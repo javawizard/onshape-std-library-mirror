@@ -107,7 +107,8 @@ precondition
     var resolvedEntities = evaluateQuery(context, usedEntities);
     if(@size(resolvedEntities) == 0)
     {
-        reportFeatureError(context, id, ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
+        reportFeatureError(context, id, extrudeDefinition.bodyType == ToolBodyType.SOLID ?
+                ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION : ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
         return;
     }
 
@@ -155,27 +156,13 @@ precondition
     {
         if (!processNewBodyIfNeeded(context, id, extrudeDefinition))
         {
-            setBooleanErrorEntities(context, id, extrudeDefinition);
+            var statusToolId = id + ".statusTools";
+            opExtrude(context, statusToolId, extrudeDefinition);
+            setBooleanErrorEntities(context, id, statusToolId);
         }
     }
 
     endFeature(context, id);
-}
-
-function setBooleanErrorEntities(context is Context, id is Id, extrudeDefinition is map)
-{
-    var statusToolId = id + ".statusTools";
-    opExtrude(context, statusToolId, extrudeDefinition);
-    var statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
-    if (size(evaluateQuery(context, statusToolsQ)) > 0)
-    {
-        var errorDefinition = {};
-        errorDefinition.entities = statusToolsQ;
-        setErrorEntities(context, id, errorDefinition);
-        var deletionData = {};
-        deletionData.entities = statusToolsQ;
-        opDeleteBodies(context, statusToolId + ".delete", deletionData);
-    }
 }
 
 function getEntitiesToUse(extrudeDefinition is map)
@@ -320,3 +307,4 @@ export function performTypeFlip(context is Context, featureDefinition is map, fe
     featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
     return featureDefinition;
 }
+

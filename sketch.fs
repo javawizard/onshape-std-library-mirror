@@ -3,6 +3,7 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/lineplane.fs", version : "");
 export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
 
 
@@ -71,7 +72,7 @@ precondition
     var sketchPlane = evPlane(context, { "face" : value.sketchPlane });
     if(sketchPlane.error != undefined)
     {
-        reportFeatureError(context, id, sketchPlane.error);
+        reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
         sketchPlane.result = XY_PLANE;
         value.planeReference = qNothing();
     }

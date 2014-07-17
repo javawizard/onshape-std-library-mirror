@@ -510,5 +510,10 @@ export operator+(id is Id, addend is Id) returns Id
     return concatenateArrays([id, addend]) as Id;
 }
 
+//==================
 
+export function notFoundErrorKey(paramName is string) returns string
+{
+    return paramName ~ "notFoundError";
+}
 

@@ -20,7 +20,7 @@ export import(path : "onshape/std/deleteFace.fs", version : "");
 export import(path : "onshape/std/moveFace.fs", version : "");
 export import(path : "onshape/std/replaceFace.fs", version : "");
 export import(path : "onshape/std/modifyFillet.fs", version : "");
-export import(path : "onshape/std/matePoint.fs", version : "");
+export import(path : "onshape/std/mateConnector.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
 

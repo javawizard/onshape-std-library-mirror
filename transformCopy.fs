@@ -27,7 +27,8 @@ precondition
 {
     startFeature(context, id, definition);
     var transform = identityTransform();
-    opPattern(context, id, {"entities" : definition.entities, "transforms" : [transform], "instanceNames" : ["1"]});
+    opPattern(context, id, {"entities" : definition.entities, "transforms" : [transform], "instanceNames" : ["1"],
+                            notFoundErrorKey("entities") :  ErrorStringEnum.COPY_SELECT_PARTS });
     endFeature(context, id);
 }
 
