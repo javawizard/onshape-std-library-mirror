@@ -1,6 +1,7 @@
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path: "onshape/std/evaluate.fs", version : "");
-export import(path:"onshape/std/transform.fs", version : "");
+export import(path: "onshape/std/transform.fs", version : "");
+export import(path: "onshape/std/errorstringenum.gen.fs", version : "");
 
 annotation {"Feature Type Name" : "Mirror"}
 export function mirror(context is Context, id is Id, mirrorDefinition is map)
@@ -16,11 +17,15 @@ precondition
     startFeature(context, id, mirrorDefinition);
     mirrorDefinition.mirrorPlane = qGeometry(mirrorDefinition.mirrorPlane, GeometryType.PLANE);
     var planeResult = evPlane(context, {"face" : mirrorDefinition.mirrorPlane});
-    if(reportFeatureError(context, id, planeResult.error))
+    if (planeResult.error != undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.MIRROR_NO_PLANE);
         return;
+    }
 
     var transform = mirrorAcross(planeResult.result);
-    opPattern(context, id, {"entities" : mirrorDefinition.entities, "transforms" : [transform], "instanceNames" : ["1"]});
+    opPattern(context, id, {"entities" : mirrorDefinition.entities, "transforms" : [transform], "instanceNames" : ["1"],
+                            notFoundErrorKey("entities") :  ErrorStringEnum.MIRROR_SELECT_PARTS });
     endFeature(context, id);
 }
 

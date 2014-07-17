@@ -98,9 +98,11 @@ precondition
     //Dir 1
     var result = computePatternOffset(context, patternDefinition.directionOne,
         patternDefinition.oppositeDirection, patternDefinition.distance);
-    if(reportFeatureError(context, id, result.error))
+    if (result.error != undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR);
         return;
-
+    }
     var offset1 = result.offset;
     var count1 = patternDefinition.instanceCount;
 
@@ -111,8 +113,11 @@ precondition
     {
         var result = computePatternOffset(context, patternDefinition.directionTwo,
             patternDefinition.oppositeDirectionTwo, patternDefinition.distanceTwo);
-        if(reportFeatureError(context, id, result.error))
+        if (result.error != undefined)
+        {
+            reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR);
             return;
+        }
         offset2 = result.offset;
         if(parallelVectors(offset1, offset2))
         {   //notify user that parallel directions are selected for dir1 and dir2
@@ -142,14 +147,7 @@ precondition
         }
     }
 
-    if (patternDefinition.isFacePattern == true)
-    {
-        opPattern(context, id, { "entities" : patternDefinition.faces,"transforms" : transforms , "instanceNames" : instanceNames  });
-    }
-    else
-    {
-        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instanceNames});
-    }
+    checkInputAndCallPatternOp(context, id, patternDefinition, transforms, instanceNames);
     endFeature(context, id);
 }
 
@@ -210,8 +208,11 @@ precondition
         angle = -angle;
 
     var rawDirectionResult = evAxis(context, {"axis" : patternDefinition.axis});
-    if (reportFeatureError(context, id, rawDirectionResult.error))
+    if (rawDirectionResult.error != undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS);
         return;
+    }
 
     if(patternDefinition.equalSpace == true)
     {
@@ -231,17 +232,23 @@ precondition
         instanceNames = append(instanceNames, "" ~ i);
     }
 
-    if (patternDefinition.isFacePattern == true)
-    {
-        opPattern(context, id, { "entities" : patternDefinition.faces, "transforms" : transforms , "instanceNames" : instanceNames  });
-    }
-    else
-    {
-        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instanceNames});
-    }
+    checkInputAndCallPatternOp(context, id, patternDefinition, transforms, instanceNames);
     endFeature(context, id);
 }
 
+function checkInputAndCallPatternOp(context is Context, id is Id, patternDefinition is map, transforms is array, instanceNames is array)
+{
+    if (patternDefinition.isFacePattern == true)
+    {
+        opPattern(context, id, { "entities" : patternDefinition.faces, "transforms" : transforms , "instanceNames" : instanceNames,
+        notFoundErrorKey("entities") :  ErrorStringEnum.PATTERN_SELECT_FACES });
+    }
+    else
+    {
+        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instanceNames,
+        notFoundErrorKey("entities") :  ErrorStringEnum.PATTERN_SELECT_PARTS });
+    }
+}
 
 
 //======================================================================================

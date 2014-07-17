@@ -3,6 +3,8 @@ export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/vector.fs", version : "");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
+
 
 export enum RevolveType
 {
@@ -79,9 +81,11 @@ precondition
 {
     startFeature(context, id, revolveDefinition);
     var axis = evAxis(context, revolveDefinition);
-    if(reportFeatureError(context, id, axis.error))
+    if (axis.error != undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS);
         return;
-
+    }
     revolveDefinition.axis = axis.result;
 
     if(revolveDefinition.bodyType == undefined)
@@ -120,26 +124,12 @@ precondition
     {
         if (!processNewBodyIfNeeded(context, id, revolveDefinition))
         {
-            setBooleanErrorEntities(context, id, revolveDefinition);
+            var statusToolId = id + ".statusTools";
+            opRevolve(context, statusToolId, revolveDefinition);
+            setBooleanErrorEntities(context, id, statusToolId);
         }
     }
     endFeature(context, id);
-}
-
-function setBooleanErrorEntities(context is Context, id is Id, revolveDefinition is map)
-{
-    var statusToolId = id + ".statusTools";
-    opRevolve(context, statusToolId, revolveDefinition);
-    var statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
-    if (size(evaluateQuery(context, statusToolsQ)) > 0)
-    {
-        var errorDefinition = {};
-        errorDefinition.entities = statusToolsQ;
-        setErrorEntities(context, id, errorDefinition);
-        var deletionData = {};
-        deletionData.entities = statusToolsQ;
-        opDeleteBodies(context, statusToolId + ".delete", deletionData);
-    }
 }
 
 //Manipulator functions

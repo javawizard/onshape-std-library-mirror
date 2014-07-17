@@ -36,7 +36,6 @@ precondition
             annotation {"Name" : "Keep tools"}
             booleanDefinition.keepTools is boolean;
         }
-
     }
 }
 {
@@ -380,4 +379,17 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
     return featureDefinition;
 }
 
+export function setBooleanErrorEntities(context is Context, id is Id, statusToolId is Id)
+{
+    var statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
+    if (size(evaluateQuery(context, statusToolsQ)) > 0)
+    {
+        var errorDefinition = {};
+        errorDefinition.entities = statusToolsQ;
+        setErrorEntities(context, id, errorDefinition);
+        var deletionData = {};
+        deletionData.entities = statusToolsQ;
+        opDeleteBodies(context, statusToolId + ".delete", deletionData);
+    }
+}
 

@@ -1,6 +1,7 @@
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
+export import(path: "onshape/std/errorstringenum.gen.fs", version : "");
 
 //Draft Operation
 annotation {"Feature Type Name" : "Draft"}
@@ -32,8 +33,11 @@ precondition
 {
     startFeature(context, id, draftDefinition);
     var planeResult = evFaceTangentPlane(context, {"face" : draftDefinition.neutralPlane, "parameter" : vector(0.5, 0.5)});
-    if(reportFeatureError(context, id, planeResult.error))
+    if (planeResult.error != undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.DRAFT_SELECT_NEUTRAL);
         return;
+    }
 
     draftDefinition.pullVec = planeResult.result.normal;
     if(draftDefinition.pullDirection)

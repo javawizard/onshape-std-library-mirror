@@ -14,7 +14,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(2) as Context;
+   return @newContext(3) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -164,9 +164,9 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
   return @opModifyFillet(context, id, 0, definition);
 }
 
-export function opMatePoint(context is Context, id is Id, definition is map)
+export function opMateConnector(context is Context, id is Id, definition is map)
 {
-  return @opMatePoint(context, id, 0, definition);
+  return @opMateConnector(context, id, 0, definition);
 }
 
 // =====================================================================

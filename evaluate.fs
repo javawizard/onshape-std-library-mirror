@@ -211,9 +211,9 @@ precondition
     return result;
 }
 
-export function evMatePointTransform(context is Context, arg is map) returns map
+export function evMateConnectorTransform(context is Context, arg is map) returns map
 {
-    var result = @evMatePointTransform(context, arg);
+    var result = @evMateConnectorTransform(context, arg);
     if (result.error == undefined)
     {
         result.result = transformFromBuiltin(result.result);
