@@ -98,7 +98,7 @@ export function opChamfer(context is Context, id is Id, definition is map)
 
 export function opDraft(context is Context, id is Id, definition is map)
 {
-  return @opDraft(context, id, 0, definition);
+  return @opDraft(context, id, 1, definition);
 }
 
 export function opExtrude(context is Context, id is Id, definition is map)
@@ -118,7 +118,7 @@ export function opPlane(context is Context, id is Id, definition is map)
 
 export function opRevolve(context is Context, id is Id, definition is map)
 {
-  return @opRevolve(context, id, 0, definition);
+  return @opRevolve(context, id, 1, definition);
 }
 
 export function opShell(context is Context, id is Id, definition is map)
@@ -136,7 +136,7 @@ export function opPoint(context is Context, id is Id, definition is map)
 }
 export function opSweep(context is Context, id is Id, definition is map)
 {
-    return @opSweep(context, id, 1, definition);
+    return @opSweep(context, id, 2, definition);
 }
 
 export function opDeleteFace(context is Context, id is Id, definition is map)

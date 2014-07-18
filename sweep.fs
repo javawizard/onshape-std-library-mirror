@@ -32,8 +32,8 @@ precondition
     }
     else
     {
-        annotation {"Name" : "Sketch curves to sweep",
-                    "Filter" : (EntityType.EDGE && SketchObject.YES)}
+        annotation {"Name" : "Edges and sketch curves to sweep",
+                    "Filter" : (EntityType.EDGE)}
         sweepDefinition.surfaceProfiles is Query;
     }
 
