@@ -43,8 +43,8 @@ precondition
     }
     else
     {
-        annotation {"Name" : "Sketch curves to revolve",
-                    "Filter" : (EntityType.EDGE && SketchObject.YES)}
+        annotation {"Name" : "Edges and sketch curves to revolve",
+                    "Filter" : (EntityType.EDGE)}
         revolveDefinition.surfaceEntities is Query;
     }
 
