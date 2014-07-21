@@ -128,11 +128,21 @@ precondition
       return;
   }
 
+  var onlyPartInStudio = qNothing();
+  var allBodies = qEverything(EntityType.BODY);
+  var allParts = qBodyType(allBodies, BodyType.SOLID);
+
+  if (@size(evaluateQuery(context, allParts)) == 1)
+  {
+    onlyPartInStudio = allParts;
+  }
+
   var possiblePartOwners = [ mateConnectorDefinition.ownerPart,
                              mateConnectorDefinition.originQuery,
                              mateConnectorDefinition.originAdditionalQuery,
                              mateConnectorDefinition.primaryAxisQuery,
-                             mateConnectorDefinition.secondaryAxisQuery ];
+                             mateConnectorDefinition.secondaryAxisQuery,
+                             onlyPartInStudio ];
 
   var ownerPartQuery;
   for(var i = 0; i < size(possiblePartOwners); i += 1)
