@@ -175,15 +175,6 @@ export const POSITIVE_COUNT_BOUNDS =
     (unitless) : [1, 2, 1e5]
 } as IntegerBoundSpec;
 
-
-export const POSITIVE_COUNT_BOUNDS_DEFAULT_1 =
-{
-    "min"      : 1,
-    "max"      : 1e9,
-    (unitless) : [1, 1, 1e5]
-} as IntegerBoundSpec;
-
-
 export const POSITIVE_REAL_BOUNDS =
 {
     "min"      : 0,

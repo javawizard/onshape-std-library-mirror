@@ -6,7 +6,7 @@ export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
 export import(path : "onshape/std/origincreationtype.gen.fs", version : "");
 export import(path : "onshape/std/rotationtype.gen.fs", version : "");
 
-annotation {"Feature Type Name" : "Mate connector"}
+annotation {"Feature Type Name" : "Mate Connector"}
 export function mateConnector(context is Context, id is Id, mateConnectorDefinition is map)
 precondition
 {

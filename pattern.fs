@@ -82,7 +82,7 @@ precondition
         annotation {"Name" : "Distance2"}
         isLength(patternDefinition.distanceTwo, PATTERN_OFFSET_BOUND);
         annotation {"Name" : "Instance count2"}
-        isInteger(patternDefinition.instanceCountTwo, POSITIVE_COUNT_BOUNDS_DEFAULT_1);
+        isInteger(patternDefinition.instanceCountTwo, POSITIVE_COUNT_BOUNDS);
         annotation {"Name" : "Opposite direction2", "UIHint" : "OppositeDirection"}
         patternDefinition.oppositeDirectionTwo is boolean;
     }
@@ -111,25 +111,19 @@ precondition
     var count2 = 1;
     if(patternDefinition.hasSecondDir == true)
     {
-        count2 = patternDefinition.instanceCountTwo;
-
         var result = computePatternOffset(context, patternDefinition.directionTwo,
             patternDefinition.oppositeDirectionTwo, patternDefinition.distanceTwo);
-        if (result.error == undefined)
+        if (result.error != undefined)
         {
-          offset2 =  result.offset;
-          if(parallelVectors(offset1, offset2))
-          {   //notify user that parallel directions are selected for dir1 and dir2
-            reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_DIRECTIONS_PARALLEL);
-          }
-        }
-        else if (count2 > 1)
-        {
-            //if count2 = 1, we don't need a direction (i.e. we keep the 1-directional solution),
-            //so only complain about direction if the count for second direction is > 1.
             reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR);
             return;
         }
+        offset2 = result.offset;
+        if(parallelVectors(offset1, offset2))
+        {   //notify user that parallel directions are selected for dir1 and dir2
+            reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_DIRECTIONS_PARALLEL);
+        }
+        count2 = patternDefinition.instanceCountTwo;
     }
 
     if(verifyPatternSize(context, id, count1 * count2))
