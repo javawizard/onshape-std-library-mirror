@@ -180,7 +180,7 @@ precondition
     return lhs;
 }
 
-export function abs(value is ValueWithUnits)
+export function abs(value is ValueWithUnits) returns ValueWithUnits
 {
     return value.value < 0 ? -value : value;
 }

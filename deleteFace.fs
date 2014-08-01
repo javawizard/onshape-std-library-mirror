@@ -14,7 +14,7 @@ precondition
 
     if(definition.includeFillet != undefined)
     {
-        annotation {"Name" : "Deleted fillet faces", "Default" : true}
+        annotation {"Name" : "Delete fillet faces", "Default" : true}
         definition.includeFillet is boolean;
     }
 
