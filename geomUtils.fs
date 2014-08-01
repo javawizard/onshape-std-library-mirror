@@ -195,6 +195,13 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
         reportFeatureWarning(context, id, result.result);
         madeChanges = true;
     }
+    result = getFeatureInfo(context, subId);
+    if(result.result != undefined)
+    {
+        reportFeatureInfo(context, id, result.result);
+        madeChanges = true;
+    }
+
     return madeChanges;
 }
 
@@ -206,6 +213,11 @@ export function getFeatureError(context is Context, id is Id)
 export function getFeatureWarning(context is Context, id is Id)
 {
     return @getFeatureWarning(context, id);
+}
+
+export function getFeatureInfo(context is Context, id is Id)
+{
+    return @getFeatureInfo(context, id);
 }
 
 export function setErrorEntities(context is Context, id is Id, definition is map)
