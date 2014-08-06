@@ -87,7 +87,7 @@ precondition
     value.sketchPlane is Plane;
 }
 {
-    var result = @newSketch(context, id, 3, value);
+    var result = @newSketch(context, id, 4, value);
     reportFeatureError(context, id, result.error);
     return result.result as Sketch;
 }
