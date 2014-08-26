@@ -41,7 +41,8 @@ export enum SketchProjectionType
 {
     USE,
     SILHOUETTE_START,
-    SILHOUETTE_END
+    SILHOUETTE_END,
+    USE_END
 }
 
 export predicate is2dPoint(value)
@@ -87,7 +88,7 @@ precondition
     value.sketchPlane is Plane;
 }
 {
-    var result = @newSketch(context, id, 4, value);
+    var result = @newSketch(context, id, 6, value);
     reportFeatureError(context, id, result.error);
     return result.result as Sketch;
 }

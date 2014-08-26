@@ -108,7 +108,7 @@ export function opExtrude(context is Context, id is Id, definition is map)
 
 export function opPattern(context is Context, id is Id, definition is map)
 {
-  return @opPattern(context, id, 0, definition);
+  return @opPattern(context, id, 1, definition);
 }
 
 export function opPlane(context is Context, id is Id, definition is map)
@@ -128,7 +128,7 @@ export function opShell(context is Context, id is Id, definition is map)
 
 export function opSplitPart(context is Context, id is Id, definition is map)
 {
-  return @opSplitPart(context, id, 0, definition);
+  return @opSplitPart(context, id, 1, definition);
 }
 export function opPoint(context is Context, id is Id, definition is map)
 {

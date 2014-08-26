@@ -156,9 +156,11 @@ precondition
     {
         if (!processNewBodyIfNeeded(context, id, extrudeDefinition))
         {
-            var statusToolId = id + ".statusTools";
+            var statusToolId = id + "statusTools";
+            startFeature(context, statusToolId, extrudeDefinition);
             opExtrude(context, statusToolId, extrudeDefinition);
             setBooleanErrorEntities(context, id, statusToolId);
+            endFeature(context, statusToolId);
         }
     }
 

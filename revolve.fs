@@ -124,9 +124,11 @@ precondition
     {
         if (!processNewBodyIfNeeded(context, id, revolveDefinition))
         {
-            var statusToolId = id + ".statusTools";
+            var statusToolId = id + "statusTools";
+            startFeature(context, statusToolId, revolveDefinition);
             opRevolve(context, statusToolId, revolveDefinition);
             setBooleanErrorEntities(context, id, statusToolId);
+            endFeature(context, statusToolId);
         }
     }
     endFeature(context, id);

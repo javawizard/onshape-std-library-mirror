@@ -44,17 +44,12 @@ precondition
     if(definition.oppositeSense == undefined)
         definition.oppositeSense = false;
 
-    // We can always draw the opposite sense manipulator, as long as the template face is defined
-    var templateFacePlane = computeFacePlane(context, id, definition.templateFace);
-    if(templateFacePlane != undefined)
-        addOppositeSenseManipulator(context, id, definition, templateFacePlane);
+    // Only draw the offset manipulator if both the replace face and the template face are defined
+    var replaceFacePlane = computeFacePlane(context, id, definition.replaceFaces);
+    if(replaceFacePlane != undefined && definition.templateFace != undefined)
+        addOffsetManipulator(context, id, definition, replaceFacePlane);
 
     opReplaceFace(context, id, definition);
-
-    // Only draw the offset manipulator if both the replaced face and the template face are defined
-    var replacedFacePlane = computeFacePlane(context, id, definition.replaceFaces);
-    if(replacedFacePlane != undefined && templateFacePlane != undefined)
-        addOffsetManipulator(context, id, definition, replacedFacePlane);
 
     endFeature(context, id);
 }
@@ -62,45 +57,20 @@ precondition
 //======================= Manipulators ==========================
 
 const OFFSET_MANIPULATOR = "offsetManipulator";
-const FLIP_MANIPULATOR = "flipManipulator";
 
-function addOppositeSenseManipulator(context is Context, id is Id, replaceFaceDefinition is map, templateFacePlane is Plane)
+function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinition is map, replaceFace is Plane)
 {
-    addManipulators(context, id, { (FLIP_MANIPULATOR) :
-                                   flipManipulator(templateFacePlane.origin,
-                                                   templateFacePlane.normal,
-                                                   replaceFaceDefinition.oppositeSense, replaceFaceDefinition.templateFace) });
-}
-
-function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinition is map, replacedFace is Plane)
-{
-
-    var offsetOrigin;
-    var offsetDirection = replacedFace.normal;
-
-    if (!featureHasError(context, id))
-    {
-        // If feature was successful, then use the origin and normal of the post replace face to compute an origin
-        // that travels back along the face's normal by the offset amount.  This will keep the manipulator fixed to the
-        // result face.
-
-        // If the opposite sense is enabled, the normal of the manipulator needs to be flipped. This keeps the measurement
-        // correct relative to the template face.
-        if (replaceFaceDefinition.oppositeSense)
-          offsetDirection = -offsetDirection;
-        offsetOrigin = replacedFace.origin - offsetDirection * replaceFaceDefinition.offset;
-    }
-    else
-    {
-        // If feature was unsuccessful, place the manipulator offset from the replaced face.  This will allow
-        // the manipulator to travel relative to the face so that the user can search for a valid value.
-        offsetOrigin = replacedFace.origin;
-        if (replaceFaceDefinition.oppositeSense)
-            offsetDirection = -offsetDirection;
-    }
+    // Don't try anything fancy to guess where to place the manipulator. With replace face it is too hard to guess what the
+    // result will look like. Place the manipulator offset from the face to be replaced.  This will allow
+    // the manipulator to travel relative to the face where the replacement happens.
+    var offsetOrigin = replaceFace.origin;
+    var offsetDirection = replaceFace.normal;
+    if (replaceFaceDefinition.oppositeSense)
+        offsetDirection = -offsetDirection;
 
     addManipulators(context, id, { (OFFSET_MANIPULATOR) :
                                    linearManipulator(offsetOrigin, offsetDirection, replaceFaceDefinition.offset) });
+
 }
 
 function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
@@ -117,10 +87,6 @@ precondition
     {
       replaceFaceDefinition.oppositeDirection = newManipulators[OFFSET_MANIPULATOR].offset < 0 * meter;
       replaceFaceDefinition.offset = abs(newManipulators[OFFSET_MANIPULATOR].offset);
-    }
-    if (newManipulators[FLIP_MANIPULATOR] != undefined)
-    {
-      replaceFaceDefinition.oppositeSense = newManipulators[FLIP_MANIPULATOR].flipped;
     }
 
     return replaceFaceDefinition;
