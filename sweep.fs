@@ -62,9 +62,11 @@ precondition
     {
         if (!processNewBodyIfNeeded(context, id, sweepDefinition))
         {
-            var statusToolId = id + ".statusTools";
+            var statusToolId = id + "statusTools";
+            startFeature(context, statusToolId, sweepDefinition);
             opSweep(context, statusToolId, sweepDefinition);
             setBooleanErrorEntities(context, id, statusToolId);
+            endFeature(context, statusToolId);
         }
     }
 
