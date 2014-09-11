@@ -14,7 +14,8 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(3) as Context;
+// Lana Saksonov 8/27/2014 Context version increase to require stricter disambiguation of some queries
+   return @newContext(5) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -88,12 +89,12 @@ export function opBoolean(context is Context, id is Id, definition is map)
 
 export function opFillet(context is Context, id is Id, definition is map)
 {
-  return @opFillet(context, id, 0, definition);
+  return @opFillet(context, id, 2, definition);
 }
 
 export function opChamfer(context is Context, id is Id, definition is map)
 {
-  return @opChamfer(context, id, 0, definition);
+  return @opChamfer(context, id, 2, definition);
 }
 
 export function opDraft(context is Context, id is Id, definition is map)

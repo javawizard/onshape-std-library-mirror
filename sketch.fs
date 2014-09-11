@@ -5,6 +5,7 @@ export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
 
 
 export enum ConstraintType
@@ -88,7 +89,7 @@ precondition
     value.sketchPlane is Plane;
 }
 {
-    var result = @newSketch(context, id, 6, value);
+    var result = @newSketch(context, id, 7, value);
     reportFeatureError(context, id, result.error);
     return result.result as Sketch;
 }

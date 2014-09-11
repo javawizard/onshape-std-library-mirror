@@ -25,6 +25,12 @@ precondition
     {
         annotation {"Name" : "Fillet radius"}
         isLength(definition.radius, BLEND_BOUNDS);
+
+        if(definition.reFillet != undefined)
+        {
+            annotation {"Name" : "Reapply fillet", "Default" : true}
+            definition.reFillet is boolean;
+        }
     }
 }
 //============================ Body =============================
@@ -33,6 +39,8 @@ precondition
 
     if(definition.radius == undefined)
         definition.radius = 0.0;
+    if(definition.reFillet == undefined)
+        definition.reFillet = false;
 
     opModifyFillet(context, id, definition);
 
