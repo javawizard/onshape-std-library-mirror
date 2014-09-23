@@ -49,7 +49,7 @@ precondition
                 "Filter" : QueryFilterCompound.ALLOWS_AXIS,
                 "MaxNumberOfPicks" : 1}
         definition.axis is Query;
-        annotation {"Name" : "Rotation Angle"}
+        annotation {"Name" : "Rotation angle"}
         isAngle(definition.angle, MOVE_FACE_ROTATION_BOUNDS);
     }
 
