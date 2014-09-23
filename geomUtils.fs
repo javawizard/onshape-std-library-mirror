@@ -14,8 +14,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-// Lana Saksonov 8/27/2014 Context version increase to require stricter disambiguation of some queries
-   return @newContext(5) as Context;
+   return @newContext(8) as Context;  //This number should match the number in BTContextVersion.h
 }
 
 //====================== Query evaluation ========================
@@ -137,7 +136,7 @@ export function opPoint(context is Context, id is Id, definition is map)
 }
 export function opSweep(context is Context, id is Id, definition is map)
 {
-    return @opSweep(context, id, 2, definition);
+    return @opSweep(context, id, 3, definition);
 }
 
 export function opDeleteFace(context is Context, id is Id, definition is map)
