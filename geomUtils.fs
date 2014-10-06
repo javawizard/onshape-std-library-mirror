@@ -14,7 +14,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(8) as Context;  //This number should match the number in BTContextVersion.h
+   return @newContext(13) as Context;  //This number should match the number in BTContextVersion.h
 }
 
 //====================== Query evaluation ========================
@@ -83,17 +83,17 @@ export function opTransform(context is Context, id is Id, definition is map)
 
 export function opBoolean(context is Context, id is Id, definition is map)
 {
-  return @opBoolean(context, id, 0, definition);
+  return @opBoolean(context, id, 1, definition);
 }
 
 export function opFillet(context is Context, id is Id, definition is map)
 {
-  return @opFillet(context, id, 2, definition);
+  return @opFillet(context, id, 3, definition);
 }
 
 export function opChamfer(context is Context, id is Id, definition is map)
 {
-  return @opChamfer(context, id, 2, definition);
+  return @opChamfer(context, id, 3, definition);
 }
 
 export function opDraft(context is Context, id is Id, definition is map)
