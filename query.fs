@@ -426,6 +426,10 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
                 "entityType" : entityType, queryType : "DUMMY"});
 }
 
+export function qBodySplitBy(featureId is Id, backBody is boolean)
+{
+    return query(featureId, "SPLIT", EntityType.BODY, {"isFromBackBody" : backBody});
+}
 export function sketchEntityQuery(operationId is Id, entityType is EntityType, sketchEntityId is string) returns Query
 {
     return query(operationId, "SKETCH_ENTITY", entityType,

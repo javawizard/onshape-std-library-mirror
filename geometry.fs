@@ -23,6 +23,7 @@ export import(path : "onshape/std/modifyFillet.fs", version : "");
 export import(path : "onshape/std/mateConnector.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
+export import(path : "onshape/std/sectionpart.fs", version : "");
 
 //start model context
 export function newContextWithDefaults() returns Context
