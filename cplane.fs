@@ -16,7 +16,9 @@ export enum CPlaneType
     annotation {"Name" : "Three Point"}
     THREE_POINT,
     annotation {"Name" : "Mid Plane"}
-    MID_PLANE
+    MID_PLANE,
+    annotation {"Name" : "Curve Point"}
+    CURVE_POINT
 }
 
 // Messages
@@ -30,6 +32,7 @@ const requiresThreePointsMessage   = ErrorStringEnum.CPLANE_INPUT_THREE_POINT;
 const degeneratePointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
 const coincidentPointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage      = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
+const requiresCurvePointMessage    = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
 annotation {"Feature Type Name" : "Plane"}
 export function cPlane(context is Context, id is Id, cplaneDefinition is map)
@@ -37,7 +40,7 @@ precondition
 {
 
     annotation {"Name" : "Entities",
-                "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS}
+                "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE}
     cplaneDefinition.entities is Query;
 
     annotation {"Name" : "Plane type"}
@@ -230,6 +233,28 @@ precondition
         // fall through to failure
         reportFeatureError(context, id, midPlaneDefaultErrorMessage);
         return;
+    }
+
+    if(cplaneDefinition.cplaneType == CPlaneType.CURVE_POINT)
+    {
+        if(numEntities < 2) {
+            reportFeatureError(context, id, requiresCurvePointMessage);
+            return;
+        }
+        if(numEntities > 2) {
+            reportFeatureError(context, id, tooManyEntitiesMessage);
+            return;
+        }
+
+        var param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
+                                                   "vertex" : qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX) });
+
+        var lineResult = evEdgeTangentLine(context, {"edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
+                                    "parameter" : param.result, "arcLengthParameterization" : false });
+        if(reportFeatureError(context, id, lineResult.error))
+            return;
+
+        cplaneDefinition.plane = plane(lineResult.result.origin, lineResult.result.direction);
     }
 
     opPlane(context, id, cplaneDefinition);
