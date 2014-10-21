@@ -47,10 +47,16 @@ precondition
 {
     arg.edge is Query;
     arg.parameters is array;
+    if(arg.arcLengthParameterization != undefined)
+        arg.arcLengthParameterization is boolean;
+
     for(var i in arg.parameters)
         i is number;
 }
 {
+    if(arg.arcLengthParameterization == undefined)
+        arg.arcLengthParameterization = true;
+
     var result = @evEdgeTangentLines(context, 0, arg);
     if(result.result is array)
     {
@@ -105,6 +111,19 @@ precondition
     var result = @evAxis(context, 1, arg);
     if(result.result is map)
         result.result = lineFromBuiltin(result.result);
+    return result;
+}
+
+// Project point on curve, will return the parameter linearly scaled based on the interval of the edge. So parameter interval of the edge is
+// always [0, 1]. Parameter output can be negative or greater than 1 (project on curve outside of the edge).
+export function evProjectPointOnCurve(context is Context, arg is map) returns map
+precondition
+{
+    arg.edge is Query;
+    arg.vertex is Query;
+}
+{
+    var result = @evProjectPointOnCurve(context, 0, arg);
     return result;
 }
 
