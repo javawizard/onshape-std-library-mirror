@@ -2,6 +2,7 @@ export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 
 //====================== Context ========================
 
@@ -14,7 +15,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(13) as Context;  //This number should match the number in BTContextVersion.h
+   return @newContext(FeatureScriptVersionNumber.V46_NEW_VERSION_NUMBERING_SCHEME) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -68,105 +69,105 @@ export function reportFeatureInfo(context is Context, id is Id, message is strin
 
 export function opImportForeign(context is Context, id is Id, definition is map)
 {
-  return @opImportForeign(context, id, 0, definition);
+  return @opImportForeign(context, id, definition);
 }
 
 export function opDeleteBodies(context is Context, id is Id, definition is map)
 {
-  return @opDeleteBodies(context, id, 0, definition);
+  return @opDeleteBodies(context, id, definition);
 }
 
 export function opTransform(context is Context, id is Id, definition is map)
 {
-  return @opTransform(context, id, 0, definition);
+  return @opTransform(context, id, definition);
 }
 
 export function opBoolean(context is Context, id is Id, definition is map)
 {
-  return @opBoolean(context, id, 1, definition);
+  return @opBoolean(context, id, definition);
 }
 
 export function opFillet(context is Context, id is Id, definition is map)
 {
-  return @opFillet(context, id, 3, definition);
+  return @opFillet(context, id, definition);
 }
 
 export function opChamfer(context is Context, id is Id, definition is map)
 {
-  return @opChamfer(context, id, 3, definition);
+  return @opChamfer(context, id, definition);
 }
 
 export function opDraft(context is Context, id is Id, definition is map)
 {
-  return @opDraft(context, id, 1, definition);
+  return @opDraft(context, id, definition);
 }
 
 export function opExtrude(context is Context, id is Id, definition is map)
 {
-  return @opExtrude(context, id, 0, definition);
+  return @opExtrude(context, id, definition);
 }
 
 export function opPattern(context is Context, id is Id, definition is map)
 {
-  return @opPattern(context, id, 1, definition);
+  return @opPattern(context, id, definition);
 }
 
 export function opPlane(context is Context, id is Id, definition is map)
 {
-  return @opPlane(context, id, 0, definition);
+  return @opPlane(context, id, definition);
 }
 
 export function opRevolve(context is Context, id is Id, definition is map)
 {
-  return @opRevolve(context, id, 1, definition);
+  return @opRevolve(context, id, definition);
 }
 
 export function opShell(context is Context, id is Id, definition is map)
 {
-  return @opShell(context, id, 0, definition);
+  return @opShell(context, id, definition);
 }
 
 export function opSplitPart(context is Context, id is Id, definition is map)
 {
-  return @opSplitPart(context, id, 1, definition);
+  return @opSplitPart(context, id, definition);
 }
 export function opPoint(context is Context, id is Id, definition is map)
 {
-    return @opPoint(context, id, 0, definition);
+    return @opPoint(context, id, definition);
 }
 export function opSweep(context is Context, id is Id, definition is map)
 {
-    return @opSweep(context, id, 3, definition);
+    return @opSweep(context, id, definition);
 }
 
 export function opDeleteFace(context is Context, id is Id, definition is map)
 {
-  return @opDeleteFace(context, id, 0, definition);
+  return @opDeleteFace(context, id, definition);
 }
 
 export function opMoveFace(context is Context, id is Id, definition is map)
 {
-  return @opMoveFace(context, id, 0, definition);
+  return @opMoveFace(context, id, definition);
 }
 
 export function opOffsetFace(context is Context, id is Id, definition is map)
 {
-  return @opOffsetFace(context, id, 0, definition);
+  return @opOffsetFace(context, id, definition);
 }
 
 export function opReplaceFace(context is Context, id is Id, definition is map)
 {
-  return @opReplaceFace(context, id, 0, definition);
+  return @opReplaceFace(context, id, definition);
 }
 
 export function opModifyFillet(context is Context, id is Id, definition is map)
 {
-  return @opModifyFillet(context, id, 0, definition);
+  return @opModifyFillet(context, id, definition);
 }
 
 export function opMateConnector(context is Context, id is Id, definition is map)
 {
-  return @opMateConnector(context, id, 0, definition);
+  return @opMateConnector(context, id, definition);
 }
 
 // =====================================================================

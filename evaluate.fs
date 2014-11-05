@@ -24,7 +24,7 @@ precondition
     }
 }
 {
-    var result = @evFaceTangentPlanes(context, 0, arg);
+    var result = @evFaceTangentPlanes(context, arg);
     if(result.result is array)
     {
         for(var i = 0; i < @size(result.result); i += 1)
@@ -57,7 +57,7 @@ precondition
     if(arg.arcLengthParameterization == undefined)
         arg.arcLengthParameterization = true;
 
-    var result = @evEdgeTangentLines(context, 0, arg);
+    var result = @evEdgeTangentLines(context, arg);
     if(result.result is array)
     {
         for(var i = 0; i < @size(result.result); i += 1)
@@ -72,7 +72,7 @@ precondition
     arg.vertex is Query;
 }
 {
-    var result = @evVertexPoint(context, 0, arg);
+    var result = @evVertexPoint(context, arg);
     if(result.result is array)
         result.result = meter * vector(result.result);
     return result;
@@ -84,7 +84,7 @@ precondition
     arg.edge is Query;
 }
 {
-    var result = @evLine(context, 0, arg);
+    var result = @evLine(context, arg);
     if(result.result is map)
         result.result = lineFromBuiltin(result.result);
     return result;
@@ -96,7 +96,7 @@ precondition
     arg.face is Query;
 }
 {
-    var result = @evPlane(context, 0, arg);
+    var result = @evPlane(context, arg);
     if(result.result is map)
         result.result = planeFromBuiltin(result.result);
     return result;
@@ -108,7 +108,7 @@ precondition
     arg.axis is Query;
 }
 {
-    var result = @evAxis(context, 1, arg);
+    var result = @evAxis(context, arg);
     if(result.result is map)
         result.result = lineFromBuiltin(result.result);
     return result;
@@ -123,7 +123,7 @@ precondition
     arg.vertex is Query;
 }
 {
-    var result = @evProjectPointOnCurve(context, 0, arg);
+    var result = @evProjectPointOnCurve(context, arg);
     return result;
 }
 
@@ -133,7 +133,7 @@ precondition
     arg.entity is Query;
 }
 {
-    var result = @evOwnerSketchPlane(context, 0, arg);
+    var result = @evOwnerSketchPlane(context, arg);
     if(result.result is map)
         result.result = planeFromBuiltin(result.result);
     return result;
@@ -147,7 +147,7 @@ precondition
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
     var ownedEdges = qOwnedByPart(arg.entities, EntityType.EDGE);
-    return @evLength(context, 0, {"edges" : qUnion([edges, ownedEdges])}).result * meter;
+    return @evLength(context, {"edges" : qUnion([edges, ownedEdges])}).result * meter;
 }
 
 export function evArea(context is Context, arg is map) returns ValueWithUnits
@@ -158,7 +158,7 @@ precondition
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
     var ownedFaces = qOwnedByPart(arg.entities, EntityType.FACE);
-    return @evArea(context, 0, {"faces" : qUnion([faces, ownedFaces])}).result * meter ^ 2;
+    return @evArea(context, {"faces" : qUnion([faces, ownedFaces])}).result * meter ^ 2;
 }
 
 export function evVolume(context is Context, arg is map) returns ValueWithUnits
@@ -167,7 +167,7 @@ precondition
     arg.entities is Query;
 }
 {
-    return @evVolume(context, 0, {"bodies" : qEntityFilter(arg.entities, EntityType.BODY)}).result * meter ^ 3;
+    return @evVolume(context, {"bodies" : qEntityFilter(arg.entities, EntityType.BODY)}).result * meter ^ 3;
 }
 
 
@@ -183,7 +183,7 @@ precondition
     if(arg.passOwners == undefined)
         arg.passOwners = false;
 
-    var result = @evCollisionDetection(context, 0, {"tools" : arg.tools , "targets" : arg.targets, "owners" : arg.passOwners});
+    var result = @evCollisionDetection(context, {"tools" : arg.tools , "targets" : arg.targets, "owners" : arg.passOwners});
     var collisions = result.result;
     if (collisions is array)
     {
@@ -224,7 +224,7 @@ precondition
     arg.cSys is Transform;
 }
 {
-    var result = @evBox(context, 0, arg);
+    var result = @evBox(context, arg);
     if (result.error == undefined)
         result.result = box3d(meter * vector(result.result.minCorner) , meter * vector(result.result.maxCorner));
     return result;
@@ -232,7 +232,7 @@ precondition
 
 export function evMateConnectorTransform(context is Context, arg is map) returns map
 {
-    var result = @evMateConnectorTransform(context, 0, arg);
+    var result = @evMateConnectorTransform(context, arg);
     if (result.error == undefined)
     {
         result.result = transformFromBuiltin(result.result);
