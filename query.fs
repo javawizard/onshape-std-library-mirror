@@ -349,7 +349,12 @@ export function qHoleFaces(subquery is Query) returns Query
 
 export function qSketchRegion(featureId is Id) returns Query
 {
-    return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId } as Query;
+    return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : false } as Query;
+}
+
+export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) returns Query
+{
+    return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : filterInnerLoops } as Query;
 }
 
 // find fillet faces of radius equal to , less than and equal to, greater than and equal to the
