@@ -1,6 +1,6 @@
 // wrappers around geometric operations
 export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/lineplane.fs", version : "");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
@@ -71,7 +71,12 @@ precondition
 {
     recordQueries(context, id, value);
     value.planeReference = value.sketchPlane;
-    var sketchPlane = evPlane(context, { "face" : value.sketchPlane });
+    var planeDefinition = { "face" : value.sketchPlane };
+    if (value.asVersion != undefined)
+    {
+        planeDefinition.asVersion = value.asVersion;
+    }
+    var sketchPlane = evPlane(context, planeDefinition);
     if(sketchPlane.error != undefined)
     {
         reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
