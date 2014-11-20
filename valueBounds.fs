@@ -136,6 +136,18 @@ export const LENGTH_BOUNDS =
     (yard)       : [0.0001, 0.025, 250]
 } as LengthBoundSpec;
 
+export const ZERO_DEFAULT_LENGTH_BOUNDS =
+{
+    "min"        : -500 * meter,
+    "max"        : 500 * meter,
+    (meter)      : [-250, 0.0, 250],
+    (millimeter) : [-250000, 0.0,  250000],
+    (centimeter) : [-25000, 0.0,   25000],
+    (inch)       : [-1000, 0.0,   1000],
+    (foot)       : [-1000, 0.0,   1000],
+    (yard)       : [-250, 0.00, 250]
+} as LengthBoundSpec;
+
 export const ANGLE_360_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -196,6 +208,13 @@ export const FILLET_RHO_BOUNDS =
     "min"      : 0.0,
     "max"      : 1.0,
     (unitless) : [0.0, 0.5, 1.0]
+} as RealBoundSpec;
+
+export const HELIX_TURN_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 1e9,
+    (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
 
 

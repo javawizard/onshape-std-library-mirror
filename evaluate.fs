@@ -1,4 +1,5 @@
-export import(path : "onshape/std/lineplane.fs", version : "");
+export import(path : "onshape/std/curveGeometry.fs", version : "");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
@@ -99,6 +100,40 @@ precondition
     var result = @evPlane(context, arg);
     if(result.result is map)
         result.result = planeFromBuiltin(result.result);
+    return result;
+}
+
+export function evSurfaceDefinition(context is Context, arg is map) returns map
+precondition
+{
+    arg.face is Query;
+}
+{
+    var result = @evSurfaceDefinition(context, arg);
+    if (result.result is map)
+    {
+        if (result.result.surfaceType == (SurfaceType.CYLINDER as string))
+        {
+            result.result = cylinderFromBuiltin(result.result);
+        }
+        else if (result.result.surfaceType == (SurfaceType.CONE as string))
+        {
+            result.result = coneFromBuiltin(result.result);
+        }
+        else if (result.result.surfaceType == (SurfaceType.TORUS as string))
+        {
+            result.result = torusFromBuiltin(result.result);
+        }
+        else if(result.result.surfaceType == (SurfaceType.SPHERE as string))
+        {
+            result.result = sphereFromBuiltin(result.result);
+        }
+        else if(result.result.surfaceType == (SurfaceType.PLANE as string))
+        {
+            result.result = planeFromBuiltin(result.result);
+        }
+    }
+
     return result;
 }
 

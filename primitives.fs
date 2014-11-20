@@ -29,7 +29,6 @@ precondition
     isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
 }
 {
-    startFeature(context, id, definition);
     var center;
     if(definition.center != undefined)
     {
@@ -41,7 +40,6 @@ precondition
 
     ellipsoid(context, id, { "center" : center,
                           radius : vector(1, 1, 1) * definition.radius });
-    endFeature(context, id);
 }
 
 export function cuboid(context is Context, id is Id, definition is map)

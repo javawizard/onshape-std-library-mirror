@@ -15,7 +15,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V46_NEW_VERSION_NUMBERING_SCHEME) as Context;
+   return @newContext(FeatureScriptVersionNumber.V50_HELIX) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -117,6 +117,11 @@ export function opPlane(context is Context, id is Id, definition is map)
   return @opPlane(context, id, definition);
 }
 
+export function opHelix(context is Context, id is Id, definition is map)
+{
+  return @opHelix(context, id, definition);
+}
+
 export function opRevolve(context is Context, id is Id, definition is map)
 {
   return @opRevolve(context, id, definition);
@@ -173,7 +178,7 @@ export function opMateConnector(context is Context, id is Id, definition is map)
 // =====================================================================
 export function startFeature(context is Context, id is Id, definition is map)
 {
-    @startFeature(context, id);
+    @startFeature(context, id, definition);
     recordQueries(context, id, definition);
 }
 
