@@ -1,4 +1,5 @@
 export import(path : "onshape/std/math.fs", version : "");
+export import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 //4 * inch is how four inches are expressed
 
 export type UnitSpec typecheck canBeUnitSpec;
@@ -11,7 +12,7 @@ export const TIME_UNITS = { "second" : 1 } as UnitSpec;
 export const CURRENT_UNITS = { "ampere" : 1 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
-export const unitless = scalar(1);
+export const unitless = 1;
 
 annotation { "Name" : "Meter", "Abbreviation" : "m" }
 export const meter = { "value" : 1, "unit" : LENGTH_UNITS } as ValueWithUnits;
@@ -24,7 +25,7 @@ annotation { "Name" : "Inch", "Abbreviation" : "in" }
 export const inch = 2.54 * centimeter;
 annotation { "Name" : "Foot", "Abbreviation" : "ft" }
 export const foot = 12 * inch;
-annotation { "Name" : "Yard" }
+annotation { "Name" : "Yard" , "Abbreviation" : "yd" }
 export const yard = 3 * foot;
 
 annotation { "Name" : "Radian", "Abbreviation" : "rad" }
@@ -34,16 +35,17 @@ export const degree = 0.0174532925199432957692 * radian;
 
 export type ValueWithUnits typecheck canBeValueWithUnits;
 
-export predicate canBeValueWithUnits(obj)
+export predicate canBeValueWithUnits(value)
 {
-    obj is map;
-    obj.value is number;
-    obj.unit is UnitSpec;
+    value is map;
+    value.value is number;
+    value.unit is UnitSpec;
 }
 
 export predicate canBeUnitSpec(value)
 {
     value is map;
+    @size(value) > 0;
     for(var unit in value)
     {
         unit.key is string;
@@ -64,45 +66,21 @@ export predicate isAngle(val)
     val.unit == ANGLE_UNITS;
 }
 
-export predicate isUnitless(val is number)
-{ //Trivially true
-}
-
-export predicate isUnitless(val)
-{
-    val is ValueWithUnits;
-    val.unit == ({} as UnitSpec);
-}
-
-export function scalar(num is number) returns ValueWithUnits
-{
-    return { "value" : num, "unit" : {} as UnitSpec } as ValueWithUnits;
-}
-
 export operator<(lhs is ValueWithUnits, rhs is ValueWithUnits) returns boolean
-precondition
-{
-    lhs.unit == rhs.unit;
-}
+precondition lhs.unit == rhs.unit;
 {
     return lhs.value < rhs.value;
 }
 
 export operator+(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
-precondition
-{
-    lhs.unit == rhs.unit;
-}
+precondition lhs.unit == rhs.unit;
 {
     lhs.value += rhs.value;
     return lhs;
 }
 
 export operator-(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
-precondition
-{
-    lhs.unit == rhs.unit;
-}
+precondition lhs.unit == rhs.unit;
 {
     lhs.value -= rhs.value;
     return lhs;
@@ -116,15 +94,17 @@ export operator-(rhs is ValueWithUnits) returns ValueWithUnits
 
 export operator*(lhs is number, rhs is ValueWithUnits) returns ValueWithUnits
 {
-    return scalar(lhs) * rhs;
+    rhs.value *= lhs;
+    return rhs;
 }
 
 export operator*(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 {
-    return lhs * scalar(rhs);
+    lhs.value *= rhs;
+    return lhs;
 }
 
-export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
+export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return ValueWithUnits or number
 {
     var newUnit = lhs.unit;
     for(var unit in rhs.unit)
@@ -142,27 +122,37 @@ export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWith
                 newUnit[unit.key] = sum;
         }
     }
+
+    if(@size(newUnit) == 0)
+        return lhs.value * rhs.value;
+
     return { "value" : lhs.value * rhs.value, "unit" : newUnit } as ValueWithUnits;
 }
 
-export operator/(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
+function reciprocal(val is ValueWithUnits) returns ValueWithUnits
 {
-    var negUnits = {} as UnitSpec;
-    for(var unit in rhs.unit)
+    for(var unit in val.unit)
     {
-        negUnits[unit.key] = -unit.value;
+        val.unit[unit.key] *= -1;
     }
-    return lhs * ({ "value" : (1 / rhs.value), "unit" : negUnits } as ValueWithUnits);
+    val.value = 1 / val.value;
+    return val;
+}
+
+export operator/(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return ValueWithUnits or number
+{
+    return lhs * reciprocal(rhs);
 }
 
 export operator/(lhs is number, rhs is ValueWithUnits) returns ValueWithUnits
 {
-    return scalar(lhs) / rhs;
+    return lhs * reciprocal(rhs);
 }
 
 export operator/(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 {
-    return lhs / scalar(rhs);
+    lhs.value /= rhs;
+    return lhs;
 }
 
 export operator^(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
@@ -198,6 +188,44 @@ precondition
     return value;
 }
 
+export function sin(value is ValueWithUnits) returns number
+precondition isAngle(value);
+{
+    return @sin(value.value);
+}
+
+export function cos(value is ValueWithUnits) returns number
+precondition isAngle(value);
+{
+    return @cos(value.value);
+}
+
+export function tan(value is ValueWithUnits) returns number
+precondition isAngle(value);
+{
+    return @tan(value.value);
+}
+
+export function asin(value is number) returns ValueWithUnits
+{
+    return @asin(value) * radian;
+}
+
+export function acos(value is number) returns ValueWithUnits
+{
+    return @acos(value) * radian;
+}
+
+export function atan(value is number) returns ValueWithUnits
+{
+    return @atan(value) * radian;
+}
+
+export function atan2(value1 is number, value2 is number) returns ValueWithUnits
+{
+    return @atan2(value1, value2) * radian;
+}
+
 export function toString(value is ValueWithUnits) returns string
 {
     var result = value.value ~ "";
@@ -211,7 +239,7 @@ export function toString(value is ValueWithUnits) returns string
 }
 
 //The strip units overloads get rid of units recursively.
-// result is also stripped of type tags, thus it should not be passed to BelScript - only to built-in functions.
+//The result is also stripped of type tags, thus it should not be passed to BelScript - only to built-in functions.
 export function stripUnits(value)
 {
     return value;
@@ -239,4 +267,27 @@ export function stripUnits(value is map) returns map
     }
     return value as map;
 }
+
+export function evaluateExpression(expression is number, expectedUnit is number) returns map
+{
+    return { 'status' : ExpressionValidationResult.VALID, 'value' : expression };
+}
+
+export function evaluateExpression(expression is number, expectedUnit is ValueWithUnits) returns map
+{
+    return {'status' : ExpressionValidationResult.NO_UNIT , 'value' : expression * expectedUnit.value };
+}
+
+export function evaluateExpression(expression is ValueWithUnits, expectedUnit is ValueWithUnits) returns map
+{
+    if (expression.unit == expectedUnit.unit)
+    {
+        return {'status' : ExpressionValidationResult.VALID , 'value' : expression.value };
+    }
+
+    return { 'status' : ExpressionValidationResult.ERROR, 'value' : 0.0 };
+}
+
+
+
 

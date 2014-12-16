@@ -188,7 +188,7 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
 precondition
 {
     newManipulators[ANGLE_MANIPULATOR] is Manipulator;
-    revolveDefinition.revolveType == RevolveType.ONE_DIRECTION;
+    revolveDefinition.revolveType == RevolveType.ONE_DIRECTION || revolveDefinition.revolveType == RevolveType.SYMMETRIC;
 }
 {
     var newAngle = newManipulators[ANGLE_MANIPULATOR].angle;

@@ -28,35 +28,8 @@ export function log10(value is number)
     return @log10(value);
 }
 
-export function sin(value is number)
-{
-    return @sin(value);
-}
-
-export function cos(value is number)
-{
-    return @cos(value);
-}
-
-export function tan(value is number)
-{
-    return @tan(value);
-}
-
-export function asin(value is number)
-{
-    return @asin(value);
-}
-
-export function acos(value is number)
-{
-    return @acos(value);
-}
-
-export function atan(value is number)
-{
-    return @atan(value);
-}
+// sin, cos, tan, asin, acos, atan, atan2  are in units.fs to deal with angular units properly
+// corresponding builtin functions (@sin etc) can be used to bypass the units.
 
 export function sinh(value is number)
 {
@@ -86,11 +59,6 @@ export function acosh(value is number)
 export function atanh(value is number)
 {
     return @atanh(value);
-}
-
-export function atan2(value1 is number, value2 is number)
-{
-    return @atan2(value1, value2);
 }
 
 export function exp(value is number)
@@ -131,6 +99,11 @@ export function floor(value is number)
 export function ceil(value is number)
 {
     return @ceil(value);
+}
+
+export function round(value is number)
+{
+    return @floor(value + 0.5);
 }
 
 export function min(value1, value2)

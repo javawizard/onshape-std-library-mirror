@@ -41,7 +41,7 @@ export predicate isUnitlessVector(value)
     value is Vector;
     for(var i = 0; i < @size(value); i += 1)
     {
-        ::isUnitless(value[i]);
+        value[i] is number;
     }
 }
 
@@ -271,7 +271,7 @@ precondition
             return rotationMatrix3d(perp, PI);
         }
     }
-    return rotationMatrix3d(axis, atan2(norm(axis), dotProduct(from, to)));
+    return rotationMatrix3d(axis, @atan2(norm(axis), dotProduct(from, to)));
 }
 
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)

@@ -77,7 +77,7 @@ precondition
         }
         else if (surface is Cone)
         {
-            var slope = tan(surface.halfAngle.value);
+            var slope = tan(surface.halfAngle);
             baseRadius = slope * boxResult.result.minCorner[2];
             endRadius = slope * boxResult.result.maxCorner[2];
         }
@@ -105,7 +105,7 @@ precondition
         return;
     }
     var startPointVector = helixDefinitionOut.startPoint - helixDefinitionOut.axisStart;
-    helixDefinitionOut.startPoint = (rotationMatrix3d(helixDefinitionOut.direction, helixDefinition.startAngle.value) *  startPointVector) + helixDefinitionOut.axisStart;
+    helixDefinitionOut.startPoint = (rotationMatrix3d(helixDefinitionOut.direction, helixDefinition.startAngle) *  startPointVector) + helixDefinitionOut.axisStart;
 
     helixDefinitionOut.interval = [0, revolutions];
 

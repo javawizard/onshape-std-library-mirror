@@ -219,7 +219,7 @@ function addExtrudeManipulator(context is Context, id is Id, extrudeDefinition i
         if(extrudeDefinition.oppositeDirection == true)
             offset *= -1;
         addManipulators(context, id, { (DEPTH_MANIPULATOR) :
-                                       linearManipulatorWithSources(extrudeAxis.origin,
+                                       linearManipulator(extrudeAxis.origin,
                                            extrudeAxis.direction,
                                            offset,
                                            usedEntities) });

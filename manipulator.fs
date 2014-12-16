@@ -17,83 +17,73 @@ export predicate canBeManipulator(value)
 }
 
 export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits) returns Manipulator
-precondition
 {
-    is3dLengthVector(base);
-    is3dDirection(direction);
-    isLength(offset);
-}
-{
-    return stripUnits({ "manipulatorType" : ManipulatorType.LINEAR_1D,
-                        "base" : base,
-                        "direction" : direction,
-                        "offset" : offset}) as Manipulator;
+    return linearManipulator(base, direction, offset, undefined);
 }
 
-export function linearManipulatorWithSources(base is Vector, direction is Vector, offset is ValueWithUnits, sources is Query) returns Manipulator
+export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits, sources) returns Manipulator
 precondition
 {
     is3dLengthVector(base);
     is3dDirection(direction);
     isLength(offset);
+    sources == undefined || sources is Query;
 }
 {
-    return stripUnits({ "manipulatorType" : ManipulatorType.LINEAR_1D,
+    return { "manipulatorType" : ManipulatorType.LINEAR_1D,
                         "base" : base,
                         "direction" : direction,
                         "offset" : offset,
-                        "sources" : sources }) as Manipulator;
+                        "sources" : sources } as Manipulator;
 }
 
 export function angularManipulator(axisOrigin is Vector,
                                    axisDirection is Vector,
                                    rotationOrigin is Vector,
                                    angle is ValueWithUnits) returns Manipulator
-precondition
 {
-    is3dLengthVector(axisOrigin);
-    is3dDirection(axisDirection);
-    is3dLengthVector(rotationOrigin);
-    isAngle(angle);
-}
-{
-    return stripUnits({ "manipulatorType" : ManipulatorType.ANGULAR,
-                        "axisOrigin" : axisOrigin, "axisDirection" : axisDirection,
-                        "rotationOrigin" : rotationOrigin, "angle" : angle }) as Manipulator;
+    return angularManipulator(axisOrigin, axisDirection, rotationOrigin, angle, undefined);
 }
 
 export function angularManipulator(axisOrigin is Vector,
                                    axisDirection is Vector,
                                    rotationOrigin is Vector,
                                    angle is ValueWithUnits,
-                                   sources is Query) returns Manipulator
+                                   sources) returns Manipulator
 precondition
 {
     is3dLengthVector(axisOrigin);
     is3dDirection(axisDirection);
     is3dLengthVector(rotationOrigin);
     isAngle(angle);
+    sources == undefined || sources is Query;
 }
 {
-    return stripUnits({ "manipulatorType" : ManipulatorType.ANGULAR,
+    return { "manipulatorType" : ManipulatorType.ANGULAR,
                         "axisOrigin" : axisOrigin, "axisDirection" : axisDirection,
                         "rotationOrigin" : rotationOrigin,
                         "angle" : angle,
-                        "sources" : sources }) as Manipulator;
+                        "sources" : sources } as Manipulator;
 }
 
-export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, entities is Query) returns Manipulator
+export function flipManipulator(base is Vector, direction is Vector, flipped is boolean) returns Manipulator
+{
+    return flipManipulator(base, direction, flipped, undefined);
+}
+
+export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, sources) returns Manipulator
 precondition
 {
     is3dLengthVector(base);
     is3dDirection(direction);
+    sources == undefined || sources is Query;
 }
 {
-    return stripUnits({ "manipulatorType" : ManipulatorType.FLIP,
+    return { "manipulatorType" : ManipulatorType.FLIP,
                         "base" : base,
                         "direction" : direction,
                         "flipped" : flipped,
-                        "sources" : entities }) as Manipulator;
+                        "sources" : sources } as Manipulator;
 }
 
 export function addManipulators(context is Context, id is Id, manipulators is map)
