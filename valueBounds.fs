@@ -36,7 +36,7 @@ export predicate isInteger(value, boundSpec is IntegerBoundSpec)
 
 export predicate isReal(value, boundSpec is RealBoundSpec)
 {
-    isUnitless(value);
+    value is number;
     defineBounds(value, boundSpec);
 }
 
@@ -71,7 +71,7 @@ export const BLEND_BOUNDS =
     (meter)      : [0.0001, 0.005, 250],
     (millimeter) : [0.1,    5.0,   250000],
     (centimeter) : [0.01,   0.5,   25000],
-    (inch)       : [0.001,  0.2,   1000],
+    (inch)       : [0.001,  0.2,   10000],
     (foot)       : [0.0001, 0.015, 1000],
     (yard)       : [0.0001, 0.005, 250]
 } as LengthBoundSpec;
@@ -83,7 +83,7 @@ export const SHELL_OFFSET_BOUNDS =
     (meter)      : [0.0001, 0.0025, 250],
     (millimeter) : [0.1,    2.5,    250000],
     (centimeter) : [0.01,   0.25,   25000 ],
-    (inch)       : [0.001,  0.1,    1000],
+    (inch)       : [0.001,  0.1,    10000],
     (foot)       : [0.0001, 0.01,   1000],
     (yard)       : [0.0001, 0.0025, 250]
 } as LengthBoundSpec;
@@ -95,7 +95,7 @@ export const NONNEGATIVE_LENGTH_BOUNDS =
     (meter)      : [0.0001, 0.025, 250],
     (millimeter) : [0.1,    25.0,  250000],
     (centimeter) : [0.01,   2.5,   25000],
-    (inch)       : [0.001,  1.0,   1000],
+    (inch)       : [0.001,  1.0,   10000],
     (foot)       : [0.001,  0.1,   1000],
     (yard)       : [0.0001, 0.025, 250]
 } as LengthBoundSpec;
@@ -105,10 +105,10 @@ export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
     (meter)      : [0.0, 0.025, 250],
-    (millimeter) : [0.0,    25.0,  250000],
-    (centimeter) : [0.0,   2.5,   25000],
-    (inch)       : [0.0,  1.0,   1000],
-    (foot)       : [0.0,  0.1,   1000],
+    (millimeter) : [0.0, 25.0,  250000],
+    (centimeter) : [0.0, 2.5,   25000],
+    (inch)       : [0.0, 1.0,   10000],
+    (foot)       : [0.0, 0.1,   1000],
     (yard)       : [0.0, 0.025, 250]
 } as LengthBoundSpec;
 
@@ -119,7 +119,7 @@ export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
     (meter)      : [0.0, 0.0, 250],
     (millimeter) : [0.0, 0.0,  250000],
     (centimeter) : [0.0, 0.0,   25000],
-    (inch)       : [0.0, 0.0,   1000],
+    (inch)       : [0.0, 0.0,   10000],
     (foot)       : [0.0, 0.0,   1000],
     (yard)       : [0.0, 0.00, 250]
 } as LengthBoundSpec;
@@ -131,7 +131,7 @@ export const LENGTH_BOUNDS =
     (meter)      : [0.0001, 0.025, 250],
     (millimeter) : [0.1,    25.0,  250000],
     (centimeter) : [0.01,   2.5,   25000],
-    (inch)       : [0.001,  1.0,   1000],
+    (inch)       : [0.001,  1.0,   10000],
     (foot)       : [0.001,  0.1,   1000],
     (yard)       : [0.0001, 0.025, 250]
 } as LengthBoundSpec;
@@ -143,7 +143,7 @@ export const ZERO_DEFAULT_LENGTH_BOUNDS =
     (meter)      : [-250, 0.0, 250],
     (millimeter) : [-250000, 0.0,  250000],
     (centimeter) : [-25000, 0.0,   25000],
-    (inch)       : [-1000, 0.0,   1000],
+    (inch)       : [-1000, 0.0,   10000],
     (foot)       : [-1000, 0.0,   1000],
     (yard)       : [-250, 0.00, 250]
 } as LengthBoundSpec;
@@ -169,7 +169,7 @@ export const ANGLE_STRICT_180_BOUNDS =
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI - TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 30, 179],
-    (radian) : [0, 1,  PI]
+    (radian) : [0, 0.1667 * PI, 0.995 * PI]
 } as AngleBoundSpec;
 
 export const ANGLE_STRICT_90_BOUNDS =
@@ -177,7 +177,15 @@ export const ANGLE_STRICT_90_BOUNDS =
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI * 0.5 - TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 3, 89],
-    (radian) : [0, PI * 0.01667,  PI * 0.5]
+    (radian) : [0, 0.01667 * PI,  0.495 * PI]
+} as AngleBoundSpec;
+
+export const CHAMFER_ANGLE_BOUNDS =
+{
+    "min"    : -TOLERANCE.zeroAngle * radian,
+    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
+    (degree) : [0, 45, 179],
+    (radian) : [0, 0.25 * PI,  0.994 * PI]
 } as AngleBoundSpec;
 
 export const POSITIVE_COUNT_BOUNDS =
@@ -216,7 +224,6 @@ export const HELIX_TURN_BOUNDS =
     "max"      : 1e9,
     (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
-
 
 
 //Type checking follows
@@ -280,8 +287,8 @@ export predicate canBeIntegerBoundSpec(value)
 export predicate canBeRealBoundSpec(value)
 {
     canBeBoundSpec(value);
-    isUnitless(value.min);
-    isUnitless(value.max);
+    value.min is number;
+    value.max is number;
     @size(value) == 3;
     value[unitless] is array;
 }

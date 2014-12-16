@@ -215,7 +215,7 @@ precondition
         moveFaceDefinition.angle = abs(newValue);
     }
 
-    moveFaceDefinition.oppositeDirection = newValue < 0 * meter;
+    moveFaceDefinition.oppositeDirection = newValue.value < 0;
 
     return moveFaceDefinition;
 }

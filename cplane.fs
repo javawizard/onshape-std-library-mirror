@@ -136,7 +136,7 @@ precondition
         if(reportFeatureError(context, id, lineResult.error))
             return;
         var normal = perpendicularVector(lineResult.result.direction);
-        normal = rotationMatrix3d(lineResult.result.direction, cplaneDefinition.angle.value) *  normal;
+        normal = rotationMatrix3d(lineResult.result.direction, cplaneDefinition.angle) *  normal;
         cplaneDefinition.plane = plane(lineResult.result.origin, normal, lineResult.result.direction);
     }
 

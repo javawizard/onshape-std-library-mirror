@@ -15,7 +15,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V50_HELIX) as Context;
+   return @newContext(FeatureScriptVersionNumber.V66_CHAMFER_RANGE_AND_UNDO_UPTO_NEXT) as Context;
 }
 
 //====================== Query evaluation ========================

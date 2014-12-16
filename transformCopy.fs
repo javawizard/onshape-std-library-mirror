@@ -6,14 +6,16 @@ export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 export enum TransformType
 {
-    annotation {"Name" : "Translation"}
-    TRANSLATION,
-    annotation {"Name" : "Translation by Distance"}
+    annotation {"Name" : "Translate by entity"}
+    TRANSLATION_ENTITY,
+    annotation {"Name" : "Translate by distance"}
     TRANSLATION_DISTANCE,
-    annotation {"Name" : "Rotation"}
+    annotation {"Name" : "Translate by XYZ"}
+    TRANSLATION_3D,
+    annotation {"Name" : "Rotate about entity"}
     ROTATION,
-    annotation {"Name" : "Mirror"}
-    MIRROR
+    annotation {"Name" : "Copy in place"}
+    COPY
 }
 
 
@@ -32,38 +34,48 @@ precondition
     endFeature(context, id);
 }
 
-annotation {"Feature Type Name" : "Transform / Copy"}
-export function transformCopy(context is Context, id is Id, definition is map)
+// Note that transform() is also defined in transform.fs
+// with different signatures.
+
+annotation {"Feature Type Name" : "Transform"}
+export function transform(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation {"Name" : "Entities to transform",
-            "Filter" : EntityType.BODY}
+    annotation {"Name" : "Parts to transform or copy",
+                "Filter" : EntityType.BODY}
     definition.entities is Query;
-
-    annotation {"Name" : "Make a copy"}
-    definition.makeCopy is boolean;
 
     annotation {"Name" : "Transform type"}
     definition.transformType is TransformType;
 
-    if(definition.transformType != TransformType.MIRROR)
+    if(definition.transformType == TransformType.TRANSLATION_ENTITY)
     {
-        if(definition.oppositeDirection != undefined)
-        {
-            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
-            definition.oppositeDirection is boolean;
-        }
+        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        definition.oppositeDirectionEntity is boolean;
     }
 
-    annotation {"Name" : "Transform definition",
-                "Filter": QueryFilterCompound.ALLOWS_AXIS ||  GeometryType.PLANE || EntityType.VERTEX,
-                "MaxNumberOfPicks" : 2}
-    definition.transformDefinition is Query;
-
-    if(definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    if(definition.transformType == TransformType.TRANSLATION_ENTITY)
     {
+        annotation {"Name" : "Transform definition",
+                    "Filter": EntityType.VERTEX || EntityType.EDGE,
+                    "MaxNumberOfPicks" : 2}
+        definition.transformLine is Query;
+    }
+    else if(definition.transformType == TransformType.ROTATION)
+    {
+        annotation {"Name" : "Axis of rotation",
+                    "Filter": QueryFilterCompound.ALLOWS_AXIS,
+                    "MaxNumberOfPicks" : 1}
+        definition.transformAxis is Query;
+    }
+    else if(definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    {
+        annotation {"Name" : "Direction",
+                    "Filter": QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
+                    "MaxNumberOfPicks" : 2}
+        definition.transformDirection is Query;
         annotation {"Name" : "Distance"}
-        isLength(definition.distance, BLEND_BOUNDS);
+        isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
     }
 
     if(definition.transformType == TransformType.ROTATION)
@@ -71,22 +83,57 @@ precondition
         annotation {"Name" : "Angle"}
         isAngle(definition.angle, ANGLE_360_BOUNDS);
     }
+
+    if(definition.transformType == TransformType.ROTATION ||
+       definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    {
+        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        definition.oppositeDirection is boolean;
+    }
+
+    if(definition.transformType == TransformType.TRANSLATION_3D)
+    {
+        annotation {"Name": "X translation"}
+        isLength(definition.dx, ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation {"Name" : "Opposite direction",
+                    "UIHint" : "OppositeDirection"}
+        definition.oppositeX is boolean;
+        annotation {"Name": "Y translation"}
+        isLength(definition.dy, ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation {"Name" : "Opposite direction",
+                    "UIHint" : "OppositeDirection"}
+        definition.oppositeY is boolean;
+        annotation {"Name": "Z translation"}
+        isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation {"Name" : "Opposite direction",
+                    "UIHint" : "OppositeDirection"}
+        definition.oppositeZ is boolean;
+    }
+
+    if(definition.transformType != TransformType.COPY)
+    {
+        annotation {"Name" : "Copy part"}
+        definition.makeCopy is boolean;
+    }
 }
 //============================ Body =============================
 {
     startFeature(context, id, definition);
     //Start by figuring out the transform
     var transform = identityTransform();
+    var transformType = definition.transformType;
 
-    if(definition.transformType == TransformType.TRANSLATION ||
-        definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    if(transformType == TransformType.TRANSLATION_ENTITY ||
+        transformType == TransformType.TRANSLATION_DISTANCE)
     {
+        var selection = (transformType == TransformType.TRANSLATION_ENTITY ?
+                         definition.transformLine : definition.transformDirection);
         //For a translation / translation by distance, figure out which entities are used to specify it
-        var distanceSpecified = definition.transformType == TransformType.TRANSLATION_DISTANCE;
+        var distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
         var translation;
-        var vertices = evaluateQuery(context, qEntityFilter(definition.transformDefinition, EntityType.VERTEX));
-        var edges = evaluateQuery(context, qEntityFilter(definition.transformDefinition, EntityType.EDGE));
-        var faces = evaluateQuery(context, qEntityFilter(definition.transformDefinition, EntityType.FACE));
+        var vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
+        var edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
+        var faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
 
         if(@size(vertices) >= 2)
         {
@@ -104,9 +151,16 @@ precondition
         else if(distanceSpecified && @size(faces) >= 1) // A plane only provides direction
         {
             var planeResult = evPlane(context, { "face" : faces[0] });
-            if(reportFeatureError(context, id, planeResult.error))
+            var axisResult = evAxis(context, { "axis" : faces[0] });
+            if (planeResult.result is Plane)
+                translation = planeResult.result.normal * meter;
+            else if (axisResult.result is Line)
+                translation = axisResult.result.direction * meter;
+            else if(reportFeatureError(context, id, planeResult.error))
                 return;
-            translation = planeResult.result.normal * meter;
+            else if(reportFeatureError(context, id, axisResult.error))
+                return;
+            /* else "can't happen" and norm(undefined) will fail later */
         }
         else
         {
@@ -129,28 +183,50 @@ precondition
         transform = transform(translation);
     }
 
-    if(definition.transformType == TransformType.ROTATION)
+    if(transformType == TransformType.ROTATION)
     {
-        var axisResult = evAxis(context, { "axis" : definition.transformDefinition });
+        var axisResult = evAxis(context, { "axis" : definition.transformAxis });
         if(reportFeatureError(context, id, axisResult.error))
             return;
-        transform = rotationAround(axisResult.result, definition.angle);
-    }
-    if(definition.transformType == TransformType.MIRROR)
-    {
-        var planeResult = evPlane(context, { "face" : definition.transformDefinition });
-        if(reportFeatureError(context, id, planeResult.error))
-            return;
-        transform = mirrorAcross(planeResult.result);
+        var angle = definition.angle;
+        transform = rotationAround(axisResult.result, angle);
     }
 
-    if(definition.oppositeDirection == true)
+    if(transformType == TransformType.TRANSLATION_3D)
+    {
+        var dx = definition.oppositeX ? -definition.dx : definition.dx;
+        var dy = definition.oppositeY ? -definition.dy : definition.dy;
+        var dz = definition.oppositeZ ? -definition.dz : definition.dz;
+        transform = transform(vector(dx, dy, dz));
+    }
+
+    var oppositeDirection = false;
+    if(transformType == TransformType.TRANSLATION_ENTITY)
+    {
+        oppositeDirection = definition.oppositeDirectionEntity;
+    }
+    else if(transformType != TransformType.TRANSLATION_3D)
+    {
+        oppositeDirection = definition.oppositeDirection;
+    }
+
+    if(oppositeDirection == true)
         transform = inverse(transform);
 
-    if(!definition.makeCopy)
-        opTransform(context, id + "transform", { "bodies" : definition.entities, "transform" : transform});
+    if(definition.makeCopy || transformType == TransformType.COPY)
+    {
+        opPattern(context, id,
+                  { "entities" : definition.entities,
+                    "transforms" : [transform] ,
+                    "instanceNames" : ["1"]});
+    }
     else
-        opPattern(context, id, { "entities" : definition.entities, "transforms" : [transform] , "instanceNames" : ["1"]});
+    {
+        opTransform(context, id + "transform",
+                    { "bodies" : definition.entities,
+                      "transform" : transform});
+    }
+
     endFeature(context, id);
 }
 

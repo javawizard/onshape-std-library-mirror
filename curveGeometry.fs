@@ -48,7 +48,7 @@ precondition
     isAngle(angle);
 }
 {
-    var rotation = rotationMatrix3d(line.direction, angle.value);
+    var rotation = rotationMatrix3d(line.direction, angle);
     return transform(rotation, line.origin - rotation * line.origin);
 }
 

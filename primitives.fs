@@ -12,8 +12,9 @@ precondition
     isLength(definition.sideLength, NONNEGATIVE_LENGTH_BOUNDS);
 }
 {
-    cuboid(context, id, { corner1 : vector(0, 0, 0) * meter,
-                          corner2 : vector(1, 1, 1) * definition.sideLength });
+    definition.corner1 = vector(0, 0, 0) * meter;
+    definition.corner2 = vector(1, 1, 1) * definition.sideLength;
+    cuboid(context, id, definition);
 }
 
 annotation {"Feature Type Name" : "Sphere"}
@@ -38,8 +39,10 @@ precondition
     if(center == undefined)
         center = vector(0, 0, 0) * meter;
 
-    ellipsoid(context, id, { "center" : center,
-                          radius : vector(1, 1, 1) * definition.radius });
+    definition.center = center;
+    definition.radius = vector(1, 1, 1) * definition.radius;
+
+    ellipsoid(context, id, definition);
 }
 
 export function cuboid(context is Context, id is Id, definition is map)
