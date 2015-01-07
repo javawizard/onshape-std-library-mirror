@@ -25,32 +25,43 @@ precondition
         chamferDefinition.chamferType is ChamferType;
     }
 
+    //first quantity input (length)
     if(chamferDefinition.chamferType != ChamferType.TWO_OFFSETS)
     {
         annotation {"Name" : "Distance"}
         isLength(chamferDefinition.width, BLEND_BOUNDS);
-        if (chamferDefinition.chamferType == ChamferType.OFFSET_ANGLE)
-        {
-            annotation {"Name" : "Angle"}
-            isAngle(chamferDefinition.angle, CHAMFER_ANGLE_BOUNDS);
-        }
     }
-    if(chamferDefinition.chamferType == ChamferType.TWO_OFFSETS)
+    else
     {
         annotation {"Name" : "Distance 1"}
         isLength(chamferDefinition.width1, BLEND_BOUNDS);
+    }
+
+    //opposite direction button
+    if (chamferDefinition.chamferType == ChamferType.OFFSET_ANGLE ||
+        chamferDefinition.chamferType == ChamferType.TWO_OFFSETS)
+    {
+        if(chamferDefinition.oppositeDirection != undefined)
+        {
+            annotation {"Name" : "Opposite direction", "Default" : false,  "UIHint" : "OppositeDirection"}
+            chamferDefinition.oppositeDirection is boolean;
+        }
+    }
+
+    //second quantity input (length or angle depending on type)
+    if(chamferDefinition.chamferType == ChamferType.TWO_OFFSETS)
+    {
         annotation {"Name" : "Distance 2"}
         isLength(chamferDefinition.width2, BLEND_BOUNDS);
     }
-
-    if(chamferDefinition.oppositeDirection != undefined &&
-       chamferDefinition.chamferType != undefined &&
-       chamferDefinition.chamferType != ChamferType.EQUAL_OFFSETS)
+    else if(chamferDefinition.chamferType == ChamferType.OFFSET_ANGLE)
     {
-        annotation {"Name" : "Opposite direction", "Default" : false}
-        chamferDefinition.oppositeDirection is boolean;
+        annotation {"Name" : "Angle"}
+        isAngle(chamferDefinition.angle, CHAMFER_ANGLE_BOUNDS);
     }
 
+
+    //tangent propagation option (checkbox)
     if(chamferDefinition.tangentPropagation != undefined)
     {
         annotation {"Name" : "Tangent propagation", "Default" : true}
@@ -59,10 +70,12 @@ precondition
 }
 {
     startFeature(context, id, chamferDefinition);
-    if(chamferDefinition.tangentPropagation == undefined)
-        chamferDefinition.tangentPropagation = false;
+
     if(chamferDefinition.oppositeDirection == undefined)
         chamferDefinition.oppositeDirection = false;
+
+    if(chamferDefinition.tangentPropagation == undefined)
+        chamferDefinition.tangentPropagation = false;
 
     opChamfer(context, id, chamferDefinition);
     endFeature(context, id);

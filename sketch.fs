@@ -28,7 +28,8 @@ export enum ConstraintType
     NORMAL,
     FIX,
     PROJECTED,
-    OFFSET
+    OFFSET,
+    CIRCULAR_PATTERN
 }
 
 export enum DimensionDirection

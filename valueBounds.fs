@@ -88,6 +88,20 @@ export const SHELL_OFFSET_BOUNDS =
     (yard)       : [0.0001, 0.0025, 250]
 } as LengthBoundSpec;
 
+
+export const THICKEN_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.005, 250],
+    (millimeter) : [0.0, 5.0,   250000],
+    (centimeter) : [0.0, 0.5,   25000],
+    (inch)       : [0.0, 0.25,  10000],
+    (foot)       : [0.0, 0.025, 1000],
+    (yard)       : [0.0, 0.01,  250]
+} as LengthBoundSpec;
+
+
 export const NONNEGATIVE_LENGTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
@@ -184,8 +198,8 @@ export const CHAMFER_ANGLE_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI - TOLERANCE.zeroAngle) * radian,
-    (degree) : [0, 45, 179],
-    (radian) : [0, 0.25 * PI,  0.994 * PI]
+    (degree) : [1, 45, 179],
+    (radian) : [0.0056 * PI, 0.25 * PI,  0.994 * PI]
 } as AngleBoundSpec;
 
 export const POSITIVE_COUNT_BOUNDS =
