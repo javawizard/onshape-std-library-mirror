@@ -4,6 +4,23 @@ export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 
+//====================== Version compatibility ========================
+
+/* Return true if a feature definition contains a version number
+   less than version [introduced] that changed behavior. */
+export function isAtVersionOrLater(introduced is FeatureScriptVersionNumber,
+                                   definition is map) returns boolean
+{
+    var asVersion = definition.asVersion;
+    if (! (asVersion is FeatureScriptVersionNumber))
+        return true;
+    if (introduced == asVersion)
+        return true;
+    for (var result in { (asVersion) : false, (introduced) : true })
+        return result.value;
+    return true; /* can't happen, but code analysis tools might complain */
+}
+
 //====================== Context ========================
 
 export type Context typecheck canBeContext;
@@ -15,7 +32,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V66_CHAMFER_RANGE_AND_UNDO_UPTO_NEXT) as Context;
+   return @newContext(FeatureScriptVersionNumber.V75_THICKEN_ENCHANCEMENTS) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -173,6 +190,11 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
 export function opMateConnector(context is Context, id is Id, definition is map)
 {
   return @opMateConnector(context, id, definition);
+}
+
+export function opThicken(context is Context, id is Id, definition is map)
+{
+  return @opThicken(context, id, definition);
 }
 
 // =====================================================================

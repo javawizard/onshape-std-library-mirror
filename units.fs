@@ -155,6 +155,16 @@ export operator/(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
     return lhs;
 }
 
+export operator%(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
+precondition
+{
+    lhs.unit == rhs.unit;
+}
+{
+    lhs.value %= rhs.value;
+    return lhs;
+}
+
 export operator^(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 precondition
 {
