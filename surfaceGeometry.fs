@@ -33,9 +33,9 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
     return plane(origin, normal, perpendicularVector(normal));
 }
 
-export function planeFromBuiltin(plane is map) returns Plane
+export function planeFromBuiltin(definition is map) returns Plane
 {
-    return plane((plane.origin as Vector) * meter, plane.normal as Vector, plane.x as Vector);
+    return plane((definition.origin as Vector) * meter, definition.normal as Vector, definition.x as Vector);
 }
 
 export function toString(value is Plane) returns string
@@ -53,11 +53,11 @@ precondition
     return point + plane.normal * dotProduct(plane.normal, plane.origin - point);
 }
 
-export operator*(transform is Transform, plane is Plane) returns Plane
+export operator*(transform is Transform, planeRhs is Plane) returns Plane
 {
-    return plane(transform * plane.origin,
-                 inverse(transpose(transform.linear)) * plane.normal, //The normal is a co-vector
-                 transform.linear * plane.x);
+    return plane(transform * planeRhs.origin,
+                 inverse(transpose(transform.linear)) * planeRhs.normal, //The normal is a co-vector
+                 transform.linear * planeRhs.x);
 }
 
 export function planeToWorld(plane is Plane, planePoint is Vector) returns Vector
@@ -149,9 +149,9 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
     return {"coordSystem" : cSys, "halfAngle" : halfAngle} as Cone;
 }
 
-export function coneFromBuiltin(cone is map) returns Cone
+export function coneFromBuiltin(definition is map) returns Cone
 {
-    return cone(coordSystemFromBuiltin(cone.coordSystem), cone.halfAngle * radian);
+    return cone(coordSystemFromBuiltin(definition.coordSystem), definition.halfAngle * radian);
 }
 
 export function toString(value is Cone) returns string
@@ -176,9 +176,9 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
     return {"coordSystem" : cSys, "radius" : radius} as Cylinder;
 }
 
-export function cylinderFromBuiltin(cylinder is map) returns Cylinder
+export function cylinderFromBuiltin(definition is map) returns Cylinder
 {
-    return cylinder(coordSystemFromBuiltin(cylinder.coordSystem), cylinder.radius * meter);
+    return cylinder(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
 export function toString(value is Cylinder) returns string
@@ -204,9 +204,9 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
     return {"coordSystem" : cSys, "minorRadius" : minorRadius, "radius" : radius} as Torus;
 }
 
-export function torusFromBuiltin(torus is map) returns Torus
+export function torusFromBuiltin(definition is map) returns Torus
 {
-    return torus(coordSystemFromBuiltin(torus.coordSystem), torus.minorRadius * meter, torus.radius * meter);
+    return torus(coordSystemFromBuiltin(definition.coordSystem), definition.minorRadius * meter, definition.radius * meter);
 }
 
 export function toString(value is Torus) returns string
@@ -231,9 +231,9 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
     return {"coordSystem" : cSys, "radius" : radius} as Sphere;
 }
 
-export function sphereFromBuiltin(sphere is map) returns Sphere
+export function sphereFromBuiltin(definition is map) returns Sphere
 {
-    return sphere(coordSystemFromBuiltin(sphere.coordSystem), sphere.radius * meter);
+    return sphere(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
 export function toString(value is Sphere) returns string

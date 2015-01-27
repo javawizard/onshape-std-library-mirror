@@ -66,7 +66,7 @@ precondition
         skSolve(sketch);
     }
     {
-        var query = query(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
+        var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
         opExtrude(context, id + "extrude",
                   { "entities"   : query,
                     "startBound" : BoundingType.BLIND,
@@ -105,7 +105,7 @@ precondition
         skSolve(sketch);
     }
     {
-        var query = query(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
+        var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
         extrude(context, id + "extrude",
                 { "entities" : query,
                   "endBound" : BoundingType.BLIND,
@@ -155,7 +155,7 @@ precondition
         skSolve(sketch);
     }
     {
-        var query = query(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
+        var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
         var axis = sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line.0");
         revolve(context, id + "revolve",
                 {  "entities"    : query,

@@ -61,7 +61,14 @@ annotation {"Feature Type Name" : "Import"}
 export function importForeign(context is Context, id is Id, importDefinition is map)
 precondition
 {
+    annotation {"Name" : "Foreign Id"}
     importDefinition.foreignId is ForeignId;
+
+    if (importDefinition.yAxisIsUp != undefined)
+    {
+        annotation {"Name" : "Source is 'Y Axis Up'"}
+        importDefinition.yAxisIsUp is boolean;
+    }
 }
 {
     startFeature(context, id, importDefinition);

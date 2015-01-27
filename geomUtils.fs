@@ -32,7 +32,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V75_THICKEN_ENCHANCEMENTS) as Context;
+   return @newContext(FeatureScriptVersionNumber.V87_SKETCH_REGION_ORDERING) as Context;
 }
 
 //====================== Query evaluation ========================

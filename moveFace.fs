@@ -105,7 +105,6 @@ precondition
     }
     else
     {
-        var transform = identityTransform();
         if(definition.moveFaceType == MoveFaceType.TRANSLATE)
         {
             // If the user specified an axis for the direction, we will use that for the translation.  If they,

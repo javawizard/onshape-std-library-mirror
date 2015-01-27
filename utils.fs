@@ -134,3 +134,25 @@ export function length(s is string) returns number
     return size(@splitIntoCharacters(s));
 }
 
+/* mapLookup is a hopefully temporary function.
+
+   mapLookup(a, ["b","c","d","e"])
+
+   is the same as
+
+   try (a.b.c.d.e)
+
+   except it does not log a warning.
+*/
+export function mapLookup(m is map, keys is array)
+{
+    var result = m;
+    for (var key in keys)
+    {
+        if (! (result is map))
+            return undefined;
+        result = result[key];
+    }
+    return result;
+}
+

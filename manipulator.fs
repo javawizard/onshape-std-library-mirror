@@ -2,6 +2,7 @@ export import(path : "onshape/std/geomUtils.fs", version : "");
 
 export enum ManipulatorType
 {
+    LINEAR_3D,
     LINEAR_1D,
     ANGULAR,
     FLIP
@@ -15,6 +16,21 @@ export predicate canBeManipulator(value)
     value.manipulatorType is ManipulatorType;
     //Anything else is up to the specific kind
 }
+
+export function triadManipulator(base is Vector, offset is Vector, sources) returns Manipulator
+precondition
+{
+    is3dLengthVector(base);
+    is3dLengthVector(offset);
+    sources == undefined || sources is Query;
+}
+{
+    return { "manipulatorType" : ManipulatorType.LINEAR_3D,
+             "base" : base,
+             "offset" : offset,
+             "sources" : sources } as Manipulator;
+}
+
 
 export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits) returns Manipulator
 {

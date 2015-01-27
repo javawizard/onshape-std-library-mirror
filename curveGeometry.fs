@@ -17,14 +17,14 @@ export function line(origin is Vector, direction is Vector) returns Line
     return {"origin" : origin, "direction" : normalize(direction)} as Line;
 }
 
-export function lineFromBuiltin(line is map) returns Line
+export function lineFromBuiltin(definition is map) returns Line
 {
-    return line((line.origin as Vector) * meter, line.direction as Vector);
+    return line((definition.origin as Vector) * meter, definition.direction as Vector);
 }
 
-export operator*(transform is Transform, line is Line) returns Line
+export operator*(transform is Transform, lineRhs is Line) returns Line
 {
-    return line(transform * line.origin, transform.linear * line.direction);
+    return line(transform * lineRhs.origin, transform.linear * lineRhs.direction);
 }
 
 export function transform(from is Line, to is Line) returns Transform
@@ -80,9 +80,9 @@ export function circle(center is Vector, xDirection is Vector, normal is Vector,
     return circle(coordSystem(center, xDirection, normal), radius);
 }
 
-export function circleFromBuiltin(circle is map) returns Circle
+export function circleFromBuiltin(definition is map) returns Circle
 {
-    return circle(coordSystemFromBuiltin(circle.coordSystem), circle.radius * meter);
+    return circle(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
 export function toString(value is Circle) returns string

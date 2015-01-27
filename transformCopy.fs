@@ -22,6 +22,7 @@ export enum TransformType
 /* Manipulator names */
 const ROTATE = "rotate";
 const OFFSET_LINE = "offsetLine";
+const TRANSLATION = "translation";
 
 /* Reduce from [-2 pi, +2 pi] to [-pi, +pi] radians */
 function reduceAngle(angle is ValueWithUnits) returns ValueWithUnits
@@ -51,21 +52,13 @@ precondition
     endFeature(context, id);
 }
 
-/* Find a point associated with a part to be moved.
-   The manipulator bar will attach to the part at this point. */
-function findPoint(context is Context, id is Id, entities is Query) returns Vector
+/* Find a point to attach the manipulator bar.
+   Returns Vector or undefined.  */
+function findCenter(context is Context, id is Id, entities is Query)
 {
-    /* Pick an arbitrary vertex, if any. */
-    var vertex = evVertexPoint(context, { "vertex" : qOwnedByPart(entities, EntityType.VERTEX) });
-    if (vertex.result is Vector)
-        return vertex.result;
-
-    /* The center (in parameter space) of an arbitrary face. */
-    var face = evFaceTangentPlane(context, {"face" : qOwnedByPart(entities, EntityType.FACE), "parameter" : vector(0.5, 0.5)});
-    if (face is map && face.result is map)
-        return face.result.origin;
-
-    /* This should not happen.  */
+    var boxResult = evBox3d(context, { topology : entities });
+    if (boxResult.result is Box3d)
+        return (boxResult.result.minCorner + boxResult.result.maxCorner) / 2;
     reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
     return undefined;
 }
@@ -165,7 +158,7 @@ precondition
 {
     startFeature(context, id, definition);
     //Start by figuring out the transform
-    var transform = identityTransform();
+    var transformMatrix = identityTransform();
     var transformType = definition.transformType;
 
     /*  Prior to V74
@@ -240,7 +233,7 @@ precondition
                 return;
             }
             var target = definition.entities;
-            var origin = findPoint(context, id, target);
+            var origin = findCenter(context, id, target);
             if (origin is undefined)
                 return;
             var direction = normalize(translation);
@@ -251,7 +244,7 @@ precondition
                 (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
             translation = direction * definition.distance;
         }
-        transform = transform(translation);
+        transformMatrix = transform(translation);
     }
 
     if(transformType == TransformType.ROTATION)
@@ -260,7 +253,7 @@ precondition
         if(reportFeatureError(context, id, axisResult.error))
             return;
         var target = definition.entities;
-        var origin = findPoint(context, id, target);
+        var origin = findCenter(context, id, target);
         if (origin is undefined)
             return;
         var angle = reduceAngle(definition.angle);
@@ -271,7 +264,7 @@ precondition
             { (ROTATE) :
               angularManipulator(project(axis, origin), axis.direction,
                                  origin, angle, target)});
-        transform = rotationAround(axis, angle);
+        transformMatrix = rotationAround(axis, angle);
     }
 
     if(transformType == TransformType.TRANSLATION_3D)
@@ -279,7 +272,13 @@ precondition
         var dx = definition.oppositeX ? -definition.dx : definition.dx;
         var dy = definition.oppositeY ? -definition.dy : definition.dy;
         var dz = definition.oppositeZ ? -definition.dz : definition.dz;
-        transform = transform(vector(dx, dy, dz));
+        var transformVector = vector(dx, dy, dz);
+        transformMatrix = transform(transformVector);
+        var target = definition.entities;
+        var origin = findCenter(context, id, target);
+        if (origin is undefined)
+            return;
+        addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
     }
 
     /* Reversal for rotation and 3D translation is handled above.
@@ -288,13 +287,13 @@ precondition
          definition.oppositeDirectionEntity) ||
         (transformType == TransformType.TRANSLATION_DISTANCE &&
          definition.oppositeDirection))
-        transform = inverse(transform);
+        transformMatrix = inverse(transformMatrix);
 
     if(definition.makeCopy || transformType == TransformType.COPY)
     {
         opPattern(context, id,
                   { "entities" : definition.entities,
-                    "transforms" : [transform] ,
+                    "transforms" : [transformMatrix] ,
                     "instanceNames" : ["1"]});
     }
     else
@@ -302,7 +301,7 @@ precondition
         var subId = validateInputs ? id : id + "transform";
         opTransform(context, subId,
                     { "bodies" : definition.entities,
-                      "transform" : transform});
+                      "transform" : transformMatrix});
     }
 
     endFeature(context, id);
@@ -329,6 +328,19 @@ export function transformManipulatorChange(context is Context, output is map, in
     {
         output.distance = abs(distance);
         output.oppositeDirection = distance.value < 0;
+    }
+    if (input[TRANSLATION] is map)
+    {
+        var offset = input[TRANSLATION].offset;
+        var dx = offset[0];
+        var dy = offset[1];
+        var dz = offset[2];
+        output.dx = abs(dx);
+        output.oppositeX = dx.value < 0;
+        output.dy = abs(dy);
+        output.oppositeY = dy.value < 0;
+        output.dz = abs(dz);
+        output.oppositeZ = dz.value < 0;
     }
     return output;
 }
