@@ -36,9 +36,9 @@ precondition
     return { "linear" : identityMatrix(3), "translation" : translation } as Transform;
 }
 
-export function transformFromBuiltin(transform is map) returns Transform
+export function transformFromBuiltin(definition is map) returns Transform
 {
-    return transform(transform.linear as Matrix, (transform.translation as Vector) * meter);
+    return transform(definition.linear as Matrix, (definition.translation as Vector) * meter);
 }
 
 export function identityTransform() returns Transform

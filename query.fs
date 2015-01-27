@@ -127,7 +127,7 @@ export predicate canBeQuery(value)
 }
 
 //put Query type on a map
-export function query(value is map) returns Query
+export function makeQuery(value is map) returns Query
 {
     return value as Query;
 }
@@ -413,7 +413,7 @@ precondition
 // ==================================== Historical Query stuff ================================
 
 //historical query function
-export function query(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
+export function makeQuery(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
 {
     return @mergeMaps(value,
                     {"operationId" : operationId, "queryType" : queryType,
@@ -422,22 +422,22 @@ export function query(operationId is Id, queryType is string, entityType is Enti
 
 export function dummyQuery(operationId is Id, entityType is EntityType, disambiguationOrder is number) returns Query
 {
-    return query({ "operationId" : operationId, historyType : "CREATION", "entityType" : entityType,
+    return makeQuery({ "operationId" : operationId, historyType : "CREATION", "entityType" : entityType,
     queryType : "DUMMY", disambiguationData : [{ disambiguationType : "ORDER", order : disambiguationOrder }] });
 }
 export function dummyQuery(operationId is Id, entityType is EntityType) returns Query
 {
-    return query({ "operationId" : operationId, historyType : "CREATION",
+    return makeQuery({ "operationId" : operationId, historyType : "CREATION",
                 "entityType" : entityType, queryType : "DUMMY"});
 }
 
 export function qBodySplitBy(featureId is Id, backBody is boolean)
 {
-    return query(featureId, "SPLIT", EntityType.BODY, {"isFromBackBody" : backBody});
+    return makeQuery(featureId, "SPLIT", EntityType.BODY, {"isFromBackBody" : backBody});
 }
 export function sketchEntityQuery(operationId is Id, entityType is EntityType, sketchEntityId is string) returns Query
 {
-    return query(operationId, "SKETCH_ENTITY", entityType,
+    return makeQuery(operationId, "SKETCH_ENTITY", entityType,
                       { "sketchEntityId" : sketchEntityId });
 }
 export function orderDisambiguation(order is number)
@@ -524,5 +524,16 @@ export operator+(id is Id, addend is Id) returns Id
 export function notFoundErrorKey(paramName is string) returns string
 {
     return paramName ~ "notFoundError";
+}
+
+//backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.
+export function query(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
+{
+    return makeQuery(operationId, queryType, entityType, value);
+}
+
+export function query(value is map) returns Query
+{
+    return makeQuery(value);
 }
 

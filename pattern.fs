@@ -75,15 +75,15 @@ precondition
     }
     if(patternDefinition.hasSecondDir == true)
     {
-        annotation {"Name" : "Direction2",
+        annotation {"Name" : "Direction",
                     "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
                     "MaxNumberOfPicks" : 1}
         patternDefinition.directionTwo is Query;
-        annotation {"Name" : "Distance2"}
+        annotation {"Name" : "Distance"}
         isLength(patternDefinition.distanceTwo, PATTERN_OFFSET_BOUND);
-        annotation {"Name" : "Instance count2"}
+        annotation {"Name" : "Instance count"}
         isInteger(patternDefinition.instanceCountTwo, POSITIVE_COUNT_BOUNDS_DEFAULT_1);
-        annotation {"Name" : "Opposite direction2", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
         patternDefinition.oppositeDirectionTwo is boolean;
     }
 
@@ -304,15 +304,15 @@ precondition
     var evaluated = evaluatedResult.result;
     var lastPoint;
     var lastTan;
-    var transform;
+    var curTransform;
     for (var positionAndTangent in evaluated)
     {
         var pos = positionAndTangent.origin;
         var tangent = positionAndTangent.direction;
 
-        if(transform == undefined)
+        if(curTransform == undefined)
         {
-            transform = identityTransform();
+            curTransform = identityTransform();
         }
         else
         {
@@ -320,16 +320,16 @@ precondition
             {
                 // Compute a rotation from the old to the new
                 var rotation = rotationMatrix3d(lastTan, tangent);
-                transform = transform(rotation, pos) * transform(-lastPoint) * transform;
+                curTransform = transform(rotation, pos) * transform(-lastPoint) * curTransform;
             }
             else
             {
-                transform = transform(pos - lastPoint) * transform;
+                curTransform = transform(pos - lastPoint) * curTransform;
             }
         }
         lastTan = tangent;
         lastPoint = pos;
-        transforms = append(transforms, transform);
+        transforms = append(transforms, curTransform);
     }
 
     opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instNames});

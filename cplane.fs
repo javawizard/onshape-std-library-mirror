@@ -73,7 +73,7 @@ precondition
         }
     }
 
-    annotation {"Name" : "Display size"}
+    annotation {"Name" : "Display size", "UIHint" : "AlwaysHidden"}
     isLength(cplaneDefinition.size, PLANE_SIZE_BOUNDS);
 }
 //============================ Body =============================
@@ -245,9 +245,15 @@ precondition
             reportFeatureError(context, id, tooManyEntitiesMessage);
             return;
         }
-
         var param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
                                                    "vertex" : qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX) });
+        if ( param.error == "CANNOT_RESOLVE_ENTITIES")
+        {
+            reportFeatureError(context, id, requiresCurvePointMessage);
+            return;
+        }
+        else if (reportFeatureError(context, id, param.error))
+            return;
 
         var lineResult = evEdgeTangentLine(context, {"edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
                                     "parameter" : param.result, "arcLengthParameterization" : false });
