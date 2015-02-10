@@ -264,7 +264,7 @@ export function stripUnits(value is array) returns array
 {
     for(var i = 0; i < @size(value); i += 1)
     {
-        value[i] = ::stripUnits(value[i]);
+        value[i] = stripUnits(value[i]);
     }
     return value as array;
 }
@@ -273,7 +273,7 @@ export function stripUnits(value is map) returns map
 {
     for(var entry in value)
     {
-        value[entry.key] = ::stripUnits(entry.value);
+        value[entry.key] = stripUnits(entry.value);
     }
     return value as map;
 }

@@ -41,7 +41,7 @@ precondition
 
 export function origin(context is Context)
 {
-    var id = id("Origin");
+    var id = makeId("Origin");
     startFeature(context, id, {});
     var out = opPoint(context, id, {"point" : vector(0, 0, 0) * meter, "origin" : true});
     endFeature(context, id);
@@ -58,51 +58,28 @@ export predicate canBeForeignId(value)
 }
 
 annotation {"Feature Type Name" : "Import"}
-export function importForeign(context is Context, id is Id, importDefinition is map)
-precondition
-{
-    annotation {"Name" : "Foreign Id"}
-    importDefinition.foreignId is ForeignId;
-
-    if (importDefinition.yAxisIsUp != undefined)
+export const importForeign = defineFeature(function(context is Context, id is Id, importDefinition is map)
+    precondition
     {
+        annotation {"Name" : "Foreign Id"}
+        importDefinition.foreignId is ForeignId;
+
         annotation {"Name" : "Source is 'Y Axis Up'"}
         importDefinition.yAxisIsUp is boolean;
     }
-}
-{
-    startFeature(context, id, importDefinition);
-    opImportForeign(context, id, importDefinition);
-    endFeature(context, id);
-}
+    {
+        opImportForeign(context, id, importDefinition);
+    }, { yAxisIsUp : false });
 
 annotation {"Feature Type Name" : "Delete Part"}
-export function deleteBodies(context is Context, id is Id, deleteDefinition is map)
-precondition
-{
-    annotation {"Name" : "Entities to delete",
-    "Filter" : EntityType.BODY}
-    deleteDefinition.entities is Query;
-}
-{
-    startFeature(context, id, deleteDefinition);
-    opDeleteBodies(context, id, deleteDefinition);
-    endFeature(context, id);
-}
-
-//Transform Feature
-//TODO: annotation {"Feature Type Name" : "Transform"}
-export function transformBodies(context is Context, id is Id, transformDefinition is map)
-precondition
-{
-    annotation {"Name" : "Bodies to transform", "Filter": EntityType.BODY}
-    transformDefinition.bodies is Query;
-    transformDefinition.transform is Transform;
-}
-{
-    startFeature(context, id, transformDefinition);
-    opTransform(context, id, transformDefinition);
-    endFeature(context, id);
-}
-
+export const deleteBodies = defineFeature(function(context is Context, id is Id, deleteDefinition is map)
+    precondition
+    {
+        annotation {"Name" : "Entities to delete",
+        "Filter" : EntityType.BODY}
+        deleteDefinition.entities is Query;
+    }
+    {
+        opDeleteBodies(context, id, deleteDefinition);
+    });
 

@@ -41,9 +41,9 @@ export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
     var ranges = PLANE_SIZE_BOUNDS[defLengthUnit];
     var size = ranges[1] * defLengthUnit;
 
-    defaultPlane(context, id("Front"), DefaultPlaneType.XZ, size);
-    defaultPlane(context, id("Top"), DefaultPlaneType.XY, size);
-    defaultPlane(context, id("Right"), DefaultPlaneType.YZ, size);
+    defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
+    defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);
+    defaultPlane(context, makeId("Right"), DefaultPlaneType.YZ, size);
     return context;
 }
 

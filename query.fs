@@ -137,7 +137,7 @@ export function stripUnits(value is Query)
 {
     if(value.historyType != undefined)
         return value;
-    return ::stripUnits(value as map);
+    return stripUnits(value as map);
 }
 
 
@@ -364,7 +364,7 @@ export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) retu
 export function qFilletFaces(subquery is Query, compareType is CompareType) returns Query
 precondition
 {
-    compareType == CompareType.EQUAL || compareType == CompareType.LESS_EQUAL || CompareType == CompareType.GREATER_EQUAL;
+    compareType == CompareType.EQUAL || compareType == CompareType.LESS_EQUAL || compareType == CompareType.GREATER_EQUAL;
 }
 {
     return { "queryType" : QueryType.FILLET_FACES, "compareType" : compareType, "subquery" : subquery} as Query;
@@ -492,7 +492,7 @@ export function newId() returns Id
     return [] as Id;
 }
 
-export function id(idComp is string) returns Id
+export function makeId(idComp is string) returns Id
 {
     return [idComp] as Id;
 }

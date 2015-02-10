@@ -3,7 +3,6 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
 export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
 
@@ -49,7 +48,7 @@ export enum SketchProjectionType
 
 export predicate is2dPoint(value)
 {
-    ::isLengthVector(value);
+    isLengthVector(value);
     @size(value) == 2;
 }
 
@@ -259,7 +258,7 @@ precondition
 {
     //Line segments
     var segIds = ["left", "right", "top", "bottom"];
-    var locVal = ::stripUnits(value);
+    var locVal = stripUnits(value);
     for (var sId in segIds)
     {
         var fullId = rectangleId ~ "." ~ sId;

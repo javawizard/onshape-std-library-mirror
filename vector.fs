@@ -32,7 +32,7 @@ export predicate isLengthVector(value)
     value is Vector;
     for(var i = 0; i < @size(value); i += 1)
     {
-        ::isLength(value[i]);
+        isLength(value[i]);
     }
 }
 
@@ -47,13 +47,13 @@ export predicate isUnitlessVector(value)
 
 export predicate is3dLengthVector(value)
 {
-    ::isLengthVector(value);
+    isLengthVector(value);
     @size(value) == 3;
 }
 
 export predicate is3dDirection(value)
 {
-    ::isUnitlessVector(value);
+    isUnitlessVector(value);
     @size(value) == 3;
     abs(squaredNorm(value) - 1) < TOLERANCE.zeroAngle;
 }
@@ -74,7 +74,7 @@ export function squaredNorm(vector is Vector)
 
 export function norm(vector is Vector)
 {
-    return ::sqrt(squaredNorm(vector));
+    return sqrt(squaredNorm(vector));
 }
 
 export operator+(vector1 is Vector, vector2 is Vector) returns Vector
@@ -83,12 +83,11 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    var newVector = vector1;
     for(var i = 0; i < @size(vector1); i += 1)
     {
-        newVector[i] = ::operator+(vector1[i], vector2[i]);
+        vector1[i] += vector2[i];
     }
-    return newVector;
+    return vector1;
 }
 
 export operator-(vector1 is Vector, vector2 is Vector) returns Vector
@@ -97,22 +96,20 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    var newVector = vector1;
     for(var i = 0; i < @size(vector1); i += 1)
     {
-        newVector[i] = ::operator-(vector1[i], vector2[i]);
+        vector1[i] -= vector2[i];
     }
-    return newVector;
+    return vector1;
 }
 
 export operator-(vector is Vector) returns Vector
 {
-    var newVector = vector;
     for(var i = 0; i < @size(vector); i += 1)
     {
-        newVector[i] = ::operator-(vector[i]);
+        vector[i] = -vector[i];
     }
-    return newVector;
+    return vector;
 }
 
 export function dotProduct(vector1 is Vector, vector2 is Vector)
@@ -121,10 +118,10 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    var dot = ::operator*(vector1[0], vector2[0]);
+    var dot = vector1[0] * vector2[0];
     for(var i = 1; i < @size(vector1); i += 1)
     {
-        dot = ::operator+(dot, ::operator*(vector1[i], vector2[i]));
+        dot += vector1[i] * vector2[i];
     }
     return dot;
 }
@@ -136,9 +133,9 @@ precondition
     @size(vector2) == 3;
 }
 {
-    var nx = ::operator-(::operator*(vector1[1], vector2[2]), ::operator*(vector2[1], vector1[2]));
-    var ny = ::operator-(::operator*(vector1[2], vector2[0]), ::operator*(vector2[2], vector1[0]));
-    var nz = ::operator-(::operator*(vector1[0], vector2[1]), ::operator*(vector2[0], vector1[1]));
+    var nx = vector1[1] * vector2[2] - vector2[1] * vector1[2];
+    var ny = vector1[2] * vector2[0] - vector2[2] * vector1[0];
+    var nz = vector1[0] * vector2[1] - vector2[0] * vector1[1];
     return [nx, ny, nz] as Vector;
 }
 
@@ -149,38 +146,30 @@ precondition
     @size(vector2) == 3;
 }
 {
-    return ::atan2(norm(crossProduct(vector1, vector2)), dotProduct(vector1, vector2));
+    return atan2(norm(crossProduct(vector1, vector2)), dotProduct(vector1, vector2));
 }
 
 export function normalize(vector is Vector) returns Vector
 {
-    var result = ::operator/(vector, norm(vector));
-    if(result[0] is ValueWithUnits) //strip the units
-    {
-        for(var i = 0; i < @size(result); i += 1)
-            result[i] = result[i].value;
-    }
-    return result;
+    return vector / norm(vector);
 }
 
 export operator*(vector is Vector, scalar) returns Vector
 {
-    var newVector = vector;
     for(var i = 0; i < @size(vector); i += 1)
     {
-        newVector[i] = ::operator*(vector[i], scalar);
+        vector[i] *= scalar;
     }
-    return newVector;
+    return vector;
 }
 
 export operator*(scalar, vector is Vector) returns Vector
 {
-    var newVector = vector;
     for(var i = 0; i < @size(vector); i += 1)
     {
-        newVector[i] = ::operator*(scalar, vector[i]);
+        vector[i] = scalar * vector[i];
     }
-    return newVector;
+    return vector;
 }
 
 export operator*(matrix is Matrix, vector is Vector) returns Vector
@@ -200,29 +189,27 @@ precondition
     }
     //Multiply "by hand"
     var transposed = transpose(matrix);
-    var result = ::operator*(transposed[0] as Vector, vector[0]);
+    var result = (transposed[0] as Vector) * vector[0];
     for(var i = 1; i < @size(vector); i += 1)
     {
-        result = ::operator+(result, ::operator*(transposed[i], vector[i]));
+        result += transposed[i] * vector[i];
     }
     return result as Vector;
 }
 
 export operator/(vector is Vector, scalar) returns Vector
 {
-    var newVector = vector;
     for(var i = 0; i < @size(vector); i += 1)
     {
-        newVector[i] = ::operator/(vector[i], scalar);
+        vector[i] /= scalar;
     }
-    return newVector;
+    return vector;
 }
 
 export function project(vector1 is Vector, vector2 is Vector) returns Vector
 {
     var dot = dotProduct(vector1, vector2);
-    var scalar = ::operator/(dot, squaredNorm(vector2));
-    return ::operator*(vector2, scalar);
+    return vector2 * (dot / squaredNorm(vector2));
 }
 
 export function perpendicularVector(vec is Vector) returns Vector
@@ -288,10 +275,10 @@ precondition
 
 export function toString(value is Vector) returns string
 {
-    var str = "(" ~ ::toString(value[0]);
+    var str = "(" ~ toString(value[0]);
     for(var i = 1; i < @size(value); i += 1)
     {
-        str = str ~ ", " ~ ::toString(value[i]);
+        str = str ~ ", " ~ toString(value[i]);
     }
     str = str ~ ")";
     return str;

@@ -108,12 +108,12 @@ export function round(value is number)
 
 export function min(value1, value2)
 {
-    return (::operator<(value1, value2) ? value1 : value2);
+    return (value1 < value2) ? value1 : value2;
 }
 
 export function max(value1, value2)
 {
-    return (::operator<(value1, value2) ? value2 : value1);
+    return (value1 < value2) ? value2 : value1;
 }
 
 export function min(arr is array)
@@ -121,7 +121,7 @@ export function min(arr is array)
     var minVal = undefined;
     for(var entry in arr)
     {
-        if(minVal == undefined || ::operator<(entry, minVal))
+        if(minVal == undefined || entry < minVal)
         {
             minVal = entry;
         }
@@ -134,7 +134,7 @@ export function max(arr is array)
     var maxVal = undefined;
     for(var entry in arr)
     {
-        if(maxVal == undefined || ::operator<(maxVal, entry))
+        if(maxVal == undefined || maxVal < entry)
         {
             maxVal = entry;
         }
@@ -148,7 +148,7 @@ export function argMin(arr is array)
     var minIndex = undefined;
     for(var i = 0; i < @size(arr); i += 1)
     {
-        if(minVal == undefined || ::operator<(arr[i], minVal))
+        if(minVal == undefined || arr[i] < minVal)
         {
             minVal = arr[i];
             minIndex = i;
@@ -163,7 +163,7 @@ export function argMax(arr is array)
     var maxIndex = undefined;
     for(var i = 0; i < @size(arr); i += 1)
     {
-        if(maxVal == undefined || ::operator<(maxVal, arr[i]))
+        if(maxVal == undefined || maxVal < arr[i])
         {
             maxVal = arr[i];
             maxIndex = i;

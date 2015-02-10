@@ -3,7 +3,6 @@ export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/vector.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 
 export enum RevolveType
@@ -20,119 +19,109 @@ export enum RevolveType
 
 
 annotation {"Feature Type Name" : "Revolve", "Manipulator Change Function" : "revolveManipulatorChange" }
-export function revolve(context is Context, id is Id, revolveDefinition is map)
-precondition
-{
-    if(revolveDefinition.bodyType != undefined)
+export const revolve = defineFeature(function(context is Context, id is Id, revolveDefinition is map)
+    precondition
     {
         annotation {"Name" : "Creation type"}
         revolveDefinition.bodyType is ToolBodyType;
-    }
 
-    if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        booleanStepTypePredicate(revolveDefinition);
-    }
-
-    if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        annotation {"Name" : "Faces and sketch regions to revolve",
-                    "Filter" : (EntityType.FACE && GeometryType.PLANE)
-                               && ConstructionObject.NO}
-        revolveDefinition.entities is Query;
-    }
-    else
-    {
-        annotation {"Name" : "Edges and sketch curves to revolve",
-                    "Filter" : (EntityType.EDGE)}
-        revolveDefinition.surfaceEntities is Query;
-    }
-
-    annotation {"Name" : "Revolve axis", "Filter": QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1}
-    revolveDefinition.axis is Query;
-    annotation {"Name" : "Revolve type"}
-    revolveDefinition.revolveType is RevolveType;
-
-    if(revolveDefinition.oppositeDirection != undefined
-        && revolveDefinition.revolveType != RevolveType.SYMMETRIC
-        && revolveDefinition.revolveType != RevolveType.FULL)
-    {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
-        revolveDefinition.oppositeDirection is boolean;
-    }
-
-    if(revolveDefinition.revolveType != RevolveType.FULL)
-    {
-        annotation {"Name" : "Revolve angle"}
-        isAngle(revolveDefinition.angle, ANGLE_360_BOUNDS);
-    }
-
-    if(revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
-    {
-        annotation {"Name" : "Second revolve angle"}
-        isAngle(revolveDefinition.angleBack, ANGLE_360_BOUNDS);
-    }
-
-    if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        booleanStepScopePredicate(revolveDefinition);
-    }
-}
-{
-    startFeature(context, id, revolveDefinition);
-    var axis = evAxis(context, revolveDefinition);
-    if (axis.error != undefined)
-    {
-        reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS);
-        return;
-    }
-    revolveDefinition.axis = axis.result;
-
-    if(revolveDefinition.bodyType == undefined)
-        revolveDefinition.bodyType = ToolBodyType.SOLID;
-
-    addRevolveManipulator(context, id, revolveDefinition);
-
-    if(revolveDefinition.operationType == undefined)
-        revolveDefinition.operationType = NewBodyOperationType.NEW;
-    if(revolveDefinition.revolveType == RevolveType.FULL)
-    {
-        revolveDefinition.angleForward = 2 * PI;
-        revolveDefinition.angleBack = 0;
-    }
-    if(revolveDefinition.revolveType == RevolveType.ONE_DIRECTION)
-    {
-        revolveDefinition.angleForward = revolveDefinition.angle;
-        revolveDefinition.angleBack = 0;
-    }
-    if(revolveDefinition.revolveType == RevolveType.SYMMETRIC)
-    {
-        revolveDefinition.angleForward = revolveDefinition.angle / 2;
-        revolveDefinition.angleBack = revolveDefinition.angle / 2;
-    }
-    if(revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
-    {
-        revolveDefinition.angleForward = revolveDefinition.angle;
-    }
-    if(revolveDefinition.oppositeDirection == true)
-    {
-        revolveDefinition.axis.direction *= -1; // To be consistent with extrude
-    }
-    opRevolve(context, id, revolveDefinition);
-
-    if (revolveDefinition.bodyType == ToolBodyType.SOLID)
-    {
-        if (!processNewBodyIfNeeded(context, id, revolveDefinition))
+        if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
         {
-            var statusToolId = id + "statusTools";
-            startFeature(context, statusToolId, revolveDefinition);
-            opRevolve(context, statusToolId, revolveDefinition);
-            setBooleanErrorEntities(context, id, statusToolId);
-            endFeature(context, statusToolId);
+            booleanStepTypePredicate(revolveDefinition);
+        }
+
+        if (revolveDefinition.bodyType == ToolBodyType.SOLID)
+        {
+            annotation {"Name" : "Faces and sketch regions to revolve",
+                        "Filter" : (EntityType.FACE && GeometryType.PLANE)
+                                   && ConstructionObject.NO}
+            revolveDefinition.entities is Query;
+        }
+        else
+        {
+            annotation {"Name" : "Edges and sketch curves to revolve",
+                        "Filter" : (EntityType.EDGE)}
+            revolveDefinition.surfaceEntities is Query;
+        }
+
+        annotation {"Name" : "Revolve axis", "Filter": QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1}
+        revolveDefinition.axis is Query;
+
+        annotation {"Name" : "Revolve type"}
+        revolveDefinition.revolveType is RevolveType;
+
+        if(revolveDefinition.revolveType != RevolveType.SYMMETRIC
+            && revolveDefinition.revolveType != RevolveType.FULL)
+        {
+            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            revolveDefinition.oppositeDirection is boolean;
+        }
+
+        if(revolveDefinition.revolveType != RevolveType.FULL)
+        {
+            annotation {"Name" : "Revolve angle"}
+            isAngle(revolveDefinition.angle, ANGLE_360_BOUNDS);
+        }
+
+        if(revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+        {
+            annotation {"Name" : "Second revolve angle"}
+            isAngle(revolveDefinition.angleBack, ANGLE_360_BOUNDS);
+        }
+
+        if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
+        {
+            booleanStepScopePredicate(revolveDefinition);
         }
     }
-    endFeature(context, id);
-}
+    {
+        var axis = evAxis(context, revolveDefinition);
+        if (axis.error != undefined)
+        {
+            reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS);
+            return;
+        }
+        revolveDefinition.axis = axis.result;
+
+        addRevolveManipulator(context, id, revolveDefinition);
+
+        if(revolveDefinition.revolveType == RevolveType.FULL)
+        {
+            revolveDefinition.angleForward = 2 * PI;
+            revolveDefinition.angleBack = 0;
+        }
+        if(revolveDefinition.revolveType == RevolveType.ONE_DIRECTION)
+        {
+            revolveDefinition.angleForward = revolveDefinition.angle;
+            revolveDefinition.angleBack = 0;
+        }
+        if(revolveDefinition.revolveType == RevolveType.SYMMETRIC)
+        {
+            revolveDefinition.angleForward = revolveDefinition.angle / 2;
+            revolveDefinition.angleBack = revolveDefinition.angle / 2;
+        }
+        if(revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+        {
+            revolveDefinition.angleForward = revolveDefinition.angle;
+        }
+        if(revolveDefinition.oppositeDirection)
+        {
+            revolveDefinition.axis.direction *= -1; // To be consistent with extrude
+        }
+        opRevolve(context, id, revolveDefinition);
+
+        if (revolveDefinition.bodyType == ToolBodyType.SOLID)
+        {
+            if (!processNewBodyIfNeeded(context, id, revolveDefinition))
+            {
+                var statusToolId = id + "statusTools";
+                startFeature(context, statusToolId, revolveDefinition);
+                opRevolve(context, statusToolId, revolveDefinition);
+                setBooleanErrorEntities(context, id, statusToolId);
+                endFeature(context, statusToolId);
+            }
+        }
+    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW } );
 
 //Manipulator functions
 
@@ -149,6 +138,7 @@ function getEntitiesToUse(revolveDefinition is map)
       return revolveDefinition.surfaceEntities;
     }
 }
+
 function addRevolveManipulator(context is Context, id is Id, revolveDefinition is map)
 {
     if(revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC )
