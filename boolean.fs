@@ -2,7 +2,6 @@ export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 export enum BooleanOperationType
 {
@@ -18,36 +17,26 @@ export enum BooleanOperationType
 
 //Boolean Operation
 annotation {"Feature Type Name" : "Boolean"}
-export function booleanBodies(context is Context, id is Id, booleanDefinition is map)
-precondition
-{
-    annotation {"Name" : "Operation type"}
-    booleanDefinition.operationType is BooleanOperationType;
-    annotation {"Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID}
-    booleanDefinition.tools is Query;
-
-    if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
+export const booleanBodies = defineFeature(function(context is Context, id is Id, booleanDefinition is map)
+    precondition
     {
-        annotation {"Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID}
-        booleanDefinition.targets is Query;
+        annotation {"Name" : "Operation type"}
+        booleanDefinition.operationType is BooleanOperationType;
+        annotation {"Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID}
+        booleanDefinition.tools is Query;
 
-        if( booleanDefinition.keepTools != undefined )
+        if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
         {
+            annotation {"Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID}
+            booleanDefinition.targets is Query;
+
             annotation {"Name" : "Keep tools"}
             booleanDefinition.keepTools is boolean;
         }
     }
-}
-{
-    if(booleanDefinition.keepTools == undefined)
-        booleanDefinition.keepTools = false;
-
-    startFeature(context, id, booleanDefinition);
-
-
-    opBoolean(context, id, booleanDefinition);
-    endFeature(context, id);
-}
+    {
+        opBoolean(context, id, booleanDefinition);
+    }, { keepTools : false });
 
 export enum NewBodyOperationType
 {
@@ -63,28 +52,22 @@ export enum NewBodyOperationType
 
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
-    if(booleanDefinition.operationType != undefined)
-    {
-        annotation {"Name" : "Result body operation type"}
-        booleanDefinition.operationType is NewBodyOperationType;
-    }
+    annotation {"Name" : "Result body operation type"}
+    booleanDefinition.operationType is NewBodyOperationType;
 }
 
 export predicate booleanStepScopePredicate(booleanDefinition is map)
 {
-    if(booleanDefinition.operationType != undefined)
+    if (booleanDefinition.operationType != NewBodyOperationType.NEW)
     {
-        if (booleanDefinition.operationType != NewBodyOperationType.NEW)
+        if (booleanDefinition.defaultScope != undefined)
         {
-            if (booleanDefinition.defaultScope != undefined)
+            annotation{"Name" : "Merge with all", "Default" : false}
+            booleanDefinition.defaultScope is boolean;
+            if (booleanDefinition.defaultScope != true)
             {
-                annotation{"Name" : "Merge with all", "Default" : false}
-                booleanDefinition.defaultScope is boolean;
-                if (booleanDefinition.defaultScope != true)
-                {
-                    annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID}
-                    booleanDefinition.booleanScope is Query;
-                }
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID}
+                booleanDefinition.booleanScope is Query;
             }
         }
     }

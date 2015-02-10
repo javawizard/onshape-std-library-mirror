@@ -3,7 +3,6 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 export enum TransformType
 {
@@ -37,20 +36,19 @@ precondition
     return (angle + REDUCE_ADD) % CIRCLE - REDUCE_SUB;
 }
 
+/* This feature is deprecated but still used by the UI.  See BEL-15681. */
 annotation {"Feature Type Name" : "Copy part"}
-export function copyPart(context is Context, id is Id, definition is map)
-precondition
-{
-    annotation {"Name" : "Entities to copy", "Filter" : EntityType.BODY}
-    definition.entities is Query;
-}
-{
-    startFeature(context, id, definition);
-    var transform = identityTransform();
-    opPattern(context, id, {"entities" : definition.entities, "transforms" : [transform], "instanceNames" : ["1"],
-                            notFoundErrorKey("entities") :  ErrorStringEnum.COPY_SELECT_PARTS });
-    endFeature(context, id);
-}
+export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        annotation {"Name" : "Entities to copy", "Filter" : EntityType.BODY}
+        definition.entities is Query;
+    }
+    {
+        var transform = identityTransform();
+        opPattern(context, id, {"entities" : definition.entities, "transforms" : [transform], "instanceNames" : ["1"],
+                                notFoundErrorKey("entities") :  ErrorStringEnum.COPY_SELECT_PARTS });
+    });
 
 /* Find a point to attach the manipulator bar.
    Returns Vector or undefined.  */
@@ -72,8 +70,7 @@ function reportCoincident(context is Context, id is Id, distance is Vector) retu
 }
 
 // Note that transform() is also defined in transform.fs
-// with different signatures.
-
+// with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
 annotation {"Feature Type Name" : "Transform",
             "Manipulator Change Function" : "transformManipulatorChange" }
 export function transform(context is Context, id is Id, definition is map)
@@ -154,158 +151,159 @@ precondition
         definition.makeCopy is boolean;
     }
 }
-//============================ Body =============================
 {
-    startFeature(context, id, definition);
-    //Start by figuring out the transform
-    var transformMatrix = identityTransform();
-    var transformType = definition.transformType;
+    fTransform(context, id, definition);
+}
 
-    /*  Prior to V74
-        1. Transform of no part was not an error (bug compatibility)
-        2. Null transform was not an error (behavior change)
-     */
-    var validateInputs = isAtVersionOrLater(FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING, definition);
-
-    if(transformType == TransformType.TRANSLATION_ENTITY ||
-        transformType == TransformType.TRANSLATION_DISTANCE)
+const fTransform = defineFeature(function(context is Context, id is Id, definition is map)
     {
-        var selection = (transformType == TransformType.TRANSLATION_ENTITY ?
-                         definition.transformLine : definition.transformDirection);
-        //For a translation / translation by distance, figure out which entities are used to specify it
-        var distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
-        var translation;
-        var vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
-        var edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
-        var nedges = @size(edges);
-        var faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
+        //Start by figuring out the transform
+        var transformMatrix = identityTransform();
+        var transformType = definition.transformType;
 
-        if(@size(vertices) >= 2)
-        {
-            var v0 = evVertexPoint(context, { "vertex" : vertices[0] }).result;
-            var v1 = evVertexPoint(context, { "vertex" : vertices[1] }).result;
-            translation = v1 - v0;
-            if(validateInputs && reportCoincident(context, id, translation))
-                return;
-        }
-        else if(validateInputs && nedges > 1)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED);
-            return;
-        }
-        else if(nedges >= 1)
-        {
-            var evalResult = evEdgeTangentLines(context, { "edge" : edges[0], "parameters" : [0, 1] });
-            if(reportFeatureError(context, id, evalResult.error))
-                return;
-            translation = evalResult.result[1].origin - evalResult.result[0].origin;
-            if(validateInputs && reportCoincident(context, id, translation))
-                return;
-        }
-        else if(distanceSpecified && @size(faces) >= 1) // A plane only provides direction
-        {
-            var planeResult = evPlane(context, { "face" : faces[0] });
-            var axisResult = evAxis(context, { "axis" : faces[0] });
-            if (planeResult.result is Plane)
-                translation = planeResult.result.normal * meter;
-            else if (axisResult.result is Line)
-                translation = axisResult.result.direction * meter;
-            else if(reportFeatureError(context, id, planeResult.error))
-                return;
-            else if(reportFeatureError(context, id, axisResult.error))
-                return;
-            /* else "can't happen" and norm(undefined) will fail later */
-        }
-        else
-        {
-            if(distanceSpecified)
-                reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT);
-            else
-                reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_INPUT);
-            return;
-        }
+        /*  Prior to V74
+            1. Transform of no part was not an error (bug compatibility)
+            2. Null transform was not an error (behavior change)
+         */
+        var validateInputs = isAtVersionOrLater(FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING, definition);
 
-        if(distanceSpecified)
+        if(transformType == TransformType.TRANSLATION_ENTITY ||
+            transformType == TransformType.TRANSLATION_DISTANCE)
         {
-            if(norm(translation).value < TOLERANCE.zeroLength)
+            var selection = (transformType == TransformType.TRANSLATION_ENTITY ?
+                             definition.transformLine : definition.transformDirection);
+            //For a translation / translation by distance, figure out which entities are used to specify it
+            var distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
+            var translation;
+            var vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
+            var edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
+            var nedges = @size(edges);
+            var faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
+
+            if(@size(vertices) >= 2)
             {
-                reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION);
+                var v0 = evVertexPoint(context, { "vertex" : vertices[0] }).result;
+                var v1 = evVertexPoint(context, { "vertex" : vertices[1] }).result;
+                translation = v1 - v0;
+                if(validateInputs && reportCoincident(context, id, translation))
+                    return;
+            }
+            else if(validateInputs && nedges > 1)
+            {
+                reportFeatureError(context, id, ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED);
                 return;
             }
+            else if(nedges >= 1)
+            {
+                var evalResult = evEdgeTangentLines(context, { "edge" : edges[0], "parameters" : [0, 1] });
+                if(reportFeatureError(context, id, evalResult.error))
+                    return;
+                translation = evalResult.result[1].origin - evalResult.result[0].origin;
+                if(validateInputs && reportCoincident(context, id, translation))
+                    return;
+            }
+            else if(distanceSpecified && @size(faces) >= 1) // A plane only provides direction
+            {
+                var planeResult = evPlane(context, { "face" : faces[0] });
+                var axisResult = evAxis(context, { "axis" : faces[0] });
+                if (planeResult.result is Plane)
+                    translation = planeResult.result.normal * meter;
+                else if (axisResult.result is Line)
+                    translation = axisResult.result.direction * meter;
+                else if(reportFeatureError(context, id, planeResult.error))
+                    return;
+                else if(reportFeatureError(context, id, axisResult.error))
+                    return;
+                /* else "can't happen" and norm(undefined) will fail later */
+            }
+            else
+            {
+                if(distanceSpecified)
+                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT);
+                else
+                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_INPUT);
+                return;
+            }
+
+            if(distanceSpecified)
+            {
+                if(norm(translation).value < TOLERANCE.zeroLength)
+                {
+                    reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION);
+                    return;
+                }
+                var target = definition.entities;
+                var origin = findCenter(context, id, target);
+                if (origin is undefined)
+                    return;
+                var direction = normalize(translation);
+                var distance = definition.distance;
+                if (definition.oppositeDirection)
+                    distance = -distance;
+                addManipulators(context, id, {
+                    (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
+                translation = direction * definition.distance;
+            }
+            transformMatrix = transform(translation);
+        }
+
+        if(transformType == TransformType.ROTATION)
+        {
+            var axisResult = evAxis(context, { "axis" : definition.transformAxis });
+            if(reportFeatureError(context, id, axisResult.error))
+                return;
             var target = definition.entities;
             var origin = findCenter(context, id, target);
             if (origin is undefined)
                 return;
-            var direction = normalize(translation);
-            var distance = definition.distance;
-            if (definition.oppositeDirection == true)
-                distance = -distance;
-            addManipulators(context, id, {
-                (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
-            translation = direction * definition.distance;
+            var angle = reduceAngle(definition.angle);
+            if (definition.oppositeDirection)
+                angle = -angle;
+            var axis = axisResult.result;
+            addManipulators(context, id,
+                { (ROTATE) :
+                  angularManipulator(project(axis, origin), axis.direction,
+                                     origin, angle, target)});
+            transformMatrix = rotationAround(axis, angle);
         }
-        transformMatrix = transform(translation);
-    }
 
-    if(transformType == TransformType.ROTATION)
-    {
-        var axisResult = evAxis(context, { "axis" : definition.transformAxis });
-        if(reportFeatureError(context, id, axisResult.error))
-            return;
-        var target = definition.entities;
-        var origin = findCenter(context, id, target);
-        if (origin is undefined)
-            return;
-        var angle = reduceAngle(definition.angle);
-        if (definition.oppositeDirection)
-            angle = -angle;
-        var axis = axisResult.result;
-        addManipulators(context, id,
-            { (ROTATE) :
-              angularManipulator(project(axis, origin), axis.direction,
-                                 origin, angle, target)});
-        transformMatrix = rotationAround(axis, angle);
-    }
+        if(transformType == TransformType.TRANSLATION_3D)
+        {
+            var dx = definition.oppositeX ? -definition.dx : definition.dx;
+            var dy = definition.oppositeY ? -definition.dy : definition.dy;
+            var dz = definition.oppositeZ ? -definition.dz : definition.dz;
+            var transformVector = vector(dx, dy, dz);
+            transformMatrix = transform(transformVector);
+            var target = definition.entities;
+            var origin = findCenter(context, id, target);
+            if (origin is undefined)
+                return;
+            addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
+        }
 
-    if(transformType == TransformType.TRANSLATION_3D)
-    {
-        var dx = definition.oppositeX ? -definition.dx : definition.dx;
-        var dy = definition.oppositeY ? -definition.dy : definition.dy;
-        var dz = definition.oppositeZ ? -definition.dz : definition.dz;
-        var transformVector = vector(dx, dy, dz);
-        transformMatrix = transform(transformVector);
-        var target = definition.entities;
-        var origin = findCenter(context, id, target);
-        if (origin is undefined)
-            return;
-        addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
-    }
+        /* Reversal for rotation and 3D translation is handled above.
+           Reversal is not applicable to copy. */
+        if ((transformType == TransformType.TRANSLATION_ENTITY &&
+             definition.oppositeDirectionEntity) ||
+            (transformType == TransformType.TRANSLATION_DISTANCE &&
+             definition.oppositeDirection))
+            transformMatrix = inverse(transformMatrix);
 
-    /* Reversal for rotation and 3D translation is handled above.
-       Reversal is not applicable to copy. */
-    if ((transformType == TransformType.TRANSLATION_ENTITY &&
-         definition.oppositeDirectionEntity) ||
-        (transformType == TransformType.TRANSLATION_DISTANCE &&
-         definition.oppositeDirection))
-        transformMatrix = inverse(transformMatrix);
-
-    if(definition.makeCopy || transformType == TransformType.COPY)
-    {
-        opPattern(context, id,
-                  { "entities" : definition.entities,
-                    "transforms" : [transformMatrix] ,
-                    "instanceNames" : ["1"]});
-    }
-    else
-    {
-        var subId = validateInputs ? id : id + "transform";
-        opTransform(context, subId,
-                    { "bodies" : definition.entities,
-                      "transform" : transformMatrix});
-    }
-
-    endFeature(context, id);
-}
+        if(definition.makeCopy || transformType == TransformType.COPY)
+        {
+            opPattern(context, id,
+                      { "entities" : definition.entities,
+                        "transforms" : [transformMatrix] ,
+                        "instanceNames" : ["1"]});
+        }
+        else
+        {
+            var subId = validateInputs ? id : id + "transform";
+            opTransform(context, subId,
+                        { "bodies" : definition.entities,
+                          "transform" : transformMatrix});
+        }
+    }, { oppositeDirection : false });
 
 function extractOffset(input is map, axis is string)
 {

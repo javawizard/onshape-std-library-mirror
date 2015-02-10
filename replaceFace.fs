@@ -4,55 +4,42 @@ export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 
 annotation {"Feature Type Name" : "Replace face", "Manipulator Change Function" : "manipulatorChanged" }
-export function replaceFace(context is Context, id is Id, definition is map)
-precondition
-{
-    annotation {"Name" : "Faces to replace",
-                "UIHint" : "ShowCreateSelection",
-                "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
-    definition.replaceFaces is Query;
-
-    annotation {"Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1}
-    definition.templateFace is Query;
-
-    // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the
-    // face being replaced. (e.g to determine if the outside or inside of a cylindrical surface is to be used as template)
-    // Basically, if oppositeSense is false, we use the same sense as the template face, so the normal of the face
-    // will point in the same direction as the template. If oppositeSense is true it will point in opposite direction
-    if(definition.oppositeSense != undefined)
+export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
     {
+        annotation {"Name" : "Faces to replace",
+                    "UIHint" : "ShowCreateSelection",
+                    "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
+        definition.replaceFaces is Query;
+
+        annotation {"Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1}
+        definition.templateFace is Query;
+
+        // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the
+        // face being replaced. (e.g to determine if the outside or inside of a cylindrical surface is to be used as template)
+        // Basically, if oppositeSense is false, we use the same sense as the template face, so the normal of the face
+        // will point in the same direction as the template. If oppositeSense is true it will point in opposite direction
         annotation {"Name" : "Flip alignment", "Default" : false}
         definition.oppositeSense is boolean;
-    }
 
-    annotation {"Name" : "Offset distance"}
-    isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation {"Name" : "Offset distance"}
+        isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-    if(definition.oppositeDirection != undefined)
-    {
         annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
         definition.oppositeDirection is boolean;
     }
-}
-//============================ Body =============================
-{
-    startFeature(context, id, definition);
+    //============================ Body =============================
+    {
+        if(definition.oppositeDirection)
+            definition.offset = -definition.offset;
 
-    if(definition.oppositeDirection)
-        definition.offset = -definition.offset;
+        // Only draw the offset manipulator if the replace face is defined
+        var replaceFacePlane = computeFacePlane(context, id, definition.replaceFaces);
+        if(replaceFacePlane != undefined)
+            addOffsetManipulator(context, id, definition, replaceFacePlane);
 
-    if(definition.oppositeSense == undefined)
-        definition.oppositeSense = false;
-
-    // Only draw the offset manipulator if both the replace face and the template face are defined
-    var replaceFacePlane = computeFacePlane(context, id, definition.replaceFaces);
-    if(replaceFacePlane != undefined && definition.templateFace != undefined)
-        addOffsetManipulator(context, id, definition, replaceFacePlane);
-
-    opReplaceFace(context, id, definition);
-
-    endFeature(context, id);
-}
+        opReplaceFace(context, id, definition);
+    }, { oppositeSense : false, oppositeDirection : false });
 
 //======================= Manipulators ==========================
 

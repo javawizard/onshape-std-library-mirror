@@ -3,19 +3,19 @@ export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 //====================== Version compatibility ========================
 
-/* Return true if a feature definition contains a version number
-   less than version [introduced] that changed behavior. */
+/* Return false if a feature description [definition] contains
+   a version number less than version [introduced] that changed behavior. */
 export function isAtVersionOrLater(introduced is FeatureScriptVersionNumber,
                                    definition is map) returns boolean
 {
-    var asVersion = definition.asVersion;
+    const asVersion = definition.asVersion;
     if (! (asVersion is FeatureScriptVersionNumber))
         return true;
-    if (introduced == asVersion)
-        return true;
+    /* Map literals evaluate left to right. */
     for (var result in { (asVersion) : false, (introduced) : true })
         return result.value;
     return true; /* can't happen, but code analysis tools might complain */
@@ -32,7 +32,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V87_SKETCH_REGION_ORDERING) as Context;
+   return @newContext(FeatureScriptVersionNumber.V91_PS27_1_165) as Context;
 }
 
 //====================== Query evaluation ========================
@@ -55,14 +55,12 @@ export function reportFeatureError(context is Context, id is Id, message is unde
 export function reportFeatureError(context is Context, id is Id, message is string) returns boolean
 {
     @reportFeatureError(context, id, {"message" : message});
-    @abortFeature(context, id);
     return true;
 }
 
 export function reportFeatureError(context is Context, id is Id, message is string, faultyParameters is array) returns boolean
 {
     @reportFeatureError(context, id, {"message" : message, "faultyParameters": faultyParameters});
-    @abortFeature(context, id);
     return true;
 }
 
@@ -195,6 +193,36 @@ export function opMateConnector(context is Context, id is Id, definition is map)
 export function opThicken(context is Context, id is Id, definition is map)
 {
   return @opThicken(context, id, definition);
+}
+
+// =========================== defineFeature ===========================
+
+export function defineFeature(feature is function, defaults is map) returns function
+{
+    return function(context is Context, id is Id, definition is map)
+        {
+            var started = false;
+            try
+            {
+                //TODO: definition = @convert(definition, CurrentVersion);
+                definition = mergeMaps(defaults, definition);
+                startFeature(context, id, definition);
+                started = true;
+                feature(context, id, definition);
+                endFeature(context, id);
+            }
+            catch
+            {
+                reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
+                if(started)
+                    abortFeature(context, id);
+            }
+        };
+}
+
+export function defineFeature(feature is function) returns function
+{
+    return defineFeature(feature, {});
 }
 
 // =====================================================================

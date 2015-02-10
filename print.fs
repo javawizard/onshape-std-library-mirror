@@ -20,7 +20,7 @@ export function toString(value is array) returns string
             first = false;
         else
             result ~= ",";
-        result ~= " " ~ ::toString(element) ~ " ";
+        result ~= " " ~  toString(element) ~ " ";
     }
     return result ~ "]";
 }
@@ -35,18 +35,18 @@ export function toString(value is map) returns string
             first = false;
         else
             result ~= ",";
-        result ~= " " ~ ::toString(element.key) ~ " : " ~ ::toString(element.value) ~ " ";
+        result ~= " " ~ toString(element.key) ~ " : " ~ toString(element.value) ~ " ";
     }
     return result ~ "}";
 }
 
 export function print(value)
 {
-    @print(::toString(value));
+    @print(toString(value));
 }
 
 export function println(value)
 {
-    @print(::toString(value) ~ '\n');
+    @print(toString(value) ~ '\n');
 }
 

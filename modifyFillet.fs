@@ -11,41 +11,26 @@ export enum ModifyFilletType
 }
 
 annotation {"Feature Type Name" : "Modify fillet"}
-export function modifyFillet(context is Context, id is Id, definition is map)
-precondition
-{
-    annotation {"Name" : "Fillet faces to modify",
-                "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && !GeometryType.PLANE}
-    definition.faces is Query;
-
-    annotation {"Name" : "Modification type"}
-    definition.modifyFilletType is ModifyFilletType;
-
-    if(definition.modifyFilletType == ModifyFilletType.CHANGE_RADIUS)
+export const modifyFillet = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
     {
-        annotation {"Name" : "Fillet radius"}
-        isLength(definition.radius, BLEND_BOUNDS);
+        annotation {"Name" : "Fillet faces to modify",
+                    "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && !GeometryType.PLANE}
+        definition.faces is Query;
 
-        if(definition.reFillet != undefined)
+        annotation {"Name" : "Modification type"}
+        definition.modifyFilletType is ModifyFilletType;
+
+        if(definition.modifyFilletType == ModifyFilletType.CHANGE_RADIUS)
         {
+            annotation {"Name" : "Fillet radius"}
+            isLength(definition.radius, BLEND_BOUNDS);
+
             annotation {"Name" : "Reapply fillet", "Default" : true}
             definition.reFillet is boolean;
         }
     }
-}
-//============================ Body =============================
-{
-    startFeature(context, id, definition);
-
-    if(definition.radius == undefined)
-        definition.radius = 0.0;
-    if(definition.reFillet == undefined)
-        definition.reFillet = false;
-
-    opModifyFillet(context, id, definition);
-
-    endFeature(context, id);
-}
-
-
+    {
+        opModifyFillet(context, id, definition);
+    }, { reFillet : false });
 

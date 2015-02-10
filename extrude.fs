@@ -3,7 +3,6 @@ export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
 export enum BoundingType
 {
@@ -23,149 +22,126 @@ export enum BoundingType
 
 //Extrude Feature
 annotation {"Feature Type Name" : "Extrude", "Manipulator Change Function" : "extrudeManipulatorChange" }
-export function extrude(context is Context, id is Id, extrudeDefinition is map)
-precondition
-{
-    if(extrudeDefinition.bodyType != undefined)
+export const extrude = defineFeature(function(context is Context, id is Id, extrudeDefinition is map)
+    precondition
     {
         annotation {"Name" : "Creation type"}
         extrudeDefinition.bodyType is ToolBodyType;
-    }
 
-    if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        booleanStepTypePredicate(extrudeDefinition);
-    }
+        if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
+        {
+            booleanStepTypePredicate(extrudeDefinition);
+        }
 
-    if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        annotation {"Name" : "Faces and sketch regions to extrude",
-                    "Filter" : (EntityType.FACE && GeometryType.PLANE)
-                               && ConstructionObject.NO}
-        extrudeDefinition.entities is Query;
-    }
-    else
-    {
-        annotation {"Name" : "Sketch curves to extrude",
-                    "Filter" : (EntityType.EDGE && SketchObject.YES)}
-        extrudeDefinition.surfaceEntities is Query;
-    }
+        if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
+        {
+            annotation {"Name" : "Faces and sketch regions to extrude",
+                        "Filter" : (EntityType.FACE && GeometryType.PLANE)
+                                   && ConstructionObject.NO}
+            extrudeDefinition.entities is Query;
+        }
+        else
+        {
+            annotation {"Name" : "Sketch curves to extrude",
+                        "Filter" : (EntityType.EDGE && SketchObject.YES)}
+            extrudeDefinition.surfaceEntities is Query;
+        }
 
-    if(extrudeDefinition.endBound != undefined)
-    {
         annotation {"Name" : "End type"}
         extrudeDefinition.endBound is BoundingType;
-    }
 
-    if (extrudeDefinition.oppositeDirection != undefined
-        &&  extrudeDefinition.endBound != BoundingType.SYMMETRIC )
-    {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
-        extrudeDefinition.oppositeDirection is boolean;
-    }
-
-    if ( extrudeDefinition.endBound == BoundingType.UP_TO_SURFACE ||
-         extrudeDefinition.endBound == BoundingType.UP_TO_BODY )
-    {
-        annotation {"Name" : "Up to face, surface, or part",
-                    "Filter" : (EntityType.FACE || EntityType.BODY) && SketchObject.NO,
-                    "MaxNumberOfPicks" : 1}
-        extrudeDefinition.endBoundEntity is Query;
-    }
-
-    if (extrudeDefinition.endBound == BoundingType.BLIND ||
-        extrudeDefinition.endBound == BoundingType.SYMMETRIC )
-    {
-        annotation {"Name" : "Depth"}
-        isLength(extrudeDefinition.depth, LENGTH_BOUNDS);
-    }
-
-    if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
-    {
-        booleanStepScopePredicate(extrudeDefinition);
-    }
-}
-{
-    startFeature(context, id, extrudeDefinition);
-
-    // ------------- Set the default parameters ---------------
-    if (extrudeDefinition.endBound is undefined)
-        extrudeDefinition.endBound = BoundingType.BLIND;
-
-    if(extrudeDefinition.oppositeDirection is undefined)
-        extrudeDefinition.oppositeDirection = false;
-
-    if(extrudeDefinition.bodyType == undefined)
-        extrudeDefinition.bodyType = ToolBodyType.SOLID;
-
-    if(extrudeDefinition.operationType == undefined)
-       extrudeDefinition.operationType = NewBodyOperationType.NEW;
-
-    var usedEntities = getEntitiesToUse(extrudeDefinition);
-
-    // ------------- Get the extrude axis ---------------
-    var resolvedEntities = evaluateQuery(context, usedEntities);
-    if(@size(resolvedEntities) == 0)
-    {
-        reportFeatureError(context, id, extrudeDefinition.bodyType == ToolBodyType.SOLID ?
-                ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION : ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
-        return;
-    }
-
-    var extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
-    if(extrudeAxis == undefined)
-    {
-        reportFeatureError(context, id, ErrorStringEnum.EXTRUDE_NO_DIRECTION);
-        return;
-    }
-
-    // Add manipulator
-    addExtrudeManipulator(context, id, extrudeDefinition, extrudeAxis);
-
-    // ------------- Determine the direction ---------------
-
-    extrudeDefinition.direction = extrudeAxis.direction;
-
-    if(extrudeDefinition.oppositeDirection)
-        extrudeDefinition.direction *= -1;
-
-    if(extrudeDefinition.depth != undefined && extrudeDefinition.depth < 0 * meter)
-    {
-        extrudeDefinition.depth *= -1;
-        if(extrudeDefinition.endBound == BoundingType.BLIND)
-            extrudeDefinition.direction *= -1;
-    }
-
-    // ------------- Determine the bounds ---------------
-    extrudeDefinition.startBound = BoundingType.BLIND;
-    extrudeDefinition.startDepth = 0;
-    extrudeDefinition.endDepth = extrudeDefinition.depth;
-
-    if(extrudeDefinition.endBound == BoundingType.SYMMETRIC)
-    {
-        extrudeDefinition.endBound = BoundingType.BLIND;
-        extrudeDefinition.startDepth = extrudeDefinition.depth * -0.5;
-        extrudeDefinition.endDepth = extrudeDefinition.depth * 0.5;
-    }
-
-    // ------------- Perform the operation ---------------
-
-    opExtrude(context, id, extrudeDefinition);
-
-    if (extrudeDefinition.bodyType == ToolBodyType.SOLID)
-    {
-        if (!processNewBodyIfNeeded(context, id, extrudeDefinition))
+        if (extrudeDefinition.endBound != BoundingType.SYMMETRIC )
         {
-            var statusToolId = id + "statusTools";
-            startFeature(context, statusToolId, extrudeDefinition);
-            opExtrude(context, statusToolId, extrudeDefinition);
-            setBooleanErrorEntities(context, id, statusToolId);
-            endFeature(context, statusToolId);
+            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            extrudeDefinition.oppositeDirection is boolean;
+        }
+
+        if ( extrudeDefinition.endBound == BoundingType.UP_TO_SURFACE ||
+             extrudeDefinition.endBound == BoundingType.UP_TO_BODY )
+        {
+            annotation {"Name" : "Up to face, surface, or part",
+                        "Filter" : (EntityType.FACE || EntityType.BODY) && SketchObject.NO,
+                        "MaxNumberOfPicks" : 1}
+            extrudeDefinition.endBoundEntity is Query;
+        }
+
+        if (extrudeDefinition.endBound == BoundingType.BLIND ||
+            extrudeDefinition.endBound == BoundingType.SYMMETRIC )
+        {
+            annotation {"Name" : "Depth"}
+            isLength(extrudeDefinition.depth, LENGTH_BOUNDS);
+        }
+
+        if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
+        {
+            booleanStepScopePredicate(extrudeDefinition);
         }
     }
+    {
+        var usedEntities = getEntitiesToUse(extrudeDefinition);
 
-    endFeature(context, id);
-}
+        // ------------- Get the extrude axis ---------------
+        var resolvedEntities = evaluateQuery(context, usedEntities);
+        if(@size(resolvedEntities) == 0)
+        {
+            reportFeatureError(context, id, extrudeDefinition.bodyType == ToolBodyType.SOLID ?
+                    ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION : ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
+            return;
+        }
+
+        var extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
+        if(extrudeAxis == undefined)
+        {
+            reportFeatureError(context, id, ErrorStringEnum.EXTRUDE_NO_DIRECTION);
+            return;
+        }
+
+        // Add manipulator
+        addExtrudeManipulator(context, id, extrudeDefinition, extrudeAxis);
+
+        // ------------- Determine the direction ---------------
+
+        extrudeDefinition.direction = extrudeAxis.direction;
+
+        if(extrudeDefinition.oppositeDirection)
+            extrudeDefinition.direction *= -1;
+
+        if(extrudeDefinition.depth != undefined && extrudeDefinition.depth < 0 * meter)
+        {
+            extrudeDefinition.depth *= -1;
+            if(extrudeDefinition.endBound == BoundingType.BLIND)
+                extrudeDefinition.direction *= -1;
+        }
+
+        // ------------- Determine the bounds ---------------
+        extrudeDefinition.startBound = BoundingType.BLIND;
+        extrudeDefinition.startDepth = 0;
+        extrudeDefinition.endDepth = extrudeDefinition.depth;
+
+        if(extrudeDefinition.endBound == BoundingType.SYMMETRIC)
+        {
+            extrudeDefinition.endBound = BoundingType.BLIND;
+            extrudeDefinition.startDepth = extrudeDefinition.depth * -0.5;
+            extrudeDefinition.endDepth = extrudeDefinition.depth * 0.5;
+        }
+
+        // ------------- Perform the operation ---------------
+
+        opExtrude(context, id, extrudeDefinition);
+
+        if (extrudeDefinition.bodyType == ToolBodyType.SOLID)
+        {
+            if (!processNewBodyIfNeeded(context, id, extrudeDefinition))
+            {
+                var statusToolId = id + "statusTools";
+                startFeature(context, statusToolId, extrudeDefinition);
+                opExtrude(context, statusToolId, extrudeDefinition);
+                setBooleanErrorEntities(context, id, statusToolId);
+                endFeature(context, statusToolId);
+            }
+        }
+    }, { endBound : BoundingType.BLIND, oppositeDirection : false,
+         bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW });
 
 function getEntitiesToUse(extrudeDefinition is map)
 {

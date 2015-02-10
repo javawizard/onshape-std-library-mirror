@@ -21,36 +21,30 @@ export enum ConstraintFaceType
 }
 
 annotation {"Feature Type Name" : "Constrain face"}
-export function constraintFace(context is Context, id is Id, definition is map)
-precondition
-{
-    annotation {"Name" : "Anchor face", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1}
-    definition.anchorFace is Query;
-
-    annotation {"Name" : "Constraint type"}
-    definition.constraintFaceType is ConstraintFaceType;
-
-    if(definition.constraintFaceType == ConstraintFaceType.PARALLEL)
+export const constraintFace = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
     {
-        annotation {"Name" : "Offset distance"}
-        isLength(definition.offset, CONSTRAINT_FACE_OFFSET_BOUNDS);
+        annotation {"Name" : "Anchor face", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1}
+        definition.anchorFace is Query;
 
-        if(definition.oppositeDirection != undefined)
+        annotation {"Name" : "Constraint type"}
+        definition.constraintFaceType is ConstraintFaceType;
+
+        if(definition.constraintFaceType == ConstraintFaceType.PARALLEL)
         {
+            annotation {"Name" : "Offset distance"}
+            isLength(definition.offset, CONSTRAINT_FACE_OFFSET_BOUNDS);
+
             annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
             definition.oppositeDirection is boolean;
         }
+
+        annotation {"Name" : "Constrained faces",
+                    "Filter": EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+        definition.constraintFaces is Query;
     }
-
-    annotation {"Name" : "Constrained faces",
-                "Filter": EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-    definition.constraintFaces is Query;
-}
-//============================ Body =============================
-{
-    startFeature(context, id, definition);
-
-    opConstraintFace(context, id, definition);
-    endFeature(context, id);
-}
+    //============================ Body =============================
+    {
+        opConstraintFace(context, id, definition);
+    }, { oppositeDirection : false });
 

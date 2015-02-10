@@ -1,5 +1,6 @@
 //Matrices are in row major order so that the first index is the row and the second is the column.
 export import(path:"onshape/std/utils.fs", version : "");
+export import(path:"onshape/std/math.fs", version : "");
 
 export type Matrix typecheck canBeMatrix;
 
@@ -96,7 +97,7 @@ export function squaredNorm(m is Matrix) returns number
 
 export function norm(m is Matrix) returns number
 {
-    return ::sqrt(squaredNorm(m));
+    return sqrt(squaredNorm(m));
 }
 
 export function svd(m is Matrix) returns map
