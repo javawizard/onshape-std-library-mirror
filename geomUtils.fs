@@ -5,6 +5,20 @@ export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
+//====================== Context ========================
+
+export type Context typecheck canBeContext;
+
+export predicate canBeContext(value)
+{
+    value is builtin;
+}
+
+export function newContext() returns Context
+{
+   return @newContext(FeatureScriptVersionNumber.V100_BOOLEAN_OFFSET_NO_FACE_ERROR) as Context;
+}
+
 //====================== Version compatibility ========================
 
 /* Return false if a feature description [definition] contains
@@ -21,20 +35,6 @@ export function isAtVersionOrLater(introduced is FeatureScriptVersionNumber,
     return true; /* can't happen, but code analysis tools might complain */
 }
 
-//====================== Context ========================
-
-export type Context typecheck canBeContext;
-
-export predicate canBeContext(value)
-{
-    value is builtin;
-}
-
-export function newContext() returns Context
-{
-   return @newContext(FeatureScriptVersionNumber.V91_PS27_1_165) as Context;
-}
-
 //====================== Query evaluation ========================
 
 export function evaluateQuery(context is Context, query is Query) returns array
@@ -48,6 +48,11 @@ export function evaluateQuery(context is Context, query is Query) returns array
 //====================== Error Reporting ===================
 
 export function reportFeatureError(context is Context, id is Id, message is undefined) returns boolean
+{
+    return false;
+}
+
+export function reportFeatureError(context is Context, id is Id, message is undefined, faultyParameters) returns boolean
 {
     return false;
 }

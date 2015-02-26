@@ -83,3 +83,9 @@ export const deleteBodies = defineFeature(function(context is Context, id is Id,
         opDeleteBodies(context, id, deleteDefinition);
     });
 
+export type BuildFunction typecheck canBeBuildFunction;
+export predicate canBeBuildFunction(value)
+{
+    value is function;
+}
+

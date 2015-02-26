@@ -167,6 +167,12 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
          */
         var validateInputs = isAtVersionOrLater(FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING, definition);
 
+        if(validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
+        {
+            reportFeatureError(context, id, ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
+            return;
+        }
+
         if(transformType == TransformType.TRANSLATION_ENTITY ||
             transformType == TransformType.TRANSLATION_DISTANCE)
         {
@@ -190,7 +196,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             }
             else if(validateInputs && nedges > 1)
             {
-                reportFeatureError(context, id, ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED);
+                reportFeatureError(context, id, ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED,
+                                   [distanceSpecified ? "transformDirection" : "transformLine"]);
                 return;
             }
             else if(nedges >= 1)
@@ -210,18 +217,18 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                     translation = planeResult.result.normal * meter;
                 else if (axisResult.result is Line)
                     translation = axisResult.result.direction * meter;
-                else if(reportFeatureError(context, id, planeResult.error))
+                else if(reportFeatureError(context, id, planeResult.error, ["transformDirection"]))
                     return;
-                else if(reportFeatureError(context, id, axisResult.error))
+                else if(reportFeatureError(context, id, axisResult.error, ["transformDirection"]))
                     return;
                 /* else "can't happen" and norm(undefined) will fail later */
             }
             else
             {
                 if(distanceSpecified)
-                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT);
+                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT, ["transformDirection"]);
                 else
-                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_INPUT);
+                    reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_INPUT, ["transformLine"]);
                 return;
             }
 
@@ -229,7 +236,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             {
                 if(norm(translation).value < TOLERANCE.zeroLength)
                 {
-                    reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION);
+                    reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["transformDirection"]);
                     return;
                 }
                 var target = definition.entities;
@@ -250,7 +257,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         if(transformType == TransformType.ROTATION)
         {
             var axisResult = evAxis(context, { "axis" : definition.transformAxis });
-            if(reportFeatureError(context, id, axisResult.error))
+            if(reportFeatureError(context, id, axisResult.error, ["transformAxis"]))
                 return;
             var target = definition.entities;
             var origin = findCenter(context, id, target);
@@ -293,15 +300,15 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         {
             opPattern(context, id,
                       { "entities" : definition.entities,
-                        "transforms" : [transformMatrix] ,
-                        "instanceNames" : ["1"]});
+                        "transforms" : [transformMatrix],
+                        "instanceNames" : ["1"] });
         }
         else
         {
             var subId = validateInputs ? id : id + "transform";
             opTransform(context, subId,
                         { "bodies" : definition.entities,
-                          "transform" : transformMatrix});
+                          "transform" : transformMatrix });
         }
     }, { oppositeDirection : false });
 

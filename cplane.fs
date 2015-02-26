@@ -77,15 +77,15 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
         if(cplaneDefinition.cplaneType == CPlaneType.OFFSET)
         {
             if(numEntities < 1) {
-                reportFeatureError(context, id, requiresPlaneToOffsetMessage);
+                reportFeatureError(context, id, requiresPlaneToOffsetMessage, ["entities"]);
                 return;
             }
             if(numEntities > 1) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var planeResult = evPlane(context, { "face" : cplaneDefinition.entities });
-            if(reportFeatureError(context, id, planeResult.error))
+            if(reportFeatureError(context, id, planeResult.error, ["entities"]))
                 return;
             cplaneDefinition.plane = planeResult.result;
             if(cplaneDefinition.oppositeDirection)
@@ -96,18 +96,18 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
         if(cplaneDefinition.cplaneType == CPlaneType.PLANE_POINT)
         {
             if(numEntities < 2) {
-                reportFeatureError(context, id, requiresPointPlaneMessage);
+                reportFeatureError(context, id, requiresPointPlaneMessage, ["entities"]);
                 return;
             }
             if(numEntities > 2) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var planeResult = evPlane(context, { "face" : qEntityFilter(cplaneDefinition.entities, EntityType.FACE) });
-            if(reportFeatureError(context, id, planeResult.error))
+            if(reportFeatureError(context, id, planeResult.error, ["entities"]))
                 return;
             var pointResult = evVertexPoint(context, { "vertex" : qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX) });
-            if (reportFeatureError(context, id, pointResult.error))
+            if (reportFeatureError(context, id, pointResult.error, ["entities"]))
                 return;
             cplaneDefinition.plane = planeResult.result;
             cplaneDefinition.plane.origin = pointResult.result;
@@ -116,15 +116,15 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
         if(cplaneDefinition.cplaneType == CPlaneType.LINE_ANGLE)
         {
             if(numEntities < 1) {
-                reportFeatureError(context, id, requiresLineMessage);
+                reportFeatureError(context, id, requiresLineMessage, ["entities"]);
                 return;
             }
             if(numEntities > 1) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var lineResult = evAxis(context, { "axis" : cplaneDefinition.entities });
-            if(reportFeatureError(context, id, lineResult.error))
+            if(reportFeatureError(context, id, lineResult.error, ["entities"]))
                 return;
             var normal = perpendicularVector(lineResult.result.direction);
             normal = rotationMatrix3d(lineResult.result.direction, cplaneDefinition.angle) *  normal;
@@ -134,19 +134,19 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
         if(cplaneDefinition.cplaneType == CPlaneType.LINE_POINT)
         {
             if(numEntities < 2) {
-                reportFeatureError(context, id, requiresLinePointMessage);
+                reportFeatureError(context, id, requiresLinePointMessage, ["entities"]);
                 return;
             }
             if(numEntities > 2) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var lineResult = evAxis(context, { "axis" : qUnion([qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
                                                                 qEntityFilter(cplaneDefinition.entities, EntityType.FACE)]) });
-            if(reportFeatureError(context, id, lineResult.error))
+            if(reportFeatureError(context, id, lineResult.error, ["entities"]))
                 return;
             var pointResult = evVertexPoint(context, { "vertex" : qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX) });
-            if(reportFeatureError(context, id, pointResult.error))
+            if(reportFeatureError(context, id, pointResult.error, ["entities"]))
                return;
             cplaneDefinition.plane = plane(pointResult.result, lineResult.result.direction);
         }
@@ -156,25 +156,25 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             var vertexQueries = evaluateQuery(context, qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX));
             if(@size(vertexQueries) < 3)
             {
-                reportFeatureError(context, id, requiresThreePointsMessage);
+                reportFeatureError(context, id, requiresThreePointsMessage, ["entities"]);
                 return;
             }
             if(numEntities > 3) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var points = makeArray(3);
             for(var i = 0; i < 3; i += 1)
             {
                 var pointResult = evVertexPoint(context, { "vertex" : vertexQueries[i] });
-                if(reportFeatureError(context, id, pointResult.error))
+                if(reportFeatureError(context, id, pointResult.error, ["entities"]))
                     return;
                 points[i] = pointResult.result;
             }
             var normal = crossProduct(points[2] - points[0], points[1] - points[0]);
             if(norm(normal).value < TOLERANCE.zeroLength)
             {
-                reportFeatureError(context, id, degeneratePointsMessage);
+                reportFeatureError(context, id, degeneratePointsMessage, ["entities"]);
                 return;
             }
             cplaneDefinition.plane = plane(points[0], normalize(normal), normalize(points[1] - points[0]));
@@ -188,7 +188,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             {
                 // Check for extra entities, not vertices
                 if(numEntities > 2) {
-                    reportFeatureError(context, id, tooManyEntitiesMessage);
+                    reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                     return;
                 }
                 createMidPlaneFromTwoPoints(context, id, vertexQueries, cplaneDefinition.size);
@@ -201,7 +201,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             {
                 // Check for extra entities, not edges
                 if(numEntities > 1) {
-                    reportFeatureError(context, id, tooManyEntitiesMessage);
+                    reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                     return;
                 }
                 createMidPlaneFromEdge(context, id, edgeQueries, cplaneDefinition.size);
@@ -214,7 +214,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             {
                 // Check for extra entities, not faces
                 if(numEntities > 2) {
-                    reportFeatureError(context, id, tooManyEntitiesMessage);
+                    reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                     return;
                 }
                 createMidPlaneFromTwoPlanes(context, id, cplaneDefinition);
@@ -222,33 +222,33 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             }
 
             // fall through to failure
-            reportFeatureError(context, id, midPlaneDefaultErrorMessage);
+            reportFeatureError(context, id, midPlaneDefaultErrorMessage, ["entities"]);
             return;
         }
 
         if(cplaneDefinition.cplaneType == CPlaneType.CURVE_POINT)
         {
             if(numEntities < 2) {
-                reportFeatureError(context, id, requiresCurvePointMessage);
+                reportFeatureError(context, id, requiresCurvePointMessage, ["entities"]);
                 return;
             }
             if(numEntities > 2) {
-                reportFeatureError(context, id, tooManyEntitiesMessage);
+                reportFeatureError(context, id, tooManyEntitiesMessage, ["entities"]);
                 return;
             }
             var param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
                                                        "vertex" : qEntityFilter(cplaneDefinition.entities, EntityType.VERTEX) });
             if ( param.error == "CANNOT_RESOLVE_ENTITIES")
             {
-                reportFeatureError(context, id, requiresCurvePointMessage);
+                reportFeatureError(context, id, requiresCurvePointMessage, ["entities"]);
                 return;
             }
-            else if (reportFeatureError(context, id, param.error))
+            else if (reportFeatureError(context, id, param.error, ["entities"]))
                 return;
 
             var lineResult = evEdgeTangentLine(context, {"edge" : qEntityFilter(cplaneDefinition.entities, EntityType.EDGE),
                                         "parameter" : param.result, "arcLengthParameterization" : false });
-            if(reportFeatureError(context, id, lineResult.error))
+            if(reportFeatureError(context, id, lineResult.error, ["entities"]))
                 return;
 
             cplaneDefinition.plane = plane(lineResult.result.origin, lineResult.result.direction);
@@ -263,7 +263,7 @@ function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries
     for(var i = 0; i < 2; i += 1)
     {
         var pointResult = evVertexPoint(context, { "vertex" : vertexQueries[i] });
-        if(reportFeatureError(context, id, pointResult.error))
+        if(reportFeatureError(context, id, pointResult.error, ["entities"]))
             return false;
         points[i] = pointResult.result;
     }
@@ -277,7 +277,7 @@ function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries
     }
     else
     {
-        reportFeatureError(context, id, coincidentPointsMessage);
+        reportFeatureError(context, id, coincidentPointsMessage, ["entities"]);
         return false;
     }
 }
@@ -298,7 +298,7 @@ function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is arr
     }
     else
     {
-        reportFeatureError(context, id, edgeIsClosedLoopMessage);
+        reportFeatureError(context, id, edgeIsClosedLoopMessage, ["entities"]);
         return false;
     }
 
@@ -308,10 +308,10 @@ function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is arr
 function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinition is map) returns boolean
 {
     var plane1Result = evPlane(context, { "face" : qNthElement(cplaneDefinition.entities, 0) });
-    if(reportFeatureError(context, id, plane1Result.error))
+    if(reportFeatureError(context, id, plane1Result.error, ["entities"]))
         return false;
     var plane2Result = evPlane(context, { "face" : qNthElement(cplaneDefinition.entities, 1) });
-    if(reportFeatureError(context, id, plane2Result.error))
+    if(reportFeatureError(context, id, plane2Result.error, ["entities"]))
         return false;
     var p1 = plane1Result.result;
     var p2 = plane2Result.result;

@@ -31,7 +31,7 @@ export const draft = defineFeature(function(context is Context, id is Id, draftD
         var planeResult = evFaceTangentPlane(context, {"face" : draftDefinition.neutralPlane, "parameter" : vector(0.5, 0.5)});
         if (planeResult.error != undefined)
         {
-            reportFeatureError(context, id, ErrorStringEnum.DRAFT_SELECT_NEUTRAL);
+            reportFeatureError(context, id, ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
             return;
         }
 
