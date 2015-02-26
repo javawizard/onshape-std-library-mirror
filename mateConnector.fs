@@ -156,7 +156,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if(ownerPartQuery == undefined)
         {
-            reportFeatureError(context, id, ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED);
+            reportFeatureError(context, id, ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
             return;
         }
 

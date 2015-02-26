@@ -75,10 +75,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, revo
         }
     }
     {
+        revolveDefinition.entities = getEntitiesToUse(revolveDefinition);
+        var resolvedEntities = evaluateQuery(context, revolveDefinition.entities);
+        if(@size(resolvedEntities) == 0)
+        {
+            if(revolveDefinition.bodyType == ToolBodyType.SOLID)
+                reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
+            else
+                reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
+            return;
+        }
+
         var axis = evAxis(context, revolveDefinition);
         if (axis.error != undefined)
         {
-            reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS);
+            reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS, ["axis"]);
             return;
         }
         revolveDefinition.axis = axis.result;
@@ -131,11 +142,11 @@ function getEntitiesToUse(revolveDefinition is map)
 {
     if (revolveDefinition.bodyType == ToolBodyType.SOLID)
     {
-      return revolveDefinition.entities;
+        return revolveDefinition.entities;
     }
     else
     {
-      return revolveDefinition.surfaceEntities;
+        return revolveDefinition.surfaceEntities;
     }
 }
 

@@ -78,17 +78,19 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
         }
     }
     {
-        var usedEntities = getEntitiesToUse(extrudeDefinition);
+        extrudeDefinition.entities = getEntitiesToUse(extrudeDefinition);
 
-        // ------------- Get the extrude axis ---------------
-        var resolvedEntities = evaluateQuery(context, usedEntities);
+        var resolvedEntities = evaluateQuery(context, extrudeDefinition.entities);
         if(@size(resolvedEntities) == 0)
         {
-            reportFeatureError(context, id, extrudeDefinition.bodyType == ToolBodyType.SOLID ?
-                    ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION : ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
+            if(extrudeDefinition.bodyType == ToolBodyType.SOLID)
+                reportFeatureError(context, id, ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION, ["entities"]);
+            else
+                reportFeatureError(context, id, ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["surfaceEntities"]);
             return;
         }
 
+        // ------------- Get the extrude axis ---------------
         var extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
         if(extrudeAxis == undefined)
         {

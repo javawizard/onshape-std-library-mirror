@@ -56,7 +56,7 @@ export const helix = defineFeature(function(context is Context, id is Id, helixD
 
         var face = evSurfaceDefinition(context, {'face' : helixDefinition.entities});
 
-        if (reportFeatureError(context, id, face.error))
+        if (reportFeatureError(context, id, face.error, ["entities"]))
             return;
         var surface = face.result;
         if ((surface is Cone) || (surface is Cylinder))
@@ -96,7 +96,7 @@ export const helix = defineFeature(function(context is Context, id is Id, helixD
         }
         else
         {
-            reportFeatureError(context, id, needConeOrCylinderMessage);
+            reportFeatureError(context, id, needConeOrCylinderMessage, ["entities"]);
             return;
         }
         var startPointVector = helixDefinitionOut.startPoint - helixDefinitionOut.axisStart;

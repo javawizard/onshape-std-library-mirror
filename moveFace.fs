@@ -66,21 +66,23 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     }
     //============================ Body =============================
     {
+        var resolvedEntities = evaluateQuery(context, definition.moveFaces);
+        if(size(resolvedEntities) == 0)
+        {
+            reportFeatureError(context, id, ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT, ["moveFaces"]);
+            return;
+        }
+
         var directionSign = 1;
         if(definition.oppositeDirection)
             directionSign = -1;
 
         // Extract an axis defined by the moved face for use in the manipulators.
-        var resolvedEntities = evaluateQuery(context, definition.moveFaces);
-        var facePlane = undefined;
-        if(@size(resolvedEntities) > 0)
+        var facePlane = evFaceTangentPlane(context, {"face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5)}).result;
+        if(facePlane == undefined)
         {
-            facePlane = computeFacePlane(context, id, resolvedEntities[0]);
-            if(facePlane == undefined)
-            {
-                reportFeatureError(context, id, ErrorStringEnum.NO_TANGENT_PLANE);
-                return;
-            }
+            reportFeatureError(context, id, ErrorStringEnum.NO_TANGENT_PLANE, ["moveFaces"]);
+            return;
         }
 
         if(definition.moveFaceType == MoveFaceType.OFFSET)
@@ -108,7 +110,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                     var planeResult = evPlane(context, {"face" : definition.direction});
                     if(planeResult.error != undefined)
                     {
-                        reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION);
+                        reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
                         return;
                     }
                     translation = planeResult.result.normal * definition.translationDistance * directionSign;
@@ -130,7 +132,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             if(definition.moveFaceType == MoveFaceType.ROTATE)
             {
                 var axisResult = evAxis(context, { "axis" : definition.axis });
-                if(reportFeatureError(context, id, axisResult.error))
+                if(reportFeatureError(context, id, axisResult.error, ["axis"]))
                     return;
 
                 if(facePlane != undefined)
@@ -174,15 +176,6 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
 
     addManipulators(context, id, { (ROTATE_MANIPULATOR) :
                                    angularManipulator(rotateOrigin, axis.direction, facePlane.origin, angle) });
-}
-
-function computeFacePlane(context is Context, id is Id, faceQuery is Query)
-{
-    var plane = evFaceTangentPlane(context, {"face" : faceQuery, "parameter" : vector(0.5, 0.5)});
-    if(reportFeatureError(context, id, plane.error))
-       return undefined;
-
-    return plane.result;
 }
 
 export function moveFaceManipulatorChange(context is Context, moveFaceDefinition is map, newManipulators is map) returns map

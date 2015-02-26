@@ -85,9 +85,14 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
             patternDefinition.oppositeDirectionTwo is boolean;
         }
-
     }
     {
+        if(patternDefinition.isFacePattern)
+            patternDefinition.entities = patternDefinition.faces;
+
+        if(!checkInput(context, id, patternDefinition))
+            return;
+
         // Compute a vector of transforms
         var transforms = [];
         var instanceNames = [];
@@ -97,7 +102,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             patternDefinition.oppositeDirection, patternDefinition.distance);
         if (result.error != undefined)
         {
-            reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR);
+            reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR, ["directionOne"]);
             return;
         }
         var offset1 = result.offset;
@@ -114,17 +119,17 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
                 patternDefinition.oppositeDirectionTwo, patternDefinition.distanceTwo);
             if (result.error == undefined)
             {
-              offset2 =  result.offset;
-              if(parallelVectors(offset1, offset2))
-              {   //notify user that parallel directions are selected for dir1 and dir2
-                reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_DIRECTIONS_PARALLEL);
-              }
+                offset2 =  result.offset;
+                if(parallelVectors(offset1, offset2))
+                {   //notify user that parallel directions are selected for dir1 and dir2
+                    reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_DIRECTIONS_PARALLEL);
+                }
             }
             else if (count2 > 1)
             {
                 //if count2 = 1, we don't need a direction (i.e. we keep the 1-directional solution),
                 //so only complain about direction if the count for second direction is > 1.
-                reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR);
+                reportFeatureError(context, id, ErrorStringEnum.PATTERN_LINEAR_NO_DIR, ["directionTwo"]);
                 return;
             }
         }
@@ -150,7 +155,10 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             }
         }
 
-        checkInputAndCallPatternOp(context, id, patternDefinition, transforms, instanceNames);
+        patternDefinition.transforms = transforms;
+        patternDefinition.instanceNames = instanceNames;
+
+        opPattern(context, id, patternDefinition);
     }, { isFacePattern : true, hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
 
 //======================================================================================
@@ -191,6 +199,12 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
     }
     {
+        if(patternDefinition.isFacePattern)
+            patternDefinition.entities = patternDefinition.faces;
+
+        if(!checkInput(context, id, patternDefinition))
+            return;
+
         var transforms = [];
         var instanceNames = [];
 
@@ -204,7 +218,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         var rawDirectionResult = evAxis(context, {"axis" : patternDefinition.axis});
         if (rawDirectionResult.error != undefined)
         {
-            reportFeatureError(context, id, ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS);
+            reportFeatureError(context, id, ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS, ["axis"]);
             return;
         }
 
@@ -212,7 +226,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             if( patternDefinition.instanceCount < 2 )
             {
-                reportFeatureError(context, id, ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES);
+                reportFeatureError(context, id, ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
                 return;
             }
             var isFull = abs(abs(stripUnits(angle)) - (2 * PI)) < TOLERANCE.zeroAngle;
@@ -226,21 +240,23 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             instanceNames = append(instanceNames, "" ~ i);
         }
 
-        checkInputAndCallPatternOp(context, id, patternDefinition, transforms, instanceNames);
+        patternDefinition.transforms = transforms;
+        patternDefinition.instanceNames = instanceNames;
+
+        opPattern(context, id, patternDefinition);
     }, { isFacePattern : true, oppositeDirection : false, equalSpace : false });
 
-function checkInputAndCallPatternOp(context is Context, id is Id, patternDefinition is map, transforms is array, instanceNames is array)
+function checkInput(context is Context, id is Id, patternDefinition is map) returns boolean
 {
-    if (patternDefinition.isFacePattern == true)
+    if(size(evaluateQuery(context, patternDefinition.entities)) == 0)
     {
-        opPattern(context, id, { "entities" : patternDefinition.faces, "transforms" : transforms , "instanceNames" : instanceNames,
-        notFoundErrorKey("entities") :  ErrorStringEnum.PATTERN_SELECT_FACES });
+        if (patternDefinition.isFacePattern)
+            reportFeatureError(context, id, ErrorStringEnum.PATTERN_SELECT_FACES, ["faces"]);
+        else
+            reportFeatureError(context, id, ErrorStringEnum.PATTERN_SELECT_PARTS, ["entities"]);
+        return false;
     }
-    else
-    {
-        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instanceNames,
-        notFoundErrorKey("entities") :  ErrorStringEnum.PATTERN_SELECT_PARTS });
-    }
+    return true;
 }
 
 

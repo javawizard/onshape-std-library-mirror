@@ -2,6 +2,7 @@ export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
+export import(path : "onshape/std/moveFace.fs", version : "");
 
 export enum BooleanOperationType
 {
@@ -30,13 +31,103 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             annotation {"Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID}
             booleanDefinition.targets is Query;
 
+            annotation {"Name" : "Offset"}
+            booleanDefinition.offset is boolean;
+
+            if (booleanDefinition.offset)
+            {
+                annotation {"Name" : "Offset all"}
+                booleanDefinition.offsetAll is boolean;
+
+                if (!booleanDefinition.offsetAll)
+                {
+                    annotation {"Name" : "Faces to offset",
+                        "Filter" : (EntityType.FACE && BodyType.SOLID)}
+                    booleanDefinition.entitiesToOffset is Query;
+                }
+
+                annotation {"Name" : "Offset distance"}
+                isLength(booleanDefinition.offsetDistance, SHELL_OFFSET_BOUNDS);
+
+                annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+                booleanDefinition.oppositeDirection is boolean;
+            }
+
             annotation {"Name" : "Keep tools"}
             booleanDefinition.keepTools is boolean;
         }
     }
     {
-        opBoolean(context, id, booleanDefinition);
-    }, { keepTools : false });
+        if (booleanDefinition.offset && booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
+        {
+            if (booleanDefinition.oppositeDirection)
+            {
+                booleanDefinition.offsetDistance = -booleanDefinition.offsetDistance;
+            }
+            var suffix = "offsetTempBody";
+            var transformMatrix = identityTransform();
+            opPattern(context, id + suffix,
+                      { "entities" : booleanDefinition.tools,
+                        "transforms" : [transformMatrix],
+                        "instanceNames" : ["1"] });
+
+            var faceQuery;
+            if (booleanDefinition.offsetAll)
+            {
+                faceQuery = qCreatedBy(id + suffix, EntityType.FACE);
+            }
+            else
+            {
+                faceQuery = wrapFaceQueryInCopy(booleanDefinition.entitiesToOffset, id + suffix);
+                if (size(evaluateQuery(context, faceQuery)) == 0)
+                {
+                    reportFeatureError(context, id, ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
+                    return;
+                }
+            }
+
+            var tempMoveFaceSuffix = "offsetMoveFace";
+            var moveFaceDefinition = {
+                "moveFaces" : faceQuery,
+                "moveFaceType" : MoveFaceType.OFFSET,
+                "offsetDistance" : booleanDefinition.offsetDistance,
+                "reFillet" : true };
+
+            opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
+
+            var tempBooleanDefinition = {
+                "operationType" : booleanDefinition.operationType,
+                "tools" : qCreatedBy(id + suffix, EntityType.BODY),
+                "targets" : booleanDefinition.targets,
+                "keepTools" : false };
+
+            var tempBooleanSuffix = "tempBoolean";
+            opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition);
+
+            if (!booleanDefinition.keepTools)
+            {
+                opDeleteBodies(context, id + ".delete", { "entities" : booleanDefinition.tools });
+            }
+        }
+        else
+        {
+            opBoolean(context, id, booleanDefinition);
+        }
+    }, { keepTools : false, offset : false, oppositeDirection : false , offsetAll : false});
+
+function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
+{
+    if(query.queryType == QueryType.UNION)
+    {
+        var wrappedSubqueries = query.subqueries;
+        for(var i = 0; i < @size(wrappedSubqueries); i += 1)
+        {
+            wrappedSubqueries[i] = wrapFaceQueryInCopy(wrappedSubqueries[i], id);
+        }
+        return qUnion(wrappedSubqueries);
+    }
+    return makeQuery(id, "COPY", EntityType.FACE, {"derivedFrom" : query, "instanceName" : "1"});
+}
 
 export enum NewBodyOperationType
 {

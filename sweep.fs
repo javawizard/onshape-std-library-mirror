@@ -35,6 +35,9 @@ export const sweep = defineFeature(function(context is Context, id is Id, sweepD
         }
     }
     {
+        if (sweepDefinition.bodyType == ToolBodyType.SURFACE)
+            sweepDefinition.profiles = sweepDefinition.surfaceProfiles;
+
         opSweep(context, id, sweepDefinition);
 
         if (sweepDefinition.bodyType == ToolBodyType.SOLID)
