@@ -103,6 +103,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
 
             var tempBooleanSuffix = "tempBoolean";
             opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition);
+            processSubfeatureStatus(context, id + tempBooleanSuffix, id);
 
             if (!booleanDefinition.keepTools)
             {

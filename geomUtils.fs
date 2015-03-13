@@ -16,7 +16,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V100_BOOLEAN_OFFSET_NO_FACE_ERROR) as Context;
+   return @newContext(FeatureScriptVersionNumber.V104_DRAFT_CHECK_STEEP) as Context;
 }
 
 //====================== Version compatibility ========================
