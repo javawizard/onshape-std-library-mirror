@@ -130,19 +130,12 @@ precondition
     {
         annotation {"Name": "X translation"}
         isLength(definition.dx, ZERO_DEFAULT_LENGTH_BOUNDS);
-        annotation {"Name" : "Opposite direction",
-                    "UIHint" : "OppositeDirection"}
-        definition.oppositeX is boolean;
+
         annotation {"Name": "Y translation"}
         isLength(definition.dy, ZERO_DEFAULT_LENGTH_BOUNDS);
-        annotation {"Name" : "Opposite direction",
-                    "UIHint" : "OppositeDirection"}
-        definition.oppositeY is boolean;
+
         annotation {"Name": "Z translation"}
         isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
-        annotation {"Name" : "Opposite direction",
-                    "UIHint" : "OppositeDirection"}
-        definition.oppositeZ is boolean;
     }
 
     if(definition.transformType != TransformType.COPY)
@@ -269,16 +262,19 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             var axis = axisResult.result;
             addManipulators(context, id,
                 { (ROTATE) :
-                  angularManipulator(project(axis, origin), axis.direction,
-                                     origin, angle, target)});
+                  angularManipulator({ "axisOrigin" : project(axis, origin),
+                                       "axisDirection" : axis.direction,
+                                       "rotationOrigin" : origin,
+                                       "angle" : angle,
+                                       "sources" : target })});
             transformMatrix = rotationAround(axis, angle);
         }
 
         if(transformType == TransformType.TRANSLATION_3D)
         {
-            var dx = definition.oppositeX ? -definition.dx : definition.dx;
-            var dy = definition.oppositeY ? -definition.dy : definition.dy;
-            var dz = definition.oppositeZ ? -definition.dz : definition.dz;
+            var dx = definition.dx;
+            var dy = definition.dy;
+            var dz = definition.dz;
             var transformVector = vector(dx, dy, dz);
             transformMatrix = transform(transformVector);
             var target = definition.entities;
@@ -337,15 +333,9 @@ export function transformManipulatorChange(context is Context, output is map, in
     if (input[TRANSLATION] is map)
     {
         var offset = input[TRANSLATION].offset;
-        var dx = offset[0];
-        var dy = offset[1];
-        var dz = offset[2];
-        output.dx = abs(dx);
-        output.oppositeX = dx.value < 0;
-        output.dy = abs(dy);
-        output.oppositeY = dy.value < 0;
-        output.dz = abs(dz);
-        output.oppositeZ = dz.value < 0;
+        output.dx = offset[0];
+        output.dy = offset[1];
+        output.dz = offset[2];
     }
     return output;
 }

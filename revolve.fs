@@ -174,15 +174,29 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
     }
     var axisOrigin = project(revolveDefinition.axis, revolvePoint);
 
+    var minValue = -2 * PI * radian;
+    var maxValue = 2 * PI * radian;
+
     //Compute value
     var angle = revolveDefinition.angle;
     if(revolveDefinition.oppositeDirection == true)
         angle *= -1;
     if(revolveDefinition.revolveType == RevolveType.SYMMETRIC)
+    {
         angle *= .5;
+        minValue = -PI * radian;
+        maxValue = PI * radian;
+    }
+
 
     addManipulators(context, id, { (ANGLE_MANIPULATOR) :
-                        angularManipulator(axisOrigin, revolveDefinition.axis.direction, revolvePoint, angle, entities) });
+                        angularManipulator({ "axisOrigin" : axisOrigin,
+                                             "axisDirection" : revolveDefinition.axis.direction,
+                                             "rotationOrigin" : revolvePoint,
+                                             "angle" : angle,
+                                             "sources" : entities,
+                                             "minValue" : minValue,
+                                             "maxValue" : maxValue })});
 }
 
 export function revolveManipulatorChange(context is Context, revolveDefinition is map, newManipulators is map) returns map

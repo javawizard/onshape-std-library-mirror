@@ -89,3 +89,8 @@ export predicate canBeBuildFunction(value)
     value is function;
 }
 
+export predicate isAnything(value) // used to create a generic feature parameter that can be any featurescript expression
+{
+}
+
+

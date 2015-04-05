@@ -84,19 +84,19 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             if(mateConnectorDefinition.translationX != undefined)
             {
                 annotation {"Name" : "X translation"}
-                isLength(mateConnectorDefinition.translationX, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(mateConnectorDefinition.translationX, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
             if(mateConnectorDefinition.translationY != undefined)
             {
                 annotation {"Name" : "Y translation"}
-                isLength(mateConnectorDefinition.translationY, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(mateConnectorDefinition.translationY, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
             if(mateConnectorDefinition.translationZ != undefined)
             {
                 annotation {"Name" : "Z translation"}
-                isLength(mateConnectorDefinition.translationZ, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(mateConnectorDefinition.translationZ, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
             if(mateConnectorDefinition.rotationType != undefined)
@@ -114,7 +114,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if(mateConnectorDefinition.ownerPart != undefined)
         {
-            annotation {"Name" : "Owner part", "Filter" : EntityType.BODY && BodyType.SOLID}
+            annotation {"Name" : "Owner part", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1}
             mateConnectorDefinition.ownerPart is Query;
         }
 
