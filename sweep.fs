@@ -29,6 +29,9 @@ export const sweep = defineFeature(function(context is Context, id is Id, sweepD
         annotation {"Name" : "Sweep path", "Filter" : EntityType.EDGE }
         sweepDefinition.path is Query;
 
+        annotation {"Name" : "Keep profile orientation"}
+        sweepDefinition.keepProfileOrientation is boolean;
+
         if (sweepDefinition.bodyType == ToolBodyType.SOLID)
         {
             booleanStepScopePredicate(sweepDefinition);
@@ -51,5 +54,5 @@ export const sweep = defineFeature(function(context is Context, id is Id, sweepD
                 endFeature(context, statusToolId);
             }
         }
-    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW });
+    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false });
 

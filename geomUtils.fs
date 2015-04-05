@@ -5,6 +5,8 @@ export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
+export const CURRENT_VERSION = FeatureScriptVersionNumber.V115_SKETCH_LINEAR_PATTERNS;
+
 //====================== Context ========================
 
 export type Context typecheck canBeContext;
@@ -16,7 +18,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumber.V104_DRAFT_CHECK_STEEP) as Context;
+   return @newContext(CURRENT_VERSION) as Context;
 }
 
 //====================== Version compatibility ========================

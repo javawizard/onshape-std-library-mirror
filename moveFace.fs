@@ -137,7 +137,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
                 if(facePlane != undefined)
                 {
-                    addRotateManipulator(context, id, axisResult.result, facePlane, definition.angle * directionSign);
+                    addRotateManipulator(context, id, axisResult.result, facePlane, definition.angle * directionSign, definition.moveFaces);
                 }
 
                 definition.transform = rotationAround(axisResult.result, definition.angle * directionSign);
@@ -165,17 +165,39 @@ function addTranslateManipulator(context is Context, id is Id, origin is Vector,
                                    linearManipulator(origin, direction, magnitude) });
 }
 
-function addRotateManipulator(context is Context, id is Id, axis is Line, facePlane is Plane, angle is ValueWithUnits)
+function addRotateManipulator(context is Context, id is Id, axis is Line, facePlane is Plane, angle is ValueWithUnits, faceQuery is Query)
 {
     // Project the center of the plane onto the axis
-    var rotateOrigin = axis.origin + dotProduct(facePlane.origin - axis.origin, axis.direction) * axis.direction;
-    if (samePoint(rotateOrigin, facePlane.origin))
+    var refPoint = facePlane.origin;
+    var rotateOrigin = axis.origin + dotProduct(refPoint - axis.origin, axis.direction) * axis.direction;
+    if (samePoint(rotateOrigin, refPoint))
     {
-        return;
+        // refPoint lies on the axis, so construct a different refPoint
+        var orthoVec = crossProduct(axis.direction, facePlane.normal);
+        var orthoVecNorm = norm(orthoVec);
+        if (abs(orthoVecNorm) > TOLERANCE.zeroLength)
+        {
+          orthoVec = orthoVec / orthoVecNorm;
+        }
+        else
+        {
+          // The plane normal is parallel to the axis, so choose an arbitrary orthogonal vector
+          orthoVec = perpendicularVector(axis.direction);
+        }
+        // Calculate a manipulator radius if we have to use an arbitrary face point.
+        var faceBox = evBox3d(context, {topology : qNthElement(faceQuery, 0)});
+        var manipulatorRadius = 0.001 * meter; // default of 1 mm if we fail to get the box
+        if (faceBox.result is Box3d)
+        {
+            manipulatorRadius = norm(faceBox.result.maxCorner - faceBox.result.minCorner) * 0.5;
+        }
+        refPoint = rotateOrigin + orthoVec * manipulatorRadius;
     }
 
-    addManipulators(context, id, { (ROTATE_MANIPULATOR) :
-                                   angularManipulator(rotateOrigin, axis.direction, facePlane.origin, angle) });
+    addManipulators(context, id, { (ROTATE_MANIPULATOR) : angularManipulator({ "axisOrigin" : rotateOrigin,
+                                                                               "axisDirection" : axis.direction,
+                                                                               "rotationOrigin" : refPoint,
+                                                                               "angle" : angle })});
 }
 
 export function moveFaceManipulatorChange(context is Context, moveFaceDefinition is map, newManipulators is map) returns map

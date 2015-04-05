@@ -47,39 +47,31 @@ precondition
 }
 {
     return { "manipulatorType" : ManipulatorType.LINEAR_1D,
-                        "base" : base,
-                        "direction" : direction,
-                        "offset" : offset,
-                        "sources" : sources } as Manipulator;
+             "base" : base,
+             "direction" : direction,
+             "offset" : offset,
+             "sources" : sources } as Manipulator;
 }
 
-export function angularManipulator(axisOrigin is Vector,
-                                   axisDirection is Vector,
-                                   rotationOrigin is Vector,
-                                   angle is ValueWithUnits) returns Manipulator
-{
-    return angularManipulator(axisOrigin, axisDirection, rotationOrigin, angle, undefined);
-}
-
-export function angularManipulator(axisOrigin is Vector,
-                                   axisDirection is Vector,
-                                   rotationOrigin is Vector,
-                                   angle is ValueWithUnits,
-                                   sources) returns Manipulator
+export function angularManipulator(definition is map) returns Manipulator
 precondition
 {
-    is3dLengthVector(axisOrigin);
-    is3dDirection(axisDirection);
-    is3dLengthVector(rotationOrigin);
-    isAngle(angle);
-    sources == undefined || sources is Query;
+    is3dLengthVector(definition.axisOrigin);
+    is3dDirection(definition.axisDirection);
+    is3dLengthVector(definition.rotationOrigin);
+    isAngle(definition.angle);
+    definition.sources == undefined || definition.sources is Query;
+    definition.minValue == undefined || isAngle(definition.minValue);
+    definition.maxValue == undefined || isAngle(definition.maxValue);
 }
 {
-    return { "manipulatorType" : ManipulatorType.ANGULAR,
-                        "axisOrigin" : axisOrigin, "axisDirection" : axisDirection,
-                        "rotationOrigin" : rotationOrigin,
-                        "angle" : angle,
-                        "sources" : sources } as Manipulator;
+    definition.manipulatorType = ManipulatorType.ANGULAR;
+    if (definition.minValue == undefined || definition.maxValue == undefined)
+    {
+        definition.minValue = -PI * radian;
+        definition.maxValue = PI * radian;
+    }
+    return definition as Manipulator;
 }
 
 export function flipManipulator(base is Vector, direction is Vector, flipped is boolean) returns Manipulator
