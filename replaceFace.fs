@@ -8,7 +8,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
     precondition
     {
         annotation {"Name" : "Faces to replace",
-                    "UIHint" : "ShowCreateSelection",
+                    "UIHint" : "SHOW_CREATE_SELECTION",
                     "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
         definition.replaceFaces is Query;
 
@@ -25,7 +25,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
         annotation {"Name" : "Offset distance"}
         isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         definition.oppositeDirection is boolean;
     }
     //============================ Body =============================

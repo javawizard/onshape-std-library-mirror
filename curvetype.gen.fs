@@ -4,7 +4,8 @@ export enum CurveType
 {
     CIRCLE,
     LINE,
-    OTHER
+    OTHER,
+    ELLIPSE
 }
 
 

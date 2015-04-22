@@ -49,8 +49,11 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 annotation {"Name" : "Offset distance"}
                 isLength(booleanDefinition.offsetDistance, SHELL_OFFSET_BOUNDS);
 
-                annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
                 booleanDefinition.oppositeDirection is boolean;
+
+                annotation {"Name" : "Reapply fillet"}
+                booleanDefinition.reFillet is boolean;
             }
 
             annotation {"Name" : "Keep tools"}
@@ -91,7 +94,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 "moveFaces" : faceQuery,
                 "moveFaceType" : MoveFaceType.OFFSET,
                 "offsetDistance" : booleanDefinition.offsetDistance,
-                "reFillet" : true };
+                "reFillet" : booleanDefinition.reFillet };
 
             opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
 
@@ -114,7 +117,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         {
             opBoolean(context, id, booleanDefinition);
         }
-    }, { keepTools : false, offset : false, oppositeDirection : false , offsetAll : false});
+    }, { keepTools : false, offset : false, oppositeDirection : false , offsetAll : false, reFillet : false});
 
 function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {

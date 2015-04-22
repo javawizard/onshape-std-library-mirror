@@ -6,7 +6,7 @@ export import(path : "onshape/std/origincreationtype.gen.fs", version : "");
 export import(path : "onshape/std/rotationtype.gen.fs", version : "");
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
-annotation {"Feature Type Name" : "Mate connector"}
+annotation {"Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY"}
 export const mateConnector = defineFeature(function(context is Context, id is Id, mateConnectorDefinition is map)
     precondition
     {
@@ -21,10 +21,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
                     "MaxNumberOfPicks" : 1 }
         mateConnectorDefinition.originQuery is Query;
 
-        annotation {"UIHint" : "AlwaysHidden" }
+        annotation {"UIHint" : "ALWAYS_HIDDEN" }
         mateConnectorDefinition.entityInferenceType is EntityInferenceType;
 
-        annotation {"UIHint" : "AlwaysHidden" }
+        annotation {"UIHint" : "ALWAYS_HIDDEN" }
         mateConnectorDefinition.secondaryOriginQuery is Query;
 
         if (mateConnectorDefinition.originType == OriginCreationType.BETWEEN_ENTITIES)
@@ -38,13 +38,13 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if(mateConnectorDefinition.flipPrimary != undefined)
         {
-            annotation {"Name" : "Flip primary axis", "UIHint" : "AlwaysHidden"}
+            annotation {"Name" : "Flip primary axis", "UIHint" : "ALWAYS_HIDDEN"}
             mateConnectorDefinition.flipPrimary is boolean;
         }
 
         if(mateConnectorDefinition.secondaryAxisType != undefined)
         {
-            annotation {"Name" : "Secondary axis type", "UIHint" : "AlwaysHidden", "Default" : MateConnectorAxisType.PLUS_X}
+            annotation {"Name" : "Secondary axis type", "UIHint" : "ALWAYS_HIDDEN", "Default" : MateConnectorAxisType.PLUS_X}
             mateConnectorDefinition.secondaryAxisType is MateConnectorAxisType;
         }
 

@@ -41,15 +41,15 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation {"Name" : "Face pattern", "Default" : false}
         patternDefinition.isFacePattern is boolean;
 
-        if (patternDefinition.isFacePattern)
-        {
-            annotation {"Name" : "Faces to pattern", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-            patternDefinition.faces is Query;
-        }
-        else
+        if (!patternDefinition.isFacePattern)
         {
             annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             patternDefinition.entities is Query;
+        }
+        else
+        {
+            annotation {"Name" : "Faces to pattern", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            patternDefinition.faces is Query;
         }
 
         annotation {"Name" : "Direction",
@@ -63,7 +63,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation {"Name" : "Instance count"}
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         patternDefinition.oppositeDirection is boolean;
 
         annotation {"Name" : "Second direction"}
@@ -82,7 +82,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             annotation {"Name" : "Instance count"}
             isInteger(patternDefinition.instanceCountTwo, POSITIVE_COUNT_BOUNDS_DEFAULT_1);
 
-            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
             patternDefinition.oppositeDirectionTwo is boolean;
         }
     }
@@ -191,7 +191,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation {"Name" : "Instance count"}
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         patternDefinition.oppositeDirection is boolean;
 
         annotation {"Name" : "Equal spacing"}
@@ -275,7 +275,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         annotation {"Name" : "Instance count"}
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         patternDefinition.oppositeDirection is boolean;
 
         annotation {"Name" : "Follow curve"}

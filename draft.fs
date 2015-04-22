@@ -18,7 +18,7 @@ export const draft = defineFeature(function(context is Context, id is Id, draftD
         annotation {"Name" : "Draft angle"}
         isAngle(draftDefinition.angle, ANGLE_STRICT_90_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         draftDefinition.pullDirection is boolean;
 
         annotation {"Name" : "Tangent propagation", "Default" : true}

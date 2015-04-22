@@ -83,7 +83,7 @@ export enum BodyType
     SOLID,
     SHEET,
     WIRE,
-    ACORN
+    POINT
 }
 
 export enum ConstructionObject
@@ -308,7 +308,23 @@ export function qGeometry(subquery is Query, geometryType is GeometryType) retur
 
 export function qBodyType(subquery is Query, bodyType is BodyType) returns Query
 {
-    return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyType, "subquery" : subquery } as Query;
+    return qBodyType(subquery, [bodyType]);
+}
+
+export function qBodyType(subquery is Query, bodyTypes is array) returns Query
+precondition
+{
+    for (var el in bodyTypes)
+    {
+        el is BodyType;
+    }
+}
+{
+    if (subquery.queryType == QueryType.EVERYTHING) {
+        subquery.bodyType = bodyTypes;
+        return subquery;
+    }
+    return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyTypes, "subquery" : subquery } as Query;
 }
 // ===================================== Geometry matching Queries =====================================
 /* Not done yet

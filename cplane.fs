@@ -33,7 +33,7 @@ const coincidentPointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage      = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage    = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
-annotation {"Feature Type Name" : "Plane"}
+annotation {"Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY"}
 export const cPlane = defineFeature(function(context is Context, id is Id, cplaneDefinition is map)
     precondition
     {
@@ -50,7 +50,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             annotation {"Name" : "Offset distance"}
             isLength(cplaneDefinition.offset, PLANE_OFFSET_BOUNDS);
 
-            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
             cplaneDefinition.oppositeDirection is boolean;
         }
 
@@ -66,7 +66,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
             cplaneDefinition.flipAlignment is boolean;
         }
 
-        annotation {"Name" : "Display size", "UIHint" : "AlwaysHidden"}
+        annotation {"Name" : "Display size", "UIHint" : "ALWAYS_HIDDEN"}
         isLength(cplaneDefinition.size, PLANE_SIZE_BOUNDS);
     }
     //============================ Body =============================

@@ -15,7 +15,9 @@ export enum TransformType
     annotation {"Name" : "Rotate"}
     ROTATION,
     annotation {"Name" : "Copy in place"}
-    COPY
+    COPY,
+    annotation {"Name" : "Scale uniformly"}
+    SCALE_UNIFORMLY
 }
 
 /* Manipulator names */
@@ -85,7 +87,7 @@ precondition
 
     if(definition.transformType == TransformType.TRANSLATION_ENTITY)
     {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         definition.oppositeDirectionEntity is boolean;
     }
 
@@ -112,6 +114,11 @@ precondition
         annotation {"Name" : "Distance"}
         isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
     }
+    else if(definition.transformType == TransformType.SCALE_UNIFORMLY)
+    {
+        annotation {"Name" : "Scale"}
+        isReal(definition.scale, SCALE_BOUNDS);
+    }
 
     if(definition.transformType == TransformType.ROTATION)
     {
@@ -122,7 +129,7 @@ precondition
     if(definition.transformType == TransformType.ROTATION ||
        definition.transformType == TransformType.TRANSLATION_DISTANCE)
     {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         definition.oppositeDirection is boolean;
     }
 
@@ -142,6 +149,14 @@ precondition
     {
         annotation {"Name" : "Copy part"}
         definition.makeCopy is boolean;
+    }
+
+    if(definition.transformType == TransformType.SCALE_UNIFORMLY)
+    {
+        annotation {"Name" : "Point",
+                    "Filter": EntityType.VERTEX,
+                    "MaxNumberOfPicks" : 1}
+        definition.scalePoint is Query;
     }
 }
 {
@@ -284,6 +299,19 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
         }
 
+        if(transformType == TransformType.SCALE_UNIFORMLY)
+        {
+
+            var matrix = identityMatrix(3) * definition.scale;
+            var target = definition.entities;
+
+            var centerPointResult = evVertexPoint(context, { "vertex" : definition.scalePoint });
+            if(reportFeatureError(context, id, centerPointResult.error, ["scalePoint"]))
+                return;
+
+            var centerPoint = centerPointResult.result;
+            transformMatrix = transform(matrix, centerPoint - matrix * centerPoint);
+        }
         /* Reversal for rotation and 3D translation is handled above.
            Reversal is not applicable to copy. */
         if ((transformType == TransformType.TRANSLATION_ENTITY &&
@@ -306,7 +334,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                         { "bodies" : definition.entities,
                           "transform" : transformMatrix });
         }
-    }, { oppositeDirection : false });
+    }, { oppositeDirection : false, scale : 1.0 });
 
 function extractOffset(input is map, axis is string)
 {
