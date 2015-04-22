@@ -24,7 +24,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     precondition
     {
         annotation {"Name" : "Faces",
-                    "UIHint" : "ShowCreateSelection",
+                    "UIHint" : "SHOW_CREATE_SELECTION",
                     "Filter": EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
         definition.moveFaces is Query;
 
@@ -58,7 +58,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             isLength(definition.offsetDistance, MOVE_FACE_OFFSET_BOUNDS);
         }
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
         definition.oppositeDirection is boolean;
 
         annotation {"Name" : "Reapply fillet", "Default" : true}

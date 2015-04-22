@@ -56,7 +56,7 @@ export const modifyFace = defineFeature(function(context is Context, id is Id, d
 
             if(definition.modifyFaceType != ModifyFaceType.CONCENTRIC)
             {
-                annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
                 definition.oppositeDirection is boolean;
             }
         }

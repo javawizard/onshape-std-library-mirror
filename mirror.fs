@@ -9,15 +9,15 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
         annotation {"Name" : "Face mirror", "Default" : false}
         mirrorDefinition.isFaceMirror is boolean;
 
-        if (mirrorDefinition.isFaceMirror)
-        {
-            annotation {"Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-            mirrorDefinition.faces is Query;
-        }
-        else
+        if (!mirrorDefinition.isFaceMirror)
         {
             annotation {"Name" : "Entities to mirror", "Filter" : EntityType.BODY }
             mirrorDefinition.entities is Query;
+        }
+        else
+        {
+            annotation {"Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            mirrorDefinition.faces is Query;
         }
 
         annotation {"Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1}

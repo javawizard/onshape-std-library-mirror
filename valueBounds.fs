@@ -232,6 +232,13 @@ export const FILLET_RHO_BOUNDS =
     (unitless) : [0.0, 0.5, 0.99999]
 } as RealBoundSpec;
 
+export const SCALE_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 1e9,
+    (unitless) : [.0001, 1, 1e5]
+} as RealBoundSpec;
+
 export const HELIX_TURN_BOUNDS =
 {
     "min"      : 0,

@@ -52,7 +52,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
 
         if (extrudeDefinition.endBound != BoundingType.SYMMETRIC )
         {
-            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
             extrudeDefinition.oppositeDirection is boolean;
         }
 

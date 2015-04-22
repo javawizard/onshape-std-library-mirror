@@ -25,16 +25,16 @@ precondition
 {
     var definition = {  "defaultType" : defaultType,
                         "size"        : size
-                    };
+                     };
 
     startFeature(context, id, definition);
     var origin = vector(0, 0, 0) * meter;
     if(defaultType == DefaultPlaneType.XY)
-      definition.plane = plane(origin, vector(0, 0, 1), vector(1, 0, 0));
+        definition.plane = plane(origin, vector(0, 0, 1), vector(1, 0, 0));
     if(defaultType == DefaultPlaneType.YZ)
-      definition.plane = plane(origin, vector(1, 0, 0), vector(0, 1, 0));
+        definition.plane = plane(origin, vector(1, 0, 0), vector(0, 1, 0));
     if(defaultType == DefaultPlaneType.XZ)
-      definition.plane = plane(origin, vector(0, -1, 0), vector(1, 0, 0));
+        definition.plane = plane(origin, vector(0, -1, 0), vector(1, 0, 0));
     opPlane(context, id, definition);
     endFeature(context, id);
 }
@@ -88,6 +88,31 @@ export predicate canBeBuildFunction(value)
 {
     value is function;
 }
+
+annotation {"Feature Type Name" : "Import Derived"}
+export const importDerived = defineFeature(function(context is Context, id is Id, importDefinition is map)
+    precondition
+    {
+        annotation {"Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN"}
+        importDefinition.parts is Query;
+        annotation {"UIHint" : "ALWAYS_HIDDEN"}
+        importDefinition.buildFunction is BuildFunction;
+    }
+    {
+        var otherContext = importDefinition.buildFunction();
+        if (otherContext != undefined)
+        {
+            var deleteDefinition = {};
+            deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), importDefinition.parts);
+            deleteBodies(otherContext, id + "delete", deleteDefinition);
+
+            var mergeDefinition = importDefinition; // to pass such general parameters as asVersion
+            mergeDefinition.contextFrom = otherContext;
+            @mergeContexts(context, id + "merge", mergeDefinition);
+        }
+    });
+
+
 
 export predicate isAnything(value) // used to create a generic feature parameter that can be any featurescript expression
 {

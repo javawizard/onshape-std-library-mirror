@@ -236,6 +236,12 @@ export function atan2(value1 is number, value2 is number) returns ValueWithUnits
     return @atan2(value1, value2) * radian;
 }
 
+export function atan2(value1 is ValueWithUnits, value2 is ValueWithUnits) returns ValueWithUnits
+precondition value1.units == value2.units;
+{
+    return @atan2(value1.value, value2.value) * radian;
+}
+
 export function toString(value is ValueWithUnits) returns string
 {
     var result = value.value ~ "";

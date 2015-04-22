@@ -35,7 +35,7 @@ export const constraintFace = defineFeature(function(context is Context, id is I
             annotation {"Name" : "Offset distance"}
             isLength(definition.offset, CONSTRAINT_FACE_OFFSET_BOUNDS);
 
-            annotation {"Name" : "Opposite direction", "UIHint" : "OppositeDirection"}
+            annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
             definition.oppositeDirection is boolean;
         }
 

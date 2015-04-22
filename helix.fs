@@ -22,7 +22,7 @@ export enum Direction
     CCW
 }
 
-annotation {"Feature Type Name" : "Helix"}
+annotation {"Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY"}
 export const helix = defineFeature(function(context is Context, id is Id, helixDefinition is map)
     precondition
     {

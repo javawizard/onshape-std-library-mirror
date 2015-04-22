@@ -61,7 +61,7 @@ export predicate canBeSketch(value)
     value is builtin; //TODO: have a builtin call for verification
 }
 
-annotation {"Feature Type Name" : "Sketch"}
+annotation {"Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY"}
 export function newSketch(context is Context, id is Id, value is map) returns Sketch
 precondition
 {
@@ -143,6 +143,20 @@ precondition
     return @skCircle(sketch, circleId, value);
 }
 
+//adds an ellipse, returns map {centerId:string}
+export function skEllipse(sketch is Sketch, ellipseId is string, value is map)
+precondition
+{
+    value.center is undefined || is2dPoint(value.center);
+    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.construction is undefined || value.construction is boolean;
+}
+{
+    return @skEllipse(sketch, ellipseId, value);
+}
+
 //adds an arc, returns map {startId:string, endId:string}
 export function skArc(sketch is Sketch, arcId is string, value is map)
 precondition
@@ -154,6 +168,22 @@ precondition
 }
 {
     return @skArc(sketch, arcId, value);
+}
+
+//adds an arc, returns map {startId:string, endId:string}
+export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
+precondition
+{
+   value.center is undefined || is2dPoint(value.center);
+   value.majorAxis is undefined || is2dPoint(value.majorAxis);
+   value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+   value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+   value.startParameter is undefined || value.startParameter is number;
+   value.endParameter is undefined || value.endParameter is number;
+   value.construction is undefined || value.construction is boolean;
+}
+{
+    return @skEllipticalArc(sketch, arcId, value);
 }
 
 //adds a closed spline
@@ -202,6 +232,12 @@ precondition
     value.constraintType is ConstraintType;
 }
 {
+    // If the units are wrong, make sure that the constraint is in error
+    if (value.length != undefined && !isLength(value.length))
+        value.length = undefined;
+    if (value.angle != undefined && !isAngle(value.angle))
+        value.angle = undefined;
+
     return @skConstraint(sketch, constraintId, value);
 }
 
