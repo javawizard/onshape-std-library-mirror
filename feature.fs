@@ -102,6 +102,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         var otherContext = importDefinition.buildFunction();
         if (otherContext != undefined)
         {
+            if (size(evaluateQuery(otherContext, importDefinition.parts)) == 0 )
+            {
+                reportFeatureError(context, id, ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
+                    return;
+            }
             var deleteDefinition = {};
             deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), importDefinition.parts);
             deleteBodies(otherContext, id + "delete", deleteDefinition);
@@ -109,10 +114,9 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             var mergeDefinition = importDefinition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;
             @mergeContexts(context, id + "merge", mergeDefinition);
+            processSubfeatureStatus(context, id + "merge", id);
         }
     });
-
-
 
 export predicate isAnything(value) // used to create a generic feature parameter that can be any featurescript expression
 {

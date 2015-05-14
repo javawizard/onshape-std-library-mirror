@@ -5,7 +5,7 @@ export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
-export const CURRENT_VERSION = FeatureScriptVersionNumber.V126_DCM_VERSION_64_3_1;
+export const CURRENT_VERSION = FeatureScriptVersionNumber.V137_VERSION_HISTORY_ENTRY;
 
 //====================== Context ========================
 
@@ -200,6 +200,11 @@ export function opMateConnector(context is Context, id is Id, definition is map)
 export function opThicken(context is Context, id is Id, definition is map)
 {
   return @opThicken(context, id, definition);
+}
+
+export function opLoft(context is Context, id is Id, definition is map)
+{
+  return @opLoft(context, id, definition);
 }
 
 // =========================== defineFeature ===========================

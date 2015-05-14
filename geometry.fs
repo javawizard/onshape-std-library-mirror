@@ -26,6 +26,7 @@ export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/sectionpart.fs", version : "");
 export import(path : "onshape/std/helix.fs", version : "");
 export import(path : "onshape/std/thicken.fs", version : "");
+export import(path : "onshape/std/loft.fs", version : "");
 export import(path : "onshape/std/variable.fs", version : "");
 
 //start model context
