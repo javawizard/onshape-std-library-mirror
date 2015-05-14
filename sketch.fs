@@ -30,7 +30,11 @@ export enum ConstraintType
     OFFSET,
     CIRCULAR_PATTERN,
     PIERCE,
-    LINEAR_PATTERN
+    LINEAR_PATTERN,
+    MAJOR_DIAMETER,
+    MINOR_DIAMETER,
+    QUADRANT,
+    DIAMETER
 }
 
 export enum DimensionDirection
@@ -129,6 +133,18 @@ precondition
 }
 {
     return @skLineSegment(sketch, lineId, value);
+}
+
+// Creates a text rectangle.
+export function skText(sketch is Sketch, textId is string, value is map)
+precondition
+{
+    value.fontName is string;
+    value.text is string;
+    value.construction is undefined || value.construction is boolean;
+}
+{
+    return @skText(sketch, textId, value);
 }
 
 //adds a circle, returns map {centerId:string}

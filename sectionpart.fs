@@ -1,4 +1,5 @@
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/evaluate.fs", version : "");
 
 //Section Part Feature
 export const sectionPart = defineFeature(function(context is Context, id is Id, sectionPartDefinition is map)
@@ -31,9 +32,19 @@ export const sectionPart = defineFeature(function(context is Context, id is Id, 
         processSubfeatureStatus(context, splitPartId, id);
 
         // Delete parts in front of plane
-        var deleteBodiesId = id + "deleteBody";
         var splitBodies = qBodySplitBy(splitPartId, false);
-        opDeleteBodies(context, deleteBodiesId, {"entities" : qUnion([splitBodies, planeTool])});
+        var bodiesToDelete = qUnion([splitBodies, planeTool]);
+        var transform = planeToWorld(sectionPartDefinition.plane);
+        var boxResult = evBox3d(context, { 'topology' : sectionPartDefinition.targets, 'cSys' : transform} );
+        if (boxResult.error == undefined) {
+            if (stripUnits(boxResult.result.minCorner[2]) > -TOLERANCE.zeroLength) {
+                bodiesToDelete = qUnion([splitBodies, planeTool, sectionPartDefinition.targets]);
+            }
+        }
+
+        // Delete parts in front of plane
+        var deleteBodiesId = id + "deleteBody";
+        opDeleteBodies(context, deleteBodiesId, {"entities" : bodiesToDelete});
         processSubfeatureStatus(context, deleteBodiesId, id);
     });
 
