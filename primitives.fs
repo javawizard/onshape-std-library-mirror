@@ -99,7 +99,7 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
             var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : plane});
 
             skCircle(sketch, "circle1",
-                     { "center" : vector(0, 0) * meter,
+                     { "center" : worldToSketch(plane, definition.bottomCenter),
                        "radius" : definition.radius
                      });
 
@@ -136,11 +136,12 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
             var plane = plane(definition.bottomCenter, normal, crossProduct(dir, normal));
             var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : plane});
             var height = norm(definition.topCenter - definition.bottomCenter);
+            var base = worldToSketch(plane, definition.bottomCenter);
             {
-                var points = [vector(0, 0) * meter,
-                              vector(0 * meter, height),
-                              vector(definition.topRadius, height),
-                              vector(definition.bottomRadius, 0 * meter)];
+                var points = [base,
+                              base + vector(0 * meter, height),
+                              base + vector(definition.topRadius, height),
+                              base + vector(definition.bottomRadius, 0 * meter)];
                 for(var i = 0; i < size(points); i += 1)
                 {
                     skLineSegment(sketch, "line." ~ i,

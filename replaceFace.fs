@@ -1,9 +1,9 @@
-export import(path: "onshape/std/geomUtils.fs", version : "");
-export import(path: "onshape/std/evaluate.fs", version : "");
+export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 
-annotation {"Feature Type Name" : "Replace face", "Manipulator Change Function" : "manipulatorChanged" }
+annotation {"Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -65,15 +65,12 @@ function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
     return evFaceTangentPlane(context, {"face" : entitiesQuery, "parameter" : vector(0.5, 0.5)}).result;
 }
 
-export function manipulatorChanged(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map
-precondition
-{
-}
+export function replaceFaceManipulatorChange(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map
 {
     if (newManipulators[OFFSET_MANIPULATOR] != undefined)
     {
-      replaceFaceDefinition.oppositeDirection = newManipulators[OFFSET_MANIPULATOR].offset < 0 * meter;
-      replaceFaceDefinition.offset = abs(newManipulators[OFFSET_MANIPULATOR].offset);
+        replaceFaceDefinition.oppositeDirection = newManipulators[OFFSET_MANIPULATOR].offset < 0 * meter;
+        replaceFaceDefinition.offset = abs(newManipulators[OFFSET_MANIPULATOR].offset);
     }
 
     return replaceFaceDefinition;

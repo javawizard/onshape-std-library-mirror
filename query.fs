@@ -3,8 +3,9 @@ export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 
 
 
-// When evaluated all the queries except for UNION order their output by deterministic ids
+// When evaluated all the queries except for those listed order their output by deterministic ids
 // UNION query preserves order of sub-queries.
+// COEDGE query preserves order based on deterministic id of the face, followed by the edge
 export enum QueryType
 {
     //Special
@@ -53,7 +54,8 @@ export enum QueryType
     CLOSEST_TO, //point
     FARTHEST_ALONG, //direction
     LARGEST,
-    SMALLEST
+    SMALLEST,
+    COEDGE
 }
 // Following enums can be used in query filters
 export enum EntityType
@@ -371,6 +373,11 @@ export function qSketchRegion(featureId is Id) returns Query
 export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) returns Query
 {
     return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : filterInnerLoops } as Query;
+}
+
+export function qCoEdge(faceQuery is Query, edgeQuery is Query) returns Query
+{
+    return { "queryType" : QueryType.COEDGE, "faceQuery" : faceQuery, "edgeQuery" : edgeQuery } as Query;
 }
 
 // find fillet faces of radius equal to , less than and equal to, greater than and equal to the

@@ -5,7 +5,7 @@ export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
-export const CURRENT_VERSION = FeatureScriptVersionNumber.V137_VERSION_HISTORY_ENTRY;
+export const CURRENT_VERSION = FeatureScriptVersionNumber.V145_REMOVE_SCAR_EDGES;
 
 //====================== Context ========================
 
