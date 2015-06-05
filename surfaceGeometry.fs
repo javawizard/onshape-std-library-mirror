@@ -80,6 +80,15 @@ export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vecto
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal), worldPoint);
 }
 
+/* Return the projection of a point onto a sketch, in sketch coordinates.
+   The origin of a sketch is the projection of the world origin onto the
+   sketch plane. */
+export function worldToSketch(plane is Plane, worldPoint is Vector) returns Vector
+{
+    return vector(dotProduct(worldPoint, plane.x),
+                  dotProduct(worldPoint, crossProduct(plane.normal, plane.x)));
+}
+
 export function worldToPlane(plane is Plane) returns Transform
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal));
@@ -241,3 +250,4 @@ export function toString(value is Sphere) returns string
     var str = "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
     return str;
 }
+
