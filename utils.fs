@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 //simple utilities
 
 export function isIn(value, container is array) returns boolean
@@ -154,5 +155,10 @@ export function mapLookup(m is map, keys is array)
         result = result[key];
     }
     return result;
+}
+
+export function libraryLanguageVersion()
+{
+    return @getLanguageVersion();
 }
 

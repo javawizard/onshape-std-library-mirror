@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");

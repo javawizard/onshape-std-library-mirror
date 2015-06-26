@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/extrude.fs", version : "");
 export import(path : "onshape/std/revolve.fs", version : "");

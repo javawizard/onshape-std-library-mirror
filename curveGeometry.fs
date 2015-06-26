@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path:"onshape/std/transform.fs", version : "");
 export import(path:"onshape/std/coordSystem.fs", version : "");
 export import(path : "onshape/std/curvetype.gen.fs", version : "");

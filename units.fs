@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 //4 * inch is how four inches are expressed

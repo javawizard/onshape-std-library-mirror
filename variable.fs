@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 
 export enum AssignmentType

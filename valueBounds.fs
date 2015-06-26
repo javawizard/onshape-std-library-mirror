@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/units.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
 

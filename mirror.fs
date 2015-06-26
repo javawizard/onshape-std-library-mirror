@@ -1,4 +1,6 @@
+FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path: "onshape/std/boolean.fs", version : "");
 export import(path: "onshape/std/evaluate.fs", version : "");
 export import(path: "onshape/std/transform.fs", version : "");
 
@@ -11,6 +13,9 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
 
         if (!mirrorDefinition.isFaceMirror)
         {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepTypePredicate(mirrorDefinition);
+
             annotation {"Name" : "Entities to mirror", "Filter" : EntityType.BODY }
             mirrorDefinition.entities is Query;
         }
@@ -22,6 +27,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
 
         annotation {"Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1}
         mirrorDefinition.mirrorPlane is Query;
+
+        if (!mirrorDefinition.isFaceMirror)
+        {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepScopePredicate(mirrorDefinition);
+        }
     }
     {
         const isFaceMirror = mirrorDefinition.isFaceMirror;
@@ -47,9 +58,28 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
         }
 
         var transform = mirrorAcross(planeResult.result);
-        opPattern(context, id, {"entities" : mirrorDefinition.entities, "transforms" : [transform], "instanceNames" : ["1"],
-                                notFoundErrorKey("entities") :  ErrorStringEnum.MIRROR_SELECT_PARTS });
-        if(getFeatureError(context, id).result != undefined)
-            reportFeatureError(context, id, isFaceMirror ? ErrorStringEnum.MIRROR_FACE_FAILED : ErrorStringEnum.MIRROR_BODY_FAILED);
-    }, { isFaceMirror : false });
+        var patternDefinition = {
+            "entities" : mirrorDefinition.entities,
+            "transforms" : [transform],
+            "instanceNames" : ["1"],
+            notFoundErrorKey("entities") :  ErrorStringEnum.MIRROR_SELECT_PARTS };
+        opPattern(context, id, patternDefinition);
+
+        if (getFeatureError(context, id).result != undefined)
+        {
+            reportFeatureError(context, id, mirrorDefinition.isFaceMirror ? ErrorStringEnum.MIRROR_FACE_FAILED : ErrorStringEnum.MIRROR_BODY_FAILED);
+            return;
+        }
+
+        // Perform any booleans, if required
+        if (!mirrorDefinition.isFaceMirror)
+        {
+            if (!processNewBodyIfNeeded(context, id, mergeMaps(mirrorDefinition, {"seed" : mirrorDefinition.entities})))
+            {
+                var errorId = id + "boolError";
+                opPattern(context, errorId, patternDefinition);
+                setBooleanErrorEntities(context, id, errorId);
+            }
+        }
+    }, { isFaceMirror : false,  operationType : NewBodyOperationType.NEW });
 

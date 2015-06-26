@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 // Functions for constructing queries
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 

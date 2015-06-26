@@ -1,3 +1,4 @@
+FeatureScript ✨; /* Automatically generated version */
 //Pretty printing and toString methods
 
 export function toString(value) returns string
