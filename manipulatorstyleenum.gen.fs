@@ -1,11 +1,10 @@
 FeatureScript 146;
 /* Automatically generated file -- DO NOT EDIT */
 
-export enum RadiusDisplay
+export enum ManipulatorStyleEnum
 {
-    NONE,
-    RADIAL,
-    DIAMETRAL
+    DEFAULT,
+    SECONDARY
 }
 
 

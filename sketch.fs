@@ -1,3 +1,4 @@
+FeatureScript 156; /* Automatically generated version */
 // wrappers around geometric operations
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
@@ -5,6 +6,7 @@ export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
 export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "");
 
 
 export enum ConstraintType
@@ -34,7 +36,8 @@ export enum ConstraintType
     MAJOR_DIAMETER,
     MINOR_DIAMETER,
     QUADRANT,
-    DIAMETER
+    DIAMETER,
+    SILHOUETTED
 }
 
 export enum DimensionDirection

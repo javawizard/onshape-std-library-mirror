@@ -1,11 +1,10 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
-
-export const CURRENT_VERSION = FeatureScriptVersionNumber.V145_REMOVE_SCAR_EDGES;
 
 //====================== Context ========================
 
@@ -18,23 +17,16 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(CURRENT_VERSION) as Context;
+   return @newContext(FeatureScriptVersionNumberCurrent) as Context;
 }
 
 //====================== Version compatibility ========================
 
-/* Return false if a feature description [definition] contains
-   a version number less than version [introduced] that changed behavior. */
-export function isAtVersionOrLater(introduced is FeatureScriptVersionNumber,
-                                   definition is map) returns boolean
+/* Return false if the active feature is running at a version number
+   at least as new as [introduced] that changed behavior. */
+export function isAtVersionOrLater(context is Context, introduced is FeatureScriptVersionNumber) returns boolean
 {
-    const asVersion = definition.asVersion;
-    if (! (asVersion is FeatureScriptVersionNumber))
-        return true;
-    /* Map literals evaluate left to right. */
-    for (var result in { (asVersion) : false, (introduced) : true })
-        return result.value;
-    return true; /* can't happen, but code analysis tools might complain */
+    return @isAtVersionOrLater(context, introduced);
 }
 
 //====================== Query evaluation ========================

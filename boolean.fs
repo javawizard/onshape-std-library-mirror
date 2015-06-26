@@ -1,3 +1,4 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
@@ -145,6 +146,15 @@ export enum NewBodyOperationType
     INTERSECT
 }
 
+export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
+{
+    return {
+        NewBodyOperationType.ADD       : BooleanOperationType.UNION,
+        NewBodyOperationType.REMOVE    : BooleanOperationType.SUBTRACTION,
+        NewBodyOperationType.INTERSECT : BooleanOperationType.SUBTRACT_COMPLEMENT
+    }[operationType];
+}
+
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
     annotation {"Name" : "Result body operation type"}
@@ -174,21 +184,67 @@ export predicate booleanStepPredicate(booleanDefinition is map)
     booleanStepScopePredicate(booleanDefinition);
 }
 
+/** Constructs a map with tools and targets queries for boolean operations. For operations where
+ * seed needs to be part of the tools for the boolean, should set the "seed" parameter in the
+ * definition.
+ *
+ * Arguments:
+ * @param id: identifier of the tools feature
+ * @param definition:
+ *    .seed <Query>: original input to the seed function (optional)
+ *    .operationType <NewBodyOperationType>: one of "ADD", "REMOVE", "INTERSECT"
+ *    .defaultScope <boolean>: if true, targets are set to everything except the tools
+ *    .booleanScope <Query>: is used as the targets if !defaultScope
+ * @return map
+ *    .targets <Query>: targets to use
+ *    .tools <Query>: tools to use
+ */
+function subfeatureToolsTargets(context is Context, id is Id, definition is map) returns map
+{
+    // Fill defaults
+    definition = mergeMaps({ "seed" : qNothing(), "defaultScope" : true}, definition);
+
+    var output = {};
+    var resultQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
+    var defaultTools = qUnion([definition.seed, resultQuery]);
+
+    output.tools = defaultTools;
+    output.targets = (definition.defaultScope != false) ? qBodyType(qEverything(EntityType.BODY), BodyType.SOLID) : definition.booleanScope;
+    output.targets = qSubtraction(output.targets, defaultTools);
+
+    // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.
+    // (This logic comes from the fact that grouping of tools/targets has a significant effect on output.)
+    if (definition.operationType == NewBodyOperationType.ADD &&
+        size(evaluateQuery(context, output.targets)) <= 0)
+    {
+        output.tools = resultQuery;
+        output.targets = definition.seed;
+    }
+
+    return output;
+}
+
+/** Performs a boolean operation (optionally).
+ *
+ * Arguments:
+ * @param id: identifier of the main feature
+ * @param tools: query to be used for the tools
+ * @param definition:
+ *     .operationType <NewBodyOperationType>: if "New", nothing is done
+ *     .defaultScope <boolean>: if true, indicates merge scope of "everything else"
+ *     .booleanScope <Query>: is used as the targets if !defaultScope
+ *     .seed <Query>: {if set, will be as a rule included in the tool section of the boolean,
+ *                     (see subfeatureToolsTargets)}
+ * @return {This function returns a logical boolean to indicate if, in the case of "false",
+ *          the error geometry should be shown to the user. This can happen both when
+ *          input is malformed and when the boolean itself fails.}
+ */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map) returns boolean
 {
-    // This function returns a logical boolean to indicate if the boolean operation was successful
-    // If there is a problem with the inputs it will return true, if everything is fine it will return true
-    // If the boolean can't be done it will return false
-
     if( !featureHasError(context, id) && definition.operationType != NewBodyOperationType.NEW)
     {
-        var booleanDefinition = {};
-        booleanDefinition.operationType = {
-                                              NewBodyOperationType.ADD       : BooleanOperationType.UNION,
-                                              NewBodyOperationType.REMOVE    : BooleanOperationType.SUBTRACTION,
-                                              NewBodyOperationType.INTERSECT : BooleanOperationType.SUBTRACT_COMPLEMENT
-                                          }[definition.operationType];
-        booleanDefinition.tools = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
+        var booleanDefinition = subfeatureToolsTargets(context, id, definition);
+        booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
         if ( size(evaluateQuery(context, booleanDefinition.tools)) == 0 )
         {
             //TODO : this would probably be better to block on the UI, but that would be something
@@ -197,20 +253,12 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
             return true;
         }
 
-        if (definition.defaultScope != false)
-        {
-            booleanDefinition.targets = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), booleanDefinition.tools);
-        }
-        else
-        {
-            booleanDefinition.targets = definition.booleanScope;
-        }
-
-        if (size(evaluateQuery(context, booleanDefinition.targets)) > 0 )
+        if (size(evaluateQuery(context, booleanDefinition.targets)) > 0)
         {
             booleanDefinition.targetsAndToolsNeedGrouping = true;
-            booleanBodies(context, id + "boolean", booleanDefinition);
-            return !processSubfeatureStatus(context, id + "boolean", id);
+            const boolId = id + "boolean";
+            booleanBodies(context, boolId, booleanDefinition);
+            return !processSubfeatureStatus(context, boolId, id);
         }
         else
         {

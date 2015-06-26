@@ -1,3 +1,4 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
@@ -173,7 +174,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             1. Transform of no part was not an error (bug compatibility)
             2. Null transform was not an error (behavior change)
          */
-        var validateInputs = isAtVersionOrLater(FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING, definition);
+        var validateInputs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING);
 
         if(validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
         {

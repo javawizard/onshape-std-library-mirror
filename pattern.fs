@@ -1,3 +1,4 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path: "onshape/std/geomUtils.fs", version : "");
 export import(path: "onshape/std/boolean.fs", version : "");
 export import(path: "onshape/std/evaluate.fs", version : "");
@@ -43,6 +44,9 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         if (!patternDefinition.isFacePattern)
         {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepTypePredicate(patternDefinition);
+
             annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             patternDefinition.entities is Query;
         }
@@ -84,6 +88,11 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
             annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
             patternDefinition.oppositeDirectionTwo is boolean;
+        }
+        if (!patternDefinition.isFacePattern)
+        {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepScopePredicate(patternDefinition);
         }
     }
     {
@@ -159,7 +168,10 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         patternDefinition.instanceNames = instanceNames;
 
         opPattern(context, id, patternDefinition);
-    }, { isFacePattern : true, hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
+
+        processPatternBooleansIfNeeded(context, id, patternDefinition);
+    }, { isFacePattern : true,  operationType : NewBodyOperationType.NEW,
+         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
 
 //======================================================================================
 //CircularPattern Feature
@@ -170,16 +182,19 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation {"Name" : "Face pattern", "Default" : false}
         patternDefinition.isFacePattern is boolean;
 
-        if(patternDefinition.isFacePattern)
+        if (!patternDefinition.isFacePattern)
+        {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepTypePredicate(patternDefinition);
+
+            annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY}
+            patternDefinition.entities is Query;
+        }
+        else
         {
             annotation {"Name" : "Faces to pattern",
                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO}
             patternDefinition.faces is Query;
-        }
-        else
-        {
-            annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY}
-            patternDefinition.entities is Query;
         }
 
         annotation {"Name" : "Axis of pattern", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1}
@@ -197,6 +212,11 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation {"Name" : "Equal spacing"}
         patternDefinition.equalSpace is boolean;
 
+        if (!patternDefinition.isFacePattern)
+        {
+            // TODO(mshugrina): reenable in 1.33
+            // booleanStepScopePredicate(patternDefinition);
+        }
     }
     {
         if(patternDefinition.isFacePattern)
@@ -244,7 +264,29 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         patternDefinition.instanceNames = instanceNames;
 
         opPattern(context, id, patternDefinition);
-    }, { isFacePattern : true, oppositeDirection : false, equalSpace : false });
+
+        processPatternBooleansIfNeeded(context, id, patternDefinition);
+    }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
+         oppositeDirection : false, equalSpace : false });
+
+
+function processPatternBooleansIfNeeded(context is Context, id is Id, patternDefinition is map)
+{
+    if (getFeatureError(context, id).result != undefined)
+    {
+        return;
+    }
+
+    if (!patternDefinition.isFacePattern)
+    {
+        if (!processNewBodyIfNeeded(context, id, mergeMaps(patternDefinition, {"seed" : patternDefinition.entities})))
+        {
+            var errorId = id + "boolError";
+            opPattern(context, errorId, patternDefinition);
+            setBooleanErrorEntities(context, id, errorId);
+        }
+    }
+}
 
 function checkInput(context is Context, id is Id, patternDefinition is map) returns boolean
 {

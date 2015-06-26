@@ -1,8 +1,10 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
+export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "");
 
 export enum BoundingType
 {
@@ -10,6 +12,20 @@ export enum BoundingType
     BLIND,
     annotation {"Name" : "Symmetric"}
     SYMMETRIC,
+    annotation {"Name" : "Up to next"}
+    UP_TO_NEXT,
+    annotation {"Name" : "Up to surface"}
+    UP_TO_SURFACE,
+    annotation {"Name" : "Up to part"}
+    UP_TO_BODY,
+    annotation {"Name" : "Through all"}
+    THROUGH_ALL
+}
+
+export enum SecondDirectionBoundingType
+{
+    annotation {"Name" : "Blind"}
+    BLIND,
     annotation {"Name" : "Up to next"}
     UP_TO_NEXT,
     annotation {"Name" : "Up to surface"}
@@ -72,6 +88,35 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
             isLength(extrudeDefinition.depth, LENGTH_BOUNDS);
         }
 
+        if (extrudeDefinition.endBound != BoundingType.SYMMETRIC)
+        {
+            annotation {"Name": "Second end position"}
+            extrudeDefinition.hasSecondDirection is boolean;
+
+            if (extrudeDefinition.hasSecondDirection)
+            {
+                annotation {"Name" : "End type"}
+                extrudeDefinition.secondDirectionBound is SecondDirectionBoundingType;
+
+                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true}
+                extrudeDefinition.secondDirectionOppositeDirection is boolean;
+
+                if ( extrudeDefinition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE ||
+                    extrudeDefinition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY )
+                {
+                    annotation {"Name" : "Up to face, surface, or part",
+                        "Filter" : (EntityType.FACE || EntityType.BODY) && SketchObject.NO,
+                        "MaxNumberOfPicks" : 1}
+                    extrudeDefinition.secondDirectionBoundEntity is Query;
+                }
+
+                if (extrudeDefinition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
+                {
+                    annotation {"Name" : "Depth"}
+                    isLength(extrudeDefinition.secondDirectionDepth, LENGTH_BOUNDS);
+                }
+            }
+        }
         if (extrudeDefinition.bodyType != ToolBodyType.SURFACE)
         {
             booleanStepScopePredicate(extrudeDefinition);
@@ -115,6 +160,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
                 extrudeDefinition.direction *= -1;
         }
 
+        extrudeDefinition.isStartBoundOpposite = false;
+
         // ------------- Determine the bounds ---------------
         extrudeDefinition.startBound = BoundingType.BLIND;
         extrudeDefinition.startDepth = 0;
@@ -125,6 +172,22 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
             extrudeDefinition.endBound = BoundingType.BLIND;
             extrudeDefinition.startDepth = extrudeDefinition.depth * -0.5;
             extrudeDefinition.endDepth = extrudeDefinition.depth * 0.5;
+        }
+        else if (extrudeDefinition.hasSecondDirection)
+        {
+            // ------------- Check the second direction ---------------
+            extrudeDefinition.startBound = extrudeDefinition.secondDirectionBound as BoundingType;
+            extrudeDefinition.startBoundEntity = extrudeDefinition.secondDirectionBoundEntity;
+
+            if(extrudeDefinition.secondDirectionDepth != undefined &&
+               extrudeDefinition.secondDirectionDepth < 0 * meter)
+            {
+                extrudeDefinition.secondDirectionDepth *= -1;
+            }
+
+            extrudeDefinition.startDepth = extrudeDefinition.secondDirectionDepth;
+            if (extrudeDefinition.secondDirectionOppositeDirection != extrudeDefinition.oppositeDirection)
+                extrudeDefinition.isStartBoundOpposite = true;
         }
 
         // ------------- Perform the operation ---------------
@@ -143,7 +206,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
             }
         }
     }, { endBound : BoundingType.BLIND, oppositeDirection : false,
-         bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW });
+         bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
+         secondDirectionBound : SecondDirectionBoundingType.BLIND,
+         secondDirectionOppositeDirection : true, hasSecondDirection: false});
 
 function getEntitiesToUse(extrudeDefinition is map)
 {
@@ -179,18 +244,23 @@ function computeExtrudeAxis(context is Context, entity is Query)
 
 const DEPTH_MANIPULATOR = "depthManipulator";
 const FLIP_MANIPULATOR = "flipManipulator";
+const SECOND_DEPTH_MANIPULATOR = "secondDirectionDepthManipulator";
+const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
 
 function addExtrudeManipulator(context is Context, id is Id, extrudeDefinition is map, extrudeAxis is Line)
 {
     var usedEntities = getEntitiesToUse(extrudeDefinition);
 
-    if(extrudeDefinition.endBound != BoundingType.BLIND && extrudeDefinition.endBound != BoundingType.SYMMETRIC) {
+    if(extrudeDefinition.endBound != BoundingType.BLIND && extrudeDefinition.endBound != BoundingType.SYMMETRIC)
+    {
         addManipulators(context, id, { (FLIP_MANIPULATOR) :
                                        flipManipulator(extrudeAxis.origin,
                                            extrudeAxis.direction,
                                            extrudeDefinition.oppositeDirection,
                                            usedEntities) });
-    } else {
+    }
+    else
+    {
         var offset = extrudeDefinition.depth;
         if(extrudeDefinition.endBound == BoundingType.SYMMETRIC)
             offset *= 0.5;
@@ -202,27 +272,65 @@ function addExtrudeManipulator(context is Context, id is Id, extrudeDefinition i
                                            offset,
                                            usedEntities) });
     }
+
+    if (extrudeDefinition.hasSecondDirection && extrudeDefinition.endBound != BoundingType.SYMMETRIC)
+    {
+        if (extrudeDefinition.secondDirectionBound != SecondDirectionBoundingType.BLIND)
+        {
+            addManipulators(context, id, { (SECOND_FLIP_MANIPULATOR) :
+                flipManipulator(extrudeAxis.origin,
+                                extrudeAxis.direction,
+                                extrudeDefinition.secondDirectionOppositeDirection,
+                                usedEntities,
+                                ManipulatorStyleEnum.SECONDARY) });
+        }
+        else
+        {
+            var secondDirectionOffset = extrudeDefinition.secondDirectionDepth;
+            if (extrudeDefinition.secondDirectionOppositeDirection == true)
+                secondDirectionOffset *= -1;
+            addManipulators(context, id, { (SECOND_DEPTH_MANIPULATOR) :
+                linearManipulator(extrudeAxis.origin,
+                                  extrudeAxis.direction,
+                                  secondDirectionOffset,
+                                  usedEntities,
+                                  ManipulatorStyleEnum.SECONDARY) });
+        }
+    }
 }
 
 export function extrudeManipulatorChange(context is Context, extrudeDefinition is map, newManipulators is map) returns map
-precondition
 {
-    if (extrudeDefinition.endBound == BoundingType.BLIND || extrudeDefinition.endBound == BoundingType.SYMMETRIC) {
-        newManipulators[DEPTH_MANIPULATOR] is Manipulator;
-    } else {
-        newManipulators[FLIP_MANIPULATOR] is Manipulator;
-    }
-}
-{
-    if (extrudeDefinition.endBound == BoundingType.BLIND || extrudeDefinition.endBound == BoundingType.SYMMETRIC) {
+    if (newManipulators[DEPTH_MANIPULATOR] is map && (extrudeDefinition.endBound == BoundingType.BLIND ||
+                                                      extrudeDefinition.endBound == BoundingType.SYMMETRIC))
+    {
         var newOffset = newManipulators[DEPTH_MANIPULATOR].offset;
         if(extrudeDefinition.endBound == BoundingType.SYMMETRIC)
             newOffset *= 2;
         extrudeDefinition.oppositeDirection = newOffset < 0 * meter;
         extrudeDefinition.depth = abs(newOffset);
-    } else {
+    }
+    else if (newManipulators[FLIP_MANIPULATOR] is map && extrudeDefinition.endBound != BoundingType.BLIND &&
+               extrudeDefinition.endBound != BoundingType.SYMMETRIC){
         extrudeDefinition.oppositeDirection = newManipulators[FLIP_MANIPULATOR].flipped;
     }
+
+    if (extrudeDefinition.hasSecondDirection && extrudeDefinition.endBound != BoundingType.SYMMETRIC)
+    {
+        if (newManipulators[SECOND_DEPTH_MANIPULATOR] is map &&
+            extrudeDefinition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
+        {
+            var newSecondDirectionOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
+            extrudeDefinition.secondDirectionOppositeDirection = newSecondDirectionOffset < 0 * meter;
+            extrudeDefinition.secondDirectionDepth = abs(newSecondDirectionOffset);
+        }
+        else if (newManipulators[SECOND_FLIP_MANIPULATOR] is map &&
+                   extrudeDefinition.secondDirectionBound != SecondDirectionBoundingType.BLIND)
+        {
+            extrudeDefinition.secondDirectionOppositeDirection = newManipulators[SECOND_FLIP_MANIPULATOR].flipped;
+        }
+    }
+
     return extrudeDefinition;
 }
 
@@ -260,17 +368,17 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
 {
     var usedEntities = getEntitiesToUse(featureDefinition);
     var resolvedEntities = evaluateQuery(context, usedEntities);
-    if(@size(resolvedEntities) == 0)
+    if (@size(resolvedEntities) == 0)
     {
         return featureDefinition;
     }
     var extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
-    if(extrudeAxis == undefined)
+    if (extrudeAxis == undefined)
     {
         return featureDefinition;
     }
     var direction = extrudeAxis.direction;
-    if(featureDefinition.oppositeDirection == true)
+    if (featureDefinition.oppositeDirection == true)
         direction *= -1;
     if (featureDefinition.endBoundEntity is Query &&
         shouldFlipExtrudeDirection(context,

@@ -1,4 +1,6 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "");
 
 export enum ManipulatorType
 {
@@ -14,6 +16,7 @@ export predicate canBeManipulator(value)
 {
     value is map;
     value.manipulatorType is ManipulatorType;
+    value.style is undefined || value.style is ManipulatorStyleEnum;
     //Anything else is up to the specific kind
 }
 
@@ -28,7 +31,8 @@ precondition
     return { "manipulatorType" : ManipulatorType.LINEAR_3D,
              "base" : base,
              "offset" : offset,
-             "sources" : sources } as Manipulator;
+             "sources" : sources,
+             "style" : ManipulatorStyleEnum.DEFAULT } as Manipulator;
 }
 
 
@@ -38,6 +42,11 @@ export function linearManipulator(base is Vector, direction is Vector, offset is
 }
 
 export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits, sources) returns Manipulator
+{
+    return linearManipulator(base, direction, offset, sources, ManipulatorStyleEnum.DEFAULT);
+}
+
+export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits, sources, style is ManipulatorStyleEnum) returns Manipulator
 precondition
 {
     is3dLengthVector(base);
@@ -50,7 +59,8 @@ precondition
              "base" : base,
              "direction" : direction,
              "offset" : offset,
-             "sources" : sources } as Manipulator;
+             "sources" : sources,
+             "style" : style } as Manipulator;
 }
 
 export function angularManipulator(definition is map) returns Manipulator
@@ -80,6 +90,11 @@ export function flipManipulator(base is Vector, direction is Vector, flipped is 
 }
 
 export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, sources) returns Manipulator
+{
+    return flipManipulator(base, direction, flipped, sources, ManipulatorStyleEnum.DEFAULT);
+}
+
+export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, sources, style is ManipulatorStyleEnum) returns Manipulator
 precondition
 {
     is3dLengthVector(base);
@@ -91,7 +106,8 @@ precondition
                         "base" : base,
                         "direction" : direction,
                         "flipped" : flipped,
-                        "sources" : sources } as Manipulator;
+                        "sources" : sources,
+                        "style" : style } as Manipulator;
 }
 
 export function addManipulators(context is Context, id is Id, manipulators is map)

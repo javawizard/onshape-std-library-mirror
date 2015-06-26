@@ -1,3 +1,4 @@
+FeatureScript 156; /* Automatically generated version */
 export import(path:"onshape/std/coordSystem.fs", version : "");
 export import(path:"onshape/std/curveGeometry.fs", version : "");
 export import(path:"onshape/std/surfacetype.gen.fs", version : "");
