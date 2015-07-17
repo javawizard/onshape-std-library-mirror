@@ -1,4 +1,4 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 //Pretty printing and toString methods
 
 export function toString(value) returns string
@@ -15,13 +15,13 @@ export function toString(value is array) returns string
 {
     var result = "[";
     var first = true;
-    for(var element in value)
+    for (var element in value)
     {
-        if(first)
+        if (first)
             first = false;
         else
             result ~= ",";
-        result ~= " " ~  toString(element) ~ " ";
+        result ~= " " ~ toString(element) ~ " ";
     }
     return result ~ "]";
 }
@@ -30,9 +30,9 @@ export function toString(value is map) returns string
 {
     var result = "{";
     var first = true;
-    for(var element in value)
+    for (var element in value)
     {
-        if(first)
+        if (first)
             first = false;
         else
             result ~= ",";

@@ -1,4 +1,4 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/curveGeometry.fs", version : "");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 export import(path : "onshape/std/geomUtils.fs", version : "");
@@ -9,7 +9,7 @@ export function evFaceTangentPlane(context is Context, arg is map) returns map
 {
     arg.parameters = [arg.parameter];
     var result = evFaceTangentPlanes(context, arg);
-    if(result.result is array)
+    if (result.result is array)
         result.result = result.result[0];
     return result;
 }
@@ -19,7 +19,7 @@ precondition
 {
     arg.face is Query;
     arg.parameters is array;
-    for(var uv in arg.parameters)
+    for (var uv in arg.parameters)
     {
         uv is Vector;
         @size(uv) == 2;
@@ -27,9 +27,9 @@ precondition
 }
 {
     var result = @evFaceTangentPlanes(context, arg);
-    if(result.result is array)
+    if (result.result is array)
     {
-        for(var i = 0; i < @size(result.result); i += 1)
+        for (var i = 0; i < @size(result.result); i += 1)
             result.result[i] = planeFromBuiltin(result.result[i]);
     }
     return result;
@@ -39,7 +39,7 @@ export function evEdgeTangentLine(context is Context, arg is map) returns map
 {
     arg.parameters = [arg.parameter];
     var result = evEdgeTangentLines(context, arg);
-    if(result.result is array)
+    if (result.result is array)
         result.result = result.result[0];
     return result;
 }
@@ -49,20 +49,20 @@ precondition
 {
     arg.edge is Query;
     arg.parameters is array;
-    if(arg.arcLengthParameterization != undefined)
+    if (arg.arcLengthParameterization != undefined)
         arg.arcLengthParameterization is boolean;
 
-    for(var i in arg.parameters)
+    for (var i in arg.parameters)
         i is number;
 }
 {
-    if(arg.arcLengthParameterization == undefined)
+    if (arg.arcLengthParameterization == undefined)
         arg.arcLengthParameterization = true;
 
     var result = @evEdgeTangentLines(context, arg);
-    if(result.result is array)
+    if (result.result is array)
     {
-        for(var i = 0; i < @size(result.result); i += 1)
+        for (var i = 0; i < @size(result.result); i += 1)
             result.result[i] = lineFromBuiltin(result.result[i]);
     }
     return result;
@@ -75,7 +75,7 @@ precondition
 }
 {
     var result = @evVertexPoint(context, arg);
-    if(result.result is array)
+    if (result.result is array)
         result.result = meter * vector(result.result);
     return result;
 }
@@ -87,7 +87,7 @@ precondition
 }
 {
     var result = @evLine(context, arg);
-    if(result.result is map)
+    if (result.result is map)
         result.result = lineFromBuiltin(result.result);
     return result;
 }
@@ -99,7 +99,7 @@ precondition
 }
 {
     var result = @evPlane(context, arg);
-    if(result.result is map)
+    if (result.result is map)
         result.result = planeFromBuiltin(result.result);
     return result;
 }
@@ -125,11 +125,11 @@ precondition
         {
             result.result = torusFromBuiltin(result.result);
         }
-        else if(result.result.surfaceType == (SurfaceType.SPHERE as string))
+        else if (result.result.surfaceType == (SurfaceType.SPHERE as string))
         {
             result.result = sphereFromBuiltin(result.result);
         }
-        else if(result.result.surfaceType == (SurfaceType.PLANE as string))
+        else if (result.result.surfaceType == (SurfaceType.PLANE as string))
         {
             result.result = planeFromBuiltin(result.result);
         }
@@ -145,7 +145,7 @@ precondition
 }
 {
     var result = @evAxis(context, arg);
-    if(result.result is map)
+    if (result.result is map)
         result.result = lineFromBuiltin(result.result);
     return result;
 }
@@ -170,7 +170,7 @@ precondition
 }
 {
     var result = @evOwnerSketchPlane(context, arg);
-    if(result.result is map)
+    if (result.result is map)
         result.result = planeFromBuiltin(result.result);
     return result;
 }
@@ -183,7 +183,7 @@ precondition
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
     var ownedEdges = qOwnedByPart(arg.entities, EntityType.EDGE);
-    return @evLength(context, {"edges" : qUnion([edges, ownedEdges])}).result * meter;
+    return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }).result * meter;
 }
 
 export function evArea(context is Context, arg is map) returns ValueWithUnits
@@ -194,7 +194,7 @@ precondition
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
     var ownedFaces = qOwnedByPart(arg.entities, EntityType.FACE);
-    return @evArea(context, {"faces" : qUnion([faces, ownedFaces])}).result * meter ^ 2;
+    return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }).result * meter ^ 2;
 }
 
 export function evVolume(context is Context, arg is map) returns ValueWithUnits
@@ -203,7 +203,7 @@ precondition
     arg.entities is Query;
 }
 {
-    return @evVolume(context, {"bodies" : qEntityFilter(arg.entities, EntityType.BODY)}).result * meter ^ 3;
+    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY) }).result * meter ^ 3;
 }
 
 
@@ -212,14 +212,14 @@ precondition
 {
     arg.tools is Query;
     arg.targets is Query;
-    if( arg.passOwners != undefined)
+    if (arg.passOwners != undefined)
         arg.passOwners is boolean;
 }
 {
-    if(arg.passOwners == undefined)
+    if (arg.passOwners == undefined)
         arg.passOwners = false;
 
-    var result = @evCollisionDetection(context, {"tools" : arg.tools , "targets" : arg.targets, "owners" : arg.passOwners});
+    var result = @evCollisionDetection(context, { "tools" : arg.tools, "targets" : arg.targets, "owners" : arg.passOwners });
     var collisions = result.result;
     if (collisions is array)
     {
@@ -240,6 +240,7 @@ precondition
 }
 
 export type Box3d typecheck canBeBox3d;
+
 export predicate canBeBox3d(value)
 {
     value is map;
@@ -249,20 +250,19 @@ export predicate canBeBox3d(value)
 
 export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 {
-    return {'minCorner' : minCorner, 'maxCorner' : maxCorner} as Box3d;
+    return { 'minCorner' : minCorner, 'maxCorner' : maxCorner } as Box3d;
 }
 
 export function evBox3d(context is Context, arg is map) returns map
 precondition
 {
     arg.topology is Query;
-    arg.cSys == undefined ||
-    arg.cSys is Transform;
+    arg.cSys == undefined || arg.cSys is Transform;
 }
 {
     var result = @evBox(context, arg);
     if (result.error == undefined)
-        result.result = box3d(meter * vector(result.result.minCorner) , meter * vector(result.result.maxCorner));
+        result.result = box3d(meter * vector(result.result.minCorner), meter * vector(result.result.maxCorner));
     return result;
 }
 

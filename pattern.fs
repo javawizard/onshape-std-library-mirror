@@ -1,105 +1,103 @@
-FeatureScript 156; /* Automatically generated version */
-export import(path: "onshape/std/geomUtils.fs", version : "");
-export import(path: "onshape/std/boolean.fs", version : "");
-export import(path: "onshape/std/evaluate.fs", version : "");
-export import(path: "onshape/std/transform.fs", version : "");
-export import(path: "onshape/std/print.fs", version : "");
+FeatureScript 172; /* Automatically generated version */
+export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/boolean.fs", version : "");
+export import(path : "onshape/std/evaluate.fs", version : "");
+export import(path : "onshape/std/transform.fs", version : "");
+export import(path : "onshape/std/print.fs", version : "");
 
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
 
 
 function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits) returns map
 {
-    if(oppositeDir)
+    if (oppositeDir)
         distance = -distance;
 
-    var rawDirectionResult = evAxis(context, {"axis" : entity});
-    if(rawDirectionResult.error != undefined)
+    var rawDirectionResult = evAxis(context, { "axis" : entity });
+    if (rawDirectionResult.error != undefined)
     {
-        var rawPlaneResult = evPlane(context, {"face" : entity});
-        if(rawPlaneResult.error != undefined)
+        var rawPlaneResult = evPlane(context, { "face" : entity });
+        if (rawPlaneResult.error != undefined)
             return rawPlaneResult;
 
-        return {"offset" : rawPlaneResult.result.normal * distance};
+        return { "offset" : rawPlaneResult.result.normal * distance };
     }
     else
-        return {"offset" : rawDirectionResult.result.direction * distance};
+        return { "offset" : rawDirectionResult.result.direction * distance };
 }
 
 function verifyPatternSize(context is Context, id is Id, instances is number) returns boolean
 {
-    if(instances <= 2500)
+    if (instances <= 2500)
         return false; //Fine
     reportFeatureError(context, id, ErrorStringEnum.PATTERN_INPUT_TOO_MANY_INSTANCES);
     return true;
 }
 
 //LinearPattern Feature
-annotation {"Feature Type Name" : "Linear pattern"}
+annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allparts" }
 export const linearPattern = defineFeature(function(context is Context, id is Id, patternDefinition is map)
     precondition
     {
-        annotation {"Name" : "Face pattern", "Default" : false}
+        annotation { "Name" : "Face pattern", "Default" : false }
         patternDefinition.isFacePattern is boolean;
 
         if (!patternDefinition.isFacePattern)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepTypePredicate(patternDefinition);
+            booleanStepTypePredicate(patternDefinition);
 
-            annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             patternDefinition.entities is Query;
         }
         else
         {
-            annotation {"Name" : "Faces to pattern", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            annotation { "Name" : "Faces to pattern", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             patternDefinition.faces is Query;
         }
 
-        annotation {"Name" : "Direction",
-                    "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
-                    "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Direction",
+                     "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                     "MaxNumberOfPicks" : 1 }
         patternDefinition.directionOne is Query;
 
-        annotation {"Name" : "Distance"}
+        annotation { "Name" : "Distance" }
         isLength(patternDefinition.distance, PATTERN_OFFSET_BOUND);
 
-        annotation {"Name" : "Instance count"}
+        annotation { "Name" : "Instance count" }
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         patternDefinition.oppositeDirection is boolean;
 
-        annotation {"Name" : "Second direction"}
+        annotation { "Name" : "Second direction" }
         patternDefinition.hasSecondDir is boolean;
 
-        if(patternDefinition.hasSecondDir)
+        if (patternDefinition.hasSecondDir)
         {
-            annotation {"Name" : "Direction",
-                        "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
-                        "MaxNumberOfPicks" : 1}
+            annotation { "Name" : "Direction",
+                         "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                         "MaxNumberOfPicks" : 1 }
             patternDefinition.directionTwo is Query;
 
-            annotation {"Name" : "Distance"}
+            annotation { "Name" : "Distance" }
             isLength(patternDefinition.distanceTwo, PATTERN_OFFSET_BOUND);
 
-            annotation {"Name" : "Instance count"}
+            annotation { "Name" : "Instance count" }
             isInteger(patternDefinition.instanceCountTwo, POSITIVE_COUNT_BOUNDS_DEFAULT_1);
 
-            annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             patternDefinition.oppositeDirectionTwo is boolean;
         }
         if (!patternDefinition.isFacePattern)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepScopePredicate(patternDefinition);
+            booleanStepScopePredicate(patternDefinition);
         }
     }
     {
-        if(patternDefinition.isFacePattern)
+        if (patternDefinition.isFacePattern)
             patternDefinition.entities = patternDefinition.faces;
 
-        if(!checkInput(context, id, patternDefinition))
+        if (!checkInput(context, id, patternDefinition))
             return;
 
         // Compute a vector of transforms
@@ -120,7 +118,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         //Dir2, if any
         var offset2 = zeroVector(3) * meter;
         var count2 = 1;
-        if(patternDefinition.hasSecondDir == true)
+        if (patternDefinition.hasSecondDir == true)
         {
             count2 = patternDefinition.instanceCountTwo;
 
@@ -128,9 +126,9 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
                 patternDefinition.oppositeDirectionTwo, patternDefinition.distanceTwo);
             if (result.error == undefined)
             {
-                offset2 =  result.offset;
-                if(parallelVectors(offset1, offset2))
-                {   //notify user that parallel directions are selected for dir1 and dir2
+                offset2 = result.offset;
+                if (parallelVectors(offset1, offset2))
+                { //notify user that parallel directions are selected for dir1 and dir2
                     reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_DIRECTIONS_PARALLEL);
                 }
             }
@@ -143,20 +141,20 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             }
         }
 
-        if(verifyPatternSize(context, id, count1 * count2))
+        if (verifyPatternSize(context, id, count1 * count2))
             return;
 
         //Create the transforms and instance names, create along the first direction first then the second direction
-        for(var j = 0; j < count2; j += 1)
+        for (var j = 0; j < count2; j += 1)
         {
-            for(var i = 0; i < count1; i += 1)
+            for (var i = 0; i < count1; i += 1)
             {
-                if ( j == 0 && i == 0 ) //skip recreating original
+                if (j == 0 && i == 0) //skip recreating original
                     continue;
 
                 transforms = append(transforms, transform(identityMatrix(3), offset1 * i + offset2 * j));
                 var instName = "" ~ i;
-                if(j > 0)
+                if (j > 0)
                 {
                     instName ~= "_" ~ j;
                 }
@@ -170,81 +168,79 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         opPattern(context, id, patternDefinition);
 
         processPatternBooleansIfNeeded(context, id, patternDefinition);
-    }, { isFacePattern : true,  operationType : NewBodyOperationType.NEW,
+    }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
          hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
 
 //======================================================================================
 //CircularPattern Feature
-annotation {"Feature Type Name" : "Circular pattern"}
+annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allparts" }
 export const circularPattern = defineFeature(function(context is Context, id is Id, patternDefinition is map)
     precondition
     {
-        annotation {"Name" : "Face pattern", "Default" : false}
+        annotation { "Name" : "Face pattern", "Default" : false }
         patternDefinition.isFacePattern is boolean;
 
         if (!patternDefinition.isFacePattern)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepTypePredicate(patternDefinition);
+            booleanStepTypePredicate(patternDefinition);
 
-            annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY}
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             patternDefinition.entities is Query;
         }
         else
         {
-            annotation {"Name" : "Faces to pattern",
-                        "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO}
+            annotation { "Name" : "Faces to pattern",
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             patternDefinition.faces is Query;
         }
 
-        annotation {"Name" : "Axis of pattern", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Axis of pattern", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
         patternDefinition.axis is Query;
 
-        annotation {"Name" : "Angle"}
+        annotation { "Name" : "Angle" }
         isAngle(patternDefinition.angle, ANGLE_360_BOUNDS);
 
-        annotation {"Name" : "Instance count"}
+        annotation { "Name" : "Instance count" }
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         patternDefinition.oppositeDirection is boolean;
 
-        annotation {"Name" : "Equal spacing"}
+        annotation { "Name" : "Equal spacing" }
         patternDefinition.equalSpace is boolean;
 
         if (!patternDefinition.isFacePattern)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepScopePredicate(patternDefinition);
+            booleanStepScopePredicate(patternDefinition);
         }
     }
     {
-        if(patternDefinition.isFacePattern)
+        if (patternDefinition.isFacePattern)
             patternDefinition.entities = patternDefinition.faces;
 
-        if(!checkInput(context, id, patternDefinition))
+        if (!checkInput(context, id, patternDefinition))
             return;
 
         var transforms = [];
         var instanceNames = [];
 
-        if(verifyPatternSize(context, id, patternDefinition.instanceCount))
+        if (verifyPatternSize(context, id, patternDefinition.instanceCount))
             return;
 
         var angle = patternDefinition.angle;
-        if(patternDefinition.oppositeDirection == true)
+        if (patternDefinition.oppositeDirection == true)
             angle = -angle;
 
-        var rawDirectionResult = evAxis(context, {"axis" : patternDefinition.axis});
+        var rawDirectionResult = evAxis(context, { "axis" : patternDefinition.axis });
         if (rawDirectionResult.error != undefined)
         {
             reportFeatureError(context, id, ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS, ["axis"]);
             return;
         }
 
-        if(patternDefinition.equalSpace)
+        if (patternDefinition.equalSpace)
         {
-            if( patternDefinition.instanceCount < 2 )
+            if (patternDefinition.instanceCount < 2)
             {
                 reportFeatureError(context, id, ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
                 return;
@@ -254,7 +250,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = angle / instCt; //with error check above, no chance of instCt < 1
         }
 
-        for(var i = 1; i < patternDefinition.instanceCount; i += 1)
+        for (var i = 1; i < patternDefinition.instanceCount; i += 1)
         {
             transforms = append(transforms, rotationAround(rawDirectionResult.result, i * angle));
             instanceNames = append(instanceNames, "" ~ i);
@@ -279,7 +275,7 @@ function processPatternBooleansIfNeeded(context is Context, id is Id, patternDef
 
     if (!patternDefinition.isFacePattern)
     {
-        if (!processNewBodyIfNeeded(context, id, mergeMaps(patternDefinition, {"seed" : patternDefinition.entities})))
+        if (!processNewBodyIfNeeded(context, id, mergeMaps(patternDefinition, { "seed" : patternDefinition.entities })))
         {
             var errorId = id + "boolError";
             opPattern(context, errorId, patternDefinition);
@@ -290,7 +286,7 @@ function processPatternBooleansIfNeeded(context is Context, id is Id, patternDef
 
 function checkInput(context is Context, id is Id, patternDefinition is map) returns boolean
 {
-    if(size(evaluateQuery(context, patternDefinition.entities)) == 0)
+    if (size(evaluateQuery(context, patternDefinition.entities)) == 0)
     {
         if (patternDefinition.isFacePattern)
             reportFeatureError(context, id, ErrorStringEnum.PATTERN_SELECT_FACES, ["faces"]);
@@ -304,23 +300,23 @@ function checkInput(context is Context, id is Id, patternDefinition is map) retu
 
 //======================================================================================
 //CurvePattern Feature
-annotation { "Feature Type Name" : "Curve pattern" }
+annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }
 export const curvePattern = defineFeature(function(context is Context, id is Id, patternDefinition is map)
     precondition
     {
-        annotation {"Name" : "Entities to pattern", "Filter" : EntityType.BODY}
+        annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
         patternDefinition.entities is Query;
 
-        annotation {"Name" : "Curve", "Filter" : EntityType.EDGE}
+        annotation { "Name" : "Curve", "Filter" : EntityType.EDGE }
         patternDefinition.curve is Query;
 
-        annotation {"Name" : "Instance count"}
+        annotation { "Name" : "Instance count" }
         isInteger(patternDefinition.instanceCount, POSITIVE_COUNT_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         patternDefinition.oppositeDirection is boolean;
 
-        annotation {"Name" : "Follow curve"}
+        annotation { "Name" : "Follow curve" }
         patternDefinition.followCurve is boolean;
 
         booleanStepPredicate(patternDefinition);
@@ -329,7 +325,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         // Compute a vector of transforms
         var transforms = [];
         var parameters = [];
-        var instNames =[];
+        var instNames = [];
         // Equally spaced
         var count = patternDefinition.instanceCount;
         var isClosed = size(evaluateQuery(context, qVertexAdjacent(patternDefinition.curve, EntityType.VERTEX))) < 2;
@@ -340,12 +336,12 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             instNames = append(instNames, "" ~ i);
         }
 
-        if(patternDefinition.oppositeDirection)
+        if (patternDefinition.oppositeDirection)
         {
             parameters = reverse(parameters);
         }
         var evaluatedResult = evEdgeTangentLines(context, { "edge" : patternDefinition.curve, "parameters" : parameters });
-        if(reportFeatureError(context, id, evaluatedResult.error))
+        if (reportFeatureError(context, id, evaluatedResult.error))
             return;
 
         var evaluated = evaluatedResult.result;
@@ -357,7 +353,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             var pos = positionAndTangent.origin;
             var tangent = positionAndTangent.direction;
 
-            if(curTransform == undefined)
+            if (curTransform == undefined)
             {
                 curTransform = identityTransform();
             }
@@ -379,7 +375,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             transforms = append(transforms, curTransform);
         }
 
-        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms , "instanceNames" : instNames});
+        opPattern(context, id, { "entities" : patternDefinition.entities, "transforms" : transforms, "instanceNames" : instNames });
         opDeleteBodies(context, id + "delete", { "entities" : patternDefinition.entities });
         processNewBodyIfNeeded(context, id, patternDefinition);
     });

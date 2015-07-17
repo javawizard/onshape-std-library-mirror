@@ -1,15 +1,15 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
-annotation {"Feature Type Name" : "Loft"}
+annotation { "Feature Type Name" : "Loft", "Filter Selector" : "allparts" }
 export const loft = defineFeature(function(context is Context, id is Id, loftDefinition is map)
     precondition
     {
 
-        annotation {"Name" : "Creation type"}
+        annotation { "Name" : "Creation type" }
         loftDefinition.bodyType is ToolBodyType;
 
         if (loftDefinition.bodyType == ToolBodyType.SOLID)
@@ -19,34 +19,34 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
 
         if (loftDefinition.bodyType == ToolBodyType.SOLID)
         {
-            annotation {"Name" : "Profiles",
-            "Filter" : ((EntityType.FACE && GeometryType.PLANE) || EntityType.VERTEX) && ConstructionObject.NO}
+            annotation { "Name" : "Profiles",
+                         "Filter" : ((EntityType.FACE && GeometryType.PLANE) || EntityType.VERTEX) && ConstructionObject.NO }
             loftDefinition.sheetProfiles is Query;
         }
         else
         {
-            annotation {"Name" : "Profiles",
-            "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE) && ConstructionObject.NO}
+            annotation { "Name" : "Profiles",
+                         "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE) && ConstructionObject.NO }
             loftDefinition.wireProfiles is Query;
         }
 
-        annotation{"Name": "Add guides"}
+        annotation { "Name" : "Add guides" }
         loftDefinition.addGuides is boolean;
         if (loftDefinition.addGuides)
         {
-            annotation {"Name" : "Guides", "Filter" : EntityType.EDGE && ConstructionObject.NO}
+            annotation { "Name" : "Guides", "Filter" : EntityType.EDGE && ConstructionObject.NO }
             loftDefinition.guides is Query;
         }
 
-        annotation{"Name": "Match vertices"}
+        annotation { "Name" : "Match vertices" }
         loftDefinition.matchVertices is boolean;
         if (loftDefinition.matchVertices)
         {
-            annotation {"Name" : "Vertices", "Filter" : EntityType.VERTEX }
+            annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX }
             loftDefinition.vertices is Query;
         }
 
-        annotation {"Name" : "Make periodic", "UIHint" : "ALWAYS_HIDDEN"}
+        annotation { "Name" : "Make periodic", "UIHint" : "ALWAYS_HIDDEN" }
         loftDefinition.makePeriodic is boolean;
 
         if (loftDefinition.bodyType == ToolBodyType.SOLID)
@@ -56,7 +56,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
     }
     {
         var profileQuery = (loftDefinition.bodyType == ToolBodyType.SOLID) ? loftDefinition.sheetProfiles : loftDefinition.wireProfiles;
-        if(profileQuery.queryType == QueryType.UNION)
+        if (profileQuery.queryType == QueryType.UNION)
         {
             var subQ = profileQuery.subqueries;
             if (size(subQ) < 1)
@@ -72,7 +72,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
         if (loftDefinition.addGuides)
         {
             var guideQuery = loftDefinition.guides;
-            if(guideQuery.queryType == QueryType.UNION)
+            if (guideQuery.queryType == QueryType.UNION)
             {
                 var subQ = guideQuery.subqueries;
                 loftDefinition.guideSubqueries = subQ;
@@ -85,7 +85,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
 
         opLoft(context, id, loftDefinition);
 
-         if (loftDefinition.bodyType == ToolBodyType.SOLID)
+        if (loftDefinition.bodyType == ToolBodyType.SOLID)
         {
             if (!processNewBodyIfNeeded(context, id, loftDefinition))
             {
@@ -96,7 +96,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
                 endFeature(context, statusToolId);
             }
         }
-    }, { makePeriodic : false , bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices :  false });
+    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false });
 
 
 

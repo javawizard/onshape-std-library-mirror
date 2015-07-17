@@ -1,7 +1,6 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 // Functions for constructing queries
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
-
 
 
 // When evaluated all the queries except for those listed order their output by deterministic ids
@@ -56,8 +55,10 @@ export enum QueryType
     FARTHEST_ALONG, //direction
     LARGEST,
     SMALLEST,
-    COEDGE
+    COEDGE,
+    MATE_CONNECTOR
 }
+
 // Following enums can be used in query filters
 export enum EntityType
 {
@@ -100,6 +101,7 @@ export enum SketchObject
     YES,
     NO
 }
+
 export enum EdgeTopology
 {
     LAMINAR,
@@ -118,8 +120,9 @@ export enum CompareType
 //Short hands expanded in precondition processing
 export enum QueryFilterCompound
 {
-    ALLOWS_AXIS            // = GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER
+    ALLOWS_AXIS // = GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER
 }
+
 export type Query typecheck canBeQuery;
 
 export predicate canBeQuery(value)
@@ -138,7 +141,7 @@ export function makeQuery(value is map) returns Query
 //Don't strip units off historical queries
 export function stripUnits(value is Query)
 {
-    if(value.historyType != undefined)
+    if (value.historyType != undefined)
         return value;
     return stripUnits(value as map);
 }
@@ -200,37 +203,40 @@ export function transientQueriesToStrings(query is Query)
 
 export function transientQueriesToStrings(value is map) returns map
 {
-    for(var entry in value)
+    for (var entry in value)
     {
         if (!(entry.key is array) && !(entry.key is map))
             value[entry.key] = transientQueriesToStrings(entry.value);
         else
         {
-            value[entry.key] =  undefined;
+            value[entry.key] = undefined;
             value[transientQueriesToStrings(entry.key)] = transientQueriesToStrings(entry.value);
         }
     }
     return value;
 }
+
 export function transientQueriesToStrings(value is array) returns array
 {
-    for(var i = 0; i < @size(value); i += 1)
+    for (var i = 0; i < @size(value); i += 1)
     {
         value[i] = transientQueriesToStrings(value[i]);
     }
     return value;
 }
+
 export function transientQueriesToStrings(value)
 {
     return value;
 }
+
 // ===================================== Boolean Queries ================================
 
 // When evaluated qUnion preserves order of subQueries in its output
 export function qUnion(subqueries is array) returns Query
 precondition
 {
-    for(var subquery in subqueries)
+    for (var subquery in subqueries)
         subquery is Query;
 }
 {
@@ -240,7 +246,7 @@ precondition
 export function qIntersection(subqueries is array) returns Query
 precondition
 {
-    for(var subquery in subqueries)
+    for (var subquery in subqueries)
         subquery is Query;
 }
 {
@@ -249,7 +255,7 @@ precondition
 
 export function qSubtraction(query1 is Query, query2 is Query) returns Query
 {
-    return { "queryType" : QueryType.SUBTRACTION, "query1" : query1, "query2" : query2} as Query;
+    return { "queryType" : QueryType.SUBTRACTION, "query1" : query1, "query2" : query2 } as Query;
 }
 
 export function qSymmetricDifference(query1 is Query, query2 is Query) returns Query
@@ -323,12 +329,14 @@ precondition
     }
 }
 {
-    if (subquery.queryType == QueryType.EVERYTHING) {
+    if (subquery.queryType == QueryType.EVERYTHING)
+    {
         subquery.bodyType = bodyTypes;
         return subquery;
     }
     return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyTypes, "subquery" : subquery } as Query;
 }
+
 // ===================================== Geometry matching Queries =====================================
 /* Not done yet
 export function qPlanarNormal(subquery is Query, normal is Vector) returns Query
@@ -343,27 +351,32 @@ export function qPlanarNormal(subquery is Query, normal is Vector) returns Query
 // ===================================== Faces Related Queries =====================================
 export function qConvexConnectedFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.CONVEX_CONNECTED_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.CONVEX_CONNECTED_FACES, "subquery" : subquery } as Query;
 }
+
 export function qConcaveConnectedFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.CONCAVE_CONNECTED_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.CONCAVE_CONNECTED_FACES, "subquery" : subquery } as Query;
 }
+
 export function qTangentConnectedFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : subquery } as Query;
 }
+
 export function qLoopBoundedFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.LOOP_BOUNDED_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.LOOP_BOUNDED_FACES, "subquery" : subquery } as Query;
 }
+
 export function qFaceOrEdgeBoundedFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.FACE_OR_EDGE_BOUNDED_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.FACE_OR_EDGE_BOUNDED_FACES, "subquery" : subquery } as Query;
 }
+
 export function qHoleFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.HOLE_FACES, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.HOLE_FACES, "subquery" : subquery } as Query;
 }
 
 export function qSketchRegion(featureId is Id) returns Query
@@ -381,6 +394,11 @@ export function qCoEdge(faceQuery is Query, edgeQuery is Query) returns Query
     return { "queryType" : QueryType.COEDGE, "faceQuery" : faceQuery, "edgeQuery" : edgeQuery } as Query;
 }
 
+export function qMateConnectorsOfParts(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.MATE_CONNECTOR, "subquery" : subquery } as Query;
+}
+
 // find fillet faces of radius equal to , less than and equal to, greater than and equal to the
 // input faces. Will find the fillet radius from the faces and then compare to find all the faces
 // of fillets that satisfy the compareType. The input faces should be from a fillet other wise not
@@ -391,12 +409,12 @@ precondition
     compareType == CompareType.EQUAL || compareType == CompareType.LESS_EQUAL || compareType == CompareType.GREATER_EQUAL;
 }
 {
-    return { "queryType" : QueryType.FILLET_FACES, "compareType" : compareType, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.FILLET_FACES, "compareType" : compareType, "subquery" : subquery } as Query;
 }
 
 export function qMatchingFaces(subquery is Query) returns Query
 {
-    return { "queryType" : QueryType.PATTERN, "subquery" : subquery} as Query;
+    return { "queryType" : QueryType.PATTERN, "subquery" : subquery } as Query;
 }
 
 
@@ -421,15 +439,15 @@ export function qIntersectsPlane(subquery is Query, plane is Plane) returns Quer
 //INTERSECTS_BALL,
 //===================================== Optimization Queries =====================================
 /* Not done yet
-export function qClosestTo(subquery is Query, point is Vector) returns Query
-precondition
-{
-    is3dLengthVector(point);
-}
-{
-    return { "queryType" : QueryType.CLOSEST_TO, "subquery" : subquery, "point" : point} as Query;
-}
-*/
+   export function qClosestTo(subquery is Query, point is Vector) returns Query
+   precondition
+   {
+   is3dLengthVector(point);
+   }
+   {
+   return { "queryType" : QueryType.CLOSEST_TO, "subquery" : subquery, "point" : point} as Query;
+   }
+ */
 //FARTHEST_ALONG, //direction
 //LARGEST,
 //SMALLEST
@@ -440,34 +458,41 @@ precondition
 export function makeQuery(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
 {
     return @mergeMaps(value,
-                    {"operationId" : operationId, "queryType" : queryType,
-                      "entityType" : entityType, "historyType" : "CREATION"}) as Query;
+                      { "operationId" : operationId, "queryType" : queryType,
+                        "entityType" : entityType, "historyType" : "CREATION" }) as Query;
 }
 
 export function dummyQuery(operationId is Id, entityType is EntityType, disambiguationOrder is number) returns Query
 {
-    return makeQuery({ "operationId" : operationId, historyType : "CREATION", "entityType" : entityType,
-    queryType : "DUMMY", disambiguationData : [{ disambiguationType : "ORDER", order : disambiguationOrder }] });
+    return makeQuery({ "operationId" : operationId,
+                       historyType : "CREATION",
+                       "entityType" : entityType,
+                       queryType : "DUMMY",
+                       disambiguationData : [{ disambiguationType : "ORDER", order : disambiguationOrder }] });
 }
+
 export function dummyQuery(operationId is Id, entityType is EntityType) returns Query
 {
     return makeQuery({ "operationId" : operationId, historyType : "CREATION",
-                "entityType" : entityType, queryType : "DUMMY"});
+                "entityType" : entityType, queryType : "DUMMY" });
 }
 
 export function qBodySplitBy(featureId is Id, backBody is boolean)
 {
-    return makeQuery(featureId, "SPLIT", EntityType.BODY, {"isFromBackBody" : backBody});
+    return makeQuery(featureId, "SPLIT", EntityType.BODY, { "isFromBackBody" : backBody });
 }
+
 export function sketchEntityQuery(operationId is Id, entityType is EntityType, sketchEntityId is string) returns Query
 {
     return makeQuery(operationId, "SKETCH_ENTITY", entityType,
-                      { "sketchEntityId" : sketchEntityId });
+            { "sketchEntityId" : sketchEntityId });
 }
+
 export function orderDisambiguation(order is number)
 {
     return { disambiguationType : "ORDER", "order" : order };
 }
+
 export function topologyDisambiguation(topology is array)
 {
     return { disambiguationType : "TOPOLOGY", entities : topology };
@@ -475,18 +500,21 @@ export function topologyDisambiguation(topology is array)
 
 export function originalSetDisambiguation(queries is array)
 {
-    return { disambiguationType : "ORIGINAL_DEPENDENCY", originals : queries};
+    return { disambiguationType : "ORIGINAL_DEPENDENCY", originals : queries };
 }
+
 export function trueDependencyDisambiguation(queries is array)
 {
-    return { disambiguationType : "TRUE_DEPENDENCY", derivedFrom : queries};
+    return { disambiguationType : "TRUE_DEPENDENCY", derivedFrom : queries };
 }
+
 export function ownerDisambiguation(topology is array)
 {
-    return { disambiguationType : "OWNER", owners : topology};
+    return { disambiguationType : "OWNER", owners : topology };
 }
 
 export type TransientId typecheck canBeTransientId;
+
 export predicate canBeTransientId(value)
 {
     value is builtin;
@@ -505,12 +533,13 @@ export predicate canBeId(value)
     value is array;
     for (var comp in value)
     {
-            comp is string;
-            replace(comp, "\\*?[a-zA-Z0-9_.+/\\-]", "") == ""; //All characters should be of this form
+        comp is string;
+        replace(comp, "\\*?[a-zA-Z0-9_.+/\\-]", "") == ""; //All characters should be of this form
     }
 }
 
 export const baseId = [] as Id;
+
 export function newId() returns Id
 {
     return [] as Id;

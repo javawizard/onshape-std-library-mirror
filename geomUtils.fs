@@ -1,4 +1,4 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
@@ -17,7 +17,7 @@ export predicate canBeContext(value)
 
 export function newContext() returns Context
 {
-   return @newContext(FeatureScriptVersionNumberCurrent) as Context;
+    return @newContext(FeatureScriptVersionNumberCurrent) as Context;
 }
 
 //====================== Version compatibility ========================
@@ -34,7 +34,7 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
 export function evaluateQuery(context is Context, query is Query) returns array
 {
     var out = @evaluateQuery(context, { "query" : query }).result;
-    for(var i = 0; i < @size(out); i += 1)
+    for (var i = 0; i < @size(out); i += 1)
         out[i] = qTransient(out[i] as TransientId);
     return out;
 }
@@ -53,25 +53,25 @@ export function reportFeatureError(context is Context, id is Id, message is unde
 
 export function reportFeatureError(context is Context, id is Id, message is string) returns boolean
 {
-    @reportFeatureError(context, id, {"message" : message});
+    @reportFeatureError(context, id, { "message" : message });
     return true;
 }
 
 export function reportFeatureError(context is Context, id is Id, message is string, faultyParameters is array) returns boolean
 {
-    @reportFeatureError(context, id, {"message" : message, "faultyParameters": faultyParameters});
+    @reportFeatureError(context, id, { "message" : message, "faultyParameters" : faultyParameters });
     return true;
 }
 
 export function reportFeatureWarning(context is Context, id is Id, message is string) returns boolean
 {
-    @reportFeatureWarning(context, id, {"message" : message});
+    @reportFeatureWarning(context, id, { "message" : message });
     return true;
 }
 
 export function reportFeatureInfo(context is Context, id is Id, message is string) returns boolean
 {
-    @reportFeatureInfo(context, id, {"message" : message});
+    @reportFeatureInfo(context, id, { "message" : message });
     return true;
 }
 
@@ -83,77 +83,79 @@ export function reportFeatureInfo(context is Context, id is Id, message is strin
 
 export function opImportForeign(context is Context, id is Id, definition is map)
 {
-  return @opImportForeign(context, id, definition);
+    return @opImportForeign(context, id, definition);
 }
 
 export function opDeleteBodies(context is Context, id is Id, definition is map)
 {
-  return @opDeleteBodies(context, id, definition);
+    return @opDeleteBodies(context, id, definition);
 }
 
 export function opTransform(context is Context, id is Id, definition is map)
 {
-  return @opTransform(context, id, definition);
+    return @opTransform(context, id, definition);
 }
 
 export function opBoolean(context is Context, id is Id, definition is map)
 {
-  return @opBoolean(context, id, definition);
+    return @opBoolean(context, id, definition);
 }
 
 export function opFillet(context is Context, id is Id, definition is map)
 {
-  return @opFillet(context, id, definition);
+    return @opFillet(context, id, definition);
 }
 
 export function opChamfer(context is Context, id is Id, definition is map)
 {
-  return @opChamfer(context, id, definition);
+    return @opChamfer(context, id, definition);
 }
 
 export function opDraft(context is Context, id is Id, definition is map)
 {
-  return @opDraft(context, id, definition);
+    return @opDraft(context, id, definition);
 }
 
 export function opExtrude(context is Context, id is Id, definition is map)
 {
-  return @opExtrude(context, id, definition);
+    return @opExtrude(context, id, definition);
 }
 
 export function opPattern(context is Context, id is Id, definition is map)
 {
-  return @opPattern(context, id, definition);
+    return @opPattern(context, id, definition);
 }
 
 export function opPlane(context is Context, id is Id, definition is map)
 {
-  return @opPlane(context, id, definition);
+    return @opPlane(context, id, definition);
 }
 
 export function opHelix(context is Context, id is Id, definition is map)
 {
-  return @opHelix(context, id, definition);
+    return @opHelix(context, id, definition);
 }
 
 export function opRevolve(context is Context, id is Id, definition is map)
 {
-  return @opRevolve(context, id, definition);
+    return @opRevolve(context, id, definition);
 }
 
 export function opShell(context is Context, id is Id, definition is map)
 {
-  return @opShell(context, id, definition);
+    return @opShell(context, id, definition);
 }
 
 export function opSplitPart(context is Context, id is Id, definition is map)
 {
-  return @opSplitPart(context, id, definition);
+    return @opSplitPart(context, id, definition);
 }
+
 export function opPoint(context is Context, id is Id, definition is map)
 {
     return @opPoint(context, id, definition);
 }
+
 export function opSweep(context is Context, id is Id, definition is map)
 {
     return @opSweep(context, id, definition);
@@ -161,42 +163,42 @@ export function opSweep(context is Context, id is Id, definition is map)
 
 export function opDeleteFace(context is Context, id is Id, definition is map)
 {
-  return @opDeleteFace(context, id, definition);
+    return @opDeleteFace(context, id, definition);
 }
 
 export function opMoveFace(context is Context, id is Id, definition is map)
 {
-  return @opMoveFace(context, id, definition);
+    return @opMoveFace(context, id, definition);
 }
 
 export function opOffsetFace(context is Context, id is Id, definition is map)
 {
-  return @opOffsetFace(context, id, definition);
+    return @opOffsetFace(context, id, definition);
 }
 
 export function opReplaceFace(context is Context, id is Id, definition is map)
 {
-  return @opReplaceFace(context, id, definition);
+    return @opReplaceFace(context, id, definition);
 }
 
 export function opModifyFillet(context is Context, id is Id, definition is map)
 {
-  return @opModifyFillet(context, id, definition);
+    return @opModifyFillet(context, id, definition);
 }
 
 export function opMateConnector(context is Context, id is Id, definition is map)
 {
-  return @opMateConnector(context, id, definition);
+    return @opMateConnector(context, id, definition);
 }
 
 export function opThicken(context is Context, id is Id, definition is map)
 {
-  return @opThicken(context, id, definition);
+    return @opThicken(context, id, definition);
 }
 
 export function opLoft(context is Context, id is Id, definition is map)
 {
-  return @opLoft(context, id, definition);
+    return @opLoft(context, id, definition);
 }
 
 // =========================== defineFeature ===========================
@@ -218,7 +220,7 @@ export function defineFeature(feature is function, defaults is map) returns func
             catch
             {
                 reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
-                if(started)
+                if (started)
                     abortFeature(context, id);
             }
         };
@@ -244,19 +246,19 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
 
     var madeChanges = false;
     var result = getFeatureError(context, subId);
-    if(result.result != undefined)
+    if (result.result != undefined)
     {
         reportFeatureError(context, id, result.result);
         madeChanges = true;
     }
     result = getFeatureWarning(context, subId);
-    if(result.result != undefined)
+    if (result.result != undefined)
     {
         reportFeatureWarning(context, id, result.result);
         madeChanges = true;
     }
     result = getFeatureInfo(context, subId);
-    if(result.result != undefined)
+    if (result.result != undefined)
     {
         reportFeatureInfo(context, id, result.result);
         madeChanges = true;
@@ -292,7 +294,7 @@ export function abortFeature(context is Context, id is Id)
 
 export function endFeature(context is Context, id is Id)
 {
-    if (@size(id) == 1 &&  @getFeatureError(context, id).result != undefined)
+    if (@size(id) == 1 && @getFeatureError(context, id).result != undefined)
     {
         @abortFeature(context, id);
     }
@@ -301,19 +303,20 @@ export function endFeature(context is Context, id is Id)
         @endFeature(context, id);
     }
 }
+
 export function recordQueries(context is Context, id is Id, definition is map)
 {
     for (var paramEntry in definition)
     {
         if (paramEntry.value is Query)
         {
-            @recordQuery(context, id, {paramEntry.key : paramEntry.value});
+            @recordQuery(context, id, { paramEntry.key : paramEntry.value });
         }
     }
 }
 
 export function featureHasError(context is Context, id is Id) returns boolean
 {
-    return  @getFeatureError(context, id).result != undefined;
+    return @getFeatureError(context, id).result != undefined;
 }
 

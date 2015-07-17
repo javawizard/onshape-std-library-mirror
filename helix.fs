@@ -1,53 +1,53 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/curveGeometry.fs", version : "");
 
-const needConeOrCylinderMessage    = ErrorStringEnum.HELIX_INPUT_CONE;
+const needConeOrCylinderMessage = ErrorStringEnum.HELIX_INPUT_CONE;
 
 export enum HelixType
 {
-    annotation {"Name" : "Turns"}
+    annotation { "Name" : "Turns" }
     TURNS,
-    annotation {"Name" : "Pitch"}
+    annotation { "Name" : "Pitch" }
     PITCH
 }
 
 export enum Direction
 {
-    annotation {"Name" : "Clockwise"}
+    annotation { "Name" : "Clockwise" }
     CW,
-    annotation {"Name" : "Counterclockwise"}
+    annotation { "Name" : "Counterclockwise" }
     CCW
 }
 
-annotation {"Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY"}
+annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY" }
 export const helix = defineFeature(function(context is Context, id is Id, helixDefinition is map)
     precondition
     {
-        annotation {"Name" : "Helix type"}
+        annotation { "Name" : "Helix type" }
         helixDefinition.helixType is HelixType;
 
-        annotation {"Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS}
+        annotation { "Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS }
         helixDefinition.entities is Query;
 
-        annotation {"Name" : "Handedness"}
+        annotation { "Name" : "Handedness" }
         helixDefinition.handedness is Direction;
 
         if (helixDefinition.helixType == HelixType.PITCH)
         {
-            annotation {"Name" : "Helical pitch"}
+            annotation { "Name" : "Helical pitch" }
             isLength(helixDefinition.helicalPitch, NONNEGATIVE_LENGTH_BOUNDS);
         }
         else
         {
-            annotation {"Name" : "Revolutions"}
+            annotation { "Name" : "Revolutions" }
             isReal(helixDefinition.revolutions, HELIX_TURN_BOUNDS);
         }
 
-        annotation {"Name" : "Start angle"}
+        annotation { "Name" : "Start angle" }
         isAngle(helixDefinition.startAngle, ANGLE_360_ZERO_DEFAULT_BOUNDS);
     }
     //===================================================<body>=======================================================
@@ -55,7 +55,7 @@ export const helix = defineFeature(function(context is Context, id is Id, helixD
         var helixDefinitionOut = {};
         var revolutions;
 
-        var face = evSurfaceDefinition(context, {'face' : helixDefinition.entities});
+        var face = evSurfaceDefinition(context, { 'face' : helixDefinition.entities });
 
         if (reportFeatureError(context, id, face.error, ["entities"]))
             return;
@@ -64,7 +64,7 @@ export const helix = defineFeature(function(context is Context, id is Id, helixD
         {
             var endRadius = 0;
             var baseRadius = 0;
-            var boxResult = evBox3d(context, {'topology' : helixDefinition.entities, 'cSys' : toWorld(surface.coordSystem)});
+            var boxResult = evBox3d(context, { 'topology' : helixDefinition.entities, 'cSys' : toWorld(surface.coordSystem) });
             var height = boxResult.result.maxCorner[2] - boxResult.result.minCorner[2];
             if (surface is Cylinder)
             {
@@ -101,11 +101,11 @@ export const helix = defineFeature(function(context is Context, id is Id, helixD
             return;
         }
         var startPointVector = helixDefinitionOut.startPoint - helixDefinitionOut.axisStart;
-        helixDefinitionOut.startPoint = (rotationMatrix3d(helixDefinitionOut.direction, helixDefinition.startAngle) *  startPointVector) + helixDefinitionOut.axisStart;
+        helixDefinitionOut.startPoint = (rotationMatrix3d(helixDefinitionOut.direction, helixDefinition.startAngle) * startPointVector) + helixDefinitionOut.axisStart;
 
         helixDefinitionOut.interval = [0, revolutions];
 
-        if(helixDefinition.handedness == Direction.CW)
+        if (helixDefinition.handedness == Direction.CW)
         {
             helixDefinitionOut.clockwise = true;
         }

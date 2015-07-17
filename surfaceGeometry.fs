@@ -1,8 +1,8 @@
-FeatureScript 156; /* Automatically generated version */
-export import(path:"onshape/std/coordSystem.fs", version : "");
-export import(path:"onshape/std/curveGeometry.fs", version : "");
-export import(path:"onshape/std/surfacetype.gen.fs", version : "");
-export import(path:"onshape/std/print.fs", version : "");
+FeatureScript 172; /* Automatically generated version */
+export import(path : "onshape/std/coordSystem.fs", version : "");
+export import(path : "onshape/std/curveGeometry.fs", version : "");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "");
+export import(path : "onshape/std/print.fs", version : "");
 
 //===================================== Plane ======================================
 
@@ -26,7 +26,7 @@ export function plane(cSys is CoordSystem) returns Plane
 
 export function plane(origin is Vector, normal is Vector, x is Vector) returns Plane
 {
-    return {"origin" : origin, "normal" : normalize(normal), "x" : normalize(x)} as Plane;
+    return { "origin" : origin, "normal" : normalize(normal), "x" : normalize(x) } as Plane;
 }
 
 export function plane(origin is Vector, normal is Vector) returns Plane //Arbitrary x
@@ -87,7 +87,7 @@ export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vecto
 export function worldToSketch(plane is Plane, worldPoint is Vector) returns Vector
 {
     return vector(dotProduct(worldPoint, plane.x),
-                  dotProduct(worldPoint, crossProduct(plane.normal, plane.x)));
+            dotProduct(worldPoint, crossProduct(plane.normal, plane.x)));
 }
 
 export function worldToPlane(plane is Plane) returns Transform
@@ -110,16 +110,17 @@ export function mirrorAcross(plane is Plane) returns Transform
 export function intersection(p1 is Plane, p2 is Plane) // Returns Line or undefined if there's no good intersection
 {
     var direction = crossProduct(p1.normal, p2.normal);
-    if(norm(direction) < TOLERANCE.zeroAngle)
+    if (norm(direction) < TOLERANCE.zeroAngle)
         return;
     direction = normalize(direction);
     var rhs = vector(dotProduct(p1.normal, p1.origin), dotProduct(p2.normal, p2.origin),
-                     dotProduct(direction, 0.5 * (p1.origin + p2.origin)));
+        dotProduct(direction, 0.5 * (p1.origin + p2.origin)));
     var point = inverse([p1.normal, p2.normal, direction] as Matrix) * rhs;
     return line(point, direction);
 }
 
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
+
 predicate canBeLinePlaneIntersection(value)
 {
     value is map;
@@ -129,18 +130,19 @@ predicate canBeLinePlaneIntersection(value)
     if (value.dim == 1)
         value.intersection is Line;
 }
+
 export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersection or undefined
 {
     var dotPr = dotProduct(p.normal, l.direction);
     if (abs(dotPr) < TOLERANCE.zeroAngle)
     {
         if (samePoint(l.origin, project(p, l.origin)))
-            return {'dim' : 1, 'intersection' : l} as LinePlaneIntersection;
+            return { 'dim' : 1, 'intersection' : l } as LinePlaneIntersection;
         else
-            return {'dim' : -1} as LinePlaneIntersection; //line is parallel to plane
+            return { 'dim' : -1 } as LinePlaneIntersection; //line is parallel to plane
     }
-    var t = dotProduct(p.origin - l.origin, p.normal)/dotPr;
-    return {'dim' : 0, 'intersection' : l.origin + t * l.direction} as LinePlaneIntersection;
+    var t = dotProduct(p.origin - l.origin, p.normal) / dotPr;
+    return { 'dim' : 0, 'intersection' : l.origin + t * l.direction } as LinePlaneIntersection;
 }
 
 // ===================================== Cone ======================================
@@ -156,7 +158,7 @@ export predicate canBeCone(value)
 
 export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns Cone
 {
-    return {"coordSystem" : cSys, "halfAngle" : halfAngle} as Cone;
+    return { "coordSystem" : cSys, "halfAngle" : halfAngle } as Cone;
 }
 
 export function coneFromBuiltin(definition is map) returns Cone
@@ -183,7 +185,7 @@ export predicate canBeCylinder(value)
 
 export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns Cylinder
 {
-    return {"coordSystem" : cSys, "radius" : radius} as Cylinder;
+    return { "coordSystem" : cSys, "radius" : radius } as Cylinder;
 }
 
 export function cylinderFromBuiltin(definition is map) returns Cylinder
@@ -211,7 +213,7 @@ export predicate canBeTorus(value)
 
 export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius is ValueWithUnits) returns Torus
 {
-    return {"coordSystem" : cSys, "minorRadius" : minorRadius, "radius" : radius} as Torus;
+    return { "coordSystem" : cSys, "minorRadius" : minorRadius, "radius" : radius } as Torus;
 }
 
 export function torusFromBuiltin(definition is map) returns Torus
@@ -238,7 +240,7 @@ export predicate canBeSphere(value)
 
 export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sphere
 {
-    return {"coordSystem" : cSys, "radius" : radius} as Sphere;
+    return { "coordSystem" : cSys, "radius" : radius } as Sphere;
 }
 
 export function sphereFromBuiltin(definition is map) returns Sphere

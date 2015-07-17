@@ -1,12 +1,12 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 //simple utilities
 
 export function isIn(value, container is array) returns boolean
 {
     for (var element in container)
     {
-       if (element == value)
-           return true;
+        if (element == value)
+            return true;
     }
     return false;
 }
@@ -57,6 +57,7 @@ export function size(container is array) returns number
 {
     return @size(container);
 }
+
 export function size(container is map) returns number
 {
     return @size(container);
@@ -82,21 +83,21 @@ export function append(arr is array, newValue) returns array
 export function concatenateArrays(arr is array) returns array
 precondition
 {
-    for(var a in arr)
+    for (var a in arr)
         a is array;
 }
 {
     var totalSize = 0;
 
-    for(var a in arr)
+    for (var a in arr)
         totalSize += @size(a);
 
     var out = makeArray(totalSize);
 
     var i = 0;
-    for(var a in arr)
+    for (var a in arr)
     {
-        for(var j = 0; j < @size(a); j += 1)
+        for (var j = 0; j < @size(a); j += 1)
         {
             out[i] = a[j];
             i += 1;
@@ -109,11 +110,12 @@ export function mergeMaps(map1 is map, map2 is map) returns map
 {
     return @mergeMaps(map1, map2);
 }
+
 export function reverse(arr is array) returns array
 {
     var size = @size(arr);
     var out = makeArray(size);
-    for(var i = 0; i < size; i += 1)
+    for (var i = 0; i < size; i += 1)
     {
         out[i] = arr[size - 1 - i];
     }
@@ -144,13 +146,13 @@ export function length(s is string) returns number
    try (a.b.c.d.e)
 
    except it does not log a warning.
-*/
+ */
 export function mapLookup(m is map, keys is array)
 {
     var result = m;
     for (var key in keys)
     {
-        if (! (result is map))
+        if (!(result is map))
             return undefined;
         result = result[key];
     }

@@ -1,6 +1,7 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
+
 //4 * inch is how four inches are expressed
 
 export type UnitSpec typecheck canBeUnitSpec;
@@ -26,11 +27,11 @@ annotation { "Name" : "Inch", "Abbreviation" : "in" }
 export const inch = 2.54 * centimeter;
 annotation { "Name" : "Foot", "Abbreviation" : "ft" }
 export const foot = 12 * inch;
-annotation { "Name" : "Yard" , "Abbreviation" : "yd" }
+annotation { "Name" : "Yard", "Abbreviation" : "yd" }
 export const yard = 3 * foot;
 
 annotation { "Name" : "Radian", "Abbreviation" : "rad" }
-export const radian = { "value" : 1, "unit" : ANGLE_UNITS} as ValueWithUnits;
+export const radian = { "value" : 1, "unit" : ANGLE_UNITS } as ValueWithUnits;
 annotation { "Name" : "Degree", "Abbreviation" : "deg" }
 export const degree = 0.0174532925199432957692 * radian;
 
@@ -47,7 +48,7 @@ export predicate canBeUnitSpec(value)
 {
     value is map;
     @size(value) > 0;
-    for(var unit in value)
+    for (var unit in value)
     {
         unit.key is string;
         unit.value is number;
@@ -108,23 +109,23 @@ export operator*(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return ValueWithUnits or number
 {
     var newUnit = lhs.unit;
-    for(var unit in rhs.unit)
+    for (var unit in rhs.unit)
     {
-        if(lhs.unit[unit.key] == undefined)
+        if (lhs.unit[unit.key] == undefined)
         {
             newUnit[unit.key] = unit.value;
         }
         else
         {
             var sum = lhs.unit[unit.key] + unit.value;
-            if(sum == 0)
+            if (sum == 0)
                 newUnit[unit.key] = undefined;
             else
                 newUnit[unit.key] = sum;
         }
     }
 
-    if(@size(newUnit) == 0)
+    if (@size(newUnit) == 0)
         return lhs.value * rhs.value;
 
     return { "value" : lhs.value * rhs.value, "unit" : newUnit } as ValueWithUnits;
@@ -132,7 +133,7 @@ export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return Val
 
 function reciprocal(val is ValueWithUnits) returns ValueWithUnits
 {
-    for(var unit in val.unit)
+    for (var unit in val.unit)
     {
         val.unit[unit.key] *= -1;
     }
@@ -169,12 +170,12 @@ precondition
 export operator^(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 precondition
 {
-    for(var unit in lhs.unit)
+    for (var unit in lhs.unit)
         (unit.value * rhs) % 1 == 0;
 }
 {
     lhs.value = lhs.value ^ rhs;
-    for(var unit in lhs.unit)
+    for (var unit in lhs.unit)
     {
         lhs.unit[unit.key] = unit.value * rhs;
     }
@@ -189,12 +190,12 @@ export function abs(value is ValueWithUnits) returns ValueWithUnits
 export function sqrt(value is ValueWithUnits) returns ValueWithUnits
 precondition
 {
-    for(var unit in value.unit)
+    for (var unit in value.unit)
         unit.value % 2 == 0;
 }
 {
     value.value = sqrt(value.value);
-    for(var unit in value.unit)
+    for (var unit in value.unit)
         value.unit[unit.key] = unit.value / 2;
     return value;
 }
@@ -246,10 +247,10 @@ precondition value1.units == value2.units;
 export function toString(value is ValueWithUnits) returns string
 {
     var result = value.value ~ "";
-    for(var unit in value.unit)
+    for (var unit in value.unit)
     {
         result ~= " " ~ unit.key;
-        if(unit.value != 1)
+        if (unit.value != 1)
             result ~= "^" ~ unit.value;
     }
     return result;
@@ -269,7 +270,7 @@ export function stripUnits(value is ValueWithUnits)
 
 export function stripUnits(value is array) returns array
 {
-    for(var i = 0; i < @size(value); i += 1)
+    for (var i = 0; i < @size(value); i += 1)
     {
         value[i] = stripUnits(value[i]);
     }
@@ -278,7 +279,7 @@ export function stripUnits(value is array) returns array
 
 export function stripUnits(value is map) returns map
 {
-    for(var entry in value)
+    for (var entry in value)
     {
         value[entry.key] = stripUnits(entry.value);
     }
@@ -292,14 +293,14 @@ export function evaluateExpression(expression is number, expectedUnit is number)
 
 export function evaluateExpression(expression is number, expectedUnit is ValueWithUnits) returns map
 {
-    return {'status' : ExpressionValidationResult.NO_UNIT , 'value' : expression * expectedUnit.value };
+    return { 'status' : ExpressionValidationResult.NO_UNIT, 'value' : expression * expectedUnit.value };
 }
 
 export function evaluateExpression(expression is ValueWithUnits, expectedUnit is ValueWithUnits) returns map
 {
     if (expression.unit == expectedUnit.unit)
     {
-        return {'status' : ExpressionValidationResult.VALID , 'value' : expression.value };
+        return { 'status' : ExpressionValidationResult.VALID, 'value' : expression.value };
     }
 
     return { 'status' : ExpressionValidationResult.ERROR, 'value' : 0.0 };

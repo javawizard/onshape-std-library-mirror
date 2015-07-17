@@ -1,13 +1,13 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 //wrappers around mathematical builtin functions and some constants
 
 export const PI = 3.1415926535897932384626433832795;
 
 export const TOLERANCE =
-    {
-        "zeroAngle"     : 1e-11,
-        "zeroLength"    : 1e-8
-    };
+{
+    "zeroAngle" : 1e-11,
+    "zeroLength" : 1e-8
+};
 
 export function abs(value is number)
 {
@@ -120,9 +120,9 @@ export function max(value1, value2)
 export function min(arr is array)
 {
     var minVal = undefined;
-    for(var entry in arr)
+    for (var entry in arr)
     {
-        if(minVal == undefined || entry < minVal)
+        if (minVal == undefined || entry < minVal)
         {
             minVal = entry;
         }
@@ -133,9 +133,9 @@ export function min(arr is array)
 export function max(arr is array)
 {
     var maxVal = undefined;
-    for(var entry in arr)
+    for (var entry in arr)
     {
-        if(maxVal == undefined || maxVal < entry)
+        if (maxVal == undefined || maxVal < entry)
         {
             maxVal = entry;
         }
@@ -147,9 +147,9 @@ export function argMin(arr is array)
 {
     var minVal = undefined;
     var minIndex = undefined;
-    for(var i = 0; i < @size(arr); i += 1)
+    for (var i = 0; i < @size(arr); i += 1)
     {
-        if(minVal == undefined || arr[i] < minVal)
+        if (minVal == undefined || arr[i] < minVal)
         {
             minVal = arr[i];
             minIndex = i;
@@ -162,9 +162,9 @@ export function argMax(arr is array)
 {
     var maxVal = undefined;
     var maxIndex = undefined;
-    for(var i = 0; i < @size(arr); i += 1)
+    for (var i = 0; i < @size(arr); i += 1)
     {
-        if(maxVal == undefined || maxVal < arr[i])
+        if (maxVal == undefined || maxVal < arr[i])
         {
             maxVal = arr[i];
             maxIndex = i;
@@ -188,7 +188,7 @@ precondition
     var num = floor(1 + (to - from) / step);
     var out = @resize([], num);
     var cur = from;
-    for(var i = 0; i < num; i += 1)
+    for (var i = 0; i < num; i += 1)
     {
         out[i] = cur;
         cur += step;

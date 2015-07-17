@@ -1,4 +1,4 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/units.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
 
@@ -89,7 +89,6 @@ export const SHELL_OFFSET_BOUNDS =
     (yard)       : [0.0001, 0.0025, 250]
 } as LengthBoundSpec;
 
-
 export const THICKEN_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
@@ -101,7 +100,6 @@ export const THICKEN_BOUNDS =
     (foot)       : [0.0, 0.025, 1000],
     (yard)       : [0.0, 0.01,  250]
 } as LengthBoundSpec;
-
 
 export const NONNEGATIVE_LENGTH_BOUNDS =
 {
@@ -210,14 +208,12 @@ export const POSITIVE_COUNT_BOUNDS =
     (unitless) : [1, 2, 1e5]
 } as IntegerBoundSpec;
 
-
 export const POSITIVE_COUNT_BOUNDS_DEFAULT_1 =
 {
     "min"      : 1,
     "max"      : 1e9,
     (unitless) : [1, 1, 1e5]
 } as IntegerBoundSpec;
-
 
 export const POSITIVE_REAL_BOUNDS =
 {
@@ -247,7 +243,6 @@ export const HELIX_TURN_BOUNDS =
     (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
 
-
 //Type checking follows
 
 export type LengthBoundSpec typecheck canBeLengthBoundSpec;
@@ -258,23 +253,23 @@ export type RealBoundSpec typecheck canBeRealBoundSpec;
 export predicate canBeBoundSpec(value)
 {
     value is map;
-    if(!(value.min is number && value.max is number))
+    if (!(value.min is number && value.max is number))
     {
         value.min is ValueWithUnits;
         value.max is ValueWithUnits;
         value.min.unit == value.max.unit;
     }
     value.min <= value.max;
-    for(var entry in value)
+    for (var entry in value)
     {
-        if(entry.key != "min" && entry.key != "max")
+        if (entry.key != "min" && entry.key != "max")
         {
             entry.value is array;
             @size(entry.value) == 3;
-            for(var i = 0; i < 3; i += 1)
+            for (var i = 0; i < 3; i += 1)
             {
                 entry.value[i] is number;
-                if(i > 0)
+                if (i > 0)
                     entry.value[i - 1] <= entry.value[i];
             }
         }
@@ -285,7 +280,7 @@ export predicate canBeLengthBoundSpec(value)
 {
     canBeBoundSpec(value);
     isLength(value.min);
-    for(var entry in value)
+    for (var entry in value)
         entry.key == "min" || entry.key == "max" || isLength(entry.key);
 }
 
@@ -293,7 +288,7 @@ export predicate canBeAngleBoundSpec(value)
 {
     canBeBoundSpec(value);
     isAngle(value.min);
-    for(var entry in value)
+    for (var entry in value)
         entry.key == "min" || entry.key == "max" || isAngle(entry.key);
 }
 

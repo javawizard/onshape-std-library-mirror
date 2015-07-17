@@ -1,9 +1,9 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 //Vector math
-export import(path:"onshape/std/math.fs", version : "");
-export import(path:"onshape/std/utils.fs", version : "");
-export import(path:"onshape/std/units.fs", version : "");
-export import(path:"onshape/std/matrix.fs", version : "");
+export import(path : "onshape/std/math.fs", version : "");
+export import(path : "onshape/std/utils.fs", version : "");
+export import(path : "onshape/std/units.fs", version : "");
+export import(path : "onshape/std/matrix.fs", version : "");
 
 export type Vector typecheck canBeVector;
 
@@ -31,7 +31,7 @@ export function vector(x, y, z) returns Vector
 export predicate isLengthVector(value)
 {
     value is Vector;
-    for(var i = 0; i < @size(value); i += 1)
+    for (var i = 0; i < @size(value); i += 1)
     {
         isLength(value[i]);
     }
@@ -40,7 +40,7 @@ export predicate isLengthVector(value)
 export predicate isUnitlessVector(value)
 {
     value is Vector;
-    for(var i = 0; i < @size(value); i += 1)
+    for (var i = 0; i < @size(value); i += 1)
     {
         value[i] is number;
     }
@@ -84,7 +84,7 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    for(var i = 0; i < @size(vector1); i += 1)
+    for (var i = 0; i < @size(vector1); i += 1)
     {
         vector1[i] += vector2[i];
     }
@@ -97,7 +97,7 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    for(var i = 0; i < @size(vector1); i += 1)
+    for (var i = 0; i < @size(vector1); i += 1)
     {
         vector1[i] -= vector2[i];
     }
@@ -106,7 +106,7 @@ precondition
 
 export operator-(vector is Vector) returns Vector
 {
-    for(var i = 0; i < @size(vector); i += 1)
+    for (var i = 0; i < @size(vector); i += 1)
     {
         vector[i] = -vector[i];
     }
@@ -120,7 +120,7 @@ precondition
 }
 {
     var dot = vector1[0] * vector2[0];
-    for(var i = 1; i < @size(vector1); i += 1)
+    for (var i = 1; i < @size(vector1); i += 1)
     {
         dot += vector1[i] * vector2[i];
     }
@@ -157,7 +157,7 @@ export function normalize(vector is Vector) returns Vector
 
 export operator*(vector is Vector, scalar) returns Vector
 {
-    for(var i = 0; i < @size(vector); i += 1)
+    for (var i = 0; i < @size(vector); i += 1)
     {
         vector[i] *= scalar;
     }
@@ -166,7 +166,7 @@ export operator*(vector is Vector, scalar) returns Vector
 
 export operator*(scalar, vector is Vector) returns Vector
 {
-    for(var i = 0; i < @size(vector); i += 1)
+    for (var i = 0; i < @size(vector); i += 1)
     {
         vector[i] = scalar * vector[i];
     }
@@ -179,19 +179,19 @@ precondition
     matrixSize(matrix)[1] == @size(vector);
 }
 {
-    if(vector[0] is ValueWithUnits)
+    if (vector[0] is ValueWithUnits)
     {
         return (@matrixMultiply(matrix, stripUnits(vector)) as Vector) *
-                    ({ "value" : 1, "unit" : vector[0].unit } as ValueWithUnits);
+            ({ "value" : 1, "unit" : vector[0].unit } as ValueWithUnits);
     }
-    else if(vector[0] is number)
+    else if (vector[0] is number)
     {
         return @matrixMultiply(matrix, vector) as Vector;
     }
     //Multiply "by hand"
     var transposed = transpose(matrix);
     var result = (transposed[0] as Vector) * vector[0];
-    for(var i = 1; i < @size(vector); i += 1)
+    for (var i = 1; i < @size(vector); i += 1)
     {
         result += transposed[i] * vector[i];
     }
@@ -200,7 +200,7 @@ precondition
 
 export operator/(vector is Vector, scalar) returns Vector
 {
-    for(var i = 0; i < @size(vector); i += 1)
+    for (var i = 0; i < @size(vector); i += 1)
     {
         vector[i] /= scalar;
     }
@@ -216,22 +216,22 @@ export function project(vector1 is Vector, vector2 is Vector) returns Vector
 export function perpendicularVector(vec is Vector) returns Vector
 precondition @size(vec) == 3;
 {
-    if(vec[0] is ValueWithUnits)
+    if (vec[0] is ValueWithUnits)
         vec = [vec[0].value, vec[1].value, vec[2].value] as Vector;
-    if(squaredNorm(vec) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
+    if (squaredNorm(vec) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
         return vector(1, 0, 0);
     var different = vector(0, 0, 0);
     // The numbers are "random" and close to 1.  They're to avoid instability in cases likely to occur.
-    if(abs(vec[0]) >  1.036663652861932668633 * abs(vec[1]))
+    if (abs(vec[0]) > 1.036663652861932668633 * abs(vec[1]))
     {
-        if(abs(vec[0]) > .951702989392233451722 * abs(vec[2]))
+        if (abs(vec[0]) > .951702989392233451722 * abs(vec[2]))
             different[2] = 1;
         else
             different[1] = 1;
     }
     else
     {
-        if(abs(vec[1]) > .920419947455385938102 * abs(vec[2]))
+        if (abs(vec[1]) > .920419947455385938102 * abs(vec[2]))
             different[0] = 1;
         else
             different[1] = 1;
@@ -247,9 +247,9 @@ precondition
 }
 {
     var axis = crossProduct(from, to);
-    if(squaredNorm(axis) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
+    if (squaredNorm(axis) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
     {
-        if(dotProduct(from, to) > 0)
+        if (dotProduct(from, to) > 0)
         {
             return identityMatrix(3);
         }
@@ -277,7 +277,7 @@ precondition
 export function toString(value is Vector) returns string
 {
     var str = "(" ~ toString(value[0]);
-    for(var i = 1; i < @size(value); i += 1)
+    for (var i = 1; i < @size(value); i += 1)
     {
         str = str ~ ", " ~ toString(value[i]);
     }
@@ -301,5 +301,6 @@ export function perpendicularVectors(vector1 is Vector, vector2 is Vector) retur
 {
     var dotP = stripUnits(dotProduct(vector1, vector2));
     var v1v2 = stripUnits(squaredNorm(vector1) * squaredNorm(vector2));
-    return  dotP * dotP < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
+    return dotP * dotP < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }
+

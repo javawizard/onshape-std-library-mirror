@@ -1,46 +1,44 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path: "onshape/std/boolean.fs", version : "");
-export import(path: "onshape/std/evaluate.fs", version : "");
-export import(path: "onshape/std/transform.fs", version : "");
+export import(path : "onshape/std/boolean.fs", version : "");
+export import(path : "onshape/std/evaluate.fs", version : "");
+export import(path : "onshape/std/transform.fs", version : "");
 
-annotation {"Feature Type Name" : "Mirror"}
+annotation { "Feature Type Name" : "Mirror", "Filter Selector" : "allparts" }
 export const mirror = defineFeature(function(context is Context, id is Id, mirrorDefinition is map)
     precondition
     {
-        annotation {"Name" : "Face mirror", "Default" : false}
+        annotation { "Name" : "Face mirror", "Default" : false }
         mirrorDefinition.isFaceMirror is boolean;
 
         if (!mirrorDefinition.isFaceMirror)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepTypePredicate(mirrorDefinition);
+            booleanStepTypePredicate(mirrorDefinition);
 
-            annotation {"Name" : "Entities to mirror", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
             mirrorDefinition.entities is Query;
         }
         else
         {
-            annotation {"Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             mirrorDefinition.faces is Query;
         }
 
-        annotation {"Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1 }
         mirrorDefinition.mirrorPlane is Query;
 
         if (!mirrorDefinition.isFaceMirror)
         {
-            // TODO(mshugrina): reenable in 1.33
-            // booleanStepScopePredicate(mirrorDefinition);
+            booleanStepScopePredicate(mirrorDefinition);
         }
     }
     {
         const isFaceMirror = mirrorDefinition.isFaceMirror;
 
-        if(isFaceMirror)
+        if (isFaceMirror)
             mirrorDefinition.entities = mirrorDefinition.faces;
 
-        if(size(evaluateQuery(context, mirrorDefinition.entities)) == 0)
+        if (size(evaluateQuery(context, mirrorDefinition.entities)) == 0)
         {
             if (isFaceMirror)
                 reportFeatureError(context, id, ErrorStringEnum.MIRROR_SELECT_FACES, ["faces"]);
@@ -50,7 +48,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
         }
 
         mirrorDefinition.mirrorPlane = qGeometry(mirrorDefinition.mirrorPlane, GeometryType.PLANE);
-        var planeResult = evPlane(context, {"face" : mirrorDefinition.mirrorPlane});
+        var planeResult = evPlane(context, { "face" : mirrorDefinition.mirrorPlane });
         if (planeResult.error != undefined)
         {
             reportFeatureError(context, id, ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
@@ -62,7 +60,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
             "entities" : mirrorDefinition.entities,
             "transforms" : [transform],
             "instanceNames" : ["1"],
-            notFoundErrorKey("entities") :  ErrorStringEnum.MIRROR_SELECT_PARTS };
+            notFoundErrorKey("entities") : ErrorStringEnum.MIRROR_SELECT_PARTS };
         opPattern(context, id, patternDefinition);
 
         if (getFeatureError(context, id).result != undefined)
@@ -74,12 +72,15 @@ export const mirror = defineFeature(function(context is Context, id is Id, mirro
         // Perform any booleans, if required
         if (!mirrorDefinition.isFaceMirror)
         {
-            if (!processNewBodyIfNeeded(context, id, mergeMaps(mirrorDefinition, {"seed" : mirrorDefinition.entities})))
+            // We only include original body in the tools if the operation is UNION
+            var additionalParmeters = (mirrorDefinition.operationType == NewBodyOperationType.ADD) ?
+                { "seed" : mirrorDefinition.entities } : {};
+            if (!processNewBodyIfNeeded(context, id, mergeMaps(mirrorDefinition, additionalParmeters)))
             {
                 var errorId = id + "boolError";
                 opPattern(context, errorId, patternDefinition);
                 setBooleanErrorEntities(context, id, errorId);
             }
         }
-    }, { isFaceMirror : false,  operationType : NewBodyOperationType.NEW });
+    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
 

@@ -1,4 +1,4 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 
 //Planes
@@ -12,9 +12,9 @@ export enum DefaultPlaneType
 // Tool body
 export enum ToolBodyType
 {
-    annotation {"Name" : "Solid"}
+    annotation { "Name" : "Solid" }
     SOLID,
-    annotation {"Name" : "Surface"}
+    annotation { "Name" : "Surface" }
     SURFACE
 }
 
@@ -24,17 +24,15 @@ precondition
     isLength(size);
 }
 {
-    var definition = {  "defaultType" : defaultType,
-                        "size"        : size
-                     };
+    var definition = { "defaultType" : defaultType, "size" : size };
 
     startFeature(context, id, definition);
     var origin = vector(0, 0, 0) * meter;
-    if(defaultType == DefaultPlaneType.XY)
+    if (defaultType == DefaultPlaneType.XY)
         definition.plane = plane(origin, vector(0, 0, 1), vector(1, 0, 0));
-    if(defaultType == DefaultPlaneType.YZ)
+    if (defaultType == DefaultPlaneType.YZ)
         definition.plane = plane(origin, vector(1, 0, 0), vector(0, 1, 0));
-    if(defaultType == DefaultPlaneType.XZ)
+    if (defaultType == DefaultPlaneType.XZ)
         definition.plane = plane(origin, vector(0, -1, 0), vector(1, 0, 0));
     opPlane(context, id, definition);
     endFeature(context, id);
@@ -44,7 +42,7 @@ export function origin(context is Context)
 {
     var id = makeId("Origin");
     startFeature(context, id, {});
-    var out = opPoint(context, id, {"point" : vector(0, 0, 0) * meter, "origin" : true});
+    var out = opPoint(context, id, { "point" : vector(0, 0, 0) * meter, "origin" : true });
     endFeature(context, id);
     return out;
 }
@@ -58,26 +56,29 @@ export predicate canBeForeignId(value)
     //TODO: other checks
 }
 
-annotation {"Feature Type Name" : "Import"}
+annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, importDefinition is map)
     precondition
     {
-        annotation {"Name" : "Foreign Id"}
+        annotation { "Name" : "Foreign Id" }
         importDefinition.foreignId is ForeignId;
 
-        annotation {"Name" : "Source is 'Y Axis Up'"}
+        annotation { "Name" : "Source is 'Y Axis Up'" }
         importDefinition.yAxisIsUp is boolean;
+
+        annotation {"Name" : "Flatten assembly"}
+        importDefinition.flatten is boolean;
     }
     {
         opImportForeign(context, id, importDefinition);
-    }, { yAxisIsUp : false });
+    }, { yAxisIsUp : false, flatten : false });
 
-annotation {"Feature Type Name" : "Delete Part"}
+annotation { "Feature Type Name" : "Delete Part" }
 export const deleteBodies = defineFeature(function(context is Context, id is Id, deleteDefinition is map)
     precondition
     {
-        annotation {"Name" : "Entities to delete",
-        "Filter" : EntityType.BODY}
+        annotation { "Name" : "Entities to delete",
+                     "Filter" : EntityType.BODY }
         deleteDefinition.entities is Query;
     }
     {
@@ -85,31 +86,34 @@ export const deleteBodies = defineFeature(function(context is Context, id is Id,
     });
 
 export type BuildFunction typecheck canBeBuildFunction;
+
 export predicate canBeBuildFunction(value)
 {
     value is function;
 }
 
-annotation {"Feature Type Name" : "Import Derived"}
+annotation { "Feature Type Name" : "Derived" }
 export const importDerived = defineFeature(function(context is Context, id is Id, importDefinition is map)
     precondition
     {
-        annotation {"Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN"}
+        annotation { "Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN" }
         importDefinition.parts is Query;
-        annotation {"UIHint" : "ALWAYS_HIDDEN"}
+        annotation { "UIHint" : "ALWAYS_HIDDEN" }
         importDefinition.buildFunction is BuildFunction;
     }
     {
         var otherContext = importDefinition.buildFunction();
         if (otherContext != undefined)
         {
-            if (size(evaluateQuery(otherContext, importDefinition.parts)) == 0 )
+            if (size(evaluateQuery(otherContext, importDefinition.parts)) == 0)
             {
                 reportFeatureError(context, id, ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
-                    return;
+                return;
             }
+            var bodiesToKeep = qUnion([importDefinition.parts, qMateConnectorsOfParts(importDefinition.parts)]);
+
             var deleteDefinition = {};
-            deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), importDefinition.parts);
+            deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), bodiesToKeep);
             deleteBodies(otherContext, id + "delete", deleteDefinition);
 
             var mergeDefinition = importDefinition; // to pass such general parameters as asVersion

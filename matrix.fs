@@ -1,7 +1,7 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 //Matrices are in row major order so that the first index is the row and the second is the column.
-export import(path:"onshape/std/utils.fs", version : "");
-export import(path:"onshape/std/math.fs", version : "");
+export import(path : "onshape/std/utils.fs", version : "");
+export import(path : "onshape/std/math.fs", version : "");
 
 export type Matrix typecheck canBeMatrix;
 
@@ -52,13 +52,13 @@ precondition matrixSize(m1) == matrixSize(m2);
 export operator-(m1 is Matrix, m2 is Matrix) returns Matrix
 precondition matrixSize(m1) == matrixSize(m2);
 {
-  return @matrixDifference(m1, m2) as Matrix;
+    return @matrixDifference(m1, m2) as Matrix;
 }
 
 export function cwiseProduct(m1 is Matrix, m2 is Matrix) returns Matrix
 precondition matrixSize(m1) == matrixSize(m2);
 {
-  return @matrixCwiseProduct(m1, m2) as Matrix;
+    return @matrixCwiseProduct(m1, m2) as Matrix;
 }
 
 export operator-(m1 is Matrix) returns Matrix
@@ -71,10 +71,12 @@ precondition @size(m1[0]) == @size(m2);
 {
     return @matrixMultiply(m1, m2) as Matrix;
 }
+
 export operator*(m1 is Matrix, m2 is number) returns Matrix
 {
     return @matrixMultiply(m1, m2) as Matrix;
 }
+
 export operator*(m1 is number, m2 is Matrix) returns Matrix
 {
     return @matrixMultiply(m1, m2) as Matrix;
@@ -111,15 +113,15 @@ export function toString(value is Matrix) returns string
 {
     var result = "[[";
     var firstRow = true;
-    for(var row in value)
+    for (var row in value)
     {
-        if(!firstRow)
+        if (!firstRow)
             result ~= "]\n[";
         firstRow = false;
         var firstCol = true;
-        for(var col in row)
+        for (var col in row)
         {
-            if(!firstCol)
+            if (!firstCol)
                 result ~= ", ";
             firstCol = false;
             result ~= col;

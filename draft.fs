@@ -1,35 +1,35 @@
-FeatureScript 156; /* Automatically generated version */
+FeatureScript 172; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 
 //Draft Operation
-annotation {"Feature Type Name" : "Draft"}
+annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
 export const draft = defineFeature(function(context is Context, id is Id, draftDefinition is map)
     precondition
     {
-        annotation {"Name" : "Neutral plane",
-                    "Filter" : GeometryType.PLANE,
-                    "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Neutral plane",
+                     "Filter" : GeometryType.PLANE,
+                     "MaxNumberOfPicks" : 1 }
         draftDefinition.neutralPlane is Query;
 
-        annotation {"Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+        annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
         draftDefinition.draftFaces is Query;
 
-        annotation {"Name" : "Draft angle"}
+        annotation { "Name" : "Draft angle" }
         isAngle(draftDefinition.angle, ANGLE_STRICT_90_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         draftDefinition.pullDirection is boolean;
 
-        annotation {"Name" : "Tangent propagation", "Default" : true}
+        annotation { "Name" : "Tangent propagation", "Default" : true }
         draftDefinition.tangentPropagation is boolean;
 
-        annotation {"Name" : "Reapply fillet", "Default" : false}
+        annotation { "Name" : "Reapply fillet", "Default" : false }
         draftDefinition.reFillet is boolean;
     }
     {
-        var planeResult = evFaceTangentPlane(context, {"face" : draftDefinition.neutralPlane, "parameter" : vector(0.5, 0.5)});
+        var planeResult = evFaceTangentPlane(context, { "face" : draftDefinition.neutralPlane, "parameter" : vector(0.5, 0.5) });
         if (planeResult.error != undefined)
         {
             reportFeatureError(context, id, ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
@@ -38,7 +38,7 @@ export const draft = defineFeature(function(context is Context, id is Id, draftD
 
         draftDefinition.pullVec = planeResult.result.normal;
 
-        if(draftDefinition.pullDirection)
+        if (draftDefinition.pullDirection)
             draftDefinition.pullVec = -draftDefinition.pullVec;
 
         opDraft(context, id, draftDefinition);
