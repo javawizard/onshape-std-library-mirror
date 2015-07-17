@@ -10,31 +10,34 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
     var transform = planeToWorld(plane);
     // The bbox of the body in plane coordinate system with positive z being in front of the plane
-    var boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : transform});
+    var boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : transform });
 
     // Error while bbox computation we delete all bodies
-    if (boxResult.error != undefined) {
+    if (boxResult.error != undefined)
+    {
         return allBodies;
     }
 
     boxResult = stripUnits(boxResult);
 
     // Body is fully behind the plane. Retain only the input body. no splitting needed
-    if (boxResult.result.maxCorner[2] < TOLERANCE.zeroLength) {
+    if (boxResult.result.maxCorner[2] < TOLERANCE.zeroLength)
+    {
         return qSubtraction(allBodies, partToSection);
     }
 
     // Body is fully in front of plane. Delete all bodies no splitting needed
-    if (boxResult.result.minCorner[2] > -TOLERANCE.zeroLength) {
+    if (boxResult.result.minCorner[2] > -TOLERANCE.zeroLength)
+    {
         return allBodies;
     }
 
     // Create construction plane for sectioning
     var cplaneDefinition =
-        {
-            "plane": plane,
-            "size": 1 * meter
-        };
+    {
+        "plane" : plane,
+        "size" : 1 * meter
+    };
 
     var planeId = id + "plane";
     opPlane(context, planeId, cplaneDefinition);
@@ -46,11 +49,11 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
     // Split part on plane
     var splitPartDefinition =
-        {
-            "targets": partToSection,
-            "tool": planeTool,
-            "keepTools": false
-        };
+    {
+        "targets" : partToSection,
+        "tool" : planeTool,
+        "keepTools" : false
+    };
 
     var splitPartId = id + "splitPart";
     opSplitPart(context, splitPartId, splitPartDefinition);
@@ -61,8 +64,8 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
         return allBodies;
     }
 
-   // Split was success. Retain everything behind the plane
-   return qSubtraction(allBodies, qBodySplitBy(splitPartId, true));
+    // Split was success. Retain everything behind the plane
+    return qSubtraction(allBodies, qBodySplitBy(splitPartId, true));
 }
 
 //Section Part Feature
@@ -73,9 +76,9 @@ export const sectionPart = defineFeature(function(context is Context, id is Id, 
         sectionPartDefinition.plane is Plane;
     }
     {
-        var bodiesToDelete = performSectionCutAndGetBodiesToDelete(context, id , sectionPartDefinition.plane, sectionPartDefinition.targets);
+        var bodiesToDelete = performSectionCutAndGetBodiesToDelete(context, id, sectionPartDefinition.plane, sectionPartDefinition.targets);
         var deleteBodiesId = id + "deleteBody";
-        opDeleteBodies(context, deleteBodiesId, {"entities" : bodiesToDelete});
+        opDeleteBodies(context, deleteBodiesId, { "entities" : bodiesToDelete });
         processSubfeatureStatus(context, deleteBodiesId, id);
     });
 

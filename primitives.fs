@@ -5,11 +5,11 @@ export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/sketch.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
-annotation {"Feature Type Name" : "Cube"}
+annotation { "Feature Type Name" : "Cube" }
 export const cube = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation {"Name" : "Side length"}
+        annotation { "Name" : "Side length" }
         isLength(definition.sideLength, NONNEGATIVE_LENGTH_BOUNDS);
     }
     {
@@ -19,28 +19,28 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
     });
 
 // Defined in the old way to overload with the sphere functions in surfaceGeometry.  TODO: rename features to start with f.
-annotation {"Feature Type Name" : "Sphere"}
+annotation { "Feature Type Name" : "Sphere" }
 export function sphere(context is Context, id is Id, definition is map)
 precondition
 {
-    if(definition.center != undefined)
+    if (definition.center != undefined)
     {
-        annotation {"Name" : "Center", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Center", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
         definition.center is Query;
     }
 
-    annotation {"Name" : "Radius"}
+    annotation { "Name" : "Radius" }
     isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
 }
 {
     startFeature(context, id, definition);
     var center;
-    if(definition.center != undefined)
+    if (definition.center != undefined)
     {
         var pointResult = evVertexPoint(context, { "vertex" : definition.center });
         center = pointResult.result;
     }
-    if(center == undefined)
+    if (center == undefined)
         center = vector(0, 0, 0) * meter;
 
     definition.center = center;
@@ -61,11 +61,11 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
         {
             var plane = XY_PLANE;
             plane.origin[2] = min(definition.corner1[2], definition.corner2[2]);
-            var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : plane});
+            var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : plane });
             skRectangle(sketch, "rectangle",
-                        { "firstCorner"  : vector(resize(definition.corner1, 2)),
-                          "secondCorner" : vector(resize(definition.corner2, 2))
-                        });
+                    { "firstCorner"  : vector(resize(definition.corner1, 2)),
+                      "secondCorner" : vector(resize(definition.corner2, 2))
+                    });
 
             skSolve(sketch);
         }
@@ -78,7 +78,7 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
                         "startDepth" : 0 * meter,
                         "direction"  : [0, 0, 1],
                         "endDepth"   : abs(definition.corner2[2] - definition.corner1[2])
-                      });
+                    });
         }
         {
             var query = qCreatedBy(sketchId, EntityType.BODY);
@@ -97,7 +97,7 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
         var sketchId = id + "sketch";
         {
             var plane = plane(definition.bottomCenter, normalize(definition.topCenter - definition.bottomCenter));
-            var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : plane});
+            var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : plane });
 
             skCircle(sketch, "circle1",
                      { "center" : worldToSketch(plane, definition.bottomCenter),
@@ -115,8 +115,8 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
                     });
         }
         {
-          var query = qCreatedBy(sketchId, EntityType.BODY);
-          deleteBodies(context, id + "deleteSketch", { "entities" : query });
+            var query = qCreatedBy(sketchId, EntityType.BODY);
+            deleteBodies(context, id + "deleteSketch", { "entities" : query });
         }
     });
 
@@ -135,23 +135,22 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
             var dir = normalize(definition.topCenter - definition.bottomCenter);
             var normal = perpendicularVector(dir);
             var plane = plane(definition.bottomCenter, normal, crossProduct(dir, normal));
-            var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : plane});
+            var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : plane });
             var height = norm(definition.topCenter - definition.bottomCenter);
             var base = worldToSketch(plane, definition.bottomCenter);
             {
                 var points = [base,
-                              base + vector(0 * meter, height),
-                              base + vector(definition.topRadius, height),
-                              base + vector(definition.bottomRadius, 0 * meter)];
-                for(var i = 0; i < size(points); i += 1)
+                    base + vector(0 * meter, height),
+                    base + vector(definition.topRadius, height),
+                    base + vector(definition.bottomRadius, 0 * meter)];
+                for (var i = 0; i < size(points); i += 1)
                 {
                     skLineSegment(sketch, "line." ~ i,
-                                  { "start"  : points[i],
-                                    "end"    : points[(i + 1) % size(points)]
+                                  { "start" : points[i],
+                                    "end"   : points[(i + 1) % size(points)]
                                   });
                 }
             }
-
 
             skSolve(sketch);
         }
@@ -159,7 +158,7 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
             var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
             var axis = sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line.0");
             revolve(context, id + "revolve",
-                    {  "entities"    : query,
+                    { "entities"    : query,
                       "axis"        : axis,
                       "revolveType" : RevolveType.FULL
                     });
@@ -179,15 +178,15 @@ export const fEllipsoid = defineFeature(function(context is Context, id is Id, d
     {
         var sketchId = id + "sketch";
         {
-            var sketch = newSketchOnPlane(context, sketchId, {sketchPlane : XY_PLANE} );
+            var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : XY_PLANE });
             skLineSegment(sketch, "line1",
-                          { "start"  : vector(0, 1) * meter,
-                            "end"    : vector(0, -1) * meter
+                          { "start" : vector(0, 1) * meter,
+                             "end"  : vector(0, -1) * meter
                           });
             skArc(sketch, "arc1",
-                  { "start"  : vector(0, 1) * meter,
-                    "mid"    : vector(1, 0) * meter,
-                    "end"    : vector(0, -1) * meter
+                  { "start" : vector(0, 1) * meter,
+                    "mid"   : vector(1, 0) * meter,
+                    "end"   : vector(0, -1) * meter
                   });
 
             skSolve(sketch);
@@ -196,9 +195,9 @@ export const fEllipsoid = defineFeature(function(context is Context, id is Id, d
             var query = qCreatedBy(sketchId, EntityType.FACE);
             var axis = sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line1");
             revolve(context, id + "revolve",
-                    { "entities"    : query,
-                      "axis"        : axis,
-                      "revolveType" : RevolveType.FULL
+                    { "entities" : query,
+                       "axis" : axis,
+                       "revolveType" : RevolveType.FULL
                     });
         }
         {
@@ -214,8 +213,8 @@ export const fEllipsoid = defineFeature(function(context is Context, id is Id, d
             var translation = definition.center;
             var transform = transform(matrix, translation);
 
-            opTransform(context, id + "transform" ,
-                        { "bodies"     : query,
+            opTransform(context, id + "transform",
+                        { "bodies" : query,
                           "transform" : transform
                         });
         }

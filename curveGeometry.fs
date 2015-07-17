@@ -1,7 +1,8 @@
 FeatureScript ✨; /* Automatically generated version */
-export import(path:"onshape/std/transform.fs", version : "");
-export import(path:"onshape/std/coordSystem.fs", version : "");
+export import(path : "onshape/std/transform.fs", version : "");
+export import(path : "onshape/std/coordSystem.fs", version : "");
 export import(path : "onshape/std/curvetype.gen.fs", version : "");
+
 // ===================================== Line ======================================
 
 export type Line typecheck canBeLine;
@@ -15,7 +16,7 @@ export predicate canBeLine(value)
 
 export function line(origin is Vector, direction is Vector) returns Line
 {
-    return {"origin" : origin, "direction" : normalize(direction)} as Line;
+    return { "origin" : origin, "direction" : normalize(direction) } as Line;
 }
 
 export function lineFromBuiltin(definition is map) returns Line
@@ -73,7 +74,7 @@ export predicate canBeCircle(value)
 
 export function circle(cSys is CoordSystem, radius is ValueWithUnits) returns Circle
 {
-    return {"coordSystem" : cSys, "radius" : radius} as Circle;
+    return { "coordSystem" : cSys, "radius" : radius } as Circle;
 }
 
 export function circle(center is Vector, xDirection is Vector, normal is Vector, radius is ValueWithUnits) returns Circle
@@ -91,5 +92,4 @@ export function toString(value is Circle) returns string
     var str = "radius" ~ toString(value.radius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
     return str;
 }
-
 

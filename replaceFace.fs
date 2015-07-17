@@ -4,39 +4,39 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 
-annotation {"Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange" }
+annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation {"Name" : "Faces to replace",
-                    "UIHint" : "SHOW_CREATE_SELECTION",
-                    "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
+        annotation { "Name" : "Faces to replace",
+                     "UIHint" : "SHOW_CREATE_SELECTION",
+                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
         definition.replaceFaces is Query;
 
-        annotation {"Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1 }
         definition.templateFace is Query;
 
         // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the
         // face being replaced. (e.g to determine if the outside or inside of a cylindrical surface is to be used as template)
         // Basically, if oppositeSense is false, we use the same sense as the template face, so the normal of the face
         // will point in the same direction as the template. If oppositeSense is true it will point in opposite direction
-        annotation {"Name" : "Flip alignment", "Default" : false}
+        annotation { "Name" : "Flip alignment", "Default" : false }
         definition.oppositeSense is boolean;
 
-        annotation {"Name" : "Offset distance"}
+        annotation { "Name" : "Offset distance" }
         isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
     }
     //============================ Body =============================
     {
-        if(definition.oppositeDirection)
+        if (definition.oppositeDirection)
             definition.offset = -definition.offset;
 
         // Only draw the offset manipulator if the replace face is defined
         var replaceFacePlane = computeFacePlane(context, id, definition.replaceFaces);
-        if(replaceFacePlane != undefined)
+        if (replaceFacePlane != undefined)
             addOffsetManipulator(context, id, definition, replaceFacePlane);
 
         opReplaceFace(context, id, definition);
@@ -57,13 +57,13 @@ function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinitio
         offsetDirection = -offsetDirection;
 
     addManipulators(context, id, { (OFFSET_MANIPULATOR) :
-                                   linearManipulator(offsetOrigin, offsetDirection, replaceFaceDefinition.offset) });
+                    linearManipulator(offsetOrigin, offsetDirection, replaceFaceDefinition.offset) });
 
 }
 
 function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
 {
-    return evFaceTangentPlane(context, {"face" : entitiesQuery, "parameter" : vector(0.5, 0.5)}).result;
+    return evFaceTangentPlane(context, { "face" : entitiesQuery, "parameter" : vector(0.5, 0.5) }).result;
 }
 
 export function replaceFaceManipulatorChange(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map

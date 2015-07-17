@@ -7,57 +7,57 @@ export import(path : "onshape/std/moveFace.fs", version : "");
 
 export enum BooleanOperationType
 {
-    annotation {"Name" : "Union"}
+    annotation { "Name" : "Union" }
     UNION,
-    annotation {"Name" : "Subtract"}
+    annotation { "Name" : "Subtract" }
     SUBTRACTION,
-    annotation {"Name" : "Intersect"}
+    annotation { "Name" : "Intersect" }
     INTERSECTION,
-    annotation {"Hidden" : true}
+    annotation { "Hidden" : true }
     SUBTRACT_COMPLEMENT
 }
 
 //Boolean Operation
-annotation {"Feature Type Name" : "Boolean"}
+annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, booleanDefinition is map)
     precondition
     {
-        annotation {"Name" : "Operation type"}
+        annotation { "Name" : "Operation type" }
         booleanDefinition.operationType is BooleanOperationType;
-        annotation {"Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID}
+        annotation { "Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID }
         booleanDefinition.tools is Query;
 
         if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
         {
-            annotation {"Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID}
+            annotation { "Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID }
             booleanDefinition.targets is Query;
 
-            annotation {"Name" : "Offset"}
+            annotation { "Name" : "Offset" }
             booleanDefinition.offset is boolean;
 
             if (booleanDefinition.offset)
             {
-                annotation {"Name" : "Offset all"}
+                annotation { "Name" : "Offset all" }
                 booleanDefinition.offsetAll is boolean;
 
                 if (!booleanDefinition.offsetAll)
                 {
-                    annotation {"Name" : "Faces to offset",
-                        "Filter" : (EntityType.FACE && BodyType.SOLID)}
+                    annotation { "Name" : "Faces to offset",
+                                 "Filter" : (EntityType.FACE && BodyType.SOLID) }
                     booleanDefinition.entitiesToOffset is Query;
                 }
 
-                annotation {"Name" : "Offset distance"}
+                annotation { "Name" : "Offset distance" }
                 isLength(booleanDefinition.offsetDistance, SHELL_OFFSET_BOUNDS);
 
-                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
                 booleanDefinition.oppositeDirection is boolean;
 
-                annotation {"Name" : "Reapply fillet"}
+                annotation { "Name" : "Reapply fillet" }
                 booleanDefinition.reFillet is boolean;
             }
 
-            annotation {"Name" : "Keep tools"}
+            annotation { "Name" : "Keep tools" }
             booleanDefinition.keepTools is boolean;
         }
     }
@@ -118,46 +118,46 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         {
             opBoolean(context, id, booleanDefinition);
         }
-    }, { keepTools : false, offset : false, oppositeDirection : false , offsetAll : false, reFillet : false});
+    }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
 
 function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
-    if(query.queryType == QueryType.UNION)
+    if (query.queryType == QueryType.UNION)
     {
         var wrappedSubqueries = query.subqueries;
-        for(var i = 0; i < @size(wrappedSubqueries); i += 1)
+        for (var i = 0; i < @size(wrappedSubqueries); i += 1)
         {
             wrappedSubqueries[i] = wrapFaceQueryInCopy(wrappedSubqueries[i], id);
         }
         return qUnion(wrappedSubqueries);
     }
-    return makeQuery(id, "COPY", EntityType.FACE, {"derivedFrom" : query, "instanceName" : "1"});
+    return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
 
 export enum NewBodyOperationType
 {
-    annotation {"Name" : "New"}
+    annotation { "Name" : "New" }
     NEW,
-    annotation {"Name" : "Add"}
+    annotation { "Name" : "Add" }
     ADD,
-    annotation {"Name" : "Remove"}
+    annotation { "Name" : "Remove" }
     REMOVE,
-    annotation {"Name" : "Intersect"}
+    annotation { "Name" : "Intersect" }
     INTERSECT
 }
 
 export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
 {
     return {
-        NewBodyOperationType.ADD       : BooleanOperationType.UNION,
-        NewBodyOperationType.REMOVE    : BooleanOperationType.SUBTRACTION,
+        NewBodyOperationType.ADD :       BooleanOperationType.UNION,
+        NewBodyOperationType.REMOVE :    BooleanOperationType.SUBTRACTION,
         NewBodyOperationType.INTERSECT : BooleanOperationType.SUBTRACT_COMPLEMENT
     }[operationType];
 }
 
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
-    annotation {"Name" : "Result body operation type"}
+    annotation { "Name" : "Result body operation type" }
     booleanDefinition.operationType is NewBodyOperationType;
 }
 
@@ -167,11 +167,11 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
     {
         if (booleanDefinition.defaultScope != undefined)
         {
-            annotation{"Name" : "Merge with all", "Default" : false}
+            annotation { "Name" : "Merge with all", "Default" : false }
             booleanDefinition.defaultScope is boolean;
             if (booleanDefinition.defaultScope != true)
             {
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID}
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID }
                 booleanDefinition.booleanScope is Query;
             }
         }
@@ -202,7 +202,7 @@ export predicate booleanStepPredicate(booleanDefinition is map)
 function subfeatureToolsTargets(context is Context, id is Id, definition is map) returns map
 {
     // Fill defaults
-    definition = mergeMaps({ "seed" : qNothing(), "defaultScope" : true}, definition);
+    definition = mergeMaps({ "seed" : qNothing(), "defaultScope" : true }, definition);
 
     var output = {};
     var resultQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
@@ -241,11 +241,11 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map) returns boolean
 {
-    if( !featureHasError(context, id) && definition.operationType != NewBodyOperationType.NEW)
+    if (!featureHasError(context, id) && definition.operationType != NewBodyOperationType.NEW)
     {
         var booleanDefinition = subfeatureToolsTargets(context, id, definition);
         booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
-        if ( size(evaluateQuery(context, booleanDefinition.tools)) == 0 )
+        if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
         {
             //TODO : this would probably be better to block on the UI, but that would be something
             //to do if/when we have a "Make surface" checkbox or similar indication.
@@ -275,7 +275,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
 function classifyCollisions(context is Context, collisions is array) returns map
 {
     var targetBodyToCollisionType = {};
-    for ( var c in collisions)
+    for (var c in collisions)
     {
         if (targetBodyToCollisionType[c.toolBody] == undefined)
             targetBodyToCollisionType[c.toolBody] = {};
@@ -295,16 +295,16 @@ function classifyCollisions(context is Context, collisions is array) returns map
     var classifyCollisions = {};
     for (var perTool in targetBodyToCollisionType)
     {
-        var toolCollisions = { 'abutting' : [], 'intersection' : []};
+        var toolCollisions = { 'abutting' : [], 'intersection' : [] };
         for (var entry in perTool.value)
         {
             if (entry.value['type'] == "INTERFERE" ||
                 entry.value['type'] == "TARGET_IN_TOOL" ||
-                entry.value['type']  == "TOOL_IN_TARGET")
+                entry.value['type'] == "TOOL_IN_TARGET")
                 toolCollisions.intersection = append(toolCollisions.intersection, entry.key);
             else if ((entry.value['type'] == "ABUT_NO_CLASS" ||
-                entry.value['type'] == "ABUT_TOOL_OUT_TARGET") &&
-                     faceToFaceCollisionsContainInterferences(context, entry.value['collisions']))
+                      entry.value['type'] == "ABUT_TOOL_OUT_TARGET") &&
+                    faceToFaceCollisionsContainInterferences(context, entry.value['collisions']))
                 toolCollisions.abutting = append(toolCollisions.abutting, entry.key);
         }
         if (size(toolCollisions.intersection) > 0 || size(toolCollisions.abutting) > 0)
@@ -315,26 +315,26 @@ function classifyCollisions(context is Context, collisions is array) returns map
 
 function faceToFaceCollisionsContainInterferences(context is Context, collisions) returns boolean
 {
-    for ( var c in collisions)
+    for (var c in collisions)
     {
         if (c.tool is Query && c.target is Query)
         {
-            var collisionResult = evCollision(context, {'tools' : c.tool, 'targets' : c.target});
+            var collisionResult = evCollision(context, { 'tools' : c.tool, 'targets' : c.target });
             if (collisionResult.error != undefined)
             {
                 return false;
             }
 
-            for ( var col1 in collisionResult.result)
+            for (var col1 in collisionResult.result)
             {
                 if (col1['type'] == "INTERFERE" ||
                     col1['type'] == "TARGET_IN_TOOL" ||
-                    col1['type']  == "TOOL_IN_TARGET")
+                    col1['type'] == "TOOL_IN_TARGET")
                 {
                     return true;
                 }
             }
-         }
+        }
     }
     return false;
 }
@@ -353,7 +353,7 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, {tools : toolQ, targets : targetQ});
+    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
     if (collisionResult.error != undefined)
     {
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
@@ -362,7 +362,7 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
     if (collisions is array)
     {
         var collisionClasses = classifyCollisions(context, collisions);
-        var conditionsToAdd;  //undefined|boolean
+        var conditionsToAdd;    //undefined|boolean
         var conditionsToRemove; //undefined|boolean
         var target = [];
         for (var entry in collisionClasses)
@@ -377,11 +377,11 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
                 target = append(target, entry.value.intersection[0]);
             if (conditionsToAdd && !isIn(entry.value.abutting[0], target))
                 target = append(target, entry.value.abutting[0]);
-         }
-         if (conditionsToRemove == true && conditionsToAdd != true)
-                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, target);
-         else if (conditionsToAdd == true && conditionsToRemove != true)
-                return setOperationType(featureDefinition, NewBodyOperationType.ADD, target);
+        }
+        if (conditionsToRemove == true && conditionsToAdd != true)
+            return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, target);
+        else if (conditionsToAdd == true && conditionsToRemove != true)
+            return setOperationType(featureDefinition, NewBodyOperationType.ADD, target);
     }
     return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
 }
@@ -398,7 +398,7 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, {tools : toolQ, targets : targetQ});
+    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
     if (collisionResult.error != undefined)
     {
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
@@ -441,14 +441,14 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
 }
 
 
-function combineCollisionType(oldType , newType is string) returns string
+function combineCollisionType(oldType, newType is string) returns string
 {
     if (oldType == undefined || oldType == newType)
         return newType;
     if (oldType == "INTERFERE" || newType == "INTERFERE")
         return "INTERFERE";
     if (oldType == "TARGET_IN_TOOL" || oldType == "TOOL_IN_TARGET")
-       return "INTERFERE";
+        return "INTERFERE";
     return oldType;
 }
 
@@ -480,7 +480,7 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, {tools : toolQ, targets : targetQ});
+    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
     if (collisionResult.error != undefined)
     {
         return featureDefinition;
@@ -497,9 +497,9 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
                 return featureDefinition;
             var nAbutting = size(entry.value.abutting);
             if (nAbutting > 0)
-               haveAbutting = true;
-         }
-         if (haveAbutting) // if we made it here there are no intersections
+                haveAbutting = true;
+        }
+        if (haveAbutting) // if we made it here there are no intersections
             featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
     }
     return featureDefinition;

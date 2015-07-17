@@ -1,5 +1,5 @@
 FeatureScript ✨; /* Automatically generated version */
-export import(path:"onshape/std/transform.fs", version : "");
+export import(path : "onshape/std/transform.fs", version : "");
 
 export type CoordSystem typecheck canBeCoordSystem;
 
@@ -14,7 +14,7 @@ export predicate canBeCoordSystem(value)
 
 export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) returns CoordSystem
 {
-    return {"origin" : origin, "xAxis" : normalize(xAxis), "zAxis" : normalize(zAxis)} as CoordSystem;
+    return { "origin" : origin, "xAxis" : normalize(xAxis), "zAxis" : normalize(zAxis) } as CoordSystem;
 }
 
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
@@ -55,3 +55,4 @@ export function toString(cSys is CoordSystem) returns string
 {
     return "origin" ~ toString(cSys.origin) ~ "\n" ~ "x-Axis" ~ toString(cSys.xAxis) ~ "\n" ~ "z-Axis" ~ toString(cSys.zAxis);
 }
+

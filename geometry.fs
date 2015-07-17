@@ -33,7 +33,7 @@ export import(path : "onshape/std/variable.fs", version : "");
 //start model context
 export function newContextWithDefaults() returns Context
 {
-   return newContextWithDefaults(meter);
+    return newContextWithDefaults(meter);
 }
 
 export function newContextWithDefaults(defLengthUnit is ValueWithUnits)

@@ -4,7 +4,7 @@ export import(path: "onshape/std/evaluate.fs", version : "");
 export import(path:"onshape/std/transform.fs", version : "");
 export import(path:"onshape/std/print.fs", version : "");
 
-annotation {"Feature Type Name" : "Delete face"}
+annotation { "Feature Type Name" : "Delete face", "Filter Selector" : "allparts" }
 export const deleteFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {

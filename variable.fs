@@ -3,9 +3,9 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 
 export enum AssignmentType
 {
-    annotation {"Name" : "Value"}
+    annotation { "Name" : "Value" }
     VALUE,
-    annotation {"Name" : "Measurement"}
+    annotation { "Name" : "Measurement" }
     MEASUREMENT
 }
 
@@ -15,39 +15,37 @@ export const assignVariable = defineFeature(function(context is Context, id is I
     precondition
     {
         annotation { "Name" : "Name" }
-        isInteger(definition.name, POSITIVE_COUNT_BOUNDS);
+        definition.name is string;
 
         annotation { "Name" : "Type" }
         definition.assignmentType is AssignmentType;
 
-        if(definition.assignmentType == AssignmentType.VALUE)
+        if (definition.assignmentType == AssignmentType.VALUE)
         {
             annotation { "Name" : "Value" }
             isLength(definition.value, ZERO_DEFAULT_LENGTH_BOUNDS);
         }
 
-        if(definition.assignmentType == AssignmentType.MEASUREMENT)
+        if (definition.assignmentType == AssignmentType.MEASUREMENT)
         {
             annotation { "Name" : "Entities", "Filter" : EntityType.VERTEX }
             definition.entities is Query;
         }
     }
     {
-        definition.name = "v" ~ definition.name;
-
-        if(definition.assignmentType == AssignmentType.MEASUREMENT)
+        if (definition.assignmentType == AssignmentType.MEASUREMENT)
         {
             var v0 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 0) }).result;
             var v1 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 1) }).result;
             var v2 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 2) }).result;
 
-            if(v0 == undefined || v1 == undefined)
+            if (v0 == undefined || v1 == undefined)
             {
                 reportFeatureError(context, id, ErrorStringEnum.CANNOT_EVALUATE_VERTEX);
                 return;
             }
 
-            if(v2 == undefined)
+            if (v2 == undefined)
                 definition.value = norm(v0 - v1);
             else
                 definition.value = angleBetween(v0 - v1, v2 - v1);

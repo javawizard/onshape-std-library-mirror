@@ -7,17 +7,17 @@ export import(path : "onshape/std/print.fs", version : "");
 
 export enum TransformType
 {
-    annotation {"Name" : "Translate by line"}
+    annotation { "Name" : "Translate by line" }
     TRANSLATION_ENTITY,
-    annotation {"Name" : "Translate by distance"}
+    annotation { "Name" : "Translate by distance" }
     TRANSLATION_DISTANCE,
-    annotation {"Name" : "Translate by XYZ"}
+    annotation { "Name" : "Translate by XYZ" }
     TRANSLATION_3D,
-    annotation {"Name" : "Rotate"}
+    annotation { "Name" : "Rotate" }
     ROTATION,
-    annotation {"Name" : "Copy in place"}
+    annotation { "Name" : "Copy in place" }
     COPY,
-    annotation {"Name" : "Scale uniformly"}
+    annotation { "Name" : "Scale uniformly" }
     SCALE_UNIFORMLY
 }
 
@@ -40,17 +40,19 @@ precondition
 }
 
 /* This feature is deprecated but still used by the UI.  See BEL-15681. */
-annotation {"Feature Type Name" : "Copy part"}
+annotation { "Feature Type Name" : "Copy part", "Filter Selector" : "allparts" }
 export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation {"Name" : "Entities to copy", "Filter" : EntityType.BODY}
+        annotation { "Name" : "Entities to copy", "Filter" : EntityType.BODY }
         definition.entities is Query;
     }
     {
         var transform = identityTransform();
-        opPattern(context, id, {"entities" : definition.entities, "transforms" : [transform], "instanceNames" : ["1"],
-                                notFoundErrorKey("entities") :  ErrorStringEnum.COPY_SELECT_PARTS });
+        opPattern(context, id, { "entities" : definition.entities,
+                                 "transforms" : [transform],
+                                 "instanceNames" : ["1"],
+                                 notFoundErrorKey("entities") : ErrorStringEnum.COPY_SELECT_PARTS });
     });
 
 /* Find a point to attach the manipulator bar.
@@ -74,89 +76,90 @@ function reportCoincident(context is Context, id is Id, distance is Vector) retu
 
 // Note that transform() is also defined in transform.fs
 // with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
-annotation {"Feature Type Name" : "Transform",
-            "Manipulator Change Function" : "transformManipulatorChange" }
+annotation { "Feature Type Name" : "Transform",
+             "Manipulator Change Function" : "transformManipulatorChange",
+             "Filter Selector" : "allparts" }
 export function transform(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation {"Name" : "Parts to transform or copy",
-                "Filter" : EntityType.BODY}
+    annotation { "Name" : "Parts to transform or copy",
+                 "Filter" : EntityType.BODY }
     definition.entities is Query;
 
-    annotation {"Name" : "Transform type"}
+    annotation { "Name" : "Transform type" }
     definition.transformType is TransformType;
 
-    if(definition.transformType == TransformType.TRANSLATION_ENTITY)
+    if (definition.transformType == TransformType.TRANSLATION_ENTITY)
     {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirectionEntity is boolean;
     }
 
-    if(definition.transformType == TransformType.TRANSLATION_ENTITY)
+    if (definition.transformType == TransformType.TRANSLATION_ENTITY)
     {
-        annotation {"Name" : "Line or points",
-                    "Filter": EntityType.VERTEX || EntityType.EDGE,
-                    "MaxNumberOfPicks" : 2}
+        annotation { "Name" : "Line or points",
+                     "Filter" : EntityType.VERTEX || EntityType.EDGE,
+                     "MaxNumberOfPicks" : 2 }
         definition.transformLine is Query;
     }
-    else if(definition.transformType == TransformType.ROTATION)
+    else if (definition.transformType == TransformType.ROTATION)
     {
-        annotation {"Name" : "Axis",
-                    "Filter": QueryFilterCompound.ALLOWS_AXIS,
-                    "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Axis",
+                     "Filter" : QueryFilterCompound.ALLOWS_AXIS,
+                     "MaxNumberOfPicks" : 1 }
         definition.transformAxis is Query;
     }
-    else if(definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    else if (definition.transformType == TransformType.TRANSLATION_DISTANCE)
     {
-        annotation {"Name" : "Direction",
-                    "Filter": QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
-                    "MaxNumberOfPicks" : 2}
+        annotation { "Name" : "Direction",
+                     "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
+                     "MaxNumberOfPicks" : 2 }
         definition.transformDirection is Query;
-        annotation {"Name" : "Distance"}
+        annotation { "Name" : "Distance" }
         isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
     }
-    else if(definition.transformType == TransformType.SCALE_UNIFORMLY)
+    else if (definition.transformType == TransformType.SCALE_UNIFORMLY)
     {
-        annotation {"Name" : "Scale"}
+        annotation { "Name" : "Scale" }
         isReal(definition.scale, SCALE_BOUNDS);
     }
 
-    if(definition.transformType == TransformType.ROTATION)
+    if (definition.transformType == TransformType.ROTATION)
     {
-        annotation {"Name" : "Angle"}
+        annotation { "Name" : "Angle" }
         isAngle(definition.angle, ANGLE_360_BOUNDS);
     }
 
-    if(definition.transformType == TransformType.ROTATION ||
-       definition.transformType == TransformType.TRANSLATION_DISTANCE)
+    if (definition.transformType == TransformType.ROTATION ||
+        definition.transformType == TransformType.TRANSLATION_DISTANCE)
     {
-        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
     }
 
-    if(definition.transformType == TransformType.TRANSLATION_3D)
+    if (definition.transformType == TransformType.TRANSLATION_3D)
     {
-        annotation {"Name": "X translation"}
+        annotation { "Name" : "X translation" }
         isLength(definition.dx, ZERO_DEFAULT_LENGTH_BOUNDS);
 
-        annotation {"Name": "Y translation"}
+        annotation { "Name" : "Y translation" }
         isLength(definition.dy, ZERO_DEFAULT_LENGTH_BOUNDS);
 
-        annotation {"Name": "Z translation"}
+        annotation { "Name" : "Z translation" }
         isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
     }
 
-    if(definition.transformType != TransformType.COPY)
+    if (definition.transformType != TransformType.COPY)
     {
-        annotation {"Name" : "Copy part"}
+        annotation { "Name" : "Copy part" }
         definition.makeCopy is boolean;
     }
 
-    if(definition.transformType == TransformType.SCALE_UNIFORMLY)
+    if (definition.transformType == TransformType.SCALE_UNIFORMLY)
     {
-        annotation {"Name" : "Point",
-                    "Filter": EntityType.VERTEX,
-                    "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Point",
+                     "Filter" : EntityType.VERTEX,
+                     "MaxNumberOfPicks" : 1 }
         definition.scalePoint is Query;
     }
 }
@@ -170,23 +173,23 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         var transformMatrix = identityTransform();
         var transformType = definition.transformType;
 
-        /*  Prior to V74
-            1. Transform of no part was not an error (bug compatibility)
-            2. Null transform was not an error (behavior change)
+        /* Prior to V74
+           1. Transform of no part was not an error (bug compatibility)
+           2. Null transform was not an error (behavior change)
          */
         var validateInputs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING);
 
-        if(validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
+        if (validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
         {
             reportFeatureError(context, id, ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
             return;
         }
 
-        if(transformType == TransformType.TRANSLATION_ENTITY ||
+        if (transformType == TransformType.TRANSLATION_ENTITY ||
             transformType == TransformType.TRANSLATION_DISTANCE)
         {
             var selection = (transformType == TransformType.TRANSLATION_ENTITY ?
-                             definition.transformLine : definition.transformDirection);
+                definition.transformLine : definition.transformDirection);
             //For a translation / translation by distance, figure out which entities are used to specify it
             var distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
             var translation;
@@ -195,30 +198,30 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             var nedges = @size(edges);
             var faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
 
-            if(@size(vertices) >= 2)
+            if (@size(vertices) >= 2)
             {
                 var v0 = evVertexPoint(context, { "vertex" : vertices[0] }).result;
                 var v1 = evVertexPoint(context, { "vertex" : vertices[1] }).result;
                 translation = v1 - v0;
-                if(validateInputs && reportCoincident(context, id, translation))
+                if (validateInputs && reportCoincident(context, id, translation))
                     return;
             }
-            else if(validateInputs && nedges > 1)
+            else if (validateInputs && nedges > 1)
             {
                 reportFeatureError(context, id, ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED,
-                                   [distanceSpecified ? "transformDirection" : "transformLine"]);
+                        [distanceSpecified ? "transformDirection" : "transformLine"]);
                 return;
             }
-            else if(nedges >= 1)
+            else if (nedges >= 1)
             {
                 var evalResult = evEdgeTangentLines(context, { "edge" : edges[0], "parameters" : [0, 1] });
-                if(reportFeatureError(context, id, evalResult.error))
+                if (reportFeatureError(context, id, evalResult.error))
                     return;
                 translation = evalResult.result[1].origin - evalResult.result[0].origin;
-                if(validateInputs && reportCoincident(context, id, translation))
+                if (validateInputs && reportCoincident(context, id, translation))
                     return;
             }
-            else if(distanceSpecified && @size(faces) >= 1) // A plane only provides direction
+            else if (distanceSpecified && @size(faces) >= 1) // A plane only provides direction
             {
                 var planeResult = evPlane(context, { "face" : faces[0] });
                 var axisResult = evAxis(context, { "axis" : faces[0] });
@@ -226,24 +229,24 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                     translation = planeResult.result.normal * meter;
                 else if (axisResult.result is Line)
                     translation = axisResult.result.direction * meter;
-                else if(reportFeatureError(context, id, planeResult.error, ["transformDirection"]))
+                else if (reportFeatureError(context, id, planeResult.error, ["transformDirection"]))
                     return;
-                else if(reportFeatureError(context, id, axisResult.error, ["transformDirection"]))
+                else if (reportFeatureError(context, id, axisResult.error, ["transformDirection"]))
                     return;
                 /* else "can't happen" and norm(undefined) will fail later */
             }
             else
             {
-                if(distanceSpecified)
+                if (distanceSpecified)
                     reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT, ["transformDirection"]);
                 else
                     reportFeatureError(context, id, ErrorStringEnum.TRANSFORM_TRANSLATE_INPUT, ["transformLine"]);
                 return;
             }
 
-            if(distanceSpecified)
+            if (distanceSpecified)
             {
-                if(norm(translation).value < TOLERANCE.zeroLength)
+                if (norm(translation).value < TOLERANCE.zeroLength)
                 {
                     reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["transformDirection"]);
                     return;
@@ -257,16 +260,16 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 if (definition.oppositeDirection)
                     distance = -distance;
                 addManipulators(context, id, {
-                    (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
+                            (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
                 translation = direction * definition.distance;
             }
             transformMatrix = transform(translation);
         }
 
-        if(transformType == TransformType.ROTATION)
+        if (transformType == TransformType.ROTATION)
         {
             var axisResult = evAxis(context, { "axis" : definition.transformAxis });
-            if(reportFeatureError(context, id, axisResult.error, ["transformAxis"]))
+            if (reportFeatureError(context, id, axisResult.error, ["transformAxis"]))
                 return;
             var target = definition.entities;
             var origin = findCenter(context, id, target);
@@ -277,16 +280,16 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 angle = -angle;
             var axis = axisResult.result;
             addManipulators(context, id,
-                { (ROTATE) :
-                  angularManipulator({ "axisOrigin" : project(axis, origin),
-                                       "axisDirection" : axis.direction,
-                                       "rotationOrigin" : origin,
-                                       "angle" : angle,
-                                       "sources" : target })});
+                    { (ROTATE) :
+                      angularManipulator({ "axisOrigin" : project(axis, origin),
+                                           "axisDirection" : axis.direction,
+                                           "rotationOrigin" : origin,
+                                           "angle" : angle,
+                                           "sources" : target }) });
             transformMatrix = rotationAround(axis, angle);
         }
 
-        if(transformType == TransformType.TRANSLATION_3D)
+        if (transformType == TransformType.TRANSLATION_3D)
         {
             var dx = definition.dx;
             var dy = definition.dy;
@@ -300,14 +303,14 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
         }
 
-        if(transformType == TransformType.SCALE_UNIFORMLY)
+        if (transformType == TransformType.SCALE_UNIFORMLY)
         {
 
             var matrix = identityMatrix(3) * definition.scale;
             var target = definition.entities;
 
             var centerPointResult = evVertexPoint(context, { "vertex" : definition.scalePoint });
-            if(reportFeatureError(context, id, centerPointResult.error, ["scalePoint"]))
+            if (reportFeatureError(context, id, centerPointResult.error, ["scalePoint"]))
                 return;
 
             var centerPoint = centerPointResult.result;
@@ -321,7 +324,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
              definition.oppositeDirection))
             transformMatrix = inverse(transformMatrix);
 
-        if(definition.makeCopy || transformType == TransformType.COPY)
+        if (definition.makeCopy || transformType == TransformType.COPY)
         {
             opPattern(context, id,
                       { "entities" : definition.entities,

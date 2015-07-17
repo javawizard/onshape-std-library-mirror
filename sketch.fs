@@ -68,13 +68,13 @@ export predicate canBeSketch(value)
     value is builtin; //TODO: have a builtin call for verification
 }
 
-annotation {"Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY"}
+annotation { "Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY" }
 export function newSketch(context is Context, id is Id, value is map) returns Sketch
 precondition
 {
-    annotation {"Name" : "Sketch plane",
+    annotation { "Name" : "Sketch plane",
                 "Filter" : GeometryType.PLANE,
-                "MaxNumberOfPicks" : 1}
+                "MaxNumberOfPicks" : 1 }
     value.sketchPlane is Query;
 }
 {
@@ -86,7 +86,7 @@ precondition
         planeDefinition.asVersion = value.asVersion;
     }
     var sketchPlane = evPlane(context, planeDefinition);
-    if(sketchPlane.error != undefined)
+    if (sketchPlane.error != undefined)
     {
         reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
         sketchPlane.result = XY_PLANE;
@@ -110,22 +110,24 @@ precondition
 
 export function skSolve(sketch is Sketch)
 {
-        return @skSolve(sketch);
+    return @skSolve(sketch);
 }
 
 export function skSetInitialGuess(sketch is Sketch, initialGuess is map)
 {
     return @skSetInitialGuess(sketch, initialGuess);
 }
+
 // adds a sketch point, returns map { pointId : string}
 export function skPoint(sketch is Sketch, pointId is string, value is map)
 precondition
 {
     value.position is undefined || is2dPoint(value.position);
- }
- {
+}
+{
     return @skPoint(sketch, pointId, value);
- }
+}
+
 // adds a line segment, returns map {startId:string, endId:string}
 export function skLineSegment(sketch is Sketch, lineId is string, value is map)
 precondition
@@ -180,10 +182,10 @@ precondition
 export function skArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
-   value.start is undefined || is2dPoint(value.start);
-   value.mid is undefined || is2dPoint(value.mid);
-   value.end is undefined || is2dPoint(value.end);
-   value.construction is undefined || value.construction is boolean;
+    value.start is undefined || is2dPoint(value.start);
+    value.mid is undefined || is2dPoint(value.mid);
+    value.end is undefined || is2dPoint(value.end);
+    value.construction is undefined || value.construction is boolean;
 }
 {
     return @skArc(sketch, arcId, value);
@@ -193,13 +195,13 @@ precondition
 export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
-   value.center is undefined || is2dPoint(value.center);
-   value.majorAxis is undefined || is2dPoint(value.majorAxis);
-   value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-   value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-   value.startParameter is undefined || value.startParameter is number;
-   value.endParameter is undefined || value.endParameter is number;
-   value.construction is undefined || value.construction is boolean;
+    value.center is undefined || is2dPoint(value.center);
+    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.startParameter is undefined || value.startParameter is number;
+    value.endParameter is undefined || value.endParameter is number;
+    value.construction is undefined || value.construction is boolean;
 }
 {
     return @skEllipticalArc(sketch, arcId, value);
@@ -219,7 +221,7 @@ precondition
 export function skSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
 {
-   value.construction is undefined || value.construction is boolean;
+    value.construction is undefined || value.construction is boolean;
 }
 {
     return @skSplineSegment(sketch, splineId, value);
@@ -239,7 +241,7 @@ precondition
 export function skInterpolatedSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
 {
-   value.construction is undefined || value.construction is boolean;
+    value.construction is undefined || value.construction is boolean;
 }
 {
     return @skInterpolatedSplineSegment(sketch, splineId, value);
@@ -263,10 +265,10 @@ precondition
 function rectangleSideStartPoint(value, side)
 {
     if (value.firstCorner is undefined)
-           return undefined;
+        return undefined;
     if (side == "left" || side == "top")
     {
-            return value.firstCorner;
+        return value.firstCorner;
     }
     if (side == "right")
     {
@@ -285,7 +287,7 @@ function rectangleSideStartPoint(value, side)
 function rectangleSideEndPoint(value, side)
 {
     if (value.secondCorner is undefined)
-           return undefined;
+        return undefined;
     if (side == "right" || side == "bottom")
     {
         return value.secondCorner;
@@ -320,44 +322,44 @@ precondition
     {
         var fullId = rectangleId ~ "." ~ sId;
         @skLineSegment(sketch, fullId,
-                          { "start" : rectangleSideStartPoint(locVal, sId),
-                            "end" : rectangleSideEndPoint(locVal, sId)});
+                { "start" : rectangleSideStartPoint(locVal, sId),
+                    "end" : rectangleSideEndPoint(locVal, sId) });
     }
 
     //corner constraints
-    var constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId~".left.start", "local1" : rectangleId ~".top.start" };
-    var constraintId = rectangleId~".corner0";
+    var constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId ~ ".left.start", "local1" : rectangleId ~ ".top.start" };
+    var constraintId = rectangleId ~ ".corner0";
 
     @skConstraint(sketch, constraintId, constrInput);
 
-    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId~".left.end", "local1" : rectangleId ~".bottom.start" };
-    constraintId = rectangleId~".corner1";
+    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId ~ ".left.end", "local1" : rectangleId ~ ".bottom.start" };
+    constraintId = rectangleId ~ ".corner1";
     @skConstraint(sketch, constraintId, constrInput);
 
-    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId~".right.end", "local1" : rectangleId ~".bottom.end" };
-    constraintId = rectangleId~".corner2";
+    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId ~ ".right.end", "local1" : rectangleId ~ ".bottom.end" };
+    constraintId = rectangleId ~ ".corner2";
     @skConstraint(sketch, constraintId, constrInput);
 
-    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId~".right.start", "local1" : rectangleId ~".top.end" };
-    constraintId = rectangleId~".corner3";
+    constrInput = { "constraintType" : ConstraintType.COINCIDENT, "local0" : rectangleId ~ ".right.start", "local1" : rectangleId ~ ".top.end" };
+    constraintId = rectangleId ~ ".corner3";
     @skConstraint(sketch, constraintId, constrInput);
 
     //parallel constraints
-    constrInput = { "constraintType" : ConstraintType.PARALLEL, "local0" : rectangleId~".left", "local1" : rectangleId ~".right" };
-    constraintId = rectangleId~".vertical.parallel";
+    constrInput = { "constraintType" : ConstraintType.PARALLEL, "local0" : rectangleId ~ ".left", "local1" : rectangleId ~ ".right" };
+    constraintId = rectangleId ~ ".vertical.parallel";
     @skConstraint(sketch, constraintId, constrInput);
 
-    constrInput = { "constraintType" : ConstraintType.PARALLEL, "local0" : rectangleId~".top", "local1" : rectangleId ~".bottom" };
-    constraintId = rectangleId~".horizontal.parallel";
+    constrInput = { "constraintType" : ConstraintType.PARALLEL, "local0" : rectangleId ~ ".top", "local1" : rectangleId ~ ".bottom" };
+    constraintId = rectangleId ~ ".horizontal.parallel";
     @skConstraint(sketch, constraintId, constrInput);
 
     //vertical/horizontal constraints
-    constrInput = { "constraintType" : ConstraintType.VERTICAL, "local0" : rectangleId~".left" };
-    constraintId = rectangleId~".vertical";
+    constrInput = { "constraintType" : ConstraintType.VERTICAL, "local0" : rectangleId ~ ".left" };
+    constraintId = rectangleId ~ ".vertical";
     @skConstraint(sketch, constraintId, constrInput);
 
-    constrInput = { "constraintType" : ConstraintType.HORIZONTAL, "local0" : rectangleId~".top" };
-    constraintId = rectangleId~".horizontal";
+    constrInput = { "constraintType" : ConstraintType.HORIZONTAL, "local0" : rectangleId ~ ".top" };
+    constraintId = rectangleId ~ ".horizontal";
     @skConstraint(sketch, constraintId, constrInput);
 }
 
