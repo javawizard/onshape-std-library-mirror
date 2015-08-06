@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 // Functions for constructing queries
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 
@@ -56,7 +56,8 @@ export enum QueryType
     LARGEST,
     SMALLEST,
     COEDGE,
-    MATE_CONNECTOR
+    MATE_CONNECTOR,
+    CONSTRUCTION_FILTER
 }
 
 // Following enums can be used in query filters
@@ -337,6 +338,11 @@ precondition
     return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyTypes, "subquery" : subquery } as Query;
 }
 
+export function qConstructionFilter(subquery is Query, constructionFilter is ConstructionObject) returns Query
+{
+    return { "queryType" : QueryType.CONSTRUCTION_FILTER, "constructionFilter" : constructionFilter, "subquery" : subquery } as Query;
+}
+
 // ===================================== Geometry matching Queries =====================================
 /* Not done yet
 export function qPlanarNormal(subquery is Query, normal is Vector) returns Query
@@ -425,8 +431,7 @@ precondition
     is3dLengthVector(point);
 }
 {
-    point = stripUnits(point);
-    return { "queryType" : QueryType.CONTAINS_POINT, "subquery" : subquery, "point" : point } as Query;
+    return { "queryType" : QueryType.CONTAINS_POINT, "subquery" : subquery, "point" : stripUnits(point) } as Query;
 }
 
 //INTERSECTS_LINE,
@@ -558,6 +563,10 @@ export function unstableIdComponent(addend) returns string
 }
 
 export operator+(id is Id, addend is string) returns Id
+precondition
+{
+        replace(addend, "^\\.", "_") == addend;
+}
 {
     return append(id, addend) as Id;
 }

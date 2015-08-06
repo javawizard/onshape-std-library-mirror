@@ -1,7 +1,7 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
 annotation { "Feature Type Name" : "Loft", "Filter Selector" : "allparts" }
@@ -58,7 +58,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
         var profileQuery = (loftDefinition.bodyType == ToolBodyType.SOLID) ? loftDefinition.sheetProfiles : loftDefinition.wireProfiles;
         if (profileQuery.queryType == QueryType.UNION)
         {
-            var subQ = profileQuery.subqueries;
+            var subQ = wrapSubqueriesInConstructionFilter(context, profileQuery.subqueries);
             if (size(subQ) < 1)
             {
                 var errorEntities = (loftDefinition.bodyType == ToolBodyType.SOLID) ? "sheetProfiles" : "wireProfiles";
@@ -75,7 +75,7 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
             if (guideQuery.queryType == QueryType.UNION)
             {
                 var subQ = guideQuery.subqueries;
-                loftDefinition.guideSubqueries = subQ;
+                loftDefinition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
             }
         }
         if (!loftDefinition.matchVertices)
@@ -98,5 +98,17 @@ export const loft = defineFeature(function(context is Context, id is Id, loftDef
         }
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false });
 
-
+export function wrapSubqueriesInConstructionFilter(context is Context, subqueries is array) returns array
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+    {
+        var wrappedSubqueries = [];
+        for (var i = 0; i < @size(subqueries); i += 1)
+        {
+            wrappedSubqueries = append(wrappedSubqueries, qConstructionFilter(subqueries[i], ConstructionObject.NO));
+        }
+        return wrappedSubqueries;
+    }
+    return subqueries;
+}
 

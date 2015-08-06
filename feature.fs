@@ -1,5 +1,6 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 
 //Planes
 export enum DefaultPlaneType
@@ -73,7 +74,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         opImportForeign(context, id, importDefinition);
     }, { yAxisIsUp : false, flatten : false });
 
-annotation { "Feature Type Name" : "Delete Part" }
+annotation { "Feature Type Name" : "Delete part" }
 export const deleteBodies = defineFeature(function(context is Context, id is Id, deleteDefinition is map)
     precondition
     {
@@ -110,6 +111,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 reportFeatureError(context, id, ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
                 return;
             }
+            recordQueries(otherContext, id, importDefinition);
             var bodiesToKeep = qUnion([importDefinition.parts, qMateConnectorsOfParts(importDefinition.parts)]);
 
             var deleteDefinition = {};

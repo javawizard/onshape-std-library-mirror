@@ -1,27 +1,12 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/curveGeometry.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "");
 
 const needConeOrCylinderMessage = ErrorStringEnum.HELIX_INPUT_CONE;
-
-export enum HelixType
-{
-    annotation { "Name" : "Turns" }
-    TURNS,
-    annotation { "Name" : "Pitch" }
-    PITCH
-}
-
-export enum Direction
-{
-    annotation { "Name" : "Clockwise" }
-    CW,
-    annotation { "Name" : "Counterclockwise" }
-    CCW
-}
 
 annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY" }
 export const helix = defineFeature(function(context is Context, id is Id, helixDefinition is map)

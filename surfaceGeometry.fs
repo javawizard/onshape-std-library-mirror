@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/coordSystem.fs", version : "");
 export import(path : "onshape/std/curveGeometry.fs", version : "");
 export import(path : "onshape/std/surfacetype.gen.fs", version : "");
@@ -16,7 +16,7 @@ export predicate canBePlane(value)
     is3dLengthVector(value.origin);
     is3dDirection(value.x);
     is3dDirection(value.normal);
-    abs(dotProduct(value.x, value.normal)) < TOLERANCE.zeroAngle;
+    abs(dot(value.x, value.normal)) < TOLERANCE.zeroAngle;
 }
 
 export function plane(cSys is CoordSystem) returns Plane
@@ -39,9 +39,19 @@ export function planeFromBuiltin(definition is map) returns Plane
     return plane((definition.origin as Vector) * meter, definition.normal as Vector, definition.x as Vector);
 }
 
+export function yAxis(plane is Plane) returns Vector
+{
+    return cross(plane.normal, plane.x);
+}
+
+export function planeToCSys(plane is Plane) returns CoordSystem
+{
+    return coordSystem(plane.origin, plane.x, plane.normal);
+}
+
 export function toString(value is Plane) returns string
 {
-    var str = "normal" ~ toString(value.normal) ~ "\n" ~ "origin" ~ toString(value.origin) ~ "\n" ~ "x-axis" ~ toString(value.x);
+    var str = "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
     return str;
 }
 
@@ -51,7 +61,7 @@ precondition
     is3dLengthVector(point);
 }
 {
-    return point + plane.normal * dotProduct(plane.normal, plane.origin - point);
+    return point + plane.normal * dot(plane.normal, plane.origin - point);
 }
 
 export operator*(transform is Transform, planeRhs is Plane) returns Plane
@@ -68,7 +78,7 @@ precondition
     @size(planePoint) == 2;
 }
 {
-    return plane.origin + plane.x * planePoint[0] + crossProduct(plane.normal, plane.x) * planePoint[1];
+    return plane.origin + plane.x * planePoint[0] + cross(plane.normal, plane.x) * planePoint[1];
 }
 
 export function planeToWorld(plane is Plane) returns Transform
@@ -79,15 +89,6 @@ export function planeToWorld(plane is Plane) returns Transform
 export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vector
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal), worldPoint);
-}
-
-/* Return the projection of a point onto a sketch, in sketch coordinates.
-   The origin of a sketch is the projection of the world origin onto the
-   sketch plane. */
-export function worldToSketch(plane is Plane, worldPoint is Vector) returns Vector
-{
-    return vector(dotProduct(worldPoint, plane.x),
-            dotProduct(worldPoint, crossProduct(plane.normal, plane.x)));
 }
 
 export function worldToPlane(plane is Plane) returns Transform
@@ -109,12 +110,12 @@ export function mirrorAcross(plane is Plane) returns Transform
 
 export function intersection(p1 is Plane, p2 is Plane) // Returns Line or undefined if there's no good intersection
 {
-    var direction = crossProduct(p1.normal, p2.normal);
+    var direction = cross(p1.normal, p2.normal);
     if (norm(direction) < TOLERANCE.zeroAngle)
         return;
     direction = normalize(direction);
-    var rhs = vector(dotProduct(p1.normal, p1.origin), dotProduct(p2.normal, p2.origin),
-        dotProduct(direction, 0.5 * (p1.origin + p2.origin)));
+    var rhs = vector(dot(p1.normal, p1.origin), dot(p2.normal, p2.origin),
+        dot(direction, 0.5 * (p1.origin + p2.origin)));
     var point = inverse([p1.normal, p2.normal, direction] as Matrix) * rhs;
     return line(point, direction);
 }
@@ -133,7 +134,7 @@ predicate canBeLinePlaneIntersection(value)
 
 export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersection or undefined
 {
-    var dotPr = dotProduct(p.normal, l.direction);
+    var dotPr = dot(p.normal, l.direction);
     if (abs(dotPr) < TOLERANCE.zeroAngle)
     {
         if (samePoint(l.origin, project(p, l.origin)))
@@ -141,7 +142,7 @@ export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersec
         else
             return { 'dim' : -1 } as LinePlaneIntersection; //line is parallel to plane
     }
-    var t = dotProduct(p.origin - l.origin, p.normal) / dotPr;
+    var t = dot(p.origin - l.origin, p.normal) / dotPr;
     return { 'dim' : 0, 'intersection' : l.origin + t * l.direction } as LinePlaneIntersection;
 }
 

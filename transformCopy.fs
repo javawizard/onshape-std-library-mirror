@@ -1,9 +1,10 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "");
 
 export enum TransformType
 {

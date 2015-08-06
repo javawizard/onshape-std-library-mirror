@@ -1,6 +1,5 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/extrude.fs", version : "");
-export import(path : "onshape/std/revolve.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/sketch.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
@@ -95,12 +94,13 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
     }
     {
         var sketchId = id + "sketch";
+        var direction = normalize(definition.topCenter - definition.bottomCenter);
         {
-            var plane = plane(definition.bottomCenter, normalize(definition.topCenter - definition.bottomCenter));
+            var plane = plane(definition.bottomCenter, direction);
             var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : plane });
 
             skCircle(sketch, "circle1",
-                     { "center" : worldToSketch(plane, definition.bottomCenter),
+                     { "center" : vector(0, 0) * meter,
                        "radius" : definition.radius
                      });
 
@@ -108,10 +108,11 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
         }
         {
             var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
-            extrude(context, id + "extrude",
+            opExtrude(context, id + "extrude",
                     { "entities" : query,
+                      "direction" : direction,
                       "endBound" : BoundingType.BLIND,
-                      "depth"    : norm(definition.topCenter - definition.bottomCenter)
+                      "endDepth"    : norm(definition.topCenter - definition.bottomCenter)
                     });
         }
         {
@@ -131,13 +132,13 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
     }
     {
         var sketchId = id + "sketch";
+        var dir = normalize(definition.topCenter - definition.bottomCenter);
         {
-            var dir = normalize(definition.topCenter - definition.bottomCenter);
             var normal = perpendicularVector(dir);
-            var plane = plane(definition.bottomCenter, normal, crossProduct(dir, normal));
+            var plane = plane(definition.bottomCenter, normal, cross(dir, normal));
             var sketch = newSketchOnPlane(context, sketchId, { sketchPlane : plane });
             var height = norm(definition.topCenter - definition.bottomCenter);
-            var base = worldToSketch(plane, definition.bottomCenter);
+            var base = vector(0, 0) * meter;
             {
                 var points = [base,
                     base + vector(0 * meter, height),
@@ -156,12 +157,19 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
         }
         {
             var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
-            var axis = sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line.0");
-            revolve(context, id + "revolve",
-                    { "entities"    : query,
-                      "axis"        : axis,
-                      "revolveType" : RevolveType.FULL
-                    });
+            var axisResult = evLine(context, {"edge" : sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line.0")});
+            if (axisResult.error != undefined)
+            {
+                reportFeatureError(context, id, axisResult.error);
+            }
+            else
+            {
+                opRevolve(context, id + "revolve",
+                        { "entities"    : query,
+                          "axis"        : axisResult.result,
+                          "angleForward" : 2 * PI
+                        });
+            }
         }
         {
             var query = qCreatedBy(sketchId, EntityType.BODY);
@@ -193,11 +201,11 @@ export const fEllipsoid = defineFeature(function(context is Context, id is Id, d
         }
         {
             var query = qCreatedBy(sketchId, EntityType.FACE);
-            var axis = sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line1");
-            revolve(context, id + "revolve",
+            var axis = line(vector(0, 1, 0) * meter, vector(0, -1, 0));
+            opRevolve(context, id + "revolve",
                     { "entities" : query,
                        "axis" : axis,
-                       "revolveType" : RevolveType.FULL
+                       "angleForward" : 2 * PI
                     });
         }
         {

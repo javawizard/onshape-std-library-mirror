@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/coordSystem.fs", version : "");
 export import(path : "onshape/std/curvetype.gen.fs", version : "");
@@ -41,7 +41,7 @@ precondition
     is3dLengthVector(point);
 }
 {
-    return line.origin + line.direction * dotProduct(line.direction, point - line.origin);
+    return line.origin + line.direction * dot(line.direction, point - line.origin);
 }
 
 export function rotationAround(line is Line, angle is ValueWithUnits) returns Transform

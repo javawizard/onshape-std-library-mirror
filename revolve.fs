@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
@@ -40,7 +40,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, revo
         else
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
-                         "Filter" : (EntityType.EDGE) }
+                         "Filter" : EntityType.EDGE && ConstructionObject.NO }
             revolveDefinition.surfaceEntities is Query;
         }
 
@@ -75,7 +75,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, revo
         }
     }
     {
-        revolveDefinition.entities = getEntitiesToUse(revolveDefinition);
+        revolveDefinition.entities = getEntitiesToUse(context, revolveDefinition);
         var resolvedEntities = evaluateQuery(context, revolveDefinition.entities);
         if (@size(resolvedEntities) == 0)
         {
@@ -138,7 +138,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, revo
 
 const ANGLE_MANIPULATOR = "angleManipulator";
 
-function getEntitiesToUse(revolveDefinition is map)
+function getEntitiesToUse(context is Context, revolveDefinition is map)
 {
     if (revolveDefinition.bodyType == ToolBodyType.SOLID)
     {
@@ -146,7 +146,14 @@ function getEntitiesToUse(revolveDefinition is map)
     }
     else
     {
-        return revolveDefinition.surfaceEntities;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+        {
+            return qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
+        }
+        else
+        {
+            return revolveDefinition.surfaceEntities;
+        }
     }
 }
 
@@ -155,7 +162,7 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
     if (revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC )
         return;
 
-    var entities = getEntitiesToUse(revolveDefinition);
+    var entities = getEntitiesToUse(context, revolveDefinition);
 
     //Compute manipulator parameters
     var revolvePoint;

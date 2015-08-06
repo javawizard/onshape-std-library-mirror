@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 
 export enum AssignmentType
@@ -10,7 +10,7 @@ export enum AssignmentType
 }
 
 
-//TODO: annotation {"Feature Type Name" : "Assign Variable"}
+//TODO: annotation {"Feature Type Name" : "Assign Variable", "UIHint" : "NO_PREVIEW_PROVIDED"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -33,6 +33,11 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         }
     }
     {
+        var replaceNameWithRegExpShouldBeBlank = replace(definition.name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
+        if (definition.name == '' || replaceNameWithRegExpShouldBeBlank != '') {
+            reportFeatureError(context, id, ErrorStringEnum.VARIABLE_NAME_INVALID);
+        }
+
         if (definition.assignmentType == AssignmentType.MEASUREMENT)
         {
             var v0 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 0) }).result;

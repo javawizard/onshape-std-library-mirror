@@ -1,6 +1,7 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "");
 
 //Given a plane definition and a input part query will return a list of bodies that one needs to delete so that
 //the only bodies that remain are the ones split by the plane and behind it. Used by drawings to render a section view

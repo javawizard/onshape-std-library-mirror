@@ -1,5 +1,5 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 
 annotation { "Feature Type Name" : "Shell", "Filter Selector" : "allparts" }
 export const shell = defineFeature(function(context is Context, id is Id, shellDefinition is map)

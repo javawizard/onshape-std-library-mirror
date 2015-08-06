@@ -1,9 +1,10 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 //Vector math
 export import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
 export import(path : "onshape/std/units.fs", version : "");
 export import(path : "onshape/std/matrix.fs", version : "");
+export import(path : "onshape/std/print.fs", version : "");
 
 export type Vector typecheck canBeVector;
 
@@ -70,7 +71,7 @@ precondition
 
 export function squaredNorm(vector is Vector)
 {
-    return dotProduct(vector, vector);
+    return dot(vector, vector);
 }
 
 export function norm(vector is Vector)
@@ -113,7 +114,7 @@ export operator-(vector is Vector) returns Vector
     return vector;
 }
 
-export function dotProduct(vector1 is Vector, vector2 is Vector)
+export function dot(vector1 is Vector, vector2 is Vector)
 precondition
 {
     @size(vector1) == @size(vector2);
@@ -127,7 +128,7 @@ precondition
     return dot;
 }
 
-export function crossProduct(vector1 is Vector, vector2 is Vector) returns Vector
+export function cross(vector1 is Vector, vector2 is Vector) returns Vector
 precondition
 {
     @size(vector1) == 3;
@@ -147,7 +148,7 @@ precondition
     @size(vector2) == 3;
 }
 {
-    return atan2(norm(crossProduct(vector1, vector2)), dotProduct(vector1, vector2));
+    return atan2(norm(cross(vector1, vector2)), dot(vector1, vector2));
 }
 
 export function normalize(vector is Vector) returns Vector
@@ -209,7 +210,7 @@ export operator/(vector is Vector, scalar) returns Vector
 
 export function project(vector1 is Vector, vector2 is Vector) returns Vector
 {
-    var dot = dotProduct(vector1, vector2);
+    var dot = dot(vector1, vector2);
     return vector2 * (dot / squaredNorm(vector2));
 }
 
@@ -236,7 +237,7 @@ precondition @size(vec) == 3;
         else
             different[1] = 1;
     }
-    return normalize(crossProduct(different, vec));
+    return normalize(cross(different, vec));
 }
 
 export function rotationMatrix3d(from is Vector, to is Vector) returns Matrix
@@ -246,10 +247,10 @@ precondition
     @size(to) == 3;
 }
 {
-    var axis = crossProduct(from, to);
+    var axis = cross(from, to);
     if (squaredNorm(axis) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
     {
-        if (dotProduct(from, to) > 0)
+        if (dot(from, to) > 0)
         {
             return identityMatrix(3);
         }
@@ -259,7 +260,7 @@ precondition
             return rotationMatrix3d(perp, PI);
         }
     }
-    return rotationMatrix3d(axis, @atan2(norm(axis), dotProduct(from, to)));
+    return rotationMatrix3d(axis, @atan2(norm(axis), dot(from, to)));
 }
 
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
@@ -270,8 +271,8 @@ precondition
     @size(vector3) == 3;
 }
 {
-    var v2Crossv3 = crossProduct(vector2, vector3);
-    return dotProduct(vector1, v2Crossv3);
+    var v2Crossv3 = cross(vector2, vector3);
+    return dot(vector1, v2Crossv3);
 }
 
 export function toString(value is Vector) returns string
@@ -292,14 +293,14 @@ export function samePoint(point1 is Vector, point2 is Vector) returns boolean
 
 export function parallelVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
-    var dotP = stripUnits(dotProduct(vector1, vector2));
+    var dotP = stripUnits(dot(vector1, vector2));
     var v1v2 = stripUnits(squaredNorm(vector1) * squaredNorm(vector2));
     return (v1v2 - dotP * dotP) < 0.5 * (v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle);
 }
 
 export function perpendicularVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
-    var dotP = stripUnits(dotProduct(vector1, vector2));
+    var dotP = stripUnits(dot(vector1, vector2));
     var v1v2 = stripUnits(squaredNorm(vector1) * squaredNorm(vector2));
     return dotP * dotP < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }

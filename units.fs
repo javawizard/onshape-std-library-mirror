@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 
@@ -34,6 +34,15 @@ annotation { "Name" : "Radian", "Abbreviation" : "rad" }
 export const radian = { "value" : 1, "unit" : ANGLE_UNITS } as ValueWithUnits;
 annotation { "Name" : "Degree", "Abbreviation" : "deg" }
 export const degree = 0.0174532925199432957692 * radian;
+
+annotation { "Name" : "Kilogram", "Abbreviation" : "kg" }
+export const kilogram = { "value" : 1, "unit" : MASS_UNITS } as ValueWithUnits;
+annotation { "Name" : "Gram", "Abbreviation" : "g" }
+export const gram = 0.001 * kilogram;
+annotation { "Name" : "Ounce", "Abbreviation" : "oz" }
+export const ounce = 28.349523 * gram;
+annotation { "Name" : "Pound", "Abbreviation" : "lb" }
+export const pound = 16 * ounce;
 
 export type ValueWithUnits typecheck canBeValueWithUnits;
 
@@ -73,6 +82,19 @@ precondition lhs.unit == rhs.unit;
 {
     return lhs.value < rhs.value;
 }
+
+export operator<(lhs is ValueWithUnits, rhs is number) returns boolean
+precondition rhs == 0;
+{
+    return lhs.value < rhs;
+}
+
+export operator<(lhs is number, rhs is ValueWithUnits) returns boolean
+precondition lhs == 0;
+{
+    return lhs < rhs.value;
+}
+
 
 export operator+(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
 precondition lhs.unit == rhs.unit;

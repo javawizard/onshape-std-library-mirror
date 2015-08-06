@@ -1,5 +1,5 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 
 //Fillet feature
 annotation { "Feature Type Name" : "Fillet", "Filter Selector" : "allparts" }

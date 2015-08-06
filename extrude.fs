@@ -1,40 +1,12 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "");
-
-export enum BoundingType
-{
-    annotation { "Name" : "Blind" }
-    BLIND,
-    annotation { "Name" : "Symmetric" }
-    SYMMETRIC,
-    annotation { "Name" : "Up to next" }
-    UP_TO_NEXT,
-    annotation { "Name" : "Up to surface" }
-    UP_TO_SURFACE,
-    annotation { "Name" : "Up to part" }
-    UP_TO_BODY,
-    annotation { "Name" : "Through all" }
-    THROUGH_ALL
-}
-
-export enum SecondDirectionBoundingType
-{
-    annotation { "Name" : "Blind" }
-    BLIND,
-    annotation { "Name" : "Up to next" }
-    UP_TO_NEXT,
-    annotation { "Name" : "Up to surface" }
-    UP_TO_SURFACE,
-    annotation { "Name" : "Up to part" }
-    UP_TO_BODY,
-    annotation { "Name" : "Through all" }
-    THROUGH_ALL
-}
+export import(path : "onshape/std/box.fs", version : "");
 
 //Extrude Feature
 annotation { "Feature Type Name" : "Extrude", "Manipulator Change Function" : "extrudeManipulatorChange", "Filter Selector" : "allparts" }
@@ -59,7 +31,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
         else
         {
             annotation { "Name" : "Sketch curves to extrude",
-                         "Filter" : (EntityType.EDGE && SketchObject.YES) }
+                         "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO ) }
             extrudeDefinition.surfaceEntities is Query;
         }
 
@@ -123,7 +95,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
         }
     }
     {
-        extrudeDefinition.entities = getEntitiesToUse(extrudeDefinition);
+        extrudeDefinition.entities = getEntitiesToUse(context, extrudeDefinition);
 
         var resolvedEntities = evaluateQuery(context, extrudeDefinition.entities);
         if (@size(resolvedEntities) == 0)
@@ -210,7 +182,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, extr
             secondDirectionBound : SecondDirectionBoundingType.BLIND,
             secondDirectionOppositeDirection : true, hasSecondDirection : false });
 
-function getEntitiesToUse(extrudeDefinition is map)
+function getEntitiesToUse(context is Context, extrudeDefinition is map)
 {
     if (extrudeDefinition.bodyType == ToolBodyType.SOLID)
     {
@@ -218,7 +190,14 @@ function getEntitiesToUse(extrudeDefinition is map)
     }
     else
     {
-        return extrudeDefinition.surfaceEntities;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+        {
+            return qConstructionFilter(extrudeDefinition.surfaceEntities, ConstructionObject.NO);
+        }
+        else
+        {
+            return extrudeDefinition.surfaceEntities;
+        }
     }
 }
 
@@ -249,7 +228,7 @@ const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
 
 function addExtrudeManipulator(context is Context, id is Id, extrudeDefinition is map, extrudeAxis is Line)
 {
-    var usedEntities = getEntitiesToUse(extrudeDefinition);
+    var usedEntities = getEntitiesToUse(context, extrudeDefinition);
 
     if (extrudeDefinition.endBound != BoundingType.BLIND && extrudeDefinition.endBound != BoundingType.SYMMETRIC)
     {
@@ -354,7 +333,7 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
         if (isecResult == undefined || isecResult.dim != 0)
             return false;
 
-        var dotPr = stripUnits(dotProduct(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
+        var dotPr = stripUnits(dot(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
         return dotPr < -TOLERANCE.zeroLength;
     }
     var pln = plane(extrudeAxis.origin, extrudeAxis.direction);
@@ -369,7 +348,7 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
 
 export function upToBoundaryFlip(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
-    var usedEntities = getEntitiesToUse(featureDefinition);
+    var usedEntities = getEntitiesToUse(context, featureDefinition);
     var resolvedEntities = evaluateQuery(context, usedEntities);
     if (@size(resolvedEntities) == 0)
     {

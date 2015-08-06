@@ -1,21 +1,12 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
-export import(path : "onshape/std/moveFace.fs", version : "");
+export import(path : "onshape/std/primitives.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "");
 
-export enum BooleanOperationType
-{
-    annotation { "Name" : "Union" }
-    UNION,
-    annotation { "Name" : "Subtract" }
-    SUBTRACTION,
-    annotation { "Name" : "Intersect" }
-    INTERSECTION,
-    annotation { "Hidden" : true }
-    SUBTRACT_COMPLEMENT
-}
 
 //Boolean Operation
 annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
@@ -56,7 +47,9 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 annotation { "Name" : "Reapply fillet" }
                 booleanDefinition.reFillet is boolean;
             }
-
+        }
+        if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION || booleanDefinition.operationType == BooleanOperationType.INTERSECTION)
+        {
             annotation { "Name" : "Keep tools" }
             booleanDefinition.keepTools is boolean;
         }
@@ -111,14 +104,26 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
 
             if (!booleanDefinition.keepTools)
             {
-                opDeleteBodies(context, id + ".delete", { "entities" : booleanDefinition.tools });
+                opDeleteBodies(context, id + "delete", { "entities" : booleanDefinition.tools });
             }
         }
         else
         {
+            if (booleanDefinition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS))
+            {
+               var complementResult = constructToolsComplement(context, id, booleanDefinition);
+               if (featureHasError(context, id))
+               {
+                   return;
+               }
+               booleanDefinition.tools = complementResult.result;
+               booleanDefinition.operationType = BooleanOperationType.SUBTRACTION;
+               booleanDefinition.keepTools = false;
+            }
             opBoolean(context, id, booleanDefinition);
         }
-    }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
+    }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false});
 
 function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
@@ -132,6 +137,38 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
         return qUnion(wrappedSubqueries);
     }
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
+}
+
+/**  Build a block large enough to contain all tools and targets. Subtract tools from it
+*/
+function constructToolsComplement(context is Context, id is Id, booleanDefinition is map) returns map
+{
+    var inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
+
+    var boxResult = evBox3d(context, {"topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets])});
+    if (boxResult.error != undefined)
+    {
+        reportFeatureError(context, id, boxResult.error);
+        return {};
+    }
+    var extendedBox is Box3d = extendBox3d(boxResult.result, 0. * meter, 0.1);
+    var boxId is Id = id + "containingBox";
+    fCuboid(context, boxId, {"corner1" : extendedBox.minCorner, "corner2" : extendedBox.maxCorner});
+    processSubfeatureStatus(context, boxId, id);
+    if (featureHasError(context, id))
+    {
+        return {};
+    }
+
+    var complementId = id + "toolComplement";
+    var complementDefinition = {
+                "operationType" : BooleanOperationType.SUBTRACTION,
+                "tools" : qUnion(inputTools),
+                "targets" : qCreatedBy(boxId, EntityType.BODY),
+                "keepTools" : booleanDefinition.keepTools };
+    opBoolean(context, complementId, complementDefinition);
+    processSubfeatureStatus(context, complementId, id);
+    return {"result" : qCreatedBy(boxId, EntityType.BODY)}; // Subtraction modifies target tool
 }
 
 export enum NewBodyOperationType
@@ -515,7 +552,7 @@ export function setBooleanErrorEntities(context is Context, id is Id, statusTool
         setErrorEntities(context, id, errorDefinition);
         var deletionData = {};
         deletionData.entities = statusToolsQ;
-        opDeleteBodies(context, statusToolId + ".delete", deletionData);
+        opDeleteBodies(context, statusToolId + "delete", deletionData);
     }
 }
 

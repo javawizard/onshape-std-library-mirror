@@ -1,17 +1,8 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 
 //Chamfer Feature
-export enum ChamferType
-{
-    annotation { "Name" : "Equal distance" }
-    EQUAL_OFFSETS,
-    annotation { "Name" : "Two distances" }
-    TWO_OFFSETS,
-    annotation { "Name" : "Distance and angle" }
-    OFFSET_ANGLE
-}
-
 annotation { "Feature Type Name" : "Chamfer", "Filter Selector" : "allparts" }
 export const chamfer = defineFeature(function(context is Context, id is Id, chamferDefinition is map)
     precondition

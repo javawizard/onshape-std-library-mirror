@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/transform.fs", version : "");
 
 export type CoordSystem typecheck canBeCoordSystem;
@@ -9,7 +9,7 @@ export predicate canBeCoordSystem(value)
     is3dLengthVector(value.origin);
     is3dDirection(value.xAxis);
     is3dDirection(value.zAxis);
-    abs(dotProduct(value.xAxis, value.zAxis)) < TOLERANCE.zeroAngle;
+    abs(dot(value.xAxis, value.zAxis)) < TOLERANCE.zeroAngle;
 }
 
 export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) returns CoordSystem
@@ -24,7 +24,7 @@ export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 
 export function toWorld(cSys is CoordSystem) returns Transform
 {
-    var rotation = transpose([cSys.xAxis, crossProduct(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix);
+    var rotation = transpose([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix);
     return transform(rotation, cSys.origin);
 }
 
@@ -35,12 +35,12 @@ precondition
 }
 {
     worldPoint -= cSys.origin;
-    return vector(dotProduct(worldPoint, cSys.xAxis), dotProduct(worldPoint, crossProduct(cSys.zAxis, cSys.xAxis)));
+    return vector(dot(worldPoint, cSys.xAxis), dot(worldPoint, cross(cSys.zAxis, cSys.xAxis)));
 }
 
 export function fromWorld(cSys is CoordSystem) returns Transform
 {
-    var rotation = [cSys.xAxis, crossProduct(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
+    var rotation = [cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
     return transform(rotation, rotation * -cSys.origin);
 }
 

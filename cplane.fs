@@ -1,25 +1,7 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
-
-export enum CPlaneType
-{
-    annotation { "Name" : "Offset" }
-    OFFSET,
-    annotation { "Name" : "Plane Point" }
-    PLANE_POINT,
-    annotation { "Name" : "Line Angle" }
-    LINE_ANGLE,
-    annotation { "Name" : "Line Point" }
-    LINE_POINT,
-    annotation { "Name" : "Three Point" }
-    THREE_POINT,
-    annotation { "Name" : "Mid Plane" }
-    MID_PLANE,
-    annotation { "Name" : "Curve Point" }
-    CURVE_POINT
-}
 
 // Messages
 const midPlaneDefaultErrorMessage  = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
@@ -181,7 +163,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, cplan
                     return;
                 points[i] = pointResult.result;
             }
-            var normal = crossProduct(points[2] - points[0], points[1] - points[0]);
+            var normal = cross(points[2] - points[0], points[1] - points[0]);
             if (norm(normal).value < TOLERANCE.zeroLength)
             {
                 reportFeatureError(context, id, degeneratePointsMessage, ["entities"]);

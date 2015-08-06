@@ -1,7 +1,7 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
 annotation { "Feature Type Name" : "Sweep", "Filter Selector" : "allparts" }
@@ -22,7 +22,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, sweepD
         else
         {
             annotation { "Name" : "Edges and sketch curves to sweep",
-                         "Filter" : (EntityType.EDGE) }
+                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) }
             sweepDefinition.surfaceProfiles is Query;
         }
 
@@ -39,8 +39,16 @@ export const sweep = defineFeature(function(context is Context, id is Id, sweepD
     }
     {
         if (sweepDefinition.bodyType == ToolBodyType.SURFACE)
-            sweepDefinition.profiles = sweepDefinition.surfaceProfiles;
-
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+            {
+                sweepDefinition.profiles = qConstructionFilter(sweepDefinition.surfaceProfiles, ConstructionObject.NO);
+            }
+            else
+            {
+                sweepDefinition.profiles = sweepDefinition.surfaceProfiles;
+            }
+        }
         opSweep(context, id, sweepDefinition);
 
         if (sweepDefinition.bodyType == ToolBodyType.SOLID)

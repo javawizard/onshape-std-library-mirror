@@ -1,24 +1,15 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 export import(path : "onshape/std/print.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "");
 
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
 export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
-
-export enum MoveFaceType
-{
-    annotation { "Name" : "Translate" }
-    TRANSLATE,
-    annotation { "Name" : "Rotate" }
-    ROTATE,
-    annotation { "Name" : "Offset" }
-    OFFSET
-}
 
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",
@@ -172,11 +163,11 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
 {
     // Project the center of the plane onto the axis
     var refPoint = facePlane.origin;
-    var rotateOrigin = axis.origin + dotProduct(refPoint - axis.origin, axis.direction) * axis.direction;
+    var rotateOrigin = axis.origin + dot(refPoint - axis.origin, axis.direction) * axis.direction;
     if (samePoint(rotateOrigin, refPoint))
     {
         // refPoint lies on the axis, so construct a different refPoint
-        var orthoVec = crossProduct(axis.direction, facePlane.normal);
+        var orthoVec = cross(axis.direction, facePlane.normal);
         var orthoVecNorm = norm(orthoVec);
         if (abs(orthoVecNorm) > TOLERANCE.zeroLength)
         {

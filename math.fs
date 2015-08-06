@@ -1,4 +1,4 @@
-FeatureScript 172; /* Automatically generated version */
+FeatureScript 189; /* Automatically generated version */
 //wrappers around mathematical builtin functions and some constants
 
 export const PI = 3.1415926535897932384626433832795;

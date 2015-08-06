@@ -1,5 +1,5 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/entityinferencetype.gen.fs", version : "");
 export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");

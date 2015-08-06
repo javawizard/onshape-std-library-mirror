@@ -1,5 +1,5 @@
-FeatureScript 172; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 189; /* Automatically generated version */
+export import(path : "onshape/std/geomOperations.fs", version : "");
 
 //Split Part Feature
 annotation { "Feature Type Name" : "Split part", "Filter Selector" : "allparts" }
