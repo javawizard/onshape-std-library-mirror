@@ -80,11 +80,7 @@ precondition
 {
     recordQueries(context, id, value);
     value.planeReference = value.sketchPlane;
-    var planeDefinition = { "face" : value.sketchPlane };
-    if (value.asVersion != undefined)
-    {
-        planeDefinition.asVersion = value.asVersion;
-    }
+    var planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
     var sketchPlane = evPlane(context, planeDefinition);
     if (sketchPlane.error != undefined)
     {
@@ -93,6 +89,10 @@ precondition
         value.planeReference = qNothing();
     }
     value.sketchPlane = sketchPlane.result;
+
+    // We can't use the usual wrapped function because the context does not have the version set here yet
+    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+        value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
 
     return newSketchOnPlane(context, id, value);
 }

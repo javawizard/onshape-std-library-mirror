@@ -29,6 +29,7 @@ export import(path : "onshape/std/helix.fs", version : "");
 export import(path : "onshape/std/thicken.fs", version : "");
 export import(path : "onshape/std/loft.fs", version : "");
 export import(path : "onshape/std/variable.fs", version : "");
+export import(path : "onshape/std/hole.fs", version : "");
 
 //start model context
 export function newContextWithDefaults() returns Context

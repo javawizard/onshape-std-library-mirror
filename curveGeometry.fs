@@ -41,7 +41,7 @@ precondition
     is3dLengthVector(point);
 }
 {
-    return line.origin + line.direction * dotProduct(line.direction, point - line.origin);
+    return line.origin + line.direction * dot(line.direction, point - line.origin);
 }
 
 export function rotationAround(line is Line, angle is ValueWithUnits) returns Transform

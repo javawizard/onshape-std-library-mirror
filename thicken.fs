@@ -1,5 +1,5 @@
 FeatureScript ✨; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/manipulator.fs", version : "");
