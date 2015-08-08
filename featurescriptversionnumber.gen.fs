@@ -192,9 +192,10 @@ export enum FeatureScriptVersionNumber
     V186_PLANE_COORDINATES,
     V187_HOLE_FEATURE_IMPROVEMENTS,
     V188_HOLE_FEATURE_QLV_PROMPT,
-    V189_HOLE_FEATURE_SPELLING
+    V189_HOLE_FEATURE_SPELLING,
+    V190_HOLE_FEATURE_ANGLE_MATH
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V189_HOLE_FEATURE_SPELLING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH;
 
 

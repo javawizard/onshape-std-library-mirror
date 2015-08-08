@@ -1,4 +1,4 @@
-FeatureScript 189; /* Automatically generated version */
+FeatureScript 190; /* Automatically generated version */
 export import(path : "onshape/std/box.fs", version : "");
 export import(path : "onshape/std/coordSystem.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
@@ -549,12 +549,26 @@ precondition
     var cSinkDepth = arg.cSinkDepth;
     if (arg.cSinkUseDepth)
     {
-        cSinkRadius = sin(arg.cSinkAngle) * cSinkDepth;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
+        {
+            cSinkRadius = cSinkDepth * tan(arg.cSinkAngle);
+        }
+        else
+        {
+            cSinkRadius = sin(arg.cSinkAngle) * cSinkDepth;
+        }
     }
     else
     {
         cSinkRadius = arg.cSinkDiameter / 2;
-        cSinkDepth = cSinkRadius / sin(arg.cSinkAngle);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
+        {
+            cSinkDepth = cSinkRadius / tan(arg.cSinkAngle);
+        }
+        else
+        {
+            cSinkDepth = cSinkRadius / sin(arg.cSinkAngle);
+        }
     }
 
     var sign = arg.isPositive ? 1 : -1;
@@ -614,22 +628,38 @@ precondition
 
         if (useTipLength)
         {
-            depth += cos(tipAngle) * radius;
+          if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
+          {
+              depth += radius / tan(tipAngle);
+          }
+          else
+          {
+              depth += cos(tipAngle) * radius;
+          }
         }
     }
 
     var points;
+    var tipDepth;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
+    {
+        tipDepth = radius / tan(tipAngle);
+    }
+    else
+    {
+        tipDepth = radius * cos(tipAngle);
+    }
     if (useTipLength)
     {
         points = [vector(arg.startDepth, 0 * meter),
                   vector(arg.startDepth + arg.clearanceDepth + depth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth - radius * cos(tipAngle), radius),
+                  vector(arg.startDepth + arg.clearanceDepth + depth - tipDepth, radius),
                   vector(arg.startDepth, radius)];
     }
     else
     {
         points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth + radius * cos(tipAngle), 0 * meter),
+                  vector(arg.startDepth + arg.clearanceDepth + depth + tipDepth, 0 * meter),
                   vector(arg.startDepth + arg.clearanceDepth + depth, radius),
                   vector(arg.startDepth, radius)];
 
