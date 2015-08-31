@@ -10,118 +10,110 @@ export import(path : "onshape/std/box.fs", version : "");
 
 //Boolean Operation
 annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
-export const booleanBodies = defineFeature(function(context is Context, id is Id, booleanDefinition is map)
+export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Operation type" }
-        booleanDefinition.operationType is BooleanOperationType;
+        definition.operationType is BooleanOperationType;
         annotation { "Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID }
-        booleanDefinition.tools is Query;
+        definition.tools is Query;
 
-        if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
+        if (definition.operationType == BooleanOperationType.SUBTRACTION)
         {
             annotation { "Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID }
-            booleanDefinition.targets is Query;
+            definition.targets is Query;
 
             annotation { "Name" : "Offset" }
-            booleanDefinition.offset is boolean;
+            definition.offset is boolean;
 
-            if (booleanDefinition.offset)
+            if (definition.offset)
             {
                 annotation { "Name" : "Offset all" }
-                booleanDefinition.offsetAll is boolean;
+                definition.offsetAll is boolean;
 
-                if (!booleanDefinition.offsetAll)
+                if (!definition.offsetAll)
                 {
                     annotation { "Name" : "Faces to offset",
                                  "Filter" : (EntityType.FACE && BodyType.SOLID) }
-                    booleanDefinition.entitiesToOffset is Query;
+                    definition.entitiesToOffset is Query;
                 }
 
                 annotation { "Name" : "Offset distance" }
-                isLength(booleanDefinition.offsetDistance, SHELL_OFFSET_BOUNDS);
+                isLength(definition.offsetDistance, SHELL_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-                booleanDefinition.oppositeDirection is boolean;
+                definition.oppositeDirection is boolean;
 
                 annotation { "Name" : "Reapply fillet" }
-                booleanDefinition.reFillet is boolean;
+                definition.reFillet is boolean;
             }
         }
-        if (booleanDefinition.operationType == BooleanOperationType.SUBTRACTION || booleanDefinition.operationType == BooleanOperationType.INTERSECTION)
+        if (definition.operationType == BooleanOperationType.SUBTRACTION || definition.operationType == BooleanOperationType.INTERSECTION)
         {
             annotation { "Name" : "Keep tools" }
-            booleanDefinition.keepTools is boolean;
+            definition.keepTools is boolean;
         }
     }
     {
-        if (booleanDefinition.offset && booleanDefinition.operationType == BooleanOperationType.SUBTRACTION)
+        if (definition.offset && definition.operationType == BooleanOperationType.SUBTRACTION)
         {
-            if (booleanDefinition.oppositeDirection)
+            if (definition.oppositeDirection)
             {
-                booleanDefinition.offsetDistance = -booleanDefinition.offsetDistance;
+                definition.offsetDistance = -definition.offsetDistance;
             }
             var suffix = "offsetTempBody";
             var transformMatrix = identityTransform();
             opPattern(context, id + suffix,
-                      { "entities" : booleanDefinition.tools,
+                      { "entities" : definition.tools,
                         "transforms" : [transformMatrix],
                         "instanceNames" : ["1"] });
 
             var faceQuery;
-            if (booleanDefinition.offsetAll)
+            if (definition.offsetAll)
             {
                 faceQuery = qCreatedBy(id + suffix, EntityType.FACE);
             }
             else
             {
-                faceQuery = wrapFaceQueryInCopy(booleanDefinition.entitiesToOffset, id + suffix);
+                faceQuery = wrapFaceQueryInCopy(definition.entitiesToOffset, id + suffix);
                 if (size(evaluateQuery(context, faceQuery)) == 0)
-                {
-                    reportFeatureError(context, id, ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
-                    return;
-                }
+                    throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
             }
 
             var tempMoveFaceSuffix = "offsetMoveFace";
             var moveFaceDefinition = {
                 "moveFaces" : faceQuery,
                 "moveFaceType" : MoveFaceType.OFFSET,
-                "offsetDistance" : booleanDefinition.offsetDistance,
-                "reFillet" : booleanDefinition.reFillet };
+                "offsetDistance" : definition.offsetDistance,
+                "reFillet" : definition.reFillet };
 
             opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
 
             var tempBooleanDefinition = {
-                "operationType" : booleanDefinition.operationType,
+                "operationType" : definition.operationType,
                 "tools" : qCreatedBy(id + suffix, EntityType.BODY),
-                "targets" : booleanDefinition.targets,
+                "targets" : definition.targets,
                 "keepTools" : false };
 
             var tempBooleanSuffix = "tempBoolean";
             opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition);
             processSubfeatureStatus(context, id + tempBooleanSuffix, id);
 
-            if (!booleanDefinition.keepTools)
+            if (!definition.keepTools)
             {
-                opDeleteBodies(context, id + "delete", { "entities" : booleanDefinition.tools });
+                opDeleteBodies(context, id + "delete", { "entities" : definition.tools });
             }
         }
         else
         {
-            if (booleanDefinition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
+            if (definition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS))
             {
-               var complementResult = constructToolsComplement(context, id, booleanDefinition);
-               if (featureHasError(context, id))
-               {
-                   return;
-               }
-               booleanDefinition.tools = complementResult.result;
-               booleanDefinition.operationType = BooleanOperationType.SUBTRACTION;
-               booleanDefinition.keepTools = false;
+               definition.tools = constructToolsComplement(context, id, definition);
+               definition.operationType = BooleanOperationType.SUBTRACTION;
+               definition.keepTools = false;
             }
-            opBoolean(context, id, booleanDefinition);
+            opBoolean(context, id, definition);
         }
     }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false});
 
@@ -141,24 +133,14 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 
 /**  Build a block large enough to contain all tools and targets. Subtract tools from it
 */
-function constructToolsComplement(context is Context, id is Id, booleanDefinition is map) returns map
+function constructToolsComplement(context is Context, id is Id, booleanDefinition is map) returns Query
 {
     var inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
 
     var boxResult = evBox3d(context, {"topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets])});
-    if (boxResult.error != undefined)
-    {
-        reportFeatureError(context, id, boxResult.error);
-        return {};
-    }
-    var extendedBox is Box3d = extendBox3d(boxResult.result, 0. * meter, 0.1);
+    var extendedBox is Box3d = extendBox3d(boxResult, 0. * meter, 0.1);
     var boxId is Id = id + "containingBox";
     fCuboid(context, boxId, {"corner1" : extendedBox.minCorner, "corner2" : extendedBox.maxCorner});
-    processSubfeatureStatus(context, boxId, id);
-    if (featureHasError(context, id))
-    {
-        return {};
-    }
 
     var complementId = id + "toolComplement";
     var complementDefinition = {
@@ -167,8 +149,7 @@ function constructToolsComplement(context is Context, id is Id, booleanDefinitio
                 "targets" : qCreatedBy(boxId, EntityType.BODY),
                 "keepTools" : booleanDefinition.keepTools };
     opBoolean(context, complementId, complementDefinition);
-    processSubfeatureStatus(context, complementId, id);
-    return {"result" : qCreatedBy(boxId, EntityType.BODY)}; // Subtraction modifies target tool
+    return qCreatedBy(boxId, EntityType.BODY); // Subtraction modifies target tool
 }
 
 export enum NewBodyOperationType
@@ -272,40 +253,36 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  *     .booleanScope <Query>: is used as the targets if !defaultScope
  *     .seed <Query>: {if set, will be as a rule included in the tool section of the boolean,
  *                     (see subfeatureToolsTargets)}
- * @return {This function returns a logical boolean to indicate if, in the case of "false",
- *          the error geometry should be shown to the user. This can happen both when
- *          input is malformed and when the boolean itself fails.}
+ * @param reconstructOp: a function that takes an id and reconstructs the input to show to the user as error geometry
+ *                       in case the input is problematic or the boolean itself fails.
  */
-export function processNewBodyIfNeeded(context is Context, id is Id, definition is map) returns boolean
+export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {
-    if (!featureHasError(context, id) && definition.operationType != NewBodyOperationType.NEW)
-    {
-        var booleanDefinition = subfeatureToolsTargets(context, id, definition);
-        booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
-        if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
-        {
-            //TODO : this would probably be better to block on the UI, but that would be something
-            //to do if/when we have a "Make surface" checkbox or similar indication.
-            reportFeatureError(context, id, ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID);
-            return true;
-        }
+    if (definition.operationType == NewBodyOperationType.NEW)
+        return;
 
-        if (size(evaluateQuery(context, booleanDefinition.targets)) > 0)
-        {
-            booleanDefinition.targetsAndToolsNeedGrouping = true;
-            const boolId = id + "boolean";
-            booleanBodies(context, boolId, booleanDefinition);
-            return !processSubfeatureStatus(context, boolId, id);
-        }
-        else
-        {
-            reportFeatureError(context, id, ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"]);
-            return false;
-        }
-    }
-    else
+    const solidsQuery = qCreatedBy(id, EntityType.BODY);
+
+    var booleanDefinition = subfeatureToolsTargets(context, id, definition);
+    booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
+
+    if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
+        throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, solidsQuery);
+
+    if (size(evaluateQuery(context, booleanDefinition.targets)) == 0)
+        throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"], solidsQuery);
+
+    booleanDefinition.targetsAndToolsNeedGrouping = true;
+    const boolId = id + "boolean";
+    booleanBodies(context, boolId, booleanDefinition);
+    if (getFeatureWarning(context, boolId) != undefined || getFeatureInfo(context, boolId) != undefined)
     {
-        return true;
+        processSubfeatureStatus(context, boolId, id);
+
+        const errorId = id + "errorEntities";
+        reconstructOp(errorId);
+        setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
     }
 }
 
@@ -356,13 +333,11 @@ function faceToFaceCollisionsContainInterferences(context is Context, collisions
     {
         if (c.tool is Query && c.target is Query)
         {
-            var collisionResult = evCollision(context, { 'tools' : c.tool, 'targets' : c.target });
-            if (collisionResult.error != undefined)
-            {
+            var collisionResult = try(evCollision(context, { 'tools' : c.tool, 'targets' : c.target }));
+            if (collisionResult == undefined)
                 return false;
-            }
 
-            for (var col1 in collisionResult.result)
+            for (var col1 in collisionResult)
             {
                 if (col1['type'] == "INTERFERE" ||
                     col1['type'] == "TARGET_IN_TOOL" ||
@@ -390,36 +365,31 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
-    if (collisionResult.error != undefined)
-    {
+    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
-    }
-    var collisions = collisionResult.result;
-    if (collisions is array)
+
+    var collisionClasses = classifyCollisions(context, collisions);
+    var conditionsToAdd;    //undefined|boolean
+    var conditionsToRemove; //undefined|boolean
+    var target = [];
+    for (var entry in collisionClasses)
     {
-        var collisionClasses = classifyCollisions(context, collisions);
-        var conditionsToAdd;    //undefined|boolean
-        var conditionsToRemove; //undefined|boolean
-        var target = [];
-        for (var entry in collisionClasses)
-        {
-            var nIntersections = size(entry.value.intersection);
-            var nAbutting = size(entry.value.abutting);
-            conditionsToRemove = (conditionsToRemove != false && nAbutting == 0 && nIntersections == 1);
-            conditionsToAdd = (conditionsToAdd != false && nAbutting == 1 && nIntersections == 0);
-            if (conditionsToRemove == conditionsToAdd)
-                break;
-            if (conditionsToRemove && !isIn(entry.value.intersection[0], target))
-                target = append(target, entry.value.intersection[0]);
-            if (conditionsToAdd && !isIn(entry.value.abutting[0], target))
-                target = append(target, entry.value.abutting[0]);
-        }
-        if (conditionsToRemove == true && conditionsToAdd != true)
-            return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, target);
-        else if (conditionsToAdd == true && conditionsToRemove != true)
-            return setOperationType(featureDefinition, NewBodyOperationType.ADD, target);
+        var nIntersections = size(entry.value.intersection);
+        var nAbutting = size(entry.value.abutting);
+        conditionsToRemove = (conditionsToRemove != false && nAbutting == 0 && nIntersections == 1);
+        conditionsToAdd = (conditionsToAdd != false && nAbutting == 1 && nIntersections == 0);
+        if (conditionsToRemove == conditionsToAdd)
+            break;
+        if (conditionsToRemove && !isIn(entry.value.intersection[0], target))
+            target = append(target, entry.value.intersection[0]);
+        if (conditionsToAdd && !isIn(entry.value.abutting[0], target))
+            target = append(target, entry.value.abutting[0]);
     }
+    if (conditionsToRemove == true && conditionsToAdd != true)
+        return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, target);
+    else if (conditionsToAdd == true && conditionsToRemove != true)
+        return setOperationType(featureDefinition, NewBodyOperationType.ADD, target);
     return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
 }
 
@@ -435,13 +405,11 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
-    if (collisionResult.error != undefined)
-    {
+    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
-    }
-    var collisions = collisionResult.result;
-    if (collisions is array && size(collisions) > 0)
+
+    if (size(collisions) > 0)
     {
         var collisionClasses = classifyCollisions(context, collisions);
         var target = undefined;
@@ -517,28 +485,25 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
     else
         excludeQ = toolQ;
     var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisionResult = evCollision(context, { tools : toolQ, targets : targetQ });
-    if (collisionResult.error != undefined)
+    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    if (collisions == undefined)
     {
         return featureDefinition;
     }
-    var collisions = collisionResult.result;
-    if (collisions is array)
+    var collisionClasses = classifyCollisions(context, collisions);
+    var haveAbutting = false; //boolean
+    for (var entry in collisionClasses)
     {
-        var collisionClasses = classifyCollisions(context, collisions);
-        var haveAbutting = false; //boolean
-        for (var entry in collisionClasses)
-        {
-            var nIntersections = size(entry.value.intersection);
-            if (nIntersections > 0)
-                return featureDefinition;
-            var nAbutting = size(entry.value.abutting);
-            if (nAbutting > 0)
-                haveAbutting = true;
-        }
-        if (haveAbutting) // if we made it here there are no intersections
-            featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
+        var nIntersections = size(entry.value.intersection);
+        if (nIntersections > 0)
+            return featureDefinition;
+        var nAbutting = size(entry.value.abutting);
+        if (nAbutting > 0)
+            haveAbutting = true;
     }
+    if (haveAbutting) // if we made it here there are no intersections
+        featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
+
     return featureDefinition;
 }
 

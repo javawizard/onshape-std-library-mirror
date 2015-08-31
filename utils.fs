@@ -164,3 +164,90 @@ export function libraryLanguageVersion()
     return @getLanguageVersion();
 }
 
+export function clamp(value is number, lowerBound is number, higherBound is number)
+precondition
+{
+    lowerBound <= higherBound;
+}
+{
+    if (value < lowerBound)
+        return lowerBound;
+    if (value > higherBound)
+        return higherBound;
+    return value;
+}
+
+/*
+ Merge Sort
+
+ compareFunction(a, b) takes two entities, and returns
+    -1 if a is before b
+    0  if a == b
+    1  if a is after b
+*/
+export function sort(entities is array, compareFunction is function)
+{
+    const totalSize is number = size(entities);
+    var result = [entities, makeArray(totalSize)];
+    var t = 0;
+    var length = 1;
+    var doubleLength = length * 2;
+    while (length < totalSize)
+    {
+        t = 1 - t;
+        for (var start = 0; start < totalSize; start += doubleLength)
+        {
+            var endLeft = clamp(start + length, 0, totalSize);
+            var endRight = clamp(start + doubleLength, 0, totalSize);
+            var leftIndex = start;
+            var rightIndex = endLeft;
+            var index = start;
+            for (; leftIndex < endLeft || rightIndex < endRight; index += 1)
+            {
+                if (leftIndex >= endLeft)
+                {
+                    result[t][index] = result[1 - t][rightIndex];
+                    rightIndex += 1;
+                }
+                else if (rightIndex >= endRight)
+                {
+                    result[t][index] = result[1 - t][leftIndex];
+                    leftIndex += 1;
+                }
+                else if (compareFunction(result[1 - t][leftIndex], result[1 - t][rightIndex]) <= 0)
+                {
+                    result[t][index] = result[1 - t][leftIndex];
+                    leftIndex += 1;
+                }
+                else
+                {
+                    result[t][index] = result[1 - t][rightIndex];
+                    rightIndex += 1;
+                }
+            }
+        }
+        length += length;
+        doubleLength += doubleLength;
+    }
+    return result[t];
+}
+
+/*
+ Filter
+
+ filterFunction(a) takes one entity.
+ It returns true to keep the entity; otherwise false.
+ */
+export function filter(entities is array, filterFunction is function)
+{
+    var result = [];
+    const totalSize is number = size(entities);
+    for (var i = 0; i < totalSize; i += 1)
+    {
+        if (filterFunction(entities[i]))
+        {
+            result = append(result, entities[i]);
+        }
+    }
+    return result;
+}

@@ -5,62 +5,70 @@ export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
 annotation { "Feature Type Name" : "Sweep", "Filter Selector" : "allparts" }
-export const sweep = defineFeature(function(context is Context, id is Id, sweepDefinition is map)
+export const sweep = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Creation type" }
-        sweepDefinition.bodyType is ToolBodyType;
+        definition.bodyType is ToolBodyType;
 
-        if (sweepDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            booleanStepTypePredicate(sweepDefinition);
+            booleanStepTypePredicate(definition);
 
             annotation { "Name" : "Faces and sketch regions to sweep",
                          "Filter" : (EntityType.FACE && GeometryType.PLANE) && ConstructionObject.NO }
-            sweepDefinition.profiles is Query;
+            definition.profiles is Query;
         }
         else
         {
             annotation { "Name" : "Edges and sketch curves to sweep",
                          "Filter" : (EntityType.EDGE && ConstructionObject.NO) }
-            sweepDefinition.surfaceProfiles is Query;
+            definition.surfaceProfiles is Query;
         }
 
-        annotation { "Name" : "Sweep path", "Filter" : EntityType.EDGE }
-        sweepDefinition.path is Query;
+        annotation { "Name" : "Sweep path", "Filter" : EntityType.EDGE && ConstructionObject.NO }
+        definition.path is Query;
 
         annotation { "Name" : "Keep profile orientation" }
-        sweepDefinition.keepProfileOrientation is boolean;
+        definition.keepProfileOrientation is boolean;
 
-        if (sweepDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            booleanStepScopePredicate(sweepDefinition);
+            booleanStepScopePredicate(definition);
         }
     }
     {
-        if (sweepDefinition.bodyType == ToolBodyType.SURFACE)
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V203_SWEEP_PATH_NO_CONSTRUCTION))
+        {
+            var pathQuery = definition.path;
+            definition.path = qConstructionFilter(definition.path, ConstructionObject.NO);
+            if (pathQuery.queryType == QueryType.UNION && size(pathQuery.subqueries) > 0)
+            {
+                var queryResults = evaluateQuery(context, definition.path);
+                if (size(queryResults) == 0)
+                {
+                    reportFeatureError(context, id, ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION);
+                    return;
+                }
+            }
+        }
+        if (definition.bodyType == ToolBodyType.SURFACE)
         {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
             {
-                sweepDefinition.profiles = qConstructionFilter(sweepDefinition.surfaceProfiles, ConstructionObject.NO);
+                definition.profiles = qConstructionFilter(definition.surfaceProfiles, ConstructionObject.NO);
             }
             else
             {
-                sweepDefinition.profiles = sweepDefinition.surfaceProfiles;
+                definition.profiles = definition.surfaceProfiles;
             }
         }
-        opSweep(context, id, sweepDefinition);
+        opSweep(context, id, definition);
 
-        if (sweepDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            if (!processNewBodyIfNeeded(context, id, sweepDefinition))
-            {
-                var statusToolId = id + "statusTools";
-                startFeature(context, statusToolId, sweepDefinition);
-                opSweep(context, statusToolId, sweepDefinition);
-                setBooleanErrorEntities(context, id, statusToolId);
-                endFeature(context, statusToolId);
-            }
+            const reconstructOp = function(id) { opSweep(context, id, definition); };
+            processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false });
 

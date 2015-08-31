@@ -5,82 +5,77 @@ export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
 
 annotation { "Feature Type Name" : "Mirror", "Filter Selector" : "allparts" }
-export const mirror = defineFeature(function(context is Context, id is Id, mirrorDefinition is map)
+export const mirror = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Face mirror", "Default" : false }
-        mirrorDefinition.isFaceMirror is boolean;
+        definition.isFaceMirror is boolean;
 
-        if (!mirrorDefinition.isFaceMirror)
+        if (!definition.isFaceMirror)
         {
-            booleanStepTypePredicate(mirrorDefinition);
+            booleanStepTypePredicate(definition);
 
             annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
-            mirrorDefinition.entities is Query;
+            definition.entities is Query;
         }
         else
         {
             annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-            mirrorDefinition.faces is Query;
+            definition.faces is Query;
         }
 
         annotation { "Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1 }
-        mirrorDefinition.mirrorPlane is Query;
+        definition.mirrorPlane is Query;
 
-        if (!mirrorDefinition.isFaceMirror)
+        if (!definition.isFaceMirror)
         {
-            booleanStepScopePredicate(mirrorDefinition);
+            booleanStepScopePredicate(definition);
         }
     }
     {
-        const isFaceMirror = mirrorDefinition.isFaceMirror;
+        const isFaceMirror = definition.isFaceMirror;
 
         if (isFaceMirror)
-            mirrorDefinition.entities = mirrorDefinition.faces;
+            definition.entities = definition.faces;
 
-        if (size(evaluateQuery(context, mirrorDefinition.entities)) == 0)
+        if (size(evaluateQuery(context, definition.entities)) == 0)
         {
             if (isFaceMirror)
-                reportFeatureError(context, id, ErrorStringEnum.MIRROR_SELECT_FACES, ["faces"]);
+                throw regenError(ErrorStringEnum.MIRROR_SELECT_FACES, ["faces"]);
             else
-                reportFeatureError(context, id, ErrorStringEnum.MIRROR_SELECT_PARTS, ["entities"]);
+                throw regenError(ErrorStringEnum.MIRROR_SELECT_PARTS, ["entities"]);
             return;
         }
 
-        mirrorDefinition.mirrorPlane = qGeometry(mirrorDefinition.mirrorPlane, GeometryType.PLANE);
-        var planeResult = evPlane(context, { "face" : mirrorDefinition.mirrorPlane });
-        if (planeResult.error != undefined)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
-            return;
-        }
+        definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
+        var planeResult = try(evPlane(context, { "face" : definition.mirrorPlane }));
+        if (planeResult == undefined)
+            throw regenError(ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
 
-        var transform = mirrorAcross(planeResult.result);
+        var transform = mirrorAcross(planeResult);
         var patternDefinition = {
-            "entities" : mirrorDefinition.entities,
+            "entities" : definition.entities,
             "transforms" : [transform],
             "instanceNames" : ["1"],
             notFoundErrorKey("entities") : ErrorStringEnum.MIRROR_SELECT_PARTS };
-        opPattern(context, id, patternDefinition);
 
-        if (getFeatureError(context, id).result != undefined)
+        try
         {
-            reportFeatureError(context, id, mirrorDefinition.isFaceMirror ? ErrorStringEnum.MIRROR_FACE_FAILED : ErrorStringEnum.MIRROR_BODY_FAILED);
-            return;
+            opPattern(context, id, patternDefinition);
+        }
+        catch
+        {
+            throw regenError(definition.isFaceMirror ? ErrorStringEnum.MIRROR_FACE_FAILED : ErrorStringEnum.MIRROR_BODY_FAILED);
         }
 
         // Perform any booleans, if required
-        if (!mirrorDefinition.isFaceMirror)
+        if (!definition.isFaceMirror)
         {
             // We only include original body in the tools if the operation is UNION
-            var additionalParmeters = (mirrorDefinition.operationType == NewBodyOperationType.ADD) ?
-                { "seed" : mirrorDefinition.entities } : {};
-            if (!processNewBodyIfNeeded(context, id, mergeMaps(mirrorDefinition, additionalParmeters)))
-            {
-                var errorId = id + "boolError";
-                opPattern(context, errorId, patternDefinition);
-                setBooleanErrorEntities(context, id, errorId);
-            }
+            var additionalParmeters = (definition.operationType == NewBodyOperationType.ADD) ?
+                { "seed" : definition.entities } : {};
+            const reconstructOp = function(id) { opPattern(context, id, patternDefinition); };
+            processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParmeters), reconstructOp);
         }
     }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
 

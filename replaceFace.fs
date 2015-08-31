@@ -35,7 +35,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
             definition.offset = -definition.offset;
 
         // Only draw the offset manipulator if the replace face is defined
-        var replaceFacePlane = computeFacePlane(context, id, definition.replaceFaces);
+        var replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));
         if (replaceFacePlane != undefined)
             addOffsetManipulator(context, id, definition, replaceFacePlane);
 
@@ -63,7 +63,7 @@ function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinitio
 
 function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
 {
-    return evFaceTangentPlane(context, { "face" : entitiesQuery, "parameter" : vector(0.5, 0.5) }).result;
+    return evFaceTangentPlane(context, { "face" : entitiesQuery, "parameter" : vector(0.5, 0.5) });
 }
 
 export function replaceFaceManipulatorChange(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map

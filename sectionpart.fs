@@ -13,22 +13,14 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
     // The bbox of the body in plane coordinate system with positive z being in front of the plane
     var boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : transform });
 
-    // Error while bbox computation we delete all bodies
-    if (boxResult.error != undefined)
-    {
-        return allBodies;
-    }
-
-    boxResult = stripUnits(boxResult);
-
     // Body is fully behind the plane. Retain only the input body. no splitting needed
-    if (boxResult.result.maxCorner[2] < TOLERANCE.zeroLength)
+    if (boxResult.maxCorner[2] < TOLERANCE.zeroLength * meter)
     {
         return qSubtraction(allBodies, partToSection);
     }
 
     // Body is fully in front of plane. Delete all bodies no splitting needed
-    if (boxResult.result.minCorner[2] > -TOLERANCE.zeroLength)
+    if (boxResult.minCorner[2] > -TOLERANCE.zeroLength * meter)
     {
         return allBodies;
     }
@@ -42,7 +34,6 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
     var planeId = id + "plane";
     opPlane(context, planeId, cplaneDefinition);
-    processSubfeatureStatus(context, planeId, id);
     var planeTool = qOwnerPart(qCreatedBy(planeId));
 
     //The plane needs to be deleted so that it is not processed as a section face
@@ -59,28 +50,26 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
     var splitPartId = id + "splitPart";
     opSplitPart(context, splitPartId, splitPartDefinition);
 
-    // Can happen if the split feature creates non manifold geometry
-    if (featureHasError(context, splitPartId))
-    {
-        return allBodies;
-    }
-
     // Split was success. Retain everything behind the plane
-    return qSubtraction(allBodies, qBodySplitBy(splitPartId, true));
+    return qSubtraction(allBodies, qSplitBy(splitPartId, EntityType.BODY, true));
 }
 
 //Section Part Feature
-export const sectionPart = defineFeature(function(context is Context, id is Id, sectionPartDefinition is map)
+export const sectionPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        sectionPartDefinition.targets is Query;
-        sectionPartDefinition.plane is Plane;
+        definition.targets is Query;
+        definition.plane is Plane;
     }
     {
-        var bodiesToDelete = performSectionCutAndGetBodiesToDelete(context, id, sectionPartDefinition.plane, sectionPartDefinition.targets);
+        var bodiesToDelete = qEverything(EntityType.BODY); // Delete everything if there's an error
+        try
+        {
+            bodiesToDelete = performSectionCutAndGetBodiesToDelete(context, id, definition.plane, definition.targets);
+        }
+        // TODO: how are errors reported?
         var deleteBodiesId = id + "deleteBody";
         opDeleteBodies(context, deleteBodiesId, { "entities" : bodiesToDelete });
-        processSubfeatureStatus(context, deleteBodiesId, id);
     });
 
 

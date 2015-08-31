@@ -2,58 +2,47 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/geomOperations.fs", version : "");
 
 annotation { "Feature Type Name" : "Shell", "Filter Selector" : "allparts" }
-export const shell = defineFeature(function(context is Context, id is Id, shellDefinition is map)
+export const shell = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Hollow", "Default" : false }
-        shellDefinition.isHollow is boolean;
+        definition.isHollow is boolean;
 
-        if (!shellDefinition.isHollow)
+        if (!definition.isHollow)
         {
             annotation { "Name" : "Faces to remove",
                 "Filter" : EntityType.FACE && BodyType.SOLID }
-            shellDefinition.entities is Query;
+            definition.entities is Query;
         }
         else
         {
             annotation { "Name" : "Parts to hollow",
                 "Filter" : EntityType.BODY && BodyType.SOLID }
-            shellDefinition.parts is Query;
+            definition.parts is Query;
         }
 
         annotation { "Name" : "Shell thickness" }
-        isLength(shellDefinition.thickness, SHELL_OFFSET_BOUNDS);
+        isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        shellDefinition.oppositeDirection is boolean;
+        definition.oppositeDirection is boolean;
     }
     {
-        if (shellDefinition.isHollow)
-            shellDefinition.entities = shellDefinition.parts;
-
-        if (!checkInput(context, id, shellDefinition))
-            return;
-
-        if (!shellDefinition.oppositeDirection)
-            shellDefinition.thickness = -shellDefinition.thickness;
-        opShell(context, id, shellDefinition);
-    }, { oppositeDirection : false, isHollow : false });
-
-function checkInput(context is Context, id is Id, shellDefinition is map) returns boolean
-{
-    if (shellDefinition.isHollow)
-        shellDefinition.entities = qEntityFilter(shellDefinition.entities, EntityType.BODY);
-    else
-        shellDefinition.entities = qEntityFilter(shellDefinition.entities, EntityType.FACE);
-
-    if (size(evaluateQuery(context, shellDefinition.entities)) == 0)
-    {
-        if (shellDefinition.isHollow)
-            reportFeatureError(context, id, ErrorStringEnum.SHELL_SELECT_PARTS, ["parts"]);
+        if (definition.isHollow)
+            definition.entities = qEntityFilter(definition.parts, EntityType.BODY);
         else
-            reportFeatureError(context, id, ErrorStringEnum.SHELL_SELECT_FACES, ["entities"]);
-        return false;
-    }
-    return true;
-}
+            definition.entities = qEntityFilter(definition.entities, EntityType.FACE);
+
+        if (size(evaluateQuery(context, definition.entities)) == 0)
+        {
+            if (definition.isHollow)
+                throw regenError(ErrorStringEnum.SHELL_SELECT_PARTS, ["parts"]);
+            else
+                throw regenError(ErrorStringEnum.SHELL_SELECT_FACES, ["entities"]);
+        }
+
+        if (!definition.oppositeDirection)
+            definition.thickness = -definition.thickness;
+        opShell(context, id, definition);
+    }, { oppositeDirection : false, isHollow : false });
 

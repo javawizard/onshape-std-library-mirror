@@ -147,7 +147,7 @@ export enum BoundingType
     SYMMETRIC,
     annotation { "Name" : "Up to next" }
     UP_TO_NEXT,
-    annotation { "Name" : "Up to surface" }
+    annotation { "Name" : "Up to face" }
     UP_TO_SURFACE,
     annotation { "Name" : "Up to part" }
     UP_TO_BODY,
@@ -161,7 +161,7 @@ export enum SecondDirectionBoundingType
     BLIND,
     annotation { "Name" : "Up to next" }
     UP_TO_NEXT,
-    annotation { "Name" : "Up to surface" }
+    annotation { "Name" : "Up to face" }
     UP_TO_SURFACE,
     annotation { "Name" : "Up to part" }
     UP_TO_BODY,
@@ -178,21 +178,6 @@ export enum ChamferType
     TWO_OFFSETS,
     annotation { "Name" : "Distance and angle" }
     OFFSET_ANGLE
-}
-
-// constraintFace
-export enum ConstraintFaceType
-{
-    annotation { "Name" : "Coincident" }
-    COINCIDENT,
-    annotation { "Name" : "Concentric" }
-    CONCENTRIC,
-    annotation { "Name" : "Equal radius" }
-    EQUAL_RADIUS,
-    annotation { "Name" : "Parallel" }
-    PARALLEL,
-    annotation { "Name" : "Perpendicular" }
-    PERPENDICULAR
 }
 
 // cplane

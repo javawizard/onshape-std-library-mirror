@@ -33,16 +33,11 @@ precondition
 }
 {
     startFeature(context, id, definition);
-    var center;
-    if (definition.center != undefined)
-    {
-        var pointResult = evVertexPoint(context, { "vertex" : definition.center });
-        center = pointResult.result;
-    }
-    if (center == undefined)
-        center = vector(0, 0, 0) * meter;
+    if (definition.center is Query)
+        definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
+    if (definition.center == undefined)
+        definition.center = vector(0, 0, 0) * meter;
 
-    definition.center = center;
     definition.radius = vector(1, 1, 1) * definition.radius;
 
     fEllipsoid(context, id, definition);
@@ -158,18 +153,11 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
         {
             var query = makeQuery(sketchId + "imprint", "IMPRINT", EntityType.FACE, {});
             var axisResult = evLine(context, {"edge" : sketchEntityQuery(sketchId + "wireOp", EntityType.EDGE, "line.0")});
-            if (axisResult.error != undefined)
-            {
-                reportFeatureError(context, id, axisResult.error);
-            }
-            else
-            {
-                opRevolve(context, id + "revolve",
-                        { "entities"    : query,
-                          "axis"        : axisResult.result,
-                          "angleForward" : 2 * PI
-                        });
-            }
+            opRevolve(context, id + "revolve",
+                    { "entities"    : query,
+                      "axis"        : axisResult,
+                      "angleForward" : 2 * PI
+                    });
         }
         {
             var query = qCreatedBy(sketchId, EntityType.BODY);

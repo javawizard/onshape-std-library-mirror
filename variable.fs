@@ -10,7 +10,7 @@ export enum AssignmentType
 }
 
 
-//TODO: annotation {"Feature Type Name" : "Assign Variable", "UIHint" : "NO_PREVIEW_PROVIDED"}
+annotation {"Feature Type Name" : "Assign variable", "Feature Name Template": "Assign #name", "UIHint" : "NO_PREVIEW_PROVIDED"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -35,20 +35,14 @@ export const assignVariable = defineFeature(function(context is Context, id is I
     {
         var replaceNameWithRegExpShouldBeBlank = replace(definition.name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
         if (definition.name == '' || replaceNameWithRegExpShouldBeBlank != '') {
-            reportFeatureError(context, id, ErrorStringEnum.VARIABLE_NAME_INVALID);
+            throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
         }
 
         if (definition.assignmentType == AssignmentType.MEASUREMENT)
         {
-            var v0 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 0) }).result;
-            var v1 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 1) }).result;
-            var v2 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 2) }).result;
-
-            if (v0 == undefined || v1 == undefined)
-            {
-                reportFeatureError(context, id, ErrorStringEnum.CANNOT_EVALUATE_VERTEX);
-                return;
-            }
+            var v0 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 0) });
+            var v1 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 1) });
+            var v2 = try(evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 2) }));
 
             if (v2 == undefined)
                 definition.value = norm(v0 - v1);
@@ -63,7 +57,7 @@ export function makeLookupFunction(context is Context, id is Id) returns functio
 {
     return function(name is string)
         {
-            return @getVariable(context, { "name" : name }).result;
+            return @getVariable(context, { "name" : name });
         };
 }
 

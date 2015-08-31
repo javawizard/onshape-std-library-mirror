@@ -7,38 +7,7 @@ export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
 export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
 export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "");
-
-
-export enum ConstraintType
-{
-    NONE,
-    COINCIDENT,
-    PARALLEL,
-    VERTICAL,
-    HORIZONTAL,
-    PERPENDICULAR,
-    CONCENTRIC,
-    MIRROR,
-    MIDPOINT,
-    TANGENT,
-    EQUAL,
-    LENGTH,
-    DISTANCE,
-    ANGLE,
-    RADIUS,
-    NORMAL,
-    FIX,
-    PROJECTED,
-    OFFSET,
-    CIRCULAR_PATTERN,
-    PIERCE,
-    LINEAR_PATTERN,
-    MAJOR_DIAMETER,
-    MINOR_DIAMETER,
-    QUADRANT,
-    DIAMETER,
-    SILHOUETTED
-}
+export import(path : "onshape/std/constrainttype.gen.fs", version : "");
 
 export enum DimensionDirection
 {
@@ -81,14 +50,14 @@ precondition
     recordQueries(context, id, value);
     value.planeReference = value.sketchPlane;
     var planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
-    var sketchPlane = evPlane(context, planeDefinition);
-    if (sketchPlane.error != undefined)
+    var sketchPlane = try(evPlane(context, planeDefinition));
+    if (sketchPlane == undefined)
     {
         reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
-        sketchPlane.result = XY_PLANE;
+        sketchPlane = XY_PLANE;
         value.planeReference = qNothing();
     }
-    value.sketchPlane = sketchPlane.result;
+    value.sketchPlane = sketchPlane;
 
     // We can't use the usual wrapped function because the context does not have the version set here yet
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
@@ -104,8 +73,7 @@ precondition
 }
 {
     var result = @newSketch(context, id, value);
-    reportFeatureError(context, id, result.error);
-    return result.result as Sketch;
+    return result as Sketch;
 }
 
 export function skSolve(sketch is Sketch)
@@ -150,6 +118,21 @@ precondition
 }
 {
     return @skText(sketch, textId, value);
+}
+
+//adds an image rectangle, and returns ids of corner points.
+export function skImage(sketch is Sketch, imageId is string, value is map)
+precondition
+{
+    // sourceId is the foreign data id string pointing to a specific version of an uploaded image
+    value.sourceId is string;
+    value.aspectRatio is number;
+    value.aspectRatio > 0;
+    value.firstCorner is undefined || is2dPoint(value.firstCorner);
+    value.secondCorner is undefined || is2dPoint(value.secondCorner);
+}
+{
+    return @skImage(sketch, imageId, value);
 }
 
 //adds a circle, returns map {centerId:string}

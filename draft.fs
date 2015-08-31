@@ -5,42 +5,39 @@ export import(path : "onshape/std/valueBounds.fs", version : "");
 
 //Draft Operation
 annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
-export const draft = defineFeature(function(context is Context, id is Id, draftDefinition is map)
+export const draft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Neutral plane",
                      "Filter" : GeometryType.PLANE,
                      "MaxNumberOfPicks" : 1 }
-        draftDefinition.neutralPlane is Query;
+        definition.neutralPlane is Query;
 
         annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-        draftDefinition.draftFaces is Query;
+        definition.draftFaces is Query;
 
         annotation { "Name" : "Draft angle" }
-        isAngle(draftDefinition.angle, ANGLE_STRICT_90_BOUNDS);
+        isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        draftDefinition.pullDirection is boolean;
+        definition.pullDirection is boolean;
 
         annotation { "Name" : "Tangent propagation", "Default" : true }
-        draftDefinition.tangentPropagation is boolean;
+        definition.tangentPropagation is boolean;
 
         annotation { "Name" : "Reapply fillet", "Default" : false }
-        draftDefinition.reFillet is boolean;
+        definition.reFillet is boolean;
     }
     {
-        var planeResult = evFaceTangentPlane(context, { "face" : draftDefinition.neutralPlane, "parameter" : vector(0.5, 0.5) });
-        if (planeResult.error != undefined)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
-            return;
-        }
+        var planeResult = try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
+        if (planeResult == undefined)
+            throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
 
-        draftDefinition.pullVec = planeResult.result.normal;
+        definition.pullVec = planeResult.normal;
 
-        if (draftDefinition.pullDirection)
-            draftDefinition.pullVec = -draftDefinition.pullVec;
+        if (definition.pullDirection)
+            definition.pullVec = -definition.pullVec;
 
-        opDraft(context, id, draftDefinition);
+        opDraft(context, id, definition);
     }, { pullDirection : false, tangentPropagation : false, reFillet : false });
 

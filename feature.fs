@@ -58,32 +58,32 @@ export predicate canBeForeignId(value)
 }
 
 annotation { "Feature Type Name" : "Import" }
-export const importForeign = defineFeature(function(context is Context, id is Id, importDefinition is map)
+export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Foreign Id" }
-        importDefinition.foreignId is ForeignId;
+        definition.foreignId is ForeignId;
 
         annotation { "Name" : "Source is 'Y Axis Up'" }
-        importDefinition.yAxisIsUp is boolean;
+        definition.yAxisIsUp is boolean;
 
         annotation {"Name" : "Flatten assembly"}
-        importDefinition.flatten is boolean;
+        definition.flatten is boolean;
     }
     {
-        opImportForeign(context, id, importDefinition);
+        opImportForeign(context, id, definition);
     }, { yAxisIsUp : false, flatten : false });
 
 annotation { "Feature Type Name" : "Delete part" }
-export const deleteBodies = defineFeature(function(context is Context, id is Id, deleteDefinition is map)
+export const deleteBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Entities to delete",
                      "Filter" : EntityType.BODY }
-        deleteDefinition.entities is Query;
+        definition.entities is Query;
     }
     {
-        opDeleteBodies(context, id, deleteDefinition);
+        opDeleteBodies(context, id, definition);
     });
 
 export type BuildFunction typecheck canBeBuildFunction;
@@ -94,34 +94,31 @@ export predicate canBeBuildFunction(value)
 }
 
 annotation { "Feature Type Name" : "Derived" }
-export const importDerived = defineFeature(function(context is Context, id is Id, importDefinition is map)
+export const importDerived = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN" }
-        importDefinition.parts is Query;
+        definition.parts is Query;
         annotation { "UIHint" : "ALWAYS_HIDDEN" }
-        importDefinition.buildFunction is BuildFunction;
+        definition.buildFunction is BuildFunction;
     }
     {
-        var otherContext = importDefinition.buildFunction();
+        var otherContext = definition.buildFunction();
         if (otherContext != undefined)
         {
-            if (size(evaluateQuery(otherContext, importDefinition.parts)) == 0)
-            {
-                reportFeatureError(context, id, ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
-                return;
-            }
-            recordQueries(otherContext, id, importDefinition);
-            var bodiesToKeep = qUnion([importDefinition.parts, qMateConnectorsOfParts(importDefinition.parts)]);
+            if (size(evaluateQuery(otherContext, definition.parts)) == 0)
+                throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
+
+            recordQueries(otherContext, id, definition);
+            var bodiesToKeep = qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]);
 
             var deleteDefinition = {};
             deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), bodiesToKeep);
             deleteBodies(otherContext, id + "delete", deleteDefinition);
 
-            var mergeDefinition = importDefinition; // to pass such general parameters as asVersion
+            var mergeDefinition = definition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;
             @mergeContexts(context, id + "merge", mergeDefinition);
-            processSubfeatureStatus(context, id + "merge", id);
         }
     });
 
