@@ -1,6 +1,7 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 // Functions for constructing queries
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
+export import(path : "onshape/std/context.fs", version : "");
 
 
 // When evaluated all the queries except for those listed order their output by deterministic ids
@@ -57,7 +58,8 @@ export enum QueryType
     SMALLEST,
     COEDGE,
     MATE_CONNECTOR,
-    CONSTRUCTION_FILTER
+    CONSTRUCTION_FILTER,
+    DEPENDENCY
 }
 
 // Following enums can be used in query filters
@@ -192,6 +194,13 @@ export function qCreatedBy(featureId is Id, entityType is EntityType) returns Qu
 export function qTransient(id is TransientId) returns Query
 {
     return { "queryType" : QueryType.TRANSIENT, "transientId" : id } as Query;
+}
+
+// Get the true dependency of the query. E.g. for extrude, the true dependency of extruded body can be
+// the face of the profile, or the sketch edges of the profile.
+export function qDependency(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
 }
 
 export function transientQueriesToStrings(query is Query)
@@ -482,9 +491,9 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
                 "entityType" : entityType, queryType : "DUMMY" });
 }
 
-export function qBodySplitBy(featureId is Id, backBody is boolean)
+export function qSplitBy(featureId is Id, entityType is EntityType, backBody is boolean)
 {
-    return makeQuery(featureId, "SPLIT", EntityType.BODY, { "isFromBackBody" : backBody });
+    return makeQuery(featureId, "SPLIT", entityType, { "isFromBackBody" : backBody });
 }
 
 export function sketchEntityQuery(operationId is Id, entityType is EntityType, sketchEntityId is string) returns Query
@@ -530,57 +539,6 @@ export function toString(value is TransientId)
     return "Tr:" ~ @transientIdToString(value);
 }
 
-//====================== Id ========================
-export type Id typecheck canBeId;
-
-export predicate canBeId(value)
-{
-    value is array;
-    for (var comp in value)
-    {
-        comp is string;
-        replace(comp, "\\*?[a-zA-Z0-9_.+/\\-]", "") == ""; //All characters should be of this form
-    }
-}
-
-export const baseId = [] as Id;
-
-export function newId() returns Id
-{
-    return [] as Id;
-}
-
-export function makeId(idComp is string) returns Id
-{
-    return [idComp] as Id;
-}
-
-export const ANY_ID = '*';
-
-export function unstableIdComponent(addend) returns string
-{
-    return (ANY_ID ~ addend);
-}
-
-export operator+(id is Id, addend is string) returns Id
-precondition
-{
-        replace(addend, "^\\.", "_") == addend;
-}
-{
-    return append(id, addend) as Id;
-}
-
-export operator+(id is Id, addend is number) returns Id
-{
-    return id + replace("" ~ addend, "\\.", "_");
-}
-
-export operator+(id is Id, addend is Id) returns Id
-{
-    return concatenateArrays([id, addend]) as Id;
-}
-
 //==================
 
 export function notFoundErrorKey(paramName is string) returns string
@@ -589,11 +547,13 @@ export function notFoundErrorKey(paramName is string) returns string
 }
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.
+annotation { "Deprecated" : true }
 export function query(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
 {
     return makeQuery(operationId, queryType, entityType, value);
 }
 
+annotation { "Deprecated" : true }
 export function query(value is map) returns Query
 {
     return makeQuery(value);

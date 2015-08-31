@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/transform.fs", version : "");
@@ -62,31 +62,22 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     {
         var resolvedEntities = evaluateQuery(context, definition.moveFaces);
         if (size(resolvedEntities) == 0)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT, ["moveFaces"]);
-            return;
-        }
+            throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT, ["moveFaces"]);
 
         var directionSign = 1;
         if (definition.oppositeDirection)
             directionSign = -1;
 
         // Extract an axis defined by the moved face for use in the manipulators.
-        var facePlane = evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }).result;
+        var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.NO_TANGENT_PLANE, ["moveFaces"]);
-            return;
-        }
+            throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, ["moveFaces"]);
 
         if (definition.moveFaceType == MoveFaceType.OFFSET)
         {
             definition.offsetDistance = definition.offsetDistance * directionSign;
 
-            if (facePlane != undefined)
-            {
-                addOffsetManipulator(context, id, definition, facePlane);
-            }
+            addOffsetManipulator(context, id, definition, facePlane);
 
             opOffsetFace(context, id, definition);
         }
@@ -97,44 +88,33 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 // If the user specified an axis for the direction, we will use that for the translation.  If they,
                 // specified a face, we will use the face's normal, if it is planar.
                 var translation;
-                var directionResult = evAxis(context, { "axis" : definition.direction });
+                var directionResult = try(evAxis(context, { "axis" : definition.direction }));
                 var translationDirection;
-                if (directionResult.error != undefined)
+                if (directionResult == undefined)
                 {
-                    var planeResult = evPlane(context, { "face" : definition.direction });
-                    if (planeResult.error != undefined)
-                    {
-                        reportFeatureError(context, id, ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
-                        return;
-                    }
-                    translation = planeResult.result.normal * definition.translationDistance * directionSign;
-                    translationDirection = planeResult.result.normal;
+                    var planeResult = try(evPlane(context, { "face" : definition.direction }));
+                    if (planeResult == undefined)
+                        throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
+                    translation = planeResult.normal * definition.translationDistance * directionSign;
+                    translationDirection = planeResult.normal;
                 }
                 else
                 {
-                    translation = directionResult.result.direction * definition.translationDistance * directionSign;
-                    translationDirection = directionResult.result.direction;
+                    translation = directionResult.direction * definition.translationDistance * directionSign;
+                    translationDirection = directionResult.direction;
                 }
 
-                if (facePlane != undefined)
-                {
-                    addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
-                }
+                addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
 
                 definition.transform = transform(translation);
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
                 var axisResult = evAxis(context, { "axis" : definition.axis });
-                if (reportFeatureError(context, id, axisResult.error, ["axis"]))
-                    return;
 
-                if (facePlane != undefined)
-                {
-                    addRotateManipulator(context, id, axisResult.result, facePlane, definition.angle * directionSign, definition.moveFaces);
-                }
+                addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
 
-                definition.transform = rotationAround(axisResult.result, definition.angle * directionSign);
+                definition.transform = rotationAround(axisResult, definition.angle * directionSign);
             }
             opMoveFace(context, id, definition);
         }
@@ -179,12 +159,10 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
             orthoVec = perpendicularVector(axis.direction);
         }
         // Calculate a manipulator radius if we have to use an arbitrary face point.
-        var faceBox = evBox3d(context, { topology : qNthElement(faceQuery, 0) });
+        var faceBox = try(evBox3d(context, { topology : qNthElement(faceQuery, 0) }));
         var manipulatorRadius = 0.001 * meter; // default of 1 mm if we fail to get the box
-        if (faceBox.result is Box3d)
-        {
-            manipulatorRadius = norm(faceBox.result.maxCorner - faceBox.result.minCorner) * 0.5;
-        }
+        if (faceBox != undefined)
+            manipulatorRadius = norm(faceBox.maxCorner - faceBox.minCorner) * 0.5;
         refPoint = rotateOrigin + orthoVec * manipulatorRadius;
     }
 

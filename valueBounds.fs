@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/units.fs", version : "");
 export import(path : "onshape/std/utils.fs", version : "");
 
@@ -242,6 +242,27 @@ export const HELIX_TURN_BOUNDS =
     "max"      : 1e9,
     (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
+
+// Find tightest bounds of a BoundSpec
+export function tightestBounds(boundSpec is map) returns array // [min, max] with units as defined in the spec
+precondition
+{
+    canBeBoundSpec(boundSpec);
+}
+{
+    var bounds = makeArray(2);
+    bounds[0] = boundSpec["min"];
+    bounds[1] = boundSpec["max"];
+    for (var entry in boundSpec)
+    {
+        if (!(entry.key == "min" || entry.key == "max"))
+        {
+            bounds[0] = max(bounds[0], entry.value[0] * entry.key);
+            bounds[1] = min(bounds[1], entry.value[2] * entry.key);
+        }
+    }
+    return bounds;
+}
 
 //Type checking follows
 

@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "");
 
@@ -47,20 +47,35 @@ export function linearManipulator(base is Vector, direction is Vector, offset is
 }
 
 export function linearManipulator(base is Vector, direction is Vector, offset is ValueWithUnits, sources, style is ManipulatorStyleEnum) returns Manipulator
+{
+    return linearManipulator({ "base" : base,
+                               "direction" : direction,
+                               "offset" : offset,
+                               "sources" : sources,
+                               "style" : style });
+}
+
+export function linearManipulator(definition is map) returns Manipulator
 precondition
 {
-    is3dLengthVector(base);
-    is3dDirection(direction);
-    isLength(offset);
-    sources == undefined || sources is Query;
+    is3dLengthVector(definition.base);
+    is3dDirection(definition.direction);
+    isLength(definition.offset);
+    definition.sources == undefined || definition.sources is Query;
+    definition.minValue == undefined || isLength(definition.minValue);
+    definition.maxValue == undefined || isLength(definition.maxValue);
 }
 {
-    return { "manipulatorType" : ManipulatorType.LINEAR_1D,
-             "base" : base,
-             "direction" : direction,
-             "offset" : offset,
-             "sources" : sources,
-             "style" : style } as Manipulator;
+    definition.manipulatorType = ManipulatorType.LINEAR_1D;
+    if (definition.minValue == undefined)
+    {
+        definition.minValue = -PLANE_SIZE_BOUNDS.max;
+    }
+    if (definition.maxValue == undefined)
+    {
+        definition.maxValue = PLANE_SIZE_BOUNDS.max;
+    }
+    return definition as Manipulator;
 }
 
 export function angularManipulator(definition is map) returns Manipulator

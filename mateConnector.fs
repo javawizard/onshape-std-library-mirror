@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/entityinferencetype.gen.fs", version : "");
@@ -8,124 +8,119 @@ export import(path : "onshape/std/rotationtype.gen.fs", version : "");
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" }
-export const mateConnector = defineFeature(function(context is Context, id is Id, mateConnectorDefinition is map)
+export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        if (mateConnectorDefinition.originType != undefined)
+        if (definition.originType != undefined)
         {
             annotation { "Name" : "Origin type" }
-            mateConnectorDefinition.originType is OriginCreationType;
+            definition.originType is OriginCreationType;
         }
 
         annotation { "Name" : "Origin entity",
                      "Filter" : (EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO),
                      "MaxNumberOfPicks" : 1 }
-        mateConnectorDefinition.originQuery is Query;
+        definition.originQuery is Query;
 
         annotation { "UIHint" : "ALWAYS_HIDDEN" }
-        mateConnectorDefinition.entityInferenceType is EntityInferenceType;
+        definition.entityInferenceType is EntityInferenceType;
 
         annotation { "UIHint" : "ALWAYS_HIDDEN" }
-        mateConnectorDefinition.secondaryOriginQuery is Query;
+        definition.secondaryOriginQuery is Query;
 
-        if (mateConnectorDefinition.originType == OriginCreationType.BETWEEN_ENTITIES)
+        if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            if (mateConnectorDefinition.originAdditionalQuery != undefined)
+            if (definition.originAdditionalQuery != undefined)
             {
                 annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1 }
-                mateConnectorDefinition.originAdditionalQuery is Query;
+                definition.originAdditionalQuery is Query;
             }
         }
 
-        if (mateConnectorDefinition.flipPrimary != undefined)
+        if (definition.flipPrimary != undefined)
         {
             annotation { "Name" : "Flip primary axis", "UIHint" : "ALWAYS_HIDDEN" }
-            mateConnectorDefinition.flipPrimary is boolean;
+            definition.flipPrimary is boolean;
         }
 
-        if (mateConnectorDefinition.secondaryAxisType != undefined)
+        if (definition.secondaryAxisType != undefined)
         {
             annotation { "Name" : "Secondary axis type", "UIHint" : "ALWAYS_HIDDEN", "Default" : MateConnectorAxisType.PLUS_X }
-            mateConnectorDefinition.secondaryAxisType is MateConnectorAxisType;
+            definition.secondaryAxisType is MateConnectorAxisType;
         }
 
-        if (mateConnectorDefinition.realign != undefined)
+        if (definition.realign != undefined)
         {
             annotation { "Name" : "Realign" }
-            mateConnectorDefinition.realign is boolean;
+            definition.realign is boolean;
         }
 
-        if (mateConnectorDefinition.realign == true)
+        if (definition.realign == true)
         {
-            if (mateConnectorDefinition.primaryAxisQuery != undefined)
+            if (definition.primaryAxisQuery != undefined)
             {
                 annotation { "Name" : "Primary axis entity",
                              "Filter" : EntityType.FACE || EntityType.EDGE,
                              "MaxNumberOfPicks" : 1 }
-                mateConnectorDefinition.primaryAxisQuery is Query;
+                definition.primaryAxisQuery is Query;
             }
 
-            if (mateConnectorDefinition.secondaryAxisQuery != undefined)
+            if (definition.secondaryAxisQuery != undefined)
             {
                 annotation { "Name" : "Secondary axis entity",
                              "Filter" : EntityType.FACE || EntityType.EDGE,
                              "MaxNumberOfPicks" : 1 }
-                mateConnectorDefinition.secondaryAxisQuery is Query;
+                definition.secondaryAxisQuery is Query;
             }
         }
 
-        if (mateConnectorDefinition.transform != undefined)
+        if (definition.transform != undefined)
         {
             annotation { "Name" : "Move" }
-            mateConnectorDefinition.transform is boolean;
+            definition.transform is boolean;
         }
 
-        if (mateConnectorDefinition.transform == true)
+        if (definition.transform == true)
         {
-            if (mateConnectorDefinition.translationX != undefined)
+            if (definition.translationX != undefined)
             {
                 annotation { "Name" : "X translation" }
-                isLength(mateConnectorDefinition.translationX, ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(definition.translationX, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
-            if (mateConnectorDefinition.translationY != undefined)
+            if (definition.translationY != undefined)
             {
                 annotation { "Name" : "Y translation" }
-                isLength(mateConnectorDefinition.translationY, ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(definition.translationY, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
-            if (mateConnectorDefinition.translationZ != undefined)
+            if (definition.translationZ != undefined)
             {
                 annotation { "Name" : "Z translation" }
-                isLength(mateConnectorDefinition.translationZ, ZERO_DEFAULT_LENGTH_BOUNDS);
+                isLength(definition.translationZ, ZERO_DEFAULT_LENGTH_BOUNDS);
             }
 
-            if (mateConnectorDefinition.rotationType != undefined)
+            if (definition.rotationType != undefined)
             {
                 annotation { "Name" : "Rotation axis", "Default" : RotationType.ABOUT_Z }
-                mateConnectorDefinition.rotationType is RotationType;
+                definition.rotationType is RotationType;
             }
 
-            if (mateConnectorDefinition.rotation != undefined)
+            if (definition.rotation != undefined)
             {
                 annotation { "Name" : "Rotation angle" }
-                isAngle(mateConnectorDefinition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+                isAngle(definition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
             }
         }
 
-        if (mateConnectorDefinition.ownerPart != undefined)
+        if (definition.ownerPart != undefined)
         {
             annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
-            mateConnectorDefinition.ownerPart is Query;
+            definition.ownerPart is Query;
         }
     }
     {
-        var mateConnectorTransform = evMateConnectorTransform(context, mateConnectorDefinition);
-        if (mateConnectorTransform.error != undefined)
-        {
-            reportFeatureError(context, id, mateConnectorTransform.error);
-            return;
-        }
+        var mateConnectorTransform = evMateConnectorTransform(context, definition);
 
         var onlyPartInStudio = qNothing();
         var allBodies = qEverything(EntityType.BODY);
@@ -136,11 +131,11 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             onlyPartInStudio = allParts;
         }
 
-        var possiblePartOwners = [mateConnectorDefinition.ownerPart,
-                                  mateConnectorDefinition.originQuery,
-                                  mateConnectorDefinition.originAdditionalQuery,
-                                  mateConnectorDefinition.primaryAxisQuery,
-                                  mateConnectorDefinition.secondaryAxisQuery,
+        var possiblePartOwners = [definition.ownerPart,
+                                  definition.originQuery,
+                                  definition.originAdditionalQuery,
+                                  definition.primaryAxisQuery,
+                                  definition.secondaryAxisQuery,
                                   onlyPartInStudio];
 
         var ownerPartQuery;
@@ -155,11 +150,8 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
 
         if (ownerPartQuery == undefined)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
-            return;
-        }
+            throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
 
-        opMateConnector(context, id, { "owner" : ownerPartQuery, "transform" : mateConnectorTransform.result });
+        opMateConnector(context, id, { "owner" : ownerPartQuery, "transform" : mateConnectorTransform });
     });
 

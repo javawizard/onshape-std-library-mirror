@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/feature.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
@@ -20,117 +20,107 @@ export enum RevolveType
 
 
 annotation { "Feature Type Name" : "Revolve", "Manipulator Change Function" : "revolveManipulatorChange", "Filter Selector" : "allparts" }
-export const revolve = defineFeature(function(context is Context, id is Id, revolveDefinition is map)
+export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Creation type" }
-        revolveDefinition.bodyType is ToolBodyType;
+        definition.bodyType is ToolBodyType;
 
-        if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
+        if (definition.bodyType != ToolBodyType.SURFACE)
         {
-            booleanStepTypePredicate(revolveDefinition);
+            booleanStepTypePredicate(definition);
         }
 
-        if (revolveDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
             annotation { "Name" : "Faces and sketch regions to revolve",
                          "Filter" : (EntityType.FACE && GeometryType.PLANE) && ConstructionObject.NO }
-            revolveDefinition.entities is Query;
+            definition.entities is Query;
         }
         else
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
                          "Filter" : EntityType.EDGE && ConstructionObject.NO }
-            revolveDefinition.surfaceEntities is Query;
+            definition.surfaceEntities is Query;
         }
 
         annotation { "Name" : "Revolve axis", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
-        revolveDefinition.axis is Query;
+        definition.axis is Query;
 
         annotation { "Name" : "Revolve type" }
-        revolveDefinition.revolveType is RevolveType;
+        definition.revolveType is RevolveType;
 
-        if (revolveDefinition.revolveType != RevolveType.SYMMETRIC
-            && revolveDefinition.revolveType != RevolveType.FULL)
+        if (definition.revolveType != RevolveType.SYMMETRIC
+            && definition.revolveType != RevolveType.FULL)
         {
             annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-            revolveDefinition.oppositeDirection is boolean;
+            definition.oppositeDirection is boolean;
         }
 
-        if (revolveDefinition.revolveType != RevolveType.FULL)
+        if (definition.revolveType != RevolveType.FULL)
         {
             annotation { "Name" : "Revolve angle" }
-            isAngle(revolveDefinition.angle, ANGLE_360_BOUNDS);
+            isAngle(definition.angle, ANGLE_360_BOUNDS);
         }
 
-        if (revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
         {
             annotation { "Name" : "Second revolve angle" }
-            isAngle(revolveDefinition.angleBack, ANGLE_360_BOUNDS);
+            isAngle(definition.angleBack, ANGLE_360_BOUNDS);
         }
 
-        if (revolveDefinition.bodyType != ToolBodyType.SURFACE)
+        if (definition.bodyType != ToolBodyType.SURFACE)
         {
-            booleanStepScopePredicate(revolveDefinition);
+            booleanStepScopePredicate(definition);
         }
     }
     {
-        revolveDefinition.entities = getEntitiesToUse(context, revolveDefinition);
-        var resolvedEntities = evaluateQuery(context, revolveDefinition.entities);
+        definition.entities = getEntitiesToUse(context, definition);
+        var resolvedEntities = evaluateQuery(context, definition.entities);
         if (@size(resolvedEntities) == 0)
         {
-            if (revolveDefinition.bodyType == ToolBodyType.SOLID)
-                reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
+            if (definition.bodyType == ToolBodyType.SOLID)
+                throw regenError(ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
             else
-                reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
+                throw regenError(ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
             return;
         }
 
-        var axis = evAxis(context, revolveDefinition);
-        if (axis.error != undefined)
-        {
-            reportFeatureError(context, id, ErrorStringEnum.REVOLVE_SELECT_AXIS, ["axis"]);
-            return;
-        }
-        revolveDefinition.axis = axis.result;
+        definition.axis = try(evAxis(context, definition));
+        if (definition.axis == undefined)
+            throw regenError(ErrorStringEnum.REVOLVE_SELECT_AXIS, ["axis"]);
 
-        addRevolveManipulator(context, id, revolveDefinition);
+        addRevolveManipulator(context, id, definition);
 
-        if (revolveDefinition.revolveType == RevolveType.FULL)
+        if (definition.revolveType == RevolveType.FULL)
         {
-            revolveDefinition.angleForward = 2 * PI;
-            revolveDefinition.angleBack = 0;
+            definition.angleForward = 2 * PI;
+            definition.angleBack = 0;
         }
-        if (revolveDefinition.revolveType == RevolveType.ONE_DIRECTION)
+        if (definition.revolveType == RevolveType.ONE_DIRECTION)
         {
-            revolveDefinition.angleForward = revolveDefinition.angle;
-            revolveDefinition.angleBack = 0;
+            definition.angleForward = definition.angle;
+            definition.angleBack = 0;
         }
-        if (revolveDefinition.revolveType == RevolveType.SYMMETRIC)
+        if (definition.revolveType == RevolveType.SYMMETRIC)
         {
-            revolveDefinition.angleForward = revolveDefinition.angle / 2;
-            revolveDefinition.angleBack = revolveDefinition.angle / 2;
+            definition.angleForward = definition.angle / 2;
+            definition.angleBack = definition.angle / 2;
         }
-        if (revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
         {
-            revolveDefinition.angleForward = revolveDefinition.angle;
+            definition.angleForward = definition.angle;
         }
-        if (revolveDefinition.oppositeDirection)
+        if (definition.oppositeDirection)
         {
-            revolveDefinition.axis.direction *= -1; // To be consistent with extrude
+            definition.axis.direction *= -1; // To be consistent with extrude
         }
-        opRevolve(context, id, revolveDefinition);
+        opRevolve(context, id, definition);
 
-        if (revolveDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            if (!processNewBodyIfNeeded(context, id, revolveDefinition))
-            {
-                var statusToolId = id + "statusTools";
-                startFeature(context, statusToolId, revolveDefinition);
-                opRevolve(context, statusToolId, revolveDefinition);
-                setBooleanErrorEntities(context, id, statusToolId);
-                endFeature(context, statusToolId);
-            }
+            const reconstructOp = function(id) { opRevolve(context, id, definition); };
+            processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW });
 
@@ -166,16 +156,16 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
 
     //Compute manipulator parameters
     var revolvePoint;
-    var faceResult = evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) });
-    if (faceResult.result != undefined)
+    var faceResult = try(evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) }));
+    if (faceResult != undefined)
     {
-        revolvePoint = faceResult.result.origin;
+        revolvePoint = faceResult.origin;
     }
     else
     {
-        var edgeResult = evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 });
-        if (edgeResult.result != undefined)
-            revolvePoint = edgeResult.result.origin;
+        var edgeResult = try(evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 }));
+        if (edgeResult != undefined)
+            revolvePoint = edgeResult.origin;
         else
             return;
     }

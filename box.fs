@@ -1,4 +1,4 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/geomUtils.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/vector.fs", version : "");
@@ -33,18 +33,4 @@ precondition
                  midPoint + absoluteIncrement + halfDiagonal * (1 + factor));
 
 }
-
-export function evBox3d(context is Context, arg is map) returns map
-precondition
-{
-    arg.topology is Query;
-    arg.cSys == undefined || arg.cSys is Transform;
-}
-{
-    var result = @evBox(context, arg);
-    if (result.error == undefined)
-        result.result = box3d(meter * vector(result.result.minCorner), meter * vector(result.result.maxCorner));
-    return result;
-}
-
 

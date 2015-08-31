@@ -1,102 +1,210 @@
-FeatureScript 190; /* Automatically generated version */
+FeatureScript 213; /* Automatically generated version */
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/geomOperations.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
 
+
+export enum LoftEndDerivativeType
+{
+    annotation { "Name" : "None" }
+    DEFAULT,
+    annotation { "Name" : "Normal to profile" }
+    NORMAL_TO_PROFILE,
+    annotation { "Name" : "Tangent to profile" }
+    TANGENT_TO_PROFILE,
+    annotation { "Name" : "Match tangent" }
+    MATCH_TANGENT,
+    annotation { "Name" : "Match curvature" }
+    MATCH_CURVATURE
+}
+
+export enum LoftShapeControlType
+{
+    annotation { "Name" : "None" }
+    DEFAULT,
+    annotation { "Name" : "Guides" }
+    ADD_GUIDES,
+    annotation { "Name" : "End conditions" }
+    ADD_END_CONDITIONS
+}
+
+export const CLAMP_MAGNITUDE_REAL_BOUNDS =
+{
+    "min"      : -1e9,
+    "max"      : 1e9,
+    (unitless) : [-1e5, 1, 1e5]
+} as RealBoundSpec;
+
 annotation { "Feature Type Name" : "Loft", "Filter Selector" : "allparts" }
-export const loft = defineFeature(function(context is Context, id is Id, loftDefinition is map)
+export const loft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
 
         annotation { "Name" : "Creation type" }
-        loftDefinition.bodyType is ToolBodyType;
+        definition.bodyType is ToolBodyType;
 
-        if (loftDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            booleanStepTypePredicate(loftDefinition);
+            booleanStepTypePredicate(definition);
         }
 
-        if (loftDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
             annotation { "Name" : "Profiles",
-                         "Filter" : ((EntityType.FACE && GeometryType.PLANE) || EntityType.VERTEX) && ConstructionObject.NO }
-            loftDefinition.sheetProfiles is Query;
+                         "Filter" : (EntityType.FACE || EntityType.VERTEX) && ConstructionObject.NO }
+            definition.sheetProfiles is Query;
         }
         else
         {
             annotation { "Name" : "Profiles",
                          "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE) && ConstructionObject.NO }
-            loftDefinition.wireProfiles is Query;
+            definition.wireProfiles is Query;
         }
 
-        annotation { "Name" : "Add guides" }
-        loftDefinition.addGuides is boolean;
-        if (loftDefinition.addGuides)
+        annotation { "Name" : "Control type" }
+        definition.shapeControl is LoftShapeControlType;
+
+        if (definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
         {
             annotation { "Name" : "Guides", "Filter" : EntityType.EDGE && ConstructionObject.NO }
-            loftDefinition.guides is Query;
+            definition.guides is Query;
+        }
+        else if (definition.shapeControl == LoftShapeControlType.ADD_END_CONDITIONS)
+        {
+            annotation { "Name" : "Start profile condition" }
+            definition.startCondition is LoftEndDerivativeType;
+            if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
+            {
+                annotation { "Name" : "Start magnitude" }
+                isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
+
+            annotation { "Name" : "End profile condition" }
+            definition.endCondition is LoftEndDerivativeType;
+            if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
+            {
+                annotation { "Name" : "End magnitude" }
+                isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
         }
 
         annotation { "Name" : "Match vertices" }
-        loftDefinition.matchVertices is boolean;
-        if (loftDefinition.matchVertices)
+        definition.matchVertices is boolean;
+        if (definition.matchVertices)
         {
             annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX }
-            loftDefinition.vertices is Query;
+            definition.vertices is Query;
         }
 
         annotation { "Name" : "Make periodic", "UIHint" : "ALWAYS_HIDDEN" }
-        loftDefinition.makePeriodic is boolean;
+        definition.makePeriodic is boolean;
 
-        if (loftDefinition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
-            booleanStepScopePredicate(loftDefinition);
+            booleanStepScopePredicate(definition);
         }
     }
     {
-        var profileQuery = (loftDefinition.bodyType == ToolBodyType.SOLID) ? loftDefinition.sheetProfiles : loftDefinition.wireProfiles;
+        var profileQuery = (definition.bodyType == ToolBodyType.SOLID) ? definition.sheetProfiles : definition.wireProfiles;
         if (profileQuery.queryType == QueryType.UNION)
         {
             var subQ = wrapSubqueriesInConstructionFilter(context, profileQuery.subqueries);
             if (size(subQ) < 1)
             {
-                var errorEntities = (loftDefinition.bodyType == ToolBodyType.SOLID) ? "sheetProfiles" : "wireProfiles";
-                reportFeatureError(context, id, ErrorStringEnum.LOFT_SELECT_PROFILES, [errorEntities]);
-                return;
+                var errorEntities = (definition.bodyType == ToolBodyType.SOLID) ? "sheetProfiles" : "wireProfiles";
+                throw regenError(ErrorStringEnum.LOFT_SELECT_PROFILES, [errorEntities]);
             }
 
-            loftDefinition.profileSubqueries = subQ;
+            definition.profileSubqueries = subQ;
         }
 
-        if (loftDefinition.addGuides)
+        if (definition.addGuides || definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
         {
-            var guideQuery = loftDefinition.guides;
+            definition.shapeControl = LoftShapeControlType.ADD_GUIDES;
+            var guideQuery = definition.guides;
             if (guideQuery.queryType == QueryType.UNION)
             {
                 var subQ = guideQuery.subqueries;
-                loftDefinition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
+                definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
             }
         }
-        if (!loftDefinition.matchVertices)
+        else if (definition.shapeControl == LoftShapeControlType.ADD_END_CONDITIONS)
         {
-            loftDefinition.vertices = qUnion([]);
-        }
-
-        opLoft(context, id, loftDefinition);
-
-        if (loftDefinition.bodyType == ToolBodyType.SOLID)
-        {
-            if (!processNewBodyIfNeeded(context, id, loftDefinition))
+            var derivatives = [];
+            if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
             {
-                var statusToolId = id + "statusTools";
-                startFeature(context, statusToolId, loftDefinition);
-                opLoft(context, statusToolId, loftDefinition);
-                setBooleanErrorEntities(context, id, statusToolId);
-                endFeature(context, statusToolId);
+                derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
+                                                            definition.profileSubqueries[0], 0, definition.startMagnitude));
+            }
+            if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
+            {
+                var lastProfileIndex =  @size(definition.profileSubqueries) - 1;
+                derivatives = append(derivatives, createProfileConditions(context, definition.endCondition,
+                                                            definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude));
+            }
+            definition.derivativeInfo = derivatives;
+        }
+
+        if (!definition.matchVertices)
+        {
+            definition.vertices = qUnion([]);
+        }
+
+        opLoft(context, id, definition);
+
+        if (definition.bodyType == ToolBodyType.SOLID)
+        {
+            const reconstructOp = function(id) { opLoft(context, id, definition); };
+            processNewBodyIfNeeded(context, id, definition, reconstructOp);
+        }
+
+    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
+        shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
+        startMagnitude : 1, endMagnitude : 1 });
+
+export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
+{
+    if (endCondition == LoftEndDerivativeType.NORMAL_TO_PROFILE || endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE)
+    {
+        var derivativeInfo = { "profileIndex" : profileIndex,
+                                "magnitude" : magnitude,
+                                "tangentToPlane" : endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE };
+        var planeResult = try(evPlane(context, { "face" : profileQuery }));
+        if (planeResult is Plane)
+        {
+            derivativeInfo.vector = normalize(planeResult.normal);
+        }
+        else
+        {
+            //it might be that we have just edges in the profile, if on sketch, use the sketch plane
+            planeResult = try(evOwnerSketchPlane(context, {"entity" : profileQuery }));
+            if (planeResult is Plane)
+            {
+               derivativeInfo.vector = normalize(planeResult.normal);
+            }
+            else
+            {
+                throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_PLANE_FOR_START_CLAMP : ErrorStringEnum.LOFT_NO_PLANE_FOR_END_CLAMP);
             }
         }
-    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false });
+        return derivativeInfo;
+    }
+    else if (endCondition == LoftEndDerivativeType.MATCH_TANGENT ||
+            endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
+    {
+        var adjacentFaceQuery = qEdgeAdjacent(profileQuery, EntityType.FACE);
+        if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
+        {
+            throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_FACE_FOR_START_CLAMP : ErrorStringEnum.LOFT_NO_FACE_FOR_END_CLAMP);
+        }
+        var derivativeInfo = { "profileIndex" : profileIndex,
+                               "magnitude" : magnitude,
+                               "matchCurvature" : endCondition == LoftEndDerivativeType.MATCH_CURVATURE,
+                               "adjacentFaces" : qEdgeAdjacent(profileQuery, EntityType.FACE)};
+        return derivativeInfo;
+    }
+}
 
 export function wrapSubqueriesInConstructionFilter(context is Context, subqueries is array) returns array
 {
