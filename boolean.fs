@@ -1,14 +1,27 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/utils.fs", version : "");
-export import(path : "onshape/std/primitives.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/clashtype.gen.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/primitives.fs", version : "");
+import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 
-//Boolean Operation
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -61,8 +74,8 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             {
                 definition.offsetDistance = -definition.offsetDistance;
             }
-            var suffix = "offsetTempBody";
-            var transformMatrix = identityTransform();
+            const suffix = "offsetTempBody";
+            const transformMatrix = identityTransform();
             opPattern(context, id + suffix,
                       { "entities" : definition.tools,
                         "transforms" : [transformMatrix],
@@ -80,8 +93,8 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                     throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
             }
 
-            var tempMoveFaceSuffix = "offsetMoveFace";
-            var moveFaceDefinition = {
+            const tempMoveFaceSuffix = "offsetMoveFace";
+            const moveFaceDefinition = {
                 "moveFaces" : faceQuery,
                 "moveFaceType" : MoveFaceType.OFFSET,
                 "offsetDistance" : definition.offsetDistance,
@@ -89,13 +102,13 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
 
             opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
 
-            var tempBooleanDefinition = {
+            const tempBooleanDefinition = {
                 "operationType" : definition.operationType,
                 "tools" : qCreatedBy(id + suffix, EntityType.BODY),
                 "targets" : definition.targets,
                 "keepTools" : false };
 
-            var tempBooleanSuffix = "tempBoolean";
+            const tempBooleanSuffix = "tempBoolean";
             opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition);
             processSubfeatureStatus(context, id + tempBooleanSuffix, id);
 
@@ -115,18 +128,13 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             }
             opBoolean(context, id, definition);
         }
-    }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false});
+    }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
 
 function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
     if (query.queryType == QueryType.UNION)
     {
-        var wrappedSubqueries = query.subqueries;
-        for (var i = 0; i < @size(wrappedSubqueries); i += 1)
-        {
-            wrappedSubqueries[i] = wrapFaceQueryInCopy(wrappedSubqueries[i], id);
-        }
-        return qUnion(wrappedSubqueries);
+        return qUnion(mapArray(query.subqueries, function(q) { return wrapFaceQueryInCopy(q, id); }));
     }
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
@@ -135,15 +143,15 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 */
 function constructToolsComplement(context is Context, id is Id, booleanDefinition is map) returns Query
 {
-    var inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
+    const inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
 
-    var boxResult = evBox3d(context, {"topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets])});
-    var extendedBox is Box3d = extendBox3d(boxResult, 0. * meter, 0.1);
-    var boxId is Id = id + "containingBox";
+    const boxResult = evBox3d(context, {"topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets])});
+    const extendedBox is Box3d = extendBox3d(boxResult, 0. * meter, 0.1);
+    const boxId is Id = id + "containingBox";
     fCuboid(context, boxId, {"corner1" : extendedBox.minCorner, "corner2" : extendedBox.maxCorner});
 
-    var complementId = id + "toolComplement";
-    var complementDefinition = {
+    const complementId = id + "toolComplement";
+    const complementDefinition = {
                 "operationType" : BooleanOperationType.SUBTRACTION,
                 "tools" : qUnion(inputTools),
                 "targets" : qCreatedBy(boxId, EntityType.BODY),
@@ -152,18 +160,10 @@ function constructToolsComplement(context is Context, id is Id, booleanDefinitio
     return qCreatedBy(boxId, EntityType.BODY); // Subtraction modifies target tool
 }
 
-export enum NewBodyOperationType
-{
-    annotation { "Name" : "New" }
-    NEW,
-    annotation { "Name" : "Add" }
-    ADD,
-    annotation { "Name" : "Remove" }
-    REMOVE,
-    annotation { "Name" : "Intersect" }
-    INTERSECT
-}
-
+/**
+ * TODO: description
+ * @param operationType
+ */
 export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
 {
     return {
@@ -202,30 +202,36 @@ export predicate booleanStepPredicate(booleanDefinition is map)
     booleanStepScopePredicate(booleanDefinition);
 }
 
-/** Constructs a map with tools and targets queries for boolean operations. For operations where
- * seed needs to be part of the tools for the boolean, should set the "seed" parameter in the
- * definition.
+/**
+ * Constructs a map with tools and targets queries for boolean operations. For operations where
+ * seed needs to be part of the tools for the boolean, set the "seed" parameter in the definition.
  *
- * Arguments:
- * @param id: identifier of the tools feature
- * @param definition:
- *    .seed <Query>: original input to the seed function (optional)
- *    .operationType <NewBodyOperationType>: one of "ADD", "REMOVE", "INTERSECT"
- *    .defaultScope <boolean>: if true, targets are set to everything except the tools
- *    .booleanScope <Query>: is used as the targets if !defaultScope
- * @return map
- *    .targets <Query>: targets to use
- *    .tools <Query>: tools to use
+ * @param context {Context}
+ * @param id {Id}: identifier of the tools feature
+ * @param definition {{
+ *      @field operationType {NewBodyOperationType}:
+ *          @eg `NewBodyOperationType.ADD` performs a boolean union
+ *          @eg `NewBodyOperationType.NEW` does nothing
+ *      @field defaultScope {boolean}: @optional
+ *          @eg `true`  indicates merge scope of "everything else" (default)
+ *          @eg `false` indicates merge scope is specified in `booleanScope`
+ *      @field booleanScope {Query}: targets to use if `defaultScope` is false
+ *      @field seed {Query}: if set, will be included in the tools section of the boolean
+ *          @optional
+ * }}
+ * @returns {{
+ *    @field targets {Query}: targets to use
+ *    @field tools {Query}: tools to use
+ * }}
  */
 function subfeatureToolsTargets(context is Context, id is Id, definition is map) returns map
 {
     // Fill defaults
     definition = mergeMaps({ "seed" : qNothing(), "defaultScope" : true }, definition);
+    const resultQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
+    const defaultTools = qUnion([definition.seed, resultQuery]);
 
     var output = {};
-    var resultQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
-    var defaultTools = qUnion([definition.seed, resultQuery]);
-
     output.tools = defaultTools;
     output.targets = (definition.defaultScope != false) ? qBodyType(qEverything(EntityType.BODY), BodyType.SOLID) : definition.booleanScope;
     output.targets = qSubtraction(output.targets, defaultTools);
@@ -242,19 +248,16 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
     return output;
 }
 
-/** Performs a boolean operation (optionally).
+/**
+ * Performs a boolean operation (optionally).
  *
  * Arguments:
- * @param id: identifier of the main feature
- * @param tools: query to be used for the tools
- * @param definition:
- *     .operationType <NewBodyOperationType>: if "New", nothing is done
- *     .defaultScope <boolean>: if true, indicates merge scope of "everything else"
- *     .booleanScope <Query>: is used as the targets if !defaultScope
- *     .seed <Query>: {if set, will be as a rule included in the tool section of the boolean,
- *                     (see subfeatureToolsTargets)}
- * @param reconstructOp: a function that takes an id and reconstructs the input to show to the user as error geometry
- *                       in case the input is problematic or the boolean itself fails.
+ * @param id : identifier of the main feature
+ * @param tools : query to be used for the tools
+ * @param definition {map} : @see `subfeatureToolsTargets#definition` definition specifying how to contruct tools and targets
+ *                           on subfeatureToolsTargets.
+ * @param reconstructOp {function(Id)}: reconstructs the input to show to the user as error geometry
+ *                                      in case the input is problematic or the boolean itself fails.
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {
@@ -312,12 +315,13 @@ function classifyCollisions(context is Context, collisions is array) returns map
         var toolCollisions = { 'abutting' : [], 'intersection' : [] };
         for (var entry in perTool.value)
         {
-            if (entry.value['type'] == "INTERFERE" ||
-                entry.value['type'] == "TARGET_IN_TOOL" ||
-                entry.value['type'] == "TOOL_IN_TARGET")
+            const clash is ClashType = entry.value['type'];
+            if (clash == ClashType.INTERFERE ||
+                clash == ClashType.TARGET_IN_TOOL ||
+                clash == ClashType.TOOL_IN_TARGET)
                 toolCollisions.intersection = append(toolCollisions.intersection, entry.key);
-            else if ((entry.value['type'] == "ABUT_NO_CLASS" ||
-                      entry.value['type'] == "ABUT_TOOL_OUT_TARGET") &&
+            else if ((clash == ClashType.ABUT_NO_CLASS ||
+                      clash == ClashType.ABUT_TOOL_OUT_TARGET) &&
                     faceToFaceCollisionsContainInterferences(context, entry.value['collisions']))
                 toolCollisions.abutting = append(toolCollisions.abutting, entry.key);
         }
@@ -339,9 +343,10 @@ function faceToFaceCollisionsContainInterferences(context is Context, collisions
 
             for (var col1 in collisionResult)
             {
-                if (col1['type'] == "INTERFERE" ||
-                    col1['type'] == "TARGET_IN_TOOL" ||
-                    col1['type'] == "TOOL_IN_TARGET")
+                const clash is ClashType = col1['type'];
+                if (clash == ClashType.INTERFERE ||
+                    clash == ClashType.TARGET_IN_TOOL ||
+                    clash == ClashType.TOOL_IN_TARGET)
                 {
                     return true;
                 }
@@ -355,28 +360,38 @@ function faceToFaceCollisionsContainInterferences(context is Context, collisions
 // Current rule: If every tool abuts one and only one target Boolean operation is set to "ADD" and abutting targets go into booleanScope list
 // If every tool intersects one and only one target Boolean operation is set to "REMOVE" and intersecting targets go into booleanScope list
 // Otherwise Boolean operation is set to "NEW" booleanScope list is cleared out
+/**
+ * TODO: description
+ * @param context
+ * @param featureDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function autoSelectionForBooleanStep(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
-    var id = newId();
-    var toolQ = qBodyType(qCreatedBy(id + featureInfo.featureId, EntityType.BODY), BodyType.SOLID);
+    const id = newId();
+    const toolQ = qBodyType(qCreatedBy(id + featureInfo.featureId, EntityType.BODY), BodyType.SOLID);
     var excludeQ;
     if (featureInfo.excludeBodies is Query)
         excludeQ = qUnion([toolQ, featureInfo.excludeBodies]);
     else
         excludeQ = toolQ;
-    var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    const targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
+    const collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
     if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
 
-    var collisionClasses = classifyCollisions(context, collisions);
+    const collisionClasses is map = classifyCollisions(context, collisions);
     var conditionsToAdd;    //undefined|boolean
     var conditionsToRemove; //undefined|boolean
     var target = [];
     for (var entry in collisionClasses)
     {
-        var nIntersections = size(entry.value.intersection);
-        var nAbutting = size(entry.value.abutting);
+        const nIntersections = size(entry.value.intersection);
+        const nAbutting = size(entry.value.abutting);
         conditionsToRemove = (conditionsToRemove != false && nAbutting == 0 && nIntersections == 1);
         conditionsToAdd = (conditionsToAdd != false && nAbutting == 1 && nIntersections == 0);
         if (conditionsToRemove == conditionsToAdd)
@@ -395,28 +410,37 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
 
 // The latest implementation is simpler. If the number of parts hit by the tools is equal to 1 then we default to add.
 // If the number of parts hit by the tools is other than 1 then we default to new.
+/**
+ * TODO: description
+ * @param context
+ * @param featureDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function autoSelectionForBooleanStep2(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
-    var id = newId();
-    var toolQ = qBodyType(qCreatedBy(id + featureInfo.featureId, EntityType.BODY), BodyType.SOLID);
+    const toolQ = qBodyType(qCreatedBy(makeId(featureInfo.featureId), EntityType.BODY), BodyType.SOLID);
     var excludeQ;
     if (featureInfo.excludeBodies is Query)
         excludeQ = qUnion([toolQ, featureInfo.excludeBodies]);
     else
         excludeQ = toolQ;
-    var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    const targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
+    const collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
     if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
 
     if (size(collisions) > 0)
     {
-        var collisionClasses = classifyCollisions(context, collisions);
+        const collisionClasses = classifyCollisions(context, collisions);
         var target = undefined;
         for (var entry in collisionClasses)
         {
-            var collisions = concatenateArrays([entry.value.intersection, entry.value.abutting]);
-            var nCollisions = size(collisions);
+            const collisions = concatenateArrays([entry.value.intersection, entry.value.abutting]);
+            const nCollisions = size(collisions);
             if (nCollisions > 1)
             {
                 // Hits more than one thing. Use NEW.
@@ -435,7 +459,7 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
                 }
             }
         }
-        // classifyCollisions filters out  abutting along edge, so we might come empty here
+        // classifyCollisions filters out abutting along edge, so we might come empty here
         if (target != undefined)
         {
             return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
@@ -446,14 +470,18 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
 }
 
 
-function combineCollisionType(oldType, newType is string) returns string
+function combineCollisionType(oldType, newType is ClashType) returns ClashType
+precondition
+{
+    oldType is undefined || oldType is ClashType;
+}
 {
     if (oldType == undefined || oldType == newType)
         return newType;
-    if (oldType == "INTERFERE" || newType == "INTERFERE")
-        return "INTERFERE";
-    if (oldType == "TARGET_IN_TOOL" || oldType == "TOOL_IN_TARGET")
-        return "INTERFERE";
+    if (oldType == ClashType.INTERFERE || newType == ClashType.INTERFERE)
+        return ClashType.INTERFERE;
+    if (oldType == ClashType.TARGET_IN_TOOL || oldType == ClashType.TOOL_IN_TARGET)
+        return ClashType.INTERFERE;
     return oldType;
 }
 
@@ -475,29 +503,38 @@ function setOperationType(featureDef is map, opType is NewBodyOperationType, tar
 
 //This function implements flip on Remove heuristics.
 //If tool bodies don't intersect with targets but there are abuttings, flip the direction
+/**
+ * TODO: description
+ * @param context
+ * @param featureDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function flipCorrectionForRemove(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
-    var id = newId();
-    var toolQ = qBodyType(qCreatedBy(id + featureInfo.featureId, EntityType.BODY), BodyType.SOLID);
+    const toolQ = qBodyType(qCreatedBy(newId() + featureInfo.featureId, EntityType.BODY), BodyType.SOLID);
     var excludeQ;
     if (featureInfo.excludeBodies is Query)
         excludeQ = qUnion([toolQ, featureInfo.excludeBodies]);
     else
         excludeQ = toolQ;
-    var targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
-    var collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
+    const targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
+    const collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
     if (collisions == undefined)
     {
         return featureDefinition;
     }
-    var collisionClasses = classifyCollisions(context, collisions);
+    const collisionClasses = classifyCollisions(context, collisions);
     var haveAbutting = false; //boolean
     for (var entry in collisionClasses)
     {
-        var nIntersections = size(entry.value.intersection);
+        const nIntersections = size(entry.value.intersection);
         if (nIntersections > 0)
             return featureDefinition;
-        var nAbutting = size(entry.value.abutting);
+        const nAbutting = size(entry.value.abutting);
         if (nAbutting > 0)
             haveAbutting = true;
     }
@@ -507,16 +544,20 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
     return featureDefinition;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param statusToolId
+ */
 export function setBooleanErrorEntities(context is Context, id is Id, statusToolId is Id)
 {
-    var statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
+    const statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
     if (size(evaluateQuery(context, statusToolsQ)) > 0)
     {
-        var errorDefinition = {};
-        errorDefinition.entities = statusToolsQ;
+        const errorDefinition = { entities : statusToolsQ };
         setErrorEntities(context, id, errorDefinition);
-        var deletionData = {};
-        deletionData.entities = statusToolsQ;
+        const deletionData = { entities : statusToolsQ };
         opDeleteBodies(context, statusToolId + "delete", deletionData);
     }
 }

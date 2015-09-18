@@ -1,13 +1,49 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/curveGeometry.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ */
+export enum Direction
+{
+    annotation { "Name" : "Clockwise" }
+    CW,
+    annotation { "Name" : "Counterclockwise" }
+    CCW
+}
+
+/**
+ * TODO: description
+ */
+export enum HelixType
+{
+    annotation { "Name" : "Turns" }
+    TURNS,
+    annotation { "Name" : "Pitch" }
+    PITCH
+}
 
 const needConeOrCylinderMessage = ErrorStringEnum.HELIX_INPUT_CONE;
 
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY" }
 export const helix = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -45,8 +81,8 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         {
             var endRadius = 0;
             var baseRadius = 0;
-            var boxResult = evBox3d(context, { 'topology' : definition.entities, 'cSys' : toWorld(surface.coordSystem) });
-            var height = boxResult.maxCorner[2] - boxResult.minCorner[2];
+            const boxResult = evBox3d(context, { 'topology' : definition.entities, 'cSys' : surface.coordSystem });
+            const height = boxResult.maxCorner[2] - boxResult.minCorner[2];
             if (surface is Cylinder)
             {
                 endRadius = surface.radius;
@@ -54,7 +90,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
             }
             else if (surface is Cone)
             {
-                var slope = tan(surface.halfAngle);
+                const slope = tan(surface.halfAngle);
                 baseRadius = slope * boxResult.minCorner[2];
                 endRadius = slope * boxResult.maxCorner[2];
             }
@@ -81,7 +117,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
             throw regenError(needConeOrCylinderMessage, ["entities"]);
         }
 
-        var startPointVector = definitionOut.startPoint - definitionOut.axisStart;
+        const startPointVector = definitionOut.startPoint - definitionOut.axisStart;
         definitionOut.startPoint = (rotationMatrix3d(definitionOut.direction, definition.startAngle) * startPointVector) + definitionOut.axisStart;
 
         definitionOut.interval = [0, revolutions];

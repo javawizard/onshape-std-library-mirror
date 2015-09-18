@@ -1,11 +1,26 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/feature.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
 
-//Thicken Feature
+// Features using manipulators must export these.
+export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Thicken", "Filter Selector" : "allparts" }
 export const thicken = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -32,7 +47,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         // ------------- Determine the direction ---------------
         if (definition.oppositeDirection)
         {
-            var temp = definition.thickness2;
+            const temp = definition.thickness2;
             definition.thickness2 = definition.thickness1;
             definition.thickness1 = temp;
         }

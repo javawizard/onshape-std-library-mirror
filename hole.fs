@@ -1,16 +1,24 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/box.fs", version : "");
-export import(path : "onshape/std/coordSystem.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/extrude.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path : "onshape/std/math.fs", version : "");
-export import(path : "onshape/std/matrix.fs", version : "");
-export import(path : "onshape/std/sketch.fs", version : "");
-export import(path : "onshape/std/revolve.fs", version : "");
-export import(path : "onshape/std/transform.fs", version : "");
-export import(path : "onshape/std/vector.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/boundingtype.gen.fs", version : "");
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/clashtype.gen.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/coordSystem.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/extrude.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/revolve.fs", version : "");
+import(path : "onshape/std/sketch.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export enum HoleStyle
 {
     annotation { "Name" : "Simple" }
@@ -21,6 +29,9 @@ export enum HoleStyle
     C_SINK
 }
 
+/**
+ * TODO: description
+ */
 export enum HoleEndStyle
 {
     annotation { "Name" : "Through" }
@@ -31,30 +42,38 @@ export enum HoleEndStyle
     BLIND_IN_LAST
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Hole" }
 export const hole = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Hole style", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Hole style" }
         definition.style is HoleStyle;
 
-        annotation { "Name" : "Hole diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Hole diameter" }
         isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
 
         if (definition.style == HoleStyle.C_BORE)
         {
-            annotation { "Name" : "Counterbore diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Counterbore diameter" }
             isLength(definition.cBoreDiameter, HOLE_BORE_DIAMETER_BOUNDS);
-            annotation { "Name" : "Counterbore depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Counterbore depth" }
             isLength(definition.cBoreDepth, HOLE_BORE_DEPTH_BOUNDS);
         }
         else if (definition.style == HoleStyle.C_SINK)
         {
-            annotation { "Name" : "Countersink diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Countersink diameter" }
             isLength(definition.cSinkDiameter, HOLE_BORE_DIAMETER_BOUNDS);
         }
 
-        annotation { "Name" : "Hole termination", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Hole termination" }
         definition.endStyle is HoleEndStyle;
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
@@ -62,7 +81,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
         {
-            annotation { "Name" : "Hole depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Hole depth" }
             isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
         }
 
@@ -90,15 +109,15 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             if (definition.holeDiameter > definition.cSinkDiameter)
                 reportFeatureError(context, id, ErrorStringEnum.HOLE_CSINK_TOO_SMALL);
 
-            var cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle);
+            const cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle);
             if (definition.endStyle == HoleEndStyle.BLIND && definition.holeDepth < cSinkDepth)
                 reportFeatureError(context, id, ErrorStringEnum.HOLE_CSINK_TOO_DEEP);
         }
-        var locations = reduceLocations(context, definition.locations);
+        const locations = reduceLocations(context, definition.locations);
         if (size(locations) == 0)
             throw regenError(ErrorStringEnum.HOLE_NO_POINTS, ["locations"]);
 
-        var scopeTest = evaluateQuery(context, definition.scope);
+        const scopeTest = evaluateQuery(context, definition.scope);
         if (size(scopeTest) == 0)
             throw regenError(ErrorStringEnum.HOLE_EMPTY_SCOPE, ["scope"]);
 
@@ -106,7 +125,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         if (definition.scopeSize == undefined)
             throw regenError(ErrorStringEnum.HOLE_FAIL_BBOX, ["scope"]);
 
-        var startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
         // ------------- Perform the operation ---------------
 
         // for each hole
@@ -124,11 +143,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                  * Now cut the hole.
                  */
                 holeNumber += 1;
-                var sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
+                const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
                 var startPointCSys = planeToCSys(sketchPlane);
-                var point is Vector = evVertexPoint(context, { "vertex" : location });
+                const point is Vector = evVertexPoint(context, { "vertex" : location });
 
-                var sign = definition.oppositeDirection ? 1 : -1;
+                const sign = definition.oppositeDirection ? 1 : -1;
                 startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
 
                 var maxDiameter = definition.holeDiameter;
@@ -137,15 +156,15 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                 else if (definition.style == HoleStyle.C_SINK)
                     maxDiameter = definition.cSinkDiameter;
 
-                var holeId = id + ("hole-" ~ holeNumber);
+                const holeId = id + ("hole-" ~ holeNumber);
 
-                var startDistances = cylinderCastBiDir(context, holeId, {
+                const startDistances = cylinderCastBiDir(context, holeId, {
                     "scopeSize" : definition.scopeSize,
                     "cSys" : startPointCSys,
                     "diameter": maxDiameter,
                     "scope" : definition.scope });
 
-                cutHole (context, holeId, definition, startDistances, startPointCSys);
+                cutHole(context, holeId, definition, startDistances, startPointCSys);
 
                 numSuccess += 1;
             }
@@ -153,7 +172,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         if (numSuccess == 0)
             throw regenError(ErrorStringEnum.HOLE_NO_HITS);
 
-        var finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
         if (finalBodyCount > startingBodyCount)
             throw regenError(ErrorStringEnum.HOLE_DISJOINT);
     }, { endStyle : HoleEndStyle.BLIND, style : HoleStyle.SIMPLE, oppositeDirection : false,
@@ -161,12 +180,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
 function reduceLocations(context is Context, rawLocationQuery is Query) returns array
 {
-    var rawLocations = evaluateQuery(context, rawLocationQuery);
+    const rawLocations = evaluateQuery(context, rawLocationQuery);
     var pts = [];
     var locations = [];
     for (var rawLocation in rawLocations)
     {
-        var ptResult = try(evVertexPoint(context, { "vertex" : rawLocation }));
+        const ptResult = try(evVertexPoint(context, { "vertex" : rawLocation }));
         if (ptResult != undefined)
         {
             var found = false;
@@ -282,71 +301,92 @@ precondition
     arg.scope is Query;
 }
 {
-    var shotName = arg.isFront ? "shot_front" : "shot_back";
-    var id = idIn + shotName;
-    var distance = arg.scopeSize;
+    const shotName = arg.isFront ? "shot_front" : "shot_back";
+    const id = idIn + shotName;
+    const distance = arg.scopeSize;
 
     var direction = arg.cSys.zAxis;
     if (!arg.isFront)
         direction = -direction;
 
-    var startingCSys = coordSystem(arg.cSys.origin - distance * direction, arg.cSys.xAxis, direction);
+    const startingCSys = coordSystem(arg.cSys.origin - distance * direction, arg.cSys.xAxis, direction);
 
-    var sketchPlane = plane(startingCSys.origin, direction); // plane is rotated
+    const sketchPlane = plane(startingCSys.origin, direction); // plane is rotated
 
     //------------- Create profile ----------------
-    var sketchName = "raySketch";
-    var sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
+    const sketchName = "raySketch";
+    const sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
 
     skCircle(sketch, "circle", { "center" : vector(0, 0) * meter, "radius" : arg.diameter / 2 });
     skSolve(sketch);
 
     var bestDist = undefined;
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V208_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE))
+    const AOL_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE = isAtVersionOrLater(context, FeatureScriptVersionNumber.V208_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE);
+    const AOL_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC = isAtVersionOrLater(context, FeatureScriptVersionNumber.V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC);
+    // Fix for 208 was too broad, don't fix it here, fix later
+    if (AOL_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE && !AOL_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC)
     {
         bestDist = 0 * meter;
     }
-    var targets = evaluateQuery(context, arg.scope);
+    const targets = evaluateQuery(context, arg.scope);
     if (size(targets) == 0)
         throw "No targets";
 
     var shotNum = -1;
-    var sketchEntityQuery = sketchEntityQuery(id + (sketchName ~ ".wireOp"), EntityType.EDGE, "circle");
-    var curves = evaluateQuery(context, sketchEntityQuery);
+    const sketchEntityQuery = sketchEntityQuery(id + (sketchName ~ ".wireOp"), EntityType.EDGE, "circle");
+    const curves = evaluateQuery(context, sketchEntityQuery);
 
     for (var targetQuery in targets)
     {
         shotNum += 1;
-        var operationId = id + shotNum;
-          try {
-              extrude(context, operationId, {
+        const operationId = id + shotNum;
+        try {
+            extrude(context, operationId, {
                 "bodyType" : ToolBodyType.SURFACE,
                 "operationType" : NewBodyOperationType.NEW,
                 "surfaceEntities" : qUnion([sketchEntityQuery]),
                 "endBound" : BoundingType.UP_TO_BODY,
                 "endBoundEntityBody" : qUnion([targetQuery])
-              });
-          } catch (e) {
-              if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V208_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE))
-              {
-                  continue;
-              }
-              else
-              {
-                  throw e;
-              }
-          }
-        var bodyQuery = qCreatedBy(operationId, EntityType.BODY);
+            });
+        } catch (e) {
+            if (AOL_HOLE_FEATURE_HANDLE_FAILED_EXTRUDE)
+            {
+                continue;
+            }
+            else
+            {
+                throw e;
+            }
+        }
+        const bodyQuery = qCreatedBy(operationId, EntityType.BODY);
 
-        var cylBox = evBox3d(context, { "topology" : bodyQuery, "cSys" : toWorld(arg.cSys) } );
+        const cylBox = evBox3d(context, { "topology" : bodyQuery, "cSys" : arg.cSys } );
 
-        var d =  arg.isFront ? cylBox.maxCorner[2] : cylBox.minCorner[2];
+        var d = arg.isFront ? cylBox.maxCorner[2] : cylBox.minCorner[2];
+
+        // This is the front plane clamp to zero
+        const isMinimumCase = (arg.findClosest && arg.isFront) || (!arg.findClosest && !arg.isFront);
+        if (AOL_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC && isMinimumCase && d < 0) {
+            d = 0 * meter;
+        }
+
+        if (AOL_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC) {
+            const collisions = evCollision(context, {'targets': targetQuery, 'tools': bodyQuery});
+            for (var collision in collisions) {
+                if (collision['type'] == ClashType.INTERFERE) {
+                // If the shot cylinder interferes with the target, then we began the shot on the interior,
+                // fall back to starting from the sketch plane.
+                    d = 0 * meter;
+                    break;
+                }
+            }
+        }
 
         if (bestDist == undefined)
         {
             bestDist = d;
         }
-        else if ((arg.findClosest && arg.isFront) || (!arg.findClosest && !arg.isFront))
+        else if (isMinimumCase)
         {
             if (d < bestDist)
                 bestDist = d;
@@ -357,12 +397,17 @@ precondition
                 bestDist = d;
         }
 
-        deleteBodies(context, id  + ("delete_" ~ shotNum), { "entities" : bodyQuery });
+        opDeleteBodies(context, id + ("delete_" ~ shotNum), { "entities" : bodyQuery });
     }
-    deleteBodies(context, id  + "delete", { "entities" : qCreatedBy(id + sketchName, EntityType.BODY) });
+    opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(id + sketchName, EntityType.BODY) });
 
-    if (bestDist == undefined)
+    if (AOL_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC) {
+        if (bestDist == undefined) {
+            bestDist = 0 * meter;
+        }
+    } else if (bestDist == undefined) {
         throw "Hole not entirely on one body.";
+    }
 
     return bestDist;
 }
@@ -378,9 +423,9 @@ precondition
     // Small but finite distance.
     // A large distance does not work when trying to drill out from the inside of a box.
     // A zero distance produces no surface for the cast if the the target is planar face parallel to the sketch
-    var smallFrontOffset = 0.01 * millimeter;
+    const smallFrontOffset = 0.01 * millimeter;
 
-    var resultFront = try(cylinderCast(context, id, {
+    const resultFront = try(cylinderCast(context, id, {
         "scopeSize" : smallFrontOffset,
         "cSys" : arg.cSys,
         "isFront" : true,
@@ -389,7 +434,7 @@ precondition
         "scope" : arg.scope }));
 
     // The back of the part uses a large distance until we can find a better method.
-    var resultBack = try(cylinderCast(context, id, {
+    const resultBack = try(cylinderCast(context, id, {
         "scopeSize" : arg.scopeSize,
         "cSys" : arg.cSys,
         "isFront" : false,
@@ -414,20 +459,20 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     var result;
     var frontDist = 0 * meter;
     var backDist = 0 * meter;
-    var isCBore = holeDefinition.style == HoleStyle.C_BORE;
-    var isCSink = holeDefinition.style == HoleStyle.C_SINK;
+    const isCBore = holeDefinition.style == HoleStyle.C_BORE;
+    const isCSink = holeDefinition.style == HoleStyle.C_SINK;
 
     frontDist = max(startDistances.frontDist, 0 * meter);
     backDist = startDistances.backDist;
 
-    var sign = holeDefinition.oppositeDirection ? 1 : -1;
-    var startCSys = coordSystem(cSys.origin, cSys.xAxis, sign * cSys.zAxis);
+    const sign = holeDefinition.oppositeDirection ? 1 : -1;
+    const startCSys = coordSystem(cSys.origin, cSys.xAxis, sign * cSys.zAxis);
 
-    var sketchPlane = plane(cSys.origin, cSys.xAxis, cSys.zAxis); // plane is rotated
+    const sketchPlane = plane(cSys.origin, cSys.xAxis, cSys.zAxis); // plane is rotated
 
     //------------- Create profile ----------------
-    var sketchName = "sketch";
-    var sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
+    const sketchName = "sketch";
+    const sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
 
     var startDepth = 0 * meter;
     if (isCBore)
@@ -476,17 +521,17 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
 
     skSolve(sketch);
 
-    var axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
-    var sketchQuery = qSketchRegion(id + sketchName, false);
+    const axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
+    const sketchQuery = qSketchRegion(id + sketchName, false);
     spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, false);
-    deleteBodies(context, id  + "delete_sketch", { "entities" : qCreatedBy(id + sketchName, EntityType.BODY) });
+    opDeleteBodies(context, id + "delete_sketch", { "entities" : qCreatedBy(id + sketchName, EntityType.BODY) });
     // Also delete any unused bodies from the spin
-    var extraBodies = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+    const extraBodies = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
     if (size(extraBodies) > 0)
     {
-        deleteBodies(context, id  + "delete", { "entities" : qCreatedBy(id, EntityType.BODY) });
+        opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(id, EntityType.BODY) });
     }
-    var newFaces = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));
+    const newFaces = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));
     if (size(newFaces) == 0)
         throw "No faces created";
 }
@@ -505,10 +550,10 @@ function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery i
 
 function sketchPoly(context is Context, prefix is string, sketch is Sketch, points is array)
 {
-    var numPoints = size(points);
+    const numPoints = size(points);
     for (var index = 0; index < numPoints; index += 1)
     {
-        var lineId = prefix ~ "_line_" ~ index;
+        const lineId = prefix ~ "_line_" ~ index;
         skLineSegment(sketch, lineId, { "start" : points[index], "end" : points[(index + 1) % numPoints] });
     }
 }
@@ -523,11 +568,11 @@ precondition
     isLength(arg.cBoreDiameter);
 }
 {
-    var cBoreRadius = arg.cBoreDiameter / 2;
-    var points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + arg.endDepth, 0 * meter),
-                  vector(arg.startDepth + arg.endDepth, cBoreRadius),
-                  vector(arg.startDepth, cBoreRadius)];
+    const cBoreRadius = arg.cBoreDiameter / 2;
+    const points = [vector(arg.startDepth, 0 * meter),
+                    vector(arg.startDepth + arg.endDepth, 0 * meter),
+                    vector(arg.startDepth + arg.endDepth, cBoreRadius),
+                    vector(arg.startDepth, cBoreRadius)];
     sketchPoly(context, arg.prefix, arg.sketch, points);
 }
 
@@ -557,20 +602,21 @@ precondition
         cSinkDepth = depthOfRadius(context, cSinkRadius, arg.cSinkAngle);
     }
 
-    var sign = arg.isPositive ? 1 : -1;
+    const sign = arg.isPositive ? 1 : -1;
     var points;
+    const startDepth = arg.startDepth;
     if (arg.clearanceDepth > 0 * meter)
     {
-        points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + sign * (arg.clearanceDepth + cSinkDepth), 0 * meter),
-                  vector(arg.startDepth + sign * (arg.clearanceDepth), cSinkRadius),
-                  vector(arg.startDepth, cSinkRadius)];
+        points = [vector(startDepth, 0 * meter),
+                  vector(startDepth + sign * (arg.clearanceDepth + cSinkDepth), 0 * meter),
+                  vector(startDepth + sign * (arg.clearanceDepth), cSinkRadius),
+                  vector(startDepth, cSinkRadius)];
     }
     else
     {
-        points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + sign * cSinkDepth, 0 * meter),
-                  vector(arg.startDepth, cSinkRadius)];
+        points = [vector(startDepth, 0 * meter),
+                  vector(startDepth + sign * cSinkDepth, 0 * meter),
+                  vector(startDepth, cSinkRadius)];
 
     }
     sketchPoly(context, arg.prefix, arg.sketch, points);
@@ -579,7 +625,7 @@ precondition
 function sketchToolCore(context is Context, id is Id, arg is map)
 precondition
 {
-  is3dLengthVector(arg.cSys.origin);
+    is3dLengthVector(arg.cSys.origin);
     arg.prefix is string;
     arg.sketch is Sketch;
     arg.cSys is CoordSystem;
@@ -588,11 +634,11 @@ precondition
     arg.holeDefinition is map;
 }
 {
-    var radius = arg.holeDefinition.holeDiameter * 0.5;
-    var tipAngle = 118.0 / 2.0 * degree;
+    const radius = arg.holeDefinition.holeDiameter * 0.5;
+    const tipAngle = 118.0 / 2.0 * degree;
     var depth = arg.holeDefinition.holeDepth;
     var useTipLength = false;
-    var tipDepth = depthOfRadius(context, radius, tipAngle);
+    const tipDepth = depthOfRadius(context, radius, tipAngle);
     if (arg.holeDefinition.endStyle == HoleEndStyle.THROUGH)
     {
         depth = arg.holeDefinition.scopeSize * 2;
@@ -600,7 +646,7 @@ precondition
     else if (arg.holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
     {
         // Find shoulder depth
-        var result = try(cylinderCast(context, id + "limit_surf_cast", {
+        const result = try(cylinderCast(context, id + "limit_surf_cast", {
             "scopeSize" : arg.holeDefinition.scopeSize * 2,
             "cSys" : arg.cSys,
             "isFront" : true,
@@ -638,10 +684,20 @@ precondition
 
 function scopeSize(context is Context, scope is Query) returns map
 {
-    var scopeBox = evBox3d(context, { "topology" : scope});
+    const scopeBox = evBox3d(context, { "topology" : scope});
     return norm(scopeBox.maxCorner - scopeBox.minCorner);
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param holeDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition is map, featureInfo is map) returns map
 {
     var scopeSet = false;
@@ -657,15 +713,15 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
     if (scopeSet && oppositeDirectionSet)
         return {};
 
-    var locations = evaluateQuery(context, holeDefinition.locations);
+    const locations = evaluateQuery(context, holeDefinition.locations);
     var queries = [];
     for (var location in locations)
     {
-        var sketchPlane = try(evOwnerSketchPlane(context, { "entity" : location }));
+        const sketchPlane = try(evOwnerSketchPlane(context, { "entity" : location }));
         if (sketchPlane == undefined)
             continue;
 
-        var pointResult = evVertexPoint(context, { "vertex": location });
+        const pointResult = evVertexPoint(context, { "vertex": location });
         var solidBodiesQuery is Query = qNothing();
         if (scopeSet)
         {
@@ -676,19 +732,19 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
             solidBodiesQuery = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
             if (featureInfo.excludeBodies is Query)
             {
-              solidBodiesQuery = qSubtraction(solidBodiesQuery, featureInfo.excludeBodies);
+                solidBodiesQuery = qSubtraction(solidBodiesQuery, featureInfo.excludeBodies);
             }
         }
-        var faces = evaluateQuery(context, qContainsPoint(qGeometry(qOwnedByPart(solidBodiesQuery, EntityType.FACE), GeometryType.PLANE), pointResult));
+        const faces = evaluateQuery(context, qContainsPoint(qGeometry(qOwnedByPart(solidBodiesQuery, EntityType.FACE), GeometryType.PLANE), pointResult));
         if (@size(faces) != 1 && !oppositeDirectionSet)
             continue;
 
         for (var face in faces)
         {
-            var facePlane = try(evPlane(context, { "face" : face }));
+            const facePlane = try(evPlane(context, { "face" : face }));
             if (facePlane != undefined)
             {
-                var needFlip = dot(sketchPlane.normal, facePlane.normal) < 0;
+                const needFlip = dot(sketchPlane.normal, facePlane.normal) < 0;
                 if (!oppositeDirectionSet)
                 {
                     oppositeDirectionChanged = (oppositeDirection != needFlip);
@@ -698,7 +754,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
                 if (needFlip == oppositeDirection)
                 {
                     // Only add non-ambiguous parts
-                    var bodyQuery = evaluateQuery(context, qOwnerPart(face));
+                    const bodyQuery = evaluateQuery(context, qOwnerPart(face));
                     if (@size(bodyQuery) == 1)
                         queries = append(queries, bodyQuery[0]);
                 }

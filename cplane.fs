@@ -1,7 +1,35 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ */
+export enum CPlaneType
+{
+    annotation { "Name" : "Offset" }
+    OFFSET,
+    annotation { "Name" : "Plane Point" }
+    PLANE_POINT,
+    annotation { "Name" : "Line Angle" }
+    LINE_ANGLE,
+    annotation { "Name" : "Line Point" }
+    LINE_POINT,
+    annotation { "Name" : "Three Point" }
+    THREE_POINT,
+    annotation { "Name" : "Mid Plane" }
+    MID_PLANE,
+    annotation { "Name" : "Curve Point" }
+    CURVE_POINT
+}
 
 // Messages
 const midPlaneDefaultErrorMessage  = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
@@ -16,6 +44,14 @@ const coincidentPointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage      = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage    = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY" }
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -54,8 +90,8 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     }
     //============================ Body =============================
     {
-        var entities = evaluateQuery(context, definition.entities);
-        var numEntities = @size(entities);
+        const entities = evaluateQuery(context, definition.entities);
+        const numEntities = @size(entities);
 
         if (definition.cplaneType == CPlaneType.OFFSET)
         {
@@ -85,7 +121,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                 throw regenError(requiresLineMessage, ["entities"]);
             if (numEntities > 1)
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            var lineResult = evAxis(context, { "axis" : definition.entities });
+            const lineResult = evAxis(context, { "axis" : definition.entities });
             var normal = perpendicularVector(lineResult.direction);
             normal = rotationMatrix3d(lineResult.direction, definition.angle) * normal;
             definition.plane = plane(lineResult.origin, normal, lineResult.direction);
@@ -97,15 +133,15 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                 throw regenError(requiresLinePointMessage, ["entities"]);
             if (numEntities > 2)
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            var lineResult = evAxis(context, { "axis" : qUnion([qEntityFilter(definition.entities, EntityType.EDGE),
-                                qEntityFilter(definition.entities, EntityType.FACE)]) });
-            var pointResult = evVertexPoint(context, { "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
+            const lineResult = evAxis(context, { "axis" : qUnion([qEntityFilter(definition.entities, EntityType.EDGE),
+                                      qEntityFilter(definition.entities, EntityType.FACE)]) });
+            const pointResult = evVertexPoint(context, { "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
             definition.plane = plane(pointResult, lineResult.direction);
         }
 
         if (definition.cplaneType == CPlaneType.THREE_POINT)
         {
-            var vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
+            const vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
             if (size(vertexQueries) < 3)
                 throw regenError(requiresThreePointsMessage, ["entities"]);
             if (numEntities > 3)
@@ -115,7 +151,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             {
                 points[i] = evVertexPoint(context, { "vertex" : vertexQueries[i] });
             }
-            var normal = cross(points[2] - points[0], points[1] - points[0]);
+            const normal = cross(points[2] - points[0], points[1] - points[0]);
             if (norm(normal).value < TOLERANCE.zeroLength)
                 throw regenError(degeneratePointsMessage, ["entities"]);
             definition.plane = plane(points[0], normalize(normal), normalize(points[1] - points[0]));
@@ -124,7 +160,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         if (definition.cplaneType == CPlaneType.MID_PLANE)
         {
             // attempt from two points
-            var vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
+            const vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
             if (@size(vertexQueries) == 2)
             {
                 // Check for extra entities, not vertices
@@ -135,7 +171,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             }
 
             // attempt from a edge
-            var edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
+            const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
             if (@size(edgeQueries) == 1)
             {
                 // Check for extra entities, not edges
@@ -146,7 +182,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             }
 
             // attempt from 2 planes
-            var faceQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
+            const faceQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
             if (@size(faceQueries) == 2)
             {
                 // Check for extra entities, not faces
@@ -181,7 +217,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                 throw error;
             }
 
-            var lineResult = evEdgeTangentLine(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
+            const lineResult = evEdgeTangentLine(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
                     "parameter" : param, "arcLengthParameterization" : false });
 
             definition.plane = plane(lineResult.origin, lineResult.direction);
@@ -201,14 +237,14 @@ function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries
         throw regenError(coincidentPointsMessage, ["entities"]);
 
     normal = normalize(normal);
-    var midOrigin = 0.5 * (points[0] + points[1]);
+    const midOrigin = 0.5 * (points[0] + points[1]);
     opPlane(context, id, { "plane" : plane(midOrigin, normal), "size" : size });
 }
 
 function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is array, size is ValueWithUnits)
 {
     var points = makeArray(2);
-    var edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
+    const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
     points[0] = edgeEndPoints[0].origin;
     points[1] = edgeEndPoints[1].origin;
     var normal = points[1] - points[0];
@@ -216,7 +252,7 @@ function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is arr
         throw regenError(edgeIsClosedLoopMessage, ["entities"]);
 
     normal = normalize(normal);
-    var midOrigin = 0.5 * (points[0] + points[1]);
+    const midOrigin = 0.5 * (points[0] + points[1]);
     opPlane(context, id, { "plane" : plane(midOrigin, normal), "size" : size });
 }
 
@@ -230,8 +266,8 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     if (!cplaneDefinition.flipAlignment)
         p2.normal = -p2.normal;
 
-    var midOrigin = 0.5 * (p1.origin + p2.origin);
-    var intersection = intersection(p1, p2);
+    const midOrigin = 0.5 * (p1.origin + p2.origin);
+    const intersection = intersection(p1, p2);
 
     // Check for parallel case, when two planes are parallel there are no other solution we just take the normal of plane1
     if (intersection == undefined)
@@ -240,8 +276,8 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     }
     else
     {
-        var normal = normalize(p1.normal + p2.normal);
-        var x = rotationMatrix3d(p1.normal, normal) * p1.x;
+        const normal = normalize(p1.normal + p2.normal);
+        const x = rotationMatrix3d(p1.normal, normal) * p1.x;
         cplaneDefinition.plane = plane(intersection.origin, normal, x);
         cplaneDefinition.plane.origin = project(cplaneDefinition.plane, midOrigin);
     }

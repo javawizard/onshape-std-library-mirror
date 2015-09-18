@@ -1,6 +1,21 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Shell", "Filter Selector" : "allparts" }
 export const shell = defineFeature(function(context is Context, id is Id, definition is map)
     precondition

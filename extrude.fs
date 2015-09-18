@@ -1,16 +1,49 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/feature.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/draft.fs", version : "");
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
-export import(path : "onshape/std/utils.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/boundingtype.gen.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
 
-//Extrude Feature
+// Features using manipulators must export manipulator.fs.
+export import(path : "onshape/std/manipulator.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/draft.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ */
+export enum SecondDirectionBoundingType
+{
+    annotation { "Name" : "Blind" }
+    BLIND,
+    annotation { "Name" : "Up to next" }
+    UP_TO_NEXT,
+    annotation { "Name" : "Up to face" }
+    UP_TO_SURFACE,
+    annotation { "Name" : "Up to part" }
+    UP_TO_BODY,
+    annotation { "Name" : "Through all" }
+    THROUGH_ALL
+}
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Extrude", "Manipulator Change Function" : "extrudeManipulatorChange", "Filter Selector" : "allparts" }
 export const extrude = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -146,7 +179,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         // compute the draftCondition before definition gets changed.
         const draftCondition is map = getDraftConditions(definition);
 
-        var resolvedEntities = evaluateQuery(context, definition.entities);
+        const resolvedEntities = evaluateQuery(context, definition.entities);
         if (size(resolvedEntities) == 0)
         {
             if (definition.bodyType == ToolBodyType.SOLID)
@@ -156,7 +189,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
 
         // ------------- Get the extrude axis ---------------
-        var extrudeAxis = try(computeExtrudeAxis(context, resolvedEntities[0]));
+        const extrudeAxis = try(computeExtrudeAxis(context, resolvedEntities[0]));
         if (extrudeAxis == undefined)
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
 
@@ -286,8 +319,8 @@ function extrudeWithDraft(context is Context, id is Id, definition is map, draft
 
     if (draftCondition.firstDirectionNeedsDraft || draftCondition.secondDirectionNeedsDraft)
     {
-        var extrudeBodies = qCreatedBy(id, EntityType.BODY);
-        var extrudeBodyArray = evaluateQuery(context, extrudeBodies);
+        const extrudeBodies = qCreatedBy(id, EntityType.BODY);
+        const extrudeBodyArray = evaluateQuery(context, extrudeBodies);
         for (var i = 0; i < size(extrudeBodyArray); i += 1)
         {
             draftExtrudeBody(context, id, i, definition, extrudeBodyArray[i], draftCondition);
@@ -324,56 +357,56 @@ function applyDraft(context is Context, draftId is Id, draftFaces is Query,
 
 function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, direction is Vector) returns Plane
 {
-    var dependencies = evaluateQuery(context, qDependency(extrudeBody));
+    const dependencies = evaluateQuery(context, qDependency(extrudeBody));
     if (size(dependencies) == 0)
         throw "Cannot find any dependency for the extruded body";
     var neutralPlane;
     try
     {
-        var line = evEdgeTangentLine(context, { "edge" : dependencies[0], "parameter" : 0.5 });
+        const line = evEdgeTangentLine(context, { "edge" : dependencies[0], "parameter" : 0.5 });
         neutralPlane = plane(line.origin, direction);
     }
     catch
     {
-        var facePlane = evFaceTangentPlane(context, { "face" : dependencies[0], "parameter" : vector(0.5, 0.5) });
+        const facePlane = evFaceTangentPlane(context, { "face" : dependencies[0], "parameter" : vector(0.5, 0.5) });
         neutralPlane = plane(facePlane.origin, direction);
     }
 
     // reference face
-    var splitPlaneDefinition = { "plane" : neutralPlane, "size" : 1 * meter };
+    const splitPlaneDefinition = { "plane" : neutralPlane, "size" : 1 * meter };
     opPlane(context, id, splitPlaneDefinition);
     return neutralPlane;
 }
 
 function draftExtrudeBody(context is Context, id is Id, suffix is number, definition is map, extrudeBody is Query, conditions is map)
 {
-    var neutralPlaneId = id + ("neutralPlane" ~ suffix);
-    var neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction));
+    const neutralPlaneId = id + ("neutralPlane" ~ suffix);
+    const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction));
 
     if (neutralPlane == undefined)
         throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane" ~ suffix]);
 
-    var neutralPlaneFace = qCreatedBy(neutralPlaneId, EntityType.FACE);
-    var neutralPlaneQuery = qOwnerPart(qCreatedBy(neutralPlaneId));
+    const neutralPlaneFace = qCreatedBy(neutralPlaneId, EntityType.FACE);
+    const neutralPlaneQuery = qOwnerPart(qCreatedBy(neutralPlaneId));
 
     if (conditions.needsSplit)
     {
         // Split the body
-        var splitId = id + ("split" ~ suffix);
+        const splitId = id + ("split" ~ suffix);
         opSplitPart(context, splitId, { targets: extrudeBody, tool: neutralPlaneQuery, keepTools: false });
 
-        var firstBodies = qSplitBy(splitId, EntityType.BODY, false);
-        var secondBodies = qSplitBy(splitId, EntityType.BODY, true);
-        var firstBodyArray = evaluateQuery(context, firstBodies);
-        var secondBodyArray = evaluateQuery(context, secondBodies);
+        const firstBodies = qSplitBy(splitId, EntityType.BODY, false);
+        const secondBodies = qSplitBy(splitId, EntityType.BODY, true);
+        const firstBodyArray = evaluateQuery(context, firstBodies);
+        const secondBodyArray = evaluateQuery(context, secondBodies);
         if (size(firstBodyArray) != size(secondBodyArray))
             throw regenError(ErrorStringEnum.SPLIT_INVALID_INPUT, ["split" ~ suffix]);
 
-        var draftFirstId = id + ("draftFirst" ~ suffix);
-        var draftSecondId = id + ("draftSecond" ~ suffix);
+        const draftFirstId = id + ("draftFirst" ~ suffix);
+        const draftSecondId = id + ("draftSecond" ~ suffix);
 
-        var firstFaces = qSplitBy(splitId, EntityType.FACE, false);
-        var secondFaces = qSplitBy(splitId, EntityType.FACE, true);
+        const firstFaces = qSplitBy(splitId, EntityType.FACE, false);
+        const secondFaces = qSplitBy(splitId, EntityType.FACE, true);
 
         var draftFirstDefinition = undefined;
         var draftSecondDefinition = undefined;
@@ -404,16 +437,16 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
         if (draftSecondDefinition != undefined)
             applyDraft(context, draftSecondId, secondFaces, draftSecondDefinition, neutralPlaneFace, neutralPlane);
 
-        var toolsQ = qUnion([firstBodies, secondBodies]);
+        const toolsQ = qUnion([firstBodies, secondBodies]);
         booleanBodies(context, id + ("booleanUnion" ~ suffix),
                       { "operationType" : BooleanOperationType.UNION, "tools" : toolsQ });
     }
     else
     {
-        var draftDefinition = { "angle" : definition.draftAngle,
-            "pullDirection" : definition.draftPullDirection };
+        const draftDefinition = { "angle" : definition.draftAngle,
+                                  "pullDirection" : definition.draftPullDirection };
         // TODO: replace this with the merged query enum
-        var draftFaces = qOwnedByPart(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
+        const draftFaces = qOwnedByPart(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
         applyDraft(context, id + ("draft" ~ suffix), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane);
     }
 
@@ -443,13 +476,13 @@ function computeExtrudeAxis(context is Context, entity is Query)
 {
     try
     {
-        var entityPlane = evPlane(context, { "face" : entity });
+        const entityPlane = evPlane(context, { "face" : entity });
         return line(entityPlane.origin, entityPlane.normal);
     }
 
     //The extrude axis should start in the middle of the edge and point in the sketch plane normal
-    var tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
-    var entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
+    const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
+    const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
     return line(tangentAtEdge.origin, entityPlane.normal);
 }
 
@@ -462,7 +495,7 @@ const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
 
 function addExtrudeManipulator(context is Context, id is Id, definition is map, extrudeAxis is Line)
 {
-    var usedEntities = getEntitiesToUse(context, definition);
+    const usedEntities = getEntitiesToUse(context, definition);
 
     if (definition.endBound != BoundingType.BLIND && definition.endBound != BoundingType.SYMMETRIC)
     {
@@ -512,6 +545,16 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
     }
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param definition {{
+ *      @field TODO
+ * }}
+ * @param newManipulators {{
+ *      @field TODO
+ * }}
+ */
 export function extrudeManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
     if (newManipulators[DEPTH_MANIPULATOR] is map &&
@@ -536,7 +579,7 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
         if (newManipulators[SECOND_DEPTH_MANIPULATOR] is map &&
             definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
         {
-            var newSecondDirectionOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
+            const newSecondDirectionOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
             definition.secondDirectionOppositeDirection = newSecondDirectionOffset < 0 * meter;
             definition.secondDirectionDepth = abs(newSecondDirectionOffset);
         }
@@ -560,18 +603,18 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
 
     if (endBound == BoundingType.UP_TO_SURFACE)
     {
-        var refPlane = try(evPlane(context, { "face" : endBoundEntity }));
+        const refPlane = try(evPlane(context, { "face" : endBoundEntity }));
         if (refPlane == undefined)
             return false; //err on side of not flipping, TODO: surfaceXline
-        var isecResult = intersection(refPlane, extrudeAxis);
+        const isecResult = intersection(refPlane, extrudeAxis);
         if (isecResult == undefined || isecResult.dim != 0)
             return false;
 
-        var dotPr = stripUnits(dot(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
+        const dotPr = stripUnits(dot(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
         return dotPr < -TOLERANCE.zeroLength;
     }
-    var pln = plane(extrudeAxis.origin, extrudeAxis.direction);
-    var boxResult = try(evBox3d(context, { 'topology' : endBoundEntity, 'cSys' : planeToWorld(pln) }));
+    const pln = plane(extrudeAxis.origin, extrudeAxis.direction);
+    const boxResult = try(evBox3d(context, { 'topology' : endBoundEntity, 'cSys' : planeToCSys(pln) }));
     if (boxResult == undefined)
         return false;
 
@@ -580,15 +623,25 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
 }
 
 
+/**
+ * TODO: description
+ * @param context
+ * @param featureDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function upToBoundaryFlip(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
-    var usedEntities = getEntitiesToUse(context, featureDefinition);
-    var resolvedEntities = evaluateQuery(context, usedEntities);
+    const usedEntities = getEntitiesToUse(context, featureDefinition);
+    const resolvedEntities = evaluateQuery(context, usedEntities);
     if (@size(resolvedEntities) == 0)
     {
         return featureDefinition;
     }
-    var extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
+    const extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
     if (extrudeAxis == undefined)
     {
         return featureDefinition;
@@ -607,6 +660,16 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
     return featureDefinition;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param featureDefinition {{
+ *      @field TODO
+ * }}
+ * @param featureInfo {{
+ *      @field TODO
+ * }}
+ */
 export function performTypeFlip(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
     featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;

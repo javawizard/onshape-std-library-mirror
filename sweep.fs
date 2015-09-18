@@ -1,9 +1,22 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/feature.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Sweep", "Filter Selector" : "allparts" }
 export const sweep = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -40,11 +53,11 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V203_SWEEP_PATH_NO_CONSTRUCTION))
         {
-            var pathQuery = definition.path;
+            const pathQuery = definition.path;
             definition.path = qConstructionFilter(definition.path, ConstructionObject.NO);
             if (pathQuery.queryType == QueryType.UNION && size(pathQuery.subqueries) > 0)
             {
-                var queryResults = evaluateQuery(context, definition.path);
+                const queryResults = evaluateQuery(context, definition.path);
                 if (size(queryResults) == 0)
                 {
                     reportFeatureError(context, id, ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION);

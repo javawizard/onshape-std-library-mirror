@@ -1,9 +1,26 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
+
+// Features using manipulators must export manipulator.fs.
 export import(path : "onshape/std/manipulator.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/vector.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -35,7 +52,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
             definition.offset = -definition.offset;
 
         // Only draw the offset manipulator if the replace face is defined
-        var replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));
+        const replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));
         if (replaceFacePlane != undefined)
             addOffsetManipulator(context, id, definition, replaceFacePlane);
 
@@ -51,7 +68,7 @@ function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinitio
     // Don't try anything fancy to guess where to place the manipulator. With replace face it is too hard to guess what the
     // result will look like. Place the manipulator offset from the face to be replaced.  This will allow
     // the manipulator to travel relative to the face where the replacement happens.
-    var offsetOrigin = replaceFace.origin;
+    const offsetOrigin = replaceFace.origin;
     var offsetDirection = replaceFace.normal;
     if (replaceFaceDefinition.oppositeSense)
         offsetDirection = -offsetDirection;
@@ -66,6 +83,16 @@ function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
     return evFaceTangentPlane(context, { "face" : entitiesQuery, "parameter" : vector(0.5, 0.5) });
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param replaceFaceDefinition {{
+ *      @field TODO
+ * }}
+ * @param newManipulators {{
+ *      @field TODO
+ * }}
+ */
 export function replaceFaceManipulatorChange(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map
 {
     if (newManipulators[OFFSET_MANIPULATOR] != undefined)

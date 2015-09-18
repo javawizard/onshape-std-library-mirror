@@ -1,6 +1,10 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/transform.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export type CoordSystem typecheck canBeCoordSystem;
 
 export predicate canBeCoordSystem(value)
@@ -12,22 +16,43 @@ export predicate canBeCoordSystem(value)
     abs(dot(value.xAxis, value.zAxis)) < TOLERANCE.zeroAngle;
 }
 
+/**
+ * TODO: description
+ * @param origin
+ * @param xAxis
+ * @param zAxis
+ */
 export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) returns CoordSystem
 {
     return { "origin" : origin, "xAxis" : normalize(xAxis), "zAxis" : normalize(zAxis) } as CoordSystem;
 }
 
+/**
+ * TODO: description
+ * @param cSys {{
+ *      @field TODO
+ * }}
+ */
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 {
     return coordSystem((cSys.origin as Vector) * meter, cSys.xAxis as Vector, cSys.zAxis as Vector);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ */
 export function toWorld(cSys is CoordSystem) returns Transform
 {
-    var rotation = transpose([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix);
+    const rotation = transpose([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix);
     return transform(rotation, cSys.origin);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ * @param worldPoint
+ */
 export function fromWorld(cSys is CoordSystem, worldPoint is Vector) returns Vector
 precondition
 {
@@ -40,7 +65,7 @@ precondition
 
 export function fromWorld(cSys is CoordSystem) returns Transform
 {
-    var rotation = [cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
+    const rotation = [cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
     return transform(rotation, rotation * -cSys.origin);
 }
 
@@ -51,6 +76,10 @@ export operator*(transform is Transform, cSys is CoordSystem) returns CoordSyste
                        inverse(transpose(transform.linear)) * cSys.zAxis);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ */
 export function toString(cSys is CoordSystem) returns string
 {
     return "origin" ~ toString(cSys.origin) ~ "\n" ~ "x-Axis" ~ toString(cSys.xAxis) ~ "\n" ~ "z-Axis" ~ toString(cSys.zAxis);

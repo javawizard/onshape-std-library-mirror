@@ -1,7 +1,15 @@
-FeatureScript 213; /* Automatically generated version */
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/context.fs", version : "");
+
+/**
+ * TODO: description
+ * @param message
+ */
 export function regenError(message is ErrorStringEnum)
 {
     return { "message" : message };
@@ -22,6 +30,14 @@ export function regenError(message is ErrorStringEnum, faultyParameters is array
     return { "message" : message, "faultyParameters" : faultyParameters, "entities" : entities };
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param error {{
+ *      @field TODO
+ * }}
+ */
 export function processError(context is Context, id is Id, error is map) returns boolean
 {
     var messageEnum = try(error.message as ErrorStringEnum);
@@ -45,6 +61,12 @@ export function processError(context is Context, id is Id, error) returns boolea
     return true;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param message
+ */
 export function reportFeatureError(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
     @reportFeatureError(context, id, { "message" : message });
@@ -57,18 +79,36 @@ export function reportFeatureError(context is Context, id is Id, message is Erro
     return true;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param message
+ */
 export function reportFeatureWarning(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
     @reportFeatureWarning(context, id, { "message" : message });
     return true;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param message
+ */
 export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
     @reportFeatureInfo(context, id, { "message" : message });
     return true;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param subId
+ * @param id
+ */
 export function processSubfeatureStatus(context is Context, subId is Id, id is Id) returns boolean
 {
     // If an operation contains sub-operations, e.g. an extruded boss is an extrusion and a boolean
@@ -98,29 +138,57 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
     return madeChanges;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
 export function getFeatureError(context is Context, id is Id)
 {
-    var result = @getFeatureError(context, id);
+    const result = @getFeatureError(context, id);
     return result == undefined ? undefined : result as ErrorStringEnum;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
 export function getFeatureWarning(context is Context, id is Id)
 {
-    var result = @getFeatureWarning(context, id);
+    const result = @getFeatureWarning(context, id);
     return result == undefined ? undefined : result as ErrorStringEnum;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
 export function getFeatureInfo(context is Context, id is Id)
 {
-    var result = @getFeatureInfo(context, id);
+    const result = @getFeatureInfo(context, id);
     return result == undefined ? undefined : result as ErrorStringEnum;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function setErrorEntities(context is Context, id is Id, definition is map)
 {
     @setErrorEntities(context, id, definition);
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
 export function featureHasError(context is Context, id is Id) returns boolean
 {
     return @getFeatureError(context, id) != undefined;

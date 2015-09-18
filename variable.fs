@@ -1,58 +1,48 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/evaluate.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
-export enum AssignmentType
-{
-    annotation { "Name" : "Value" }
-    VALUE,
-    annotation { "Name" : "Measurement" }
-    MEASUREMENT
-}
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 
-
-annotation {"Feature Type Name" : "Assign variable", "Feature Name Template": "Assign #name", "UIHint" : "NO_PREVIEW_PROVIDED"}
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
+// TODO: annotation {"Feature Type Name" : "Variable", "Feature Name Template": "Variable #name = #computedValue", "UIHint" : "NO_PREVIEW_PROVIDED"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Name" }
         definition.name is string;
 
-        annotation { "Name" : "Type" }
-        definition.assignmentType is AssignmentType;
-
-        if (definition.assignmentType == AssignmentType.VALUE)
-        {
-            annotation { "Name" : "Value" }
-            isLength(definition.value, ZERO_DEFAULT_LENGTH_BOUNDS);
-        }
-
-        if (definition.assignmentType == AssignmentType.MEASUREMENT)
-        {
-            annotation { "Name" : "Entities", "Filter" : EntityType.VERTEX }
-            definition.entities is Query;
-        }
+        annotation { "Name" : "Value" }
+        isAnything(definition.value);
     }
     {
-        var replaceNameWithRegExpShouldBeBlank = replace(definition.name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
+        const replaceNameWithRegExpShouldBeBlank = replace(definition.name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
         if (definition.name == '' || replaceNameWithRegExpShouldBeBlank != '') {
             throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
         }
 
-        if (definition.assignmentType == AssignmentType.MEASUREMENT)
-        {
-            var v0 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 0) });
-            var v1 = evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 1) });
-            var v2 = try(evVertexPoint(context, { "vertex" : qNthElement(definition.entities, 2) }));
-
-            if (v2 == undefined)
-                definition.value = norm(v0 - v1);
-            else
-                definition.value = angleBetween(v0 - v1, v2 - v1);
-        }
-
         @setVariable(context, definition);
+        setFeatureComputedParameter(context, id, { "name" : "computedValue", "value" : definition.value });
     });
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
 export function makeLookupFunction(context is Context, id is Id) returns function
 {
     return function(name is string)

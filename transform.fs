@@ -1,8 +1,12 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/matrix.fs", version : "");
-export import(path : "onshape/std/vector.fs", version : "");
-export import(path : "onshape/std/units.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/matrix.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/vector.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export type Transform typecheck canBeTransform;
 
 export predicate canBeTransform(value)
@@ -37,11 +41,20 @@ precondition
     return { "linear" : identityMatrix(3), "translation" : translation } as Transform;
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function transformFromBuiltin(definition is map) returns Transform
 {
     return transform(definition.linear as Matrix, (definition.translation as Vector) * meter);
 }
 
+/**
+ * TODO: description
+ */
 export function identityTransform() returns Transform
 {
     return { "linear" : identityMatrix(3), "translation" : vector(0, 0, 0) * meter } as Transform;
@@ -63,7 +76,7 @@ precondition
 
 export function inverse(t is Transform) returns Transform
 {
-    var linear = inverse(t.linear);
+    const linear = inverse(t.linear);
     return transform(linear, -linear * t.translation);
 }
 

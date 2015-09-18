@@ -1,7 +1,19 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
-//Split Part Feature
+// Imports used internally
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Split part", "Filter Selector" : "allparts" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition

@@ -1,11 +1,14 @@
-FeatureScript 213; /* Automatically generated version */
+FeatureScript 225; /* Automatically generated version */
 //Vector math
-export import(path : "onshape/std/math.fs", version : "");
-export import(path : "onshape/std/utils.fs", version : "");
-export import(path : "onshape/std/units.fs", version : "");
-export import(path : "onshape/std/matrix.fs", version : "");
-export import(path : "onshape/std/print.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/matrix.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export type Vector typecheck canBeVector;
 
 export predicate canBeVector(value)
@@ -14,6 +17,10 @@ export predicate canBeVector(value)
     @size(value) > 0;
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function vector(value is array) returns Vector
 {
     return value as Vector;
@@ -60,6 +67,10 @@ export predicate is3dDirection(value)
     abs(squaredNorm(value) - 1) < TOLERANCE.zeroAngle;
 }
 
+/**
+ * TODO: description
+ * @param size
+ */
 export function zeroVector(size is number) returns Vector
 precondition
 {
@@ -114,6 +125,11 @@ export operator-(vector is Vector) returns Vector
     return vector;
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ */
 export function dot(vector1 is Vector, vector2 is Vector)
 precondition
 {
@@ -128,6 +144,11 @@ precondition
     return dot;
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ */
 export function cross(vector1 is Vector, vector2 is Vector) returns Vector
 precondition
 {
@@ -135,12 +156,17 @@ precondition
     @size(vector2) == 3;
 }
 {
-    var nx = vector1[1] * vector2[2] - vector2[1] * vector1[2];
-    var ny = vector1[2] * vector2[0] - vector2[2] * vector1[0];
-    var nz = vector1[0] * vector2[1] - vector2[0] * vector1[1];
+    const nx = vector1[1] * vector2[2] - vector2[1] * vector1[2];
+    const ny = vector1[2] * vector2[0] - vector2[2] * vector1[0];
+    const nz = vector1[0] * vector2[1] - vector2[0] * vector1[1];
     return [nx, ny, nz] as Vector;
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ */
 export function angleBetween(vector1 is Vector, vector2 is Vector)
 precondition
 {
@@ -151,6 +177,10 @@ precondition
     return atan2(norm(cross(vector1, vector2)), dot(vector1, vector2));
 }
 
+/**
+ * TODO: description
+ * @param vector
+ */
 export function normalize(vector is Vector) returns Vector
 {
     return vector / norm(vector);
@@ -190,7 +220,7 @@ precondition
         return @matrixMultiply(matrix, vector) as Vector;
     }
     //Multiply "by hand"
-    var transposed = transpose(matrix);
+    const transposed = transpose(matrix);
     var result = (transposed[0] as Vector) * vector[0];
     for (var i = 1; i < @size(vector); i += 1)
     {
@@ -210,10 +240,14 @@ export operator/(vector is Vector, scalar) returns Vector
 
 export function project(vector1 is Vector, vector2 is Vector) returns Vector
 {
-    var dot = dot(vector1, vector2);
+    const dot = dot(vector1, vector2);
     return vector2 * (dot / squaredNorm(vector2));
 }
 
+/**
+ * TODO: description
+ * @param vec
+ */
 export function perpendicularVector(vec is Vector) returns Vector
 precondition @size(vec) == 3;
 {
@@ -247,7 +281,7 @@ precondition
     @size(to) == 3;
 }
 {
-    var axis = cross(from, to);
+    const axis = cross(from, to);
     if (squaredNorm(axis) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
     {
         if (dot(from, to) > 0)
@@ -256,13 +290,19 @@ precondition
         }
         else
         {
-            var perp = perpendicularVector(from);
+            const perp = perpendicularVector(from);
             return rotationMatrix3d(perp, PI);
         }
     }
     return rotationMatrix3d(axis, @atan2(norm(axis), dot(from, to)));
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ * @param vector3
+ */
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
 precondition
 {
@@ -271,7 +311,7 @@ precondition
     @size(vector3) == 3;
 }
 {
-    var v2Crossv3 = cross(vector2, vector3);
+    const v2Crossv3 = cross(vector2, vector3);
     return dot(vector1, v2Crossv3);
 }
 
@@ -286,22 +326,37 @@ export function toString(value is Vector) returns string
     return str;
 }
 
+/**
+ * TODO: description
+ * @param point1
+ * @param point2
+ */
 export function samePoint(point1 is Vector, point2 is Vector) returns boolean
 {
     return stripUnits(squaredNorm(point1 - point2)) < TOLERANCE.zeroLength * TOLERANCE.zeroLength;
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ */
 export function parallelVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
-    var dotP = stripUnits(dot(vector1, vector2));
-    var v1v2 = stripUnits(squaredNorm(vector1) * squaredNorm(vector2));
-    return (v1v2 - dotP * dotP) < 0.5 * (v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle);
+    const crossP2 = squaredNorm(cross(vector1, vector2));
+    const v1v2 = squaredNorm(vector1) * squaredNorm(vector2);
+    return crossP2 < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }
 
+/**
+ * TODO: description
+ * @param vector1
+ * @param vector2
+ */
 export function perpendicularVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
-    var dotP = stripUnits(dot(vector1, vector2));
-    var v1v2 = stripUnits(squaredNorm(vector1) * squaredNorm(vector2));
+    const dotP = dot(vector1, vector2);
+    const v1v2 = squaredNorm(vector1) * squaredNorm(vector2);
     return dotP * dotP < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }
 

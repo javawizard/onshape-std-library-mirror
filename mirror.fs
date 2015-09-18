@@ -1,9 +1,23 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/transform.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/transform.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Mirror", "Filter Selector" : "allparts" }
 export const mirror = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -48,12 +62,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
 
         definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
-        var planeResult = try(evPlane(context, { "face" : definition.mirrorPlane }));
+        const planeResult = try(evPlane(context, { "face" : definition.mirrorPlane }));
         if (planeResult == undefined)
             throw regenError(ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
 
-        var transform = mirrorAcross(planeResult);
-        var patternDefinition = {
+        const transform = mirrorAcross(planeResult);
+        const patternDefinition = {
             "entities" : definition.entities,
             "transforms" : [transform],
             "instanceNames" : ["1"],
@@ -72,7 +86,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         if (!definition.isFaceMirror)
         {
             // We only include original body in the tools if the operation is UNION
-            var additionalParmeters = (definition.operationType == NewBodyOperationType.ADD) ?
+            const additionalParmeters = (definition.operationType == NewBodyOperationType.ADD) ?
                 { "seed" : definition.entities } : {};
             const reconstructOp = function(id) { opPattern(context, id, patternDefinition); };
             processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParmeters), reconstructOp);

@@ -1,11 +1,20 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/feature.fs", version : "");
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/tool.fs", version : "");
+
+// Features using manipulators must export manipulator.fs
 export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/vector.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export enum RevolveType
 {
     annotation { "Name" : "Full" }
@@ -18,7 +27,14 @@ export enum RevolveType
     TWO_DIRECTIONS
 }
 
-
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Revolve", "Manipulator Change Function" : "revolveManipulatorChange", "Filter Selector" : "allparts" }
 export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -76,7 +92,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
     }
     {
         definition.entities = getEntitiesToUse(context, definition);
-        var resolvedEntities = evaluateQuery(context, definition.entities);
+        const resolvedEntities = evaluateQuery(context, definition.entities);
         if (@size(resolvedEntities) == 0)
         {
             if (definition.bodyType == ToolBodyType.SOLID)
@@ -152,24 +168,24 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
     if (revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC )
         return;
 
-    var entities = getEntitiesToUse(context, revolveDefinition);
+    const entities = getEntitiesToUse(context, revolveDefinition);
 
     //Compute manipulator parameters
     var revolvePoint;
-    var faceResult = try(evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) }));
+    const faceResult = try(evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) }));
     if (faceResult != undefined)
     {
         revolvePoint = faceResult.origin;
     }
     else
     {
-        var edgeResult = try(evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 }));
+        const edgeResult = try(evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 }));
         if (edgeResult != undefined)
             revolvePoint = edgeResult.origin;
         else
             return;
     }
-    var axisOrigin = project(revolveDefinition.axis, revolvePoint);
+    const axisOrigin = project(revolveDefinition.axis, revolvePoint);
 
     var minValue = -2 * PI * radian;
     var maxValue = 2 * PI * radian;
@@ -196,6 +212,16 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
                                              "maxValue" : maxValue })});
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param revolveDefinition {{
+ *      @field TODO
+ * }}
+ * @param newManipulators {{
+ *      @field TODO
+ * }}
+ */
 export function revolveManipulatorChange(context is Context, revolveDefinition is map, newManipulators is map) returns map
 precondition
 {
@@ -203,7 +229,7 @@ precondition
     revolveDefinition.revolveType == RevolveType.ONE_DIRECTION || revolveDefinition.revolveType == RevolveType.SYMMETRIC;
 }
 {
-    var newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
+    const newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
 
     revolveDefinition.oppositeDirection = newAngle < 0 * radian;
     revolveDefinition.angle = abs(newAngle);

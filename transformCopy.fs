@@ -1,11 +1,24 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/transform.fs", version : "");
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/print.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
+// Features using manipulators must export these.
+export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+/**
+ * TODO: description
+ */
 export enum TransformType
 {
     annotation { "Name" : "Translate by line" }
@@ -43,7 +56,7 @@ precondition
 /* Find a point to attach the manipulator bar. */
 function findCenter(context is Context, id is Id, entities is Query) returns Vector
 {
-    var boxResult = evBox3d(context, { topology : entities });
+    const boxResult = evBox3d(context, { topology : entities });
     return (boxResult.minCorner + boxResult.maxCorner) / 2;
 }
 
@@ -151,13 +164,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     {
         //Start by figuring out the transform
         var transformMatrix = identityTransform();
-        var transformType = definition.transformType;
+        const transformType = definition.transformType;
 
         /* Prior to V74
            1. Transform of no part was not an error (bug compatibility)
            2. Null transform was not an error (behavior change)
          */
-        var validateInputs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING);
+        const validateInputs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING);
 
         if (validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
@@ -165,20 +178,20 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         if (transformType == TransformType.TRANSLATION_ENTITY ||
             transformType == TransformType.TRANSLATION_DISTANCE)
         {
-            var selection = (transformType == TransformType.TRANSLATION_ENTITY ?
+            const selection = (transformType == TransformType.TRANSLATION_ENTITY ?
                 definition.transformLine : definition.transformDirection);
             //For a translation / translation by distance, figure out which entities are used to specify it
-            var distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
+            const distanceSpecified = transformType == TransformType.TRANSLATION_DISTANCE;
+            const vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
+            const edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
+            const nedges = @size(edges);
+            const faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
             var translation;
-            var vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
-            var edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
-            var nedges = @size(edges);
-            var faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
 
             if (@size(vertices) >= 2)
             {
-                var v0 = evVertexPoint(context, { "vertex" : vertices[0] });
-                var v1 = evVertexPoint(context, { "vertex" : vertices[1] });
+                const v0 = evVertexPoint(context, { "vertex" : vertices[0] });
+                const v1 = evVertexPoint(context, { "vertex" : vertices[1] });
                 translation = v1 - v0;
                 if (validateInputs)
                     reportCoincident(context, id, translation);
@@ -190,14 +203,14 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             }
             else if (nedges >= 1)
             {
-                var evalResult = evEdgeTangentLines(context, { "edge" : edges[0], "parameters" : [0, 1] });
+                const evalResult = evEdgeTangentLines(context, { "edge" : edges[0], "parameters" : [0, 1] });
                 translation = evalResult[1].origin - evalResult[0].origin;
                 if (validateInputs)
                     reportCoincident(context, id, translation);
             }
             else if (distanceSpecified && @size(faces) >= 1) // A plane only provides direction
             {
-                var planeResult = try(evPlane(context, { "face" : faces[0] }));
+                const planeResult = try(evPlane(context, { "face" : faces[0] }));
                 if (planeResult is Plane)
                     translation = planeResult.normal * meter;
                 else
@@ -216,9 +229,9 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 if (norm(translation).value < TOLERANCE.zeroLength)
                     throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["transformDirection"]);
 
-                var target = definition.entities;
-                var origin = findCenter(context, id, target);
-                var direction = normalize(translation);
+                const target = definition.entities;
+                const origin = findCenter(context, id, target);
+                const direction = normalize(translation);
                 var distance = definition.distance;
                 if (definition.oppositeDirection)
                     distance = -distance;
@@ -228,12 +241,11 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             }
             transformMatrix = transform(translation);
         }
-
-        if (transformType == TransformType.ROTATION)
+        else if (transformType == TransformType.ROTATION)
         {
-            var axis = evAxis(context, { "axis" : definition.transformAxis });
-            var target = definition.entities;
-            var origin = findCenter(context, id, target);
+            const axis = evAxis(context, { "axis" : definition.transformAxis });
+            const target = definition.entities;
+            const origin = findCenter(context, id, target);
             if (origin is undefined)
                 return;
             var angle = reduceAngle(definition.angle);
@@ -248,30 +260,28 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                                            "sources" : target }) });
             transformMatrix = rotationAround(axis, angle);
         }
-
-        if (transformType == TransformType.TRANSLATION_3D)
+        else if (transformType == TransformType.TRANSLATION_3D)
         {
-            var dx = definition.dx;
-            var dy = definition.dy;
-            var dz = definition.dz;
-            var transformVector = vector(dx, dy, dz);
+            const dx = definition.dx;
+            const dy = definition.dy;
+            const dz = definition.dz;
+            const transformVector = vector(dx, dy, dz);
             transformMatrix = transform(transformVector);
-            var target = definition.entities;
-            var origin = findCenter(context, id, target);
+            const target = definition.entities;
+            const origin = findCenter(context, id, target);
             if (origin is undefined)
                 return;
             addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
         }
-
-        if (transformType == TransformType.SCALE_UNIFORMLY)
+        else if (transformType == TransformType.SCALE_UNIFORMLY)
         {
 
-            var matrix = identityMatrix(3) * definition.scale;
-            var target = definition.entities;
+            const matrix = identityMatrix(3) * definition.scale;
 
-            var centerPoint = evVertexPoint(context, { "vertex" : definition.scalePoint });
+            const centerPoint = evVertexPoint(context, { "vertex" : definition.scalePoint });
             transformMatrix = transform(matrix, centerPoint - matrix * centerPoint);
         }
+
         /* Reversal for rotation and 3D translation is handled above.
            Reversal is not applicable to copy. */
         if ((transformType == TransformType.TRANSLATION_ENTITY &&
@@ -289,7 +299,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else
         {
-            var subId = validateInputs ? id : id + "transform";
+            const subId = validateInputs ? id : id + "transform";
             opTransform(context, subId,
                         { "bodies" : definition.entities,
                           "transform" : transformMatrix });
@@ -298,21 +308,31 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
 function extractOffset(input is map, axis is string)
 {
-    var submap = input[axis];
+    const submap = input[axis];
     if (submap is undefined)
         return undefined;
     return submap.offset;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param output {{
+ *      @field TODO
+ * }}
+ * @param input {{
+ *      @field TODO
+ * }}
+ */
 export function transformManipulatorChange(context is Context, output is map, input is map) returns map
 {
     if (input[ROTATE] is map)
     {
-        var angle = reduceAngle(input[ROTATE].angle);
+        const angle = reduceAngle(input[ROTATE].angle);
         output.angle = abs(angle);
         output.oppositeDirection = angle < 0 * radian;
     }
-    var distance = extractOffset(input, OFFSET_LINE);
+    const distance = extractOffset(input, OFFSET_LINE);
     if (distance is ValueWithUnits)
     {
         output.distance = abs(distance);
@@ -320,7 +340,7 @@ export function transformManipulatorChange(context is Context, output is map, in
     }
     if (input[TRANSLATION] is map)
     {
-        var offset = input[TRANSLATION].offset;
+        const offset = input[TRANSLATION].offset;
         output.dx = offset[0];
         output.dy = offset[1];
         output.dz = offset[2];
@@ -329,7 +349,8 @@ export function transformManipulatorChange(context is Context, output is map, in
 }
 
 /* This feature is deprecated but still used in old documents that need an upgrade tasklet. */
-annotation { "Feature Type Name" : "Copy part", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Copy part", "Filter Selector" : "allparts",
+             "Deprecated" : true }
 export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -337,7 +358,7 @@ export const copyPart = defineFeature(function(context is Context, id is Id, def
         definition.entities is Query;
     }
     {
-        var transform = identityTransform();
+        const transform = identityTransform();
         opPattern(context, id, { "entities" : definition.entities,
                                  "transforms" : [transform],
                                  "instanceNames" : ["1"],

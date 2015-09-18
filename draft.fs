@@ -1,9 +1,21 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
-//Draft Operation
+// Imports used internally
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/vector.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
 export const draft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -29,7 +41,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
         definition.reFillet is boolean;
     }
     {
-        var planeResult = try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
+        const planeResult = try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
         if (planeResult == undefined)
             throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
 

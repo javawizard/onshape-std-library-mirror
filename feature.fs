@@ -1,127 +1,135 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomUtils.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports that most features will need to use.
+export import(path : "onshape/std/context.fs", version : "");
+export import(path : "onshape/std/error.fs", version : "");
 export import(path : "onshape/std/geomOperations.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "");
 
-//Planes
-export enum DefaultPlaneType
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
+
+/**
+ * TODO: description
+ * @param feature
+ * @param defaults {{
+ *      @field TODO
+ * }}
+ */
+export function defineFeature(feature is function, defaults is map) returns function
 {
-    XY,
-    YZ,
-    XZ
+    return function(context is Context, id is Id, definition is map)
+        {
+            var started = false;
+            try
+            {
+                //TODO: definition = @convert(definition, CurrentVersion);
+                definition = mergeMaps(defaults, definition);
+                startFeature(context, id, definition);
+                started = true;
+                feature(context, id, definition);
+                endFeature(context, id);
+            }
+            catch (error)
+            {
+                if (try(processError(context, id, error)) == undefined)
+                    reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
+                if (started)
+                    abortFeature(context, id);
+                if (!isTopLevelId(id))
+                    throw error; // rethrow
+            }
+        };
 }
 
-// Tool body
-export enum ToolBodyType
+export function defineFeature(feature is function) returns function
 {
-    annotation { "Name" : "Solid" }
-    SOLID,
-    annotation { "Name" : "Surface" }
-    SURFACE
+    return defineFeature(feature, {});
 }
 
-export function defaultPlane(context is Context, id is Id, defaultType is DefaultPlaneType, size)
-precondition
+// =====================================================================
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
+export function startFeature(context is Context, id is Id, definition is map)
 {
-    isLength(size);
-}
-{
-    var definition = { "defaultType" : defaultType, "size" : size };
-
-    startFeature(context, id, definition);
-    var origin = vector(0, 0, 0) * meter;
-    if (defaultType == DefaultPlaneType.XY)
-        definition.plane = plane(origin, vector(0, 0, 1), vector(1, 0, 0));
-    if (defaultType == DefaultPlaneType.YZ)
-        definition.plane = plane(origin, vector(1, 0, 0), vector(0, 1, 0));
-    if (defaultType == DefaultPlaneType.XZ)
-        definition.plane = plane(origin, vector(0, -1, 0), vector(1, 0, 0));
-    opPlane(context, id, definition);
-    endFeature(context, id);
+    @startFeature(context, id, definition);
+    recordQueries(context, id, definition);
 }
 
-export function origin(context is Context)
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
+export function abortFeature(context is Context, id is Id)
 {
-    var id = makeId("Origin");
-    startFeature(context, id, {});
-    var out = opPoint(context, id, { "point" : vector(0, 0, 0) * meter, "origin" : true });
-    endFeature(context, id);
+    @abortFeature(context, id);
+}
+
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ */
+export function endFeature(context is Context, id is Id)
+{
+    if (@size(id) == 1 && getFeatureError(context, id) != undefined)
+    {
+        @abortFeature(context, id);
+    }
+    else
+    {
+        @endFeature(context, id);
+    }
+}
+
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
+export function recordQueries(context is Context, id is Id, definition is map)
+{
+    for (var paramEntry in definition)
+    {
+        if (paramEntry.value is Query)
+        {
+            @recordQuery(context, id, { paramEntry.key : paramEntry.value });
+        }
+    }
+}
+
+export function setFeatureComputedParameter(context is Context, id is Id, definition is map)
+{
+    @setFeatureComputedParameter(context, id, definition);
+}
+
+
+//====================== Query evaluation ========================
+
+/**
+ * TODO: description
+ * @param context
+ * @param query
+ */
+export function evaluateQuery(context is Context, query is Query) returns array
+{
+    var out = @evaluateQuery(context, { "query" : query });
+    for (var i = 0; i < @size(out); i += 1)
+        out[i] = qTransient(out[i] as TransientId);
     return out;
 }
 
-//Import Feature
-export type ForeignId typecheck canBeForeignId;
-
-export predicate canBeForeignId(value)
-{
-    value is string;
-    //TODO: other checks
-}
-
-annotation { "Feature Type Name" : "Import" }
-export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
-    precondition
-    {
-        annotation { "Name" : "Foreign Id" }
-        definition.foreignId is ForeignId;
-
-        annotation { "Name" : "Source is 'Y Axis Up'" }
-        definition.yAxisIsUp is boolean;
-
-        annotation {"Name" : "Flatten assembly"}
-        definition.flatten is boolean;
-    }
-    {
-        opImportForeign(context, id, definition);
-    }, { yAxisIsUp : false, flatten : false });
-
-annotation { "Feature Type Name" : "Delete part" }
-export const deleteBodies = defineFeature(function(context is Context, id is Id, definition is map)
-    precondition
-    {
-        annotation { "Name" : "Entities to delete",
-                     "Filter" : EntityType.BODY }
-        definition.entities is Query;
-    }
-    {
-        opDeleteBodies(context, id, definition);
-    });
-
-export type BuildFunction typecheck canBeBuildFunction;
-
-export predicate canBeBuildFunction(value)
-{
-    value is function;
-}
-
-annotation { "Feature Type Name" : "Derived" }
-export const importDerived = defineFeature(function(context is Context, id is Id, definition is map)
-    precondition
-    {
-        annotation { "Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN" }
-        definition.parts is Query;
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
-        definition.buildFunction is BuildFunction;
-    }
-    {
-        var otherContext = definition.buildFunction();
-        if (otherContext != undefined)
-        {
-            if (size(evaluateQuery(otherContext, definition.parts)) == 0)
-                throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
-
-            recordQueries(otherContext, id, definition);
-            var bodiesToKeep = qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]);
-
-            var deleteDefinition = {};
-            deleteDefinition.entities = qSubtraction(qEverything(EntityType.BODY), bodiesToKeep);
-            deleteBodies(otherContext, id + "delete", deleteDefinition);
-
-            var mergeDefinition = definition; // to pass such general parameters as asVersion
-            mergeDefinition.contextFrom = otherContext;
-            @mergeContexts(context, id + "merge", mergeDefinition);
-        }
-    });
-
+//================ Compatibility with early expressions ================
 export predicate isAnything(value) // used to create a generic feature parameter that can be any featurescript expression
 {
 }

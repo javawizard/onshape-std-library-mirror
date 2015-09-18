@@ -1,6 +1,7 @@
-FeatureScript 213; /* Automatically generated version */
+FeatureScript 225; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/units.fs", version : "");
-export import(path : "onshape/std/utils.fs", version : "");
 
 export predicate defineUIDefaultValue(value, defaultValue)
 {
@@ -29,6 +30,7 @@ export predicate isAngle(value, boundSpec is AngleBoundSpec)
     defineBounds(value, boundSpec);
 }
 
+/* Overloads isInteger in math.fs */
 export predicate isInteger(value, boundSpec is IntegerBoundSpec)
 {
     isInteger(value);
@@ -244,6 +246,12 @@ export const HELIX_TURN_BOUNDS =
 } as RealBoundSpec;
 
 // Find tightest bounds of a BoundSpec
+/**
+ * TODO: description
+ * @param boundSpec {{
+ *      @field TODO
+ * }}
+ */
 export function tightestBounds(boundSpec is map) returns array // [min, max] with units as defined in the spec
 precondition
 {
@@ -266,9 +274,21 @@ precondition
 
 //Type checking follows
 
+/**
+ * TODO: description
+ */
 export type LengthBoundSpec typecheck canBeLengthBoundSpec;
+/**
+ * TODO: description
+ */
 export type AngleBoundSpec typecheck canBeAngleBoundSpec;
+/**
+ * TODO: description
+ */
 export type IntegerBoundSpec typecheck canBeIntegerBoundSpec;
+/**
+ * TODO: description
+ */
 export type RealBoundSpec typecheck canBeRealBoundSpec;
 
 export predicate canBeBoundSpec(value)

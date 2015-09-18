@@ -1,8 +1,11 @@
-FeatureScript 213; /* Automatically generated version */
+FeatureScript 225; /* Automatically generated version */
 //Matrices are in row major order so that the first index is the row and the second is the column.
-export import(path : "onshape/std/utils.fs", version : "");
-export import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export type Matrix typecheck canBeMatrix;
 
 export predicate canBeMatrix(val)
@@ -11,6 +14,10 @@ export predicate canBeMatrix(val)
     @isMatrix(val);
 }
 
+/**
+ * TODO: description
+ * @param matrix
+ */
 export function matrixSize(matrix is Matrix) returns array //returns [rows, cols]
 {
     return [@size(matrix), @size(matrix[0])];
@@ -21,12 +28,21 @@ export predicate isSquare(matrix is Matrix)
     @size(matrix) == @size(matrix[0]);
 }
 
+/**
+ * TODO: description
+ * @param size
+ */
 export function identityMatrix(size is number) returns Matrix
 precondition isPositiveInteger(size);
 {
     return @matrixIdentity(size) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param rows
+ * @param cols
+ */
 export function zeroMatrix(rows is number, cols is number) returns Matrix
 precondition
 {
@@ -37,6 +53,11 @@ precondition
     return makeArray(rows, makeArray(cols, 0)) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param axis
+ * @param angle
+ */
 export function rotationMatrix3d(axis is array, angle is number) returns Matrix
 precondition size(axis) == 3;
 {
@@ -55,6 +76,11 @@ precondition matrixSize(m1) == matrixSize(m2);
     return @matrixDifference(m1, m2) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param m1
+ * @param m2
+ */
 export function cwiseProduct(m1 is Matrix, m2 is Matrix) returns Matrix
 precondition matrixSize(m1) == matrixSize(m2);
 {
@@ -82,30 +108,50 @@ export operator*(m1 is number, m2 is Matrix) returns Matrix
     return @matrixMultiply(m1, m2) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param m
+ */
 export function transpose(m is Matrix) returns Matrix
 {
     return @matrixTranspose(m) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param m
+ */
 export function inverse(m is Matrix) returns Matrix
 precondition isSquare(m);
 {
     return @matrixInverse(m) as Matrix;
 }
 
+/**
+ * TODO: description
+ * @param m
+ */
 export function squaredNorm(m is Matrix) returns number
 {
     return @matrixSquaredNorm(m);
 }
 
+/**
+ * TODO: description
+ * @param m
+ */
 export function norm(m is Matrix) returns number
 {
     return sqrt(squaredNorm(m));
 }
 
+/**
+ * TODO: description
+ * @param m
+ */
 export function svd(m is Matrix) returns map
 {
-    var result = @matrixSvd(m);
+    const result = @matrixSvd(m);
     return { "u" : result.u as Matrix, "s" : result.s as Matrix, "v" : result.v as Matrix };
 }
 

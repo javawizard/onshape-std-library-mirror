@@ -1,7 +1,17 @@
-FeatureScript 213; /* Automatically generated version */
-// wrappers around geometric operations
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
+// These are not used in the library, but are made available to programs.
 export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
 export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
 export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
@@ -9,6 +19,9 @@ export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
 export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "");
 export import(path : "onshape/std/constrainttype.gen.fs", version : "");
 
+/**
+ * TODO: description
+ */
 export enum DimensionDirection
 {
     MINIMUM,
@@ -16,6 +29,9 @@ export enum DimensionDirection
     VERTICAL
 }
 
+/**
+ * TODO: description
+ */
 export enum SketchProjectionType
 {
     USE,
@@ -30,6 +46,9 @@ export predicate is2dPoint(value)
     @size(value) == 2;
 }
 
+/**
+ * TODO: description
+ */
 export type Sketch typecheck canBeSketch;
 
 export predicate canBeSketch(value)
@@ -37,6 +56,14 @@ export predicate canBeSketch(value)
     value is builtin; //TODO: have a builtin call for verification
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY" }
 export function newSketch(context is Context, id is Id, value is map) returns Sketch
 precondition
@@ -49,7 +76,7 @@ precondition
 {
     recordQueries(context, id, value);
     value.planeReference = value.sketchPlane;
-    var planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
+    const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
     var sketchPlane = try(evPlane(context, planeDefinition));
     if (sketchPlane == undefined)
     {
@@ -66,27 +93,54 @@ precondition
     return newSketchOnPlane(context, id, value);
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function newSketchOnPlane(context is Context, id is Id, value is map) returns Sketch
 precondition
 {
     value.sketchPlane is Plane;
 }
 {
-    var result = @newSketch(context, id, value);
+    const result = @newSketch(context, id, value);
     return result as Sketch;
 }
 
+/**
+ * TODO: description
+ * @param sketch
+ */
 export function skSolve(sketch is Sketch)
 {
     return @skSolve(sketch);
 }
 
+/**
+ * TODO: description
+ * @param sketch
+ * @param initialGuess {{
+ *      @field TODO
+ * }}
+ */
 export function skSetInitialGuess(sketch is Sketch, initialGuess is map)
 {
     return @skSetInitialGuess(sketch, initialGuess);
 }
 
 // adds a sketch point, returns map { pointId : string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param pointId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skPoint(sketch is Sketch, pointId is string, value is map)
 precondition
 {
@@ -97,6 +151,14 @@ precondition
 }
 
 // adds a line segment, returns map {startId:string, endId:string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param lineId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skLineSegment(sketch is Sketch, lineId is string, value is map)
 precondition
 {
@@ -109,6 +171,14 @@ precondition
 }
 
 // Creates a text rectangle.
+/**
+ * TODO: description
+ * @param sketch
+ * @param textId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skText(sketch is Sketch, textId is string, value is map)
 precondition
 {
@@ -121,21 +191,37 @@ precondition
 }
 
 //adds an image rectangle, and returns ids of corner points.
+/**
+ * TODO: description
+ * @param sketch
+ * @param imageId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skImage(sketch is Sketch, imageId is string, value is map)
 precondition
 {
     // sourceId is the foreign data id string pointing to a specific version of an uploaded image
-    value.sourceId is string;
-    value.aspectRatio is number;
-    value.aspectRatio > 0;
+    value.blobInfo.sourceId is string;
+    value.blobInfo.aspectRatio is undefined || (value.blobInfo.aspectRatio is number && value.blobInfo.aspectRatio > 0);
     value.firstCorner is undefined || is2dPoint(value.firstCorner);
     value.secondCorner is undefined || is2dPoint(value.secondCorner);
 }
 {
+    value = mergeMaps(value.blobInfo, value);
     return @skImage(sketch, imageId, value);
 }
 
 //adds a circle, returns map {centerId:string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param circleId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skCircle(sketch is Sketch, circleId is string, value is map)
 precondition
 {
@@ -148,6 +234,14 @@ precondition
 }
 
 //adds an ellipse, returns map {centerId:string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param ellipseId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skEllipse(sketch is Sketch, ellipseId is string, value is map)
 precondition
 {
@@ -162,6 +256,14 @@ precondition
 }
 
 //adds an arc, returns map {startId:string, endId:string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param arcId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
@@ -175,6 +277,14 @@ precondition
 }
 
 //adds an arc, returns map {startId:string, endId:string}
+/**
+ * TODO: description
+ * @param sketch
+ * @param arcId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
@@ -191,6 +301,14 @@ precondition
 }
 
 //adds a closed spline
+/**
+ * TODO: description
+ * @param sketch
+ * @param splineId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skSpline(sketch is Sketch, splineId is string, value is map)
 precondition
 {
@@ -201,6 +319,14 @@ precondition
 }
 
 //adds a spline segment (i.e open spline or piece of a closed spline)
+/**
+ * TODO: description
+ * @param sketch
+ * @param splineId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
 {
@@ -211,6 +337,14 @@ precondition
 }
 
 //adds a closed interpolated spline
+/**
+ * TODO: description
+ * @param sketch
+ * @param splineId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skInterpolatedSpline(sketch is Sketch, splineId is string, value is map)
 precondition
 {
@@ -221,6 +355,14 @@ precondition
 }
 
 //adds a spline segment (i.e open spline or piece of a closed spline)
+/**
+ * TODO: description
+ * @param sketch
+ * @param splineId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skInterpolatedSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
 {
@@ -230,6 +372,14 @@ precondition
     return @skInterpolatedSplineSegment(sketch, splineId, value);
 }
 
+/**
+ * TODO: description
+ * @param sketch
+ * @param constraintId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skConstraint(sketch is Sketch, constraintId is string, value is map)
 precondition
 {
@@ -290,6 +440,14 @@ function rectangleSideEndPoint(value, side)
 }
 
 // Creates rectangle ( four line segments properly constrained) and returns ids of corner points.
+/**
+ * TODO: description
+ * @param sketch
+ * @param rectangleId
+ * @param value {{
+ *      @field TODO
+ * }}
+ */
 export function skRectangle(sketch is Sketch, rectangleId is string, value is map)
 precondition
 {
@@ -299,11 +457,11 @@ precondition
 }
 {
     //Line segments
-    var segIds = ["left", "right", "top", "bottom"];
-    var locVal = stripUnits(value);
+    const segIds = ["left", "right", "top", "bottom"];
+    const locVal = stripUnits(value);
     for (var sId in segIds)
     {
-        var fullId = rectangleId ~ "." ~ sId;
+        const fullId = rectangleId ~ "." ~ sId;
         @skLineSegment(sketch, fullId,
                 { "start" : rectangleSideStartPoint(locVal, sId),
                     "end" : rectangleSideEndPoint(locVal, sId) });

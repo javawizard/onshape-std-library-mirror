@@ -1,7 +1,15 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
 
 //Given a plane definition and a input part query will return a list of bodies that one needs to delete so that
 //the only bodies that remain are the ones split by the plane and behind it. Used by drawings to render a section view
@@ -9,9 +17,8 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 {
     var allBodies = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
 
-    var transform = planeToWorld(plane);
     // The bbox of the body in plane coordinate system with positive z being in front of the plane
-    var boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : transform });
+    const boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : planeToCSys(plane) });
 
     // Body is fully behind the plane. Retain only the input body. no splitting needed
     if (boxResult.maxCorner[2] < TOLERANCE.zeroLength * meter)
@@ -26,28 +33,28 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
     }
 
     // Create construction plane for sectioning
-    var cplaneDefinition =
+    const cplaneDefinition =
     {
         "plane" : plane,
         "size" : 1 * meter
     };
 
-    var planeId = id + "plane";
+    const planeId = id + "plane";
     opPlane(context, planeId, cplaneDefinition);
-    var planeTool = qOwnerPart(qCreatedBy(planeId));
+    const planeTool = qOwnerPart(qCreatedBy(planeId));
 
     //The plane needs to be deleted so that it is not processed as a section face
     allBodies = qUnion([allBodies, planeTool]);
 
     // Split part on plane
-    var splitPartDefinition =
+    const splitPartDefinition =
     {
         "targets" : partToSection,
         "tool" : planeTool,
         "keepTools" : false
     };
 
-    var splitPartId = id + "splitPart";
+    const splitPartId = id + "splitPart";
     opSplitPart(context, splitPartId, splitPartDefinition);
 
     // Split was success. Retain everything behind the plane
@@ -55,6 +62,14 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 }
 
 //Section Part Feature
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export const sectionPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -68,11 +83,8 @@ export const sectionPart = defineFeature(function(context is Context, id is Id, 
             bodiesToDelete = performSectionCutAndGetBodiesToDelete(context, id, definition.plane, definition.targets);
         }
         // TODO: how are errors reported?
-        var deleteBodiesId = id + "deleteBody";
+        const deleteBodiesId = id + "deleteBody";
         opDeleteBodies(context, deleteBodiesId, { "entities" : bodiesToDelete });
     });
-
-
-
 
 

@@ -1,9 +1,12 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/math.fs", version : "");
-export import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 
 //4 * inch is how four inches are expressed
 
+/**
+ * TODO: description
+ */
 export type UnitSpec typecheck canBeUnitSpec;
 
 export const LENGTH_UNITS = { "meter" : 1 } as UnitSpec;
@@ -44,6 +47,9 @@ export const ounce = 28.349523 * gram;
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
 
+/**
+ * TODO: description
+ */
 export type ValueWithUnits typecheck canBeValueWithUnits;
 
 export predicate canBeValueWithUnits(value)
@@ -139,7 +145,7 @@ export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return Val
         }
         else
         {
-            var sum = lhs.unit[unit.key] + unit.value;
+            const sum = lhs.unit[unit.key] + unit.value;
             if (sum == 0)
                 newUnit[unit.key] = undefined;
             else
@@ -204,11 +210,6 @@ precondition
     return lhs;
 }
 
-export function abs(value is ValueWithUnits) returns ValueWithUnits
-{
-    return value.value < 0 ? -value : value;
-}
-
 export function sqrt(value is ValueWithUnits) returns ValueWithUnits
 precondition
 {
@@ -222,39 +223,68 @@ precondition
     return value;
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function sin(value is ValueWithUnits) returns number
 precondition isAngle(value);
 {
     return @sin(value.value);
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function cos(value is ValueWithUnits) returns number
 precondition isAngle(value);
 {
     return @cos(value.value);
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function tan(value is ValueWithUnits) returns number
 precondition isAngle(value);
 {
     return @tan(value.value);
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function asin(value is number) returns ValueWithUnits
 {
     return @asin(value) * radian;
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function acos(value is number) returns ValueWithUnits
 {
     return @acos(value) * radian;
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function atan(value is number) returns ValueWithUnits
 {
     return @atan(value) * radian;
 }
 
+/**
+ * TODO: description
+ * @param value1
+ * @param value2
+ */
 export function atan2(value1 is number, value2 is number) returns ValueWithUnits
 {
     return @atan2(value1, value2) * radian;
@@ -308,6 +338,11 @@ export function stripUnits(value is map) returns map
     return value as map;
 }
 
+/**
+ * TODO: description
+ * @param expression
+ * @param expectedUnit
+ */
 export function evaluateExpression(expression is number, expectedUnit is number) returns map
 {
     return { 'status' : ExpressionValidationResult.VALID, 'value' : expression };

@@ -1,11 +1,27 @@
-FeatureScript 206; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 
-//Fillet feature
+// Features using manipulators must export manipulator.fs.
+export import(path : "onshape/std/manipulator.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/vector.fs", version : "");
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange", "Filter Selector" : "allparts" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -40,29 +56,29 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 function addFilletManipulator(context is Context, id is Id, definition is map)
 {
     // get last last edge (or arbitrary edge of the last face) from the qlv
-    var operativeEntity = try(findManipulationEntity(context, definition));
+    const operativeEntity = try(findManipulationEntity(context, definition));
     if (operativeEntity != undefined)
     {
         // convert given radius and edge topology into origin, direction, and offset
-        var origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
-        var normals = try(findSurfaceNormalsAtEdge(context, operativeEntity, origin));
+        const origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
+        const normals = try(findSurfaceNormalsAtEdge(context, operativeEntity, origin));
         if (normals != undefined && !parallelVectors(normals[0], normals[1]))
         {
-            var direction = normalize(normals[0] + normals[1]);
+            const direction = normalize(normals[0] + normals[1]);
 
             var convexity = 1.0;
-            var bounds = tightestBounds(BLEND_BOUNDS);
+            const bounds = tightestBounds(BLEND_BOUNDS);
             var minDragValue = bounds[0];
             var maxDragValue = bounds[1];
             if (isEdgeConvex(context, operativeEntity))
             {
                 convexity = -1.0;
-                var tempMin = minDragValue;
+                const tempMin = minDragValue;
                 minDragValue = -maxDragValue;
                 maxDragValue = -tempMin;
             }
 
-            var offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
+            const offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
 
             addManipulators(context, id, {"filletRadiusManipulator" :
                             linearManipulator({ "base" : origin,
@@ -77,6 +93,16 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
 /*
  * Respond to drag changes to the fillet manipulator
  */
+/**
+ * TODO: description
+ * @param context
+ * @param definition {{
+ *      @field TODO
+ * }}
+ * @param newManipulators {{
+ *      @field TODO
+ * }}
+ */
 export function filletManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
     try
@@ -84,10 +110,10 @@ export function filletManipulatorChange(context is Context, definition is map, n
         if (newManipulators["filletRadiusManipulator"] is map)
         {
             // convert given offset and edge topology into new radius
-            var operativeEntity = findManipulationEntity(context, definition);
-            var origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
-            var normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
-            var convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
+            const operativeEntity = findManipulationEntity(context, definition);
+            const origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
+            const normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
+            const convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
 
             definition.radius = convexity * newManipulators["filletRadiusManipulator"].offset / findRadiusToOffsetRatio(normals);
         }
@@ -103,7 +129,7 @@ export function filletManipulatorChange(context is Context, definition is map, n
  */
 function findManipulationEntity(context is Context, definition is map) returns Query
 {
-    var resolvedEntities = evaluateQuery(context, definition.entities);
+    const resolvedEntities = evaluateQuery(context, definition.entities);
     if (@size(resolvedEntities) > 0)
     {
         var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
@@ -117,17 +143,20 @@ function findManipulationEntity(context is Context, definition is map) returns Q
 }
 
 /*
- * Find surface normals at the point closest to edgePoint on the two faces attached to the given edge
+ * Find surface normals at the point closest to edgePoint on the two faces attached to the given edge.
+ * Returns undefined if the edge does not have two faces adjacent to it.
  */
-function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint is Vector) returns array
+function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint is Vector)
 {
-    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    const faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    if (size(faces) < 2)
+        return undefined;
 
     var normals = makeArray(2);
     for (var i = 0; i < 2; i += 1)
     {
-        var param = evProjectPointOnFace(context, { "face" : faces[i], "point" : edgePoint }) as Vector;
-        var plane = evFaceTangentPlane(context, {
+        const param = evProjectPointOnFace(context, { "face" : faces[i], "point" : edgePoint }) as Vector;
+        const plane = evFaceTangentPlane(context, {
                     "face" : faces[i],
                     "parameter" : param
                 });

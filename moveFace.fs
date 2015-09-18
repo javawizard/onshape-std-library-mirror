@@ -1,16 +1,33 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/transform.fs", version : "");
-export import(path : "onshape/std/print.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "");
+
+// Features using manipulators must export manipulator.fs.
 export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
+
+// Imports used internally
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
 export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",
              "Filter Selector" : "allparts" }
@@ -60,7 +77,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     }
     //============================ Body =============================
     {
-        var resolvedEntities = evaluateQuery(context, definition.moveFaces);
+        const resolvedEntities = evaluateQuery(context, definition.moveFaces);
         if (size(resolvedEntities) == 0)
             throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT, ["moveFaces"]);
 
@@ -69,7 +86,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             directionSign = -1;
 
         // Extract an axis defined by the moved face for use in the manipulators.
-        var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
+        const facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)
             throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, ["moveFaces"]);
 
@@ -88,11 +105,11 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 // If the user specified an axis for the direction, we will use that for the translation.  If they,
                 // specified a face, we will use the face's normal, if it is planar.
                 var translation;
-                var directionResult = try(evAxis(context, { "axis" : definition.direction }));
+                const directionResult = try(evAxis(context, { "axis" : definition.direction }));
                 var translationDirection;
                 if (directionResult == undefined)
                 {
-                    var planeResult = try(evPlane(context, { "face" : definition.direction }));
+                    const planeResult = try(evPlane(context, { "face" : definition.direction }));
                     if (planeResult == undefined)
                         throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
                     translation = planeResult.normal * definition.translationDistance * directionSign;
@@ -110,7 +127,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                var axisResult = evAxis(context, { "axis" : definition.axis });
+                const axisResult = evAxis(context, { "axis" : definition.axis });
 
                 addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
 
@@ -143,12 +160,12 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
 {
     // Project the center of the plane onto the axis
     var refPoint = facePlane.origin;
-    var rotateOrigin = axis.origin + dot(refPoint - axis.origin, axis.direction) * axis.direction;
+    const rotateOrigin = axis.origin + dot(refPoint - axis.origin, axis.direction) * axis.direction;
     if (samePoint(rotateOrigin, refPoint))
     {
         // refPoint lies on the axis, so construct a different refPoint
         var orthoVec = cross(axis.direction, facePlane.normal);
-        var orthoVecNorm = norm(orthoVec);
+        const orthoVecNorm = norm(orthoVec);
         if (abs(orthoVecNorm) > TOLERANCE.zeroLength)
         {
             orthoVec = orthoVec / orthoVecNorm;
@@ -159,7 +176,7 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
             orthoVec = perpendicularVector(axis.direction);
         }
         // Calculate a manipulator radius if we have to use an arbitrary face point.
-        var faceBox = try(evBox3d(context, { topology : qNthElement(faceQuery, 0) }));
+        const faceBox = try(evBox3d(context, { topology : qNthElement(faceQuery, 0) }));
         var manipulatorRadius = 0.001 * meter; // default of 1 mm if we fail to get the box
         if (faceBox != undefined)
             manipulatorRadius = norm(faceBox.maxCorner - faceBox.minCorner) * 0.5;
@@ -172,6 +189,16 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
                                    "angle" : angle }) });
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param moveFaceDefinition {{
+ *      @field TODO
+ * }}
+ * @param newManipulators {{
+ *      @field TODO
+ * }}
+ */
 export function moveFaceManipulatorChange(context is Context, moveFaceDefinition is map, newManipulators is map) returns map
 precondition
 {

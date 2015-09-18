@@ -1,18 +1,48 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/curveGeometry.fs", version : "");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
-export import(path : "onshape/std/geomUtils.fs", version : "");
-export import(path : "onshape/std/box.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/print.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+/**
+ * Evaluation functions return information about the topological entities in the context, like bounding boxes, tangent
+ * planes, projections, and collisions. Evaluation functions typically take a context and a map that specifies the
+ * computation to be performed and return a ValueWithUnits or a FeatureScript geometry type (like Line or Plane). They
+ * may also throw errors if a query fails to evaluate or the input is otherwise invalid.
+ */
+import(path : "onshape/std/box.fs", version : "");
+import(path : "onshape/std/clashtype.gen.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/context.fs", version : "");
+import(path : "onshape/std/coordSystem.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/query.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/surfaceGeometry.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
 
+/**
+ * Given a face, calculate and return a Plane tangent to that face with an
+ * origin, a normal, and an x axis.
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face to evaluate
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameter {Vector}: 2d vector specifying the plane's origin's offset, relative to the given edge's bounding box.
+ *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
+ * }}
+ * @returns {Plane}
+ */
 export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 {
     arg.parameters = [arg.parameter];
     return evFaceTangentPlanes(context, arg)[0];
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evFaceTangentPlanes(context is Context, arg is map) returns array
 precondition
 {
@@ -31,12 +61,32 @@ precondition
     return result;
 }
 
+/**
+ * Given an edge, calculate and return a Line tangent to that edge with an
+ * origin and a direction.
+ * @param context {Context}
+ * @param arg {{
+ *      @field edge {Query}: @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {number}: Offset of the resulting line's origin, relative to the given edge.
+ *          @eg `0.5` places the origin at the edge's midpoint
+ *      @field arcLengthParameterization : TODO: document me
+ *          @optional
+ * }}
+ * @returns {Line}
+ */
 export function evEdgeTangentLine(context is Context, arg is map) returns Line
 {
     arg.parameters = [arg.parameter];
     return evEdgeTangentLines(context, arg)[0];
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evEdgeTangentLines(context is Context, arg is map) returns array
 precondition
 {
@@ -58,6 +108,13 @@ precondition
     return result;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evVertexPoint(context is Context, arg is map) returns Vector
 precondition
 {
@@ -67,6 +124,13 @@ precondition
     return meter * vector(@evVertexPoint(context, arg));
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evLine(context is Context, arg is map) returns Line
 precondition
 {
@@ -76,6 +140,13 @@ precondition
     return lineFromBuiltin(@evLine(context, arg));
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evPlane(context is Context, arg is map) returns Plane
 precondition
 {
@@ -85,6 +156,13 @@ precondition
     return planeFromBuiltin(@evPlane(context, arg));
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evSurfaceDefinition(context is Context, arg is map) returns map
 precondition
 {
@@ -119,6 +197,13 @@ precondition
     return result;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evAxis(context is Context, arg is map) returns Line
 precondition
 {
@@ -130,6 +215,13 @@ precondition
 
 // Project point on curve, will return the parameter linearly scaled based on the interval of the edge. So parameter interval of the edge is
 // always [0, 1]. Parameter output can be negative or greater than 1 (project on curve outside of the edge).
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evProjectPointOnCurve(context is Context, arg is map) returns number
 precondition
 {
@@ -142,6 +234,13 @@ precondition
 
 // return a parameter value of the point projected onto the face, the param value is scaled by the face interval [[0, 1], [0, 1]]
 // param return will not be outside the parameterization of the face, projection will always project to closest point on face, not underlying surface
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evProjectPointOnFace(context is Context, arg is map) returns array
 precondition
 {
@@ -153,7 +252,11 @@ precondition
 }
 
 /**
- * returns plane : { "origin" : Vector with length units, "normal" : Vector, "x" : Vector }
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
  */
 export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
 precondition
@@ -164,6 +267,13 @@ precondition
     return planeFromBuiltin(@evOwnerSketchPlane(context, arg));
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evLength(context is Context, arg is map) returns ValueWithUnits
 precondition
 {
@@ -175,6 +285,13 @@ precondition
     return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evArea(context is Context, arg is map) returns ValueWithUnits
 precondition
 {
@@ -186,6 +303,13 @@ precondition
     return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evVolume(context is Context, arg is map) returns ValueWithUnits
 precondition
 {
@@ -196,6 +320,13 @@ precondition
 }
 
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evCollision(context is Context, arg is map) returns array
 precondition
 {
@@ -208,9 +339,11 @@ precondition
     if (arg.passOwners == undefined)
         arg.passOwners = false;
 
-    var collisions = @evCollisionDetection(context, { "tools" : arg.tools, "targets" : arg.targets, "owners" : arg.passOwners });
+    var collisions is array = @evCollisionDetection(context, { "tools" : arg.tools, "targets" : arg.targets, "owners" : arg.passOwners });
     for (var i = 0; i < size(collisions); i += 1)
     {
+        /* Each collision is a map with fields type, target, targetBody, tool, toolBody */
+        collisions[i]['type'] = collisions[i]['type'] as ClashType;
         for (var entry in collisions[i])
         {
             if (entry.value is builtin)
@@ -220,9 +353,15 @@ precondition
         }
     }
     return collisions;
-
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evEdgeConvexity(context is Context, arg is map) returns EdgeConvexityType
 precondition
 {
@@ -232,16 +371,30 @@ precondition
     return @evEdgeConvexity(context, arg) as EdgeConvexityType;
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evMateConnectorTransform(context is Context, arg is map) returns Transform
 {
-    return  transformFromBuiltin(@evMateConnectorTransform(context, arg));
+    return transformFromBuiltin(@evMateConnectorTransform(context, arg));
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param arg {{
+ *      @field TODO
+ * }}
+ */
 export function evBox3d(context is Context, arg is map) returns Box3d
 precondition
 {
     arg.topology is Query;
-    arg.cSys == undefined || arg.cSys is Transform;
+    arg.cSys == undefined || arg.cSys is CoordSystem;
 }
 {
     var result = @evBox(context, arg);

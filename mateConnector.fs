@@ -1,12 +1,27 @@
-FeatureScript 213; /* Automatically generated version */
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
+FeatureScript 225; /* Automatically generated version */
+// Imports used in interface
+export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/entityinferencetype.gen.fs", version : "");
 export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
 export import(path : "onshape/std/origincreationtype.gen.fs", version : "");
 export import(path : "onshape/std/rotationtype.gen.fs", version : "");
 
+// Imports used internally
+import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
+
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -120,28 +135,28 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
     }
     {
-        var mateConnectorTransform = evMateConnectorTransform(context, definition);
+        const mateConnectorTransform = evMateConnectorTransform(context, definition);
 
         var onlyPartInStudio = qNothing();
-        var allBodies = qEverything(EntityType.BODY);
-        var allParts = qBodyType(allBodies, BodyType.SOLID);
+        const allBodies = qEverything(EntityType.BODY);
+        const allParts = qBodyType(allBodies, BodyType.SOLID);
 
         if (@size(evaluateQuery(context, allParts)) == 1)
         {
             onlyPartInStudio = allParts;
         }
 
-        var possiblePartOwners = [definition.ownerPart,
-                                  definition.originQuery,
-                                  definition.originAdditionalQuery,
-                                  definition.primaryAxisQuery,
-                                  definition.secondaryAxisQuery,
-                                  onlyPartInStudio];
+        const possiblePartOwners = [definition.ownerPart,
+                                    definition.originQuery,
+                                    definition.originAdditionalQuery,
+                                    definition.primaryAxisQuery,
+                                    definition.secondaryAxisQuery,
+                                    onlyPartInStudio];
 
         var ownerPartQuery;
         for (var i = 0; i < size(possiblePartOwners); i += 1)
         {
-            var currentQuery = qBodyType(qOwnerPart(possiblePartOwners[i]), BodyType.SOLID);
+            const currentQuery = qBodyType(qOwnerPart(possiblePartOwners[i]), BodyType.SOLID);
             if (size(evaluateQuery(context, currentQuery)) != 0)
             {
                 ownerPartQuery = currentQuery;
