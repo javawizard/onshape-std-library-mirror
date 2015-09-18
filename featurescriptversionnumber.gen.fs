@@ -216,9 +216,17 @@ export enum FeatureScriptVersionNumber
     V210_LOFT_END_CONDITIONS,
     V211_EXTRUDE_WITH_DRAFT,
     V212_FIX_BOOLEAN_STATUS,
-    V213_EXTRUDE_WITH_DRAFT2
+    V213_EXTRUDE_WITH_DRAFT2,
+    V218_PS_VERSION_28_0_188,
+    V219_FACE_PATTERN_FEATURE_QLV,
+    V220_DRAFT_IS_STEEP_CHECK,
+    V221_HELIX_REDIRECTION,
+    V222_REMOVE_LOFT_INFO,
+    V223_CHANGE_VARIABLE_NAME_TEMPLATE,
+    V224_VERSION_BUMP,
+    V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V213_EXTRUDE_WITH_DRAFT2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC;
 
 

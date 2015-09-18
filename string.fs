@@ -41,13 +41,50 @@ export function toString(value is map) returns string
     return result ~ "}";
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function print(value)
 {
     @print(toString(value));
 }
 
+/**
+ * TODO: description
+ * @param value
+ */
 export function println(value)
 {
     @print(toString(value) ~ '\n');
+}
+
+/**
+ * TODO: description
+ * @param s
+ */
+export function splitIntoCharacters(s is string) returns array
+{
+    return @splitIntoCharacters(s);
+}
+
+/**
+ * TODO: description
+ * @param s
+ * @param regExp
+ * @param replacement
+ */
+export function replace(s is string, regExp is string, replacement is string) returns string
+{
+    return @replace(s, regExp, replacement);
+}
+
+/**
+ * TODO: description
+ * @param s
+ */
+export function length(s is string) returns number
+{
+    return @size(@splitIntoCharacters(s));
 }
 

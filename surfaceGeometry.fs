@@ -1,13 +1,18 @@
 FeatureScript ✨; /* Automatically generated version */
-export import(path : "onshape/std/coordSystem.fs", version : "");
-export import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/coordSystem.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/units.fs", version : "");
 export import(path : "onshape/std/surfacetype.gen.fs", version : "");
-export import(path : "onshape/std/print.fs", version : "");
 
 //===================================== Plane ======================================
 
 export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 
+/**
+ * TODO: description
+ */
 export type Plane typecheck canBePlane;
 
 export predicate canBePlane(value)
@@ -19,6 +24,10 @@ export predicate canBePlane(value)
     abs(dot(value.x, value.normal)) < TOLERANCE.zeroAngle;
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ */
 export function plane(cSys is CoordSystem) returns Plane
 {
     return plane(cSys.origin, cSys.zAxis, cSys.xAxis);
@@ -34,16 +43,30 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
     return plane(origin, normal, perpendicularVector(normal));
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function planeFromBuiltin(definition is map) returns Plane
 {
     return plane((definition.origin as Vector) * meter, definition.normal as Vector, definition.x as Vector);
 }
 
+/**
+ * TODO: description
+ * @param plane
+ */
 export function yAxis(plane is Plane) returns Vector
 {
     return cross(plane.normal, plane.x);
 }
 
+/**
+ * TODO: description
+ * @param plane
+ */
 export function planeToCSys(plane is Plane) returns CoordSystem
 {
     return coordSystem(plane.origin, plane.x, plane.normal);
@@ -51,8 +74,7 @@ export function planeToCSys(plane is Plane) returns CoordSystem
 
 export function toString(value is Plane) returns string
 {
-    var str = "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
-    return str;
+    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
 }
 
 export function project(plane is Plane, point is Vector) returns Vector
@@ -71,6 +93,11 @@ export operator*(transform is Transform, planeRhs is Plane) returns Plane
                  transform.linear * planeRhs.x);
 }
 
+/**
+ * TODO: description
+ * @param plane
+ * @param planePoint
+ */
 export function planeToWorld(plane is Plane, planePoint is Vector) returns Vector
 precondition
 {
@@ -86,6 +113,11 @@ export function planeToWorld(plane is Plane) returns Transform
     return toWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
 
+/**
+ * TODO: description
+ * @param plane
+ * @param worldPoint
+ */
 export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vector
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal), worldPoint);
@@ -101,25 +133,37 @@ export function transform(from is Plane, to is Plane) returns Transform
     return planeToWorld(to) * worldToPlane(from);
 }
 
+/**
+ * TODO: description
+ * @param plane
+ */
 export function mirrorAcross(plane is Plane) returns Transform
 {
-    var normalMatrix = [plane.normal] as Matrix;
-    var linear = identityMatrix(3) - 2 * transpose(normalMatrix) * normalMatrix;
+    const normalMatrix = [plane.normal] as Matrix;
+    const linear = identityMatrix(3) - 2 * transpose(normalMatrix) * normalMatrix;
     return transform(linear, plane.origin - linear * plane.origin);
 }
 
+/**
+ * TODO: description
+ * @param p1
+ * @param p2
+ */
 export function intersection(p1 is Plane, p2 is Plane) // Returns Line or undefined if there's no good intersection
 {
     var direction = cross(p1.normal, p2.normal);
     if (norm(direction) < TOLERANCE.zeroAngle)
         return;
     direction = normalize(direction);
-    var rhs = vector(dot(p1.normal, p1.origin), dot(p2.normal, p2.origin),
+    const rhs = vector(dot(p1.normal, p1.origin), dot(p2.normal, p2.origin),
         dot(direction, 0.5 * (p1.origin + p2.origin)));
-    var point = inverse([p1.normal, p2.normal, direction] as Matrix) * rhs;
+    const point = inverse([p1.normal, p2.normal, direction] as Matrix) * rhs;
     return line(point, direction);
 }
 
+/**
+ * TODO: description
+ */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
 
 predicate canBeLinePlaneIntersection(value)
@@ -134,7 +178,7 @@ predicate canBeLinePlaneIntersection(value)
 
 export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersection or undefined
 {
-    var dotPr = dot(p.normal, l.direction);
+    const dotPr = dot(p.normal, l.direction);
     if (abs(dotPr) < TOLERANCE.zeroAngle)
     {
         if (samePoint(l.origin, project(p, l.origin)))
@@ -142,12 +186,15 @@ export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersec
         else
             return { 'dim' : -1 } as LinePlaneIntersection; //line is parallel to plane
     }
-    var t = dot(p.origin - l.origin, p.normal) / dotPr;
+    const t = dot(p.origin - l.origin, p.normal) / dotPr;
     return { 'dim' : 0, 'intersection' : l.origin + t * l.direction } as LinePlaneIntersection;
 }
 
 // ===================================== Cone ======================================
 
+/**
+ * TODO: description
+ */
 export type Cone typecheck canBeCone;
 
 export predicate canBeCone(value)
@@ -157,11 +204,22 @@ export predicate canBeCone(value)
     isAngle(value.halfAngle);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ * @param halfAngle
+ */
 export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns Cone
 {
     return { "coordSystem" : cSys, "halfAngle" : halfAngle } as Cone;
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function coneFromBuiltin(definition is map) returns Cone
 {
     return cone(coordSystemFromBuiltin(definition.coordSystem), definition.halfAngle * radian);
@@ -169,12 +227,14 @@ export function coneFromBuiltin(definition is map) returns Cone
 
 export function toString(value is Cone) returns string
 {
-    var str = "half angle" ~ toString(value.halfAngle) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
-    return str;
+    return "half angle" ~ toString(value.halfAngle) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
 }
 
 // ===================================== Cylinder ======================================
 
+/**
+ * TODO: description
+ */
 export type Cylinder typecheck canBeCylinder;
 
 export predicate canBeCylinder(value)
@@ -184,11 +244,22 @@ export predicate canBeCylinder(value)
     isLength(value.radius);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ * @param radius
+ */
 export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns Cylinder
 {
     return { "coordSystem" : cSys, "radius" : radius } as Cylinder;
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function cylinderFromBuiltin(definition is map) returns Cylinder
 {
     return cylinder(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
@@ -196,12 +267,14 @@ export function cylinderFromBuiltin(definition is map) returns Cylinder
 
 export function toString(value is Cylinder) returns string
 {
-    var str = "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
-    return str;
+    return "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
 }
 
 // ===================================== Torus ======================================
 
+/**
+ * TODO: description
+ */
 export type Torus typecheck canBeTorus;
 
 export predicate canBeTorus(value)
@@ -212,11 +285,23 @@ export predicate canBeTorus(value)
     isLength(value.minorRadius);
 }
 
+/**
+ * TODO: description
+ * @param cSys
+ * @param minorRadius
+ * @param radius
+ */
 export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius is ValueWithUnits) returns Torus
 {
     return { "coordSystem" : cSys, "minorRadius" : minorRadius, "radius" : radius } as Torus;
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function torusFromBuiltin(definition is map) returns Torus
 {
     return torus(coordSystemFromBuiltin(definition.coordSystem), definition.minorRadius * meter, definition.radius * meter);
@@ -224,12 +309,14 @@ export function torusFromBuiltin(definition is map) returns Torus
 
 export function toString(value is Torus) returns string
 {
-    var str = "radius" ~ toString(value.radius) ~ "\n" ~ "minor radius" ~ toString(value.minorRadius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
-    return str;
+    return "radius" ~ toString(value.radius) ~ "\n" ~ "minor radius" ~ toString(value.minorRadius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
 }
 
 // ===================================== Sphere ======================================
 
+/**
+ * TODO: description
+ */
 export type Sphere typecheck canBeSphere;
 
 export predicate canBeSphere(value)
@@ -244,6 +331,12 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
     return { "coordSystem" : cSys, "radius" : radius } as Sphere;
 }
 
+/**
+ * TODO: description
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function sphereFromBuiltin(definition is map) returns Sphere
 {
     return sphere(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
@@ -251,7 +344,6 @@ export function sphereFromBuiltin(definition is map) returns Sphere
 
 export function toString(value is Sphere) returns string
 {
-    var str = "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
-    return str;
+    return "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
 }
 

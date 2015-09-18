@@ -10,7 +10,9 @@ export enum SketchToolType
     OFFSET,
     USE,
     TRIM,
-    PATTERN
+    PATTERN,
+    SLOT,
+    SPLIT
 }
 
 
