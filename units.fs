@@ -1,11 +1,11 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 
-//4 * inch is how four inches are expressed
-
 /**
- * TODO: description
+ * For Onshape internal use only.
+ * A `UnitSpec` is a fundamental dimension like length and time.
+ * Angle is treated as a dimension although formally it is dimensionless.
  */
 export type UnitSpec typecheck canBeUnitSpec;
 
@@ -48,7 +48,19 @@ annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
 
 /**
- * TODO: description
+ * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
+ * 90 degrees, or 9.81 meters per second per second.
+ *
+ * Values can be multiplied and divided.   The preceding values are
+ * `1 * kilogram`, `90 * degree`, and `9.81 * meter / second / second`.
+ *
+ * Values with the same units can be added and subtracted.
+ * Square root works if the units appear as even powers, as
+ * in `sqrt(4 * meter * meter)`.
+ *
+ * Equality considers the underlying value, so 25.4 millimeters is the
+ * same as 1 inch.  (But `PI * radian` may not equal `180 * degree`
+ * because of finite precision arithmetic.)
  */
 export type ValueWithUnits typecheck canBeValueWithUnits;
 
@@ -134,6 +146,11 @@ export operator*(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
     return lhs;
 }
 
+/**
+ * Multiplication of two `ValueWithUnits` normally returns a `ValueWithUnits`.
+ * Multiplying two lengths returns an area.  As a special case, if the product
+ * is unitless the result is a scalar `number`.
+ */
 export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return ValueWithUnits or number
 {
     var newUnit = lhs.unit;
@@ -210,6 +227,9 @@ precondition
     return lhs;
 }
 
+/**
+ * Square root
+ */
 export function sqrt(value is ValueWithUnits) returns ValueWithUnits
 precondition
 {
@@ -224,8 +244,7 @@ precondition
 }
 
 /**
- * TODO: description
- * @param value
+ * Sine
  */
 export function sin(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -234,8 +253,7 @@ precondition isAngle(value);
 }
 
 /**
- * TODO: description
- * @param value
+ * Cosine
  */
 export function cos(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -244,8 +262,7 @@ precondition isAngle(value);
 }
 
 /**
- * TODO: description
- * @param value
+ * Tangent
  */
 export function tan(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -254,7 +271,7 @@ precondition isAngle(value);
 }
 
 /**
- * TODO: description
+ * Arcsine (inverse sine)
  * @param value
  */
 export function asin(value is number) returns ValueWithUnits
@@ -263,7 +280,7 @@ export function asin(value is number) returns ValueWithUnits
 }
 
 /**
- * TODO: description
+ * Arccosine (inverse cosine)
  * @param value
  */
 export function acos(value is number) returns ValueWithUnits
@@ -272,8 +289,7 @@ export function acos(value is number) returns ValueWithUnits
 }
 
 /**
- * TODO: description
- * @param value
+ * Arctangent (inverse tangent)
  */
 export function atan(value is number) returns ValueWithUnits
 {
@@ -281,21 +297,29 @@ export function atan(value is number) returns ValueWithUnits
 }
 
 /**
- * TODO: description
- * @param value1
- * @param value2
+ * `atan2(y, x)` returns the counterclockwise angle from [0, 1] to [x, y].
+ * The angle is negative if y is negative.  This is equivalent to `atan(y/x)`
+ * except the result respects the quadrant of the input and is well-behaved
+ * near x == 0.
  */
-export function atan2(value1 is number, value2 is number) returns ValueWithUnits
+export function atan2(y is number, x is number) returns ValueWithUnits
 {
-    return @atan2(value1, value2) * radian;
+    return @atan2(y, x) * radian;
 }
 
+/**
+ * `atan2(y, x)` returns the inverse tangent of `(y/x)`, using the
+ * signs of its argument to choose a quadrant for the result.
+ */
 export function atan2(value1 is ValueWithUnits, value2 is ValueWithUnits) returns ValueWithUnits
 precondition value1.units == value2.units;
 {
     return @atan2(value1.value, value2.value) * radian;
 }
 
+/**
+ * General value to string conversion.
+ */
 export function toString(value is ValueWithUnits) returns string
 {
     var result = value.value ~ "";
@@ -308,8 +332,14 @@ export function toString(value is ValueWithUnits) returns string
     return result;
 }
 
-//The strip units overloads get rid of units recursively.
-//The result is also stripped of type tags, thus it should not be passed to BelScript - only to built-in functions.
+/**
+ * For Onshape internal use.
+ *
+ * `stripUnits` removes all units from a `ValueWithUnits` leaving only
+ * the underlying numeric value in Onshape internal units.  If the argument
+ * is a container, units are stripped recursively from contents.
+ * Resulting values are meant for use in builtin functions.
+ */
 export function stripUnits(value)
 {
     return value;

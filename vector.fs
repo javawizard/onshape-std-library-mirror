@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 //Vector math
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
@@ -7,7 +7,12 @@ import(path : "onshape/std/matrix.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
 
 /**
- * TODO: description
+ * A `Vector` is a non-empty array.  It should contain numbers or lengths.
+ *
+ * Operators `+`, `-`, `*`, and `/` are overloaded for vectors,
+ * and other operations such as dot product are available.
+ * If a vector does not contain numbers or lengths operations
+ * that assume number-like properties may fail.
  */
 export type Vector typecheck canBeVector;
 
@@ -18,19 +23,28 @@ export predicate canBeVector(value)
 }
 
 /**
- * TODO: description
- * @param value
+ * Make a Vector from an array.
  */
 export function vector(value is array) returns Vector
+precondition
+{
+    @size(value) > 0;
+}
 {
     return value as Vector;
 }
 
+/**
+ * Construct a 2-dimensional vector.
+ */
 export function vector(x, y) returns Vector
 {
     return [x, y] as Vector;
 }
 
+/**
+ * Construct a 3-dimensional vector.
+ */
 export function vector(x, y, z) returns Vector
 {
     return [x, y, z] as Vector;
@@ -39,19 +53,28 @@ export function vector(x, y, z) returns Vector
 export predicate isLengthVector(value)
 {
     value is Vector;
-    for (var i = 0; i < @size(value); i += 1)
-    {
-        isLength(value[i]);
-    }
+    for (var v in value)
+        isLength(v);
 }
 
 export predicate isUnitlessVector(value)
 {
     value is Vector;
-    for (var i = 0; i < @size(value); i += 1)
-    {
-        value[i] is number;
-    }
+    for (var v in value)
+        v is number;
+}
+
+export predicate is2dPoint(value)
+{
+    isLengthVector(value);
+    size(value) == 2;
+}
+
+export predicate is2dPointVector(value)
+{
+   value is array;
+   for (var point in value)
+        is2dPoint(point);
 }
 
 export predicate is3dLengthVector(value)
@@ -68,8 +91,8 @@ export predicate is3dDirection(value)
 }
 
 /**
- * TODO: description
- * @param size
+ * Make an array filled with 0.
+ * @example `zeroVector(3)` is equivalent to `vector(0, 0, 0)`
  */
 export function zeroVector(size is number) returns Vector
 precondition
@@ -80,11 +103,18 @@ precondition
     return makeArray(size, 0) as Vector;
 }
 
+/**
+ * Return the squared length of a vector.
+ * This is slightly faster to calculate than the length.
+ */
 export function squaredNorm(vector is Vector)
 {
     return dot(vector, vector);
 }
 
+/**
+ * Return the length (norm) of a vector.
+ */
 export function norm(vector is Vector)
 {
     return sqrt(squaredNorm(vector));
@@ -126,9 +156,7 @@ export operator-(vector is Vector) returns Vector
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
+ * Return the dot product of two vectors.
  */
 export function dot(vector1 is Vector, vector2 is Vector)
 precondition
@@ -145,9 +173,7 @@ precondition
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
+ * Return the cross product of two 3-dimensional vectors.
  */
 export function cross(vector1 is Vector, vector2 is Vector) returns Vector
 precondition
@@ -163,9 +189,7 @@ precondition
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
+ * Return the angle between two 3-dimensional vectors.
  */
 export function angleBetween(vector1 is Vector, vector2 is Vector)
 precondition
@@ -178,8 +202,8 @@ precondition
 }
 
 /**
- * TODO: description
- * @param vector
+ * Returns the (unitless) result of normalizing vector. Throws if the input is zero-length.
+ * @param vector : A Vector with any units.
  */
 export function normalize(vector is Vector) returns Vector
 {
@@ -245,8 +269,9 @@ export function project(vector1 is Vector, vector2 is Vector) returns Vector
 }
 
 /**
- * TODO: description
- * @param vec
+ * Return a vector perpendicular to the given vector.
+ * The choice of which perpendicular vector to return
+ * is arbitrary but consistent for the same input.
  */
 export function perpendicularVector(vec is Vector) returns Vector
 precondition @size(vec) == 3;
@@ -274,6 +299,10 @@ precondition @size(vec) == 3;
     return normalize(cross(different, vec));
 }
 
+/**
+ * Construct a 3D rotation matrix that represents the minimum rotation that takes the normalized `from` vector to the
+ * normalized `to` vector. The inputs may have any units.
+ */
 export function rotationMatrix3d(from is Vector, to is Vector) returns Matrix
 precondition
 {
@@ -291,17 +320,26 @@ precondition
         else
         {
             const perp = perpendicularVector(from);
-            return rotationMatrix3d(perp, PI);
+            return rotationMatrix3d(perp, PI * radian);
         }
     }
-    return rotationMatrix3d(axis, @atan2(norm(axis), dot(from, to)));
+    return rotationMatrix3d(axis, atan2(norm(axis), dot(from, to)));
+}
+
+// This lives here because we can see definitions of both ValueWithUnits and Matrix.
+/**
+ * Construct a 3D matrix representing a councerclockwise rotation
+ * around the given axis by the given rotation angle.
+ */
+export function rotationMatrix3d(axis is array, angle is ValueWithUnits) returns Matrix
+precondition size(axis) == 3;
+{
+    return @matrixRotation3d(axis, angle.value) as Matrix;
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
- * @param vector3
+ * Return the scalar triple product, a dot b cross c, of
+ * three 3-dimensional vectors.
  */
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
 precondition
@@ -327,9 +365,7 @@ export function toString(value is Vector) returns string
 }
 
 /**
- * TODO: description
- * @param point1
- * @param point2
+ * Return true if two vectors designate the same point (within tolerance).
  */
 export function samePoint(point1 is Vector, point2 is Vector) returns boolean
 {
@@ -337,9 +373,7 @@ export function samePoint(point1 is Vector, point2 is Vector) returns boolean
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
+ * Return true if two vectors are parallel (within tolerance).
  */
 export function parallelVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
@@ -349,9 +383,7 @@ export function parallelVectors(vector1 is Vector, vector2 is Vector) returns bo
 }
 
 /**
- * TODO: description
- * @param vector1
- * @param vector2
+ * Return true if two vectors are perpendicular (within tolerance).
  */
 export function perpendicularVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {

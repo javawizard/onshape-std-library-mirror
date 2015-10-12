@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
@@ -16,7 +16,6 @@ import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
  * TODO: description
- * @param context
  * @param id : @eg `id + TODO`
  * @param definition {{
  *      @field TODO
@@ -253,11 +252,10 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  *
  * Arguments:
  * @param id : identifier of the main feature
- * @param tools : query to be used for the tools
  * @param definition {map} : @see `subfeatureToolsTargets#definition` definition specifying how to contruct tools and targets
  *                           on subfeatureToolsTargets.
- * @param reconstructOp {function(Id)}: reconstructs the input to show to the user as error geometry
- *                                      in case the input is problematic or the boolean itself fails.
+ * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
+ *      in case the input is problematic or the boolean itself fails.
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {

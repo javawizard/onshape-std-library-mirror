@@ -1,10 +1,8 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/math.fs", version : "");
 
 /**
- * TODO: description
- * @param value
- * @param container
+ * Return true if an array contains the given value, using `==` for comparison.
  */
 export function isIn(value, container is array) returns boolean
 {
@@ -16,13 +14,10 @@ export function isIn(value, container is array) returns boolean
     return false;
 }
 
-/* Unused -- needs a test */
 /**
- * TODO: description
- * @param value
- * @param container {{
- *      @field TODO
- * }}
+ * Return true if a given value appears as the value of a map entry.
+ * @example `isValueIn(true, { a : true, b : 0 })` returns true
+ * @example `isValueIn('b', { a : true, b : 0 })` returns false
  */
 export function isValueIn(value, container is map) returns boolean
 {
@@ -35,8 +30,8 @@ export function isValueIn(value, container is map) returns boolean
 }
 
 /**
- * TODO: description
- * @param size
+ * Create a new array with a given size.  If no fill value is provided,
+ * the array is filled with `undefined`.
  */
 export function makeArray(size is number) returns array
 precondition isNonNegativeInteger(size);
@@ -50,6 +45,11 @@ precondition isNonNegativeInteger(size);
     return @resize([], size, fillValue);
 }
 
+/**
+ * Build a new array by applying a constructor function to each
+ * element of the source array.
+ * @example `mapArray([0, 1], function(x) { return -x; })` returns `[0, -1]`
+ */
 export function mapArray(a is array, constructor is function) returns array
 {
     const size = @size(a);
@@ -60,8 +60,9 @@ export function mapArray(a is array, constructor is function) returns array
 }
 
 /**
- * TODO: description
- * @param container
+ * Return the size of a container.  This counts only direct children;
+ * it does not recursively examine containers inside.
+ * @example `size([1, [2]])` returns 2
  */
 export function size(container is array) returns number
 {
@@ -74,26 +75,24 @@ export function size(container is map) returns number
 }
 
 /**
- * TODO: description
- * @param arr
- * @param newSize
+ * Return a copy of an array with size changed to `newSize`.
+ * If the new size is larger than the original size, the extra values
+ * are set to `newValue`.  If `newValue` is omitted, `undefined` is used.
  */
-export function resize(arr is array, newSize is number) returns array
-precondition isNonNegativeInteger(newSize);
-{
-    return @resize(arr, newSize);
-}
-
 export function resize(arr is array, newSize is number, newValue) returns array
 precondition isNonNegativeInteger(newSize);
 {
     return @resize(arr, newSize, newValue);
 }
 
+export function resize(arr is array, newSize is number) returns array
+precondition isNonNegativeInteger(newSize);
+{
+    return @resize(arr, newSize);
+}
+
 /**
- * TODO: description
- * @param arr
- * @param newValue
+ * Add a new value onto the end of an array, increasing size by one.
  */
 export function append(arr is array, newValue) returns array
 {
@@ -101,8 +100,8 @@ export function append(arr is array, newValue) returns array
 }
 
 /**
- * TODO: description
- * @param arr
+ * Given an array of arrays, concatenate the contents of the inner arrays.
+ * @example `concatenateArrays([[], [1], [], [undefined, 2], [3], [])`
  */
 export function concatenateArrays(arr is array) returns array
 precondition
@@ -131,22 +130,21 @@ precondition
 }
 
 /**
- * TODO: description
- * @param map1 {{
- *      @field TODO
- * }}
- * @param map2 {{
- *      @field TODO
- * }}
+ * Given two maps, use the first map to provide default values for the second.
+ * More formally, add each key-value pair in the second map to the first and
+ * return the result.  Since later-added entries take precedence, nothing from
+ * the second map will be lost.
+ * @example `mergeMaps({}, x)` returns (a copy of) its second argument
+ * @example `mergemaps({a:0}, {a:1})` returns `{a:1}`
+ * @example `mergemaps({a:0}, {b:1})` returns `{a:1, b:1}`
  */
-export function mergeMaps(map1 is map, map2 is map) returns map
+export function mergeMaps(defaults is map, m is map) returns map
 {
-    return @mergeMaps(map1, map2);
+    return @mergeMaps(defaults, m);
 }
 
 /**
- * TODO: description
- * @param arr
+ * Return a copy of an array with elements in reverse order.
  */
 export function reverse(arr is array) returns array
 {
@@ -159,22 +157,10 @@ export function reverse(arr is array) returns array
     return out;
 }
 
-/* mapLookup is a hopefully temporary function.
-
-   mapLookup(a, ["b","c","d","e"])
-
-   is the same as
-
-   try (a.b.c.d.e)
-
-   except it does not log a warning.
- */
 /**
- * TODO: description
- * @param m {{
- *      @field TODO
- * }}
- * @param keys
+ * For Onshape internal use.  Not needed in user code.
+ * `mapLookup(a, ["b","c","d","e"])` is the same as `try (a.b.c.d.e)`
+ * except it does not log a warning when used in the standard library.
  */
 export function mapLookup(m is map, keys is array)
 {
@@ -188,18 +174,11 @@ export function mapLookup(m is map, keys is array)
     return result;
 }
 
-/*
- Merge Sort
-
- compareFunction(a, b) takes two entities, and returns
-    -1 if a is before b
-    0  if a == b
-    1  if a is after b
-*/
 /**
- * TODO: description
- * @param entities
- * @param compareFunction
+ * Return a sorted copy of an array.  (Currently implemented with merge sort.)
+ * @param compareFunction : a function that takes two values and returns
+ * negative if the first is before the second, 0 if the two are equal,
+ * and positive if the second is before the first.
  */
 export function sort(entities is array, compareFunction is function)
 {
@@ -248,26 +227,25 @@ export function sort(entities is array, compareFunction is function)
     return result[t];
 }
 
-/*
- Filter
-
- filterFunction(a) takes one entity.
- It returns true to keep the entity; otherwise false.
- */
 /**
- * TODO: description
+ * Return the members of an array matching a predicate function.
+ * The result is an array containing only elements for which the
+ * function returns true.  Order is preserved.
+ *
+ * Throws exception if an array element violates an `is` constraint
+ * of the function or if the function does not return `boolean`.
  * @param entities
- * @param filterFunction
+ * @param filterFunction : A function taking one argument (a member
+ *                         of the input array) and returning `boolean`.
  */
 export function filter(entities is array, filterFunction is function)
 {
     var result = [];
-    const totalSize is number = size(entities);
-    for (var i = 0; i < totalSize; i += 1)
+    for (var entity in entities)
     {
-        if (filterFunction(entities[i]))
+        if (filterFunction(entity))
         {
-            result = append(result, entities[i]);
+            result = append(result, entity);
         }
     }
     return result;

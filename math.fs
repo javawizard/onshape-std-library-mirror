@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 //wrappers around mathematical builtin functions and some constants
 
 export const PI = 3.1415926535897932384626433832795;
@@ -9,37 +9,25 @@ export const TOLERANCE =
     "zeroLength" : 1e-8
 };
 
-/**
- * TODO: description
- * @param value
- */
+/** Absolute value */
 export function abs(value)
 {
     return value < 0 ? -value : value;
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Square root */
 export function sqrt(value is number)
 {
     return @sqrt(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Natural logarithm */
 export function log(value is number)
 {
     return @log(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Base 10 logarithm */
 export function log10(value is number)
 {
     return @log10(value);
@@ -48,163 +36,105 @@ export function log10(value is number)
 // sin, cos, tan, asin, acos, atan, atan2  are in units.fs to deal with angular units properly
 // corresponding builtin functions (@sin etc) can be used to bypass the units.
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic sine */
 export function sinh(value is number)
 {
     return @sinh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic cosine */
 export function cosh(value is number)
 {
     return @cosh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic tangent */
 export function tanh(value is number)
 {
     return @tanh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic arcsine (inverse cosine) */
 export function asinh(value is number)
 {
     return @asinh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic arccosine (inverse cosine) */
 export function acosh(value is number)
 {
     return @acosh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Hyperbolic arctangent (inverse tangent) */
 export function atanh(value is number)
 {
     return @atanh(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Exponentiation, e^x */
 export function exp(value is number)
 {
     return @exp(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Exponentiation, 2^x */
 export function exp2(value is number)
 {
     return @exp2(value);
 }
 
-/**
- * TODO: description
- * @param value1
- * @param value2
- */
-export function pow(value1 is number, value2 is number)
+/** First argument raised to power of second, x^y */
+export function pow(base is number, exponent is number)
 {
-    return @pow(value1, value2);
+    return @pow(base, exponent);
 }
 
 /**
- * TODO: description
- * @param a
- * @param b
+ * Hypotenuse function, `hypot(x, y) == sqrt(x^2 + y^2)` but without any
+ * surprising results due to finite numeric precision.
  */
 export function hypot(a is number, b is number)
 {
     return @hypot(a, b);
 }
 
-/**
- * TODO: description
- * @param value
- */
-export function degreesToRadians(value is number)
-{
-    return (value * (PI / 180));
-}
-
-/**
- * TODO: description
- * @param value
- */
-export function radiansToDegrees(value is number)
-{
-    return (value * (180 / PI));
-}
-
-/**
- * TODO: description
- * @param value
- */
+/** Round a number down to the nearest integer. */
 export function floor(value is number)
 {
     return @floor(value);
 }
 
-/**
- * TODO: description
- * @param value
- */
+/** Round a number up to the nearest integer. */
 export function ceil(value is number)
 {
     return @ceil(value);
 }
 
 /**
- * TODO: description
- * @param value
+ * Round a number to the nearest integer. x.5 always rounds up to (x+1).
  */
 export function round(value is number)
 {
     return @floor(value + 0.5);
 }
 
-/**
- * TODO: description
- * @param value1
- * @param value2
- */
+/** Return the lesser of two values, which must be comparable with `<`. */
 export function min(value1, value2)
 {
     return (value1 < value2) ? value1 : value2;
 }
 
-/**
- * TODO: description
- * @param value1
- * @param value2
- */
+/** Return the greater of two values, which must be comparable with `<`. */
 export function max(value1, value2)
 {
     return (value1 < value2) ? value2 : value1;
 }
 
+/**
+ * Return the least of an array of values, as determined by operator `<`,
+ * or undefined if the array is empty.
+ */
 export function min(arr is array)
 {
     var minVal = undefined;
@@ -218,6 +148,10 @@ export function min(arr is array)
     return minVal;
 }
 
+/**
+ * Return the greatest of an array of values, as determined by operator `<`,
+ * or undefined if the array is empty.
+ */
 export function max(arr is array)
 {
     var maxVal = undefined;
@@ -232,8 +166,8 @@ export function max(arr is array)
 }
 
 /**
- * TODO: description
- * @param arr
+ * Return the index of the smallest element of an array, as determined
+ * by operator `<`, or undefined if the array is empty.
  */
 export function argMin(arr is array)
 {
@@ -251,8 +185,8 @@ export function argMin(arr is array)
 }
 
 /**
- * TODO: description
- * @param arr
+ * Return the index of the largest element of an array, as determined
+ * by the `>` operator, or undefined if the array is empty.
  */
 export function argMax(arr is array)
 {
@@ -270,15 +204,21 @@ export function argMax(arr is array)
 }
 
 /**
- * TODO: description
- * @param from
- * @param to
+ * Return an array of numbers (normally integers) in a range.
  */
 export function range(from is number, to is number)
 {
     return range(from, (to < from) ? -1 : 1, to);
 }
 
+/**
+ * Return an array of numbers, or other values that behave like
+ * numbers when added (`operator +`), subtracted (`operator -`),
+ * and divided (`operator /`), in a range.  If the difference between
+ * bounds is a multiple of step size, the upper bound is included.
+ * `range(0, 2, 10) == [0, 2, 4, 6, 8, 10]`
+ * `range(0, 1.5, 5) == [0, 1.5, 3, 4.5]`
+ */
 export function range(from, step, to)
 precondition
 {
@@ -298,10 +238,9 @@ precondition
 }
 
 /**
- * TODO: description
- * @param value
- * @param lowerBound
- * @param higherBound
+ * Force a value into a range, @example `clamp(-1, 0, 20)` returns `0`,
+ * @example `clamp(10, 0, 20)` returns `10`, and
+ * @example `clamp(30, 0, 20)` returns `20`.
  */
 export function clamp(value, lowerBound, higherBound)
 precondition
@@ -320,12 +259,15 @@ export predicate isInteger(value)
 {
     value is number;
     @floor(value) == value;
+    value < inf;
+    value > -inf;
 }
 
 export predicate isNonNegativeInteger(value)
 {
     value is number;
     value >= 0;
+    value < inf;
     @floor(value) == value;
 }
 
@@ -333,6 +275,7 @@ export predicate isPositiveInteger(value)
 {
     value is number;
     value > 0;
+    value < inf;
     @floor(value) == value;
 }
 

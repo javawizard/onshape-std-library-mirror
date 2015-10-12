@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -18,7 +18,7 @@ annotation { "Feature Type Name" : "Split part", "Filter Selector" : "allparts" 
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Parts to split", "Filter" : EntityType.BODY && BodyType.SOLID }
+        annotation { "Name" : "Parts or surfaces to split", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) }
         definition.targets is Query;
 
         annotation { "Name" : "Entity to split with",

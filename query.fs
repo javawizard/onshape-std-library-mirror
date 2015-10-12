@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 /**
  * Functions for constructing queries.
  * Features that take queries as inputs should re-export this module.
@@ -20,6 +20,7 @@ FeatureScript 225; /* Automatically generated version */
  * The order of entities referenced by a query is unspecified (though of course deterministic) except in the case of a
  * `qUnion` query: in that case the entities matched by earlier queries in the argument to `qUnion` are returned first.
  */
+
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/context.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -125,7 +126,9 @@ export enum BodyType
     SOLID,
     SHEET,
     WIRE,
-    POINT
+    POINT,
+    // MATE_CONNECTOR body type is for filtering selections only
+    MATE_CONNECTOR
 }
 
 /**
@@ -181,8 +184,10 @@ export enum QueryFilterCompound
  * @see `evaluateQuery` to find geometry matching a Query in a given context, returning a list of Queries, each representing
  * an individual geometric entity
  *
- * @field queryType {QueryType}
- * @field entityType {EntityType} : @optional
+ * @value {{
+ *      @field queryType {QueryType}
+ *      @field entityType {EntityType} : @optional
+ * }}
  */
 export type Query typecheck canBeQuery;
 
@@ -238,7 +243,7 @@ export function qEverything() returns Query
 
 /**
  * A query for all geometry of a specified EntityType
- * @param entityType <EntityType>:
+ * @param entityType {EntityType}:
  *      @eg `EntityType.BODY`
  */
 export function qEverything(entityType is EntityType) returns Query
@@ -248,7 +253,7 @@ export function qEverything(entityType is EntityType) returns Query
 
 /**
  * A query for an element in a sub-query at a specified index
- * @param subQuery {Query}
+ * @param subquery {Query}
  * @param n {number}: zero-based index of element in subquery.
  *      @eg `0`  indicates the first element
  *      @eg `-1` indicates the last element
@@ -786,7 +791,7 @@ export type TransientId typecheck canBeTransientId;
 
 export predicate canBeTransientId(value)
 {
-    value is builtin;
+    @isTransientId(value); /* implies (value is builtin) */
 }
 
 export function toString(value is TransientId)

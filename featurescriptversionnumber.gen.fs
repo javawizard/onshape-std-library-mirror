@@ -1,4 +1,4 @@
-FeatureScript 146;
+FeatureScript 236; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum FeatureScriptVersionNumber
@@ -224,9 +224,16 @@ export enum FeatureScriptVersionNumber
     V222_REMOVE_LOFT_INFO,
     V223_CHANGE_VARIABLE_NAME_TEMPLATE,
     V224_VERSION_BUMP,
-    V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC
+    V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC,
+    V230_LARGE_ASSEMBLY_IMPORT_FIX,
+    V231_SURFACE_SPLIT,
+    V232_SKETCH_IMAGE_WITH_BLOB,
+    V233_FS_EV_CURVE_DEFINITION,
+    V234_REVOLVE_TWO_DIRECTION,
+    V235_TRANSFORM_BY_MATE_CONNECTORS,
+    V236_DEFAULT_MAX_ASSEMBLIES
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V225_HOLE_FEATURE_FIX_BROKEN_DEPTH_CALC;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V236_DEFAULT_MAX_ASSEMBLIES;
 
 

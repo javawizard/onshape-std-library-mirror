@@ -1,9 +1,8 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
 import(path : "onshape/std/box.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");

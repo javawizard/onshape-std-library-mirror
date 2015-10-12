@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
@@ -27,7 +27,7 @@ export type Context typecheck canBeContext;
 
 export predicate canBeContext(value)
 {
-    value is builtin;
+    @isContext(value); /* implies (value is builtin) */
 }
 
 /**

@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/mathUtils.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 
@@ -28,10 +28,8 @@ export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) 
 }
 
 /**
- * TODO: description
- * @param cSys {{
- *      @field TODO
- * }}
+ * Create a CoordSystem from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 {

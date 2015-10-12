@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/boundingtype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
@@ -474,12 +474,12 @@ function getEntitiesToUse(context is Context, definition is map)
 
 function computeExtrudeAxis(context is Context, entity is Query)
 {
-    try
+    var planes = evaluateQuery(context, qGeometry(entity, GeometryType.PLANE));
+    if (size(planes) == 1)
     {
         const entityPlane = evPlane(context, { "face" : entity });
         return line(entityPlane.origin, entityPlane.normal);
     }
-
     //The extrude axis should start in the middle of the edge and point in the sketch plane normal
     const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
     const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
@@ -649,10 +649,19 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
     var direction = extrudeAxis.direction;
     if (featureDefinition.oppositeDirection == true)
         direction *= -1;
-    if (featureDefinition.endBoundEntity is Query &&
+    var endBoundEntity;
+    if (featureDefinition.endBound == BoundingType.UP_TO_SURFACE)
+    {
+        endBoundEntity = featureDefinition.endBoundEntityFace;
+    }
+    else if (featureDefinition.endBound == BoundingType.UP_TO_BODY)
+    {
+        endBoundEntity = featureDefinition.endBoundEntityBody;
+    }
+    if (endBoundEntity is Query &&
         shouldFlipExtrudeDirection(context,
                                    featureDefinition.endBound,
-                                   featureDefinition.endBoundEntity,
+                                   endBoundEntity,
                                    line(extrudeAxis.origin, direction)))
     {
         featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;

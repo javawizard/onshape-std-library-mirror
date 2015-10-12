@@ -1,5 +1,14 @@
-FeatureScript 225; /* Automatically generated version */
-/* Onshape standard library utilities */
+FeatureScript 236; /* Automatically generated version */
+/**
+ * This module makes all Onshape standard library features and functions
+ * available.
+ *
+ * Generated Feature Studios begin with an import of this module,
+ * ```export import(path : "onshape/std/geometry.fs", version : "");```
+ * (with current version inserted) for user convenience.  The module
+ * does not provide any features or functions not also available by
+ * explicitly importing other modules.
+ */
 /* Features! */
 export import(path : "onshape/std/context.fs", version : "");
 export import(path : "onshape/std/defaultFeatures.fs", version : "");

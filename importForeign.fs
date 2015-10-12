@@ -1,5 +1,6 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
  * TODO: description
@@ -32,8 +33,11 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         annotation {"Name" : "Flatten assembly"}
         definition.flatten is boolean;
+
+        annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
+        isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
     }
     {
         opImportForeign(context, id, definition);
-    }, { yAxisIsUp : false, flatten : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10});
 

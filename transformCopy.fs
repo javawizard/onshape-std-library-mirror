@@ -1,5 +1,6 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
 
 // Features using manipulators must export these.
@@ -9,6 +10,7 @@ export import(path : "onshape/std/tool.fs", version : "");
 // Imports used internally
 import(path : "onshape/std/box.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/coordSystem.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -27,6 +29,8 @@ export enum TransformType
     TRANSLATION_DISTANCE,
     annotation { "Name" : "Translate by XYZ" }
     TRANSLATION_3D,
+    annotation { "Name" : "Transform by mate connectors" }
+    TRANSFORM_MATE_CONNECTORS,
     annotation { "Name" : "Rotate" }
     ROTATION,
     annotation { "Name" : "Copy in place" }
@@ -73,94 +77,115 @@ annotation { "Feature Type Name" : "Transform",
              "Manipulator Change Function" : "transformManipulatorChange",
              "Filter Selector" : "allparts" }
 export function transform(context is Context, id is Id, definition is map)
-precondition
-{
-    annotation { "Name" : "Parts to transform or copy",
-                 "Filter" : EntityType.BODY }
-    definition.entities is Query;
-
-    annotation { "Name" : "Transform type" }
-    definition.transformType is TransformType;
-
-    if (definition.transformType == TransformType.TRANSLATION_ENTITY)
-    {
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        definition.oppositeDirectionEntity is boolean;
-    }
-
-    if (definition.transformType == TransformType.TRANSLATION_ENTITY)
-    {
-        annotation { "Name" : "Line or points",
-                     "Filter" : EntityType.VERTEX || EntityType.EDGE,
-                     "MaxNumberOfPicks" : 2 }
-        definition.transformLine is Query;
-    }
-    else if (definition.transformType == TransformType.ROTATION)
-    {
-        annotation { "Name" : "Axis",
-                     "Filter" : QueryFilterCompound.ALLOWS_AXIS,
-                     "MaxNumberOfPicks" : 1 }
-        definition.transformAxis is Query;
-    }
-    else if (definition.transformType == TransformType.TRANSLATION_DISTANCE)
-    {
-        annotation { "Name" : "Direction",
-                     "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
-                     "MaxNumberOfPicks" : 2 }
-        definition.transformDirection is Query;
-        annotation { "Name" : "Distance" }
-        isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
-    }
-    else if (definition.transformType == TransformType.SCALE_UNIFORMLY)
-    {
-        annotation { "Name" : "Scale" }
-        isReal(definition.scale, SCALE_BOUNDS);
-    }
-
-    if (definition.transformType == TransformType.ROTATION)
-    {
-        annotation { "Name" : "Angle" }
-        isAngle(definition.angle, ANGLE_360_BOUNDS);
-    }
-
-    if (definition.transformType == TransformType.ROTATION ||
-        definition.transformType == TransformType.TRANSLATION_DISTANCE)
-    {
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        definition.oppositeDirection is boolean;
-    }
-
-    if (definition.transformType == TransformType.TRANSLATION_3D)
-    {
-        annotation { "Name" : "X translation" }
-        isLength(definition.dx, ZERO_DEFAULT_LENGTH_BOUNDS);
-
-        annotation { "Name" : "Y translation" }
-        isLength(definition.dy, ZERO_DEFAULT_LENGTH_BOUNDS);
-
-        annotation { "Name" : "Z translation" }
-        isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
-    }
-
-    if (definition.transformType != TransformType.COPY)
-    {
-        annotation { "Name" : "Copy part" }
-        definition.makeCopy is boolean;
-    }
-
-    if (definition.transformType == TransformType.SCALE_UNIFORMLY)
-    {
-        annotation { "Name" : "Point",
-                     "Filter" : EntityType.VERTEX,
-                     "MaxNumberOfPicks" : 1 }
-        definition.scalePoint is Query;
-    }
-}
 {
     fTransform(context, id, definition);
 }
 
 const fTransform = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        annotation { "Name" : "Parts to transform or copy",
+                     "Filter" : EntityType.BODY }
+        definition.entities is Query;
+
+        annotation { "Name" : "Transform type" }
+        definition.transformType is TransformType;
+
+        if (definition.transformType == TransformType.TRANSLATION_ENTITY)
+        {
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirectionEntity is boolean;
+
+            annotation { "Name" : "Line or points",
+                         "Filter" : EntityType.VERTEX || EntityType.EDGE,
+                         "MaxNumberOfPicks" : 2 }
+            definition.transformLine is Query;
+        }
+        else if (definition.transformType == TransformType.ROTATION)
+        {
+            annotation { "Name" : "Axis",
+                         "Filter" : QueryFilterCompound.ALLOWS_AXIS,
+                         "MaxNumberOfPicks" : 1 }
+            definition.transformAxis is Query;
+        }
+        else if (definition.transformType == TransformType.TRANSLATION_DISTANCE)
+        {
+            annotation { "Name" : "Direction",
+                         "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
+                         "MaxNumberOfPicks" : 2 }
+            definition.transformDirection is Query;
+            annotation { "Name" : "Distance" }
+            isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
+        }
+        else if (definition.transformType == TransformType.SCALE_UNIFORMLY)
+        {
+            annotation { "Name" : "Scale" }
+            isReal(definition.scale, SCALE_BOUNDS);
+        }
+        else if (definition.transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
+        {
+            annotation { "Name" : "From mate connector",
+                         "Filter" : BodyType.MATE_CONNECTOR,
+                         "MaxNumberOfPicks" : 1 }
+            definition.baseConnector is Query;
+
+            annotation { "Name" : "To mate connector",
+                         "Filter" : BodyType.MATE_CONNECTOR,
+                         "MaxNumberOfPicks" : 1 }
+            definition.destinationConnector is Query;
+
+            if (definition.oppositeDirectionMateAxis != undefined)
+            {
+                annotation { "Name" : "Flip primary axis", "UIHint" : "PRIMARY_AXIS" }
+                definition.oppositeDirectionMateAxis is boolean;
+            }
+
+            if (definition.secondaryAxisType != undefined)
+            {
+                annotation { "Name" : "Reorient secondary axis", "UIHint" : "MATE_CONNECTOR_AXIS_TYPE", "Default" : MateConnectorAxisType.PLUS_X }
+                definition.secondaryAxisType is MateConnectorAxisType;
+            }
+        }
+
+        if (definition.transformType == TransformType.ROTATION)
+        {
+            annotation { "Name" : "Angle" }
+            isAngle(definition.angle, ANGLE_360_BOUNDS);
+        }
+
+        if (definition.transformType == TransformType.ROTATION ||
+            definition.transformType == TransformType.TRANSLATION_DISTANCE)
+        {
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirection is boolean;
+        }
+
+        if (definition.transformType == TransformType.TRANSLATION_3D)
+        {
+            annotation { "Name" : "X translation" }
+            isLength(definition.dx, ZERO_DEFAULT_LENGTH_BOUNDS);
+
+            annotation { "Name" : "Y translation" }
+            isLength(definition.dy, ZERO_DEFAULT_LENGTH_BOUNDS);
+
+            annotation { "Name" : "Z translation" }
+            isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
+        }
+
+        if (definition.transformType != TransformType.COPY)
+        {
+            annotation { "Name" : "Copy part" }
+            definition.makeCopy is boolean;
+        }
+
+        if (definition.transformType == TransformType.SCALE_UNIFORMLY)
+        {
+            annotation { "Name" : "Point",
+                         "Filter" : EntityType.VERTEX,
+                         "MaxNumberOfPicks" : 1 }
+            definition.scalePoint is Query;
+        }
+    }
     {
         //Start by figuring out the transform
         var transformMatrix = identityTransform();
@@ -280,6 +305,31 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
             const centerPoint = evVertexPoint(context, { "vertex" : definition.scalePoint });
             transformMatrix = transform(matrix, centerPoint - matrix * centerPoint);
+        }
+        else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
+        {
+            const c1 = evMateConnector(context, { "mateConnector" : definition.baseConnector });
+            const c2 = evMateConnector(context, { "mateConnector" : definition.destinationConnector });
+            var xAxis = c2.xAxis;
+            var zAxis = definition.oppositeDirectionMateAxis ? -c2.zAxis : c2.zAxis;
+            if (definition.secondaryAxisType != undefined)
+            {
+                if (definition.secondaryAxisType == MateConnectorAxisType.PLUS_Y)
+                {
+                    xAxis = cross(zAxis, xAxis);
+                }
+                else if (definition.secondaryAxisType == MateConnectorAxisType.MINUS_X)
+                {
+                    xAxis = -xAxis;
+                }
+                else if (definition.secondaryAxisType == MateConnectorAxisType.MINUS_Y)
+                {
+                    xAxis = -cross(zAxis, xAxis);
+                }
+            }
+            const A = toWorld(c1);
+            const B = toWorld(coordSystem(c2.origin, xAxis, zAxis));
+            transformMatrix = (B * inverse(A));
         }
 
         /* Reversal for rotation and 3D translation is handled above.

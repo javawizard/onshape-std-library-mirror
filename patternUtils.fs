@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Most patterns use these
 export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/containers.fs", version : "");
@@ -8,6 +8,13 @@ export import(path : "onshape/std/valueBounds.fs", version : "");
 
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
 
+/**
+ * TODO: description
+ * @param context
+ * @param entity
+ * @param oppositeDir
+ * @param distance
+ */
 export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits) returns map
 {
     if (oppositeDir)
@@ -20,6 +27,12 @@ export function computePatternOffset(context is Context, entity is Query, opposi
         return { "offset" : rawDirectionResult.direction * distance };
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param instances
+ */
 export function verifyPatternSize(context is Context, id is Id, instances is number)
 {
     if (instances <= 2500)
@@ -27,6 +40,14 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
     throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_MANY_INSTANCES);
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function checkInput(context is Context, id is Id, definition is map)
 {
     if (size(evaluateQuery(context, definition.entities)) == 0)
@@ -38,6 +59,14 @@ export function checkInput(context is Context, id is Id, definition is map)
     }
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
 {
     if (!definition.isFacePattern)

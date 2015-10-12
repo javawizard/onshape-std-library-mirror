@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 /**
  * Evaluation functions return information about the topological entities in the context, like bounding boxes, tangent
  * planes, projections, and collisions. Evaluation functions typically take a context and a map that specifies the
@@ -37,11 +37,9 @@ export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 }
 
 /**
- * TODO: description
- * @param context
- * @param arg {{
- *      @field TODO
- * }}
+ * Same as `evFaceTangentPlane`, but input is an array of points
+ * instead of one point and result is an array of planes instead of
+ * one Plane.
  */
 export function evFaceTangentPlanes(context is Context, arg is map) returns array
 precondition
@@ -62,17 +60,8 @@ precondition
 }
 
 /**
- * Given an edge, calculate and return a Line tangent to that edge with an
- * origin and a direction.
- * @param context {Context}
- * @param arg {{
- *      @field edge {Query}: @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
- *      @field parameter {number}: Offset of the resulting line's origin, relative to the given edge.
- *          @eg `0.5` places the origin at the edge's midpoint
- *      @field arcLengthParameterization : TODO: document me
- *          @optional
- * }}
- * @returns {Line}
+ * Return one tangent to an edge.
+ * @see `evEdgeTangentLines`
  */
 export function evEdgeTangentLine(context is Context, arg is map) returns Line
 {
@@ -81,11 +70,19 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
 }
 
 /**
- * TODO: description
- * @param context
+ * Return tangents to a line.
  * @param arg {{
- *      @field TODO
+ *      @field edge {Query}: The line to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {array}:
+ *             An array of numbers in the range 0..1 indicating points along
+ *             the line to evaluate tangents at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *          @optional
  * }}
+ * @returns {array} : array of `Line`
  */
 export function evEdgeTangentLines(context is Context, arg is map) returns array
 precondition
@@ -109,10 +106,9 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Return the coordinates of a point.
  * @param arg {{
- *      @field TODO
+ *      @field vertex {Query}
  * }}
  */
 export function evVertexPoint(context is Context, arg is map) returns Vector
@@ -125,10 +121,9 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * If the edge is a line, return a Line value for the given edge.
  * @param arg {{
- *      @field TODO
+ *      @field edge{Query}
  * }}
  */
 export function evLine(context is Context, arg is map) returns Line
@@ -141,10 +136,9 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * If the face is a planem, return a Plane value for the given face.
  * @param arg {{
- *      @field TODO
+ *      @field face{Query}
  * }}
  */
 export function evPlane(context is Context, arg is map) returns Plane
@@ -157,10 +151,14 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Return a descriptive value for a face, or the first face if the query
+ * finds more than one.  Return a `Cone`, `Cylinder`, `Plane`, `Sphere`,
+ * or `Torus` as appropriate for the face, or an unspecified map value
+ * if the face is none of these.
+ *
+ * If the first result is not a face, throw an exception.
  * @param arg {{
- *      @field TODO
+ *      @field face{Query}
  * }}
  */
 export function evSurfaceDefinition(context is Context, arg is map) returns map
@@ -198,10 +196,48 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Given a query for a curve, return a `Circle`, `Ellipse`, or `Line`
+ * value for the curve.  If the curve is none of these types, return
+ * a map with unspecified contents.  If the query does not find a curve,
+ * throw an exception.
  * @param arg {{
- *      @field TODO
+ *      @field edge{Query} : The curve to evaluate.
+ * }}
+ * @throws
+ */
+export function evCurveDefinition(context is Context, arg is map) returns map
+precondition
+{
+    arg.edge is Query;
+}
+{
+    var result = @evCurveDefinition(context, arg);
+    if (result is map)
+    {
+        if (result.curveType == (CurveType.CIRCLE as string))
+        {
+            result = circleFromBuiltin(result);
+        }
+        else if (result.curveType == (CurveType.ELLIPSE as string))
+        {
+            result = ellipseFromBuiltin(result);
+        }
+        else if (result.curveType == (CurveType.LINE as string))
+        {
+            result = lineFromBuiltin(result);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * If the query finds one entity with an axis -- a line, circle,
+ * plane, cylinder, cone, sphere, torus, or revolved surface -- return
+ * the axis.
+ * Otherwise throw an exception.
+ * @param arg {{
+ *      @field axis{Query}
  * }}
  */
 export function evAxis(context is Context, arg is map) returns Line
@@ -213,13 +249,13 @@ precondition
     return lineFromBuiltin(@evAxis(context, arg));
 }
 
-// Project point on curve, will return the parameter linearly scaled based on the interval of the edge. So parameter interval of the edge is
-// always [0, 1]. Parameter output can be negative or greater than 1 (project on curve outside of the edge).
 /**
- * TODO: description
- * @param context
+ * Project a point onto a curve.  The result is in curve parameter space,
+ * so in [0, 1] if the point projects onto the curve and negative or
+ * greater than 1 if the point projects onto an extension of the curve.
  * @param arg {{
- *      @field TODO
+ *      @field edge{Query} : The curve to project onto
+ *      @field vertex{Query} : The point to project
  * }}
  */
 export function evProjectPointOnCurve(context is Context, arg is map) returns number
@@ -232,13 +268,13 @@ precondition
     return @evProjectPointOnCurve(context, arg);
 }
 
-// return a parameter value of the point projected onto the face, the param value is scaled by the face interval [[0, 1], [0, 1]]
-// param return will not be outside the parameterization of the face, projection will always project to closest point on face, not underlying surface
 /**
- * TODO: description
- * @param context
+ * Project point onto face.  The result is an array of two numbers
+ * in parameter space of the face, range [0, 1].  The result will
+ * not be outside of the face (unlike `evProjectPointOnCurve`).
  * @param arg {{
- *      @field TODO
+ *      @field face{Query}
+ *      @field point
  * }}
  */
 export function evProjectPointOnFace(context is Context, arg is map) returns array
@@ -268,10 +304,11 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Return the total length of all the entities (if they are edges)
+ * and edges belonging to entities (if they are bodies).  If no edges
+ * are found the total length will be zero.
  * @param arg {{
- *      @field TODO
+ *      @field entities{Query}
  * }}
  */
 export function evLength(context is Context, arg is map) returns ValueWithUnits
@@ -286,10 +323,10 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Return the total area of all the entities.
+ * If no matching 2D faces are found the total area will be zero.
  * @param arg {{
- *      @field TODO
+ *      @field entities{Query}
  * }}
  */
 export function evArea(context is Context, arg is map) returns ValueWithUnits
@@ -304,10 +341,10 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
+ * Return the total volume of all the entities.
+ * If no matching 3D bodies are found, the total volume will be zero.
  * @param arg {{
- *      @field TODO
+ *      @field entities{Query}
  * }}
  */
 export function evVolume(context is Context, arg is map) returns ValueWithUnits
@@ -321,11 +358,14 @@ precondition
 
 
 /**
- * TODO: description
+ * Find collisions between tools and targets.  Each collision is a
+ * map with field `type` of type `ClashType` and fields `target`,
+ * `targetBody`, `tool`, and `toolBody` of type `Query`.
  * @param context
  * @param arg {{
- *      @field TODO
+ *      @field tools{Query} @field targets{Query}
  * }}
+ * @returns {array}
  */
 export function evCollision(context is Context, arg is map) returns array
 precondition
@@ -356,7 +396,11 @@ precondition
 }
 
 /**
- * TODO: description
+ * Return the convexity type of the given edge,
+ * `CONVEX`, `CONCAVE`, `SMOOTH`, or `VARIABLE`.
+ * If the edge is part of a body with inside and outside
+ * convex and concave have the obvious meanings.
+ * Throws an exception if the query does not evaluate to a single edge.
  * @param context
  * @param arg {{
  *      @field TODO
@@ -384,10 +428,11 @@ export function evMateConnectorTransform(context is Context, arg is map) returns
 }
 
 /**
- * TODO: description
- * @param context
+ * Find a bounding box around an entity, optionally with respect
+ * to a given coordinate system.
  * @param arg {{
- *      @field TODO
+ *      @field topology{Query} : The entity to find the bounding box of.
+ *      @field cSys{CoordSystem} : The coordinate system to use (if not the standard coordinate system). @optional
  * }}
  */
 export function evBox3d(context is Context, arg is map) returns Box3d
@@ -399,6 +444,18 @@ precondition
 {
     var result = @evBox(context, arg);
     return box3d(meter * vector(result.minCorner), meter * vector(result.maxCorner));
+}
+
+/**
+ * Gets the coordinate system of the given mate connector
+ * @param context
+ * @param arg {{
+ *      @field mateConnector{Query} : The mate connector to evaluate.
+ * }}
+ */
+export function evMateConnector(context is Context, arg is map) returns CoordSystem
+{
+    return coordSystemFromBuiltin(@evMateConnector(context, arg));
 }
 
 

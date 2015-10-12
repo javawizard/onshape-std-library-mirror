@@ -1,6 +1,9 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 //Pretty printing and toString methods
 
+/**
+ * Return a string representation of any value.
+ */
 export function toString(value) returns string
 {
     return "" ~ value;
@@ -42,8 +45,8 @@ export function toString(value is map) returns string
 }
 
 /**
- * TODO: description
- * @param value
+ * Print a message to the FeatureScript message area.
+ * This has no effect on model state or rendering.
  */
 export function print(value)
 {
@@ -51,8 +54,8 @@ export function print(value)
 }
 
 /**
- * TODO: description
- * @param value
+ * Print a message to the FeatureScript message area.
+ * This has no effect on model state or rendering.
  */
 export function println(value)
 {
@@ -60,8 +63,7 @@ export function println(value)
 }
 
 /**
- * TODO: description
- * @param s
+ * Split a string into characters, each represented as a string.
  */
 export function splitIntoCharacters(s is string) returns array
 {
@@ -80,8 +82,7 @@ export function replace(s is string, regExp is string, replacement is string) re
 }
 
 /**
- * TODO: description
- * @param s
+ * Return the number of characters in a string.
  */
 export function length(s is string) returns number
 {

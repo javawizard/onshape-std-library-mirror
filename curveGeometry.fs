@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/curvetype.gen.fs", version : "");
 
@@ -32,10 +32,8 @@ export function line(origin is Vector, direction is Vector) returns Line
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Line` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function lineFromBuiltin(definition is map) returns Line
 {
@@ -123,10 +121,8 @@ export function circle(center is Vector, xDirection is Vector, normal is Vector,
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Circle` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function circleFromBuiltin(definition is map) returns Circle
 {
@@ -136,5 +132,51 @@ export function circleFromBuiltin(definition is map) returns Circle
 export function toString(value is Circle) returns string
 {
     return "radius" ~ toString(value.radius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
+}
+
+
+// ===================================== Ellipse ======================================
+
+/**
+ * TODO: description
+ */
+export type Ellipse typecheck canBeEllipse;
+
+export predicate canBeEllipse(value)
+{
+    value is map;
+    value.coordSystem is CoordSystem;
+    isLength(value.majorRadius);
+    isLength(value.minorRadius);
+}
+
+/**
+ * TODO: description
+ * @param cSys
+ * @param majorRadius
+ * @param minorRadius
+ */
+export function ellipse(cSys is CoordSystem, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
+{
+    return { "coordSystem" : cSys, "majorRadius" : majorRadius, "minorRadius" : minorRadius } as Ellipse;
+}
+
+export function ellipse(center is Vector, xDirection is Vector, normal is Vector, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
+{
+    return ellipse(coordSystem(center, xDirection, normal), majorRadius, minorRadius);
+}
+
+/**
+ * Create an `Ellipse` from the result of a builtin call.
+ * For Onshape internal use.
+ */
+export function ellipseFromBuiltin(definition is map) returns Ellipse
+{
+    return ellipse(coordSystemFromBuiltin(definition.coordSystem), definition.majorRadius * meter, definition.minorRadius * meter);
+}
+
+export function toString(value is Ellipse) returns string
+{
+    return "majorRadius" ~ toString(value.majorRadius) ~ "\n" ~ "minorRadius" ~ toString(value.minorRadius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
 }
 

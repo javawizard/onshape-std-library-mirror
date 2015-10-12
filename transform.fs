@@ -1,11 +1,11 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/matrix.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
 /**
- * TODO: description
+ * A transform is rotation and scaling followed by a vector translation.
  */
 export type Transform typecheck canBeTransform;
 
@@ -22,6 +22,10 @@ export function transform(value is map) returns Transform
     return value as Transform;
 }
 
+/**
+ * Construct a `Transform` using the matrix argument for rotation
+ * and scaling and the vector argument for translation.
+ */
 export function transform(linear is Matrix, translation is Vector) returns Transform
 precondition
 {
@@ -32,6 +36,9 @@ precondition
     return { "linear" : linear, "translation" : translation } as Transform;
 }
 
+/**
+ * Construct a `Transform` that translates without rotation or scaling.
+ */
 export function transform(translation is Vector) returns Transform
 precondition
 {
@@ -42,10 +49,8 @@ precondition
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Transform` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function transformFromBuiltin(definition is map) returns Transform
 {
@@ -53,7 +58,7 @@ export function transformFromBuiltin(definition is map) returns Transform
 }
 
 /**
- * TODO: description
+ * Construct a transform that does nothing, no rotation, scaling, or translation.
  */
 export function identityTransform() returns Transform
 {
@@ -74,16 +79,13 @@ precondition
     return t.translation + t.linear * v;
 }
 
+/**
+ * Compute the inverse of a `Transform`, such that
+ * `inverse(t) * t == identityTransform()`.
+ */
 export function inverse(t is Transform) returns Transform
 {
     const linear = inverse(t.linear);
     return transform(linear, -linear * t.translation);
-}
-
-// This lives here because we can see definitions of both ValueWithUnits and Matrix.
-export function rotationMatrix3d(axis is array, angle is ValueWithUnits) returns Matrix
-precondition size(axis) == 3;
-{
-    return @matrixRotation3d(axis, angle.value) as Matrix;
 }
 

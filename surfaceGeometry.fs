@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/coordSystem.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -11,7 +11,8 @@ export import(path : "onshape/std/surfacetype.gen.fs", version : "");
 export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 
 /**
- * TODO: description
+ * A plane is represented by an origin, an X direction, and a normal
+ * perpendicular to the X direction.
  */
 export type Plane typecheck canBePlane;
 
@@ -44,10 +45,8 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Plane` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function planeFromBuiltin(definition is map) returns Plane
 {
@@ -77,6 +76,11 @@ export function toString(value is Plane) returns string
     return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
 }
 
+/**
+ * TODO: description
+ * @param plane
+ * @param point
+ */
 export function project(plane is Plane, point is Vector) returns Vector
 precondition
 {
@@ -128,6 +132,11 @@ export function worldToPlane(plane is Plane) returns Transform
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
 
+/**
+ * TODO: description
+ * @param from
+ * @param to
+ */
 export function transform(from is Plane, to is Plane) returns Transform
 {
     return planeToWorld(to) * worldToPlane(from);
@@ -215,10 +224,8 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Cone` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function coneFromBuiltin(definition is map) returns Cone
 {
@@ -255,10 +262,8 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Cylinder` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function cylinderFromBuiltin(definition is map) returns Cylinder
 {
@@ -297,10 +302,8 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Torus` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function torusFromBuiltin(definition is map) returns Torus
 {
@@ -332,10 +335,8 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
 }
 
 /**
- * TODO: description
- * @param definition {{
- *      @field TODO
- * }}
+ * Create a `Sphere` from the result of a builtin call.
+ * For Onshape internal use.
  */
 export function sphereFromBuiltin(definition is map) returns Sphere
 {

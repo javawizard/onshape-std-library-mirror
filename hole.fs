@@ -1,4 +1,4 @@
-FeatureScript 225; /* Automatically generated version */
+FeatureScript 236; /* Automatically generated version */
 import(path : "onshape/std/boolean.fs", version : "");
 import(path : "onshape/std/boundingtype.gen.fs", version : "");
 import(path : "onshape/std/box.fs", version : "");
@@ -456,14 +456,11 @@ precondition
 
 function cutHole(context is Context, id is Id, holeDefinition is map, startDistances is map, cSys is CoordSystem)
 {
-    var result;
     var frontDist = 0 * meter;
-    var backDist = 0 * meter;
     const isCBore = holeDefinition.style == HoleStyle.C_BORE;
     const isCSink = holeDefinition.style == HoleStyle.C_SINK;
 
     frontDist = max(startDistances.frontDist, 0 * meter);
-    backDist = startDistances.backDist;
 
     const sign = holeDefinition.oppositeDirection ? 1 : -1;
     const startCSys = coordSystem(cSys.origin, cSys.xAxis, sign * cSys.zAxis);
@@ -477,7 +474,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     var startDepth = 0 * meter;
     if (isCBore)
     {
-        result = sketchCBore(context, {
+        sketchCBore(context, {
             "prefix" : "cbore_start",
             "sketch" : sketch,
             "startDepth" : startDepth,
@@ -494,7 +491,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
         if (isCBore)
             cSinkStartDepth += holeDefinition.cBoreDepth;
 
-        result = sketchCSink(context, {
+        sketchCSink(context, {
             "prefix" : "csink_start",
             "sketch" : sketch,
             "isPositive" : true,
@@ -511,7 +508,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     }
 
     // Handle hole core
-    result = sketchToolCore(context, id, {
+    sketchToolCore(context, id, {
         "prefix" : "core",
         "sketch" : sketch,
         "cSys" : cSys,
