@@ -108,6 +108,14 @@ export function recordQueries(context is Context, id is Id, definition is map)
     }
 }
 
+/**
+ * TODO: description
+ * @param context
+ * @param id
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
 export function setFeatureComputedParameter(context is Context, id is Id, definition is map)
 {
     @setFeatureComputedParameter(context, id, definition);

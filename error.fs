@@ -7,7 +7,10 @@ export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
 import(path : "onshape/std/context.fs", version : "");
 
 /**
- * TODO: description
+ * regenError functions are used to construct maps for throwing to signal feature regeneration errors.
+ * @eg ```throw regenError(ErrorStringEnum.POINTS_COINCIDENT, ["points"]);```
+ * Overloads allow for specifying parameters for the UI to indicate error state and error entities for the UI to
+ * display in red.
  * @param message
  */
 export function regenError(message is ErrorStringEnum)

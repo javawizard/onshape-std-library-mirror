@@ -82,7 +82,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
         {
             annotation { "Name" : "Second revolve angle" }
-            isAngle(definition.angleBack, ANGLE_360_BOUNDS);
+            isAngle(definition.angleBack, ANGLE_360_REVERSE_DEFAULT_BOUNDS);
         }
 
         if (definition.bodyType != ToolBodyType.SURFACE)
@@ -121,7 +121,15 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.revolveType == RevolveType.SYMMETRIC)
         {
             definition.angleForward = definition.angle / 2;
-            definition.angleBack = definition.angle / 2;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V234_REVOLVE_TWO_DIRECTION))
+            {
+                definition.angleBack = 2 * PI * radian - definition.angle / 2;
+            }
+            else
+            {
+                // older versions use opposite direction
+                definition.angleBack = definition.angle / 2;
+            }
         }
         if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
         {
@@ -142,7 +150,14 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
 //Manipulator functions
 
+function enableTwoDirectionManipulator(context is Context, revolveDefinition is map)
+{
+    return revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V234_REVOLVE_TWO_DIRECTION);
+}
+
 const ANGLE_MANIPULATOR = "angleManipulator";
+const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
 
 function getEntitiesToUse(context is Context, revolveDefinition is map)
 {
@@ -165,7 +180,8 @@ function getEntitiesToUse(context is Context, revolveDefinition is map)
 
 function addRevolveManipulator(context is Context, id is Id, revolveDefinition is map)
 {
-    if (revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC )
+    if (revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC
+        && !enableTwoDirectionManipulator(context, revolveDefinition))
         return;
 
     const entities = getEntitiesToUse(context, revolveDefinition);
@@ -200,16 +216,44 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
         minValue = -PI * radian;
         maxValue = PI * radian;
     }
-
-
+    else if (revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+    {
+        if (!revolveDefinition.oppositeDirection)
+        {
+            minValue = 0 * radian;
+            maxValue = 2 * PI * radian;
+        }
+        else
+        {
+            minValue = - 2 * PI * radian;
+            maxValue = 0 * radian;
+        }
+    }
     addManipulators(context, id, { (ANGLE_MANIPULATOR) :
-                        angularManipulator({ "axisOrigin" : axisOrigin,
-                                             "axisDirection" : revolveDefinition.axis.direction,
-                                             "rotationOrigin" : revolvePoint,
-                                             "angle" : angle,
-                                             "sources" : entities,
-                                             "minValue" : minValue,
-                                             "maxValue" : maxValue })});
+        angularManipulator({ "axisOrigin" : axisOrigin,
+            "axisDirection" : revolveDefinition.axis.direction,
+            "rotationOrigin" : revolvePoint,
+            "angle" : angle,
+            "sources" : entities,
+            "minValue" : minValue,
+            "maxValue" : maxValue })});
+
+    if (enableTwoDirectionManipulator(context, revolveDefinition))
+    {
+        var angleBack = revolveDefinition.angleBack;
+
+        if (revolveDefinition.oppositeDirection == true)
+            angleBack *= -1;
+        addManipulators(context, id, { (SECOND_ANGLE_MANIPULATOR) :
+            angularManipulator({ "axisOrigin" : axisOrigin,
+                "axisDirection" : revolveDefinition.axis.direction,
+                "rotationOrigin" : revolvePoint,
+                "angle" : angleBack,
+                "sources" : entities,
+                "minValue" : minValue,
+                "maxValue" : maxValue,
+                "style" : ManipulatorStyleEnum.SECONDARY })});
+    }
 }
 
 /**
@@ -223,25 +267,29 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
  * }}
  */
 export function revolveManipulatorChange(context is Context, revolveDefinition is map, newManipulators is map) returns map
-precondition
 {
-    newManipulators[ANGLE_MANIPULATOR] is Manipulator;
-    revolveDefinition.revolveType == RevolveType.ONE_DIRECTION || revolveDefinition.revolveType == RevolveType.SYMMETRIC;
-}
-{
-    const newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
-
-    revolveDefinition.oppositeDirection = newAngle < 0 * radian;
-    revolveDefinition.angle = abs(newAngle);
-
-    if (revolveDefinition.revolveType == RevolveType.SYMMETRIC)
+    if (newManipulators[ANGLE_MANIPULATOR] is Manipulator &&
+        (revolveDefinition.revolveType == RevolveType.ONE_DIRECTION || revolveDefinition.revolveType == RevolveType.SYMMETRIC
+         || enableTwoDirectionManipulator(context, revolveDefinition)))
     {
-        revolveDefinition.angle *= 2;
-        if (revolveDefinition.angle > 2 * PI * radian)
+        const newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
+
+        revolveDefinition.oppositeDirection = newAngle < 0 * radian;
+        revolveDefinition.angle = abs(newAngle);
+
+        if (revolveDefinition.revolveType == RevolveType.SYMMETRIC)
         {
-            // for the effect of one-directional manip loop
-            revolveDefinition.angle = 4 * PI * radian - revolveDefinition.angle;
+            revolveDefinition.angle *= 2;
+            if (revolveDefinition.angle > 2 * PI * radian)
+            {
+                // for the effect of one-directional manip loop
+                revolveDefinition.angle = 4 * PI * radian - revolveDefinition.angle;
+            }
         }
+    }
+    if (newManipulators[SECOND_ANGLE_MANIPULATOR] is Manipulator && enableTwoDirectionManipulator(context, revolveDefinition))
+    {
+        revolveDefinition.angleBack = abs(newManipulators[SECOND_ANGLE_MANIPULATOR].angle);
     }
     return revolveDefinition;
 }

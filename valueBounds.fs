@@ -171,6 +171,14 @@ export const ANGLE_360_BOUNDS =
     (radian) : [0, 1,  2 * PI]
 } as AngleBoundSpec;
 
+export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
+{
+    "min"    : -TOLERANCE.zeroAngle * radian,
+    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
+    (degree) : [0, 330, 360],
+    (radian) : [0, 2,  2 * PI]
+} as AngleBoundSpec;
+
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -245,12 +253,11 @@ export const HELIX_TURN_BOUNDS =
     (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
 
-// Find tightest bounds of a BoundSpec
 /**
- * TODO: description
- * @param boundSpec {{
- *      @field TODO
- * }}
+ * Return the intersection of all bounds in a BoundSpec as an
+ * array with [0] = lower bound and [1] = upper bound.
+ * For example, if a BoundSpec allows 1/32 inch to 1 yard for Imperial
+ * units and and 1 mm to 1 meter for metric, the result is [1 mm, 1 yard].
  */
 export function tightestBounds(boundSpec is map) returns array // [min, max] with units as defined in the spec
 precondition

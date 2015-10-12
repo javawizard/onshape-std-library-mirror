@@ -1,4 +1,4 @@
-FeatureScript ✨;
+FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum UIHint
@@ -10,7 +10,9 @@ export enum UIHint
     NO_PREVIEW_PROVIDED,
     REMEMBER_PREVIOUS_VALUE,
     DISPLAY_SHORT,
-    ALLOW_FEATURE_SELECTION
+    ALLOW_FEATURE_SELECTION,
+    MATE_CONNECTOR_AXIS_TYPE,
+    PRIMARY_AXIS
 }
 
 

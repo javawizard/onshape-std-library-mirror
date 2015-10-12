@@ -3,7 +3,7 @@ import(path : "onshape/std/units.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
 /**
- * TODO: description
+ * A three-dimensional bounding box.
  */
 export type Box3d typecheck canBeBox3d;
 
@@ -15,9 +15,7 @@ export predicate canBeBox3d(value)
 }
 
 /**
- * TODO: description
- * @param minCorner
- * @param maxCorner
+ * Construct a bounding box from two opposite corners.
  */
 export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 {
@@ -25,10 +23,12 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 }
 
 /**
- * TODO: description
+ * Enlarge a bounding box.
  * @param bBox
- * @param absoluteValue
- * @param factor
+ * @param absoluteValue {ValueWithUnits} : The absolute distance to move
+ *     each face of the box.  The corners move sqrt(3) times as far.
+ * @param factor {number} : The relative amount to expand the box, with
+ *     `0` leaving it unchanged.
  */
 export function extendBox3d(bBox is Box3d, absoluteValue is ValueWithUnits, factor is number) returns Box3d
 precondition

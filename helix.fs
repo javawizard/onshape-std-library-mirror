@@ -3,7 +3,6 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
 import(path : "onshape/std/box.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");

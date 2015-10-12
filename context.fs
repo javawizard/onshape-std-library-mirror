@@ -27,7 +27,7 @@ export type Context typecheck canBeContext;
 
 export predicate canBeContext(value)
 {
-    value is builtin;
+    @isContext(value); /* implies (value is builtin) */
 }
 
 /**

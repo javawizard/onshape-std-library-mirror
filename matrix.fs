@@ -4,33 +4,35 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
 
 /**
- * TODO: description
+ * A Matrix is an array of rows, all the same size, each of which
+ * is an array of numbers
  */
 export type Matrix typecheck canBeMatrix;
 
 export predicate canBeMatrix(val)
 {
-    //A matrix is an array of rows each of which is an array of numbers
     @isMatrix(val);
 }
 
 /**
- * TODO: description
- * @param matrix
+ * Return a 2 element array containing the numbers of rows and columns
+ * of a matrix.
  */
 export function matrixSize(matrix is Matrix) returns array //returns [rows, cols]
 {
     return [@size(matrix), @size(matrix[0])];
 }
 
+/**
+ * Check whether a matrix is square.
+ */
 export predicate isSquare(matrix is Matrix)
 {
     @size(matrix) == @size(matrix[0]);
 }
 
 /**
- * TODO: description
- * @param size
+ * Construct an identity matrix of a given dimension.
  */
 export function identityMatrix(size is number) returns Matrix
 precondition isPositiveInteger(size);
@@ -39,9 +41,7 @@ precondition isPositiveInteger(size);
 }
 
 /**
- * TODO: description
- * @param rows
- * @param cols
+ * Construct an all-zero matrix of a given dimension.
  */
 export function zeroMatrix(rows is number, cols is number) returns Matrix
 precondition
@@ -51,17 +51,6 @@ precondition
 }
 {
     return makeArray(rows, makeArray(cols, 0)) as Matrix;
-}
-
-/**
- * TODO: description
- * @param axis
- * @param angle
- */
-export function rotationMatrix3d(axis is array, angle is number) returns Matrix
-precondition size(axis) == 3;
-{
-    return @matrixRotation3d(axis, angle) as Matrix;
 }
 
 export operator+(m1 is Matrix, m2 is Matrix) returns Matrix
@@ -77,9 +66,8 @@ precondition matrixSize(m1) == matrixSize(m2);
 }
 
 /**
- * TODO: description
- * @param m1
- * @param m2
+ * Construct a matrix by multiplying corresponding elements of two
+ * matrices (which must be the same size).
  */
 export function cwiseProduct(m1 is Matrix, m2 is Matrix) returns Matrix
 precondition matrixSize(m1) == matrixSize(m2);
@@ -109,8 +97,7 @@ export operator*(m1 is number, m2 is Matrix) returns Matrix
 }
 
 /**
- * TODO: description
- * @param m
+ * Return the transpose of a matrix.
  */
 export function transpose(m is Matrix) returns Matrix
 {
@@ -118,8 +105,9 @@ export function transpose(m is Matrix) returns Matrix
 }
 
 /**
- * TODO: description
- * @param m
+ * Compute the inverse of a matrix.  Throws an exception
+ * if the matrix is not square.  If the matrix is singular
+ * the resulting matrix will contain infinities.
  */
 export function inverse(m is Matrix) returns Matrix
 precondition isSquare(m);
@@ -128,8 +116,7 @@ precondition isSquare(m);
 }
 
 /**
- * TODO: description
- * @param m
+ * Return the sum of the squares of matrix elements.
  */
 export function squaredNorm(m is Matrix) returns number
 {
@@ -137,8 +124,7 @@ export function squaredNorm(m is Matrix) returns number
 }
 
 /**
- * TODO: description
- * @param m
+ * Return the square root of the sum of the squares of matrix elements.
  */
 export function norm(m is Matrix) returns number
 {
@@ -146,8 +132,14 @@ export function norm(m is Matrix) returns number
 }
 
 /**
- * TODO: description
- * @param m
+ * Compute the singular value decomposition of a matrix,
+ * m = usv where s is a diagonal matrix of eigenvalues.
+ * @param m{Matrix}
+ * @return {{
+ *     @field u{Matrix} : A unitary matrix
+ *     @field s{Matrix} : A diagonal matrix
+ *     @field v{Matrix} : A unitary matrix
+ * }}
  */
 export function svd(m is Matrix) returns map
 {

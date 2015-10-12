@@ -46,29 +46,42 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
  */
 annotation { "Feature Type Name" : "Sphere" }
 export function sphere(context is Context, id is Id, definition is map)
-precondition
 {
-    if (definition.center != undefined)
+    fSphere(context, id, definition);
+}
+
+/**
+ * TODO: description
+ * @param context
+ * @param id : @eg `id + TODO`
+ * @param definition {{
+ *      @field TODO
+ * }}
+ */
+export const fSphere = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
     {
-        annotation { "Name" : "Center", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
-        definition.center is Query;
+        if (definition.center != undefined)
+        {
+            annotation { "Name" : "Center", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+            definition.center is Query;
+        }
+
+        annotation { "Name" : "Radius" }
+        isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
     }
+    {
+        startFeature(context, id, definition);
+        if (definition.center is Query)
+            definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
+        if (definition.center == undefined)
+            definition.center = vector(0, 0, 0) * meter;
 
-    annotation { "Name" : "Radius" }
-    isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
-}
-{
-    startFeature(context, id, definition);
-    if (definition.center is Query)
-        definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
-    if (definition.center == undefined)
-        definition.center = vector(0, 0, 0) * meter;
+        definition.radius = vector(1, 1, 1) * definition.radius;
 
-    definition.radius = vector(1, 1, 1) * definition.radius;
-
-    fEllipsoid(context, id, definition);
-    endFeature(context, id);
-}
+        fEllipsoid(context, id, definition);
+        endFeature(context, id);
+    });
 
 /**
  * TODO: description

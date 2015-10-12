@@ -11,14 +11,13 @@ import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * This feature allows a user to assign a FeatureScript value to a context variable.
  * @param definition {{
- *      @field TODO
+ *      @field name : Must be an identifier.
+ *      @field value : Can be anything, including a length, an array, or a function.
  * }}
  */
-// TODO: annotation {"Feature Type Name" : "Variable", "Feature Name Template": "Variable #name = #computedValue", "UIHint" : "NO_PREVIEW_PROVIDED"}
+annotation {"Feature Type Name" : "Variable", "Feature Name Template": "Variable ###name = #value", "UIHint" : "NO_PREVIEW_PROVIDED"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -34,20 +33,18 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
         }
 
-        @setVariable(context, definition);
-        setFeatureComputedParameter(context, id, { "name" : "computedValue", "value" : definition.value });
+        @setVariable(context, definition); // TODO: wrap
+        setFeatureComputedParameter(context, id, { "name" : "value", "value" : definition.value });
     });
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Make a function to look up variables from the given context.  Used in generated part studio code.
  */
 export function makeLookupFunction(context is Context, id is Id) returns function
 {
     return function(name is string)
         {
-            return @getVariable(context, { "name" : name });
+            return @getVariable(context, { "name" : name }); // TODO: wrap
         };
 }
 
