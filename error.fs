@@ -34,11 +34,13 @@ export function regenError(message is ErrorStringEnum, faultyParameters is array
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * For Onshape internal use.
+ *
+ * Used by defineFeature to try to process the thrown error by attaching it to the feature status and showing the
+ * entities.
  * @param error {{
- *      @field TODO
+ *      @field message {ErrorStringEnum}
+ *      @field entities {Query}
  * }}
  */
 export function processError(context is Context, id is Id, error is map) returns boolean
@@ -65,10 +67,12 @@ export function processError(context is Context, id is Id, error) returns boolea
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
- * @param message
+ * For Onshape internal use. To report errors from features, use `throw regenError(...);`.
+ *
+ * Attaches an error to the given feature id. If it is a top-level id, when the feature finishes executing, it will
+ * be rolled back.
+ * @param id {Id}
+ * @param message {ErrorStringEnum}
  */
 export function reportFeatureError(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
@@ -83,10 +87,7 @@ export function reportFeatureError(context is Context, id is Id, message is Erro
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
- * @param message
+ * Attaches a warning-level status to the given feature id.
  */
 export function reportFeatureWarning(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
@@ -95,10 +96,7 @@ export function reportFeatureWarning(context is Context, id is Id, message is Er
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
- * @param message
+ * Attaches an info-level status to the given feature id.
  */
 export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
@@ -107,10 +105,11 @@ export function reportFeatureInfo(context is Context, id is Id, message is Error
 }
 
 /**
- * TODO: description
- * @param context
- * @param subId
- * @param id
+ * This function propagates a warning or info from a subfeature to the current feature.
+ * TODO: precondition check that `id` is the prefix of `subId`.
+ *
+ * @param subId : The id of the subfeature
+ * @param id : The id of the current feature.
  */
 export function processSubfeatureStatus(context is Context, subId is Id, id is Id) returns boolean
 {
@@ -142,9 +141,7 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Returns the error associated with the given feature id and `undefined` if none.
  */
 export function getFeatureError(context is Context, id is Id)
 {
@@ -153,9 +150,7 @@ export function getFeatureError(context is Context, id is Id)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Returns the warning associated with the given feature id and `undefined` if none.
  */
 export function getFeatureWarning(context is Context, id is Id)
 {
@@ -164,9 +159,7 @@ export function getFeatureWarning(context is Context, id is Id)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Returns the info-level status associated with the given feature id and `undefined` if none.
  */
 export function getFeatureInfo(context is Context, id is Id)
 {
@@ -175,11 +168,10 @@ export function getFeatureInfo(context is Context, id is Id)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Causes the given entities to be shown in red. This display is not rolled back even if the feature fails and
+ * the entities themselves are rolled back.
  * @param definition {{
- *      @field TODO
+ *      @field entities {Query} : The entities to display.
  * }}
  */
 export function setErrorEntities(context is Context, id is Id, definition is map)
@@ -188,9 +180,8 @@ export function setErrorEntities(context is Context, id is Id, definition is map
 }
 
 /**
- * TODO: description
- * @param context
  * @param id
+ * @returns {boolean} : `true` if the feature with the given id has an associated regeneration error.
  */
 export function featureHasError(context is Context, id is Id) returns boolean
 {

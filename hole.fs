@@ -50,7 +50,8 @@ export enum HoleEndStyle
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Hole" }
+
+annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic"}
 export const hole = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -686,26 +687,52 @@ function scopeSize(context is Context, scope is Query) returns map
 }
 
 /**
+ * implements heuristics for hole feature
+ * @param context
+ * @param id
+ * @param oldDefinition {{
+ *      @field TODO
+ * }}
+ * @param definition {{
+ *      @field TODO
+ * }}
+ * @param isCreating
+ * @param specifiedParameters {{
+ *      @field TODO
+ * }}
+ * @param hiddenBodies
+ */
+export function holeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    if (oldDefinition.locations != definition.locations)
+    {
+        definition.locations =  clusterVertexQueries(context, definition.locations);
+    }
+    if (!isCreating || (specifiedParameters.scope && specifiedParameters.oppositeDirection))
+    {
+        return definition;
+    }
+    return holeScopeFlipHeuristicsCall(context, definition, specifiedParameters, hiddenBodies);
+}
+
+/**
  * TODO: description
  * @param context
  * @param holeDefinition {{
  *      @field TODO
  * }}
- * @param featureInfo {{
+ * @param specifiedParameters {{
  *      @field TODO
  * }}
+ * @param hiddenBodies
  */
-export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition is map, featureInfo is map) returns map
+export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition is map, specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    var scopeSet = false;
-    var oppositeDirectionSet = false;
+    var scopeSet = specifiedParameters.scope;
+    var oppositeDirectionSet = specifiedParameters.oppositeDirection;
     var oppositeDirectionChanged = false;
     var oppositeDirection = holeDefinition.oppositeDirection;
-    if (featureInfo.specifiedParameters != undefined)
-    {
-        scopeSet = featureInfo.specifiedParameters.scope != undefined;
-        oppositeDirectionSet = featureInfo.specifiedParameters.oppositeDirection != undefined;
-    }
 
     if (scopeSet && oppositeDirectionSet)
         return {};
@@ -727,12 +754,9 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
         else
         {
             solidBodiesQuery = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
-            if (featureInfo.excludeBodies is Query)
-            {
-                solidBodiesQuery = qSubtraction(solidBodiesQuery, featureInfo.excludeBodies);
-            }
+            solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
         }
-        const faces = evaluateQuery(context, qContainsPoint(qGeometry(qOwnedByPart(solidBodiesQuery, EntityType.FACE), GeometryType.PLANE), pointResult));
+        const faces = evaluateQuery(context, qContainsPoint(qGeometry(qOwnedByBody(solidBodiesQuery, EntityType.FACE), GeometryType.PLANE), pointResult));
         if (@size(faces) != 1 && !oppositeDirectionSet)
             continue;
 
@@ -751,7 +775,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
                 if (needFlip == oppositeDirection)
                 {
                     // Only add non-ambiguous parts
-                    const bodyQuery = evaluateQuery(context, qOwnerPart(face));
+                    const bodyQuery = evaluateQuery(context, qOwnerBody(face));
                     if (@size(bodyQuery) == 1)
                         queries = append(queries, bodyQuery[0]);
                 }
@@ -766,5 +790,59 @@ export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition i
         holeDefinition.oppositeDirection = oppositeDirection;
 
     return holeDefinition;
+}
+
+/**
+*  Expects selected query to evaluate to a set of vertices. Throws if non-vertex is returned
+*  Clusters coincident vertices created by the same operation, uses one representative for each cluster
+*  union query of cluster representative queries is returned
+*/
+function clusterVertexQueries(context is Context, selected is Query) returns Query
+{
+    var perFeature = {};
+    for (var tId in evaluateQuery(context, selected))
+    {
+        var operationId = lastModifyingOperationId(context, tId);
+        if (perFeature[operationId] == undefined)
+        {
+            perFeature[operationId] = [];
+        }
+        perFeature[operationId] = append(perFeature[operationId], tId);
+    }
+    var clusterQueries = [];
+    var didCluster = false;
+    for ( var entry in perFeature)
+    {
+        var nPoints = size(entry.value);
+        if (nPoints == 1)
+        {
+            clusterQueries = append(clusterQueries, entry.value[0]);
+        }
+        else
+        {
+            var points = makeArray(nPoints);
+            for (var i = 0; i < nPoints; i = i + 1)
+            {
+                points[i] = evVertexPoint(context, {'vertex' : entry.value[i]});
+            }
+            var clusters = clusterPoints(points, TOLERANCE.zeroLength);
+            if (size(clusters) != size(points))
+            {
+                didCluster = true;
+            }
+            for (var cluster in clusters)
+            {
+                clusterQueries = append(clusterQueries, entry.value[cluster[0]]);
+            }
+        }
+    }
+    if (didCluster)
+    {
+        return qUnion(clusterQueries);
+    }
+    else
+    {
+        return selected;
+    }
 }
 

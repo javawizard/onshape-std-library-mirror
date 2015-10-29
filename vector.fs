@@ -262,10 +262,12 @@ export operator/(vector is Vector, scalar) returns Vector
     return vector;
 }
 
-export function project(vector1 is Vector, vector2 is Vector) returns Vector
+/**
+ * Project the `source` vector onto the `target` vector.  Equivalent to `target * dot(source, target) / squaredNorm(target)`.
+ */
+export function project(target is Vector, source is Vector) returns Vector
 {
-    const dot = dot(vector1, vector2);
-    return vector2 * (dot / squaredNorm(vector2));
+    return target * (dot(source, target) / squaredNorm(target));
 }
 
 /**
@@ -328,7 +330,7 @@ precondition
 
 // This lives here because we can see definitions of both ValueWithUnits and Matrix.
 /**
- * Construct a 3D matrix representing a councerclockwise rotation
+ * Construct a 3D matrix representing a counterclockwise (looking against the axis) rotation
  * around the given axis by the given rotation angle.
  */
 export function rotationMatrix3d(axis is array, angle is ValueWithUnits) returns Matrix
@@ -391,4 +393,22 @@ export function perpendicularVectors(vector1 is Vector, vector2 is Vector) retur
     const v1v2 = squaredNorm(vector1) * squaredNorm(vector2);
     return dotP * dotP < v1v2 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }
+
+/**
+*  Groups points into clusters. Two points farther than tolerance apart are guaranteed to be in separate clusters.
+*  A set of points all within tolerance of each other that has no other points within tolerance is guaranteed to be a single cluster.
+*  @returns : array of arrays of indices into points array.
+*/
+export function clusterPoints( points is array, tolerance is number) returns array
+precondition
+{
+    for (var point in points)
+    {
+        is3dLengthVector(point);
+    }
+}
+{
+    return @clusterPoints(stripUnits(points), tolerance);
+}
+
 

@@ -6,12 +6,7 @@ export import(path : "onshape/std/query.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * @see `opDeleteBodies`.
  */
 annotation { "Feature Type Name" : "Delete part" }
 export const deleteBodies = defineFeature(function(context is Context, id is Id, definition is map)

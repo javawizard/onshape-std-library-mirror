@@ -26,7 +26,7 @@ export enum ModifyFilletType
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Modify fillet", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Modify fillet", "Filter Selector" : "allparts", "Editing Logic Function" : "modifyFilletLogic" }
 export const modifyFillet = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -49,4 +49,24 @@ export const modifyFillet = defineFeature(function(context is Context, id is Id,
     {
         opModifyFillet(context, id, definition);
     }, { reFillet : false });
+
+/**
+ * Editing logic function for automatically setting the radius of the fillet.
+ */
+export function modifyFilletLogic(context is Context, id is Id, oldDefinition is map, definition is map, specified is map) returns map
+{
+    if (oldDefinition.faces == definition.faces ||
+            definition.modifyFilletType != ModifyFilletType.CHANGE_RADIUS ||
+            specified.radius)
+        return definition;
+    // If we're keeping any old faces, don't change the radius
+    var oldFaces = oldDefinition.faces == undefined ? [] : evaluateQuery(context, oldDefinition.faces);
+    if (oldFaces != [])
+        return definition;
+    try
+    {
+        definition.radius = evFilletRadius(context, { "face" : definition.faces });
+    }
+    return definition;
+}
 

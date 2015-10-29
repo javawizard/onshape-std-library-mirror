@@ -288,10 +288,10 @@ precondition
 }
 
 /**
- * TODO: description
+ * Return the plane of the sketch that created the given entity. Throws if the entity was not created by a sketch.
  * @param context
  * @param arg {{
- *      @field TODO
+ *      @field entity {Query} : The sketch entity. May be a vertex, edge, face, or body.
  * }}
  */
 export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
@@ -318,7 +318,7 @@ precondition
 }
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
-    var ownedEdges = qOwnedByPart(arg.entities, EntityType.EDGE);
+    var ownedEdges = qOwnedByBody(arg.entities, EntityType.EDGE);
     return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
 }
 
@@ -336,7 +336,7 @@ precondition
 }
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
-    var ownedFaces = qOwnedByPart(arg.entities, EntityType.FACE);
+    var ownedFaces = qOwnedByBody(arg.entities, EntityType.FACE);
     return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
 }
 
@@ -354,6 +354,21 @@ precondition
 }
 {
     return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY) }) * meter ^ 3;
+}
+
+/**
+ * Given a face of a fillet, return the radius of the fillet.
+ * @param arg {{
+ *      @field face{Query}
+ * }}
+ */
+export function evFilletRadius(context is Context, arg is map) returns ValueWithUnits
+precondition
+{
+    arg.face is Query;
+}
+{
+    return @evFilletRadius(context, arg) * meter;
 }
 
 
@@ -403,7 +418,7 @@ precondition
  * Throws an exception if the query does not evaluate to a single edge.
  * @param context
  * @param arg {{
- *      @field TODO
+ *      @field edge
  * }}
  */
 export function evEdgeConvexity(context is Context, arg is map) returns EdgeConvexityType
@@ -416,15 +431,11 @@ precondition
 }
 
 /**
- * TODO: description
- * @param context
- * @param arg {{
- *      @field TODO
- * }}
+ * For internal use.  Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
  */
-export function evMateConnectorTransform(context is Context, arg is map) returns Transform
+export function evMateConnectorCoordSystem(context is Context, arg is map) returns CoordSystem
 {
-    return transformFromBuiltin(@evMateConnectorTransform(context, arg));
+    return coordSystemFromBuiltin(@evMateConnectorCoordSystem(context, arg));
 }
 
 /**

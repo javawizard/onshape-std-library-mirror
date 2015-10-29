@@ -4,7 +4,8 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
 
 /**
- * TODO: description
+ * Returns the language version of the library. Note that the return value of `@getLanguageVersion` (but not of this
+ * function) depends on the module it is called from.
  */
 export function libraryLanguageVersion()
 {
@@ -31,17 +32,15 @@ export predicate canBeContext(value)
 }
 
 /**
- * TODO: description
+ * Returns a new empty context.
  */
 export function newContext() returns Context
 {
     return @newContext(FeatureScriptVersionNumberCurrent) as Context;
 }
 
-/* Return false if the active feature is running at a version number
-   at least as new as [introduced] that changed behavior. */
 /**
- * TODO: description
+ * Return false if the active feature is running at a version number at least as new as `introduced`.
  * @param context
  * @param introduced
  */
@@ -72,7 +71,7 @@ export predicate canBeId(value)
 }
 
 /**
- * TODO: description
+ * Returns an empty id.
  */
 export function newId() returns Id
 {
@@ -80,7 +79,7 @@ export function newId() returns Id
 }
 
 /**
- * TODO: description
+ * Returns an id specified by the given string.
  * @param idComp
  */
 export function makeId(idComp is string) returns Id
@@ -96,7 +95,8 @@ export predicate isTopLevelId(id is Id)
 export const ANY_ID = '*';
 
 /**
- * TODO: description
+ * Marks a given id component as "unstable" causing queries to treat it as a wildcard. This is useful for when the id
+ * component is not expected to be robust, such as an index into the results of an evaluated query.
  * @param addend
  */
 export function unstableIdComponent(addend) returns string

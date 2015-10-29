@@ -135,7 +135,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
     }
     {
-        const mateConnectorTransform = evMateConnectorTransform(context, definition);
+        const mateConnectorCoordSystem = evMateConnectorCoordSystem(context, definition);
 
         var onlyPartInStudio = qNothing();
         const allBodies = qEverything(EntityType.BODY);
@@ -156,7 +156,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         var ownerPartQuery;
         for (var i = 0; i < size(possiblePartOwners); i += 1)
         {
-            const currentQuery = qBodyType(qOwnerPart(possiblePartOwners[i]), BodyType.SOLID);
+            const currentQuery = qBodyType(qOwnerBody(possiblePartOwners[i]), BodyType.SOLID);
             if (size(evaluateQuery(context, currentQuery)) != 0)
             {
                 ownerPartQuery = currentQuery;
@@ -167,6 +167,6 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         if (ownerPartQuery == undefined)
             throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
 
-        opMateConnector(context, id, { "owner" : ownerPartQuery, "transform" : mateConnectorTransform });
+        opMateConnector(context, id, { "owner" : ownerPartQuery, "coordSystem" : mateConnectorCoordSystem });
     });
 

@@ -10,9 +10,7 @@ import(path : "onshape/std/units.fs", version : "");
 
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Performs a body or face linear pattern.
  * @param definition {{
  *      @field TODO
  * }}

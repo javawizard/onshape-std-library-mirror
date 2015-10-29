@@ -15,11 +15,7 @@ import(path : "onshape/std/transform.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
- * TODO: description
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * The boolean feature.  Performs an `opBoolean` after a possible `opOffsetFaces` if the operation is subtraction.
  */
 annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
@@ -138,8 +134,9 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
 
-/**  Build a block large enough to contain all tools and targets. Subtract tools from it
-*/
+/**
+ * Build a block large enough to contain all tools and targets. Subtract tools from it.
+ */
 function constructToolsComplement(context is Context, id is Id, booleanDefinition is map) returns Query
 {
     const inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
@@ -160,8 +157,7 @@ function constructToolsComplement(context is Context, id is Id, booleanDefinitio
 }
 
 /**
- * TODO: description
- * @param operationType
+ * Maps the new body operation type that features like `extrude` take to the boolean operation type.
  */
 export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
 {
@@ -172,12 +168,17 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
     }[operationType];
 }
 
+/**
+ * Used by body-creating feature preconditions to allow post-creation booleans.  For example, the boolean after
+ * extrude, revolve, sweep or loft.
+ */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
     annotation { "Name" : "Result body operation type" }
     booleanDefinition.operationType is NewBodyOperationType;
 }
 
+/** Used by body-creating feature preconditions to allow post-creation booleans. Use together with `booleanStepTypePredicate`. */
 export predicate booleanStepScopePredicate(booleanDefinition is map)
 {
     if (booleanDefinition.operationType != NewBodyOperationType.NEW)
@@ -193,12 +194,6 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
             }
         }
     }
-}
-
-export predicate booleanStepPredicate(booleanDefinition is map)
-{
-    booleanStepTypePredicate(booleanDefinition);
-    booleanStepScopePredicate(booleanDefinition);
 }
 
 /**
@@ -248,9 +243,8 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 }
 
 /**
- * Performs a boolean operation (optionally).
+ * Performs a boolean operation (optionally). Used by body-creating features with as the boolean step.
  *
- * Arguments:
  * @param id : identifier of the main feature
  * @param definition {map} : @see `subfeatureToolsTargets#definition` definition specifying how to contruct tools and targets
  *                           on subfeatureToolsTargets.
@@ -354,19 +348,13 @@ function faceToFaceCollisionsContainInterferences(context is Context, collisions
     return false;
 }
 
-// This function implements autoSelection rules. Is probably a subject to further changes.
-// Current rule: If every tool abuts one and only one target Boolean operation is set to "ADD" and abutting targets go into booleanScope list
-// If every tool intersects one and only one target Boolean operation is set to "REMOVE" and intersecting targets go into booleanScope list
-// Otherwise Boolean operation is set to "NEW" booleanScope list is cleared out
 /**
- * TODO: description
- * @param context
- * @param featureDefinition {{
- *      @field TODO
- * }}
- * @param featureInfo {{
- *      @field TODO
- * }}
+ * For Onshape internal use.
+ *
+ * This function implements autoSelection rules. Is probably a subject to further changes.
+ * Current rule: If every tool abuts one and only one target Boolean operation is set to "ADD" and abutting targets go into booleanScope list
+ * If every tool intersects one and only one target Boolean operation is set to "REMOVE" and intersecting targets go into booleanScope list
+ * Otherwise Boolean operation is set to "NEW" booleanScope list is cleared out
  */
 export function autoSelectionForBooleanStep(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
@@ -406,17 +394,11 @@ export function autoSelectionForBooleanStep(context is Context, featureDefinitio
     return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
 }
 
-// The latest implementation is simpler. If the number of parts hit by the tools is equal to 1 then we default to add.
-// If the number of parts hit by the tools is other than 1 then we default to new.
 /**
- * TODO: description
- * @param context
- * @param featureDefinition {{
- *      @field TODO
- * }}
- * @param featureInfo {{
- *      @field TODO
- * }}
+ * For Onshape internal use.
+ *
+ * If the number of parts hit by the tools is equal to 1 then we default to add.
+ * If the number of parts hit by the tools is other than 1 then we default to new.
  */
 export function autoSelectionForBooleanStep2(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
@@ -499,17 +481,11 @@ function setOperationType(featureDef is map, opType is NewBodyOperationType, tar
     return featureDef;
 }
 
-//This function implements flip on Remove heuristics.
-//If tool bodies don't intersect with targets but there are abuttings, flip the direction
 /**
- * TODO: description
- * @param context
- * @param featureDefinition {{
- *      @field TODO
- * }}
- * @param featureInfo {{
- *      @field TODO
- * }}
+ * For Onshape internal use.
+ *
+ * This function implements flip on Remove heuristics.
+ * If tool bodies don't intersect with targets but there are abuttings, flip the direction
  */
 export function flipCorrectionForRemove(context is Context, featureDefinition is map, featureInfo is map) returns map
 {
@@ -540,23 +516,5 @@ export function flipCorrectionForRemove(context is Context, featureDefinition is
         featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
 
     return featureDefinition;
-}
-
-/**
- * TODO: description
- * @param context
- * @param id
- * @param statusToolId
- */
-export function setBooleanErrorEntities(context is Context, id is Id, statusToolId is Id)
-{
-    const statusToolsQ = qBodyType(qCreatedBy(statusToolId, EntityType.BODY), BodyType.SOLID);
-    if (size(evaluateQuery(context, statusToolsQ)) > 0)
-    {
-        const errorDefinition = { entities : statusToolsQ };
-        setErrorEntities(context, id, errorDefinition);
-        const deletionData = { entities : statusToolsQ };
-        opDeleteBodies(context, statusToolId + "delete", deletionData);
-    }
 }
 

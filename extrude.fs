@@ -387,7 +387,7 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
         throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane" ~ suffix]);
 
     const neutralPlaneFace = qCreatedBy(neutralPlaneId, EntityType.FACE);
-    const neutralPlaneQuery = qOwnerPart(qCreatedBy(neutralPlaneId));
+    const neutralPlaneQuery = qOwnerBody(qCreatedBy(neutralPlaneId));
 
     if (conditions.needsSplit)
     {
@@ -446,7 +446,7 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
         const draftDefinition = { "angle" : definition.draftAngle,
                                   "pullDirection" : definition.draftPullDirection };
         // TODO: replace this with the merged query enum
-        const draftFaces = qOwnedByPart(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
+        const draftFaces = qOwnedByBody(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
         applyDraft(context, id + ("draft" ~ suffix), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane);
     }
 

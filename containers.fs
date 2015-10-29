@@ -136,7 +136,7 @@ precondition
  * the second map will be lost.
  * @example `mergeMaps({}, x)` returns (a copy of) its second argument
  * @example `mergemaps({a:0}, {a:1})` returns `{a:1}`
- * @example `mergemaps({a:0}, {b:1})` returns `{a:1, b:1}`
+ * @example `mergemaps({a:0}, {b:1})` returns `{a:0, b:1}`
  */
 export function mergeMaps(defaults is map, m is map) returns map
 {

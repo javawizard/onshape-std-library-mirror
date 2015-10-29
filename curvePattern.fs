@@ -8,17 +8,14 @@ import(path : "onshape/std/patternUtils.fs", version : "");
 import(path : "onshape/std/transform.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * The curve pattern feature. Currently incomplete and disabled.
  */
-annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }
+//annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }
 export const curvePattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        booleanStepTypePredicate(definition);
+
         annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
         definition.entities is Query;
 
@@ -34,7 +31,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         annotation { "Name" : "Follow curve" }
         definition.followCurve is boolean;
 
-        booleanStepPredicate(definition);
+        booleanStepScopePredicate(definition);
     }
     {
         // Compute a vector of transforms
@@ -72,6 +69,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             {
                 if (definition.followCurve)
                 {
+                    // IB: Doing a sweep with minimal rotation and using that for coordinate systems is better here.
                     // Compute a rotation from the old to the new
                     const rotation = rotationMatrix3d(lastTan, tangent);
                     curTransform = transform(rotation, pos) * transform(-lastPoint) * curTransform;

@@ -30,7 +30,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         definition.keepTools is boolean;
     }
     {
-        definition.tool = qOwnerPart(definition.tool);
+        definition.tool = qOwnerBody(definition.tool);
         opSplitPart(context, id, definition);
     }, { keepTools : false });
 

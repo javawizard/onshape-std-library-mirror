@@ -1,5 +1,5 @@
 FeatureScript ✨; /* Automatically generated version */
-//Pretty printing and toString methods
+/** Pretty printing and toString methods */
 
 /**
  * Return a string representation of any value.

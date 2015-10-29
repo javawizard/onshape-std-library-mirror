@@ -8,9 +8,7 @@ import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/patternUtils.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Performs a body or face circular pattern.
  * @param definition {{
  *      @field TODO
  * }}
