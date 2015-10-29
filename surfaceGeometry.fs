@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 import(path : "onshape/std/coordSystem.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -11,8 +11,13 @@ export import(path : "onshape/std/surfacetype.gen.fs", version : "");
 export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 
 /**
- * A plane is represented by an origin, an X direction, and a normal
- * perpendicular to the X direction.
+ * A plane is represented by an origin, a normal vector, and an X direction,
+ * perpendicular to the normal direction.
+ * @value {{
+ *      @field origin {Vector} : A 3D point, in world space.
+ *      @field normal {Vector} : A 3D unit vector in world space.
+ *      @field x {Vector} : A 3D unit vector in world space. Must be perpendicular to `normal`.
+ * }}
  */
 export type Plane typecheck canBePlane;
 
@@ -26,14 +31,19 @@ export predicate canBePlane(value)
 }
 
 /**
- * TODO: description
- * @param cSys
+ * Create a `Plane` on the XY plane of a specified coordinate system.
  */
 export function plane(cSys is CoordSystem) returns Plane
 {
     return plane(cSys.origin, cSys.zAxis, cSys.xAxis);
 }
 
+/**
+ * Create a `Plane`.
+ * @param origin : A 3D point in world space.
+ * @param normal : A 3D vector in world space. Need not be normalized.
+ * @param x      : A 3D vector in world space. Need not be normalized.
+ */
 export function plane(origin is Vector, normal is Vector, x is Vector) returns Plane
 {
     return { "origin" : origin, "normal" : normalize(normal), "x" : normalize(x) } as Plane;
@@ -54,8 +64,7 @@ export function planeFromBuiltin(definition is map) returns Plane
 }
 
 /**
- * TODO: description
- * @param plane
+ * Returns the y-axis of the specified plane as a 3D Vector in world space.
  */
 export function yAxis(plane is Plane) returns Vector
 {
@@ -63,8 +72,9 @@ export function yAxis(plane is Plane) returns Vector
 }
 
 /**
- * TODO: description
- * @param plane
+ * Create a coordinate system whose XY-plane is a specified plane, with its origin at the
+ * plane's origin.
+ * TODO: rename this to coordSystem(plane is Plane)?
  */
 export function planeToCSys(plane is Plane) returns CoordSystem
 {

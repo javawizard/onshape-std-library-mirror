@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum FeatureScriptVersionNumber
@@ -231,9 +231,13 @@ export enum FeatureScriptVersionNumber
     V233_FS_EV_CURVE_DEFINITION,
     V234_REVOLVE_TWO_DIRECTION,
     V235_TRANSFORM_BY_MATE_CONNECTORS,
-    V236_DEFAULT_MAX_ASSEMBLIES
+    V236_DEFAULT_MAX_ASSEMBLIES,
+    V241_PS_VERSION_28_0_197,
+    V242_MATE_CONNECTOR_CSYS_AND_ANGLE_RENORM,
+    V243_IMPRINT_USE_VERTEX_TOLERANCE,
+    V244_SKETCH_REGION_UPDATE
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V236_DEFAULT_MAX_ASSEMBLIES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V244_SKETCH_REGION_UPDATE;
 
 

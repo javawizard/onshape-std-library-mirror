@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum ManipulatorType

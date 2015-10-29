@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
@@ -10,9 +10,7 @@ import(path : "onshape/std/units.fs", version : "");
 
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Performs a body or face linear pattern.
  * @param definition {{
  *      @field TODO
  * }}

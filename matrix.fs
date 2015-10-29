@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 //Matrices are in row major order so that the first index is the row and the second is the column.
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
@@ -86,9 +86,14 @@ precondition @size(m1[0]) == @size(m2);
     return @matrixMultiply(m1, m2) as Matrix;
 }
 
-export operator*(m1 is Matrix, m2 is number) returns Matrix
+export operator*(m is Matrix, n is number) returns Matrix
 {
-    return @matrixMultiply(m1, m2) as Matrix;
+    return @matrixMultiply(m, n) as Matrix;
+}
+
+export operator/(m is Matrix, n is number) returns Matrix
+{
+    return @matrixMultiply(m, (1 / n)) as Matrix;
 }
 
 export operator*(m1 is number, m2 is Matrix) returns Matrix

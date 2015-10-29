@@ -1,5 +1,5 @@
-FeatureScript 236; /* Automatically generated version */
-//Pretty printing and toString methods
+FeatureScript 244; /* Automatically generated version */
+/** Pretty printing and toString methods */
 
 /**
  * Return a string representation of any value.

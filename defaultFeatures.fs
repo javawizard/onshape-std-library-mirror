@@ -1,27 +1,40 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/valueBounds.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
 /**
- * TODO: description
+ * Creates a `Context` with default planes and an origin.
  */
-export enum DefaultPlaneType
+export function newContextWithDefaults() returns Context
+{
+    return newContextWithDefaults(meter);
+}
+
+export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
+{
+    var context = newContext();
+    origin(context);
+
+    const ranges = PLANE_SIZE_BOUNDS[defLengthUnit];
+    const size = ranges[1] * defLengthUnit;
+
+    defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
+    defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);
+    defaultPlane(context, makeId("Right"), DefaultPlaneType.YZ, size);
+    return context;
+}
+
+enum DefaultPlaneType
 {
     XY,
     YZ,
     XZ
 }
 
-/**
- * TODO: description
- * @param context
- * @param id
- * @param defaultType
- * @param size
- */
-export function defaultPlane(context is Context, id is Id, defaultType is DefaultPlaneType, size)
+function defaultPlane(context is Context, id is Id, defaultType is DefaultPlaneType, size)
 precondition
 {
     isLength(size);
@@ -41,11 +54,7 @@ precondition
     endFeature(context, id);
 }
 
-/**
- * TODO: description
- * @param context
- */
-export function origin(context is Context)
+function origin(context is Context)
 {
     const id = makeId("Origin");
     startFeature(context, id, {});

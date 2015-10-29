@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
@@ -10,12 +10,7 @@ import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * @see `opSweep`.
  */
 annotation { "Feature Type Name" : "Sweep", "Filter Selector" : "allparts" }
 export const sweep = defineFeature(function(context is Context, id is Id, definition is map)
@@ -59,10 +54,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             {
                 const queryResults = evaluateQuery(context, definition.path);
                 if (size(queryResults) == 0)
-                {
-                    reportFeatureError(context, id, ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION);
-                    return;
-                }
+                    throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["path"]);
             }
         }
         if (definition.bodyType == ToolBodyType.SURFACE)

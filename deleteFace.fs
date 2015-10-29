@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -8,12 +8,7 @@ import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/transform.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * @see `opDeleteFace`.
  */
 annotation { "Feature Type Name" : "Delete face", "Filter Selector" : "allparts" }
 export const deleteFace = defineFeature(function(context is Context, id is Id, definition is map)

@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
@@ -41,7 +41,7 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
     const planeId = id + "plane";
     opPlane(context, planeId, cplaneDefinition);
-    const planeTool = qOwnerPart(qCreatedBy(planeId));
+    const planeTool = qOwnerBody(qCreatedBy(planeId));
 
     //The plane needs to be deleted so that it is not processed as a section face
     allBodies = qUnion([allBodies, planeTool]);

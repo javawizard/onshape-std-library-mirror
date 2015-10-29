@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/curvetype.gen.fs", version : "");
 
@@ -10,7 +10,11 @@ import(path : "onshape/std/units.fs", version : "");
 // ===================================== Line ======================================
 
 /**
- * TODO: description
+ * Represents a parameterized line in space.
+ * @value {{
+ *      @field origin {Vector} : A 3D Vector with length units.
+ *      @field direction {Vector} : A unitless normalized 3D Vector.
+ * }}
  */
 export type Line typecheck canBeLine;
 
@@ -22,9 +26,9 @@ export predicate canBeLine(value)
 }
 
 /**
- * TODO: description
+ * Creates a line from an origin and a direction.
  * @param origin
- * @param direction
+ * @param direction : The direction gets normalized by this function.
  */
 export function line(origin is Vector, direction is Vector) returns Line
 {
@@ -46,9 +50,8 @@ export operator*(transform is Transform, lineRhs is Line) returns Line
 }
 
 /**
- * TODO: description
- * @param from
- * @param to
+ * Returns the transformation that transforms the line `from` to the line `to` (including the origin) using the minimum
+ * rotation angle.
  */
 export function transform(from is Line, to is Line) returns Transform
 {
@@ -57,9 +60,7 @@ export function transform(from is Line, to is Line) returns Transform
 }
 
 /**
- * TODO: description
- * @param line
- * @param point
+ * Returns the projection of the point onto the line. See also other overloads of `project`.
  */
 export function project(line is Line, point is Vector) returns Vector
 precondition
@@ -71,9 +72,8 @@ precondition
 }
 
 /**
- * TODO: description
- * @param line
- * @param angle
+ * Returns a `Transform` that represents the rotation around the given line by the given angle. The rotation is
+ * counterclockwise looking against the line direction.
  */
 export function rotationAround(line is Line, angle is ValueWithUnits) returns Transform
 precondition
@@ -94,7 +94,12 @@ export function toString(value is Line) returns string
 // ===================================== Circle ======================================
 
 /**
- * TODO: description
+ * Represents a circle in 3D space.
+ * @value {{
+ *      @field coordSystem {CoordSystem} : The circle lies in the xy plane of this coordinate
+ *          system and the origin of its parameterization is the x axis.
+ *      @field radius {ValueWithUnits} : The radius of the circle.
+ * }}
  */
 export type Circle typecheck canBeCircle;
 
@@ -106,9 +111,7 @@ export predicate canBeCircle(value)
 }
 
 /**
- * TODO: description
- * @param cSys
- * @param radius
+ * Returns a circle given a `CoordSystem` and a radius.
  */
 export function circle(cSys is CoordSystem, radius is ValueWithUnits) returns Circle
 {
@@ -138,7 +141,13 @@ export function toString(value is Circle) returns string
 // ===================================== Ellipse ======================================
 
 /**
- * TODO: description
+ * Represents an ellipse in 3D space.
+ * @value {{
+ *      @field coordSystem {CoordSystem} : The ellipse lies in the xy plane of this coordinate
+ *          system and the x axis corresponds to the major radius.
+ *      @field majorRadius {ValueWithUnits} : The larger of the two radii.
+ *      @field minorRadius {ValueWithUnits} : The smaller of the two radii.
+ * }}
  */
 export type Ellipse typecheck canBeEllipse;
 
@@ -148,13 +157,11 @@ export predicate canBeEllipse(value)
     value.coordSystem is CoordSystem;
     isLength(value.majorRadius);
     isLength(value.minorRadius);
+    value.majorRadius >= value.minorRadius;
 }
 
 /**
- * TODO: description
- * @param cSys
- * @param majorRadius
- * @param minorRadius
+ * Constructs an ellipse according to the definition.
  */
 export function ellipse(cSys is CoordSystem, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
 {

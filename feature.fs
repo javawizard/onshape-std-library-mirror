@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports that most features will need to use.
 export import(path : "onshape/std/context.fs", version : "");
 export import(path : "onshape/std/error.fs", version : "");
@@ -10,11 +10,25 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
 
 /**
- * TODO: description
- * @param feature
- * @param defaults {{
- *      @field TODO
- * }}
+ * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
+ * recording for the UI, default parameters, and error handling.  A typical usage is something like:
+ * ```
+ * annotation { "Feature Type Name" : "Widget" } // This annotation is required for Onshape to recognize widget as a feature.
+ * export const widget = defineFeature(function(context is Context, id is Id, definition is map)
+ *     precondition
+ *     {
+ *         ... // Specify the parameters that this feature takes
+ *         definition.useMoreFillets is boolean;
+ *     }
+ *     {
+ *     ... // Specify what the feature does when regenerating
+ *     }, { "useMoreFillets" : false }); // if useMoreFillets is not passed, set it to false.
+ * ```
+ *
+ * TODO: precondition spec, Manipulator Change Function, Editing Logic Function
+ *
+ * @param feature : A function that takes a `context`, and `id`, and a `definition` and regenerates the feature.
+ * @param defaults : A map of default parameter values that are used to supplement the definition.
  */
 export function defineFeature(feature is function, defaults is map) returns function
 {
@@ -49,12 +63,9 @@ export function defineFeature(feature is function) returns function
 
 // =====================================================================
 /**
- * TODO: description
- * @param context
- * @param id
- * @param definition {{
- *      @field TODO
- * }}
+ * For Onshape internal use.
+ *
+ * Starts the feature and associates the queries with the feature id in the context.
  */
 export function startFeature(context is Context, id is Id, definition is map)
 {
@@ -63,9 +74,9 @@ export function startFeature(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * For Onshape internal use.
+ *
+ * Rolls back the feature.
  */
 export function abortFeature(context is Context, id is Id)
 {
@@ -73,9 +84,9 @@ export function abortFeature(context is Context, id is Id)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * For Onshape internal use.
+ *
+ * Ends the feature; if the feature has an associated error, it is rolled back.
  */
 export function endFeature(context is Context, id is Id)
 {
@@ -90,12 +101,7 @@ export function endFeature(context is Context, id is Id)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
- * @param definition {{
- *      @field TODO
- * }}
+ * For Onshape internal use.
  */
 export function recordQueries(context is Context, id is Id, definition is map)
 {
@@ -109,11 +115,11 @@ export function recordQueries(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id
+ * Associates a FeatureScript value with a given string. This value can then be referenced in a feature name using
+ * the string. See `variable.fs` for an example of this usage.
  * @param definition {{
- *      @field TODO
+ *      @field name {string}
+ *      @field value
  * }}
  */
 export function setFeatureComputedParameter(context is Context, id is Id, definition is map)
@@ -125,9 +131,21 @@ export function setFeatureComputedParameter(context is Context, id is Id, defini
 //====================== Query evaluation ========================
 
 /**
- * TODO: description
- * @param context
- * @param query
+ * Returns a list of the entities in a context which match a specified query.
+ * The entities are returned in the form of transient queries, which are valid
+ * only until the context is modified again.
+ *
+ * It is usually not necessary to evaluate queries, since operation and
+ * evaluation functions can accept non-evaluated queries. Rather, the evaluated
+ * queries can be used to count the number of entities (if any) that match a
+ * query, or to iterate through the list to process entities individually.
+ *
+ * The order of entities returned by this function is arbitrary (and generally
+ * not predictable) except in the case of a `qUnion` query. In that case, the
+ * entities matched by earlier queries in the argument to `qUnion` are
+ * returned first.
+ *
+ * @see `qTransient`
  */
 export function evaluateQuery(context is Context, query is Query) returns array
 {
@@ -142,4 +160,15 @@ export predicate isAnything(value) // used to create a generic feature parameter
 {
 }
 
+
+/**
+ * Returns id of operation that created or last modified the first entity to which query resolves
+ * throws if query resolves to nothing
+ * @param context
+ * @param query
+ */
+export function lastModifyingOperationId(context is Context, query is Query) returns Id
+{
+    return @lastModifyingOperationId(context, {"entity" : query}) as Id;
+}
 

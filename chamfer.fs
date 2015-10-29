@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/chamfertype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
@@ -8,12 +8,7 @@ import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * The chamfer feature just performs a chamfer operation.  @see `opChamfer`.
  */
 annotation { "Feature Type Name" : "Chamfer", "Filter Selector" : "allparts" }
 export const chamfer = defineFeature(function(context is Context, id is Id, definition is map)

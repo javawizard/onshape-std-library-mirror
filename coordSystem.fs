@@ -1,9 +1,26 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 import(path : "onshape/std/mathUtils.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 
 /**
- * TODO: description
+ * A right-handed cartesian coordinate system. Used for converting points and
+ * geometry between different reference frames, or for creating planes and
+ * mate connectors.
+ *
+ * The y-axis of a coordinate system is not stored, but it can be obtained by
+ * calling `yAxis`, which simply performs a cross product.
+ *
+ * @see `toWorld`
+ * @see `fromWorld`
+ * @see `plane`
+ * @see `opMateConnector`
+ *
+ * @value {{
+ *      @field origin {Vector}: A 3D point, in world space, representing the origin of the coordinate system.
+ *      @field xAxis {Vector}: A 3D unit vector, in world space, respresenting the x-axis of the coordinate system.
+ *      @field zAxis {Vector}: A 3D unit vector, in world space, respresenting the z-axis of the coordinate system.
+ *          Must be perpendicular to the `xAxis`.
+ * }}
  */
 export type CoordSystem typecheck canBeCoordSystem;
 
@@ -17,10 +34,10 @@ export predicate canBeCoordSystem(value)
 }
 
 /**
- * TODO: description
- * @param origin
- * @param xAxis
- * @param zAxis
+ * A creates cartesian coordinate system.
+ * @param origin : A 3D point in world space.
+ * @param xAxis : A 3D vector in world space. Need not be normalized.
+ * @param zAxis : A 3D vector in world space. Need not be normalized.
  */
 export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) returns CoordSystem
 {
@@ -29,7 +46,7 @@ export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) 
 
 /**
  * Create a CoordSystem from the result of a builtin call.
- * For Onshape internal use.
+ * For Onshape internal use only.
  */
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 {
@@ -37,8 +54,26 @@ export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 }
 
 /**
- * TODO: description
+ * Convert a specified point from a specified coordinate system into world space.
  * @param cSys
+ * @param pointInCSys : A 3D vector, measured with respect to the `cSys` provided.
+ * @returns {Vector} : A 3D vector in world space.
+ */
+export function toWorld(cSys is CoordSystem, pointInCSys is Vector) returns Vector
+precondition
+{
+    is3dLengthVector(pointInCSys);
+}
+{
+    const transform = toWorld(cSys);
+    return transform * pointInCSys;
+}
+
+/**
+ * Returns a `Transform` which will move geometry from a specified coordinate system into world
+ * space.
+ *
+ * @see `opTransform`
  */
 export function toWorld(cSys is CoordSystem) returns Transform
 {
@@ -47,9 +82,9 @@ export function toWorld(cSys is CoordSystem) returns Transform
 }
 
 /**
- * TODO: description
+ * Convert a specified point from world space into a specified coordinate system.
  * @param cSys
- * @param worldPoint
+ * @param worldPoint : A 3D vector, measured in world space.
  */
 export function fromWorld(cSys is CoordSystem, worldPoint is Vector) returns Vector
 precondition
@@ -61,6 +96,12 @@ precondition
     return vector(dot(worldPoint, cSys.xAxis), dot(worldPoint, cross(cSys.zAxis, cSys.xAxis)));
 }
 
+/**
+ * Returns a `Transform` which will move geometry from world space into a
+ * specified coordinate system.
+ *
+ * @see `opTransform`
+ */
 export function fromWorld(cSys is CoordSystem) returns Transform
 {
     const rotation = [cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
@@ -75,7 +116,16 @@ export operator*(transform is Transform, cSys is CoordSystem) returns CoordSyste
 }
 
 /**
- * TODO: description
+ * Returns the y-axis of a coordinate system
+ * @returns {Vector} : A 3D vector in world space.
+ */
+export function yAxis(cSys is CoordSystem) returns Vector
+{
+    return cross(cSys.zAxis, cSys.xAxis);
+}
+
+/**
+ * Returns a representation of the coordinate system as a string.
  * @param cSys
  */
 export function toString(cSys is CoordSystem) returns string

@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -30,7 +30,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         definition.keepTools is boolean;
     }
     {
-        definition.tool = qOwnerPart(definition.tool);
+        definition.tool = qOwnerBody(definition.tool);
         opSplitPart(context, id, definition);
     }, { keepTools : false });
 

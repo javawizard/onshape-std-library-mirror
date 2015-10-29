@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -7,11 +7,12 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
- * TODO: description
+ * The type of construction plane.
  */
 export enum CPlaneType
 {
@@ -21,7 +22,7 @@ export enum CPlaneType
     PLANE_POINT,
     annotation { "Name" : "Line Angle" }
     LINE_ANGLE,
-    annotation { "Name" : "Line Point" }
+    annotation { "Name" : "Point Normal" }
     LINE_POINT,
     annotation { "Name" : "Three Point" }
     THREE_POINT,
@@ -32,33 +33,32 @@ export enum CPlaneType
 }
 
 // Messages
-const midPlaneDefaultErrorMessage  = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
-const requiresPlaneToOffsetMessage = ErrorStringEnum.CPLANE_INPUT_OFFSET_PLANE;
-const requiresPointPlaneMessage    = ErrorStringEnum.CPLANE_INPUT_POINT_PLANE;
-const requiresLineMessage          = ErrorStringEnum.CPLANE_INPUT_LINE_ANGLE;
-const requiresLinePointMessage     = ErrorStringEnum.CPLANE_INPUT_POINT_LINE;
-const tooManyEntitiesMessage       = ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED;
-const requiresThreePointsMessage   = ErrorStringEnum.CPLANE_INPUT_THREE_POINT;
-const degeneratePointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
-const coincidentPointsMessage      = ErrorStringEnum.POINTS_COINCIDENT;
-const edgeIsClosedLoopMessage      = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
-const requiresCurvePointMessage    = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
+const midPlaneDefaultErrorMessage    = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
+const requiresPlaneToOffsetMessage   = ErrorStringEnum.CPLANE_INPUT_OFFSET_PLANE;
+const requiresPointPlaneMessage      = ErrorStringEnum.CPLANE_INPUT_POINT_PLANE;
+const requiresLineAngleSelectMessage = ErrorStringEnum.CPLANE_SELECT_LINE_ANGLE_REFERENCE;
+const requiresLineAxisMessage        = ErrorStringEnum.CPLANE_INPUT_LINE_ANGLE2;
+const requiresLinePointMessage       = ErrorStringEnum.CPLANE_INPUT_POINT_LINE;
+const degenerateSelectionMessage     = ErrorStringEnum.CPLANE_DEGENERATE_SELECTION;
+const tooManyEntitiesMessage         = ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED;
+const requiresThreePointsMessage     = ErrorStringEnum.CPLANE_INPUT_THREE_POINT;
+const degeneratePointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
+const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
+const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
+const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Creates a construction plane.  @see `opPlane`.
  * @param definition {{
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY" }
+annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic" }
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-
         annotation { "Name" : "Entities",
-                     "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE }
+                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE }
         definition.entities is Query;
 
         annotation { "Name" : "Plane type" }
@@ -76,7 +76,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
         {
             annotation { "Name" : "Angle" }
-            isAngle(definition.angle, ANGLE_360_BOUNDS);
+            isAngle(definition.angle, ANGLE_360_ZERO_DEFAULT_BOUNDS);
         }
 
         if (definition.cplaneType == CPlaneType.MID_PLANE)
@@ -117,26 +117,19 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
         {
-            if (numEntities < 1)
-                throw regenError(requiresLineMessage, ["entities"]);
-            if (numEntities > 1)
-                throw regenError(tooManyEntitiesMessage, ["entities"]);
-            const lineResult = evAxis(context, { "axis" : definition.entities });
-            var normal = perpendicularVector(lineResult.direction);
-            normal = rotationMatrix3d(lineResult.direction, definition.angle) * normal;
-            definition.plane = plane(lineResult.origin, normal, lineResult.direction);
+            definition.plane = lineAnglePlane(context, id, entities, definition.angle);
         }
 
-        if (definition.cplaneType == CPlaneType.LINE_POINT)
+        if (definition.cplaneType == CPlaneType.LINE_POINT) // Point normal
         {
             if (numEntities < 2)
                 throw regenError(requiresLinePointMessage, ["entities"]);
             if (numEntities > 2)
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            const lineResult = evAxis(context, { "axis" : qUnion([qEntityFilter(definition.entities, EntityType.EDGE),
-                                      qEntityFilter(definition.entities, EntityType.FACE)]) });
+            const axisResult = evAxis(context, { "axis" : qUnion([qEntityFilter(definition.entities, EntityType.EDGE),
+                                    qEntityFilter(definition.entities, EntityType.FACE)]) });
             const pointResult = evVertexPoint(context, { "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
-            definition.plane = plane(pointResult, lineResult.direction);
+            definition.plane = plane(pointResult, axisResult.direction);
         }
 
         if (definition.cplaneType == CPlaneType.THREE_POINT)
@@ -207,7 +200,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             try
             {
                 param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
-                                                             "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
+                            "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
             }
             catch (error)
             {
@@ -218,13 +211,74 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             }
 
             const lineResult = evEdgeTangentLine(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
-                    "parameter" : param, "arcLengthParameterization" : false });
+                        "parameter" : param, "arcLengthParameterization" : false });
 
             definition.plane = plane(lineResult.origin, lineResult.direction);
         }
 
         opPlane(context, id, definition);
     }, { oppositeDirection : false, flipAlignment : false });
+
+function lineAnglePlane(context is Context, id is Id, entities is array, angle is ValueWithUnits) returns Plane
+{
+    if (size(entities) == 1)
+    {
+        reportFeatureInfo(context, id, requiresLineAngleSelectMessage);
+        const lineResult = evAxis(context, { "axis" : entities[0] });
+        var normal = perpendicularVector(lineResult.direction);
+        normal = rotationMatrix3d(lineResult.direction, angle) * normal;
+        return plane(lineResult.origin, normal, lineResult.direction);
+    }
+
+    if (size(entities) < 2)
+        throw regenError(requiresLineAxisMessage, ["entities"]);
+    if (size(entities) > 2)
+        throw regenError(tooManyEntitiesMessage, ["entities"]);
+    var axis1 = try(evAxis(context, { "axis" : entities[0] }));
+    var axis2 = try(evAxis(context, { "axis" : entities[1] }));
+
+    if (axis1 == undefined) // If the plane or point is selected first, swap.
+    {
+        if (axis2 == undefined)
+            throw regenError(requiresLineAxisMessage, ["entities"]);
+        axis1 = axis2;
+        axis2 = undefined;
+        entities[1] = entities[0];
+    }
+
+    // The second entity can be an axis, a plane, or a point
+    var secondInPlaneDirection;
+    if (axis2 != undefined)
+    {
+        if (parallelVectors(axis1.direction, axis2.direction))
+            secondInPlaneDirection = axis2.origin - axis1.origin;
+        else
+            secondInPlaneDirection = axis2.direction;
+    }
+    else
+    {
+        var plane = try(evPlane(context, { "face" : entities[1] }));
+        if (plane != undefined)
+        {
+            secondInPlaneDirection = cross(axis1.direction, plane.normal);
+        }
+        else
+        {
+            var point = try(evVertexPoint(context, { "vertex" : entities[1] }));
+            if (point != undefined)
+                secondInPlaneDirection = point - axis1.origin;
+        }
+    }
+    if (secondInPlaneDirection == undefined)
+        throw regenError(requiresLineAxisMessage, ["entities"]);
+
+    var normal = cross(axis1.direction, secondInPlaneDirection);
+    if (stripUnits(squaredNorm(normal)) < TOLERANCE.zeroLength * TOLERANCE.zeroLength)
+        throw regenError(degenerateSelectionMessage, ["entities"]);
+
+    normal = rotationMatrix3d(axis1.direction, angle) * normal;
+    return plane(axis1.origin, normal, axis1.direction);
+}
 
 function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries is array, size is ValueWithUnits)
 {
@@ -283,5 +337,48 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     }
 
     opPlane(context, id, cplaneDefinition);
+}
+
+/**
+ * Figures out the type of plane based on the preselection.
+ */
+export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map
+{
+    if (oldDefinition != {}) // Only do anything on preselection
+        return definition;
+
+    const entities = definition.entities;
+
+    const total is number = size(evaluateQuery(context, entities));
+    const vertices is number = size(evaluateQuery(context, qEntityFilter(entities, EntityType.VERTEX)));
+    const lines is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.LINE)));
+    const planes is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.PLANE)));
+    const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
+                    qGeometry(entities, GeometryType.LINE))));
+
+    if (total == 1)
+    {
+        if (planes == 1)
+            definition.cplaneType = CPlaneType.OFFSET;
+        else if ((lines + curves) == 1 && size(evaluateQuery(context, qVertexAdjacent(entities, EntityType.VERTEX))) == 2)
+            definition.cplaneType = CPlaneType.MID_PLANE;
+    }
+    if (total == 2)
+    {
+        if (planes == 1 && vertices == 1)
+            definition.cplaneType = CPlaneType.PLANE_POINT;
+        else if (planes == 2 || vertices == 2)
+            definition.cplaneType = CPlaneType.MID_PLANE;
+        else if (curves == 1 && vertices == 1)
+            definition.cplaneType = CPlaneType.CURVE_POINT;
+        else if (vertices == 1) // The other thing must be a plane or an axis
+            definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
+        else if (lines >= 1 && (lines + vertices + planes) == 2)
+            definition.cplaneType = CPlaneType.LINE_ANGLE;
+    }
+    if (total == 3 && vertices == 3)
+        definition.cplaneType = CPlaneType.THREE_POINT;
+
+    return definition;
 }
 

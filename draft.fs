@@ -1,4 +1,4 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -9,12 +9,7 @@ import(path : "onshape/std/valueBounds.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * @see `opDraft`.
  */
 annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
 export const draft = defineFeature(function(context is Context, id is Id, definition is map)

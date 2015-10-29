@@ -1,4 +1,11 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
+/**
+ * Functions used to create sketches, and add entities to sketches.
+ *
+ * Unless otherwise specified, vectors passed into sketch functions are 2D
+ * `Vector`s in sketch coordinates, where `Vector(0, 0)` indicates the origin
+ * of the sketch plane.
+ */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 
@@ -125,8 +132,10 @@ export function skSetInitialGuess(sketch is Sketch, initialGuess is map)
 }
 
 /**
- * Create a point.
- * @param value {{ @field position }}
+ * Add a point to a sketch.
+ * @param value {{
+ *      @field position {Vector}
+ * }}
  * @return {{ @field pointId }}
  */
 export function skPoint(sketch is Sketch, pointId is string, value is map)
@@ -139,9 +148,13 @@ precondition
 }
 
 /**
- * Add a line segment.
+ * Add a line segment to a sketch.
  *
- * @param value {{ @field start @field end }}
+ * @param value {{
+ *      @field start {Vector}
+ *      @field end {Vector}
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  * @return {{ @field startId @field endId }}
  */
 export function skLineSegment(sketch is Sketch, lineId is string, value is map)
@@ -156,9 +169,33 @@ precondition
 }
 
 /**
- * Create a text rectangle.
+ * Add a text rectangle to a sketch.
  *
- * @param value {{ @field fontName @field text }}
+ * @param value {{
+ *      @field text {string}: A string of text to write. May contain newlines.
+ *
+ *      @field fontName {string}: A font name, with extension ".ttf" or ".otf".
+ *              To change font weight, replace "-Regular" with "-Bold",
+ *              "-Italic", or "-BoldItalic".
+ *              TODO: Can we just make this accept a name and two booleans instead?
+ *
+ *          Must be one of the following fonts:
+ *
+ *          @eg `"OpenSans-Regular.ttf"`        Sans-serif font. Default if no match is found.
+ *          @eg `"AllertaStencil-Regular.ttf"`  Stencil font. No bold/italic options.
+ *          @eg `"Arimo-Regular.ttf"`           Sans-serif font.
+ *          @eg `"DroidSansMono-Regular.ttf"`   Monospaced sans-serif font. No bold/italic options.
+ *          @eg `"NotoSans-Regular.ttf"`        Sans-serif font.
+ *          @eg `"NotoSansCJKjp-Regular.otf"`   Japanese font. No italic options.
+ *          @eg `"NotoSansCJKkr-Regular.otf"`   Korean font. No italic options.
+ *          @eg `"NotoSansCJKsc-Regular.otf"`   Chinese (simplified) font. No italic options.
+ *          @eg `"NotoSansCJKtc-Regular.otf"`   Chinese (tranditional) font. No italic options.
+ *          @eg `"NotoSans-Regular.ttf"`        Serif font.
+ *          @eg `"RobotoSlab-Regular.ttf"`      Sans-serif font. No italic options.
+ *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
+ *
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  */
 export function skText(sketch is Sketch, textId is string, value is map)
 precondition
@@ -174,7 +211,11 @@ precondition
 /**
  * Add an image rectangle, and return ids of corner points.
  *
- * @param value {map}
+ * @param value {{
+ *      @field blobInfo {map} : TODO: what goes here?
+ *      @field firstCorner {Vector}  : One corner of the rectangle into which the image will be placed.
+ *      @field secondCorner {Vector} : The other corner of the rectangle into which the image will be placed.
+ * }}
  */
 export function skImage(sketch is Sketch, imageId is string, value is map)
 precondition
@@ -189,9 +230,13 @@ precondition
 }
 
 /**
- * Add a circle.
+ * Add a circle to a sketch.
  *
- * @param value {{ @field center @field radius }}
+ * @param value {{
+ *      @field center {Vector}
+ *      @field radius {ValueWithUnits} : A non-negative value with length units.
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  * @return {{ @field centerId }}
  */
 export function skCircle(sketch is Sketch, circleId is string, value is map)
@@ -209,7 +254,10 @@ precondition
  * Add an ellipse
  *
  * @param value {{
- *   @field center @field majorRadius @field minorRadius @field construction
+ *      @field center {Vector}
+ *      @field majorRadius {Vector}
+ *      @field minorRadius {Vector}
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
  * }}
  * @return {{ @field centerId }}
  */
@@ -229,7 +277,12 @@ precondition
 /**
  * Add an arc.
  *
- * @param value {{ @field start @field mid @field end }}
+ * @param value {{
+ *      @field start {Vector}
+ *      @field mid {Vector}
+ *      @field end {Vector}
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  * @return {{ @field startId @field endId }}
  */
 export function skArc(sketch is Sketch, arcId is string, value is map)
@@ -248,8 +301,16 @@ precondition
  * Add an elliptical arc
  *
  * @param value {{
- *      @field center @field majorAxis @field minorRadius @field majorRadius
- *      @field startParameter @field endParameter @field construction
+ *      @field center {Vector}
+ *      @field majorAxis {Vector} : The direction, in sketch coordinates, in which the major axis of the ellipse lies.
+ *      @field minorRadius {ValueWithUnits} : A non-negative value with length units.
+ *      @field majorRadius {ValueWithUnits} : A non-negative value with length units.
+ *      @field startParameter {number} : A value between 0 and 1 (inclusive) which represents the proportion of the
+ *              ellipse's peremeter travelled from the right-hand side of the major axis to the arc's starting point.
+ *      @field endParameter {number} : A value between 0 and 1 (inclusive) which represents the proportion of the
+ *              ellipse's peremeter travelled from the right-hand side of the major axis to the arc's starting point.
+ *          TODO: Is this actually parameterized by length, and not angle, or some arbitrary thing? Does it actually start on the major axis?
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
  */
@@ -269,7 +330,7 @@ precondition
 }
 
 /**
- * Add a closed spline.  For Onshape internal use only.
+ * Add a closed spline. For Onshape internal use only.
  */
 export function skSpline(sketch is Sketch, splineId is string, value is map)
 precondition
@@ -295,7 +356,11 @@ precondition
 }
 
 /**
- * Create a closed spline through a list of points.
+ * Create a closed spline through a list of points. TODO: how to pass the list of points?
+ * @param value {{
+ *      @field splinePointCount {number} : The number of points in this spline.
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  */
 export function skInterpolatedSpline(sketch is Sketch, splineId is string, value is map)
 precondition
@@ -323,10 +388,11 @@ precondition
 /**
  * Create an interpolated spline through the given points.
  * @param value {{
- *   @field points : An array of points, each a `Vector` of two lengths
+ *      @field points : An array of points, each a `Vector` of two lengths
  *                   (x and y in the sketch plane coordinate system).
  *                   If the start and end points are the same the spline
  *                   is closed.
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
  * }}
  */
 export function skFitSpline(sketch is Sketch, splineId is string, value is map)
@@ -344,7 +410,11 @@ precondition
 /**
  * Add a constraint.  (TODO: Explain how constraints work.)
  *
- * @param value {{ @field constraintType @field length @field angle }}
+ * @param value {{
+ *      @field constraintType {ConstraintType}
+ *      @field length {ValueWithUnits} : For constraints that require a length. Must have length units. @optional
+ *      @field angle {ValueWithUnits}  : For constraints that require a angle. Must have angle units. @optional
+ * }}
  */
 export function skConstraint(sketch is Sketch, constraintId is string, value is map)
 precondition
@@ -406,9 +476,13 @@ function rectangleSideEndPoint(value, side)
 }
 
 /**
- * Create rectangle (four line segments properly constrained).
+ * Add a rectangle (four line segments, properly constrained) to a sketch.
  *
- * @param value {{ @field firstCorner @field secondCorner @field construction }}
+ * @param value {{
+ *      @field firstCorner {Vector}
+ *      @field secondCorner {Vector}
+ *      @field construction {boolean} : @eg `true` for a construction line @optional
+ * }}
  */
 export function skRectangle(sketch is Sketch, rectangleId is string, value is map)
 precondition

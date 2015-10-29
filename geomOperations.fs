@@ -1,9 +1,12 @@
-FeatureScript 236; /* Automatically generated version */
+FeatureScript 244; /* Automatically generated version */
 /**
  * Operations are the basic modeling primitives of FeatureScript. Operations can do extrusion, filleting, transforms,
  * etc. An operation takes a context, an id, and a definition and modifies the context in accordance to the
  * definition. The modifications can be referenced by the passed-in id. Operations can fail by throwing an error or
  * they can report warnings or infos. The status can be read with the getFeature... functions in error.fs.
+ *
+ * When an operation parameter that requires one entity receives a query that resolves to multiple entities, it takes
+ * the first resolved entity.
  *
  * This file contains wrappers around builtin operations and no actual logic.
  */
@@ -18,9 +21,9 @@ import(path : "onshape/std/context.fs", version : "");
  *      @field operationType {BooleanOperationType} : The boolean operation to perform.
  *          @eg `BooleanOperationType.UNION` will merge any tool bodies that intersect or abut. When several bodies merge, the first one inherits
  *              the identity.
- *          @eg `BooleanOperationType.SUBTRACTION` will remove the union of all target bodies from every tool body.
+ *          @eg `BooleanOperationType.SUBTRACTION` will remove the union of all tools bodies from every target body.
  *          @eg `BooleanOperationType.INTERSECTION` will create the intersection of all tool bodies.
- *          @eg `BooleanOperationType.SUBTRACT_COMPLEMENT` will remove the complement of the union of all target bodies from every tool body.
+ *          @eg `BooleanOperationType.SUBTRACT_COMPLEMENT` will remove the complement of the union of all tool bodies from every target body.
  *      @field targetsAndToolsNeedGrouping {boolean} : This option is for adjusting the behavior to be more suitable for doing the boolean
  *          as part of a body-creating feature (such as extrude). Default is false.  If it is set to true, the changes are as follows:
  *
@@ -153,7 +156,7 @@ export function opFitSpline(context is Context, id is Id, definition is map)
  *      @field interval {Vector} : An array of two numbers denoting the interval of the helix in terms of revolution counts.
  *      @field clockwise {boolean} : True if this is a clockwise helix when viewed along `direction`.
  *      @field helicalPitch {ValueWithUnits} : Distance along the axis between successive revolutions.
- *          @eg `0 * inch` produces a planar spiral.
+ *          @eg `0 * inch` produces a planar Archimedean spiral.
  *      @field spiralPitch {ValueWithUnits} : Change in radius between successive revolutions.
  *          @eg `0 * inch` produces a helix that lies on a cylinder.
  * }}
@@ -178,9 +181,16 @@ export function opImportForeign(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Creates a surface or solid loft between multiple profiles, possibly using guide curves. TODO: Ask Elif to document
+ * parameters and requirements.
  * @param definition {{
- *      @field TODO
+ *      @field profileSubqueries {array} : An array of queries for the profiles. For a solid loft, these must be faces
+ *          or vertices. For a surface loft, these could be faces, edges, or vertices.
+ *      @field guideSubqueries {array} : An array of queries for the guide curves. @optional
+ *      @field vertices {Query} : TODO @optional
+ *      @field makePeriodic {boolean} : Defaults to false. @optional
+ *      @field bodyType {ToolBodyType} : Whether this is a solid (default) or a surface loft. @optional
+ *      @field derivativeInfo {array} : TODO @optional
  * }}
  */
 export function opLoft(context is Context, id is Id, definition is map)
@@ -189,9 +199,13 @@ export function opLoft(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Creates a mate connector, which represents a coordinate system in the context. Currently it is a special type of
+ * point body.
  * @param definition {{
- *      @field TODO
+ *      @field coordSystem {CoordSystem} : The mate connector coordinate system.
+ *      @field owner {Query} : The owner body of the mate connector: when the owner is brought into an assembly, owned
+ *          mate connectors will be brought in and move rigidly with it.  If the query resolves to multiple bodies, the
+ *          first is taken as the owner.
  * }}
  */
 export function opMateConnector(context is Context, id is Id, definition is map)
@@ -200,9 +214,10 @@ export function opMateConnector(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Bring all of the information from `contextFrom` into `context`.  This is used, for example, for the Derived feature.
+ * @param context {Context} : The target context.
  * @param definition {{
- *      @field TODO
+ *      @field contextFrom {Context} : The source context. It is rendered unusable by this operation.
  * }}
  */
 export function opMergeContexts(context is Context, id is Id, definition is map)
@@ -211,9 +226,13 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * This is a direct editing operation that modifies or deletes fillets.
  * @param definition {{
- *      @field TODO
+ *      @field faces {Query} : The fillets to modify.
+ *      @field modifyFilletType {ModifyFilletType} : Whether to change the fillet radii or remove them altogether.
+ *      @field radius {ValueWithUnits} : If `modifyFilletType` is `CHANGE_RADIUS`, the new radius.
+ *      @field reFillet {boolean} : If `modifyFilletType` is `CHANGE_RADIUS` whether to reapply adjacent fillets.
+ *          Defaults to false. @optional
  * }}
  */
 export function opModifyFillet(context is Context, id is Id, definition is map)
@@ -222,9 +241,12 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * This is a direct editing operation that applies a transform to one or more faces.
  * @param definition {{
- *      @field TODO
+ *      @field moveFaces {Query} : The faces to transform.
+ *      @field transform {Transform} : The transform to apply.
+ *      @field reFillet {boolean} : If true, attempt defillet `moveFaces` prior to the move and reapply the fillet
+ *          after. Defaults to false. @optional
  * }}
  */
 export function opMoveFace(context is Context, id is Id, definition is map)
@@ -233,9 +255,12 @@ export function opMoveFace(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * This is a direct editing operation that offsets one or more faces.
  * @param definition {{
- *      @field TODO
+ *      @field moveFaces {Query} : The faces to offset.
+ *      @field offsetDistance {ValueWithUnits} : The positive or negative distance by which to offset.
+ *      @field reFillet {boolean} : If true, attempt defillet `moveFaces` prior to the offset and reapply the fillet
+ *          after. Defaults to false. @optional
  * }}
  */
 export function opOffsetFace(context is Context, id is Id, definition is map)
@@ -244,9 +269,13 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Patterns input faces and/or bodies by applying transforms to them. The original faces and bodies are preserved.
  * @param definition {{
- *      @field TODO
+ *      @field entities {Query} : Bodies and faces to pattern.
+ *      @field transforms {array} : An array of `transforms` to apply to `entities`. The transforms do not have to be
+ *          rigid.
+ *      @field instanceNames {array} : An array of distinct non-empty strings the same size as `transforms` to identify
+ *          the patterned entities. TODO: make it easy to query for them.
  * }}
  */
 export function opPattern(context is Context, id is Id, definition is map)
@@ -255,9 +284,11 @@ export function opPattern(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Creates a construction plane.
  * @param definition {{
- *      @field TODO
+ *      @field plane {Plane} : The plane to create.
+ *      @field size {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *      @field defaultType {DefaultPlaneType} : For internal use only. @optional
  * }}
  */
 export function opPlane(context is Context, id is Id, definition is map)
@@ -266,9 +297,11 @@ export function opPlane(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Creates a construction point (a `BodyType.POINT` with one vertex). TODO: doesn't seem to display if `origin` is
+ * false.
  * @param definition {{
- *      @field TODO
+ *      @field point {Vector} : The location of the point. Has length units.
+ *      @field origin {boolean} : For internal use only. @optional
  * }}
  */
 export function opPoint(context is Context, id is Id, definition is map)
@@ -277,9 +310,14 @@ export function opPoint(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * This is a direct editing operation that replaces the geometry one or more faces with that of another face, possibly
+ * with an offset.
  * @param definition {{
- *      @field TODO
+ *      @field replaceFaces {Query} : The faces whose geometry to replace.
+ *      @field templateFace {Query} : The face whose geometry to use as the replacement.
+ *      @field offset {ValueWithUnits} : The positive or negative distance by which to offset the `templateFace`. @optional
+ *      @field oppositeSense {boolean} : If true, flip the normal of the templateFace. Default is false. In many cases,
+ *          only one of these settings will work. @optional
  * }}
  */
 export function opReplaceFace(context is Context, id is Id, definition is map)
@@ -288,9 +326,14 @@ export function opReplaceFace(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Revolves edges and faces about an axis to produce sheet and solid bodies. The edges and faces may abut, but not
+ * strictly intersect the axis.
  * @param definition {{
- *      @field TODO
+ *      @field entities {Query} : The edges and faces to revolve.
+ *      @field axis {Line} : The axis around which to revolve.
+ *      @field angleForward {ValueWithUnits} : The angle where the revolve ends relative to `entities`. Normalized to [0, 2 PI).
+ *      @field angleBack {ValueWithUnits} : The angle where the revolve starts relative to `entities`. Normalized to [0, 2 PI).
+ *          If `angleForward == angleBack`, the revolve is a full (360-degree) revolve. Defaults to 0. @optional
  * }}
  */
 export function opRevolve(context is Context, id is Id, definition is map)
@@ -299,9 +342,12 @@ export function opRevolve(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Shell solid bodies. The bodies that are passed in are hollowed. The faces passed in are removed in order to hollow
+ * their bodies.
  * @param definition {{
- *      @field TODO
+ *      @field entities {Query} : The faces to shell and solid bodies to hollow.
+ *      @field thickness {ValueWithUnits} : The distance by which to shell. Positive means shell outward, and negative
+ *          means shell inward.
  * }}
  */
 export function opShell(context is Context, id is Id, definition is map)
@@ -310,9 +356,11 @@ export function opShell(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Split solid and sheet bodies with the given sheet body.
  * @param definition {{
- *      @field TODO
+ *      @field targets {Query} : The solid and sheet bodies to split. TODO: why not wires?
+ *      @field tool {Query} : The sheet body or construction plane to cut with.
+ *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
  * }}
  */
 export function opSplitPart(context is Context, id is Id, definition is map)
@@ -321,9 +369,13 @@ export function opSplitPart(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Sweep the given edges and faces along a path resulting in sheet and solid bodies.
  * @param definition {{
- *      @field TODO
+ *      @field profiles {Query} : Edges and faces to sweep.
+ *      @field path {Query} : Edges that comprise the path along which to sweep. The edges can be in any order but
+ *          must form a connected path.
+ *      @field keepProfileOrientation {boolean} : If true, the profile maintains its original orientation as it is
+ *          swept. If false (default), the profile rotates to remain normal to the path. @optional
  * }}
  */
 export function opSweep(context is Context, id is Id, definition is map)
@@ -332,9 +384,11 @@ export function opSweep(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Thicken sheet bodies and faces into solid bodies.
  * @param definition {{
- *      @field TODO
+ *      @field entities {Query} : The sheet bodies and faces to thicken.
+ *      @field thickness1 {ValueWithUnits} : The distance by which to thicken in the direction along the normal.
+ *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction.
  * }}
  */
 export function opThicken(context is Context, id is Id, definition is map)
@@ -343,9 +397,10 @@ export function opThicken(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
+ * Applies a given transform to one or more bodies. To make transformed copies of bodies, use `opPattern`.
  * @param definition {{
- *      @field TODO
+ *      @field bodies {Query} : The bodies to transform.
+ *      @field transform {Transform} : The transform to apply. Need not be rigid.
  * }}
  */
 export function opTransform(context is Context, id is Id, definition is map)
