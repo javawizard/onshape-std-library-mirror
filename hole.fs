@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/boolean.fs", version : "");
 import(path : "onshape/std/boundingtype.gen.fs", version : "");
 import(path : "onshape/std/box.fs", version : "");
@@ -41,6 +45,8 @@ export enum HoleEndStyle
     annotation { "Name" : "Blind in last" }
     BLIND_IN_LAST
 }
+
+const CSINK_ANGLE = 90 * degree;
 
 /**
  * TODO: description
@@ -100,84 +106,142 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         if (definition.style == HoleStyle.C_BORE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
         {
             if (definition.holeDiameter > definition.cBoreDiameter)
-                reportFeatureError(context, id, ErrorStringEnum.HOLE_CBORE_TOO_SMALL);
+                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, ["holeDiameter", "cBoreDiameter"]);
 
             if (definition.endStyle == HoleEndStyle.BLIND && definition.holeDepth < definition.cBoreDepth)
-                reportFeatureError(context, id, ErrorStringEnum.HOLE_CBORE_TOO_DEEP);
+                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
         }
+
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
         {
             if (definition.holeDiameter > definition.cSinkDiameter)
-                reportFeatureError(context, id, ErrorStringEnum.HOLE_CSINK_TOO_SMALL);
+                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, ["holeDiameter", "cSinkDiameter"]);
 
-            const cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle);
-            if (definition.endStyle == HoleEndStyle.BLIND && definition.holeDepth < cSinkDepth)
-                reportFeatureError(context, id, ErrorStringEnum.HOLE_CSINK_TOO_DEEP);
+            // tipDepth is a local used for error checking
+            var tipDepth = definition.holeDepth;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V252_HOLE_FEATURE_FIX_ERROR_CHECK) && !definition.useTipDepth)
+            {
+                // Account for measuring hole depth to the shoulder of the drill
+                tipDepth = tipDepth + (definition.holeDiameter / 2) / tan(definition.tipAngle / 2);
+            }
+            const cSinkDepth = (definition.cSinkDiameter / 2) / tan(CSINK_ANGLE / 2);
+            if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth)
+                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
         }
+
         const locations = reduceLocations(context, definition.locations);
         if (size(locations) == 0)
+        {
             throw regenError(ErrorStringEnum.HOLE_NO_POINTS, ["locations"]);
-
-        const scopeTest = evaluateQuery(context, definition.scope);
-        if (size(scopeTest) == 0)
-            throw regenError(ErrorStringEnum.HOLE_EMPTY_SCOPE, ["scope"]);
-
-        definition.scopeSize = try(scopeSize(context, definition.scope));
-        if (definition.scopeSize == undefined)
-            throw regenError(ErrorStringEnum.HOLE_FAIL_BBOX, ["scope"]);
+        }
+        else
+        {
+            definition.scopeSize = 0.1 * meter;
+            const scopeTest = evaluateQuery(context, definition.scope);
+            if (size(scopeTest) == 0)
+            {
+                reportFeatureError(context, id, ErrorStringEnum.HOLE_EMPTY_SCOPE, ["scope"]);
+            }
+            else
+            {
+                definition.scopeSize = try(scopeSize(context, definition.scope));
+                if (definition.scopeSize == undefined)
+                {
+                    reportFeatureError(context, id, ErrorStringEnum.HOLE_FAIL_BBOX, ["scope"]);
+                }
+            }
+        }
 
         const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
         // ------------- Perform the operation ---------------
+        var numSuccess = holeOp(context, id, locations, definition);
 
-        // for each hole
-        var holeNumber = -1;
-        var numSuccess = 0;
-        for (var location in locations)
+        // If we have no errors, test for sucess and disjoint and report those errors
+        if (!hasErrors(context, id))
         {
-            try
+            if (numSuccess == 0)
+                reportFeatureError(context, id, ErrorStringEnum.HOLE_NO_HITS, ["scope"]);
+            else
             {
-                /**
-                 * for each point (vertex or circular arc) compute a cSys with the point at the
-                 * origin and +z pointing in the hole direction. At each location, cast cylindrical rays
-                 * from 'infinity' at the front and back of the targets. For each cylinder, find the furthest
-                 * point of contact. Find the closest of these points, this the 'start' of the hole.
-                 * Now cut the hole.
-                 */
-                holeNumber += 1;
-                const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
-                var startPointCSys = planeToCSys(sketchPlane);
-                const point is Vector = evVertexPoint(context, { "vertex" : location });
+              const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+              if (finalBodyCount > startingBodyCount)
+                  reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+            }
+        }
 
-                const sign = definition.oppositeDirection ? 1 : -1;
-                startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
+        // Test for errors again, now with success and disjoint check
+        if (hasErrors(context, id))
+        {
+            const errorId = id + "errorEntities";
+            definition.generateErrorBodies = true;
+            holeOp(context, errorId, locations, definition);
+            setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+            opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        }
+    }, { endStyle : HoleEndStyle.BLIND, style : HoleStyle.SIMPLE, oppositeDirection : false,
+         tipAngle : 118 * degree, useTipDepth : false,
+         cSinkUseDepth : false, cSinkDepth : 0 * meter,
+         generateErrorBodies : false});
 
-                var maxDiameter = definition.holeDiameter;
-                if (definition.style == HoleStyle.C_BORE)
-                    maxDiameter = definition.cBoreDiameter;
-                else if (definition.style == HoleStyle.C_SINK)
-                    maxDiameter = definition.cSinkDiameter;
+function hasErrors(context is Context, id is Id) returns boolean
+{
+    return getFeatureError(context, id) != undefined || getFeatureWarning(context, id) != undefined || getFeatureInfo(context, id) != undefined;
+}
 
-                const holeId = id + ("hole-" ~ holeNumber);
+function holeOp(context is Context, id is Id, locations is array, definition is map)
+{
 
-                const startDistances = cylinderCastBiDir(context, holeId, {
+    // for each hole
+    var holeNumber = -1;
+    var numSuccess = 0;
+    for (var location in locations)
+    {
+        try
+        {
+            /**
+             * for each point (vertex or circular arc) compute a cSys with the point at the
+             * origin and +z pointing in the hole direction. At each location, cast cylindrical rays
+             * from 'infinity' at the front and back of the targets. For each cylinder, find the furthest
+             * point of contact. Find the closest of these points, this the 'start' of the hole.
+             * Now cut the hole.
+             */
+            holeNumber += 1;
+            const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
+            var startPointCSys = planeToCSys(sketchPlane);
+            const point is Vector = evVertexPoint(context, { "vertex" : location });
+
+            const sign = definition.oppositeDirection ? 1 : -1;
+            startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
+
+            var maxDiameter = definition.holeDiameter;
+            if (definition.style == HoleStyle.C_BORE)
+                maxDiameter = definition.cBoreDiameter;
+            else if (definition.style == HoleStyle.C_SINK)
+                maxDiameter = definition.cSinkDiameter;
+
+            const holeId = id + ("hole-" ~ holeNumber);
+
+            var startDistances;
+            if (definition.generateErrorBodies)
+            {
+                startDistances = { frontDist : 0 * meter, backDist : 0 * meter };
+            }
+            else
+            {
+                startDistances = cylinderCastBiDir(context, holeId, {
                     "scopeSize" : definition.scopeSize,
                     "cSys" : startPointCSys,
                     "diameter": maxDiameter,
                     "scope" : definition.scope });
-
-                cutHole(context, holeId, definition, startDistances, startPointCSys);
-
+            }
+            if (cutHole(context, holeId, definition, startDistances, startPointCSys))
+            {
                 numSuccess += 1;
             }
         }
-        if (numSuccess == 0)
-            throw regenError(ErrorStringEnum.HOLE_NO_HITS);
-
-        const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
-        if (finalBodyCount > startingBodyCount)
-            throw regenError(ErrorStringEnum.HOLE_DISJOINT);
-    }, { endStyle : HoleEndStyle.BLIND, style : HoleStyle.SIMPLE, oppositeDirection : false,
-         cSinkAngle : 45 * degree, cSinkUseDepth : false, cSinkDepth : 0 * meter });
+    }
+    return numSuccess;
+}
 
 function reduceLocations(context is Context, rawLocationQuery is Query) returns array
 {
@@ -192,7 +256,7 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
             var found = false;
             for (var testPt in pts)
             {
-                if (samePoint(ptResult, testPt))
+                if (tolerantEquals(ptResult, testPt))
                     found = true;
             }
             if (!found)
@@ -213,8 +277,8 @@ const HOLE_DIAMETER_BOUNDS =
     (millimeter) : [0.1,    5.0,   250000],
     (centimeter) : [0.01,   0.5,   25000],
     (inch)       : [0.001,  0.25,   10000],
-    (foot)       : [0.0001, 0.015, 1000],
-    (yard)       : [0.0001, 0.005, 250]
+    (foot)       : [0.0001, 0.02, 1000],
+    (yard)       : [0.0001, 0.007, 250]
 } as LengthBoundSpec;
 
 const HOLE_BORE_DIAMETER_BOUNDS =
@@ -225,8 +289,8 @@ const HOLE_BORE_DIAMETER_BOUNDS =
     (millimeter) : [0.1,    10.0,   250000],
     (centimeter) : [0.01,   1.0,   25000],
     (inch)       : [0.001,  0.5,   10000],
-    (foot)       : [0.0001, 0.03, 1000],
-    (yard)       : [0.0001, 0.01, 250]
+    (foot)       : [0.0001, 0.04, 1000],
+    (yard)       : [0.0001, 0.014, 250]
 } as LengthBoundSpec;
 
 const HOLE_DEPTH_BOUNDS =
@@ -237,54 +301,54 @@ const HOLE_DEPTH_BOUNDS =
     (millimeter) : [0.1,    20.0,   250000],
     (centimeter) : [0.01,   2.0,   25000],
     (inch)       : [0.001,  1.5,   10000],
-    (foot)       : [0.0001, 0.125, 1000],
-    (yard)       : [0.0001, 0.041666667, 250]
+    (foot)       : [0.0001, 0.125,  1000],
+    (yard)       : [0.0001, 0.04,   250]
 } as LengthBoundSpec;
 
 const HOLE_BORE_DEPTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.05,         250],
     (millimeter) : [0.0, 5.0,       250000],
     (centimeter) : [0.0, 0.5,        25000],
+    (meter)      : [0.0, 0.005,        250],
     (inch)       : [0.0, 0.25,       10000],
-    (foot)       : [0.0, 0.020833333, 1000],
-    (yard)       : [0.0, 0.069444444,  250]
+    (foot)       : [0.0, 0.02,        1000],
+    (yard)       : [0.0, 0.007,        250]
 } as LengthBoundSpec;
 
 
-function depthOfRadius(context is Context, radius is ValueWithUnits, angle is ValueWithUnits)
+function depthOfRadius(context is Context, radius is ValueWithUnits, halfAngle is ValueWithUnits)
 precondition
 {
     isLength(radius);
-    isAngle(angle);
+    isAngle(halfAngle);
 }
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
     {
-        return radius / tan(angle);
+        return radius / tan(halfAngle);
     }
     else
     {
-        return cos(angle) * radius;
+        return cos(halfAngle) * radius;
     }
 }
 
-function radiusOfDepth(context is Context, depth is ValueWithUnits, angle is ValueWithUnits)
+function radiusOfDepth(context is Context, depth is ValueWithUnits, halfAngle is ValueWithUnits)
 precondition
 {
     isLength(depth);
-    isAngle(angle);
+    isAngle(halfAngle);
 }
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V190_HOLE_FEATURE_ANGLE_MATH))
     {
-        return depth * tan(angle);
+        return depth * tan(halfAngle);
     }
     else
     {
-        return sin(angle) * depth;
+        return sin(halfAngle) * depth;
     }
 }
 
@@ -331,7 +395,7 @@ precondition
     }
     const targets = evaluateQuery(context, arg.scope);
     if (size(targets) == 0)
-        throw "No targets";
+        return 0 * meter;
 
     var shotNum = -1;
     const sketchEntityQuery = sketchEntityQuery(id + (sketchName ~ ".wireOp"), EntityType.EDGE, "circle");
@@ -500,8 +564,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             "clearanceDepth" : frontDist,
             "cSinkUseDepth"  : holeDefinition.cSinkUseDepth,
             "cSinkDepth"     : holeDefinition.cSinkDepth,
-            "cSinkDiameter"  : holeDefinition.cSinkDiameter,
-            "cSinkAngle"     : holeDefinition.cSinkAngle });
+            "cSinkDiameter"  : holeDefinition.cSinkDiameter });
 
         if (frontDist != 0 * meter)
             startDepth = frontDist;
@@ -519,19 +582,32 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
 
     skSolve(sketch);
 
+    var success = true;
     const axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
     const sketchQuery = qSketchRegion(id + sketchName, false);
-    spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, false);
+    const hasScope = size(evaluateQuery(context, holeDefinition.scope)) != 0;
+    if (holeDefinition.generateErrorBodies || !hasScope)
+    {
+        success = false;
+        //Failure case, make new tools
+        spinCut(context, id, sketchQuery, axisQuery, qNothing(), true );
+    }
+    else
+    {
+        // Normal case subtract tools
+        spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, false );
+    }
     opDeleteBodies(context, id + "delete_sketch", { "entities" : qCreatedBy(id + sketchName, EntityType.BODY) });
     // Also delete any unused bodies from the spin
     const extraBodies = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
-    if (size(extraBodies) > 0)
+    if (size(extraBodies) > 0 && !holeDefinition.generateErrorBodies && hasScope)
     {
         opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(id, EntityType.BODY) });
     }
     const newFaces = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));
     if (size(newFaces) == 0)
-        throw "No faces created";
+        success = false;
+    return success;
 }
 
 function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery is Query, scopeQuery is Query, makeNew is boolean)
@@ -585,19 +661,18 @@ precondition
     isLength(arg.clearanceDepth);
     isLength(arg.cSinkDepth);
     isLength(arg.cSinkDiameter);
-    isAngle(arg.cSinkAngle);
 }
 {
     var cSinkRadius = 0 * meter;
     var cSinkDepth = arg.cSinkDepth;
     if (arg.cSinkUseDepth)
     {
-        cSinkRadius = radiusOfDepth(context, cSinkDepth, arg.cSinkAngle);
+        cSinkRadius = radiusOfDepth(context, cSinkDepth, CSINK_ANGLE / 2);
     }
     else
     {
         cSinkRadius = arg.cSinkDiameter / 2;
-        cSinkDepth = depthOfRadius(context, cSinkRadius, arg.cSinkAngle);
+        cSinkDepth = depthOfRadius(context, cSinkRadius, CSINK_ANGLE / 2);
     }
 
     const sign = arg.isPositive ? 1 : -1;
@@ -633,10 +708,10 @@ precondition
 }
 {
     const radius = arg.holeDefinition.holeDiameter * 0.5;
-    const tipAngle = 118.0 / 2.0 * degree;
+    const tipAngle = arg.holeDefinition.tipAngle;
     var depth = arg.holeDefinition.holeDepth;
-    var useTipLength = false;
-    const tipDepth = depthOfRadius(context, radius, tipAngle);
+    var useTipDepth = arg.holeDefinition.useTipDepth;
+    const tipDepth = depthOfRadius(context, radius, tipAngle / 2.0);
     if (arg.holeDefinition.endStyle == HoleEndStyle.THROUGH)
     {
         depth = arg.holeDefinition.scopeSize * 2;
@@ -654,14 +729,14 @@ precondition
         if (result != undefined)
             depth += result - arg.startDepth - arg.clearanceDepth;
 
-        if (useTipLength)
+        if (useTipDepth)
         {
             depth += tipDepth;
         }
     }
 
     var points;
-    if (useTipLength)
+    if (useTipDepth)
     {
         points = [vector(arg.startDepth, 0 * meter),
                   vector(arg.startDepth + arg.clearanceDepth + depth, 0 * meter),

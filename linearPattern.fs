@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
@@ -46,7 +50,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         isLength(definition.distance, PATTERN_OFFSET_BOUND);
 
         annotation { "Name" : "Instance count" }
-        isInteger(definition.instanceCount, POSITIVE_COUNT_BOUNDS);
+        isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
@@ -65,7 +69,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             isLength(definition.distanceTwo, PATTERN_OFFSET_BOUND);
 
             annotation { "Name" : "Instance count" }
-            isInteger(definition.instanceCountTwo, POSITIVE_COUNT_BOUNDS_DEFAULT_1);
+            isInteger(definition.instanceCountTwo, SECONDARY_PATTERN_BOUNDS);
 
             annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             definition.oppositeDirectionTwo is boolean;

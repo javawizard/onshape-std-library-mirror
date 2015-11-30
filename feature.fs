@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports that most features will need to use.
 export import(path : "onshape/std/context.fs", version : "");
 export import(path : "onshape/std/error.fs", version : "");
@@ -8,6 +12,7 @@ export import(path : "onshape/std/query.fs", version : "");
 // Imports used internally
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/transform.fs", version : "");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
@@ -102,6 +107,16 @@ export function endFeature(context is Context, id is Id)
 
 /**
  * For Onshape internal use.
+ *
+ * Returns the id used by the innermost call to `startFeature`.  Temporary operations may be started by adding to this id.
+ */
+export function getCurrentSubfeatureId(context is Context) returns Id
+{
+    return @getCurrentSubfeatureId(context) as Id;
+}
+
+/**
+ * For Onshape internal use.
  */
 export function recordQueries(context is Context, id is Id, definition is map)
 {
@@ -127,6 +142,43 @@ export function setFeatureComputedParameter(context is Context, id is Id, defini
     @setFeatureComputedParameter(context, id, definition);
 }
 
+/**
+ * Builds stack of patternInstanceData, featureEnd/featureAbort on id parent pops the stack.
+ * @param id {Id} : instance id
+ * @param definition {{
+ *      @field transform {Transform}
+ *  }}
+ */
+export function setFeaturePatternInstanceData(context is Context, id is Id, definition is map)
+{
+    @setFeaturePatternInstanceData(context, id, definition);
+}
+
+/**
+ * When in feature pattern scope returns composition of all pattern transforms pushed by setFeaturePatternInstanceData
+ * returns identity transform when out of scope
+ */
+export function getFullPatternTransform(context is Context) returns Transform
+{
+    return transformFromBuiltin(@getFullPatternTransform(context));
+}
+
+/**
+ *  Among references find topology created by pattern instance deepest in the stack.
+ *  If transformation on the stack in that instance is S and full transformation is F, the remainder R is such that S*R = F
+ *
+ *  @param definition {{
+ *      @field references {Query}
+ *  }}
+ */
+export function getRemainderPatternTransform(context is Context, definition is map) returns Transform
+precondition
+{
+    definition.references is Query;
+}
+{
+    return transformFromBuiltin(@getRemainderPatternTransform(context, definition));
+}
 
 //====================== Query evaluation ========================
 

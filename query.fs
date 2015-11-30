@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /**
  * Functions for constructing queries.
  * Features that take queries as inputs should re-export this module.
@@ -119,6 +123,7 @@ export enum QueryType
     CREATED_BY,
     SKETCH_REGION,
     TRANSIENT,
+    ATTRIBUTE_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -161,6 +166,7 @@ export enum QueryType
     MATE_CONNECTOR,
     CONSTRUCTION_FILTER,
     DEPENDENCY
+
 }
 
 /**
@@ -398,6 +404,21 @@ export function qEntityFilter(subquery is Query, entityType is EntityType) retur
     return { queryType : QueryType.ENTITY_FILTER, "entityType" : entityType, "subquery" : subquery } as Query;
 }
 
+/**
+* A query for entities of a subquery which have been assigned an attribute matching a given `attributePattern` @see `getAttributes`
+*/
+export function qAttributeFilter(subquery is Query, attributePattern) returns Query
+{
+    return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern, "subquery" : subquery } as Query;
+}
+/**
+* A query for all entities which have been assigned an attribute matching a given `attributePattern`.
+* Equivalent to `qAttributeFilter(qEverything(), attributePattern)`
+*/
+export function qAttributeQuery(attributePattern) returns Query
+{
+    return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern} as Query;
+}
 /**
  * A query for all the entities created by a feature or operation. The feature
  * is given by its feature id, which was passed into the the operation function

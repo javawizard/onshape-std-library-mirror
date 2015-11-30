@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum ErrorStringEnum
@@ -436,7 +440,13 @@ export enum ErrorStringEnum
     CPLANE_DEGENERATE_SELECTION,
     CPLANE_SELECT_LINE_ANGLE_REFERENCE,
     AUTO_ASSEMBLY_INVALID_SEED_INSTANCE,
-    CANNOT_USE_VARIABLES_IN_SKETCH_PATTERNS
+    CANNOT_USE_VARIABLES_IN_SKETCH_PATTERNS,
+    SKETCH_MIRROR_OFFSET_ELLIPSE,
+    EXTERNAL_REFERENCE_FAILED_TO_CREATE,
+    SPLIT_FACE_NO_CHANGE,
+    SKETCH_INTERSECTION_FAILED,
+    SKETCH_INTERSECTION_MULTIPLE_FAILED,
+    SKETCH_INTERSECTION_PARTIAL_FAILED
 }
 
 

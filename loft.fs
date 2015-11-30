@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
@@ -73,13 +77,17 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             annotation { "Name" : "Profiles",
-                         "Filter" : (EntityType.FACE || EntityType.VERTEX) && ConstructionObject.NO }
+                         "Filter" : (EntityType.FACE || EntityType.VERTEX ||
+                                    (EntityType.BODY && BodyType.SHEET))
+                                    && ConstructionObject.NO }
             definition.sheetProfiles is Query;
         }
         else
         {
             annotation { "Name" : "Profiles",
-                         "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE) && ConstructionObject.NO }
+                         "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE ||
+                                    (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET)))
+                                    && ConstructionObject.NO }
             definition.wireProfiles is Query;
         }
 

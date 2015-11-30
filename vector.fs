@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 //Vector math
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
@@ -367,11 +371,14 @@ export function toString(value is Vector) returns string
 }
 
 /**
- * Return true if two vectors designate the same point (within tolerance).
+ * Return true if two vectors designate the same point (within tolerance) or the same direction (within tolerance).
  */
-export function samePoint(point1 is Vector, point2 is Vector) returns boolean
+export predicate tolerantEquals(point1 is Vector, point2 is Vector)
 {
-    return stripUnits(squaredNorm(point1 - point2)) < TOLERANCE.zeroLength * TOLERANCE.zeroLength;
+    if (point1[0] is number) // Assume direction
+        squaredNorm(point1 - point2) < TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
+    else
+        squaredNorm(point1 - point2).value < TOLERANCE.zeroLength * TOLERANCE.zeroLength;
 }
 
 /**

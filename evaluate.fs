@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /**
  * Evaluation functions return information about the topological entities in the context, like bounding boxes, tangent
  * planes, projections, and collisions. Evaluation functions typically take a context and a map that specifies the
@@ -28,7 +32,6 @@ import(path : "onshape/std/units.fs", version : "");
  *      @field parameter {Vector}: 2d vector specifying the plane's origin's offset, relative to the given edge's bounding box.
  *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
  * }}
- * @returns {Plane}
  */
 export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 {
@@ -60,8 +63,20 @@ precondition
 }
 
 /**
- * Return one tangent to an edge.
- * @see `evEdgeTangentLines`
+ * Return one tangent line to an edge.
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating a point along
+ *             the curve to evaluate the tangent at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
+ *          @optional
+ * }}
  */
 export function evEdgeTangentLine(context is Context, arg is map) returns Line
 {
@@ -70,16 +85,18 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
 }
 
 /**
- * Return tangents to a line.
+ * Return tangent lines to a edge.
  * @param arg {{
- *      @field edge {Query}: The line to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
  *      @field parameter {array}:
  *             An array of numbers in the range 0..1 indicating points along
- *             the line to evaluate tangents at.
+ *             the curve to evaluate tangents at.
  *      @field arcLengthParameterization :
  *             If true (default), the parameter measures distance
  *             along the edge, so `0.5` is the midpoint.
  *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
  *          @optional
  * }}
  * @returns {array} : array of `Line`
@@ -136,7 +153,7 @@ precondition
 }
 
 /**
- * If the face is a planem, return a Plane value for the given face.
+ * If the face is a plane, return a `Plane` value for the given face.
  * @param arg {{
  *      @field face{Query}
  * }}

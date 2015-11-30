@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports used in interface
 export import(path : "onshape/std/curvetype.gen.fs", version : "");
 
@@ -42,6 +46,15 @@ export function line(origin is Vector, direction is Vector) returns Line
 export function lineFromBuiltin(definition is map) returns Line
 {
     return line((definition.origin as Vector) * meter, definition.direction as Vector);
+}
+
+/**
+ * Check that two `Line`s are the same up to tolerance, including the origin.
+ */
+export predicate tolerantEquals(line1 is Line, line2 is Line)
+{
+    tolerantEquals(line1.origin, line2.origin);
+    tolerantEquals(line1.direction, line2.direction);
 }
 
 export operator*(transform is Transform, lineRhs is Line) returns Line
@@ -132,6 +145,15 @@ export function circleFromBuiltin(definition is map) returns Circle
     return circle(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
+/**
+ * Check that two `Circle`s are the same up to tolerance, including the coordinate system.
+ */
+export predicate tolerantEquals(circle1 is Circle, circle2 is Circle)
+{
+    tolerantEquals(circle1.coordSystem, circle2.coordSystem);
+    tolerantEquals(circle1.radius, circle2.radius);
+}
+
 export function toString(value is Circle) returns string
 {
     return "radius" ~ toString(value.radius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
@@ -180,6 +202,16 @@ export function ellipse(center is Vector, xDirection is Vector, normal is Vector
 export function ellipseFromBuiltin(definition is map) returns Ellipse
 {
     return ellipse(coordSystemFromBuiltin(definition.coordSystem), definition.majorRadius * meter, definition.minorRadius * meter);
+}
+
+/**
+ * Check that two `Ellipse`s are the same up to tolerance, including the coordinate system.
+ */
+export predicate tolerantEquals(ellipse1 is Ellipse, ellipse2 is Ellipse)
+{
+    tolerantEquals(ellipse1.coordSystem, ellipse2.coordSystem);
+    tolerantEquals(ellipse1.majorRadius, ellipse2.majorRadius);
+    tolerantEquals(ellipse1.minorRadius, ellipse2.minorRadius);
 }
 
 export function toString(value is Ellipse) returns string

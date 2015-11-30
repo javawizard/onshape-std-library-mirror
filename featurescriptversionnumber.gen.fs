@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /* Automatically generated file -- DO NOT EDIT */
 
 export enum FeatureScriptVersionNumber
@@ -235,9 +239,15 @@ export enum FeatureScriptVersionNumber
     V241_PS_VERSION_28_0_197,
     V242_MATE_CONNECTOR_CSYS_AND_ANGLE_RENORM,
     V243_IMPRINT_USE_VERTEX_TOLERANCE,
-    V244_SKETCH_REGION_UPDATE
+    V244_SKETCH_REGION_UPDATE,
+    V250_PS_VERSION_28_0_202,
+    V251_THICKEN_RECORDS_FIX2,
+    V252_HOLE_FEATURE_FIX_ERROR_CHECK,
+    V253_ADD_SPLIT_FACE,
+    V254_SKETCH_INTERSECTION,
+    V255_HOLE_FEATURE_FIX_ERROR_DISPLAY
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V244_SKETCH_REGION_UPDATE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V255_HOLE_FEATURE_FIX_ERROR_DISPLAY;
 
 

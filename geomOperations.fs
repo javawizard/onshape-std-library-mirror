@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /**
  * Operations are the basic modeling primitives of FeatureScript. Operations can do extrusion, filleting, transforms,
  * etc. An operation takes a context, an id, and a definition and modifies the context in accordance to the
@@ -181,16 +185,20 @@ export function opImportForeign(context is Context, id is Id, definition is map)
 }
 
 /**
- * Creates a surface or solid loft between multiple profiles, possibly using guide curves. TODO: Ask Elif to document
- * parameters and requirements.
+ * Creates a surface or solid loft fitting an ordered set of profiles, optionally constrained by guide curves.
  * @param definition {{
- *      @field profileSubqueries {array} : An array of queries for the profiles. For a solid loft, these must be faces
- *          or vertices. For a surface loft, these could be faces, edges, or vertices.
- *      @field guideSubqueries {array} : An array of queries for the guide curves. @optional
- *      @field vertices {Query} : TODO @optional
- *      @field makePeriodic {boolean} : Defaults to false. @optional
+ *      @field profileSubqueries {array} : An ordered array of queries for the profiles. For a solid loft, these must be
+ *          surface bodies, faces, or vertices. For a surface loft, these could be wire bodies, surface bodies, faces, edges, or vertices.
+ *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
+ *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
+ *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
  *      @field bodyType {ToolBodyType} : Whether this is a solid (default) or a surface loft. @optional
- *      @field derivativeInfo {array} : TODO @optional
+ *      @field derivativeInfo {array} : An array of maps that contain shape constraints at start and end profiles. Each map entry
+ *          is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
+ *          a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile. @optional
+ *          @eg `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces }]`
+ *          The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
+ *          The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  * }}
  */
 export function opLoft(context is Context, id is Id, definition is map)
@@ -366,6 +374,21 @@ export function opShell(context is Context, id is Id, definition is map)
 export function opSplitPart(context is Context, id is Id, definition is map)
 {
     return @opSplitPart(context, id, definition);
+}
+
+/**
+ * Split faces with the given edges or faces.
+ * @param definition {{
+ *      @field faceTargets {Query} : The faces to split.
+ *      @field edgeTools {Query} : The edges to cut with. @optional
+ *      @field direction {Vector} : The projection direction. It has to be set when there are edge tools. @optional
+ *      @field bodyTools {Query} : The bodies to cut with. @optional
+ *      @field planeTools {Query} : The planes to cut with. @optional
+ * }}
+ */
+export function opSplitFace(context is Context, id is Id, definition is map)
+{
+    return @opSplitFace(context, id, definition);
 }
 
 /**

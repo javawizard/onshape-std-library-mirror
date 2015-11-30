@@ -1,5 +1,10 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/containers.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/matrix.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
@@ -63,6 +68,15 @@ export function transformFromBuiltin(definition is map) returns Transform
 export function identityTransform() returns Transform
 {
     return { "linear" : identityMatrix(3), "translation" : vector(0, 0, 0) * meter } as Transform;
+}
+
+/**
+ * Check that two `Transform`s are the same up to tolerance.
+ */
+export predicate tolerantEquals(transform1 is Transform, transform2 is Transform)
+{
+    tolerantEquals(transform1.translation, transform2.translation);
+    squaredNorm(transform1.linear - transform2.linear) < 9 * TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
 }
 
 export operator*(t1 is Transform, t2 is Transform) returns Transform

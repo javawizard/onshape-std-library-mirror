@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 
@@ -203,10 +207,7 @@ export operator/(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
 }
 
 export operator%(lhs is ValueWithUnits, rhs is ValueWithUnits) returns ValueWithUnits
-precondition
-{
-    lhs.unit == rhs.unit;
-}
+precondition lhs.unit == rhs.unit;
 {
     lhs.value %= rhs.value;
     return lhs;
@@ -225,6 +226,16 @@ precondition
         lhs.unit[unit.key] = unit.value * rhs;
     }
     return lhs;
+}
+
+/** Returns true if angles are equal up to zeroAngle or anything else is equal up to zeroLength */
+export predicate tolerantEquals(value1 is ValueWithUnits, value2 is ValueWithUnits)
+precondition value1.unit == value2.unit;
+{
+    if (value1.unit == ANGLE_UNITS)
+        abs(value1.value - value2.value) < TOLERANCE.zeroAngle;
+    else
+        abs(value1.value - value2.value) < TOLERANCE.zeroLength;
 }
 
 /**

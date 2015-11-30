@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
@@ -161,7 +165,7 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
     // Project the center of the plane onto the axis
     var refPoint = facePlane.origin;
     const rotateOrigin = axis.origin + dot(refPoint - axis.origin, axis.direction) * axis.direction;
-    if (samePoint(rotateOrigin, refPoint))
+    if (tolerantEquals(rotateOrigin, refPoint))
     {
         // refPoint lies on the axis, so construct a different refPoint
         var orthoVec = cross(axis.direction, facePlane.normal);

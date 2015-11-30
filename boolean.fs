@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 // Imports used in interface
 export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "");
 export import(path : "onshape/std/query.fs", version : "");
@@ -114,14 +118,24 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         }
         else
         {
+            var isSubtractComplement = false;
             if (definition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS))
             {
-               definition.tools = constructToolsComplement(context, id, definition);
-               definition.operationType = BooleanOperationType.SUBTRACTION;
-               definition.keepTools = false;
+                isSubtractComplement = true;
+                definition.tools = constructToolsComplement(context, id, definition);
+                definition.operationType = BooleanOperationType.SUBTRACTION;
+                definition.keepTools = false;
             }
             opBoolean(context, id, definition);
+            if (isSubtractComplement)
+            {
+                var errorMessage = getFeatureInfo(context, id);
+                if (errorMessage == ErrorStringEnum.BOOLEAN_SUBTRACT_NO_OP)
+                {
+                    reportFeatureInfo(context, id,  ErrorStringEnum.BOOLEAN_INTERSECT_NO_OP);
+                }
+            }
         }
     }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
 

@@ -1,17 +1,26 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/units.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
 /**
  * A three-dimensional bounding box.
+ *
+ * @value {{
+ *      @field minCorner {Vector}: A 3D position representing the corner with the smallest x, y, and z coordinates.
+ *      @field maxCorner {Vector}: A 3D position representing the corner with the largest x, y, and z coordinates.
+ * }}
  */
 export type Box3d typecheck canBeBox3d;
 
 export predicate canBeBox3d(value)
 {
     value is map;
-    isLengthVector(value.minCorner);
-    isLengthVector(value.maxCorner);
+    is3dLengthVector(value.minCorner);
+    is3dLengthVector(value.maxCorner);
 }
 
 /**

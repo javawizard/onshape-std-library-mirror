@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/coordSystem.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -69,6 +73,16 @@ export function planeFromBuiltin(definition is map) returns Plane
 export function yAxis(plane is Plane) returns Vector
 {
     return cross(plane.normal, plane.x);
+}
+
+/**
+ * Check that two `Plane`s are the same up to tolerance, including the origin and local coordinate system.
+ */
+export predicate tolerantEquals(plane1 is Plane, plane2 is Plane)
+{
+    tolerantEquals(plane1.origin, plane2.origin);
+    tolerantEquals(plane1.normal, plane2.normal);
+    tolerantEquals(plane1.x, plane2.x);
 }
 
 /**
@@ -200,7 +214,7 @@ export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersec
     const dotPr = dot(p.normal, l.direction);
     if (abs(dotPr) < TOLERANCE.zeroAngle)
     {
-        if (samePoint(l.origin, project(p, l.origin)))
+        if (tolerantEquals(l.origin, project(p, l.origin)))
             return { 'dim' : 1, 'intersection' : l } as LinePlaneIntersection;
         else
             return { 'dim' : -1 } as LinePlaneIntersection; //line is parallel to plane
@@ -224,9 +238,7 @@ export predicate canBeCone(value)
 }
 
 /**
- * TODO: description
- * @param cSys
- * @param halfAngle
+ * Constructs a cone from a coordinate system and a half angle.
  */
 export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns Cone
 {
@@ -240,6 +252,15 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
 export function coneFromBuiltin(definition is map) returns Cone
 {
     return cone(coordSystemFromBuiltin(definition.coordSystem), definition.halfAngle * radian);
+}
+
+/**
+ * Check that two `Cone`s are the same up to tolerance, including the local coordinate system.
+ */
+export predicate tolerantEquals(cone1 is Cone, cone2 is Cone)
+{
+    tolerantEquals(cone1.coordSystem, cone2.coordSystem);
+    tolerantEquals(cone1.halfAngle, cone2.halfAngle);
 }
 
 export function toString(value is Cone) returns string
@@ -262,9 +283,7 @@ export predicate canBeCylinder(value)
 }
 
 /**
- * TODO: description
- * @param cSys
- * @param radius
+ * Constructs a cylinder from a coordinate system and a radius.
  */
 export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns Cylinder
 {
@@ -278,6 +297,15 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
 export function cylinderFromBuiltin(definition is map) returns Cylinder
 {
     return cylinder(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
+}
+
+/**
+ * Check that two `Cylinder`s are the same up to tolerance, including the local coordinate system.
+ */
+export predicate tolerantEquals(cylinder1 is Cylinder, cylinder2 is Cylinder)
+{
+    tolerantEquals(cylinder1.coordSystem, cylinder2.coordSystem);
+    tolerantEquals(cylinder1.radius, cylinder2.radius);
 }
 
 export function toString(value is Cylinder) returns string
@@ -301,10 +329,7 @@ export predicate canBeTorus(value)
 }
 
 /**
- * TODO: description
- * @param cSys
- * @param minorRadius
- * @param radius
+ * Constructs a torus from a coordinate system, the minor radius, and the major radius.
  */
 export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius is ValueWithUnits) returns Torus
 {
@@ -318,6 +343,16 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 export function torusFromBuiltin(definition is map) returns Torus
 {
     return torus(coordSystemFromBuiltin(definition.coordSystem), definition.minorRadius * meter, definition.radius * meter);
+}
+
+/**
+ * Check that two tori are the same up to tolerance, including the local coordinate system.
+ */
+export predicate tolerantEquals(torus1 is Torus, torus2 is Torus)
+{
+    tolerantEquals(torus1.coordSystem, torus2.coordSystem);
+    tolerantEquals(torus1.radius, torus2.radius);
+    tolerantEquals(torus1.minorRadius, torus2.minorRadius);
 }
 
 export function toString(value is Torus) returns string
@@ -351,6 +386,15 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
 export function sphereFromBuiltin(definition is map) returns Sphere
 {
     return sphere(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
+}
+
+/**
+ * Check that two `Sphere`s are the same up to tolerance, including the local coordinate system.
+ */
+export predicate tolerantEquals(sphere1 is Sphere, sphere2 is Sphere)
+{
+    tolerantEquals(sphere1.coordSystem, sphere2.coordSystem);
+    tolerantEquals(sphere1.radius, sphere2.radius);
 }
 
 export function toString(value is Sphere) returns string

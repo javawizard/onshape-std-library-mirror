@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 /**
  * Functions used to create sketches, and add entities to sketches.
  *
@@ -220,12 +224,13 @@ precondition
 export function skImage(sketch is Sketch, imageId is string, value is map)
 precondition
 {
-    value.blobInfo is map; // We'll let the builtin do the real error checking
+    value.blobInfo is undefined || value.blobInfo is map; // We'll let the builtin do the real error checking
     value.firstCorner is undefined || is2dPoint(value.firstCorner);
     value.secondCorner is undefined || is2dPoint(value.secondCorner);
 }
 {
-    value = mergeMaps(value.blobInfo, value);
+    if (value.blobInfo != undefined)
+        value = mergeMaps(value.blobInfo, value);
     return @skImage(sketch, imageId, value);
 }
 

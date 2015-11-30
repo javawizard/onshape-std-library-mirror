@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/units.fs", version : "");
@@ -218,13 +222,6 @@ export const POSITIVE_COUNT_BOUNDS =
     (unitless) : [1, 2, 1e5]
 } as IntegerBoundSpec;
 
-export const POSITIVE_COUNT_BOUNDS_DEFAULT_1 =
-{
-    "min"      : 1,
-    "max"      : 1e9,
-    (unitless) : [1, 1, 1e5]
-} as IntegerBoundSpec;
-
 export const POSITIVE_REAL_BOUNDS =
 {
     "min"      : 0,
@@ -252,6 +249,20 @@ export const HELIX_TURN_BOUNDS =
     "max"      : 1e9,
     (unitless) : [.0001, 4, 1e5]
 } as RealBoundSpec;
+
+export const PRIMARY_PATTERN_BOUNDS =
+{
+    "min"      : 1,
+    "max"      : 2500,
+    (unitless) : [1, 2, 2500]
+} as IntegerBoundSpec;
+
+export const SECONDARY_PATTERN_BOUNDS =
+{
+    "min"      : 1,
+    "max"      : 2500,
+    (unitless) : [1, 1, 2500]
+} as IntegerBoundSpec;
 
 /**
  * Return the intersection of all bounds in a BoundSpec as an

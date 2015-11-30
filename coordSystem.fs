@@ -1,4 +1,8 @@
-FeatureScript 244; /* Automatically generated version */
+FeatureScript 255; /* Automatically generated version */
+// This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
+// See the COPYING tab for the license text.
+// Copyright (c) 2013-Present Onshape Inc.
+
 import(path : "onshape/std/mathUtils.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 
@@ -37,9 +41,10 @@ export predicate canBeCoordSystem(value)
  * A creates cartesian coordinate system.
  * @param origin : A 3D point in world space.
  * @param xAxis : A 3D vector in world space. Need not be normalized.
- * @param zAxis : A 3D vector in world space. Need not be normalized.
+ * @param zAxis : A 3D vector in world space. Need not be normalized but must be orthogonal to xAxis.
  */
 export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) returns CoordSystem
+precondition perpendicularVectors(xAxis, zAxis);
 {
     return { "origin" : origin, "xAxis" : normalize(xAxis), "zAxis" : normalize(zAxis) } as CoordSystem;
 }
@@ -51,6 +56,16 @@ export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) 
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 {
     return coordSystem((cSys.origin as Vector) * meter, cSys.xAxis as Vector, cSys.zAxis as Vector);
+}
+
+/**
+ * Check that two `CoordSystem`s are the same up to tolerance.
+ */
+export predicate tolerantEquals(cSys1 is CoordSystem, cSys2 is CoordSystem)
+{
+    tolerantEquals(cSys1.origin, cSys2.origin);
+    tolerantEquals(cSys1.xAxis, cSys2.xAxis);
+    tolerantEquals(cSys1.zAxis, cSys2.zAxis);
 }
 
 /**
