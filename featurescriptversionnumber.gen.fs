@@ -1,6 +1,6 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /* Automatically generated file -- DO NOT EDIT */
@@ -245,9 +245,24 @@ export enum FeatureScriptVersionNumber
     V252_HOLE_FEATURE_FIX_ERROR_CHECK,
     V253_ADD_SPLIT_FACE,
     V254_SKETCH_INTERSECTION,
-    V255_HOLE_FEATURE_FIX_ERROR_DISPLAY
+    V255_HOLE_FEATURE_FIX_ERROR_DISPLAY,
+    V261_FACE_DISAMBIGUATION_ERROR,
+    V262_DCM_VERSION_65_0_0,
+    V263_SURFACE_PATTERN_BOOLEAN,
+    V264_SKETCH_CONSTRAINT_PREPROCESS_FAILURE,
+    V265_PS_VERSION_28_0_204,
+    V266_ALLOW_ZERO_OFFSETS,
+    V267_DISPLAY_TEARDROP_SPLINES,
+    V268_LOFT_BUGS,
+    V269_COUNT_MERGE_TOWARDS_SPLIT,
+    V270_SKETCH_TEXT_CUSTOM_MISSING_CHAR,
+    V271_MATE_CONNECTOR_PARALLEL_FIX,
+    V272_MODIFY_DISAMBIGUATION,
+    V273_HISTORY_RECORD_FIXES,
+    V274_HOLE_LIMIT_NUM_LOCATIONS_100,
+    V275_SKETCH_PATTERN_LOWER_LIMIT
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V255_HOLE_FEATURE_FIX_ERROR_DISPLAY;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V275_SKETCH_PATTERN_LOWER_LIMIT;
 
 
