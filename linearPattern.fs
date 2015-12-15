@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
@@ -81,8 +81,10 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
     }
     {
         if (definition.isFacePattern)
+        {
             definition.entities = definition.faces;
-
+            definition.sameFace = isSeedOnSameFace(context, definition.entities);
+        }
         checkInput(context, id, definition);
 
         // Compute a vector of transforms
@@ -149,5 +151,5 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         processPatternBooleansIfNeeded(context, id, definition);
     }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
-         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
+         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false, sameFace : true });
 

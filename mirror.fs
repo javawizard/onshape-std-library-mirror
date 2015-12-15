@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
@@ -13,6 +13,7 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/patternUtils.fs", version : "");
 
 /**
  * TODO: description
@@ -54,8 +55,10 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         const isFaceMirror = definition.isFaceMirror;
 
         if (isFaceMirror)
+        {
             definition.entities = definition.faces;
-
+            definition.sameFace = isSeedOnSameFace(context, definition.entities);
+        }
         if (size(evaluateQuery(context, definition.entities)) == 0)
         {
             if (isFaceMirror)
@@ -75,6 +78,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
             "entities" : definition.entities,
             "transforms" : [transform],
             "instanceNames" : ["1"],
+            "sameFace" : definition.sameFace,
             notFoundErrorKey("entities") : ErrorStringEnum.MIRROR_SELECT_PARTS };
 
         try
@@ -95,5 +99,5 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
             const reconstructOp = function(id) { opPattern(context, id, patternDefinition); };
             processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParmeters), reconstructOp);
         }
-    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
+    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW, sameFace : true });
 

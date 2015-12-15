@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
@@ -237,7 +237,12 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
     // Fill defaults
     definition = mergeMaps({ "seed" : qNothing(), "defaultScope" : true }, definition);
     const resultQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
-    const defaultTools = qUnion([definition.seed, resultQuery]);
+
+    var seedQuery = definition.seed;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V263_SURFACE_PATTERN_BOOLEAN))
+        seedQuery = qBodyType(definition.seed, BodyType.SOLID);
+
+    const defaultTools = qUnion([seedQuery, resultQuery]);
 
     var output = {};
     output.tools = defaultTools;
@@ -276,8 +281,14 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
 
     if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
-        throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, solidsQuery);
-
+    {
+        var errorEnum = ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V263_SURFACE_PATTERN_BOOLEAN))
+        {
+            errorEnum = ErrorStringEnum.FEATURE_NO_SOLIDS;
+        }
+        throw regenError(errorEnum, solidsQuery);
+    }
     if (size(evaluateQuery(context, booleanDefinition.targets)) == 0)
         throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"], solidsQuery);
 

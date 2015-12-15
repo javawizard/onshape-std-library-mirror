@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
@@ -80,3 +80,15 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
     }
 }
 
+/**
+ * Determine if faces in the seed query are bounded by multiple faces
+ * @param context
+ * @param seed
+ */
+export function isSeedOnSameFace(context is Context, seed is Query) returns boolean
+{
+    const adjacentFaceQuery = qEdgeAdjacent(seed, EntityType.FACE);
+    if (@size(evaluateQuery(context, qSubtraction(adjacentFaceQuery, seed))) > 1)
+        return false;
+    return true;
+}

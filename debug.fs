@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/containers.fs", version : "");
@@ -27,10 +27,8 @@ const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
  * `Line`,
  * `CoordSystem`,
  * `Plane`.
- *
- * TODO: `Cirlce`, `Ellipse`, `Cylinder`, `Cone`, `Torus`, `Transform`.
  */
-export function debug(context is Context, value)
+export function debug(context is Context, value) // TODO: `Circle`, `Ellipse`, `Cylinder`, `Cone`, `Torus`, `Transform`, `Box`.
 {
     print("debug: ");
     println("" ~ value);

@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/boolean.fs", version : "");
@@ -47,6 +47,7 @@ export enum HoleEndStyle
 }
 
 const CSINK_ANGLE = 90 * degree;
+const MAX_LOCATIONS = 100;
 
 /**
  * TODO: description
@@ -136,6 +137,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
         else
         {
+            if (size(locations) > MAX_LOCATIONS && isAtVersionOrLater(context, FeatureScriptVersionNumber.V274_HOLE_LIMIT_NUM_LOCATIONS_100))
+            {
+                throw regenError(ErrorStringEnum.HOLE_EXCEEDS_MAX_LOCATIONS, ["locations"]);
+            }
+
             definition.scopeSize = 0.1 * meter;
             const scopeTest = evaluateQuery(context, definition.scope);
             if (size(scopeTest) == 0)
@@ -273,48 +279,48 @@ const HOLE_DIAMETER_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.005, 250],
-    (millimeter) : [0.1,    5.0,   250000],
-    (centimeter) : [0.01,   0.5,   25000],
-    (inch)       : [0.001,  0.25,   10000],
-    (foot)       : [0.0001, 0.02, 1000],
-    (yard)       : [0.0001, 0.007, 250]
+    (meter)      : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.02,
+    (yard)       : 0.007
 } as LengthBoundSpec;
 
 const HOLE_BORE_DIAMETER_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.01, 250],
-    (millimeter) : [0.1,    10.0,   250000],
-    (centimeter) : [0.01,   1.0,   25000],
-    (inch)       : [0.001,  0.5,   10000],
-    (foot)       : [0.0001, 0.04, 1000],
-    (yard)       : [0.0001, 0.014, 250]
+    (meter)      : [1e-5, 0.01, 500],
+    (centimeter) : 1.0,
+    (millimeter) : 10.0,
+    (inch)       : 0.5,
+    (foot)       : 0.04,
+    (yard)       : 0.014
 } as LengthBoundSpec;
 
 const HOLE_DEPTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.02, 250],
-    (millimeter) : [0.1,    20.0,   250000],
-    (centimeter) : [0.01,   2.0,   25000],
-    (inch)       : [0.001,  1.5,   10000],
-    (foot)       : [0.0001, 0.125,  1000],
-    (yard)       : [0.0001, 0.04,   250]
+    (meter)      : [1e-5, 0.02, 500],
+    (centimeter) : 2.0,
+    (millimeter) : 20.0,
+    (inch)       : 1.5,
+    (foot)       : 0.125,
+    (yard)       : 0.04
 } as LengthBoundSpec;
 
 const HOLE_BORE_DEPTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (millimeter) : [0.0, 5.0,       250000],
-    (centimeter) : [0.0, 0.5,        25000],
-    (meter)      : [0.0, 0.005,        250],
-    (inch)       : [0.0, 0.25,       10000],
-    (foot)       : [0.0, 0.02,        1000],
-    (yard)       : [0.0, 0.007,        250]
+    (meter)      : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.02,
+    (yard)       : 0.007
 } as LengthBoundSpec;
 
 
@@ -707,6 +713,7 @@ precondition
     arg.holeDefinition is map;
 }
 {
+    const scopeSizeGrowFactor = arg.holeDefinition.generateErrorBodies ? 1 : 2;
     const radius = arg.holeDefinition.holeDiameter * 0.5;
     const tipAngle = arg.holeDefinition.tipAngle;
     var depth = arg.holeDefinition.holeDepth;
@@ -714,7 +721,7 @@ precondition
     const tipDepth = depthOfRadius(context, radius, tipAngle / 2.0);
     if (arg.holeDefinition.endStyle == HoleEndStyle.THROUGH)
     {
-        depth = arg.holeDefinition.scopeSize * 2;
+        depth = arg.holeDefinition.scopeSize * scopeSizeGrowFactor;
     }
     else if (arg.holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
     {

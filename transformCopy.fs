@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
@@ -176,18 +176,18 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             isLength(definition.dz, ZERO_DEFAULT_LENGTH_BOUNDS);
         }
 
-        if (definition.transformType != TransformType.COPY)
-        {
-            annotation { "Name" : "Copy part" }
-            definition.makeCopy is boolean;
-        }
-
         if (definition.transformType == TransformType.SCALE_UNIFORMLY)
         {
             annotation { "Name" : "Point",
                          "Filter" : EntityType.VERTEX,
                          "MaxNumberOfPicks" : 1 }
             definition.scalePoint is Query;
+        }
+
+        if (definition.transformType != TransformType.COPY)
+        {
+            annotation { "Name" : "Copy part" }
+            definition.makeCopy is boolean;
         }
     }
     {

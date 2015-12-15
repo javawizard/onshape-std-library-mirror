@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/containers.fs", version : "");
@@ -51,120 +51,120 @@ export const PLANE_SIZE_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.15, 250],
-    (millimeter) : [0.1,    150,  250000],
-    (centimeter) : [0.01,   15,   25000],
-    (inch)       : [0.001,  6,    10000],
-    (foot)       : [0.0001, 0.5,    1000],
-    (yard)       : [0.0001, 0.166667, 250]
+    (meter)      : [1e-5, 0.15, 500],
+    (centimeter) : 15,
+    (millimeter) : 150,
+    (inch)       : 6,
+    (foot)       : 0.5,
+    (yard)       : 0.166667
 } as LengthBoundSpec;
 
 export const PLANE_OFFSET_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.15, 250],
-    (millimeter) : [0.0, 150,  250000],
-    (centimeter) : [0.0, 15,   25000],
-    (inch)       : [0.0, 6,    10000],
-    (foot)       : [0.0, 0.5,    1000],
-    (yard)       : [0.0, 0.166667, 250]
+    (meter)      : [0.0, 0.15, 500],
+    (centimeter) : 15,
+    (millimeter) : 150,
+    (inch)       : 6,
+    (foot)       : 0.5,
+    (yard)       : 0.166667
 } as LengthBoundSpec;
 
 export const BLEND_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.005, 250],
-    (millimeter) : [0.1,    5.0,   250000],
-    (centimeter) : [0.01,   0.5,   25000],
-    (inch)       : [0.001,  0.2,   10000],
-    (foot)       : [0.0001, 0.015, 1000],
-    (yard)       : [0.0001, 0.005, 250]
+    (meter)      : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.2,
+    (foot)       : 0.015,
+    (yard)       : 0.005
 } as LengthBoundSpec;
 
 export const SHELL_OFFSET_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.0025, 250],
-    (millimeter) : [0.1,    2.5,    250000],
-    (centimeter) : [0.01,   0.25,   25000 ],
-    (inch)       : [0.001,  0.1,    10000],
-    (foot)       : [0.0001, 0.01,   1000],
-    (yard)       : [0.0001, 0.0025, 250]
+    (meter)      : [1e-5, 0.0025, 500],
+    (centimeter) : 0.25,
+    (millimeter) : 2.5,
+    (inch)       : 0.1,
+    (foot)       : 0.01,
+    (yard)       : 0.0025
 } as LengthBoundSpec;
 
 export const THICKEN_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.005, 250],
-    (millimeter) : [0.0, 5.0,   250000],
-    (centimeter) : [0.0, 0.5,   25000],
-    (inch)       : [0.0, 0.25,  10000],
-    (foot)       : [0.0, 0.025, 1000],
-    (yard)       : [0.0, 0.01,  250]
+    (meter)      : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.025,
+    (yard)       : 0.01
 } as LengthBoundSpec;
 
 export const NONNEGATIVE_LENGTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.025, 250],
-    (millimeter) : [0.1,    25.0,  250000],
-    (centimeter) : [0.01,   2.5,   25000],
-    (inch)       : [0.001,  1.0,   10000],
-    (foot)       : [0.001,  0.1,   1000],
-    (yard)       : [0.0001, 0.025, 250]
+    (meter)      : [1e-5, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
 } as LengthBoundSpec;
 
 export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.025, 250],
-    (millimeter) : [0.0, 25.0,  250000],
-    (centimeter) : [0.0, 2.5,   25000],
-    (inch)       : [0.0, 1.0,   10000],
-    (foot)       : [0.0, 0.1,   1000],
-    (yard)       : [0.0, 0.025, 250]
+    (meter)      : [0.0, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
 } as LengthBoundSpec;
 
 export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.0, 250],
-    (millimeter) : [0.0, 0.0,  250000],
-    (centimeter) : [0.0, 0.0,   25000],
-    (inch)       : [0.0, 0.0,   10000],
-    (foot)       : [0.0, 0.0,   1000],
-    (yard)       : [0.0, 0.00, 250]
+    (meter)      : [0.0, 0.0, 500],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
 } as LengthBoundSpec;
 
 export const LENGTH_BOUNDS =
 {
     "min"        : -500 * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0001, 0.025, 250],
-    (millimeter) : [0.1,    25.0,  250000],
-    (centimeter) : [0.01,   2.5,   25000],
-    (inch)       : [0.001,  1.0,   10000],
-    (foot)       : [0.001,  0.1,   1000],
-    (yard)       : [0.0001, 0.025, 250]
+    (meter)      : [1e-5, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
 } as LengthBoundSpec;
 
 export const ZERO_DEFAULT_LENGTH_BOUNDS =
 {
     "min"        : -500 * meter,
     "max"        : 500 * meter,
-    (meter)      : [-250, 0.0, 250],
-    (millimeter) : [-250000, 0.0,  250000],
-    (centimeter) : [-25000, 0.0,   25000],
-    (inch)       : [-1000, 0.0,   10000],
-    (foot)       : [-1000, 0.0,   1000],
-    (yard)       : [-250, 0.00, 250]
+    (meter)      : [-500, 0.0, 500],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
 } as LengthBoundSpec;
 
 export const ANGLE_360_BOUNDS =
@@ -172,7 +172,7 @@ export const ANGLE_360_BOUNDS =
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 30, 360],
-    (radian) : [0, 1,  2 * PI]
+    (radian) : 1
 } as AngleBoundSpec;
 
 export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
@@ -180,7 +180,7 @@ export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 330, 360],
-    (radian) : [0, 2,  2 * PI]
+    (radian) : 2
 } as AngleBoundSpec;
 
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
@@ -188,31 +188,31 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 0, 360],
-    (radian) : [0, 0,  2 * PI]
+    (radian) : 0
 } as AngleBoundSpec;
 
 export const ANGLE_STRICT_180_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI - TOLERANCE.zeroAngle) * radian,
-    (degree) : [0, 30, 179],
-    (radian) : [0, 0.1667 * PI, 0.995 * PI]
+    (degree) : [0, 30, 179.9],
+    (radian) : 0.1667 * PI
 } as AngleBoundSpec;
 
 export const ANGLE_STRICT_90_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI * 0.5 - TOLERANCE.zeroAngle) * radian,
-    (degree) : [0, 3, 89],
-    (radian) : [0, 0.01667 * PI,  0.495 * PI]
+    (degree) : [0, 3, 89.9],
+    (radian) : 0.01667 * PI
 } as AngleBoundSpec;
 
 export const CHAMFER_ANGLE_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
     "max"    : (PI - TOLERANCE.zeroAngle) * radian,
-    (degree) : [1, 45, 179],
-    (radian) : [0.0056 * PI, 0.25 * PI,  0.994 * PI]
+    (degree) : [0.1, 45, 179.9],
+    (radian) : 0.25 * PI
 } as AngleBoundSpec;
 
 export const POSITIVE_COUNT_BOUNDS =
@@ -240,14 +240,14 @@ export const SCALE_BOUNDS =
 {
     "min"      : 0,
     "max"      : 1e9,
-    (unitless) : [.0001, 1, 1e5]
+    (unitless) : [1e-5, 1, 1e5]
 } as RealBoundSpec;
 
 export const HELIX_TURN_BOUNDS =
 {
     "min"      : 0,
     "max"      : 1e9,
-    (unitless) : [.0001, 4, 1e5]
+    (unitless) : [1e-5, 4, 1e5]
 } as RealBoundSpec;
 
 export const PRIMARY_PATTERN_BOUNDS =
@@ -281,7 +281,7 @@ precondition
     bounds[1] = boundSpec["max"];
     for (var entry in boundSpec)
     {
-        if (!(entry.key == "min" || entry.key == "max"))
+        if (entry.key != "min" && entry.key != "max" && entry.value is array)
         {
             bounds[0] = max(bounds[0], entry.value[0] * entry.key);
             bounds[1] = min(bounds[1], entry.value[2] * entry.key);
@@ -323,6 +323,8 @@ export predicate canBeBoundSpec(value)
     {
         if (entry.key != "min" && entry.key != "max")
         {
+            if (entry.value is number)
+                continue;
             entry.value is array;
             @size(entry.value) == 3;
             for (var i = 0; i < 3; i += 1)

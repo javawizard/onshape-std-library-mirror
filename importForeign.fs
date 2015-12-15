@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/feature.fs", version : "");
@@ -35,7 +35,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
 
-        annotation {"Name" : "Flatten assembly"}
+        annotation {"Name" : "Flatten assembly", "UIHint" : "ALWAYS_HIDDEN"}
         definition.flatten is boolean;
 
         annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}

@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
@@ -304,17 +304,17 @@ precondition
 
 /**
  * Add an elliptical arc
+ * The ellipse has a period of 1, a parameter of 0 at the major axis and 0.25 at the minor axis.
+ * The arc is drawn counterclockwise from the start point to the end point.
  *
  * @param value {{
  *      @field center {Vector}
  *      @field majorAxis {Vector} : The direction, in sketch coordinates, in which the major axis of the ellipse lies.
  *      @field minorRadius {ValueWithUnits} : A non-negative value with length units.
- *      @field majorRadius {ValueWithUnits} : A non-negative value with length units.
- *      @field startParameter {number} : A value between 0 and 1 (inclusive) which represents the proportion of the
- *              ellipse's peremeter travelled from the right-hand side of the major axis to the arc's starting point.
- *      @field endParameter {number} : A value between 0 and 1 (inclusive) which represents the proportion of the
- *              ellipse's peremeter travelled from the right-hand side of the major axis to the arc's starting point.
- *          TODO: Is this actually parameterized by length, and not angle, or some arbitrary thing? Does it actually start on the major axis?
+ *      @field majorRadius {ValueWithUnits} : A non-negative value with length units. Does not need to be greater than
+ *              the minor radius
+ *      @field startParameter {number} : The parameter of the start point.
+ *      @field endParameter {number} : The parameter of the end point.
  *      @field construction {boolean} : @eg `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
@@ -500,12 +500,14 @@ precondition
     //Line segments
     const segIds = ["left", "right", "top", "bottom"];
     const locVal = stripUnits(value);
+    const construction = value.construction;
     for (var sId in segIds)
     {
         const fullId = rectangleId ~ "." ~ sId;
         @skLineSegment(sketch, fullId,
                 { "start" : rectangleSideStartPoint(locVal, sId),
-                    "end" : rectangleSideEndPoint(locVal, sId) });
+                    "end" : rectangleSideEndPoint(locVal, sId),
+           "construction" : construction });
     }
 
     //corner constraints

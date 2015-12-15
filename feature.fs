@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
@@ -45,8 +45,11 @@ export function defineFeature(feature is function, defaults is map) returns func
                 //TODO: definition = @convert(definition, CurrentVersion);
                 definition = mergeMaps(defaults, definition);
                 startFeature(context, id, definition);
+                definition.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
                 started = true;
                 feature(context, id, definition);
+                if (!isTopLevelId(id) && getFeatureError(context, id) != undefined)
+                    throw regenError(getFeatureError(context, id));
                 endFeature(context, id);
             }
             catch (error)
@@ -95,7 +98,7 @@ export function abortFeature(context is Context, id is Id)
  */
 export function endFeature(context is Context, id is Id)
 {
-    if (@size(id) == 1 && getFeatureError(context, id) != undefined)
+    if (getFeatureError(context, id) != undefined)
     {
         @abortFeature(context, id);
     }
@@ -152,6 +155,15 @@ export function setFeatureComputedParameter(context is Context, id is Id, defini
 export function setFeaturePatternInstanceData(context is Context, id is Id, definition is map)
 {
     @setFeaturePatternInstanceData(context, id, definition);
+}
+
+/**
+ * pop patternInstanceData stack if id matches throw otherwice
+ * @param id {Id} : instance id
+ */
+export function unsetFeaturePatternInstanceData(context is Context, id is Id)
+{
+    @unsetFeaturePatternInstanceData(context, id);
 }
 
 /**
@@ -223,4 +235,26 @@ export function lastModifyingOperationId(context is Context, query is Query) ret
 {
     return @lastModifyingOperationId(context, {"entity" : query}) as Id;
 }
+
+/**
+ * Parameter type that has a list of feature lambdas
+ */
+export type FeatureList typecheck canBeFeatureList;
+export predicate canBeFeatureList(value)
+{
+    value is array;
+    for (var entry in value)
+    {
+        entry is function;
+    }
+}
+
+/**
+ * Takes an array to return it as type FeatureList
+ */
+export function featureList(features is array) returns FeatureList
+{
+    return features as FeatureList;
+}
+
 

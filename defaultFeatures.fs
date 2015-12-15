@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/feature.fs", version : "");
@@ -22,8 +22,8 @@ export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
     var context = newContext();
     origin(context);
 
-    const ranges = PLANE_SIZE_BOUNDS[defLengthUnit];
-    const size = ranges[1] * defLengthUnit;
+    const range = PLANE_SIZE_BOUNDS[defLengthUnit];
+    const size = (range is number ? range : range[1]) * defLengthUnit;
 
     defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
     defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);

@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
@@ -19,11 +19,9 @@ import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a cube of a specified size, with one corner on the origin.
  * @param definition {{
- *      @field TODO
+ *      @field sideLength {valueWithUnits}
  * }}
  */
 annotation { "Feature Type Name" : "Cube" }
@@ -39,13 +37,15 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
         fCuboid(context, id, definition);
     });
 
-// Defined in the old way to overload with the sphere functions in surfaceGeometry.  TODO: rename features to start with f.
+// Defined in the old way to overload with the sphere functions in surfaceGeometry.
 /**
- * TODO: description
- * @param context
- * @param id
+ * Create a solid sphere. The feature version of fSphere.
+ *
+ * TODO: rename and merge this with fSphere.
+ *
  * @param definition {{
- *      @field TODO
+ *      @field center {Vector} : A 3D length vector in world space.
+ *      @field radius {ValueWithUnits}
  * }}
  */
 annotation { "Feature Type Name" : "Sphere" }
@@ -55,11 +55,10 @@ export function sphere(context is Context, id is Id, definition is map)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a solid sphere.
  * @param definition {{
- *      @field TODO
+ *      @field center {Query} : A single point marking the sphere's center.
+ *      @field radius {ValueWithUnits}
  * }}
  */
 export const fSphere = defineFeature(function(context is Context, id is Id, definition is map)
@@ -88,11 +87,10 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
     });
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a simple rectangular prism between two specified corners.
  * @param definition {{
- *      @field TODO
+ *      @field corner1 {Vector} : A 3D length vector in world space.
+ *      @field corner2 {Vector} : A 3D length vector in world space.
  * }}
  */
 export const fCuboid = defineFeature(function(context is Context, id is Id, definition is map)
@@ -132,11 +130,11 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
     });
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a simple cylindrical solid between two points, with a specified radius.
  * @param definition {{
- *      @field TODO
+ *      @field topCenter {Vector} : A 3D length vector in world space.
+ *      @field bottomCenter {Vector} : A 3D length vector in world space.
+ *      @field radius {ValueWithUnits}
  * }}
  */
 export const fCylinder = defineFeature(function(context is Context, id is Id, definition is map)
@@ -175,13 +173,14 @@ export const fCylinder = defineFeature(function(context is Context, id is Id, de
         }
     });
 
-//Truncated cone, actually
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a solid cone, possibly truncated.
  * @param definition {{
- *      @field TODO
+ *      @field topCenter {Vector} : A 3D length vector in world space.
+ *      @field bottomCenter {Vector} : A 3D length vector in world space.
+ *      @field topRadius {ValueWithUnits} : The radius at the top center.
+ *      @field bottomRadius {ValueWithUnits} : The radius at the bottom center.
+ *          @eg `0` produces a standard, non-truncated cone.
  * }}
  */
 export const fCone = defineFeature(function(context is Context, id is Id, definition is map)
@@ -233,11 +232,10 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
     });
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create an ellipsoid (that is, a sphere scaled independently along the three major axes).
  * @param definition {{
- *      @field TODO
+ *      @field center {Vector} : A 3D vector in world coordinates
+ *      @field radius {Vector} : The radii as measured along the x, y, and z axes, given as a single 3D length vector.
  * }}
  */
 export const fEllipsoid = defineFeature(function(context is Context, id is Id, definition is map)

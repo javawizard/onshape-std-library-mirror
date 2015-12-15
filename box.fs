@@ -1,6 +1,6 @@
-FeatureScript 255; /* Automatically generated version */
+FeatureScript 275; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
-// See the COPYING tab for the license text.
+// See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/units.fs", version : "");
@@ -21,6 +21,8 @@ export predicate canBeBox3d(value)
     value is map;
     is3dLengthVector(value.minCorner);
     is3dLengthVector(value.maxCorner);
+    for (var dim in [0, 1, 2])
+        value.minCorner[dim] <= value.maxCorner[dim];
 }
 
 /**
@@ -28,6 +30,15 @@ export predicate canBeBox3d(value)
  */
 export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 {
+    for (var dim in [0, 1, 2])
+    {
+        if (minCorner[dim] > maxCorner[dim])
+        {
+            var tmp = maxCorner[dim];
+            maxCorner[dim] = minCorner[dim];
+            minCorner[dim] = tmp;
+        }
+    }
     return { 'minCorner' : minCorner, 'maxCorner' : maxCorner } as Box3d;
 }
 
