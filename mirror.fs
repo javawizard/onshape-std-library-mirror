@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,6 +9,7 @@ export import(path : "onshape/std/tool.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
@@ -23,7 +24,9 @@ import(path : "onshape/std/patternUtils.fs", version : "");
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Mirror", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Mirror",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "mirrorEditLogic" }
 export const mirror = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -55,10 +58,8 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         const isFaceMirror = definition.isFaceMirror;
 
         if (isFaceMirror)
-        {
             definition.entities = definition.faces;
-            definition.sameFace = isSeedOnSameFace(context, definition.entities);
-        }
+
         if (size(evaluateQuery(context, definition.entities)) == 0)
         {
             if (isFaceMirror)
@@ -78,7 +79,6 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
             "entities" : definition.entities,
             "transforms" : [transform],
             "instanceNames" : ["1"],
-            "sameFace" : definition.sameFace,
             notFoundErrorKey("entities") : ErrorStringEnum.MIRROR_SELECT_PARTS };
 
         try
@@ -94,10 +94,20 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         if (!definition.isFaceMirror)
         {
             // We only include original body in the tools if the operation is UNION
-            const additionalParmeters = (definition.operationType == NewBodyOperationType.ADD) ?
+            const additionalParameters = (definition.operationType == NewBodyOperationType.ADD) ?
                 { "seed" : definition.entities } : {};
             const reconstructOp = function(id) { opPattern(context, id, patternDefinition); };
-            processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParmeters), reconstructOp);
+            processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParameters), reconstructOp);
         }
-    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW, sameFace : true });
+    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
+
+ /**
+ * implements heuristics for mirror feature
+ */
+export function mirrorEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, mirror);
+}
 

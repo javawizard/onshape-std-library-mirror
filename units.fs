@@ -1,13 +1,15 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
 
 /**
- * For Onshape internal use only.
+ * For Onshape internal use.
+ *
  * A `UnitSpec` is a fundamental dimension like length and time.
  * Angle is treated as a dimension although formally it is dimensionless.
  */
@@ -50,6 +52,45 @@ annotation { "Name" : "Ounce", "Abbreviation" : "oz" }
 export const ounce = 28.349523 * gram;
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
+
+export const STRING_TO_UNIT_MAP = {
+  "Meter" : meter,
+  "meter" : meter,
+  "m" : meter,
+  "Centimeter" : centimeter,
+  "centimeter" : centimeter,
+  "cm" : centimeter,
+  "Millimeter" : millimeter,
+  "millimeter" : millimeter,
+  "mm" : millimeter,
+  "Inch" : inch,
+  "inch" : inch,
+  "in" : inch,
+  "Foot" : foot,
+  "foot" : foot,
+  "ft" : foot,
+  "Yard" : yard,
+  "yard" : yard,
+  "yd" : yard,
+  "Radian" : radian,
+  "radian" : radian,
+  "rad" : radian,
+  "Degree" : degree,
+  "degree" : degree,
+  "deg" : degree,
+  "Kilogram" : kilogram,
+  "kilogram" : kilogram,
+  "kg" : kilogram,
+  "Gram" : gram,
+  "gram" : gram,
+  "g" : gram,
+  "Ounce" : ounce,
+  "ounce" : ounce,
+  "oz" : ounce,
+  "Pound" : pound,
+  "pound" : pound,
+  "lb" : pound
+};
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -308,7 +349,7 @@ export function atan(value is number) returns ValueWithUnits
 }
 
 /**
- * `atan2(y, x)` returns the counterclockwise angle from [0, 1] to [x, y].
+ * `atan2(y, x)` returns the counterclockwise angle from the vector `[0, 1]` to the vector `[x, y]`.
  * The angle is negative if y is negative.  This is equivalent to `atan(y/x)`
  * except the result respects the quadrant of the input and is well-behaved
  * near x == 0.
@@ -356,11 +397,17 @@ export function stripUnits(value)
     return value;
 }
 
+/**
+ * For Onshape internal use.
+ */
 export function stripUnits(value is ValueWithUnits)
 {
     return value.value;
 }
 
+/**
+ * For Onshape internal use.
+ */
 export function stripUnits(value is array) returns array
 {
     for (var i = 0; i < @size(value); i += 1)
@@ -370,6 +417,9 @@ export function stripUnits(value is array) returns array
     return value as array;
 }
 
+/**
+ * For Onshape internal use.
+ */
 export function stripUnits(value is map) returns map
 {
     for (var entry in value)
@@ -402,6 +452,29 @@ export function evaluateExpression(expression is ValueWithUnits, expectedUnit is
     }
 
     return { 'status' : ExpressionValidationResult.ERROR, 'value' : 0.0 };
+}
+
+export const REGEX_UNITS = buildRegexUnits();
+
+function buildRegexUnits() returns string
+{
+  var result = "((?:";
+  for (var entry in STRING_TO_UNIT_MAP)
+  {
+      result = result ~ entry.key ~ "|";
+  }
+  result = replace(result, "\\|$", ")\\b)");
+  return result;
+}
+
+export function stringToUnit(unitStr is string) returns ValueWithUnits
+{
+    var result = STRING_TO_UNIT_MAP[unitStr];
+    if (result != undefined)
+    {
+        return result;
+    }
+    throw "Unexpected unit:" ~ unitStr;
 }
 
 

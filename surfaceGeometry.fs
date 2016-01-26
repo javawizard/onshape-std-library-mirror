@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -17,7 +17,7 @@ export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 /**
  * A plane is represented by an origin, a normal vector, and an X direction,
  * perpendicular to the normal direction.
- * @value {{
+ * @type {{
  *      @field origin {Vector} : A 3D point, in world space.
  *      @field normal {Vector} : A 3D unit vector in world space.
  *      @field x {Vector} : A 3D unit vector in world space. Must be perpendicular to `normal`.
@@ -59,8 +59,9 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
 }
 
 /**
- * Create a `Plane` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Plane` from the result of a builtin call.
  */
 export function planeFromBuiltin(definition is map) returns Plane
 {
@@ -246,8 +247,9 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
 }
 
 /**
- * Create a `Cone` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Cone` from the result of a builtin call.
  */
 export function coneFromBuiltin(definition is map) returns Cone
 {
@@ -291,8 +293,9 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
 }
 
 /**
- * Create a `Cylinder` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Cylinder` from the result of a builtin call.
  */
 export function cylinderFromBuiltin(definition is map) returns Cylinder
 {
@@ -337,8 +340,9 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 }
 
 /**
- * Create a `Torus` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Torus` from the result of a builtin call.
  */
 export function torusFromBuiltin(definition is map) returns Torus
 {
@@ -380,8 +384,9 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
 }
 
 /**
- * Create a `Sphere` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Sphere` from the result of a builtin call.
  */
 export function sphereFromBuiltin(definition is map) returns Sphere
 {

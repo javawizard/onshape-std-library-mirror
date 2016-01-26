@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -11,6 +11,7 @@ export import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
@@ -61,7 +62,9 @@ export const CLAMP_MAGNITUDE_REAL_BOUNDS =
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Loft", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Loft",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "loftEditLogic" }
 export const loft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -260,5 +263,15 @@ export function wrapSubqueriesInConstructionFilter(context is Context, subquerie
         return wrappedSubqueries;
     }
     return subqueries;
+}
+
+/**
+ * implements heuristics for loft feature
+ */
+export function loftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, loft);
 }
 

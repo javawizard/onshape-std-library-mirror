@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -463,7 +463,11 @@ export enum ErrorStringEnum
     FEATURE_NO_SOLIDS,
     SKETCH_EXTERNAL_GEOMETRY_MISMATCH,
     HOLE_EXCEEDS_MAX_LOCATIONS,
-    SKETCH_INSERT_DWG_MAX_ENTITIES_EXCEEDED
+    SKETCH_TEXT_IS_EMPTY,
+    SKETCH_INSERT_DWG_MAX_ENTITIES_EXCEEDED,
+    HOLE_TAP_DIA_TOO_LARGE,
+    ASSEMBLY_EMPTY_BODY,
+    SIMPLIFY_BODY_FAILED
 }
 
 

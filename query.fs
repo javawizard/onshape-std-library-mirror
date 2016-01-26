@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -44,7 +44,7 @@ import(path : "onshape/std/units.fs", version : "");
  * The fields on a Query map depend on its `QueryType`, and may include one or
  * more subqueries.
  *
- * @value {{
+ * @type {{
  *      @field queryType {QueryType}
  *      @field entityType {EntityType} : @optional
  * }}
@@ -59,58 +59,59 @@ export predicate canBeQuery(value)
 }
 
 /**
+ * For Onshape internal use.
+ *
  * An enumeration which specifies the critereon of a `Query`.
  *
- * This enum is for Onshape internal use only. Queries of a given type can
- * instead be created using their corresponding constructor. For instance,
- * the query
+ * Queries of a given type can instead be created using their corresponding constructor.
+ * For instance, the query
  * `{ "queryType" : QueryType.EVERYTHING, "entityType" : EntityType.BODY }`
  * is created with `qEverything(EntityType.BODY)`, and its behavior is
  * described on the documentation for the function `qEverything`.
  *
  ******************************************************************************
- * @field NOTHING                    : Used in `qNothing`
- * @field EVERYTHING                 : Used in `qEverything`
- * @field NTH_ELEMENT                : Used in `qNthElement`
- * @field ENTITY_FILTER              : Used in `qEntityFilter`
- * @field HISTORICAL                 : Used in `qHistorical`
- * @field CREATED_BY                 : Used in `qCreatedBy`
- * @field SKETCH_REGION              : Used in `qSketchRegion`
- * @field TRANSIENT                  : Used in `qTransient`
- * @field UNION                      : Used in `qUnion`
- * @field INTERSECTION               : Used in `qIntersection`
- * @field SUBTRACTION                : Used in `qSubtraction`
- * @field OWNED_BY_PART              : Used in `qOwnedByBody`
- * @field OWNER_PART                 : Used in `qOwnerBody`
- * @field VERTEX_ADJACENT            : Used in `qVertexAdjacent`
- * @field EDGE_ADJACENT              : Used in `qEdgeAdjacent`
- * @field LOOP_AROUND_FACE           : Not yet implemented
- * @field SHELL_CONTAINING_FACE      : Not yet implemented
- * @field GEOMETRY                   : Used in `qGeometry`
- * @field BODY_TYPE                  : Used in `qBodyType`
- * @field PLANE_NORMAL               : Not yet implemented
- * @field TANGENT_EDGES              : Not yet implemented
- * @field TANGENT_FACES              : Not yet implemented
- * @field CONVEX_CONNECTED_FACES     : Used in `qConvexConnectedFaces`
- * @field CONCAVE_CONNECTED_FACES    : Used in `qConcaveConnectedFaces`
- * @field TANGENT_CONNECTED_FACES    : Used in `qTangentConnectedFaces`
- * @field LOOP_BOUNDED_FACES         : Used in `qLoopBoundedFaces`
- * @field FACE_OR_EDGE_BOUNDED_FACES : Used in `qFaceOrEdgeBoundedFaces`
- * @field HOLE_FACES                 : Used in `qHoleFaces`
- * @field FILLET_FACES               : Used in `qFilletFaces`
- * @field PATTERN                    : Used in `qMatchingFaces`
- * @field CONTAINS_POINT             : Used in `qContainsPoint`
- * @field INTERSECTS_LINE            : Not yet implemented
- * @field INTERSECTS_PLANE           : Used in `qIntersectsPlane`
- * @field INTERSECTS_BALL            : Not yet implemented
- * @field CLOSEST_TO                 : Used in `qClosestTo`
- * @field FARTHEST_ALONG             : Not yet implemented
- * @field LARGEST                    : Not yet implemented
- * @field SMALLEST                   : Not yet implemented
- * @field COEDGE                     : Used in `qCoedge`
- * @field MATE_CONNECTOR             : Used in `qMateConnector`
- * @field CONSTRUCTION_FILTER        : Used in `qConstructionFilter`
- * @field DEPENDENCY                 : Used in `qDependency`
+ * @value NOTHING                    : Used in `qNothing`
+ * @value EVERYTHING                 : Used in `qEverything`
+ * @value NTH_ELEMENT                : Used in `qNthElement`
+ * @value ENTITY_FILTER              : Used in `qEntityFilter`
+ * @value HISTORICAL                 : Used in `qHistorical`
+ * @value CREATED_BY                 : Used in `qCreatedBy`
+ * @value SKETCH_REGION              : Used in `qSketchRegion`
+ * @value TRANSIENT                  : Used in `qTransient`
+ * @value UNION                      : Used in `qUnion`
+ * @value INTERSECTION               : Used in `qIntersection`
+ * @value SUBTRACTION                : Used in `qSubtraction`
+ * @value OWNED_BY_PART              : Used in `qOwnedByBody`
+ * @value OWNER_PART                 : Used in `qOwnerBody`
+ * @value VERTEX_ADJACENT            : Used in `qVertexAdjacent`
+ * @value EDGE_ADJACENT              : Used in `qEdgeAdjacent`
+ * @value LOOP_AROUND_FACE           : Not yet implemented
+ * @value SHELL_CONTAINING_FACE      : Not yet implemented
+ * @value GEOMETRY                   : Used in `qGeometry`
+ * @value BODY_TYPE                  : Used in `qBodyType`
+ * @value PLANE_NORMAL               : Not yet implemented
+ * @value TANGENT_EDGES              : Not yet implemented
+ * @value TANGENT_FACES              : Not yet implemented
+ * @value CONVEX_CONNECTED_FACES     : Used in `qConvexConnectedFaces`
+ * @value CONCAVE_CONNECTED_FACES    : Used in `qConcaveConnectedFaces`
+ * @value TANGENT_CONNECTED_FACES    : Used in `qTangentConnectedFaces`
+ * @value LOOP_BOUNDED_FACES         : Used in `qLoopBoundedFaces`
+ * @value FACE_OR_EDGE_BOUNDED_FACES : Used in `qFaceOrEdgeBoundedFaces`
+ * @value HOLE_FACES                 : Used in `qHoleFaces`
+ * @value FILLET_FACES               : Used in `qFilletFaces`
+ * @value PATTERN                    : Used in `qMatchingFaces`
+ * @value CONTAINS_POINT             : Used in `qContainsPoint`
+ * @value INTERSECTS_LINE            : Not yet implemented
+ * @value INTERSECTS_PLANE           : Used in `qIntersectsPlane`
+ * @value INTERSECTS_BALL            : Not yet implemented
+ * @value CLOSEST_TO                 : Used in `qClosestTo`
+ * @value FARTHEST_ALONG             : Not yet implemented
+ * @value LARGEST                    : Not yet implemented
+ * @value SMALLEST                   : Not yet implemented
+ * @value COEDGE                     : Used in `qCoedge`
+ * @value MATE_CONNECTOR             : Used in `qMateConnector`
+ * @value CONSTRUCTION_FILTER        : Used in `qConstructionFilter`
+ * @value DEPENDENCY                 : Used in `qDependency`
  ******************************************************************************/
 export enum QueryType
 {
@@ -183,14 +184,14 @@ export enum QueryType
  *
  * @see `qBodyType`
  *
- * @field SOLID : A three-dimensional part (e.g. the result of a solid extrude)
- * @field SHEET : A two-dimensional sheet body (e.g. a sketch region, or the
+ * @value SOLID : A three-dimensional part (e.g. the result of a solid extrude)
+ * @value SHEET : A two-dimensional sheet body (e.g. a sketch region, or the
  *      result of a surface extrude)
- * @field WIRE  : A one-dimensional curve (e.g. a sketch line or curve, or the
+ * @value WIRE  : A one-dimensional curve (e.g. a sketch line or curve, or the
  *      result of opHelix)
- * @field POINT : A zero-dimensional point (e.g. a sketch point, or the result
+ * @value POINT : A zero-dimensional point (e.g. a sketch point, or the result
  *      of opPoint)
- * @field MATE_CONNECTOR : A part studio mate connector. For filtering
+ * @value MATE_CONNECTOR : A part studio mate connector. For filtering
  *      selections only.
  */
 export enum BodyType
@@ -214,10 +215,10 @@ export enum BodyType
  * A query for every part in a part studio is
  * `qBodyType(qEverything(EntityType.BODY), BodyType.SOLID)`
  *
- * @field VERTEX : A zero-dimensional point or vertex
- * @field EDGE : A one-dimensional line, curve, or edge
- * @field FACE : A two-dimensional surface, planar face, or non-planar face
- * @field BODY : A solid, surface, wire, or point body
+ * @value VERTEX : A zero-dimensional point or vertex
+ * @value EDGE : A one-dimensional line, curve, or edge
+ * @value FACE : A two-dimensional surface, planar face, or non-planar face
+ * @value BODY : A solid, surface, wire, or point body
  */
 export enum EntityType
 {
@@ -230,17 +231,17 @@ export enum EntityType
 /**
  * Specifies the geometric type of queried entities. @see `qGeometry`.
  *
- * @field LINE : A straight line or edge
- * @field CIRCLE : A circle of constant radius
- * @field ARC : A segment of a circle
- * @field OTHER_CURVE : Any one-dimensional entity which is not described above
+ * @value LINE : A straight line or edge
+ * @value CIRCLE : A circle of constant radius
+ * @value ARC : A segment of a circle
+ * @value OTHER_CURVE : Any one-dimensional entity which is not described above
  *      (e.g. splines, elipses, etc.)
- * @field PLANE : A construction plane or planar face
- * @field CYLINDER : A surface which forms the side of a right circular cylinder
- * @field CONE : A surface which forms the side of a right circular cone
- * @field SPHERE : A surface which forms the boundary of a sphere
- * @field TORUS : A surface which forms the boundary of a torus
- * @field OTHER_SURFACE : Any two-dimensional entity which is not described
+ * @value PLANE : A construction plane or planar face
+ * @value CYLINDER : A surface which forms the side of a right circular cylinder
+ * @value CONE : A surface which forms the side of a right circular cone
+ * @value SPHERE : A surface which forms the boundary of a sphere
+ * @value TORUS : A surface which forms the boundary of a torus
+ * @value OTHER_SURFACE : Any two-dimensional entity which is not described
  *      above (e.g. the side of an arbitrary extrude, revolve, or loft)
  */
 export enum GeometryType
@@ -268,8 +269,8 @@ export enum GeometryType
  * ```
  * @see `qConstructionFilter`
  *
- * @field YES : Matches only entities which are created for construction
- * @field NO  : Matches only entities which are not created for construction
+ * @value YES : Matches only entities which are created for construction
+ * @value NO  : Matches only entities which are not created for construction
  */
 export enum ConstructionObject
 {
@@ -285,8 +286,8 @@ export enum ConstructionObject
  * annotation { "Name" : "Sketch curves", "Filter" : EntityType.EDGE && SketchObject.YES }
  * definition.curves is Query;
  * ```
- * @field YES : Matches only entities which are part of a sketch
- * @field NO  : Matches only entities which are not part of a sketch
+ * @value YES : Matches only entities which are part of a sketch
+ * @value NO  : Matches only entities which are not part of a sketch
  */
 export enum SketchObject
 {
@@ -305,8 +306,8 @@ export enum SketchObject
  * TODO: rename LAMINAR to "boundary" or somesuch that sounds less like we're
  * talking about fliud dynamics...
  *
- * @field LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
- * @field TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
+ * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
+ * @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
  */
 export enum EdgeTopology
 {
@@ -322,7 +323,7 @@ export enum EdgeTopology
  * annotation { "Name" : "Axis", "Filter" : QueryFilterCompound.ALLOWS_AXIS }
  * definition.axis is Query;
  * ```
- * @field ALLOWS_AXIS : Equivalent to
+ * @value ALLOWS_AXIS : Equivalent to
  *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER`
  */
 export enum QueryFilterCompound
@@ -345,7 +346,8 @@ export enum CompareType
 
 //Don't strip units off historical queries
 /**
- * TODO: description
+ * For Onshape internal use.
+ *
  * @param value
  */
 export function stripUnits(value is Query)
@@ -439,7 +441,8 @@ export function qAttributeQuery(attributePattern) returns Query
  * If a sketch's feature id is specified, returns a query for all sketch
  * regions, points, and wire bodies created by the specified sketch.
  *
- * @param entityType : @optional
+ * @param featureId : The `Id` of the specified feature. @eg `id + "extrude1"`
+ * @param entityType : @optional @autocomplete `EntityType.BODY`
  */
 export function qCreatedBy(featureId is Id, entityType is EntityType) returns Query
 {
@@ -884,7 +887,7 @@ export function qIntersectsPlane(subquery is Query, plane is Plane) returns Quer
 // ==================================== Historical Query stuff ================================
 
 /**
- * For Onshape internal use only.
+ * For Onshape internal use.
  */
 export function makeQuery(value is map) returns Query
 {

@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -18,6 +18,7 @@ import(path : "onshape/std/context.fs", version : "");
 
 /**
  * Performs boolean operations on solid bodies.
+ * @param id : @autocomplete `id + "boolean1"`
  * @param definition {{
  *      @field tools {Query} : The tool bodies.
  *      @field targets {Query} : The target bodies. Required if the operation is `SUBTRACTION` or `SUBTRACT_COMPLEMENT` or
@@ -46,6 +47,7 @@ export function opBoolean(context is Context, id is Id, definition is map)
 
 /**
  * Adds a chamfer to given edges and faces.  TODO: make this interface more like an operation and less like a feature.
+ * @param id : @autocomplete `id + "chamfer1"`
  * @param definition {{
  *      @field entities {Query} : Edges and faces to chamfer.
  *      @field chamferType {ChamferType} : Determines how the offsets are specified.
@@ -64,6 +66,7 @@ export function opChamfer(context is Context, id is Id, definition is map)
 
 /**
  * Deletes bodies from the context.
+ * @param id : @autocomplete `id + "deleteBodies1"`
  * @param definition {{
  *      @field entities {Query} : Entities to delete. Passing in entities other than bodies deletes their owning bodies.
  * }}
@@ -75,6 +78,7 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
 
 /**
  * This is a direct editing operation that attempts to delete faces of a solid body and extend other faces to fill the hole.
+ * @param id : @autocomplete `id + "deleteFace1"`
  * @param definition {{
  *      @field deleteFaces {Query} : Faces to delete.
  *      @field includeFillet {boolean} : If true, also delete fillets adjacent to the input faces.
@@ -88,6 +92,7 @@ export function opDeleteFace(context is Context, id is Id, definition is map)
 
 /**
  * Applies a given draft angle to faces.
+ * @param id : @autocomplete `id + "draft1"`
  * @param definition {{
  *      @field neutralPlane {Query} : The face defining the neutral plane.  The intersection of the drafted faces
  *          and the neutral plane remains unchanged.
@@ -106,6 +111,7 @@ export function opDraft(context is Context, id is Id, definition is map)
 
 /**
  * Extrudes one or more edges or faces in a given direction with one or two end conditions.
+ * @param id : @autocomplete `id + "extrude1"`
  * @param definition {{
  *      @field entities {Query} : Edges and faces to extrude.
  *      @field direction {Vector} : The 3d direction in which to extrude.
@@ -124,6 +130,7 @@ export function opExtrude(context is Context, id is Id, definition is map)
 
 /**
  * For edges, performs a fillet on the edge. For faces, performs a fillet on all edges adjacent to the face.
+ * @param id : @autocomplete `id + "fillet1"`
  * @param definition {{
  *      @field entities {Query} : Edges and faces to fillet.
  *      @field radius {ValueWithUnits} : The fillet radius.
@@ -140,6 +147,7 @@ export function opFillet(context is Context, id is Id, definition is map)
 
 /**
  * Creates a 3D cubic spline curve through an array of 3D points.
+ * @param id : @autocomplete `id + "fitSpline1"`
  * @param definition {{
  *      @field points {array} : An array of `Vector`s with length units for the spline to interpolate. If the first
  *          point is the same as the last point, the spline is closed.
@@ -152,6 +160,7 @@ export function opFitSpline(context is Context, id is Id, definition is map)
 
 /**
  * Creates a helical and possibly spiral curve.
+ * @param id : @autocomplete `id + "helix1"`
  * @param definition {{
  *      @field direction {Vector} : The direction of the helix axis.
  *      @field axisStart {Vector} : A point on the helix axis.
@@ -172,6 +181,7 @@ export function opHelix(context is Context, id is Id, definition is map)
 
 /**
  * Brings foreign geometry into the context. This function is used for importing uploaded parts.
+ * @param id : @autocomplete `id + "importForeign1"`
  * @param definition {{
  *      @field foreignId {string} : The foreign data id (dataId from an imported blob tab).
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
@@ -186,19 +196,20 @@ export function opImportForeign(context is Context, id is Id, definition is map)
 
 /**
  * Creates a surface or solid loft fitting an ordered set of profiles, optionally constrained by guide curves.
+ * @param id : @autocomplete `id + "loft1"`
  * @param definition {{
  *      @field profileSubqueries {array} : An ordered array of queries for the profiles. For a solid loft, these must be
- *          surface bodies, faces, or vertices. For a surface loft, these could be wire bodies, surface bodies, faces, edges, or vertices.
+ *              surface bodies, faces, or vertices. For a surface loft, these could be wire bodies, surface bodies, faces, edges, or vertices.
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
  *      @field bodyType {ToolBodyType} : Whether this is a solid (default) or a surface loft. @optional
- *      @field derivativeInfo {array} : An array of maps that contain shape constraints at start and end profiles. Each map entry
- *          is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
- *          a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile. @optional
- *          @eg `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces }]`
- *          The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
- *          The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
+ *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
+ *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
+ *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
+ *              @eg `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces }]`
+ *              The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
+ *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  * }}
  */
 export function opLoft(context is Context, id is Id, definition is map)
@@ -209,6 +220,7 @@ export function opLoft(context is Context, id is Id, definition is map)
 /**
  * Creates a mate connector, which represents a coordinate system in the context. Currently it is a special type of
  * point body.
+ * @param id : @autocomplete `id + "mateConnector1"`
  * @param definition {{
  *      @field coordSystem {CoordSystem} : The mate connector coordinate system.
  *      @field owner {Query} : The owner body of the mate connector: when the owner is brought into an assembly, owned
@@ -224,6 +236,7 @@ export function opMateConnector(context is Context, id is Id, definition is map)
 /**
  * Bring all of the information from `contextFrom` into `context`.  This is used, for example, for the Derived feature.
  * @param context {Context} : The target context.
+ * @param id : @autocomplete `id + "mergeContexts1"`
  * @param definition {{
  *      @field contextFrom {Context} : The source context. It is rendered unusable by this operation.
  * }}
@@ -235,6 +248,7 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
 
 /**
  * This is a direct editing operation that modifies or deletes fillets.
+ * @param id : @autocomplete `id + "modifyFillet1"`
  * @param definition {{
  *      @field faces {Query} : The fillets to modify.
  *      @field modifyFilletType {ModifyFilletType} : Whether to change the fillet radii or remove them altogether.
@@ -250,6 +264,7 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
 
 /**
  * This is a direct editing operation that applies a transform to one or more faces.
+ * @param id : @autocomplete `id + "moveFace1"`
  * @param definition {{
  *      @field moveFaces {Query} : The faces to transform.
  *      @field transform {Transform} : The transform to apply.
@@ -264,6 +279,7 @@ export function opMoveFace(context is Context, id is Id, definition is map)
 
 /**
  * This is a direct editing operation that offsets one or more faces.
+ * @param id : @autocomplete `id + "offsetFace1"`
  * @param definition {{
  *      @field moveFaces {Query} : The faces to offset.
  *      @field offsetDistance {ValueWithUnits} : The positive or negative distance by which to offset.
@@ -278,6 +294,7 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
 
 /**
  * Patterns input faces and/or bodies by applying transforms to them. The original faces and bodies are preserved.
+ * @param id : @autocomplete `id + "pattern1"`
  * @param definition {{
  *      @field entities {Query} : Bodies and faces to pattern.
  *      @field transforms {array} : An array of `transforms` to apply to `entities`. The transforms do not have to be
@@ -293,10 +310,11 @@ export function opPattern(context is Context, id is Id, definition is map)
 
 /**
  * Creates a construction plane.
+ * @param id : @autocomplete `id + "plane1"`
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
  *      @field size {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
- *      @field defaultType {DefaultPlaneType} : For internal use only. @optional
+ *      @field defaultType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */
 export function opPlane(context is Context, id is Id, definition is map)
@@ -307,9 +325,10 @@ export function opPlane(context is Context, id is Id, definition is map)
 /**
  * Creates a construction point (a `BodyType.POINT` with one vertex). TODO: doesn't seem to display if `origin` is
  * false.
+ * @param id : @autocomplete `id + "point1"`
  * @param definition {{
  *      @field point {Vector} : The location of the point. Has length units.
- *      @field origin {boolean} : For internal use only. @optional
+ *      @field origin {boolean} : For Onshape internal use. @optional
  * }}
  */
 export function opPoint(context is Context, id is Id, definition is map)
@@ -320,6 +339,7 @@ export function opPoint(context is Context, id is Id, definition is map)
 /**
  * This is a direct editing operation that replaces the geometry one or more faces with that of another face, possibly
  * with an offset.
+ * @param id : @autocomplete `id + "replaceFace1"`
  * @param definition {{
  *      @field replaceFaces {Query} : The faces whose geometry to replace.
  *      @field templateFace {Query} : The face whose geometry to use as the replacement.
@@ -336,11 +356,12 @@ export function opReplaceFace(context is Context, id is Id, definition is map)
 /**
  * Revolves edges and faces about an axis to produce sheet and solid bodies. The edges and faces may abut, but not
  * strictly intersect the axis.
+ * @param id : @autocomplete `id + "revolve1"`
  * @param definition {{
  *      @field entities {Query} : The edges and faces to revolve.
  *      @field axis {Line} : The axis around which to revolve.
- *      @field angleForward {ValueWithUnits} : The angle where the revolve ends relative to `entities`. Normalized to [0, 2 PI).
- *      @field angleBack {ValueWithUnits} : The angle where the revolve starts relative to `entities`. Normalized to [0, 2 PI).
+ *      @field angleForward {ValueWithUnits} : The angle where the revolve ends relative to `entities`. Normalized to the range \[0, 2 PI).
+ *      @field angleBack {ValueWithUnits} : The angle where the revolve starts relative to `entities`. Normalized to the range \[0, 2 PI).
  *          If `angleForward == angleBack`, the revolve is a full (360-degree) revolve. Defaults to 0. @optional
  * }}
  */
@@ -352,6 +373,7 @@ export function opRevolve(context is Context, id is Id, definition is map)
 /**
  * Shell solid bodies. The bodies that are passed in are hollowed. The faces passed in are removed in order to hollow
  * their bodies.
+ * @param id : @autocomplete `id + "shell1"`
  * @param definition {{
  *      @field entities {Query} : The faces to shell and solid bodies to hollow.
  *      @field thickness {ValueWithUnits} : The distance by which to shell. Positive means shell outward, and negative
@@ -365,6 +387,7 @@ export function opShell(context is Context, id is Id, definition is map)
 
 /**
  * Split solid and sheet bodies with the given sheet body.
+ * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
  *      @field targets {Query} : The solid and sheet bodies to split. TODO: why not wires?
  *      @field tool {Query} : The sheet body or construction plane to cut with.
@@ -378,6 +401,7 @@ export function opSplitPart(context is Context, id is Id, definition is map)
 
 /**
  * Split faces with the given edges or faces.
+ * @param id : @autocomplete `id + "splitFace1"`
  * @param definition {{
  *      @field faceTargets {Query} : The faces to split.
  *      @field edgeTools {Query} : The edges to cut with. @optional
@@ -393,6 +417,7 @@ export function opSplitFace(context is Context, id is Id, definition is map)
 
 /**
  * Sweep the given edges and faces along a path resulting in sheet and solid bodies.
+ * @param id : @autocomplete `id + "sweep1"`
  * @param definition {{
  *      @field profiles {Query} : Edges and faces to sweep.
  *      @field path {Query} : Edges that comprise the path along which to sweep. The edges can be in any order but
@@ -408,10 +433,11 @@ export function opSweep(context is Context, id is Id, definition is map)
 
 /**
  * Thicken sheet bodies and faces into solid bodies.
+ * @param id : @autocomplete `id + "thicken1"`
  * @param definition {{
  *      @field entities {Query} : The sheet bodies and faces to thicken.
- *      @field thickness1 {ValueWithUnits} : The distance by which to thicken in the direction along the normal.
- *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction.
+ *      @field thickness1 {ValueWithUnits} : The distance by which to thicken in the direction along the normal. @autocomplete `0.1 * inch`
+ *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction. @autocomplete `0.1 * inch`
  * }}
  */
 export function opThicken(context is Context, id is Id, definition is map)
@@ -421,6 +447,7 @@ export function opThicken(context is Context, id is Id, definition is map)
 
 /**
  * Applies a given transform to one or more bodies. To make transformed copies of bodies, use `opPattern`.
+ * @param id : @autocomplete `id + "transform1"`
  * @param definition {{
  *      @field bodies {Query} : The bodies to transform.
  *      @field transform {Transform} : The transform to apply. Need not be rigid.

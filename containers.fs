@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -162,7 +162,8 @@ export function reverse(arr is array) returns array
 }
 
 /**
- * For Onshape internal use.  Not needed in user code.
+ * For Onshape internal use.
+ *
  * `mapLookup(a, ["b","c","d","e"])` is the same as `try (a.b.c.d.e)`
  * except it does not log a warning when used in the standard library.
  */

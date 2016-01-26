@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,11 +6,6 @@ FeatureScript 275; /* Automatically generated version */
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/units.fs", version : "");
-
-export predicate defineUIDefaultValue(value, defaultValue)
-{
-    //Do nothing -- for UI only
-}
 
 export predicate defineBounds(value, boundSpec is map)
 precondition
@@ -266,11 +261,11 @@ export const SECONDARY_PATTERN_BOUNDS =
 
 /**
  * Return the intersection of all bounds in a BoundSpec as an
- * array with [0] = lower bound and [1] = upper bound.
+ * array with the first element being the lower bound, and the second element being the upper bound.
  * For example, if a BoundSpec allows 1/32 inch to 1 yard for Imperial
- * units and and 1 mm to 1 meter for metric, the result is [1 mm, 1 yard].
+ * units and and 1 mm to 1 meter for metric, the result is `[1 * mm, 1 * yard]`.
  */
-export function tightestBounds(boundSpec is map) returns array // [min, max] with units as defined in the spec
+export function tightestBounds(boundSpec is map) returns array
 precondition
 {
     canBeBoundSpec(boundSpec);

@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -11,6 +11,7 @@ export import(path : "onshape/std/manipulator.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -32,14 +33,20 @@ export enum RevolveType
 }
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create a revolve, as used in Onshape's revolve feature.
+ *
+ * Internally, performs an `opRevolve`, followed by an `opBoolean`. For simple revolves, prefer using
+ * `opRevolve` directly.
+ *
+ * @param id : @autocomplete `id + "revolve1"`
  * @param definition {{
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Revolve", "Manipulator Change Function" : "revolveManipulatorChange", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Revolve",
+             "Manipulator Change Function" : "revolveManipulatorChange",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "revolveEditLogic" }
 export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -296,5 +303,26 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
         revolveDefinition.angleBack = abs(newManipulators[SECOND_ANGLE_MANIPULATOR].angle);
     }
     return revolveDefinition;
+}
+
+
+/**
+ * implements heuristics for revolve feature
+ */
+export function revolveEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    // If flip has not been specified and there is no second direction we can adjust flip based on boolean operation
+    if (definition.revolveType != RevolveType.TWO_DIRECTIONS &&
+        definition.revolveType != RevolveType.SYMMETRIC
+         && !specifiedParameters.oppositeDirection)
+    {
+        if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
+        {
+            definition.oppositeDirection = !definition.oppositeDirection;
+        }
+    }
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, revolve);
 }
 

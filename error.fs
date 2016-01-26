@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -71,7 +71,9 @@ export function processError(context is Context, id is Id, error) returns boolea
 }
 
 /**
- * For Onshape internal use. To report errors from features, use `throw regenError(...);`.
+ * For Onshape internal use.
+ *
+ * To report errors from features, use `throw regenError(...);`.
  *
  * Attaches an error to the given feature id. If it is a top-level id, when the feature finishes executing, it will
  * be rolled back.

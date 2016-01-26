@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -159,7 +159,7 @@ function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint i
     var normals = makeArray(2);
     for (var i = 0; i < 2; i += 1)
     {
-        const param = evProjectPointOnFace(context, { "face" : faces[i], "point" : edgePoint }) as Vector;
+        const param = evDistance(context, { "side0" : faces[i], "side1" : edgePoint }).sides[0].parameter;
         const plane = evFaceTangentPlane(context, {
                     "face" : faces[i],
                     "parameter" : param

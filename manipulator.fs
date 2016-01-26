@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -151,7 +151,7 @@ export function flipManipulator(base is Vector, direction is Vector, flipped is 
  *      @eg `false` points the manipulator along +direction
  *      @eg `true`  points the manipulator along -direction
  * @param sources {Query}: entities the manipulator will flip @optional
- * @param style {ManipulatorStyleEnum}: Graphical appearance of the manipulator @optional
+ * @param style {ManipulatorStyleEnum}: @optional Graphical appearance of the manipulator.
  *      @eg `ManipulatorStyleEnum.DEFAULT`
  */
 export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, sources, style is ManipulatorStyleEnum) returns Manipulator

@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -26,7 +26,7 @@ import(path : "onshape/std/valueBounds.fs", version : "");
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" }
+annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -141,36 +141,78 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
     {
         const mateConnectorCoordSystem = evMateConnectorCoordSystem(context, definition);
 
-        var onlyPartInStudio = qNothing();
-        const allBodies = qEverything(EntityType.BODY);
-        const allParts = qBodyType(allBodies, BodyType.SOLID);
-
-        if (@size(evaluateQuery(context, allParts)) == 1)
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
         {
-            onlyPartInStudio = allParts;
-        }
+            var onlyPartInStudio = qNothing();
+            const allBodies = qEverything(EntityType.BODY);
+            const allParts = qBodyType(allBodies, BodyType.SOLID);
 
-        const possiblePartOwners = [definition.ownerPart,
+            if (size(evaluateQuery(context, allParts)) == 1)
+            {
+                onlyPartInStudio = allParts;
+            }
+
+            const possiblePartOwners = [definition.ownerPart,
                                     definition.originQuery,
                                     definition.originAdditionalQuery,
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery,
                                     onlyPartInStudio];
 
-        var ownerPartQuery;
-        for (var i = 0; i < size(possiblePartOwners); i += 1)
-        {
-            const currentQuery = qBodyType(qOwnerBody(possiblePartOwners[i]), BodyType.SOLID);
-            if (size(evaluateQuery(context, currentQuery)) != 0)
-            {
-                ownerPartQuery = currentQuery;
-                break;
-            }
+            definition.ownerPart = findOwnerPart(context, definition, possiblePartOwners);
         }
 
-        if (ownerPartQuery == undefined)
+        if (definition.ownerPart == undefined || @size(evaluateQuery(context, definition.ownerPart)) == 0)
             throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
 
-        opMateConnector(context, id, { "owner" : ownerPartQuery, "coordSystem" : mateConnectorCoordSystem });
+        opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
     });
+
+
+export function connectorEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+   specifiedParameters is map) returns map
+{
+    //only called on create so no need to version
+    if (specifiedParameters.ownerPart != true)
+    {
+        var possiblePartOwners = [  definition.originQuery,
+                                    definition.originAdditionalQuery,
+                                    definition.primaryAxisQuery,
+                                    definition.secondaryAxisQuery];
+        //if there are no selections, reset owner part, dont try to recompute
+        if (size(evaluateQuery(context, qUnion(possiblePartOwners))) == 0)
+        {
+            definition.ownerPart = qUnion([]);
+            return definition;
+        }
+        //if there's a single part in the studio consider it as an owner
+        const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
+        if (size(evaluateQuery(context, allParts)) == 1)
+            possiblePartOwners = append(possiblePartOwners, allParts);
+
+        var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
+
+        if (ownerPartQuery != undefined && size(evaluateQuery(context, ownerPartQuery)) > 0)
+            definition.ownerPart = qUnion(evaluateQuery(context, ownerPartQuery));
+        else
+            definition.ownerPart = qUnion([]);
+    }
+    return definition;
+}
+
+function findOwnerPart(context is Context, definition is map, possiblePartOwners is array)
+{
+    var ownerPartQuery;
+    for (var i = 0; i < size(possiblePartOwners); i += 1)
+    {
+        const currentQuery = qBodyType(qOwnerBody(possiblePartOwners[i]), BodyType.SOLID);
+        if (size(evaluateQuery(context, currentQuery)) != 0)
+        {
+            ownerPartQuery = currentQuery;
+            break;
+        }
+    }
+    return ownerPartQuery;
+}
+
 

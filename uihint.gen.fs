@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -16,7 +16,8 @@ export enum UIHint
     DISPLAY_SHORT,
     ALLOW_FEATURE_SELECTION,
     MATE_CONNECTOR_AXIS_TYPE,
-    PRIMARY_AXIS
+    PRIMARY_AXIS,
+    SHOW_EXPRESSION
 }
 
 

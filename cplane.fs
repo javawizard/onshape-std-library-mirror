@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -203,8 +203,11 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             var param;
             try
             {
-                param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
-                            "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
+                param = evDistance(context, {
+                                    "side0" : qEntityFilter(definition.entities, EntityType.VERTEX),
+                                    "side1" : qEntityFilter(definition.entities, EntityType.EDGE),
+                                    "extendSide1" : true
+                                }).sides[1].parameter;
             }
             catch (error)
             {

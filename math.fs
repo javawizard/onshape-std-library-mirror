@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -121,6 +121,19 @@ export function ceil(value is number)
 export function round(value is number)
 {
     return @floor(value + 0.5);
+}
+
+/**
+ * Round a number to the nearest integer only for possible roundoff errors
+ */
+export function roundWithinTolerance(value is number)
+{
+    var rounded = round(value);
+    if (abs(rounded - value) <= TOLERANCE.zeroLength)
+    {
+        return rounded;
+    }
+    return value;
 }
 
 /** Return the lesser of two values, which must be comparable with `<`. */

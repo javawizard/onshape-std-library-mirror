@@ -1,4 +1,4 @@
-FeatureScript 275; /* Automatically generated version */
+FeatureScript 293; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -127,4 +127,15 @@ export operator+(id is Id, addend is Id) returns Id
     return concatenateArrays([id, addend]) as Id;
 }
 
+//====================== Variable builtins ========================
+
+export function setVariable(context is Context, name is string, value)
+{
+    @setVariable(context, { "name" : name, "value" : value });
+}
+
+export function getVariable(context is Context, name is string)
+{
+    return @getVariable(context, { "name" : name });
+}
 
