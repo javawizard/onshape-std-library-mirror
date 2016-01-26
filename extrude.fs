@@ -13,6 +13,7 @@ export import(path : "onshape/std/manipulator.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/box.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
@@ -41,14 +42,73 @@ export enum SecondDirectionBoundingType
 }
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
+ * Create an extrude, as used in Onshape's extrude feature.
+ *
+ * Internally, performs an `opExtrude`, followed by an `opBoolean`, possibly followed by a
+ * `draftExtrudeBody`, possibly in two directions. If creating a simple extrusion, prefer using
+ * `opExtrude` alone.
+ *
+ * @param id : @autocomplete `id + "extrude1"`
  * @param definition {{
- *      @field TODO
+ *      @field bodyType {ToolBodyType}: @optional
+ *              Specifies a `SOLID` or `SURFACE` extrude. Default is `SOLID`.
+ *      @field entities {Query}: @requiredif {`bodyType` is `SOLID`}
+ *              The planar faces and/or sketch regions to extrude.
+ *              @eg `qSketchRegion(id + "sketch1")` specifies all sketch regions of a given sketch.
+ *      @field surfaceEntities {Query}: @requiredif {`bodyType` is `SURFACE`}
+ *              The sketch curves to extrude.
+ *              @example `qCreatedBy(id + "sketch1", EntityType.EDGE)`
+ *
+ *      @field endBound {BoundingType}: @optional
+ *              The end bounding condition for the extrude. Default is `BLIND`.
+ *              @autocomplete `BoundingType.BLIND`
+ *      @field depth {ValueWithUnits}: @requiredif {`endBound` is `BLIND` or `SYMMETRIC`}
+ *              A length specifying the extrude depth. For a symmetric extrude, specifies the full
+ *              extrude depth. For a blind extrude, specifies the depth of the first extrude
+ *              direction.
+ *              @eg `0.5 * inch`
+ *      @field endBoundEntityFace {Query}: @requiredif {`endBound` is `UP_TO_SURFACE`}
+ *              Specifies the face or surface to bound the extrude.
+ *      @field endBoundEntityBody {Query}: @requiredif {`endBound` is `UP_TO_BODY`}
+ *              Specifies the surface or solid body to bound the extrude.
+ *
+ *      @field oppositeDirection {boolean}: @optional
+ *              @ex `true` to flip the direction of the extrude to point opposite the face/sketch
+ *              normal.
+ *
+ *      @field hasDraft {boolean} : @optional
+ *              @ex `true` to add a draft to the extrude.
+ *      @field draftAngle {ValueWithUnits}: @requiredif {`hasDraft` is `true`}
+ *              The angle, as measured from the extrude direction, at which to draft.
+ *              @ex `10 * degree`
+ *      @field draftPullDirection {boolean} : @optional
+ *              @ex `false` to draft outwards (default)
+ *              @ex `true` to draft inwards
+ *
+ *      @field hasSecondDirection {boolean} : @optional
+ *              @example `true` to specify a second direction.
+ *      @field secondDirectionBound {SecondDirectionBoundingType}: @optional
+ *              The bounding type of the second direction. Can be different from the bounding type of the first direction.
+ *      @field secondDirectionDepth {ValueWithUnits}: @requiredif {`secondDirectionBound` is `BLIND`}
+ *              A length specifying the second direction's extrude depth.
+ *      @field secondDirectionBoundEntityFace {Query}: @requiredif {`secondDirectionBound` is `UP_TO_SURFACE`}
+ *              specifies the face or surface to bound the extrude.
+ *      @field secondDirectionBoundEntityBody {Query}: @requiredif {`secondDirectionBound` is `UP_TO_BODY`}
+ *              specifies the surface or solid body to bound the extrude.
+ *      @field secondDirectionOppositeDirection {boolean} : @optional
+ *              @ex `true` will flip the second end direction to align with the plane/face's normal.
+ *
+ *      @field hasSecondDirectionDraft {boolean} : @optional
+ *              @ex `true` to add a draft to the second direction extrude.
+ *      @field secondDirectionDraftPullDirection {boolean} : @optional
+ *              @ex `false` to draft the second direction outwards (default)
+ *              @ex `true` to draft the second direction inwards
  * }}
  */
-annotation { "Feature Type Name" : "Extrude", "Manipulator Change Function" : "extrudeManipulatorChange", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Extrude",
+             "Manipulator Change Function" : "extrudeManipulatorChange",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "extrudeEditLogic" }
 export const extrude = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -628,7 +688,7 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
 
 
 /**
- * TODO: description
+ * TODO: remove featureInfo in rel-1.42
  * @param context
  * @param featureDefinition {{
  *      @field TODO
@@ -674,7 +734,7 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
 }
 
 /**
- * TODO: description
+ * TODO: remove in rel-1.42
  * @param context
  * @param featureDefinition {{
  *      @field TODO
@@ -687,5 +747,60 @@ export function performTypeFlip(context is Context, featureDefinition is map, fe
 {
     featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
     return featureDefinition;
+}
+
+
+function canSetUpToFlip(definition is map, specifiedParameters is map) returns boolean
+{
+    if (definition.endBound == BoundingType.UP_TO_SURFACE)
+    {
+        return specifiedParameters.endBoundEntityFace;
+    }
+    if (definition.endBound == BoundingType.UP_TO_BODY)
+    {
+        return specifiedParameters.endBoundEntityBody;
+    }
+    return false;
+}
+
+/**
+ * implements heuristics for extrude feature
+ */
+export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    // If flip has not been specified and there is no second direction we can adjust flip either based on location of
+    // bounding surface/body or based on boolean operation
+    if (!definition.hasSecondDirection &&
+        definition.endBound != BoundingType.SYMMETRIC &&
+        !specifiedParameters.oppositeDirection)
+    {
+        if (canSetUpToFlip(definition, specifiedParameters))
+        {
+            definition = upToBoundaryFlip(context, definition, {});
+        }
+        else if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
+        {
+            definition.oppositeDirection = !definition.oppositeDirection;
+        }
+    }
+    if (canSetSecondDirectionFlip(definition, specifiedParameters))
+    {
+        definition.secondDirectionOppositeDirection = !definition.oppositeDirection;
+    }
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, extrude);
+}
+
+function canSetSecondDirectionFlip(definition is map, specifiedParameters is map) returns boolean
+{
+    if (specifiedParameters.secondDirectionOppositeDirection is undefined ||
+        specifiedParameters.secondDirectionOppositeDirection ||
+        !definition.hasSecondDirection)
+    {
+        return false;
+    }
+
+    return (definition.secondDirectionOppositeDirection == definition.oppositeDirection);
 }
 

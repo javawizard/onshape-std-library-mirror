@@ -16,6 +16,7 @@ import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
+import(path : "onshape/std/string.fs", version : "");
 
 /**
  * TODO: description
@@ -25,7 +26,7 @@ import(path : "onshape/std/vector.fs", version : "");
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts", "Editing Logic Function" : "replaceFaceEditLogic" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -56,10 +57,15 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
             definition.offset = -definition.offset;
 
         // Only draw the offset manipulator if the replace face is defined
-        const replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));
-        if (replaceFacePlane != undefined)
-            addOffsetManipulator(context, id, definition, replaceFacePlane);
-
+        var templateFacePlane = try(computeFacePlane(context, id, definition.templateFace));
+        if (templateFacePlane != undefined)
+        {
+            if (definition.oppositeSense)
+            {
+                templateFacePlane.normal = -templateFacePlane.normal;
+            }
+            addOffsetManipulator(context, id, definition, templateFacePlane);
+        }
         opReplaceFace(context, id, definition);
     }, { oppositeSense : false, oppositeDirection : false });
 
@@ -67,13 +73,13 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
 
 const OFFSET_MANIPULATOR = "offsetManipulator";
 
-function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinition is map, replaceFace is Plane)
+function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinition is map, replaceFacePlane is Plane)
 {
     // Don't try anything fancy to guess where to place the manipulator. With replace face it is too hard to guess what the
-    // result will look like. Place the manipulator offset from the face to be replaced.  This will allow
-    // the manipulator to travel relative to the face where the replacement happens.
-    const offsetOrigin = replaceFace.origin;
-    var offsetDirection = replaceFace.normal;
+    // result will look like. Place the manipulator offset from the template face.  This will allow
+    // the manipulator to travel relative to the face where the offset happens.
+    const offsetOrigin = replaceFacePlane.origin;
+    var offsetDirection = replaceFacePlane.normal;
     if (replaceFaceDefinition.oppositeSense)
         offsetDirection = -offsetDirection;
 
@@ -106,5 +112,23 @@ export function replaceFaceManipulatorChange(context is Context, replaceFaceDefi
     }
 
     return replaceFaceDefinition;
+}
+
+/**
+ * implements heuristics for replace face feature
+ */
+export function replaceFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    if (specifiedParameters.oppositeSense != true)
+    {
+        const replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));
+        var templateFacePlane = try(computeFacePlane(context, id, definition.templateFace));
+        if (replaceFacePlane != undefined && templateFacePlane != undefined)
+        {
+            definition.oppositeSense = dot(replaceFacePlane.normal, templateFacePlane.normal) < 0;
+        }
+    }
+    return definition;
 }
 

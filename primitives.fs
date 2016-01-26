@@ -43,9 +43,10 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
  *
  * TODO: rename and merge this with fSphere.
  *
+ * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{
- *      @field center {Vector} : A 3D length vector in world space.
- *      @field radius {ValueWithUnits}
+ *      @field center {Vector} : A 3D length vector in world space. @eg `vector(0, 0, 0) * inch`
+ *      @field radius {ValueWithUnits} : @eg `1 * inch`
  * }}
  */
 annotation { "Feature Type Name" : "Sphere" }
@@ -56,6 +57,7 @@ export function sphere(context is Context, id is Id, definition is map)
 
 /**
  * Create a solid sphere.
+ * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{
  *      @field center {Query} : A single point marking the sphere's center.
  *      @field radius {ValueWithUnits}
@@ -88,9 +90,10 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
 
 /**
  * Create a simple rectangular prism between two specified corners.
+ * @param id : @autocomplete `id + "cuboid1"`
  * @param definition {{
- *      @field corner1 {Vector} : A 3D length vector in world space.
- *      @field corner2 {Vector} : A 3D length vector in world space.
+ *      @field corner1 {Vector} : A 3D length vector in world space. @eg `vector(0, 0, 0) * inch`
+ *      @field corner2 {Vector} : A 3D length vector in world space. @eg `vector(1, 1, 1) * inch`
  * }}
  */
 export const fCuboid = defineFeature(function(context is Context, id is Id, definition is map)
@@ -131,10 +134,11 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
 
 /**
  * Create a simple cylindrical solid between two points, with a specified radius.
+ * @param id : @autocomplete `id + "cylinder1"`
  * @param definition {{
- *      @field topCenter {Vector} : A 3D length vector in world space.
- *      @field bottomCenter {Vector} : A 3D length vector in world space.
- *      @field radius {ValueWithUnits}
+ *      @field topCenter {Vector} : A 3D length vector in world space. @eg `vector(0, 0, 0) * inch`
+ *      @field bottomCenter {Vector} : A 3D length vector in world space. @eg `vector(1, 1, 1) * inch`
+ *      @field radius {ValueWithUnits} : @eg `1 * inch`
  * }}
  */
 export const fCylinder = defineFeature(function(context is Context, id is Id, definition is map)
@@ -235,7 +239,8 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
  * Create an ellipsoid (that is, a sphere scaled independently along the three major axes).
  * @param definition {{
  *      @field center {Vector} : A 3D vector in world coordinates
- *      @field radius {Vector} : The radii as measured along the x, y, and z axes, given as a single 3D length vector.
+ *      @field radius {Vector} : The three radii, as measured along the x, y, and z axes, given as
+ *              a single 3D length vector.
  * }}
  */
 export const fEllipsoid = defineFeature(function(context is Context, id is Id, definition is map)

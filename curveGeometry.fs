@@ -15,7 +15,7 @@ import(path : "onshape/std/units.fs", version : "");
 
 /**
  * Represents a parameterized line in space.
- * @value {{
+ * @type {{
  *      @field origin {Vector} : A 3D Vector with length units.
  *      @field direction {Vector} : A unitless normalized 3D Vector.
  * }}
@@ -40,8 +40,9 @@ export function line(origin is Vector, direction is Vector) returns Line
 }
 
 /**
- * Create a `Line` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Line` from the result of a builtin call.
  */
 export function lineFromBuiltin(definition is map) returns Line
 {
@@ -108,7 +109,7 @@ export function toString(value is Line) returns string
 
 /**
  * Represents a circle in 3D space.
- * @value {{
+ * @type {{
  *      @field coordSystem {CoordSystem} : The circle lies in the xy plane of this coordinate
  *          system and the origin of its parameterization is the x axis.
  *      @field radius {ValueWithUnits} : The radius of the circle.
@@ -137,8 +138,9 @@ export function circle(center is Vector, xDirection is Vector, normal is Vector,
 }
 
 /**
- * Create a `Circle` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Circle` from the result of a builtin call.
  */
 export function circleFromBuiltin(definition is map) returns Circle
 {
@@ -164,7 +166,7 @@ export function toString(value is Circle) returns string
 
 /**
  * Represents an ellipse in 3D space.
- * @value {{
+ * @type {{
  *      @field coordSystem {CoordSystem} : The ellipse lies in the xy plane of this coordinate
  *          system and the x axis corresponds to the major radius.
  *      @field majorRadius {ValueWithUnits} : The larger of the two radii.
@@ -196,8 +198,9 @@ export function ellipse(center is Vector, xDirection is Vector, normal is Vector
 }
 
 /**
- * Create an `Ellipse` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create an `Ellipse` from the result of a builtin call.
  */
 export function ellipseFromBuiltin(definition is map) returns Ellipse
 {

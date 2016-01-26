@@ -13,10 +13,11 @@ FeatureScript ✨; /* Automatically generated version */
  * does not provide any features or functions not also available by
  * explicitly importing other modules.
  */
-/* Features! */
+/* Feature basics */
 export import(path : "onshape/std/context.fs", version : "");
 export import(path : "onshape/std/defaultFeatures.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
+export import(path : "onshape/std/featureList.fs", version : "");
 
 /* Query and evaluation */
 export import(path : "onshape/std/evaluate.fs", version : "");
@@ -36,6 +37,7 @@ export import(path : "onshape/std/mathUtils.fs", version : "");
 export import(path : "onshape/std/string.fs", version : "");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "");
 export import(path : "onshape/std/attributes.fs", version : "");
+export import(path : "onshape/std/lookupTablePath.fs", version : "");
 
 /* Onshape standard library features */
 export import(path : "onshape/std/boolean.fs", version : "");
@@ -67,5 +69,6 @@ export import(path : "onshape/std/sweep.fs", version : "");
 export import(path : "onshape/std/thicken.fs", version : "");
 export import(path : "onshape/std/transformCopy.fs", version : "");
 export import(path : "onshape/std/variable.fs", version : "");
+export import(path : "onshape/std/booleanHeuristics.fs", version : "");
 
 

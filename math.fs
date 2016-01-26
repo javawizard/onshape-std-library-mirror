@@ -123,6 +123,19 @@ export function round(value is number)
     return @floor(value + 0.5);
 }
 
+/**
+ * Round a number to the nearest integer only for possible roundoff errors
+ */
+export function roundWithinTolerance(value is number)
+{
+    var rounded = round(value);
+    if (abs(rounded - value) <= TOLERANCE.zeroLength)
+    {
+        return rounded;
+    }
+    return value;
+}
+
 /** Return the lesser of two values, which must be comparable with `<`. */
 export function min(value1, value2)
 {

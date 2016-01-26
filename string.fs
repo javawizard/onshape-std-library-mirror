@@ -74,6 +74,41 @@ export function splitIntoCharacters(s is string) returns array
     return @splitIntoCharacters(s);
 }
 
+const REGEX_EXP = "(?:[eE][+-]?\\d+)?";
+const REGEX_FULL_FORM = "(?:-?\\d+\\.\\d*)";
+const REGEX_LEADING_DECIMAL = "(?:-?\\.?\\d+)";
+
+/**
+ * Matches a number in the string, with our without decimals or exponents.
+ */
+export const REGEX_NUMBER = "(?:(?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
+
+/**
+ * Matches a number in the string, with our without decimals or exponents and captures it.
+ */
+export const REGEX_NUMBER_CAPTURE = "((?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
+
+/**
+ * Extends regular expression syntax by adding \\f to indicate a complete number
+ */
+export function addCustomNumberMatching(regExp is string) returns string
+  {
+      regExp = replace(regExp, "\\(\\\\f\\)", REGEX_NUMBER_CAPTURE);
+      regExp = replace(regExp, "\\\\f", REGEX_NUMBER);
+      return regExp;
+  }
+
+/**
+ * Test if s matches regExp in it's entirety.
+ * Returns a map with the test result in `result.hasMatch` and any captures
+ * in `result.captures`.
+ * `result.captures[0]` is always equal to the input string `s`
+ */
+export function match(s is string, regExp is string) returns map
+{
+    return @match(s, regExp);
+}
+
 /**
  * TODO: description
  * @param s
@@ -86,10 +121,22 @@ export function replace(s is string, regExp is string, replacement is string) re
 }
 
 /**
+ * Convert a number in string form, into a FS number.
+ * Note that this function will not accept trailing non numeric text,
+ * the entire string must be a single valid number.
+ * @param s
+ */
+export function stringToNumber(s is string) returns number
+{
+    return @stringToNumber(s);
+}
+
+/**
  * Return the number of characters in a string.
  */
 export function length(s is string) returns number
 {
     return @size(@splitIntoCharacters(s));
 }
+
 

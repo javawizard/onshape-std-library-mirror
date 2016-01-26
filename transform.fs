@@ -54,8 +54,9 @@ precondition
 }
 
 /**
- * Create a `Transform` from the result of a builtin call.
  * For Onshape internal use.
+ *
+ * Create a `Transform` from the result of a builtin call.
  */
 export function transformFromBuiltin(definition is map) returns Transform
 {

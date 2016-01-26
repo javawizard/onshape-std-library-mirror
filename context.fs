@@ -127,4 +127,15 @@ export operator+(id is Id, addend is Id) returns Id
     return concatenateArrays([id, addend]) as Id;
 }
 
+//====================== Variable builtins ========================
+
+export function setVariable(context is Context, name is string, value)
+{
+    @setVariable(context, { "name" : name, "value" : value });
+}
+
+export function getVariable(context is Context, name is string)
+{
+    return @getVariable(context, { "name" : name });
+}
 

@@ -19,7 +19,7 @@ import(path : "onshape/std/units.fs", version : "");
  * @see `plane`
  * @see `opMateConnector`
  *
- * @value {{
+ * @type {{
  *      @field origin {Vector}: A 3D point, in world space, representing the origin of the coordinate system.
  *      @field xAxis {Vector}: A 3D unit vector, in world space, respresenting the x-axis of the coordinate system.
  *      @field zAxis {Vector}: A 3D unit vector, in world space, respresenting the z-axis of the coordinate system.
@@ -50,8 +50,9 @@ precondition perpendicularVectors(xAxis, zAxis);
 }
 
 /**
+ * For Onshape internal use.
+ *
  * Create a CoordSystem from the result of a builtin call.
- * For Onshape internal use only.
  */
 export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 {

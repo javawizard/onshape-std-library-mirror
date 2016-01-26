@@ -151,7 +151,7 @@ export function flipManipulator(base is Vector, direction is Vector, flipped is 
  *      @eg `false` points the manipulator along +direction
  *      @eg `true`  points the manipulator along -direction
  * @param sources {Query}: entities the manipulator will flip @optional
- * @param style {ManipulatorStyleEnum}: Graphical appearance of the manipulator @optional
+ * @param style {ManipulatorStyleEnum}: @optional Graphical appearance of the manipulator.
  *      @eg `ManipulatorStyleEnum.DEFAULT`
  */
 export function flipManipulator(base is Vector, direction is Vector, flipped is boolean, sources, style is ManipulatorStyleEnum) returns Manipulator

@@ -13,6 +13,7 @@ export import(path : "onshape/std/tool.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
@@ -25,7 +26,9 @@ import(path : "onshape/std/valueBounds.fs", version : "");
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Thicken", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Thicken",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "thickenEditLogic" }
 export const thicken = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -62,4 +65,23 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         const reconstructOp = function(id) { opThicken(context, id, definition); };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW });
+
+
+/**
+ * implements heuristics for thicken feature
+ */
+export function thickenEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    // If flip has not been specified and there is no second direction we can adjust flip based on boolean operation
+    if (!specifiedParameters.oppositeDirection && definition.thickness2 > 0)
+    {
+        if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
+        {
+            definition.oppositeDirection = !definition.oppositeDirection;
+        }
+    }
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, thicken);
+}
 

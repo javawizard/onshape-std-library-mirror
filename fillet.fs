@@ -159,7 +159,7 @@ function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint i
     var normals = makeArray(2);
     for (var i = 0; i < 2; i += 1)
     {
-        const param = evProjectPointOnFace(context, { "face" : faces[i], "point" : edgePoint }) as Vector;
+        const param = evDistance(context, { "side0" : faces[i], "side1" : edgePoint }).sides[0].parameter;
         const plane = evFaceTangentPlane(context, {
                     "face" : faces[i],
                     "parameter" : param

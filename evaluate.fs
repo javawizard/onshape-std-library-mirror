@@ -267,44 +267,6 @@ precondition
 }
 
 /**
- * Project a point onto a curve.  The result is in curve parameter space,
- * so in [0, 1] if the point projects onto the curve and negative or
- * greater than 1 if the point projects onto an extension of the curve.
- * @param arg {{
- *      @field edge{Query} : The curve to project onto
- *      @field vertex{Query} : The point to project
- * }}
- */
-export function evProjectPointOnCurve(context is Context, arg is map) returns number
-precondition
-{
-    arg.edge is Query;
-    arg.vertex is Query;
-}
-{
-    return @evProjectPointOnCurve(context, arg);
-}
-
-/**
- * Project point onto face.  The result is an array of two numbers
- * in parameter space of the face, range [0, 1].  The result will
- * not be outside of the face (unlike `evProjectPointOnCurve`).
- * @param arg {{
- *      @field face{Query}
- *      @field point
- * }}
- */
-export function evProjectPointOnFace(context is Context, arg is map) returns array
-precondition
-{
-    arg.face is Query;
-    is3dLengthVector(arg.point);
-}
-{
-    return @evProjectPointOnFace(context, arg);
-}
-
-/**
  * Return the plane of the sketch that created the given entity. Throws if the entity was not created by a sketch.
  * @param context
  * @param arg {{
@@ -448,7 +410,9 @@ precondition
 }
 
 /**
- * For internal use.  Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
+ * For Onshape internal use.
+ *
+ * Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
  */
 export function evMateConnectorCoordSystem(context is Context, arg is map) returns CoordSystem
 {
@@ -486,4 +450,89 @@ export function evMateConnector(context is Context, arg is map) returns CoordSys
     return coordSystemFromBuiltin(@evMateConnector(context, arg));
 }
 
+// =========== evDistance stuff ===========
+
+/**
+ * The result of an evDistance call -- information about the extremal distance and the attaining point / line / entity.
+ *
+ * @type {{
+ *      @field distance {ValueWithUnits} : The minimal or maximal distance.
+ *      @field sides {array} : An array of 2 maps, containing information about where the extremum was found for each side.  Each map has a:
+ *
+ *          `point` (`Vector` of lengths) : represents the position that attains the minimum or maximum on that side.
+ *
+ *          `index` (integer) :  the index into the line or point array or into the query results, if a query is passed in.
+ *
+ *          `parameter` (number or length or array of two numbers) : If the `index` refers to an edge,
+ *                  the parameter is a number between 0 and 1 (unless extend for that side was passed in).  It is in the form that
+ *                  `evEdgeTangentLine` consumes (with `arcLengthParameterization` set to `false`).  If the side has `Line`(s),
+ *                  the parameter is a length representing the distance along the direction.
+ *                  If the `index` refers to a face, the parameter is a 2D `Vector` in the form that `evFaceTangentPlane` consumes.
+ * }}
+ */
+export type DistanceResult typecheck canBeDistanceResult;
+
+predicate canBeDistanceResult(value)
+{
+    value is map;
+    isLength(value.distance);
+    value.sides is array;
+    size(value.sides) == 2;
+    for (var sideResult in value.sides)
+    {
+        sideResult is map;
+        isNonNegativeInteger(sideResult.index); // Index into either input array or results of input query evaluation
+        is3dLengthVector(sideResult.point);
+        // The parameter is either one number (for a curve) or an array of two (for a surface).  For bodies or points, the parameter is 0.
+        // For lines, the parameter is a length representing the distance along the direction.
+        if (!(sideResult.parameter is number || isLength(sideResult.parameter)))
+        {
+            sideResult.parameter is Vector;
+            size(sideResult.parameter) == 2;
+            sideResult.parameter[0] is number;
+            sideResult.parameter[1] is number;
+        }
+    }
+}
+
+/**
+ * Computes the minimum or maximum distance between geometry on `side0` and geometry on `side1`.  "Geometry" means entities, points, or lines.
+ * When the minimum or the maximum is not uniquely defined, ties will be broken arbitrarily.  @see `DistanceResult`
+ * @example `evDistance(context, { "side0" : vector(1, 2, 3) * meter, "side1" : query }).distance` returns the minimum distance from any entity
+ * returned by `query` to the point `(1, 2, 3) meters`.
+ * @example `result = evDistance(context, { "side0" : qEverything(EntityType.VERTEX), "side1" : qEverything(EntityType.VERTEX), "maximum" : true })`
+ * computes the pair of vertices farthest apart.  `qNthElement(qEverything(EntityType.VERTEX), result.sides[0].index)` queries for one of these vertices.
+ * @param context {Context}
+ * @param arg {{
+ *      @field side0 : One of the following: A query, or a point (3D Length Vector), or a `Line`, or an array of points, or an array of `Line`s.
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 0)` or `vector(1, 2, 3) * meter` or `line(vector(1, 0, 1) * meter, vector(1, 1, 1)`
+ *      @field extendSide0 {boolean} : If `true` and side0 is a query, bodies will be ignored and edges and faces extended to
+ *          their possibly infinite underlying surfaces.  Defaults to `false`. @optional
+ *      @field side1 : Like `side0`.
+ *          @autocomplete `vector(0, 0, 0) * meter`
+ *      @field extendSide1 {boolean} : Like `extendSide0`. @optional
+ *      @field maximum {boolean} : If `true`, compute the maximum instead of the minimum.  Defaults to `false`.
+ *          Not allowed to be `true` if a line is passed in in either side or if either `extend` is true. @optional
+ * }}
+ */
+export function evDistance(context is Context, arg is map) returns DistanceResult
+{
+    var result = @evDistance(context, arg);
+    result.distance *= meter;
+    for (var side in [0, 1])
+    {
+        result.sides[side].point = vector(result.sides[side].point) * meter;
+        if (result.sides[side].parameter is array)
+        {
+            result.sides[side].parameter = result.sides[side].parameter as Vector;
+        }
+        else
+        {
+            var argSide = arg["side" ~ side];
+            if (argSide is Line || (argSide is array && argSide[result.sides[side].index] is Line))
+                result.sides[side].parameter *= meter;
+        }
+    }
+    return result as DistanceResult;
+}
 

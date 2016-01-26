@@ -9,6 +9,7 @@ export import(path : "onshape/std/tool.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
+import(path : "onshape/std/booleanHeuristics.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
@@ -16,7 +17,9 @@ import(path : "onshape/std/feature.fs", version : "");
 /**
  * @see `opSweep`.
  */
-annotation { "Feature Type Name" : "Sweep", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Sweep",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "sweepEditLogic" }
 export const sweep = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -80,4 +83,15 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false });
+
+
+/**
+ * implements heuristics for sweep feature
+ */
+export function sweepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                specifiedParameters, hiddenBodies, sweep);
+}
 

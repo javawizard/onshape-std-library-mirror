@@ -146,7 +146,9 @@ export function setFeatureComputedParameter(context is Context, id is Id, defini
 }
 
 /**
- * Builds stack of patternInstanceData, featureEnd/featureAbort on id parent pops the stack.
+ * For Onshape internal use.
+ *
+ * Builds stack of patternInstanceData, endFeature/abortFeature on id parent pops the stack.
  * @param id {Id} : instance id
  * @param definition {{
  *      @field transform {Transform}
@@ -158,6 +160,8 @@ export function setFeaturePatternInstanceData(context is Context, id is Id, defi
 }
 
 /**
+ * For Onshape internal use.
+ *
  * pop patternInstanceData stack if id matches throw otherwice
  * @param id {Id} : instance id
  */
@@ -220,14 +224,18 @@ export function evaluateQuery(context is Context, query is Query) returns array
 }
 
 //================ Compatibility with early expressions ================
-export predicate isAnything(value) // used to create a generic feature parameter that can be any featurescript expression
+/**
+ * A predicate which always returns true.
+ * Used to create a generic feature parameter that can be any featurescript expression.
+ */
+export predicate isAnything(value)
 {
 }
 
 
 /**
- * Returns id of operation that created or last modified the first entity to which query resolves
- * throws if query resolves to nothing
+ * Returns id of operation that created or last modified the first entity to which query resolves.
+ * Throws if query resolves to nothing.
  * @param context
  * @param query
  */
@@ -235,26 +243,4 @@ export function lastModifyingOperationId(context is Context, query is Query) ret
 {
     return @lastModifyingOperationId(context, {"entity" : query}) as Id;
 }
-
-/**
- * Parameter type that has a list of feature lambdas
- */
-export type FeatureList typecheck canBeFeatureList;
-export predicate canBeFeatureList(value)
-{
-    value is array;
-    for (var entry in value)
-    {
-        entry is function;
-    }
-}
-
-/**
- * Takes an array to return it as type FeatureList
- */
-export function featureList(features is array) returns FeatureList
-{
-    return features as FeatureList;
-}
-
 

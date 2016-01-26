@@ -37,7 +37,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
         }
 
-        @setVariable(context, definition); // TODO: wrap
+        setVariable(context, definition.name, definition.value);
         setFeatureComputedParameter(context, id, { "name" : "value", "value" : definition.value });
     });
 
@@ -48,7 +48,7 @@ export function makeLookupFunction(context is Context, id is Id) returns functio
 {
     return function(name is string)
         {
-            return @getVariable(context, { "name" : name }); // TODO: wrap
+            return getVariable(context, name);
         };
 }
 

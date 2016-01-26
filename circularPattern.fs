@@ -61,10 +61,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
     }
     {
         if (definition.isFacePattern)
-        {
             definition.entities = definition.faces;
-            definition.sameFace = isSeedOnSameFace(context, definition.entities);
-        }
 
         checkInput(context, id, definition);
 
@@ -104,6 +101,6 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         processPatternBooleansIfNeeded(context, id, definition);
     }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
-         oppositeDirection : false, equalSpace : false, sameFace : true });
+         oppositeDirection : false, equalSpace : false });
 
 

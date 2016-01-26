@@ -71,7 +71,9 @@ export function processError(context is Context, id is Id, error) returns boolea
 }
 
 /**
- * For Onshape internal use. To report errors from features, use `throw regenError(...);`.
+ * For Onshape internal use.
+ *
+ * To report errors from features, use `throw regenError(...);`.
  *
  * Attaches an error to the given feature id. If it is a top-level id, when the feature finishes executing, it will
  * be rolled back.

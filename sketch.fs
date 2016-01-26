@@ -157,7 +157,7 @@ precondition
  * @param value {{
  *      @field start {Vector}
  *      @field end {Vector}
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
  */
@@ -198,7 +198,7 @@ precondition
  *          @eg `"RobotoSlab-Regular.ttf"`      Sans-serif font. No italic options.
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  */
 export function skText(sketch is Sketch, textId is string, value is map)
@@ -240,7 +240,7 @@ precondition
  * @param value {{
  *      @field center {Vector}
  *      @field radius {ValueWithUnits} : A non-negative value with length units.
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  * @return {{ @field centerId }}
  */
@@ -262,7 +262,7 @@ precondition
  *      @field center {Vector}
  *      @field majorRadius {Vector}
  *      @field minorRadius {Vector}
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  * @return {{ @field centerId }}
  */
@@ -286,7 +286,7 @@ precondition
  *      @field start {Vector}
  *      @field mid {Vector}
  *      @field end {Vector}
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
  */
@@ -315,7 +315,7 @@ precondition
  *              the minor radius
  *      @field startParameter {number} : The parameter of the start point.
  *      @field endParameter {number} : The parameter of the end point.
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
  */
@@ -335,7 +335,9 @@ precondition
 }
 
 /**
- * Add a closed spline. For Onshape internal use only.
+ * For Onshape internal use.
+ *
+ * Add a closed spline.
  */
 export function skSpline(sketch is Sketch, splineId is string, value is map)
 precondition
@@ -348,8 +350,9 @@ precondition
 }
 
 /**
+ * For Onshape internal use.
+ *
  * Add a spline segment (i.e open spline or piece of a closed spline)
- * For Onshape internal use only.
  */
 export function skSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
@@ -364,7 +367,7 @@ precondition
  * Create a closed spline through a list of points. TODO: how to pass the list of points?
  * @param value {{
  *      @field splinePointCount {number} : The number of points in this spline.
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  */
 export function skInterpolatedSpline(sketch is Sketch, splineId is string, value is map)
@@ -378,8 +381,9 @@ precondition
 }
 
 /**
+ * For Onshape internal use.
+ *
  * Add a spline segment (i.e open spline or piece of a closed spline)
- * For Onshape internal use only.
  */
 export function skInterpolatedSplineSegment(sketch is Sketch, splineId is string, value is map)
 precondition
@@ -397,7 +401,7 @@ precondition
  *                   (x and y in the sketch plane coordinate system).
  *                   If the start and end points are the same the spline
  *                   is closed.
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  */
 export function skFitSpline(sketch is Sketch, splineId is string, value is map)
@@ -486,7 +490,7 @@ function rectangleSideEndPoint(value, side)
  * @param value {{
  *      @field firstCorner {Vector}
  *      @field secondCorner {Vector}
- *      @field construction {boolean} : @eg `true` for a construction line @optional
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
  * }}
  */
 export function skRectangle(sketch is Sketch, rectangleId is string, value is map)

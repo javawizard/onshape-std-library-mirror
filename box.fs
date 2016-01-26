@@ -9,7 +9,7 @@ import(path : "onshape/std/vector.fs", version : "");
 /**
  * A three-dimensional bounding box.
  *
- * @value {{
+ * @type {{
  *      @field minCorner {Vector}: A 3D position representing the corner with the smallest x, y, and z coordinates.
  *      @field maxCorner {Vector}: A 3D position representing the corner with the largest x, y, and z coordinates.
  * }}

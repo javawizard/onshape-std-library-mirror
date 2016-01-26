@@ -203,8 +203,11 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             var param;
             try
             {
-                param = evProjectPointOnCurve(context, { "edge" : qEntityFilter(definition.entities, EntityType.EDGE),
-                            "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
+                param = evDistance(context, {
+                                    "side0" : qEntityFilter(definition.entities, EntityType.VERTEX),
+                                    "side1" : qEntityFilter(definition.entities, EntityType.EDGE),
+                                    "extendSide1" : true
+                                }).sides[1].parameter;
             }
             catch (error)
             {
