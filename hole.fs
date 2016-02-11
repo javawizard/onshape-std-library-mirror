@@ -173,6 +173,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                 throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE, ["holeDiameter", "tapDrillDiameter"]);
             }
         }
+        definition.transform = getRemainderPatternTransform(context, {"references" : definition.locations});
 
         const locations = reduceLocations(context, definition.locations);
         if (size(locations) == 0)
@@ -260,7 +261,9 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
             holeNumber += 1;
             const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
             var startPointCSys = planeToCSys(sketchPlane);
-            const point is Vector = evVertexPoint(context, { "vertex" : location });
+            var point is Vector = evVertexPoint(context, { "vertex" : location });
+            point = definition.transform * point;
+            startPointCSys = definition.transform * startPointCSys;
 
             const sign = definition.oppositeDirection ? 1 : -1;
             startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
@@ -410,12 +413,14 @@ precondition
 }
 
 /**
- * returns { dist : Length - z distance to first point of contact in cSys frame }
+ * returns { dist : Length - z distance to first point of contact in cSys frame
+             target : Query - the body on which the distance was found
+           }
  */
 function cylinderCast(context is Context, idIn is Id, arg is map) returns map
 precondition
 {
-    isLength(arg.scopeSize);
+    isLength(arg.distance);
     isLength(arg.diameter);
     arg.cSys is CoordSystem;
     arg.isFront is boolean;
@@ -423,9 +428,24 @@ precondition
     arg.scope is Query;
 }
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V299_HOLE_FEATURE_FIX_BLIND_IN_LAST_FLIP))
+    {
+        return cylinderCast_rev_1(context, idIn, arg);
+    }
+    else
+    {
+        return cylinderCast_rev_0(context, idIn, arg);
+    }
+}
+
+/*
+ * Deprecated, too many repairs, starting new function
+ */
+function cylinderCast_rev_0(context is Context, idIn is Id, arg is map) returns map
+{
     const shotName = arg.isFront ? "shot_front" : "shot_back";
     const id = idIn + shotName;
-    const distance = arg.scopeSize;
+    const distance = arg.distance;
 
     var direction = arg.cSys.zAxis;
     if (!arg.isFront)
@@ -546,6 +566,119 @@ precondition
     return { "dist" : bestDist, "target" : foundTarget };
 }
 
+function cylinderCast_rev_1(context is Context, idIn is Id, arg is map) returns map
+{
+    const shotName = arg.isFront ? "shot_front" : "shot_back";
+    const id = idIn + shotName;
+    var direction = arg.cSys.zAxis;
+
+    if (!arg.isFront)
+    {
+        direction = -direction;
+    }
+    const cSys = coordSystem(arg.cSys.origin - arg.distance * direction, arg.cSys.xAxis, direction);
+
+    // Small but finite distance.
+    // A large distance does not work when trying to drill out from the inside of a box.
+    // A zero distance produces no surface for the cast if the the target is a planar face parallel to the sketch
+    const smallOffset = 0.01 * millimeter;
+    const sketchPlane = plane(cSys.origin - smallOffset * direction, direction); // plane is rotated
+
+    var bestDist = undefined;
+    var foundTarget = undefined;
+
+    //------------- Create profile ----------------
+    startFeature(context, id, {});
+    const sketchName = "raySketch";
+    const sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
+
+    skCircle(sketch, "circle", { "center" : vector(0, 0) * meter, "radius" : arg.diameter / 2 });
+    skSolve(sketch);
+
+    const targets = evaluateQuery(context, arg.scope);
+    if (size(targets) == 0)
+    {
+        return { "dist" : 0 * meter };
+    }
+
+    const sketchEntityQuery = qCreatedBy(id + (sketchName ~ ".wireOp"), EntityType.EDGE);
+
+    var shotNum = 0;
+    for (var targetQuery in targets)
+    {
+        const extrudeDefinition = {
+                                      "bodyType" : ToolBodyType.SURFACE,
+                                      "operationType" : NewBodyOperationType.NEW,
+                                      "surfaceEntities" : sketchEntityQuery,
+                                      "endBound" : BoundingType.UP_TO_BODY,
+                                      "endBoundEntityBody" : targetQuery
+        };
+        const extrudeId = id + ("extrude_" ~ shotNum);
+        shotNum += 1;
+        var d;
+        var hasCollision is boolean = false;
+        try
+        {
+            extrude(context, extrudeId, extrudeDefinition);
+            const bodyQuery = qCreatedBy(extrudeId, EntityType.BODY);
+            const cylBox = evBox3d(context, { "topology" : bodyQuery, "cSys" : cSys } );
+            d = cylBox.maxCorner[2];
+            const collisions = evCollision(context, {'targets' : targetQuery, 'tools' : bodyQuery});
+            for (var collision in collisions) {
+                if (collision['type'] == ClashType.INTERFERE) {
+                    // If the shot cylinder interferes with the target, then we began the shot on the interior,
+                    // fall back to starting from the sketch plane.
+                    hasCollision = true;
+                }
+            }
+        }
+
+        if (hasCollision)
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V306_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY))
+            {
+                // Fix, targets with collisions indicate the hole started inside the body and should be ignored
+                continue;
+            }
+            else
+            {
+                bestDist = 0 * meter;
+                foundTarget = targetQuery;
+                break;
+            }
+        }
+        if ((d != undefined) && ((bestDist == undefined) || (arg.findClosest ? d < bestDist : d > bestDist)))
+        {
+            bestDist = d;
+            foundTarget = targetQuery;
+        }
+    }
+
+    abortFeature(context, id);
+
+    if (bestDist == undefined || bestDist < 0) {
+        bestDist = 0 * meter;
+    }
+
+    if (!arg.isFront)
+    {
+        const p = cSys.origin + bestDist * cSys.zAxis;
+        bestDist = (p - arg.cSys.origin).dot(arg.cSys.zAxis);
+    }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V306_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY) && foundTarget == undefined)
+    {
+        if (size(targets) == 1)
+        {
+            foundTarget = targets[0];
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.HOLE_CANNOT_DETERMINE_LAST_BODY);
+        }
+    }
+    return { "dist" : bestDist, "target" : foundTarget };
+}
+
 function cylinderCastBiDir(context is Context, id is Id, arg is map) returns map
 precondition
 {
@@ -556,17 +689,14 @@ precondition
     arg.needBack is boolean || arg.needBack is undefined; // default true
 }
 {
-    // Small but finite distance.
-    // A large distance does not work when trying to drill out from the inside of a box.
-    // A zero distance produces no surface for the cast if the the target is planar face parallel to the sketch
-    const smallFrontOffset = 0.01 * millimeter;
+    const smallFrontOffset = isAtVersionOrLater(context, FeatureScriptVersionNumber.V299_HOLE_FEATURE_FIX_BLIND_IN_LAST_FLIP) ? 0 * meter : 0.01 * millimeter;
 
     var resultFront = {"dist" : 0 * meter};
     if (arg.needFront != false)
     {
         try {
             resultFront = cylinderCast(context, id, {
-                "scopeSize" : smallFrontOffset,
+                "distance" : smallFrontOffset,
                 "cSys" : arg.cSys,
                 "isFront" : true,
                 "findClosest" : true,
@@ -581,7 +711,7 @@ precondition
     {
         try {
             resultBack = cylinderCast(context, id, {
-                "scopeSize" : arg.scopeSize,
+                "distance" : arg.scopeSize,
                 "cSys" : arg.cSys,
                 "isFront" : false,
                 "findClosest" : true,
@@ -806,8 +936,9 @@ precondition
     {
         // Find shoulder depth
         try {
+            const distance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V299_HOLE_FEATURE_FIX_BLIND_IN_LAST_FLIP) ? 0 * meter : arg.holeDefinition.scopeSize * 2;
             const result = cylinderCast(context, id + "limit_surf_cast", {
-                "scopeSize" : arg.holeDefinition.scopeSize * 2,
+                "distance" : distance,
                 "cSys" : arg.cSys,
                 "isFront" : true,
                 "findClosest" : false,

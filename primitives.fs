@@ -76,6 +76,11 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
         isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
     }
     {
+        var remainingTransform = undefined;
+        if (definition.center is Query)
+        {
+            remainingTransform = getRemainderPatternTransform(context, {"references" : definition.center});
+        }
         startFeature(context, id, definition);
         if (definition.center is Query)
             definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
@@ -86,6 +91,11 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
 
         fEllipsoid(context, id, definition);
         endFeature(context, id);
+
+        if (remainingTransform != undefined)
+        {
+            transformResultIfNecessary(context, id, remainingTransform);
+        }
     });
 
 /**
@@ -103,6 +113,7 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
         is3dLengthVector(definition.corner2);
     }
     {
+        var remainingTransform = getRemainderPatternTransform(context, {"references" : qNothing()});
         const sketchId = id + "sketch";
         {
             var plane = XY_PLANE;
@@ -130,6 +141,7 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
             const query = qCreatedBy(sketchId, EntityType.BODY);
             opDeleteBodies(context, id + "deleteSketch", { "entities" : query });
         }
+        transformResultIfNecessary(context, id, remainingTransform);
     });
 
 /**
@@ -287,7 +299,7 @@ export const fEllipsoid = defineFeature(function(context is Context, id is Id, d
             const translation = definition.center;
             const transform = transform(matrix, translation);
 
-            opTransform(context, id + "transform",
+            opTransform(context, id + "transformResult",
                         { "bodies" : query,
                           "transform" : transform
                         });

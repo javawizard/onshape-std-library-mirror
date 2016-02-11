@@ -5,13 +5,15 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
-export enum OriginCreationType
+export enum MeasureLabelTypeEnum
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    EMPTY,
+    CENTER,
+    START_POINT,
+    END_POINT,
+    ELLIPSE_CENTER,
+    MAX_RADIUS_POINT,
+    MIN_RADIUS_POINT
 }
 
 

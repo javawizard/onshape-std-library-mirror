@@ -23,13 +23,13 @@ import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 
 /**
- * Given a face, calculate and return a Plane tangent to that face with an
- * origin, a normal, and an x axis.
+ * Given a face, calculate and return a Plane tangent to that face,
+ * where the plane's origin is at the point specified by its parameter-space coordinates.
  * @param context {Context}
  * @param arg {{
  *      @field face {Query}: The face to evaluate
  *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
- *      @field parameter {Vector}: 2d vector specifying the plane's origin's offset, relative to the given edge's bounding box.
+ *      @field parameter {Vector}: 2d unitless parameter-space vector specifying the location of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
  *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
  * }}
  */
@@ -40,9 +40,15 @@ export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 }
 
 /**
- * Same as `evFaceTangentPlane`, but input is an array of points
- * instead of one point and result is an array of planes instead of
- * one Plane.
+ * Given a face, calculate and return an array of Planes tangent to that face,
+ * where each plane's origin is located at the point specified by its parameter-space coordinates.
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face to evaluate
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
+ * }}
  */
 export function evFaceTangentPlanes(context is Context, arg is map) returns array
 precondition

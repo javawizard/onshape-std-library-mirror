@@ -3,7 +3,7 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/** Support functions for the feature list parameter */
+/** Support functions for feature lists (as used for featurePattern) */
 
 import(path : "onshape/std/context.fs", version : "");
 

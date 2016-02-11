@@ -97,6 +97,9 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         const entities = evaluateQuery(context, definition.entities);
         const numEntities = @size(entities);
 
+        var remainingTransform = getRemainderPatternTransform(context,
+            {"references" : definition.entities});
+
         if (definition.cplaneType == CPlaneType.OFFSET)
         {
             if (numEntities < 1)
@@ -224,6 +227,8 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         }
 
         opPlane(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
+
     }, { oppositeDirection : false, flipAlignment : false });
 
 function lineAnglePlane(context is Context, id is Id, entities is array, angle is ValueWithUnits) returns Plane

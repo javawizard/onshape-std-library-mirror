@@ -8,9 +8,38 @@ export import(path : "onshape/std/boolean.fs", version : "");
 export import(path : "onshape/std/containers.fs", version : "");
 export import(path : "onshape/std/evaluate.fs", version : "");
 export import(path : "onshape/std/feature.fs", version : "");
+export import(path : "onshape/std/featureList.fs", version : "");
 export import(path : "onshape/std/valueBounds.fs", version : "");
 
+import(path : "onshape/std/mathUtils.fs", version : "");
+
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
+
+/**
+ * The type of pattern.
+ */
+export enum PatternType
+{
+    annotation { "Name" : "Part pattern" }
+    PART,
+    annotation { "Name" : "Feature pattern" }
+    FEATURE,
+    annotation { "Name" : "Face pattern" }
+    FACE
+}
+
+/**
+ * The type of mirror.
+ */
+export enum MirrorType
+{
+    annotation { "Name" : "Part mirror" }
+    PART,
+    annotation { "Name" : "Feature mirror" }
+    FEATURE,
+    annotation { "Name" : "Face mirror" }
+    FACE
+}
 
 /**
  * TODO: description
@@ -19,16 +48,37 @@ export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
  * @param oppositeDir
  * @param distance
  */
-export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits) returns map
+export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits,
+    isFeaturePattern is boolean, remainingTransform is Transform) returns map
 {
     if (oppositeDir)
         distance = -distance;
 
+    var direction;
     const rawDirectionResult = try(evAxis(context, { "axis" : entity }));
     if (rawDirectionResult == undefined)
-        return { "offset" : evPlane(context, { "face" : entity }).normal * distance };
+        direction = evPlane(context, { "face" : entity }).normal * distance;
     else
-        return { "offset" : rawDirectionResult.direction * distance };
+        direction = rawDirectionResult.direction * distance;
+
+    if (isFeaturePattern)
+    {
+        var remainingTransformForAxis = getRemainderPatternTransform(context, { "references" : entity });
+        return { "offset" : (inverse(remainingTransform) * remainingTransformForAxis).linear * direction };
+    }
+    return { "offset" : direction };
+}
+
+export function computePatternAxis(context is Context, axisQuery is Query, isFeaturePattern is boolean, remainingTransform is Transform)
+{
+    const rawDirectionResult = try(evAxis(context, { "axis" : axisQuery }));
+    if (rawDirectionResult != undefined && isFeaturePattern)
+    {
+        var remainingTransformForAxis = getRemainderPatternTransform(context, { "references" : axisQuery });
+        return inverse(remainingTransform) * remainingTransformForAxis * rawDirectionResult;
+    }
+    else
+        return rawDirectionResult;
 }
 
 /**
@@ -44,6 +94,23 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
     throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_MANY_INSTANCES);
 }
 
+
+
+export function isFeaturePattern(patternType)
+{
+    return (patternType == PatternType.FEATURE || patternType == MirrorType.FEATURE);
+}
+
+function isPartPattern(patternType)
+{
+    return (patternType == PatternType.PART || patternType == MirrorType.PART);
+}
+
+function isFacePattern(patternType)
+{
+    return (patternType == PatternType.FACE || patternType == MirrorType.FACE);
+}
+
 /**
  * TODO: description
  * @param context
@@ -52,14 +119,19 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
  *      @field TODO
  * }}
  */
-export function checkInput(context is Context, id is Id, definition is map)
+export function checkInput(context is Context, id is Id, definition is map, isMirror is boolean)
 {
-    if (size(evaluateQuery(context, definition.entities)) == 0)
+    if (isFeaturePattern(definition.patternType))
     {
-        if (definition.isFacePattern)
-            throw regenError(ErrorStringEnum.PATTERN_SELECT_FACES, ["faces"]);
+        if (size(definition.instanceFunction) == 0)
+            throw regenError(isMirror ? ErrorStringEnum.MIRROR_SELECT_FEATURES : ErrorStringEnum.PATTERN_SELECT_FEATURES, ["instanceFunction"]);
+    }
+    else if (size(evaluateQuery(context, definition.entities)) == 0)
+    {
+        if (isFacePattern(definition.patternType))
+            throw regenError(isMirror ? ErrorStringEnum.MIRROR_SELECT_FACES : ErrorStringEnum.PATTERN_SELECT_FACES, ["faces"]);
         else
-            throw regenError(ErrorStringEnum.PATTERN_SELECT_PARTS, ["entities"]);
+            throw regenError(isMirror ? ErrorStringEnum.MIRROR_SELECT_PARTS : ErrorStringEnum.PATTERN_SELECT_PARTS, ["entities"]);
     }
 }
 
@@ -73,10 +145,53 @@ export function checkInput(context is Context, id is Id, definition is map)
  */
 export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
 {
-    if (!definition.isFacePattern)
+    var isPartMirror = definition.patternType == undefined && !definition.isFaceMirror; //TODO  : remove after feature mirror enabled
+    if (isPartMirror || isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
-        processNewBodyIfNeeded(context, id, mergeMaps(definition, { "seed" : definition.entities }), reconstructOp);
+        processNewBodyIfNeeded(context, id, definition, reconstructOp);
+    }
+}
+
+/**
+ * Applies the body, face, or feature pattern, given just transforms and instance names
+ * @param definition {{
+ *      @field patternType
+ *      @field transforms
+ *      @field instanceNames
+ * }}
+ */
+export function applyPattern(context is Context, id is Id, definition is map, remainingTransform is Transform)
+{
+    var isMirror = definition.patternType == undefined; // TODO : remove after feature mirror enabled
+
+    if (isMirror || !isFeaturePattern(definition.patternType))
+    {
+        opPattern(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
+
+        processPatternBooleansIfNeeded(context, id, definition);
+    }
+    else
+    {
+        var featureSuccessCount = 0;
+        for (var i = 0; i < size(definition.transforms); i += 1)
+        {
+            var instanceId = id + definition.instanceNames[i];
+            setFeaturePatternInstanceData(context, instanceId, {"transform" : definition.transforms[i]});
+            for (var func in definition.instanceFunction)
+            {
+                try
+                {
+                    func(instanceId);
+                    featureSuccessCount += 1;
+                }
+            }
+            unsetFeaturePatternInstanceData(context, instanceId);
+        }
+
+        if (featureSuccessCount == 0) // TODO: better error
+            throw regenError(ErrorStringEnum.PATTERN_FEATURE_FAILED, ["instanceFunction"]);
     }
 }
 

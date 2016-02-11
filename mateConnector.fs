@@ -139,6 +139,15 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
     }
     {
+
+        var transformQueries = [definition.originQuery];
+        if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
+            transformQueries = append(transformQueries, definition.originAdditionalQuery);
+        if (definition.realign == true)
+            transformQueries = concatenateArrays([transformQueries, [definition.primaryAxisQuery, definition.secondaryAxisQuery, definition.ownerPart]]);
+        var remainingTransform = getRemainderPatternTransform(context,
+            {"references" : qUnion(transformQueries)});
+
         const mateConnectorCoordSystem = evMateConnectorCoordSystem(context, definition);
 
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
@@ -166,6 +175,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
+        transformResultIfNecessary(context, id, remainingTransform);
     });
 
 

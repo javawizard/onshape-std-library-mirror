@@ -23,7 +23,8 @@ import(path : "onshape/std/vector.fs", version : "");
 const BOX_TOLERANCE = 0.01;
 
 //Given a plane definition and a input part query will return a list of bodies that one needs to delete so that
-//the only bodies that remain are the ones split by the plane and behind it. Used by drawings to render a section view
+//the only bodies that remain are the ones split by the plane, unless none are split by the plane, in which case
+//the only bodies that remain are the ones behind the plane. Used by drawings to render a section view
 function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, plane is Plane, partToSection is Query) returns Query
 {
     var allBodies = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
@@ -102,10 +103,52 @@ export const sectionPart = defineFeature(function(context is Context, id is Id, 
 
 
 /**
- * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
- * so that drawings created by queries can resolve.
+ * Split a set of parts with a plane and delete all bodies in front of the face. Unlike sectionPart, bodies which are
+ * entirely behind the split plane are retained. Any bodies not included in the target query are deleted.
  * @param definition {{
- *      @field target {Query} : Body to be split.
+ *      @field target {Query} : Bodies to be split.
+ *      @field plane {Plane} :  Plane that splits the bodies. Everything
+ *                                    on the positive z side of the plane will be removed.
+ * }}
+ */
+export const planeSectionPart = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.target is Query;
+        definition.plane is Plane;
+    }
+    {
+        // define sketch plane orthogonal to the cut plane, with the cut plane's x axis as the sketch plane's normal
+        // and the cut plane's reversed normal (jog & plane section have reversed sense of cutting plane direction)
+        // as the x axis, which is an arbitrary choice.
+        const sketchPlane = plane(definition.plane.origin, definition.plane.x, -definition.plane.normal);
+
+        const coordinateSystem = planeToCSys(sketchPlane);
+
+        // The bbox of the bodies in sketchPlane coordinate system with positive x being in front of the plane
+        var boxResult = evBox3d(context, { 'topology' : definition.target, 'cSys' : coordinateSystem });
+
+        // Boolean remove will complain if we don't hit anything
+        if (boxResult.maxCorner[0] < -TOLERANCE.zeroLength * meter)
+        {
+            return;
+        }
+
+        // Extend the box slightly to make sure we get everything
+        boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+
+        // Define the "jog section" points as a line extending across the bounding box y extents
+        const cutPoints = [ toWorld(coordinateSystem, vector(0 * meter, boxResult.minCorner[1], boxResult.minCorner[2])),
+                            toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
+
+        jogSectionCut(context, id, definition.target, sketchPlane, cutPoints);
+    });
+
+/**
+ * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
+ * so that drawings created by queries can resolve. Any bodies not included in the target query are deleted.
+ * @param definition {{
+ *      @field target {Query} : Bodies to be split.
  *      @field sketchPlane {Plane} :  Plane that the jog line will be drawn in and extruded normal to. Everything
  *                                    on the positive x side of the jog line will be removed.
  *      @field jogPoints {array} : Points that the cutting line goes through in world coordinates.
@@ -121,38 +164,43 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
              is3dLengthVector(point);
     }
     {
-        opDeleteBodies(context, id + "initialDelete", {"entities" : qSubtraction(qEverything(EntityType.BODY), definition.target)});
-
-        try
-        {
-            const coordinateSystem = planeToCSys(definition.sketchPlane);
-            var boxResult = evBox3d(context, { 'topology' : definition.target, 'cSys' : coordinateSystem });
-            boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
-            // Shift the plane and box to the box's min corner
-            const offsetPlane = plane(toWorld(coordinateSystem, boxResult.minCorner), definition.sketchPlane.normal, definition.sketchPlane.x);
-            boxResult.maxCorner = boxResult.maxCorner - boxResult.minCorner;
-            boxResult.minCorner = vector(0, 0, 0) * meter;
-            const numberOfPoints = size(definition.jogPoints);
-            var projectedPoints = makeArray(numberOfPoints);
-            for (var i = 0; i < numberOfPoints; i = i + 1)
-            {
-                projectedPoints[i] = worldToPlane(offsetPlane, definition.jogPoints[i]);
-            }
-            checkJogDirection(projectedPoints);
-            const polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
-            const sketchId = id + "sketch";
-
-            sketchPolyline(context, sketchId, polygon, offsetPlane);
-            const extrudeId = id + "extrude";
-            const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-            extrudeCut(context, extrudeId, definition.target, sketchRegionQuery, boxResult.maxCorner[2]);
-            opDeleteBodies(context, id + "deleteSketch", {"entities" : qCreatedBy(sketchId, EntityType.BODY)});
-        }
-        catch
-        {
-            opDeleteBodies(context, id + "delete", { "entities" : qEverything(EntityType.BODY) });
-        }
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.jogPoints);
     });
+
+function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPoints is array)
+{
+    opDeleteBodies(context, id + "initialDelete", {"entities" : qSubtraction(qEverything(EntityType.BODY), target)});
+
+    try
+    {
+        const coordinateSystem = planeToCSys(sketchPlane);
+        var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
+        boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+        // Shift the plane and box to the box's min corner
+        const offsetPlane = plane(toWorld(coordinateSystem, boxResult.minCorner), sketchPlane.normal, sketchPlane.x);
+        boxResult.maxCorner = boxResult.maxCorner - boxResult.minCorner;
+        boxResult.minCorner = vector(0, 0, 0) * meter;
+        const numberOfPoints = size(jogPoints);
+        var projectedPoints = makeArray(numberOfPoints);
+        for (var i = 0; i < numberOfPoints; i = i + 1)
+        {
+            projectedPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
+        }
+        checkJogDirection(projectedPoints);
+        const polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
+        const sketchId = id + "sketch";
+
+        sketchPolyline(context, sketchId, polygon, offsetPlane);
+        const extrudeId = id + "extrude";
+        const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
+        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
+        opDeleteBodies(context, id + "deleteSketch", {"entities" : qCreatedBy(sketchId, EntityType.BODY)});
+    }
+    catch
+    {
+        opDeleteBodies(context, id + "delete", { "entities" : qEverything(EntityType.BODY) });
+    }
+}
 
 function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
 {
@@ -177,7 +225,7 @@ function checkJogDirection(pointsInPlane is array)
         {
             increasingYCount = increasingYCount + 1;
         }
-        if (deltaY < TOLERANCE.zeroLength * meter)
+        if (deltaY < -TOLERANCE.zeroLength * meter)
         {
             decreasingYCount = decreasingYCount + 1;
         }

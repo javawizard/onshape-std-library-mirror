@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
+/** TODO: documentation */
 export enum ErrorStringEnum
 {
     NO_ERROR,
@@ -467,7 +468,14 @@ export enum ErrorStringEnum
     SKETCH_INSERT_DWG_MAX_ENTITIES_EXCEEDED,
     HOLE_TAP_DIA_TOO_LARGE,
     ASSEMBLY_EMPTY_BODY,
-    SIMPLIFY_BODY_FAILED
+    SIMPLIFY_BODY_FAILED,
+    INVALID_VIEW_NAME,
+    PATTERN_SELECT_FEATURES,
+    MIRROR_SELECT_FEATURES,
+    PATTERN_FEATURE_FAILED,
+    SKETCH_TRANSFORM_FAILED,
+    TANGENT_MATE_TWO_ENTITIES_NEEDED,
+    HOLE_CANNOT_DETERMINE_LAST_BODY
 }
 
 

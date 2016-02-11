@@ -6,15 +6,14 @@ FeatureScript ✨; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/patternUtils.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/patternUtils.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
 
-
 /**
- * Performs a body or face linear pattern.
+ * Performs a body,face, or feature linear pattern.
  * @param definition {{
  *      @field TODO
  * }}
@@ -23,22 +22,27 @@ annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allpar
 export const linearPattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Face pattern", "Default" : false }
-        definition.isFacePattern is boolean;
+        annotation { "Name" : "Pattern type" }
+        definition.patternType is PatternType;
 
-        if (!definition.isFacePattern)
+        if (definition.patternType == PatternType.PART)
         {
             booleanStepTypePredicate(definition);
 
             annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             definition.entities is Query;
         }
-        else
+        else if (definition.patternType == PatternType.FACE)
         {
             annotation { "Name" : "Faces to pattern",
                          "UIHint" : "ALLOW_FEATURE_SELECTION",
                          "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             definition.faces is Query;
+        }
+        else if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Features to pattern" }
+            definition.instanceFunction is FeatureList;
         }
 
         annotation { "Name" : "Direction",
@@ -74,16 +78,22 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             definition.oppositeDirectionTwo is boolean;
         }
-        if (!definition.isFacePattern)
+        if (definition.patternType == PatternType.PART)
         {
             booleanStepScopePredicate(definition);
         }
     }
     {
-        if (definition.isFacePattern)
+        if (definition.patternType == PatternType.FACE)
             definition.entities = definition.faces;
 
-        checkInput(context, id, definition);
+        checkInput(context, id, definition, false);
+
+        if (definition.patternType == PatternType.FEATURE)
+            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
+
+        var remainingTransform = getRemainderPatternTransform(context,
+            { "references" : definition.entities});
 
         // Compute a vector of transforms
         var transforms = [];
@@ -91,7 +101,8 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         //Dir 1
         const result = try(computePatternOffset(context, definition.directionOne,
-                           definition.oppositeDirection, definition.distance));
+                    definition.oppositeDirection, definition.distance, isFeaturePattern(definition.patternType), remainingTransform));
+
         if (result == undefined)
             throw regenError(ErrorStringEnum.PATTERN_LINEAR_NO_DIR, ["directionOne"]);
         const offset1 = result.offset;
@@ -105,7 +116,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             count2 = definition.instanceCountTwo;
 
             const result = try(computePatternOffset(context, definition.directionTwo,
-                                    definition.oppositeDirectionTwo, definition.distanceTwo));
+                        definition.oppositeDirectionTwo, definition.distanceTwo, isFeaturePattern(definition.patternType), remainingTransform));
             if (result != undefined)
             {
                 offset2 = result.offset;
@@ -132,7 +143,8 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
                 if (j == 0 && i == 0) //skip recreating original
                     continue;
 
-                transforms = append(transforms, transform(identityMatrix(3), offset1 * i + offset2 * j));
+                var instanceTransform = transform(identityMatrix(3), offset1 * i + offset2 * j);
+                transforms = append(transforms, instanceTransform);
                 var instName = "" ~ i;
                 if (j > 0)
                 {
@@ -144,10 +156,8 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         definition.transforms = transforms;
         definition.instanceNames = instanceNames;
+        definition.seed = definition.entities;
 
-        opPattern(context, id, definition);
-
-        processPatternBooleansIfNeeded(context, id, definition);
-    }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
+        applyPattern(context, id, definition, remainingTransform);
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
          hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
-

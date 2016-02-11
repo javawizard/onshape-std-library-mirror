@@ -39,25 +39,36 @@ export function defineFeature(feature is function, defaults is map) returns func
 {
     return function(context is Context, id is Id, definition is map)
         {
+            var token is map = {};
             var started = false;
             try
             {
                 //TODO: definition = @convert(definition, CurrentVersion);
                 definition = mergeMaps(defaults, definition);
-                startFeature(context, id, definition);
-                definition.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
+                var visible = definition; /* visible to feature */
+                visible.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
+                token = startFeature(context, id, definition);
                 started = true;
-                feature(context, id, definition);
-                if (!isTopLevelId(id) && getFeatureError(context, id) != undefined)
-                    throw regenError(getFeatureError(context, id));
-                endFeature(context, id);
+                feature(context, id, visible);
+                const error = getFeatureError(context, id);
+                if (error != undefined)
+                {
+                    if (!isTopLevelId(id))
+                        throw regenError(error);
+                    else
+                        @abortFeature(context, id, token);
+                }
+                else
+                {
+                    @endFeature(context, id, token);
+                }
             }
             catch (error)
             {
                 if (try(processError(context, id, error)) == undefined)
                     reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
                 if (started)
-                    abortFeature(context, id);
+                    @abortFeature(context, id, token);
                 if (!isTopLevelId(id))
                     throw error; // rethrow
             }
@@ -77,8 +88,14 @@ export function defineFeature(feature is function) returns function
  */
 export function startFeature(context is Context, id is Id, definition is map)
 {
-    @startFeature(context, id, definition);
+    var token = @startFeature(context, id, definition);
     recordQueries(context, id, definition);
+    return token;
+}
+
+export function startFeature(context is Context, id is Id)
+{
+    return startFeature(context, id, {});
 }
 
 /**
@@ -88,7 +105,7 @@ export function startFeature(context is Context, id is Id, definition is map)
  */
 export function abortFeature(context is Context, id is Id)
 {
-    @abortFeature(context, id);
+    @abortFeature(context, id, {});
 }
 
 /**
@@ -100,11 +117,11 @@ export function endFeature(context is Context, id is Id)
 {
     if (getFeatureError(context, id) != undefined)
     {
-        @abortFeature(context, id);
+        @abortFeature(context, id, {});
     }
     else
     {
-        @endFeature(context, id);
+        @endFeature(context, id, {});
     }
 }
 
@@ -181,7 +198,7 @@ export function getFullPatternTransform(context is Context) returns Transform
 
 /**
  *  Among references find topology created by pattern instance deepest in the stack.
- *  If transformation on the stack in that instance is S and full transformation is F, the remainder R is such that S*R = F
+ *  If transformation on the stack in that instance is S and full transformation is F, the remainder R is such that R * S = F
  *
  *  @param definition {{
  *      @field references {Query}
@@ -196,12 +213,27 @@ precondition
     return transformFromBuiltin(@getRemainderPatternTransform(context, definition));
 }
 
+/**
+ * Applies transformation to bodies created by operation with id if transform argument is non-trivial
+ */
+export function transformResultIfNecessary(context is Context, id is Id, transform is Transform)
+{
+    if (transform != identityTransform())
+    {
+        opTransform(context, id + "transform",
+                { "bodies" : qCreatedBy(id, EntityType.BODY),
+                  "transform" : transform
+                });
+    }
+}
+
 //====================== Query evaluation ========================
 
 /**
- * Returns a list of the entities in a context which match a specified query.
- * The entities are returned in the form of transient queries, which are valid
- * only until the context is modified again.
+ * Returns an array of queries for the individual entities in a context which match
+ * a specified query.  The returned array contains exactly one transient query
+ * for each matching entity at the time of the call.  If the context is modified,
+ * the returned queries may become invalid and no longer match an entity.
  *
  * It is usually not necessary to evaluate queries, since operation and
  * evaluation functions can accept non-evaluated queries. Rather, the evaluated

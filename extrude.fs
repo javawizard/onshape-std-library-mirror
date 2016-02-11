@@ -240,6 +240,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
     {
         definition.entities = getEntitiesToUse(context, definition);
 
+        // ------------- Handle pattern feature instance transform if needed ----------
+        definition.transform = getRemainderPatternTransform(context, {"references" : definition.entities});
+
         // compute the draftCondition before definition gets changed.
         const draftCondition is map = getDraftConditions(definition);
 
@@ -253,7 +256,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
 
         // ------------- Get the extrude axis ---------------
-        const extrudeAxis = try(computeExtrudeAxis(context, resolvedEntities[0]));
+        const extrudeAxis = try(computeExtrudeAxis(context, resolvedEntities[0], definition.transform));
         if (extrudeAxis == undefined)
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
 
@@ -419,7 +422,7 @@ function applyDraft(context is Context, draftId is Id, draftFaces is Query,
     opDraft(context, draftId, draftDefinition);
 }
 
-function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, direction is Vector) returns Plane
+function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, direction is Vector, transform is Transform) returns Plane
 {
     const dependencies = evaluateQuery(context, qDependency(extrudeBody));
     if (size(dependencies) == 0)
@@ -428,12 +431,12 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     try
     {
         const line = evEdgeTangentLine(context, { "edge" : dependencies[0], "parameter" : 0.5 });
-        neutralPlane = plane(line.origin, direction);
+        neutralPlane = plane(transform * line.origin, direction);
     }
     catch
     {
         const facePlane = evFaceTangentPlane(context, { "face" : dependencies[0], "parameter" : vector(0.5, 0.5) });
-        neutralPlane = plane(facePlane.origin, direction);
+        neutralPlane = plane(transform * facePlane.origin, direction);
     }
 
     // reference face
@@ -445,7 +448,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
 function draftExtrudeBody(context is Context, id is Id, suffix is number, definition is map, extrudeBody is Query, conditions is map)
 {
     const neutralPlaneId = id + ("neutralPlane" ~ suffix);
-    const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction));
+    const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction, definition.transform));
 
     if (neutralPlane == undefined)
         throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane" ~ suffix]);
@@ -536,18 +539,31 @@ function getEntitiesToUse(context is Context, definition is map)
     }
 }
 
-function computeExtrudeAxis(context is Context, entity is Query)
+function computeExtrudeAxis(context is Context, entity is Query, transform)
+precondition
+{
+    transform is undefined || transform is Transform;
+}
 {
     var planes = evaluateQuery(context, qGeometry(entity, GeometryType.PLANE));
+    var extrudeAxis;
     if (size(planes) == 1)
     {
         const entityPlane = evPlane(context, { "face" : entity });
-        return line(entityPlane.origin, entityPlane.normal);
+        extrudeAxis = line(entityPlane.origin, entityPlane.normal);
     }
-    //The extrude axis should start in the middle of the edge and point in the sketch plane normal
-    const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
-    const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
-    return line(tangentAtEdge.origin, entityPlane.normal);
+    else
+    {
+        //The extrude axis should start in the middle of the edge and point in the sketch plane normal
+        const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
+        const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
+        extrudeAxis = line(tangentAtEdge.origin, entityPlane.normal);
+    }
+    if (transform != undefined && transform != identityTransform())
+    {
+        extrudeAxis = transform * extrudeAxis;
+    }
+    return extrudeAxis;
 }
 
 // Manipulator functions
@@ -688,7 +704,6 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
 
 
 /**
- * TODO: remove featureInfo in rel-1.42
  * @param context
  * @param featureDefinition {{
  *      @field TODO
@@ -697,7 +712,7 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
  *      @field TODO
  * }}
  */
-export function upToBoundaryFlip(context is Context, featureDefinition is map, featureInfo is map) returns map
+function upToBoundaryFlip(context is Context, featureDefinition is map) returns map
 {
     const usedEntities = getEntitiesToUse(context, featureDefinition);
     const resolvedEntities = evaluateQuery(context, usedEntities);
@@ -705,7 +720,7 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
     {
         return featureDefinition;
     }
-    const extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0]);
+    const extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0], featureDefinition.transform);
     if (extrudeAxis == undefined)
     {
         return featureDefinition;
@@ -732,23 +747,6 @@ export function upToBoundaryFlip(context is Context, featureDefinition is map, f
     }
     return featureDefinition;
 }
-
-/**
- * TODO: remove in rel-1.42
- * @param context
- * @param featureDefinition {{
- *      @field TODO
- * }}
- * @param featureInfo {{
- *      @field TODO
- * }}
- */
-export function performTypeFlip(context is Context, featureDefinition is map, featureInfo is map) returns map
-{
-    featureDefinition.oppositeDirection = (featureDefinition.oppositeDirection == true) ? false : true;
-    return featureDefinition;
-}
-
 
 function canSetUpToFlip(definition is map, specifiedParameters is map) returns boolean
 {
@@ -777,7 +775,7 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     {
         if (canSetUpToFlip(definition, specifiedParameters))
         {
-            definition = upToBoundaryFlip(context, definition, {});
+            definition = upToBoundaryFlip(context, definition);
         }
         else if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
         {

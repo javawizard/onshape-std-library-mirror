@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
+/** TODO: documentation */
 export enum FeatureScriptVersionNumber
 {
     V0_ORIGINAL_VERSION,
@@ -273,9 +274,21 @@ export enum FeatureScriptVersionNumber
     V290_FS_USE_STD_REGEX,
     V291_HOLE_FEATURE_STANDARD_DEFAULTS,
     V292_HOLE_FEATURE_CHANGE_TAP_DRILL_NAME,
-    V293_HOLE_FEATURE_BLIND_IN_LAST_ERROR_FIX
+    V293_HOLE_FEATURE_BLIND_IN_LAST_ERROR_FIX,
+    V296_DCM_VERSION_65_5_2,
+    V297_GEOMETRY_BUGS,
+    V298_PS_VERSION_28_1_194,
+    V299_HOLE_FEATURE_FIX_BLIND_IN_LAST_FLIP,
+    V300_FEATURE_PATTERN,
+    V301_PLANE_DEFAULT_SIZE,
+    V302_SECTION_PART_STUDIOS,
+    V303_FEAT_PATTERN_SKETCH_FIX,
+    V304_DCM_VERSION_65_5_1,
+    V305_UPGRADE_TEST_FAIL,
+    V306_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY,
+    V307_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY_2
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V293_HOLE_FEATURE_BLIND_IN_LAST_ERROR_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V307_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY_2;
 
 

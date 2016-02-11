@@ -60,9 +60,15 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         }
 
         // ------------- Perform the operation ---------------
+        var remainingTransform = getRemainderPatternTransform(context,
+                {"references" : definition.entities});
         opThicken(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
 
-        const reconstructOp = function(id) { opThicken(context, id, definition); };
+        const reconstructOp = function(id) {
+            opThicken(context, id, definition);
+            transformResultIfNecessary(context, id, remainingTransform);
+        };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW });
 
