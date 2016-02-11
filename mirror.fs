@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,6 +6,7 @@ FeatureScript 293; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/patternUtils.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "");
@@ -14,7 +15,7 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/transform.fs", version : "");
-import(path : "onshape/std/patternUtils.fs", version : "");
+
 
 /**
  * TODO: description
@@ -69,36 +70,23 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
             return;
         }
 
+        var remainingTransform = getRemainderPatternTransform(context,
+                {"references" : qUnion([definition.entities, definition.mirrorPlane])});
+
         definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
         const planeResult = try(evPlane(context, { "face" : definition.mirrorPlane }));
         if (planeResult == undefined)
             throw regenError(ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
 
         const transform = mirrorAcross(planeResult);
-        const patternDefinition = {
-            "entities" : definition.entities,
-            "transforms" : [transform],
-            "instanceNames" : ["1"],
-            notFoundErrorKey("entities") : ErrorStringEnum.MIRROR_SELECT_PARTS };
 
-        try
-        {
-            opPattern(context, id, patternDefinition);
-        }
-        catch
-        {
-            throw regenError(definition.isFaceMirror ? ErrorStringEnum.MIRROR_FACE_FAILED : ErrorStringEnum.MIRROR_BODY_FAILED);
-        }
-
-        // Perform any booleans, if required
-        if (!definition.isFaceMirror)
-        {
-            // We only include original body in the tools if the operation is UNION
-            const additionalParameters = (definition.operationType == NewBodyOperationType.ADD) ?
-                { "seed" : definition.entities } : {};
-            const reconstructOp = function(id) { opPattern(context, id, patternDefinition); };
-            processNewBodyIfNeeded(context, id, mergeMaps(definition, additionalParameters), reconstructOp);
-        }
+        definition.transforms = [transform];
+        definition.instanceNames = ["1"];
+        definition[notFoundErrorKey("entities")] = ErrorStringEnum.MIRROR_SELECT_PARTS;
+        // We only include original body in the tools if the operation is UNION
+        if (!definition.isFaceMirror && definition.operationType == NewBodyOperationType.ADD)
+            definition.seed = definition.entities;
+        applyPattern(context, id, definition, remainingTransform);
     }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
 
  /**

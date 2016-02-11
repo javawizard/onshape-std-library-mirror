@@ -3,7 +3,17 @@ FeatureScript 307; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/circularPattern.fs", version : "");
-export import(path : "onshape/std/curvePattern.fs", version : "");
-export import(path : "onshape/std/linearPattern.fs", version : "");
+/* Automatically generated file -- DO NOT EDIT */
+
+export enum MeasureLabelTypeEnum
+{
+    EMPTY,
+    CENTER,
+    START_POINT,
+    END_POINT,
+    ELLIPSE_CENTER,
+    MAX_RADIUS_POINT,
+    MIN_RADIUS_POINT
+}
+
 

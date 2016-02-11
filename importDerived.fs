@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,6 +10,7 @@ export import(path : "onshape/std/query.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/tool.fs", version : "");
+import(path : "onshape/std/transform.fs", version : "");
 
 /**
  * TODO: description
@@ -39,6 +40,17 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         definition.buildFunction is BuildFunction;
     }
     {
+
+        var remainingTransform = getRemainderPatternTransform(context, {"references" : qNothing()});
+        if (remainingTransform != identityTransform())
+        {
+            opPattern(context, id,
+                      { "entities" : qCreatedBy(id, EntityType.BODY),
+                        "transforms" : [remainingTransform],
+                        "instanceNames" : ["1"] });
+            return;
+        }
+
         const otherContext = definition.buildFunction();
         if (otherContext != undefined)
         {

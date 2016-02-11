@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -75,11 +75,20 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
                 definition.profiles = definition.surfaceProfiles;
             }
         }
+
+        var remainingTransform = getRemainderPatternTransform(context,
+                {"references" : qUnion([definition.profiles, definition.path])});
+
         opSweep(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id) { opSweep(context, id, definition); };
+            const reconstructOp = function(id)
+            {
+                opSweep(context, id, definition);
+                transformResultIfNecessary(context, id, remainingTransform);
+            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false });

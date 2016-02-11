@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -79,6 +79,10 @@ precondition
 }
 {
     recordQueries(context, id, value);
+
+    var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
+    var fullTransform = getFullPatternTransform(context);
+
     value.planeReference = value.sketchPlane;
     const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
     var sketchPlane = try(evPlane(context, planeDefinition));
@@ -94,6 +98,17 @@ precondition
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
         value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
 
+    //TODO : this approach for sketch transforms does not work for feature mirroring of sketches.
+    // We chose this approach (as opposed to post transforming sketch wires) to not block potential support for
+    // external references in patterned sketches in the future.
+    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
+    {
+        //R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
+        var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
+        planeOriginal = alignCanonically(context, planeOriginal);
+        planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
+        value.sketchPlane = fullTransform * planeOriginal;
+    }
     return newSketchOnPlane(context, id, value);
 }
 

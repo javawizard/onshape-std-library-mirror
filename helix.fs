@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -79,6 +79,9 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         var definitionOut = {};
         var revolutions;
 
+        var remainingTransform = getRemainderPatternTransform(context,
+            {"references" : definition.entities});
+
         var surface = evSurfaceDefinition(context, { 'face' : definition.entities });
         if ((surface is Cone) || (surface is Cylinder))
         {
@@ -135,5 +138,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         }
 
         opHelix(context, id, definitionOut);
+        transformResultIfNecessary(context, id, remainingTransform);
+
     });
 

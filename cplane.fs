@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -96,6 +96,9 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     {
         const entities = evaluateQuery(context, definition.entities);
         const numEntities = @size(entities);
+
+        var remainingTransform = getRemainderPatternTransform(context,
+            {"references" : definition.entities});
 
         if (definition.cplaneType == CPlaneType.OFFSET)
         {
@@ -224,6 +227,8 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         }
 
         opPlane(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
+
     }, { oppositeDirection : false, flipAlignment : false });
 
 function lineAnglePlane(context is Context, id is Id, entities is array, angle is ValueWithUnits) returns Plane

@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,13 +6,13 @@ FeatureScript 293; /* Automatically generated version */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "");
 export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/patternUtils.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/math.fs", version : "");
-import(path : "onshape/std/patternUtils.fs", version : "");
 
 /**
- * Performs a body or face circular pattern.
+ * Performs a body, face, or feature circular pattern.
  * @param definition {{
  *      @field TODO
  * }}
@@ -21,22 +21,27 @@ annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allp
 export const circularPattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Face pattern", "Default" : false }
-        definition.isFacePattern is boolean;
+        annotation { "Name" : "Pattern type" }
+        definition.patternType is PatternType;
 
-        if (!definition.isFacePattern)
+        if (definition.patternType == PatternType.PART)
         {
             booleanStepTypePredicate(definition);
 
             annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             definition.entities is Query;
         }
-        else
+        else if (definition.patternType == PatternType.FACE)
         {
             annotation { "Name" : "Faces to pattern",
                          "UIHint" : "ALLOW_FEATURE_SELECTION",
                          "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             definition.faces is Query;
+        }
+        else if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Features to pattern" }
+            definition.instanceFunction is FeatureList;
         }
 
         annotation { "Name" : "Axis of pattern", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
@@ -54,16 +59,19 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation { "Name" : "Equal spacing" }
         definition.equalSpace is boolean;
 
-        if (!definition.isFacePattern)
+        if (definition.patternType == PatternType.PART)
         {
             booleanStepScopePredicate(definition);
         }
     }
     {
-        if (definition.isFacePattern)
+        if (definition.patternType == PatternType.FACE)
             definition.entities = definition.faces;
 
-        checkInput(context, id, definition);
+        checkInput(context, id, definition, false);
+
+        if (definition.patternType == PatternType.FEATURE)
+            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
 
         var transforms = [];
         var instanceNames = [];
@@ -74,8 +82,9 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         if (definition.oppositeDirection == true)
             angle = -angle;
 
-        const rawDirectionResult = try(evAxis(context, { "axis" : definition.axis }));
-        if (rawDirectionResult == undefined)
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
+        var direction = computePatternAxis(context, definition.axis, isFeaturePattern(definition.patternType), remainingTransform);
+        if (direction == undefined)
             throw regenError(ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS, ["axis"]);
 
         if (definition.equalSpace)
@@ -90,17 +99,16 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         for (var i = 1; i < definition.instanceCount; i += 1)
         {
-            transforms = append(transforms, rotationAround(rawDirectionResult, i * angle));
+            var instanceTransform = rotationAround(direction, i * angle);
+            transforms = append(transforms, instanceTransform);
             instanceNames = append(instanceNames, "" ~ i);
         }
 
         definition.transforms = transforms;
         definition.instanceNames = instanceNames;
+        definition.seed = definition.entities;
 
-        opPattern(context, id, definition);
-
-        processPatternBooleansIfNeeded(context, id, definition);
-    }, { isFacePattern : true, operationType : NewBodyOperationType.NEW,
+        applyPattern(context, id, definition, remainingTransform);
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
          oppositeDirection : false, equalSpace : false });
-
 

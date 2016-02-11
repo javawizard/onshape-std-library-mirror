@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -150,11 +150,13 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
             definition.profileSubqueries = subQ;
         }
+        var queriesForTransform = [profileQuery];
 
         if (definition.addGuides || definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
         {
             definition.shapeControl = LoftShapeControlType.ADD_GUIDES;
             const guideQuery = definition.guides;
+            queriesForTransform = append(queriesForTransform, guideQuery);
             if (guideQuery.queryType == QueryType.UNION)
             {
                 const subQ = guideQuery.subqueries;
@@ -182,12 +184,22 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             definition.vertices = qUnion([]);
         }
+        else
+        {
+            queriesForTransform = append(queriesForTransform, definition.vertices);
+        }
 
+        var remainingTransform = getRemainderPatternTransform(context,
+                {"references" : qUnion(queriesForTransform)});
         opLoft(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id) { opLoft(context, id, definition); };
+            const reconstructOp = function(id) {
+                opLoft(context, id, definition);
+                transformResultIfNecessary(context, id, remainingTransform);
+            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
 

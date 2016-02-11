@@ -1,8 +1,9 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+import(path : "onshape/std/context.fs", version : "");
 import(path : "onshape/std/coordSystem.fs", version : "");
 import(path : "onshape/std/curveGeometry.fs", version : "");
 import(path : "onshape/std/mathUtils.fs", version : "");
@@ -66,6 +67,17 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
 export function planeFromBuiltin(definition is map) returns Plane
 {
     return plane((definition.origin as Vector) * meter, definition.normal as Vector, definition.x as Vector);
+}
+
+/**
+ * For Onshape internal use.
+ *
+ * Returns the plane that would represent the coordinate system of a face coplanar with the input plane.
+ * Used in plane transformation for computing sketch patterns.
+ */
+export function alignCanonically(context is Context, plane is Plane) returns Plane
+{
+    return planeFromBuiltin(@alignCanonically(context, {"plane" : plane}));
 }
 
 /**

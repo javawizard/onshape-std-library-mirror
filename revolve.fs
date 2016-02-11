@@ -1,4 +1,4 @@
-FeatureScript 293; /* Automatically generated version */
+FeatureScript 307; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -113,6 +113,9 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             return;
         }
 
+        var remainingTransform = getRemainderPatternTransform(context,
+                {"references" : qUnion([definition.entities, definition.axis])});
+
         definition.axis = try(evAxis(context, definition));
         if (definition.axis == undefined)
             throw regenError(ErrorStringEnum.REVOLVE_SELECT_AXIS, ["axis"]);
@@ -151,10 +154,15 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             definition.axis.direction *= -1; // To be consistent with extrude
         }
         opRevolve(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id) { opRevolve(context, id, definition); };
+            const reconstructOp = function(id)
+            {
+                opRevolve(context, id, definition);
+                transformResultIfNecessary(context, id, remainingTransform);
+            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW });
