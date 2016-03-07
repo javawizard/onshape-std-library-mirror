@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -568,6 +568,12 @@ function cylinderCast_rev_0(context is Context, idIn is Id, arg is map) returns 
 
 function cylinderCast_rev_1(context is Context, idIn is Id, arg is map) returns map
 {
+    const targets = evaluateQuery(context, arg.scope);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V314_HOLE_FIX_CYL_CAST_EARLY_RETURN) && size(targets) == 0)
+    {
+        return { "dist" : 0 * meter };
+    }
+
     const shotName = arg.isFront ? "shot_front" : "shot_back";
     const id = idIn + shotName;
     var direction = arg.cSys.zAxis;
@@ -595,7 +601,7 @@ function cylinderCast_rev_1(context is Context, idIn is Id, arg is map) returns 
     skCircle(sketch, "circle", { "center" : vector(0, 0) * meter, "radius" : arg.diameter / 2 });
     skSolve(sketch);
 
-    const targets = evaluateQuery(context, arg.scope);
+    // Legacy code, left for older versions. Never hit in later versions because return call above
     if (size(targets) == 0)
     {
         return { "dist" : 0 * meter };

@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,6 +7,7 @@ FeatureScript 307; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "");
 
 // Imports used internally
+import(path : "onshape/std/box.fs", version : "");
 import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
@@ -51,13 +52,16 @@ const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
+// Factor by which to extend default plane size
+const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
+
 /**
  * Creates a construction plane.  @see `opPlane`.
  * @param definition {{
  *      @field TODO
  * }}
  */
-annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic" }
+annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -89,8 +93,11 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             definition.flipAlignment is boolean;
         }
 
-        annotation { "Name" : "Display size", "UIHint" : "ALWAYS_HIDDEN" }
-        isLength(definition.size, PLANE_SIZE_BOUNDS);
+        annotation { "Name" : "Starting width", "UIHint" : "ALWAYS_HIDDEN" }
+        isLength(definition.width, PLANE_SIZE_BOUNDS);
+
+        annotation { "Name" : "Starting height", "UIHint" : "ALWAYS_HIDDEN" }
+        isLength(definition.height, PLANE_SIZE_BOUNDS);
     }
     //============================ Body =============================
     {
@@ -154,46 +161,69 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             const normal = cross(points[2] - points[0], points[1] - points[0]);
             if (norm(normal).value < TOLERANCE.zeroLength)
                 throw regenError(degeneratePointsMessage, ["entities"]);
-            definition.plane = plane(points[0], normalize(normal), normalize(points[1] - points[0]));
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX))
+            {
+                var center = (points[0] + points[1] + points[2]) / 3;
+                definition.plane = plane(center, normalize(normal), normalize(points[1] - points[0]));
+
+                // Evaluate size here to avoid re-evaluating queries in the plane size function
+                var maxLength = max(max(norm(definition.plane.origin - points[0]), norm(definition.plane.origin - points[1])), norm(definition.plane.origin - points[2]));
+                var newSize = maxLength * 2.0;
+                var sizeOffset = newSize * PLANE_SIZE_EXTENSION_FACTOR;
+                definition.width = newSize + sizeOffset;
+                definition.height = newSize + sizeOffset;
+            }
+            else
+            {
+                definition.plane = plane(points[0], normalize(normal), normalize(points[1] - points[0]));
+            }
         }
 
         if (definition.cplaneType == CPlaneType.MID_PLANE)
         {
-            // attempt from two points
+
             const vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
+            const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
+            const faceQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
+
+            // attempt from two points
             if (@size(vertexQueries) == 2)
             {
                 // Check for extra entities, not vertices
                 if (numEntities > 2)
                     throw regenError(tooManyEntitiesMessage, ["entities"]);
-                createMidPlaneFromTwoPoints(context, id, vertexQueries, definition.size);
-                return;
+                definition.plane = createMidPlaneFromTwoPoints(context, id, vertexQueries);
+
             }
 
             // attempt from a edge
-            const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
-            if (@size(edgeQueries) == 1)
+            else if (@size(edgeQueries) == 1)
+
             {
                 // Check for extra entities, not edges
                 if (numEntities > 1)
                     throw regenError(tooManyEntitiesMessage, ["entities"]);
-                createMidPlaneFromEdge(context, id, edgeQueries, definition.size);
-                return;
+                definition.plane = createMidPlaneFromEdge(context, id, edgeQueries);
+
             }
 
             // attempt from 2 planes
-            const faceQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
-            if (@size(faceQueries) == 2)
+            else if (@size(faceQueries) == 2)
+
             {
                 // Check for extra entities, not faces
                 if (numEntities > 2)
                     throw regenError(tooManyEntitiesMessage, ["entities"]);
-                createMidPlaneFromTwoPlanes(context, id, definition);
-                return;
+                definition.plane = createMidPlaneFromTwoPlanes(context, id, definition);
+
             }
 
-            // fall through to failure
-            throw regenError(midPlaneDefaultErrorMessage, ["entities"]);
+            // error if our plane definition hasn't been created yet
+            if (definition.plane == undefined)
+            {
+                throw regenError(midPlaneDefaultErrorMessage, ["entities"]);
+            }
         }
 
         if (definition.cplaneType == CPlaneType.CURVE_POINT)
@@ -226,10 +256,17 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             definition.plane = plane(lineResult.origin, lineResult.direction);
         }
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX))
+        {
+            var planeSize = getPlaneDefaultSize(context, definition);
+            definition.width = planeSize[0];
+            definition.height = planeSize[1];
+        }
+
         opPlane(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { oppositeDirection : false, flipAlignment : false });
+    }, { oppositeDirection : false, flipAlignment : false, width : 1 * meter, height : 1 * meter });
 
 function lineAnglePlane(context is Context, id is Id, entities is array, angle is ValueWithUnits) returns Plane
 {
@@ -292,7 +329,98 @@ function lineAnglePlane(context is Context, id is Id, entities is array, angle i
     return plane(axis1.origin, normal, axis1.direction);
 }
 
-function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries is array, size is ValueWithUnits)
+function getPlaneDefaultSize(context is Context, definition is map) returns array
+{
+    var planeType = definition.cplaneType;
+    var planeBounds = [definition.width, definition.height];
+    if (planeType == CPlaneType.OFFSET)
+    {
+        var isConstruction = false;
+        const cSys = planeToCSys(definition.plane);
+        var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys });
+
+        if (planeType == CPlaneType.OFFSET)
+        {
+            var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(definition.entities, ConstructionObject.NO));
+            if (@size(constructionFilteredEntities) == 0)
+            {
+                isConstruction = true;
+            }
+        }
+
+        planeBounds = getExpandedPlaneBounds(bounds, isConstruction);
+    }
+    else if (planeType == CPlaneType.LINE_ANGLE)
+    {
+        const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
+        if (edgeQueries != undefined && @size(edgeQueries) > 0)
+        {
+            const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
+            if (edgeEndPoints != undefined && @size(edgeEndPoints) > 1)
+            {
+                var normal = edgeEndPoints[0].origin - edgeEndPoints[1].origin;
+                var size = norm(normal) * (1 + PLANE_SIZE_EXTENSION_FACTOR);
+                planeBounds = [size, size];
+            }
+        }
+    }
+    else if (planeType == CPlaneType.PLANE_POINT)
+    {
+        const cSys = planeToCSys(definition.plane);
+        var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+
+        var isConstruction = false;
+        var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(qEntityFilter(definition.entities, EntityType.FACE), ConstructionObject.NO));
+        if (@size(constructionFilteredEntities) == 0)
+        {
+            isConstruction = true;
+        }
+
+        planeBounds = getExpandedPlaneBounds(bounds, isConstruction);
+    }
+    else if (planeType == CPlaneType.MID_PLANE)
+    {
+        var isConstruction = false;
+        var faceFilteredEntities = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
+        // If this mid plane is not based on a face, return the default plane bounds
+        if (@size(faceFilteredEntities) == 0)
+        {
+            return planeBounds;
+        }
+
+        const cSys = planeToCSys(definition.plane);
+        var bounds = evBox3d(context, { 'topology' : qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+
+        if (bounds == undefined)
+        {
+            return planeBounds;
+        }
+
+        var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(definition.entities, ConstructionObject.NO));
+        if (@size(constructionFilteredEntities) == 0)
+        {
+            isConstruction = true;
+        }
+
+        planeBounds = getExpandedPlaneBounds(bounds, isConstruction);
+    }
+
+    return planeBounds;
+}
+
+function getExpandedPlaneBounds(bounds is Box3d, isConstruction is boolean) returns array
+{
+    var planeExpansionFactor = (isConstruction ? 0.0 : PLANE_SIZE_EXTENSION_FACTOR);
+    var minPlaneCorner = bounds.minCorner;
+    var maxPlaneCorner = bounds.maxCorner;
+
+    var height = abs(maxPlaneCorner[1] - minPlaneCorner[1]);
+    var width = abs(maxPlaneCorner[0] - minPlaneCorner[0]);
+    var offset = max(width, height) * planeExpansionFactor;
+    return [width + offset, height + offset];
+}
+
+function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries is array) returns Plane
 {
     var points = makeArray(2);
     for (var i = 0; i < 2; i += 1)
@@ -304,10 +432,11 @@ function createMidPlaneFromTwoPoints(context is Context, id is Id, vertexQueries
 
     normal = normalize(normal);
     const midOrigin = 0.5 * (points[0] + points[1]);
-    opPlane(context, id, { "plane" : plane(midOrigin, normal), "size" : size });
+
+    return plane(midOrigin, normal);
 }
 
-function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is array, size is ValueWithUnits)
+function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is array) returns Plane
 {
     var points = makeArray(2);
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
@@ -319,7 +448,8 @@ function createMidPlaneFromEdge(context is Context, id is Id, edgeQueries is arr
 
     normal = normalize(normal);
     const midOrigin = 0.5 * (points[0] + points[1]);
-    opPlane(context, id, { "plane" : plane(midOrigin, normal), "size" : size });
+
+    return plane(midOrigin, normal);
 }
 
 function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinition is map)
@@ -348,7 +478,7 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
         cplaneDefinition.plane.origin = project(cplaneDefinition.plane, midOrigin);
     }
 
-    opPlane(context, id, cplaneDefinition);
+    return cplaneDefinition.plane;
 }
 
 /**
@@ -393,4 +523,3 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     return definition;
 }
-

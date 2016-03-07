@@ -5,12 +5,16 @@ FeatureScript 316; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
-export enum RadiusDisplay
+export enum MateDOFType
 {
-    NONE,
-    RADIAL,
-    DIAMETRAL
+    annotation {"Name" : "Translational X"}
+    Tx,
+    annotation {"Name" : "Translational Y"}
+    Ty,
+    annotation {"Name" : "Translational Z"}
+    Tz,
+    annotation {"Name" : "Rotational Z"}
+    Rz
 }
 
 

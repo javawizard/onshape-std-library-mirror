@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 import(path : "onshape/std/units.fs", version : "");
@@ -382,7 +382,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "80 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.052 * inch", "tapDrillDiameter" : "0.052 * inch", "cBoreDiameter" : "1/8 * inch", "cBoreDepth" : "0.06 * inch", "cSinkDiameter" : "0.138 * inch", "cSinkAngle" : "82 * degree"},
@@ -398,7 +398,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "64 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.0625 * inch", "tapDrillDiameter" : "0.0625 * inch", "cBoreDiameter" : "5/32 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -407,7 +407,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "72 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.0635 * inch", "tapDrillDiameter" : "0.0635 * inch", "cBoreDiameter" : "5/33 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -423,7 +423,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "56 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.073 * inch", "tapDrillDiameter" : "0.073 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -432,7 +432,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "64 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.076 * inch", "tapDrillDiameter" : "0.076 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -448,7 +448,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "48 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.086 * inch", "tapDrillDiameter" : "0.086 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -457,7 +457,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "56 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.089 * inch", "tapDrillDiameter" : "0.089 * inch", "cBoreDiameter" : "7/33 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -473,7 +473,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "40 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.096 * inch", "tapDrillDiameter" : "0.096 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -482,7 +482,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "48 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.098 * inch", "tapDrillDiameter" : "0.098 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -498,7 +498,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "40 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.1094 * inch", "tapDrillDiameter" : "0.1094 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -507,7 +507,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "44 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.11 * inch", "tapDrillDiameter" : "0.11 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -523,7 +523,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.116 * inch", "tapDrillDiameter" : "0.116 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -532,7 +532,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "40 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.12 * inch", "tapDrillDiameter" : "0.12 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -548,7 +548,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.144 * inch", "tapDrillDiameter" : "0.144 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -557,7 +557,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "36 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.147 * inch", "tapDrillDiameter" : "0.147 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -573,7 +573,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "24 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.161 * inch", "tapDrillDiameter" : "0.161 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -582,7 +582,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.1695 * inch", "tapDrillDiameter" : "0.1695 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -598,7 +598,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.2188 * inch", "tapDrillDiameter" : "0.2188 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -607,7 +607,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "28 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.228 * inch", "tapDrillDiameter" : "0.228 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -616,7 +616,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.228 * inch", "tapDrillDiameter" : "0.228 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -632,7 +632,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "18 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.277 * inch", "tapDrillDiameter" : "0.277 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -641,7 +641,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "24 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.2812 * inch", "tapDrillDiameter" : "0.2812 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -650,7 +650,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.29 * inch", "tapDrillDiameter" : "0.29 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -666,7 +666,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "16 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.332 * inch", "tapDrillDiameter" : "0.332 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -675,7 +675,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "24 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.348 * inch", "tapDrillDiameter" : "0.348 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -684,7 +684,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "32 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.358 * inch", "tapDrillDiameter" : "0.358 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -700,7 +700,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "14 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.3906 * inch", "tapDrillDiameter" : "0.3906 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -709,7 +709,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.4062 * inch", "tapDrillDiameter" : "0.4062 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -718,7 +718,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "28 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.413 * inch", "tapDrillDiameter" : "0.413 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -734,7 +734,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "13 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.4531 * inch", "tapDrillDiameter" : "0.4531 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -743,7 +743,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.4688 * inch", "tapDrillDiameter" : "0.4688 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -752,7 +752,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "28 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.4688 * inch", "tapDrillDiameter" : "0.4688 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -768,7 +768,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "11 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.5625 * inch", "tapDrillDiameter" : "0.5625 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -777,7 +777,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "18 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.5938 * inch", "tapDrillDiameter" : "0.5938 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -786,7 +786,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "24 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.5938 * inch", "tapDrillDiameter" : "0.5938 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -802,7 +802,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "10 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.6875 * inch", "tapDrillDiameter" : "0.6875 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -811,7 +811,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "16 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.7031 * inch", "tapDrillDiameter" : "0.7031 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -820,7 +820,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.7188 * inch", "tapDrillDiameter" : "0.7188 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -836,7 +836,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "9 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.7969 * inch", "tapDrillDiameter" : "0.7969 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -845,7 +845,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "14 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.8281 * inch", "tapDrillDiameter" : "0.8281 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -854,7 +854,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.8438 * inch", "tapDrillDiameter" : "0.8438 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -870,7 +870,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "8 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.9219 * inch", "tapDrillDiameter" : "0.9219 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -879,7 +879,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "12 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.9531 * inch", "tapDrillDiameter" : "0.9531 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -888,7 +888,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "20 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "0.9688 * inch", "tapDrillDiameter" : "0.9688 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -904,7 +904,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "7 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.1562 * inch", "tapDrillDiameter" : "1.1562 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -913,7 +913,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "12 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.2031 * inch", "tapDrillDiameter" : "1.2031 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -922,7 +922,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "18 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.2187 * inch", "tapDrillDiameter" : "1.2187 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -938,7 +938,7 @@ const ANSI_TappedHoleTable = {
             "entries" : {
                 "6 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.3906 * inch", "tapDrillDiameter" : "1.3906 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -947,7 +947,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "12 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.4375 * inch", "tapDrillDiameter" : "1.4375 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -956,7 +956,7 @@ const ANSI_TappedHoleTable = {
                 },
                 "18 tpi" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "50%" : {"holeDiameter" : "1.4687 * inch", "tapDrillDiameter" : "1.4687 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -985,7 +985,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.052 * inch", "holeDiameter" : "0.064 * inch", "cBoreDiameter" : "1/8 * inch", "cBoreDepth" : "0.06 * inch", "cSinkDiameter" : "0.138 * inch", "cSinkAngle" : "82 * degree"},
@@ -994,7 +994,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.052 * inch", "holeDiameter" : "0.07 * inch", "cBoreDiameter" : "1/8 * inch", "cBoreDepth" : "0.06 * inch", "cSinkDiameter" : "0.138 * inch", "cSinkAngle" : "82 * degree"},
@@ -1017,7 +1017,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.0625 * inch", "holeDiameter" : "0.076 * inch", "cBoreDiameter" : "5/32 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -1026,7 +1026,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.0625 * inch", "holeDiameter" : "0.081 * inch", "cBoreDiameter" : "5/32 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -1042,7 +1042,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.0635 * inch", "holeDiameter" : "0.076 * inch", "cBoreDiameter" : "5/33 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -1051,7 +1051,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.0635 * inch", "holeDiameter" : "0.081 * inch", "cBoreDiameter" : "5/33 * inch", "cBoreDepth" : "0.073 * inch", "cSinkDiameter" : "0.168 * inch", "cSinkAngle" : "82 * degree"},
@@ -1074,7 +1074,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.073 * inch", "holeDiameter" : "0.089 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -1083,7 +1083,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.073 * inch", "holeDiameter" : "0.096 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -1099,7 +1099,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.076 * inch", "holeDiameter" : "0.089 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -1108,7 +1108,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.076 * inch", "holeDiameter" : "0.096 * inch", "cBoreDiameter" : "3/16 * inch", "cBoreDepth" : "0.086 * inch", "cSinkDiameter" : "0.197 * inch", "cSinkAngle" : "82 * degree"},
@@ -1131,7 +1131,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.086 * inch", "holeDiameter" : "0.104 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -1140,7 +1140,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.086 * inch", "holeDiameter" : "0.11 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -1156,7 +1156,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.089 * inch", "holeDiameter" : "0.104 * inch", "cBoreDiameter" : "7/33 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -1165,7 +1165,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.089 * inch", "holeDiameter" : "0.11 * inch", "cBoreDiameter" : "7/33 * inch", "cBoreDepth" : "0.099 * inch", "cSinkDiameter" : "0.226 * inch", "cSinkAngle" : "82 * degree"},
@@ -1188,7 +1188,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.096 * inch", "holeDiameter" : "0.116 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -1197,7 +1197,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.096 * inch", "holeDiameter" : "0.1285 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -1213,7 +1213,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.098 * inch", "holeDiameter" : "0.116 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -1222,7 +1222,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.098 * inch", "holeDiameter" : "0.1285 * inch", "cBoreDiameter" : "7/32 * inch", "cBoreDepth" : "0.112 * inch", "cSinkDiameter" : "0.255 * inch", "cSinkAngle" : "82 * degree"},
@@ -1245,7 +1245,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.1094 * inch", "holeDiameter" : "0.129 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -1254,7 +1254,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.1094 * inch", "holeDiameter" : "0.136 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -1270,7 +1270,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.11 * inch", "holeDiameter" : "0.129 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -1279,7 +1279,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.11 * inch", "holeDiameter" : "0.136 * inch", "cBoreDiameter" : "1/4 * inch", "cBoreDepth" : "0.125 * inch", "cSinkDiameter" : "0.281 * inch", "cSinkAngle" : "82 * degree"},
@@ -1302,7 +1302,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.116 * inch", "holeDiameter" : "0.144 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -1311,7 +1311,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.116 * inch", "holeDiameter" : "0.1495 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -1327,7 +1327,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.12 * inch", "holeDiameter" : "0.144 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -1336,7 +1336,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.12 * inch", "holeDiameter" : "0.1495 * inch", "cBoreDiameter" : "9/32 * inch", "cBoreDepth" : "0.138 * inch", "cSinkDiameter" : "0.307 * inch", "cSinkAngle" : "82 * degree"},
@@ -1359,7 +1359,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.144 * inch", "holeDiameter" : "0.170 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -1368,7 +1368,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.144 * inch", "holeDiameter" : "0.177 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -1384,7 +1384,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.147 * inch", "holeDiameter" : "0.170 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -1393,7 +1393,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.147 * inch", "holeDiameter" : "0.177 * inch", "cBoreDiameter" : "5/16 * inch", "cBoreDepth" : "0.164 * inch", "cSinkDiameter" : "0.359 * inch", "cSinkAngle" : "82 * degree"},
@@ -1416,7 +1416,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.161 * inch", "holeDiameter" : "0.196 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -1425,7 +1425,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.161 * inch", "holeDiameter" : "0.201 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -1441,7 +1441,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.1695 * inch", "holeDiameter" : "0.196 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -1450,7 +1450,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.1695 * inch", "holeDiameter" : "0.201 * inch", "cBoreDiameter" : "3/8 * inch", "cBoreDepth" : "0.19 * inch", "cSinkDiameter" : "0.411 * inch", "cSinkAngle" : "82 * degree"},
@@ -1473,7 +1473,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.2188 * inch", "holeDiameter" : "0.257 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1482,7 +1482,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.2188 * inch", "holeDiameter" : "0.266 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1498,7 +1498,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.228 * inch", "holeDiameter" : "0.257 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1507,7 +1507,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.228 * inch", "holeDiameter" : "0.266 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1523,7 +1523,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.228 * inch", "holeDiameter" : "0.257 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1532,7 +1532,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.228 * inch", "holeDiameter" : "0.266 * inch", "cBoreDiameter" : "7/16 * inch", "cBoreDepth" : "0.25 * inch", "cSinkDiameter" : "0.531 * inch", "cSinkAngle" : "82 * degree"},
@@ -1555,7 +1555,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.277 * inch", "holeDiameter" : "0.323 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1564,7 +1564,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.277 * inch", "holeDiameter" : "0.332 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1580,7 +1580,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.2812 * inch", "holeDiameter" : "0.323 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1589,7 +1589,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.2812 * inch", "holeDiameter" : "0.332 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1605,7 +1605,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.29 * inch", "holeDiameter" : "0.323 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1614,7 +1614,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.29 * inch", "holeDiameter" : "0.332 * inch", "cBoreDiameter" : "17/32 * inch", "cBoreDepth" : "0.3125 * inch", "cSinkDiameter" : "0.656 * inch", "cSinkAngle" : "82 * degree"},
@@ -1637,7 +1637,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.332 * inch", "holeDiameter" : "0.386 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1646,7 +1646,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.332 * inch", "holeDiameter" : "0.397 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1662,7 +1662,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.348 * inch", "holeDiameter" : "0.386 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1671,7 +1671,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.348 * inch", "holeDiameter" : "0.397 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1687,7 +1687,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.358 * inch", "holeDiameter" : "0.386 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1696,7 +1696,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.358 * inch", "holeDiameter" : "0.397 * inch", "cBoreDiameter" : "5/8 * inch", "cBoreDepth" : "0.375 * inch", "cSinkDiameter" : "0.781 * inch", "cSinkAngle" : "82 * degree"},
@@ -1719,7 +1719,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.3906 * inch", "holeDiameter" : "0.453 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1728,7 +1728,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.3906 * inch", "holeDiameter" : "0.4687 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1744,7 +1744,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4062 * inch", "holeDiameter" : "0.453 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1753,7 +1753,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4062 * inch", "holeDiameter" : "0.4687 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1769,7 +1769,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.413 * inch", "holeDiameter" : "0.453 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1778,7 +1778,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.413 * inch", "holeDiameter" : "0.4687 * inch", "cBoreDiameter" : "23/32 * inch", "cBoreDepth" : "0.4375 * inch", "cSinkDiameter" : "0.844 * inch", "cSinkAngle" : "82 * degree"},
@@ -1801,7 +1801,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4531 * inch", "holeDiameter" : "0.516 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1810,7 +1810,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4531 * inch", "holeDiameter" : "0.5312 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1826,7 +1826,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4688 * inch", "holeDiameter" : "0.516 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1835,7 +1835,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4688 * inch", "holeDiameter" : "0.5312 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1851,7 +1851,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4688 * inch", "holeDiameter" : "0.516 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1860,7 +1860,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.4688 * inch", "holeDiameter" : "0.5312 * inch", "cBoreDiameter" : "13/16 * inch", "cBoreDepth" : "0.5 * inch", "cSinkDiameter" : "0.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -1883,7 +1883,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5625 * inch", "holeDiameter" : "0.641 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1892,7 +1892,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5625 * inch", "holeDiameter" : "0.6562 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1908,7 +1908,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5938 * inch", "holeDiameter" : "0.641 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1917,7 +1917,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5938 * inch", "holeDiameter" : "0.6562 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1933,7 +1933,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5938 * inch", "holeDiameter" : "0.641 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1942,7 +1942,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.5938 * inch", "holeDiameter" : "0.6562 * inch", "cBoreDiameter" : "1 * inch", "cBoreDepth" : "0.625 * inch", "cSinkDiameter" : "1.188 * inch", "cSinkAngle" : "82 * degree"},
@@ -1965,7 +1965,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.6875 * inch", "holeDiameter" : "0.766 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -1974,7 +1974,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.6875 * inch", "holeDiameter" : "0.7812 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -1990,7 +1990,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7031 * inch", "holeDiameter" : "0.766 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -1999,7 +1999,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7031 * inch", "holeDiameter" : "0.7812 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2015,7 +2015,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7188 * inch", "holeDiameter" : "0.766 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2024,7 +2024,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7188 * inch", "holeDiameter" : "0.7812 * inch", "cBoreDiameter" : "1 3/16 * inch", "cBoreDepth" : "0.75 * inch", "cSinkDiameter" : "1.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2047,7 +2047,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7969 * inch", "holeDiameter" : "0.891 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2056,7 +2056,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.7969 * inch", "holeDiameter" : "0.9062 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2072,7 +2072,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.8281 * inch", "holeDiameter" : "0.891 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2081,7 +2081,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.8281 * inch", "holeDiameter" : "0.9062 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2097,7 +2097,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.8438 * inch", "holeDiameter" : "0.891 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2106,7 +2106,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.8438 * inch", "holeDiameter" : "0.9062 * inch", "cBoreDiameter" : "1 3/8 * inch", "cBoreDepth" : "0.875 * inch", "cSinkDiameter" : "1.688 * inch", "cSinkAngle" : "82 * degree"},
@@ -2129,7 +2129,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9219 * inch", "holeDiameter" : "1.016 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2138,7 +2138,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9219 * inch", "holeDiameter" : "1.0313 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2154,7 +2154,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9531 * inch", "holeDiameter" : "1.016 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2163,7 +2163,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9531 * inch", "holeDiameter" : "1.0313 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2179,7 +2179,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9688 * inch", "holeDiameter" : "1.016 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2188,7 +2188,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9688 * inch", "holeDiameter" : "1.0313 * inch", "cBoreDiameter" : "1 5/8 * inch", "cBoreDepth" : "1 * inch", "cSinkDiameter" : "1.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2211,7 +2211,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.1562 * inch", "holeDiameter" : "1.2656 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2220,7 +2220,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.1562 * inch", "holeDiameter" : "1.2188 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2236,7 +2236,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.2031 * inch", "holeDiameter" : "1.2656 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2245,7 +2245,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.2031 * inch", "holeDiameter" : "1.2188 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2261,7 +2261,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.2187 * inch", "holeDiameter" : "1.2656 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2270,7 +2270,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.2187 * inch", "holeDiameter" : "1.2188 * inch", "cBoreDiameter" : "2 * inch", "cBoreDepth" : "1.2500 * inch", "cSinkDiameter" : "2.438 * inch", "cSinkAngle" : "82 * degree"},
@@ -2293,7 +2293,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.3906 * inch", "holeDiameter" : "1.5156 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2302,7 +2302,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.3906 * inch", "holeDiameter" : "1.5312 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2318,7 +2318,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.4375 * inch", "holeDiameter" : "1.5156 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2327,7 +2327,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.4375 * inch", "holeDiameter" : "1.5312 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2343,7 +2343,7 @@ const ANSI_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.4687 * inch", "holeDiameter" : "1.5156 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2352,7 +2352,7 @@ const ANSI_ThroughTappedScrewTable = {
                         },
                         "Free" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.4687 * inch", "holeDiameter" : "1.5312 * inch", "cBoreDiameter" : "2 3/8 * inch", "cBoreDepth" : "1.5000 * inch", "cSinkDiameter" : "2.938 * inch", "cSinkAngle" : "82 * degree"},
@@ -2641,7 +2641,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "0.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "2.7 * millimeter", "tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2650,7 +2650,7 @@ const ISO_TappedHoleTable = {
                 },
                 "0.60 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "2.6 * millimeter", "tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2666,7 +2666,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "0.70 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "3.5 * millimeter", "tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2675,7 +2675,7 @@ const ISO_TappedHoleTable = {
                 },
                 "0.75 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "3.5 * millimeter", "tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2691,7 +2691,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "0.80 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "4.5 * millimeter", "tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2700,7 +2700,7 @@ const ISO_TappedHoleTable = {
                 },
                 "0.90 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "4.4 * millimeter", "tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2709,7 +2709,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "4.4 * millimeter", "tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2725,7 +2725,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "0.75 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "5.5 * millimeter", "tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2734,7 +2734,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "5.4 * millimeter", "tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2750,7 +2750,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "7.4 * millimeter", "tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2759,7 +2759,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.25 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "7.2 * millimeter", "tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2775,7 +2775,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "9.4 * millimeter", "tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2784,7 +2784,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.25 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "9.2 * millimeter", "tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2793,7 +2793,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "9 * millimeter", "tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2809,7 +2809,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.25 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2818,7 +2818,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "11 * millimeter", "tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2827,7 +2827,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.75 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2843,7 +2843,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.25 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "13.2 * millimeter", "tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2852,7 +2852,7 @@ const ISO_TappedHoleTable = {
                 },
                 "1.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "13 * millimeter", "tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2861,7 +2861,7 @@ const ISO_TappedHoleTable = {
                 },
                 "2.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "12.7 * millimeter", "tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2877,7 +2877,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "15 * millimeter", "tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2886,7 +2886,7 @@ const ISO_TappedHoleTable = {
                 },
                 "2.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "14.75 * millimeter", "tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2902,7 +2902,7 @@ const ISO_TappedHoleTable = {
             "entries" : {
                 "1.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "19 * millimeter", "tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2911,7 +2911,7 @@ const ISO_TappedHoleTable = {
                 },
                 "2.00 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2920,7 +2920,7 @@ const ISO_TappedHoleTable = {
                 },
                 "2.50 mm" : {
                     "name" : "engagement",
-                    "displayName" : "% thread engagement",
+                    "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
                         "25%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2949,7 +2949,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2958,7 +2958,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2974,7 +2974,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -2983,7 +2983,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3006,7 +3006,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3015,7 +3015,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3031,7 +3031,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3040,7 +3040,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3063,7 +3063,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3072,7 +3072,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3088,7 +3088,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3097,7 +3097,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3113,7 +3113,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3122,7 +3122,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3145,7 +3145,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3154,7 +3154,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3170,7 +3170,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3179,7 +3179,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3202,7 +3202,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3211,7 +3211,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3227,7 +3227,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3236,7 +3236,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3259,7 +3259,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3268,7 +3268,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3284,7 +3284,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3293,7 +3293,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3309,7 +3309,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3318,7 +3318,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3341,7 +3341,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3350,7 +3350,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3366,7 +3366,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3375,7 +3375,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3391,7 +3391,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3400,7 +3400,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3423,7 +3423,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3432,7 +3432,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3448,7 +3448,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3457,7 +3457,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3473,7 +3473,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3482,7 +3482,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3505,7 +3505,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3514,7 +3514,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3530,7 +3530,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3539,7 +3539,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3562,7 +3562,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3571,7 +3571,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3587,7 +3587,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3596,7 +3596,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3612,7 +3612,7 @@ const ISO_ThroughTappedScrewTable = {
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
@@ -3621,7 +3621,7 @@ const ISO_ThroughTappedScrewTable = {
                         },
                         "Standard" : {
                             "name" : "engagement",
-                            "displayName" : "% thread engagement",
+                            "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},

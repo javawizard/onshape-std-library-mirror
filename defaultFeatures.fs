@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -44,7 +44,7 @@ precondition
     isLength(size);
 }
 {
-    var definition = { "defaultType" : defaultType, "size" : size };
+    var definition = { "defaultType" : defaultType, "width" : size, "height" : size };
 
     startFeature(context, id, definition);
     const origin = vector(0, 0, 0) * meter;

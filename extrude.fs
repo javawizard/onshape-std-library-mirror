@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -440,7 +440,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     }
 
     // reference face
-    const splitPlaneDefinition = { "plane" : neutralPlane, "size" : 1 * meter };
+    const splitPlaneDefinition = { "plane" : neutralPlane, "width" : 1 * meter, "height" : 1 * meter };
     opPlane(context, id, splitPlaneDefinition);
     return neutralPlane;
 }

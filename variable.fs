@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,14 +32,19 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         isAnything(definition.value);
     }
     {
-        const replaceNameWithRegExpShouldBeBlank = replace(definition.name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
-        if (definition.name == '' || replaceNameWithRegExpShouldBeBlank != '') {
-            throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
-        }
+        verifyVariableName(definition.name);
 
         setVariable(context, definition.name, definition.value);
         setFeatureComputedParameter(context, id, { "name" : "value", "value" : definition.value });
     });
+
+/** Throws an error if something other than a valid identifier is passed in */
+export function verifyVariableName(name is string)
+{
+    const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
+    if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
+}
 
 /**
  * Make a function to look up variables from the given context.  Used in generated part studio code.

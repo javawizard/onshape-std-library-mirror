@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -125,6 +125,42 @@ export function debug(context is Context, value is Plane)
         addDebugEntities(context, qCreatedBy(planeId, EntityType.FACE));
     }
     abortFeature(context, planeId);
+}
+
+/** Draws a line between point1 and point2 */
+export function debug(context is Context, point1 is Vector, point2 is Vector)
+{
+    print("debug: Two vectors: ");
+    print(point1);
+    print(" and ");
+    print(point2);
+    if (is3dLengthVector(point1) && is3dLengthVector(point2))
+    {
+        println(", distance = " ~ toString(norm(point2 - point1)));
+        const lineId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "line";
+        startFeature(context, lineId, {});
+        try
+        {
+            const length = norm(point2 - point1);
+            const orth = perpendicularVector(point2 - point1);
+
+            var lineDef = { "end" : vector(length, 0 * meter) };
+
+            const sketch1 = newSketchOnPlane(context, lineId + "sketch1", {
+                        "sketchPlane" : plane(point1, orth, point2 - point1)
+                    });
+            lineDef.start = vector(0, 0) * meter;
+            skLineSegment(sketch1, "line1", lineDef);
+            skSolve(sketch1);
+
+            addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE));
+        }
+        abortFeature(context, lineId);
+    }
+    else
+    {
+        print('\n');
+    }
 }
 
 // Utility functions below

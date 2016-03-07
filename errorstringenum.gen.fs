@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -475,7 +475,11 @@ export enum ErrorStringEnum
     PATTERN_FEATURE_FAILED,
     SKETCH_TRANSFORM_FAILED,
     TANGENT_MATE_TWO_ENTITIES_NEEDED,
-    HOLE_CANNOT_DETERMINE_LAST_BODY
+    HOLE_CANNOT_DETERMINE_LAST_BODY,
+    RESTRUCTURE_CANNOT_MODIFY_SAVED_VERSION,
+    REST_ASSEMBLY_EXTERNAL_REFERENCE_REQUIRES_VERSION,
+    REST_ASSEMBLY_EXTERNAL_REFERENCE_DISALLOWS_MICROVERSION,
+    REST_ASSEMBLY_VERSION_SUPPORTED_ONLY_FOR_EXTERNAL_REFERENCES
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -578,5 +578,92 @@ precondition
                     "localFirst" : rectangleId ~ ".top" };
     constraintId = rectangleId ~ ".horizontal";
     @skConstraint(sketch, constraintId, constrInput);
+}
+
+/**
+ * Add a regular polygon to the sketch.  Unconstrained.
+ *
+ * @param value {{
+ *      @field center {Vector}
+ *      @field firstVertex {Vector} : Distance to the center determines the radius.
+ *      @field sides {number} : Must be an integer 3 or greater.
+ *      @field construction {boolean} : @ex `true` for a construction line @optional
+ * }}
+ */
+export function skRegularPolygon(sketch is Sketch, id is string, value is map)
+precondition
+{
+    is2dPoint(value.center);
+    is2dPoint(value.firstVertex);
+    !tolerantEquals(value.center, value.firstVertex);
+    isPositiveInteger(value.sides);
+    value.sides > 2;
+    value.construction is undefined || value.construction is boolean;
+}
+{
+    var points = [value.firstVertex];
+    const axis = value.firstVertex - value.center;
+    const angleIncrement = 2 * PI * radian / value.sides;
+    for (var i = 0; i < value.sides - 1; i += 1)
+    {
+        const angle = (i + 1) * angleIncrement;
+        const s = sin(angle);
+        const c = cos(angle);
+        const rotated = vector(c * axis[0] - s * axis[1], s * axis[0] + c * axis[1]);
+        points = append(points, value.center + rotated);
+    }
+    points = append(points, value.firstVertex);
+    skPolyline(sketch, id, { "points" : points, "construction" : value.construction, "constrained" : false });
+}
+
+/**
+ * Add a polyline (line segments, optionally with constrained endpoints) or a polygon to a sketch.
+ *
+ * @param value {{
+ *      @field points {array} : An array of points, each a `Vector` of two lengths.
+ *                              If first and last point are the same, the polyline is closed.
+ *      @field secondCorner {Vector}
+ *      @field construction {boolean} : @ex `true` for a construction line.  Default false. @optional
+ *      @field constrained {boolean} : @ex `true` if constraints should be created.  Default false. @optional
+ * }}
+ */
+export function skPolyline(sketch is Sketch, id is string, value is map)
+precondition
+{
+    is2dPointVector(value.points);
+    size(value.points) > 1;
+    size(value.points) > 2 || !tolerantEquals(value.points[0], value.points[size(value.points) - 1]);
+    value.construction is undefined || value.construction is boolean;
+    value.constrained is undefined || value.constrained is boolean;
+}
+{
+    //Line segments and intermediate constraints
+    const construction = value.construction;
+    var numPoints = size(value.points);
+    for (var i = 0; i + 1 < numPoints; i += 1)
+    {
+        const fullId = id ~ ".line" ~ i;
+
+        skLineSegment(sketch, fullId,
+                { "start" : value.points[i],
+                    "end" : value.points[i + 1],
+                    "construction" : construction });
+
+        if (i > 0 && value.constrained == true)
+        {
+            skConstraint(sketch, id ~ ".constraint" ~ i,
+                    { "constraintType" : ConstraintType.COINCIDENT,
+                        "localFirst" : id ~ ".line" ~ (i - 1) ~ ".end",
+                        "localSecond" : id ~ ".line" ~ i ~ ".start" });
+        }
+    }
+
+    if (value.constrained == true && tolerantEquals(value.points[0], value.points[numPoints - 1])) // closed
+    {
+        skConstraint(sketch, id ~ ".closed",
+                { "constraintType" : ConstraintType.COINCIDENT,
+                    "localFirst" : id ~ ".line0" ~ ".start",
+                    "localSecond" : id ~ ".line" ~ (numPoints - 2) ~ ".end" });
+    }
 }
 

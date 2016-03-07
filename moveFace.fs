@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -135,7 +135,18 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
                 addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
 
-                definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                // Since parasolid works off the transform only, it will try construct faces along the shortest path
+                // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
+                // Therefore we split the rotation into two steps.
+                if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                {
+                    const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
+                    definition.transformList = [transform, transform];
+                }
+                else
+                {
+                    definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                }
             }
             opMoveFace(context, id, definition);
         }
@@ -186,11 +197,15 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
             manipulatorRadius = norm(faceBox.maxCorner - faceBox.minCorner) * 0.5;
         refPoint = rotateOrigin + orthoVec * manipulatorRadius;
     }
+    var minValue = -2 * PI * radian;
+    var maxValue = 2 * PI * radian;
 
     addManipulators(context, id, { (ROTATE_MANIPULATOR) : angularManipulator({ "axisOrigin" : rotateOrigin,
                                    "axisDirection" : axis.direction,
                                    "rotationOrigin" : refPoint,
-                                   "angle" : angle }) });
+                                   "angle" : angle,
+                                   "minValue" : minValue,
+                                   "maxValue" : maxValue }) });
 }
 
 /**

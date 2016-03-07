@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -313,7 +313,8 @@ export function opPattern(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "plane1"`
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
- *      @field size {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *      @field width {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
  *      @field defaultType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */

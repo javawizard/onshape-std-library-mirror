@@ -1,4 +1,4 @@
-FeatureScript 307; /* Automatically generated version */
+FeatureScript 316; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -286,9 +286,18 @@ export enum FeatureScriptVersionNumber
     V304_DCM_VERSION_65_5_1,
     V305_UPGRADE_TEST_FAIL,
     V306_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY,
-    V307_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY_2
+    V307_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY_2,
+    V308_ADD_RIGHT_PAD_TO_TEXT,
+    V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION,
+    V310_SKETCH_SILHOUETTES_IN_FACE,
+    V311_MATECONNECTOR_EDGE_INFERENCE_FIX,
+    V312_EXTRUDE_UP_TO_FACE_USE_OWNER_TOPOLOGY,
+    V313_ORDER_INDEPENDENT_SKETCH_OFFSETS,
+    V314_HOLE_FIX_CYL_CAST_EARLY_RETURN,
+    V315_DCM_VERSION_65_5_4,
+    V316_PLANE_DEFAULT_SIZE_FIX
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V307_HOLE_FEATURE_FIX_UNDETERMINED_TARGET_BODY_2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX;
 
 
