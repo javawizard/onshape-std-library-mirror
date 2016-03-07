@@ -58,12 +58,12 @@ export const PLANE_OFFSET_BOUNDS =
 {
     "min"        : -TOLERANCE.zeroLength * meter,
     "max"        : 500 * meter,
-    (meter)      : [0.0, 0.15, 500],
-    (centimeter) : 15,
-    (millimeter) : 150,
-    (inch)       : 6,
-    (foot)       : 0.5,
-    (yard)       : 0.166667
+    (meter)      : [0.0, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25,
+    (inch)       : 1,
+    (foot)       : 0.0833,
+    (yard)       : 0.0277
 } as LengthBoundSpec;
 
 export const BLEND_BOUNDS =

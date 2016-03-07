@@ -44,7 +44,7 @@ precondition
     isLength(size);
 }
 {
-    var definition = { "defaultType" : defaultType, "size" : size };
+    var definition = { "defaultType" : defaultType, "width" : size, "height" : size };
 
     startFeature(context, id, definition);
     const origin = vector(0, 0, 0) * meter;

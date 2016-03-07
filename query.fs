@@ -112,6 +112,8 @@ export predicate canBeQuery(value)
  * @value MATE_CONNECTOR             : Used in `qMateConnector`
  * @value CONSTRUCTION_FILTER        : Used in `qConstructionFilter`
  * @value DEPENDENCY                 : Used in `qDependency`
+ * @value TRACKING                   : Used in `startTracking`
+ * @value CAP_ENTITY                 : Used in `qCapEntity`
  ******************************************************************************/
 export enum QueryType
 {
@@ -166,8 +168,9 @@ export enum QueryType
     COEDGE,
     MATE_CONNECTOR,
     CONSTRUCTION_FILTER,
-    DEPENDENCY
-
+    DEPENDENCY,
+    TRACKING,
+    CAP_ENTITY
 }
 
 /**
@@ -475,6 +478,16 @@ export function qTransient(id is TransientId) returns Query
 export function qDependency(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
+}
+/**
+* A query for start/end cap entities created by featureId.
+* Cap entities are produced by extrude, revolve, sweep and loft features
+*/
+export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
+{
+    return { "queryType" : QueryType.CAP_ENTITY,
+             "featureId" : featureId,
+            "startCap" : isStartCap} as Query;
 }
 
 /**
@@ -897,7 +910,11 @@ export function makeQuery(value is map) returns Query
 /**
  * TODO: description
  */
-export function makeQuery(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
+export function makeQuery(operationId is Id, queryType is string, entityType, value is map) returns Query
+precondition
+{
+    entityType == undefined || entityType is EntityType;
+}
 {
     return mergeMaps(value,
                      { "operationId" : operationId, "queryType" : queryType,
@@ -931,7 +948,11 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
  * @param entityType
  * @param backBody
  */
-export function qSplitBy(featureId is Id, entityType is EntityType, backBody is boolean)
+export function qSplitBy(featureId is Id, entityType, backBody is boolean)
+precondition
+{
+    entityType == undefined || entityType is EntityType;
+}
 {
     return makeQuery(featureId, "SPLIT", entityType, { "isFromBackBody" : backBody });
 }
@@ -942,7 +963,11 @@ export function qSplitBy(featureId is Id, entityType is EntityType, backBody is 
  * @param entityType
  * @param sketchEntityId
  */
-export function sketchEntityQuery(operationId is Id, entityType is EntityType, sketchEntityId is string) returns Query
+export function sketchEntityQuery(operationId is Id, entityType, sketchEntityId is string) returns Query
+precondition
+{
+    entityType == undefined || entityType is EntityType;
+}
 {
     return makeQuery(operationId, "SKETCH_ENTITY", entityType,
             { "sketchEntityId" : sketchEntityId });
@@ -1021,7 +1046,11 @@ export function notFoundErrorKey(paramName is string) returns string
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.
 annotation { "Deprecated" : true }
-export function query(operationId is Id, queryType is string, entityType is EntityType, value is map) returns Query
+export function query(operationId is Id, queryType is string, entityType, value is map) returns Query
+precondition
+{
+    entityType == undefined || entityType is EntityType;
+}
 {
     return makeQuery(operationId, queryType, entityType, value);
 }

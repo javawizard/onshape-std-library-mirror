@@ -313,7 +313,8 @@ export function opPattern(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "plane1"`
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
- *      @field size {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *      @field width {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
  *      @field defaultType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */

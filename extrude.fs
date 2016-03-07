@@ -440,7 +440,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     }
 
     // reference face
-    const splitPlaneDefinition = { "plane" : neutralPlane, "size" : 1 * meter };
+    const splitPlaneDefinition = { "plane" : neutralPlane, "width" : 1 * meter, "height" : 1 * meter };
     opPlane(context, id, splitPlaneDefinition);
     return neutralPlane;
 }

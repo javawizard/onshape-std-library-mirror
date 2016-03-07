@@ -46,6 +46,7 @@ export function defineFeature(feature is function, defaults is map) returns func
                 //TODO: definition = @convert(definition, CurrentVersion);
                 definition = mergeMaps(defaults, definition);
                 var visible = definition; /* visible to feature */
+                definition.lock = true;
                 visible.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
                 token = startFeature(context, id, definition);
                 started = true;
@@ -274,5 +275,61 @@ export predicate isAnything(value)
 export function lastModifyingOperationId(context is Context, query is Query) returns Id
 {
     return @lastModifyingOperationId(context, {"entity" : query}) as Id;
+}
+
+
+// ======================= Tracking Query ==================================== //
+/**
+* Generates a tracking query, which will evaluate to entities derived from subquery in features between
+* startTracking and when query is evaluated. If secondarySubquery is specified, the query would evaluate to
+* entities derived from both objects. Use example:
+* ```//"sketch1" constructs a polygon of "line0", "line1", etc.
+* var extrudedFromLine0 = startTracking(context, id + "sketch1", "line0");
+* extrudeOp(context, id + "extrude1", {"entities" : qSketchRegion(id + "sketch1",....});
+* var fromLine0 = evaluateQuery(context, extrudedFromLine1);
+* //fromLine0 contains a face and two edges (top and bottom) corresponding to line0 in the extrude.```
+*/
+export function startTracking(context is Context, arg is map) returns Query
+precondition
+{
+    arg.subquery is Query;
+    arg.secondarySubquery == undefined || arg.secondarySubquery is Query;
+}
+{
+    var out = arg;
+    out.subquery = undefined;
+    out.secondarySubquery = undefined;
+    out.queryType = QueryType.TRACKING;
+    if (arg.subquery != undefined)
+    {
+        out.subquery1 = evaluateQuery(context, arg.subquery);
+    }
+    if (arg.secondarySubquery != undefined)
+    {
+        out.subquery2 = evaluateQuery(context, arg.secondarySubquery);
+    }
+    out.lastOperationId = lastOperationId(context);
+    return out as Query;
+}
+
+export function startTracking(context is Context, subquery is Query) returns Query
+{
+    return startTracking(context, {'subquery' : subquery});
+}
+
+export function startTracking(context is Context, sketchId is Id, sketchEntityId is string) returns Query
+{
+    var sketchQuery = sketchEntityQuery(sketchId, undefined, sketchEntityId);
+    return startTracking(context, {
+        'subquery' : qUnion([sketchQuery, makeQuery(sketchId, "IMPRINT", undefined, {"derivedFrom" : sketchQuery})])
+        });
+}
+/**
+* @internal
+* used in startTracking
+*/
+function lastOperationId(context is Context) returns Id
+{
+    return @lastOperationId(context) as Id;
 }
 

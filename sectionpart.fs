@@ -48,7 +48,8 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
     const cplaneDefinition =
     {
         "plane" : plane,
-        "size" : 1 * meter
+        "width" : 1 * meter,
+        "height" : 1 * meter
     };
 
     const planeId = id + "plane";
