@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -13,6 +13,9 @@ export import(path : "onshape/std/surfacetype.gen.fs", version : "");
 
 //===================================== Plane ======================================
 
+/**
+ * The default XY plane, whose normal points along the Z axis.
+ */
 export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 
 /**
@@ -26,6 +29,7 @@ export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
  */
 export type Plane typecheck canBePlane;
 
+/** Typecheck for `Plane` */
 export predicate canBePlane(value)
 {
     value is map;
@@ -60,7 +64,7 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Plane` from the result of a builtin call.
  */
@@ -70,8 +74,6 @@ export function planeFromBuiltin(definition is map) returns Plane
 }
 
 /**
- * For Onshape internal use.
- *
  * Returns the plane that would represent the coordinate system of a face coplanar with the input plane.
  * Used in plane transformation for computing sketch patterns.
  */
@@ -212,7 +214,8 @@ export function intersection(p1 is Plane, p2 is Plane) // Returns Line or undefi
  */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
 
-predicate canBeLinePlaneIntersection(value)
+/** Typecheck for `LinePlaneIntersection` */
+export predicate canBeLinePlaneIntersection(value)
 {
     value is map;
     (value.dim == 0 || value.dim == 1 || value.dim == -1);
@@ -243,6 +246,7 @@ export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersec
  */
 export type Cone typecheck canBeCone;
 
+/** Typecheck for `Cone` */
 export predicate canBeCone(value)
 {
     value is map;
@@ -259,7 +263,7 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Cone` from the result of a builtin call.
  */
@@ -289,6 +293,7 @@ export function toString(value is Cone) returns string
  */
 export type Cylinder typecheck canBeCylinder;
 
+/** Typecheck for `Cylinder` */
 export predicate canBeCylinder(value)
 {
     value is map;
@@ -305,7 +310,7 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Cylinder` from the result of a builtin call.
  */
@@ -335,6 +340,7 @@ export function toString(value is Cylinder) returns string
  */
 export type Torus typecheck canBeTorus;
 
+/** Typecheck for `Torus` */
 export predicate canBeTorus(value)
 {
     value is map;
@@ -352,7 +358,7 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Torus` from the result of a builtin call.
  */
@@ -383,6 +389,7 @@ export function toString(value is Torus) returns string
  */
 export type Sphere typecheck canBeSphere;
 
+/** Typecheck for `Sphere` */
 export predicate canBeSphere(value)
 {
     value is map;
@@ -396,7 +403,7 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Sphere` from the result of a builtin call.
  */

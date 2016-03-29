@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -77,6 +77,60 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
 
 // Note that transform() is also defined in transform.fs
 // with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
+/**
+ * Move and/or rotate a body or bodies with a single `Transform`, constructed with input according to the
+ * selected `TransformType`.
+ *
+ * Internally, performs an `opTransform` when not copying, and an `opPattern` when copying. For simple
+ * transforms, prefer calling `opTransform` or `opPattern` directly.
+ *
+ * @param definition {{
+ *      @field transformType {TransformType} : Defines how the transform type should be specified.
+ *          @eg `TransformType.TRANSLATION_3D`
+ *
+ *      @field dx {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.TRANSLATION_3D`}
+ *          A value with length units specifying the distance to move in the world `x` direction.
+ *          @eg `1 * inch`
+ *      @field dy {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.TRANSLATION_3D`}
+ *          A value with length units specifying the distance to move in the world `y` direction.
+ *          @eg `1 * inch`
+ *      @field dz {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.TRANSLATION_3D`}
+ *          A value with length units specifying the distance to move in the world `z` direction.
+ *          @eg `1 * inch`
+ *
+ *      @field transformLine {Query} : @requiredIf {`transformType` is `TransformType.TRANSLATION_ENTITY`}
+ *          A `Query` for either a single line or a pair of points, specifying the direction and
+ *          distance to transform.
+ *      @field oppositeDirectionEntity {boolean} : @requiredIf {`transformType` is `TransformType.TRANSLATION_ENTITY`}
+ *          @ex `true` to flip the transform direction.
+ *
+ *      @field transformAxis {Query} : @requiredIf {`transformType` is `TransformType.ROTATION`}
+ *          A `Query` for a line, cylinder, etc. to specify the transform diection.
+ *      @field angle {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.ROTATION`}
+ *          A value with angle units specifying the angle to rotate.
+ *
+ *      @field transformDirection {Query} : @requiredIf {`transformType` is `TransformType.TRANSLATION_DISTANCE`}
+ *          A `Query` for either a single line or a pair of points, specifying the direction to transform.
+ *      @field distance {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.TRANSLATION_DISTANCE`}
+ *          A value with length units specifying the distance to move.
+ *      @field oppositeDirection {boolean} : @requiredIf {`transformType` is `TransformType.TRANSLATION_DISTANCE`
+ *              or `TransformType.ROTATION`}
+ *          @ex `true` to transform in the opposite direction.
+ *
+ *      @field scale {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *          A positive real number specifying the scale factor.
+ *      @field scalePoint {Query} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *
+ *      @field baseConnector {Query} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
+ *          The mate connector to transform from.
+ *      @field destinationConnector {Query} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
+ *          The mate connector to transform to.
+ *      @field oppositeDirectionMateAxis {boolean} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
+ *      @field secondaryAxisType {MateConnectorAxisType} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
+ *
+ *      @field makeCopy {boolean} : @requiredIf {`transformType` is not `TransformType.COPY`}
+ * }}
+ */
 annotation { "Feature Type Name" : "Transform",
              "Manipulator Change Function" : "transformManipulatorChange",
              "Filter Selector" : "allparts" }
@@ -402,9 +456,8 @@ export function transformManipulatorChange(context is Context, output is map, in
     return output;
 }
 
-/* This feature is deprecated but still used in old documents that need an upgrade tasklet. */
-annotation { "Feature Type Name" : "Copy part", "Filter Selector" : "allparts",
-             "Deprecated" : true }
+annotation { "Deprecated" : "Use `opPattern`, or the `transform` feature instead.",
+    "Feature Type Name" : "Copy part", "Filter Selector" : "allparts" }
 export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {

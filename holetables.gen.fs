@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 import(path : "onshape/std/units.fs", version : "");
@@ -3657,6 +3657,7 @@ const ISO_ThroughScrewTable = {
     }
 };
 
+/** @internal */
 export const tappedOrClearanceHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
@@ -3687,6 +3688,7 @@ const ISO_BlindInLastHoleTable = {
     }
 };
 
+/** @internal */
 export const blindInLastHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",

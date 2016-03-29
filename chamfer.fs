@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,7 +9,16 @@ export import(path : "onshape/std/query.fs", version : "");
 
 // Imports used internally
 import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
+
+const CHAMFER_ANGLE_BOUNDS =
+{
+    "min"    : -TOLERANCE.zeroAngle * radian,
+    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
+    (degree) : [0.1, 45, 179.9],
+    (radian) : 0.25 * PI
+} as AngleBoundSpec;
 
 /**
  * The chamfer feature just performs a chamfer operation.  @see `opChamfer`.

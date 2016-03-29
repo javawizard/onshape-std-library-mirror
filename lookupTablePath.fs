@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 import(path : "onshape/std/math.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
 import(path : "onshape/std/units.fs", version : "");
@@ -14,6 +14,7 @@ import(path : "onshape/std/units.fs", version : "");
  */
 export type LookupTablePath typecheck canBeLookupTablePath;
 
+/** Typecheck for `LookupTablePath` */
 export predicate canBeLookupTablePath(value)
 {
     value is map;

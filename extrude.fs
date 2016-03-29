@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -544,6 +544,46 @@ precondition
 {
     transform is undefined || transform is Transform;
 }
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
+    {
+        var planes = evaluateQuery(context, qGeometry(entity, GeometryType.PLANE));
+        var extrudeAxis;
+        if (size(planes) == 1)
+        {
+            const entityPlane = evPlane(context, { "face" : entity });
+            extrudeAxis = line(entityPlane.origin, entityPlane.normal);
+            if (transform == undefined || transform == identityTransform())
+                return extrudeAxis;
+            else
+                return transform * extrudeAxis;
+        }
+        else
+        {
+            //The extrude axis should start in the middle of the edge and point in the sketch plane normal
+            const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
+            const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
+            var direction = entityPlane.normal;
+            // We don't transform sketch *planes* during pattern transformation, just entities. So this direction
+            // does not represent the transforms, if any, on the stack.
+            var fullTransform = getFullPatternTransform(context);
+            if (fullTransform != identityTransform())
+                direction = fullTransform.linear * entityPlane.normal;
+
+            //make sure to handle the origin and transform with remainder transform passed in
+            if (transform == undefined || transform == identityTransform())
+                return line(tangentAtEdge.origin, direction);
+            else
+                return line(transform * tangentAtEdge.origin, direction);
+        }
+    }
+    else
+    {
+        return computeExtrudeAxisOld(context, entity, transform);
+    }
+}
+
+function computeExtrudeAxisOld(context is Context, entity is Query, transform)
 {
     var planes = evaluateQuery(context, qGeometry(entity, GeometryType.PLANE));
     var extrudeAxis;

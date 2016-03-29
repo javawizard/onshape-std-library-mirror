@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -295,9 +295,23 @@ export enum FeatureScriptVersionNumber
     V313_ORDER_INDEPENDENT_SKETCH_OFFSETS,
     V314_HOLE_FIX_CYL_CAST_EARLY_RETURN,
     V315_DCM_VERSION_65_5_4,
-    V316_PLANE_DEFAULT_SIZE_FIX
+    V316_PLANE_DEFAULT_SIZE_FIX,
+    V322_VERSION_BUMP_1_43,
+    V323_CONSISTENT_ELLIPSE_ORIENTATION,
+    V324_UPDATE_IMPRINT_CURVE_NORMAL,
+    V325_FEATURE_MIRROR,
+    V326_PS_VERSION_28_1_224,
+    V327_LOOKUP_TABLE_CAPITALIZE,
+    V328_INTERNAL_DOCUMENTATION
 }
 
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX;
+/**
+ * The current FeatureScript version.
+ *
+ * The version at regeneration stored on the `context`, so logic which checks the
+ * FeatureScript version should instead call
+ * `isAtVersionOrLater(context, version)`
+ */
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V328_INTERNAL_DOCUMENTATION;
 
 

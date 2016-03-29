@@ -6,19 +6,14 @@ FeatureScript 328; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /** TODO: documentation */
-export enum EntityInferenceType
+export enum SplitOperationKeepType
 {
-    PART_ORIGIN,
-    POINT,
-    CENTROID,
-    CENTER,
-    MID_POINT,
-    TOP_AXIS_POINT,
-    MID_AXIS_POINT,
-    BOTTOM_AXIS_POINT,
-    ORIGIN_X,
-    ORIGIN_Y,
-    ORIGIN_Z
+    annotation {"Name" : "Keep all"}
+    KEEP_ALL,
+    annotation {"Name" : "Keep front"}
+    KEEP_FRONT,
+    annotation {"Name" : "Keep back"}
+    KEEP_BACK
 }
 
 

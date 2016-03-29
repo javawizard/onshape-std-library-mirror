@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -47,6 +47,7 @@ export enum LoftShapeControlType
     ADD_END_CONDITIONS
 }
 
+/** @internal */
 export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 {
     "min"      : -1e9,

@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -17,6 +17,13 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
+
+const FILLET_RHO_BOUNDS =
+{
+    "min"      : 0.0,
+    "max"      : 1.0,
+    (unitless) : [0.0, 0.5, 0.99999]
+} as RealBoundSpec;
 
 /**
  * TODO: description

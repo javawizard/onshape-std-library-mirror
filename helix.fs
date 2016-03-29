@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -38,6 +38,13 @@ export enum HelixType
 }
 
 const needConeOrCylinderMessage = ErrorStringEnum.HELIX_INPUT_CONE;
+
+const HELIX_TURN_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 1e9,
+    (unitless) : [1e-5, 4, 1e5]
+} as RealBoundSpec;
 
 /**
  * TODO: description

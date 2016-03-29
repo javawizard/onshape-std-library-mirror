@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -13,6 +13,7 @@ export import(path : "onshape/std/valueBounds.fs", version : "");
 
 import(path : "onshape/std/mathUtils.fs", version : "");
 
+/** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
 
 /**
@@ -69,6 +70,10 @@ export function computePatternOffset(context is Context, entity is Query, opposi
     return { "offset" : direction };
 }
 
+/**
+ * @internal
+ * TODO: Is this worth exposing?
+ */
 export function computePatternAxis(context is Context, axisQuery is Query, isFeaturePattern is boolean, remainingTransform is Transform)
 {
     const rawDirectionResult = try(evAxis(context, { "axis" : axisQuery }));
@@ -94,8 +99,11 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
     throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_MANY_INSTANCES);
 }
 
-
-
+/**
+ * @internal
+ * @param patternType : Either a `PatternType` or a `FeatureType`
+ * @return {boolean} : @ex `true` if the given enum value represents a feature pattern.
+ */
 export function isFeaturePattern(patternType)
 {
     return (patternType == PatternType.FEATURE || patternType == MirrorType.FEATURE);
@@ -145,8 +153,7 @@ export function checkInput(context is Context, id is Id, definition is map, isMi
  */
 export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
 {
-    var isPartMirror = definition.patternType == undefined && !definition.isFaceMirror; //TODO  : remove after feature mirror enabled
-    if (isPartMirror || isPartPattern(definition.patternType))
+    if (isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
@@ -163,9 +170,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
  */
 export function applyPattern(context is Context, id is Id, definition is map, remainingTransform is Transform)
 {
-    var isMirror = definition.patternType == undefined; // TODO : remove after feature mirror enabled
-
-    if (isMirror || !isFeaturePattern(definition.patternType))
+    if (!isFeaturePattern(definition.patternType))
     {
         opPattern(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);

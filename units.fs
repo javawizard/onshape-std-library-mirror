@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,51 +8,132 @@ import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
 import(path : "onshape/std/string.fs", version : "");
 
 /**
- * For Onshape internal use.
+ * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
+ * 90 degrees, or 9.81 meters per second per second.
+ *
+ * Values can be multiplied and divided.   The preceding values are
+ * `1 * kilogram`, `90 * degree`, and `9.81 * meter / second / second`.
+ *
+ * Units are always multiplied with the values, so `myLength * myOtherLength`
+ * evaluates to an area `ValueWithUnits`. An expression where the units all
+ * cancel (e.g. `myLength / myOtherLength`), evaluates to plain `number`.
+ *
+ * Values with the same units can be added and subtracted.
+ * Square root works if the units appear as even powers, as
+ * in `sqrt(4 * meter * meter)`.
+ *
+ * Equality considers the underlying value, so `25.4 * millimeter` is the
+ * same as `1 * inch`. However, `PI * radian / 5` does not equal `36 * degree`
+ * because of finite precision arithmetic. To compare two `ValueWithUnits`s,
+ * use `tolerantEquals`.
+ */
+export type ValueWithUnits typecheck canBeValueWithUnits;
+
+/** @internal */
+export predicate canBeValueWithUnits(value)
+{
+    value is map;
+    value.value is number;
+    value.unit is UnitSpec;
+}
+
+/**
+ * @internal
  *
  * A `UnitSpec` is a fundamental dimension like length and time.
  * Angle is treated as a dimension although formally it is dimensionless.
  */
 export type UnitSpec typecheck canBeUnitSpec;
 
+/** @internal */
+export predicate canBeUnitSpec(value)
+{
+    value is map;
+    @size(value) > 0;
+    for (var unit in value)
+    {
+        unit.key is string;
+        unit.value is number;
+        unit.value != 0;
+    }
+}
+
+/** @internal */
 export const LENGTH_UNITS = { "meter" : 1 } as UnitSpec;
+/** @internal */
 export const ANGLE_UNITS = { "radian" : 1 } as UnitSpec;
+/** @internal */
 export const MASS_UNITS = { "kilogram" : 1 } as UnitSpec;
+/** @internal */
 export const TEMPERATURE_UNITS = { "kelvin" : 1 } as UnitSpec;
+/** @internal */
 export const TIME_UNITS = { "second" : 1 } as UnitSpec;
+/** @internal */
 export const CURRENT_UNITS = { "ampere" : 1 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
+/**
+ * The constant `1`, with no units.
+ */
 export const unitless = 1;
 
+/** A constant equal to 1 meter. */
 annotation { "Name" : "Meter", "Abbreviation" : "m" }
 export const meter = { "value" : 1, "unit" : LENGTH_UNITS } as ValueWithUnits;
+
+/** A constant equal to 1 centimeter. */
 annotation { "Name" : "Centimeter", "Abbreviation" : "cm" }
 export const centimeter = 0.01 * meter;
+
+/** A constant equal to 1 millimeter. */
 annotation { "Name" : "Millimeter", "Abbreviation" : "mm" }
 export const millimeter = 0.001 * meter;
 
+/** A constant equal to 1 inch. */
 annotation { "Name" : "Inch", "Abbreviation" : "in" }
 export const inch = 2.54 * centimeter;
+
+/** A constant equal to 1 foot. */
 annotation { "Name" : "Foot", "Abbreviation" : "ft" }
 export const foot = 12 * inch;
+
+/** A constant equal to 1 yard. */
 annotation { "Name" : "Yard", "Abbreviation" : "yd" }
 export const yard = 3 * foot;
 
+/**
+ * A constant equal to 1 radian.
+ *
+ * Formally, radians are unitless, so in certain situations you may need to
+ * multiply or divide by `radian`
+ *
+ * @example `var myAngle = PI / 6 * radian`
+ * @example `var arcLength = radius * arcAngle / radian`
+ */
 annotation { "Name" : "Radian", "Abbreviation" : "rad" }
 export const radian = { "value" : 1, "unit" : ANGLE_UNITS } as ValueWithUnits;
+
+/** A constant equal to 1 degree. */
 annotation { "Name" : "Degree", "Abbreviation" : "deg" }
 export const degree = 0.0174532925199432957692 * radian;
 
+/** A constant equal to 1 kilogram. */
 annotation { "Name" : "Kilogram", "Abbreviation" : "kg" }
 export const kilogram = { "value" : 1, "unit" : MASS_UNITS } as ValueWithUnits;
+
+/** A constant equal to 1 gram. */
 annotation { "Name" : "Gram", "Abbreviation" : "g" }
 export const gram = 0.001 * kilogram;
+
+/** A constant equal to 1 ounce. */
 annotation { "Name" : "Ounce", "Abbreviation" : "oz" }
 export const ounce = 28.349523 * gram;
+
+/** A constant equal to 1 kilogram. */
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
 
+/** @internal */
 export const STRING_TO_UNIT_MAP = {
   "Meter" : meter,
   "meter" : meter,
@@ -93,47 +174,17 @@ export const STRING_TO_UNIT_MAP = {
 };
 
 /**
- * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
- * 90 degrees, or 9.81 meters per second per second.
- *
- * Values can be multiplied and divided.   The preceding values are
- * `1 * kilogram`, `90 * degree`, and `9.81 * meter / second / second`.
- *
- * Values with the same units can be added and subtracted.
- * Square root works if the units appear as even powers, as
- * in `sqrt(4 * meter * meter)`.
- *
- * Equality considers the underlying value, so 25.4 millimeters is the
- * same as 1 inch.  (But `PI * radian` may not equal `180 * degree`
- * because of finite precision arithmetic.)
+ * True for any value with length units.
  */
-export type ValueWithUnits typecheck canBeValueWithUnits;
-
-export predicate canBeValueWithUnits(value)
-{
-    value is map;
-    value.value is number;
-    value.unit is UnitSpec;
-}
-
-export predicate canBeUnitSpec(value)
-{
-    value is map;
-    @size(value) > 0;
-    for (var unit in value)
-    {
-        unit.key is string;
-        unit.value is number;
-        unit.value != 0;
-    }
-}
-
 export predicate isLength(val)
 {
     val is ValueWithUnits;
     val.unit == LENGTH_UNITS;
 }
 
+/**
+ * True for any value with angle units.
+ */
 export predicate isAngle(val)
 {
     val is ValueWithUnits;
@@ -280,7 +331,13 @@ precondition value1.unit == value2.unit;
 }
 
 /**
- * Square root
+ * Square root of a `ValueWithUnits`.
+ *
+ * @example `sqrt(4 * meter^2)` equals `2 * meter`.
+ * @example `2 * PI * sqrt(armLength / (9.8 * meter/second^2))` equals the
+ *          period of a pendulum, in seconds.
+ * @example `sqrt(4 * meter)` throws an error, since FeatureScript has no
+ *          concept of the square root of a meter.
  */
 export function sqrt(value is ValueWithUnits) returns ValueWithUnits
 precondition
@@ -296,7 +353,11 @@ precondition
 }
 
 /**
- * Sine
+ * Sine, the ratio of the opposite side over the hypotenuse in a right triangle
+ * of the specified angle.
+ *
+ * @example `sin(30 * degree)` returns `0.5`
+ * @example `sin(PI * radian)` returns `0`
  */
 export function sin(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -305,7 +366,11 @@ precondition isAngle(value);
 }
 
 /**
- * Cosine
+ * Cosine, the ratio of the adjacent side over the hypotenuse in a right triangle
+ * of the specified angle.
+ *
+ * @example `cos(60 * degree)` returns `0.5`
+ * @example `cos(PI * radian)` returns `-1`
  */
 export function cos(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -314,7 +379,11 @@ precondition isAngle(value);
 }
 
 /**
- * Tangent
+ * Tangent, the ratio of the opposite side over the adjacent side in a right
+ * triangle of the specified angle.
+ *
+ * @example `tan(45 * degree)` returns `1`
+ * @example `tan(PI * radian)` returns `0`
  */
 export function tan(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -323,8 +392,13 @@ precondition isAngle(value);
 }
 
 /**
- * Arcsine (inverse sine)
- * @param value
+ * Arcsine, i.e. inverse sine.
+ *
+ * Returns a value between `-90 * degree` and `90 * degree`.
+ *
+ * @example `asin(0.5)` equals `30 * degree`
+ * @example `asin(1.5)` throws an error, since there is no value where
+ *          `sin(value)` is `1.5`
  */
 export function asin(value is number) returns ValueWithUnits
 {
@@ -332,8 +406,13 @@ export function asin(value is number) returns ValueWithUnits
 }
 
 /**
- * Arccosine (inverse cosine)
- * @param value
+ * Arccosine, i.e. inverse cosine.
+ *
+ * Returns a value between `0 * degree` and `180 * degree`.
+ *
+ * @example `acos(0.5)` equals `60 * degree`
+ * @example `acos(1.5)` throws an error, since there is no value where
+ *          `cos(value)` is `1.5`
  */
 export function acos(value is number) returns ValueWithUnits
 {
@@ -341,7 +420,12 @@ export function acos(value is number) returns ValueWithUnits
 }
 
 /**
- * Arctangent (inverse tangent)
+ * Arctangent, i.e. inverse tangent.
+ *
+ * Returns a value between `-90 * degree` and `90 * degree`.
+ *
+ * @example `atan(1)` equals `45 * degree`
+ * @example `atan(inf)` equals `90 * degree`
  */
 export function atan(value is number) returns ValueWithUnits
 {
@@ -349,10 +433,15 @@ export function atan(value is number) returns ValueWithUnits
 }
 
 /**
- * `atan2(y, x)` returns the counterclockwise angle from the vector `[0, 1]` to the vector `[x, y]`.
- * The angle is negative if y is negative.  This is equivalent to `atan(y/x)`
+ * Returns the counterclockwise angle from the vector `[0, 1]` to the vector `[x, y]`.
+ * The angle is negative if y is negative. This is equivalent to `atan(y/x)`
  * except the result respects the quadrant of the input and is well-behaved
  * near x == 0.
+ *
+ * @example `atan2(0, 1)` equals `0 * degree`
+ * @example `atan2(1, 0)` equals `90 * degree`
+ * @example `atan2(0, -1)` equals `180 * degree`
+ * @example `atan2(-1, 0)` equals `-90 * degree`
  */
 export function atan2(y is number, x is number) returns ValueWithUnits
 {
@@ -360,8 +449,11 @@ export function atan2(y is number, x is number) returns ValueWithUnits
 }
 
 /**
- * `atan2(y, x)` returns the inverse tangent of `(y/x)`, using the
- * signs of its argument to choose a quadrant for the result.
+ * Returns the counterclockwise angle from the vector `[0, 1]`
+ * to the vector `[value2, value1]`, assuming the units of value1 and value2
+ * match.
+ *
+ * @see `atan2(number, number)`
  */
 export function atan2(value1 is ValueWithUnits, value2 is ValueWithUnits) returns ValueWithUnits
 precondition value1.units == value2.units;
@@ -385,7 +477,7 @@ export function toString(value is ValueWithUnits) returns string
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * `stripUnits` removes all units from a `ValueWithUnits` leaving only
  * the underlying numeric value in Onshape internal units.  If the argument
@@ -397,17 +489,13 @@ export function stripUnits(value)
     return value;
 }
 
-/**
- * For Onshape internal use.
- */
+/** @internal */
 export function stripUnits(value is ValueWithUnits)
 {
     return value.value;
 }
 
-/**
- * For Onshape internal use.
- */
+/** @internal */
 export function stripUnits(value is array) returns array
 {
     for (var i = 0; i < @size(value); i += 1)
@@ -417,9 +505,7 @@ export function stripUnits(value is array) returns array
     return value as array;
 }
 
-/**
- * For Onshape internal use.
- */
+/** @internal */
 export function stripUnits(value is map) returns map
 {
     for (var entry in value)
@@ -429,21 +515,19 @@ export function stripUnits(value is map) returns map
     return value as map;
 }
 
-/**
- * TODO: description
- * @param expression
- * @param expectedUnit
- */
+/** @internal */
 export function evaluateExpression(expression is number, expectedUnit is number) returns map
 {
     return { 'status' : ExpressionValidationResult.VALID, 'value' : expression };
 }
 
+/** @internal */
 export function evaluateExpression(expression is number, expectedUnit is ValueWithUnits) returns map
 {
     return { 'status' : ExpressionValidationResult.NO_UNIT, 'value' : expression * expectedUnit.value };
 }
 
+/** @internal */
 export function evaluateExpression(expression is ValueWithUnits, expectedUnit is ValueWithUnits) returns map
 {
     if (expression.unit == expectedUnit.unit)
@@ -454,6 +538,7 @@ export function evaluateExpression(expression is ValueWithUnits, expectedUnit is
     return { 'status' : ExpressionValidationResult.ERROR, 'value' : 0.0 };
 }
 
+/** @internal */
 export const REGEX_UNITS = buildRegexUnits();
 
 function buildRegexUnits() returns string
@@ -467,6 +552,7 @@ function buildRegexUnits() returns string
   return result;
 }
 
+/** @internal */
 export function stringToUnit(unitStr is string) returns ValueWithUnits
 {
     var result = STRING_TO_UNIT_MAP[unitStr];
@@ -476,7 +562,4 @@ export function stringToUnit(unitStr is string) returns ValueWithUnits
     }
     throw "Unexpected unit:" ~ unitStr;
 }
-
-
-
 

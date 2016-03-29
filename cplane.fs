@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -54,6 +54,18 @@ const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
+
+const PLANE_OFFSET_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25,
+    (inch)       : 1,
+    (foot)       : 0.0833,
+    (yard)       : 0.0277
+} as LengthBoundSpec;
 
 /**
  * Creates a construction plane.  @see `opPlane`.

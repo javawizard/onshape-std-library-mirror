@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -94,7 +94,7 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
  * Return tangent lines to a edge.
  * @param arg {{
  *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
- *      @field parameter {array}:
+ *      @field parameters {array}:
  *             An array of numbers in the range 0..1 indicating points along
  *             the curve to evaluate tangents at.
  *      @field arcLengthParameterization :
@@ -416,7 +416,7 @@ precondition
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
  */
@@ -541,4 +541,61 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
     }
     return result as DistanceResult;
 }
+
+/**
+* For Onshape internal use
+*/
+export type OffsetGroup typecheck isOffsetGroup;
+
+/**
+* For Onshape internal use
+*/
+export predicate isOffsetGroup(value)
+{
+    value is map;
+    value.side0 is array;
+    value.side1 is array;
+    size(value.side0) == size(value.side1);
+    isLength(value.offsetLow);
+    isLength(value.offsetHigh);
+}
+
+/**
+* For Onshape internal use
+* Detects pairs of offset faces in the bodies
+*/
+export function evOffsetDetection(context is Context, definition is map) returns array
+precondition
+{
+    definition.bodies is Query;
+    definition.offsetTolerance is undefined || isLength(definition.offsetTolerance);
+}
+{
+    var groups = @evOffsetDetection(context, definition);
+    var out = [];
+    for (var group in groups)
+    {
+        out = append(out, offsetGroup(group));
+    }
+    return out;
+}
+
+function offsetGroup(group is map) returns OffsetGroup
+{
+    var n = size(group.side0);
+    if (size(group.side1) != n)
+    {
+        throw "Sides should be same length";
+    }
+    var side0 = makeArray(n);
+    var side1 = makeArray(n);
+    for (var i = 0; i < n; i += 1)
+    {
+        side0[i] = qTransient(group.side0[i] as TransientId);
+        side1[i] = qTransient(group.side1[i] as TransientId);
+    }
+    return {'side0' : side0, 'side1' : side1,
+        'offsetLow' : group.offsetLow * meter, 'offsethHigh' : group.offsetHigh * meter} as OffsetGroup;
+}
+
 

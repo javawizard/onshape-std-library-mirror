@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,6 +7,7 @@ import(path : "onshape/std/containers.fs", version : "");
 import(path : "onshape/std/math.fs", version : "");
 export import(path : "onshape/std/units.fs", version : "");
 
+/** @internal */
 export predicate defineBounds(value, boundSpec is map)
 precondition
 {
@@ -17,127 +18,81 @@ precondition
     value <= boundSpec.max;
 }
 
+/**
+ * True for a value with length units which conforms to the given bounds.
+ *
+ * Used in feature preconditions to specify a length parameter.
+ *
+ * @param boundSpec {LengthBoundSpec} : Specifies a min, a max, and a default
+ *      value. These values are possibly different in different units for the
+ *      sake of round numbers.
+ *
+ *      To specify a parameter with different default value or different
+ *      limits, use a different or custom `LengthBoundSpec`.
+ */
 export predicate isLength(value, boundSpec is LengthBoundSpec)
 {
     isLength(value);
     defineBounds(value, boundSpec);
 }
 
+/**
+ * True for a value with angle units which conforms to the given bounds.
+ *
+ * Used in feature preconditions to specify an angle parameter.
+ *
+ * @param boundSpec {AngleBoundSpec} : Specifies a min, a max, and a default
+ *      value. These values are possibly different in different units for the
+ *      sake of round numbers.
+ *
+ *      To specify a parameter with different default value or different
+ *      limits, use a different or custom `AngleBoundSpec`.
+ */
 export predicate isAngle(value, boundSpec is AngleBoundSpec)
 {
     isAngle(value);
     defineBounds(value, boundSpec);
 }
 
-/* Overloads isInteger in math.fs */
+/**
+ * True for a `number` that is an integer and conforms to the given bounds.
+ *
+ * Used in feature preconditions to specify an integer or count parameter.
+ *
+ * @param boundSpec {IntegerBoundSpec} : Specifies a min, a max, and a default
+ *      value. These values are possibly different in different units for the
+ *      sake of round numbers.
+ *
+ *      To specify a parameter with different default value or different
+ *      limits, use a different or custom `IntegerBoundSpec`.
+ */
 export predicate isInteger(value, boundSpec is IntegerBoundSpec)
 {
     isInteger(value);
     defineBounds(value, boundSpec);
 }
 
+/**
+ * True for a real number which conforms to the given bounds.
+ *
+ * Used in feature preconditions to specify a unitless numeric parameter.
+ *
+ * @param boundSpec {RealBoundSpec} : Specifies a min, a max, and a default
+ *      value. These values are possibly different in different units for the
+ *      sake of round numbers.
+ *
+ *      To specify a parameter with different default value or different
+ *      limits, use a different or custom `RealBoundSpec`.
+ */
 export predicate isReal(value, boundSpec is RealBoundSpec)
 {
     value is number;
     defineBounds(value, boundSpec);
 }
 
-export const PLANE_SIZE_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [1e-5, 0.15, 500],
-    (centimeter) : 15,
-    (millimeter) : 150,
-    (inch)       : 6,
-    (foot)       : 0.5,
-    (yard)       : 0.166667
-} as LengthBoundSpec;
-
-export const PLANE_OFFSET_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [0.0, 0.025, 500],
-    (centimeter) : 2.5,
-    (millimeter) : 25,
-    (inch)       : 1,
-    (foot)       : 0.0833,
-    (yard)       : 0.0277
-} as LengthBoundSpec;
-
-export const BLEND_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [1e-5, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.2,
-    (foot)       : 0.015,
-    (yard)       : 0.005
-} as LengthBoundSpec;
-
-export const SHELL_OFFSET_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [1e-5, 0.0025, 500],
-    (centimeter) : 0.25,
-    (millimeter) : 2.5,
-    (inch)       : 0.1,
-    (foot)       : 0.01,
-    (yard)       : 0.0025
-} as LengthBoundSpec;
-
-export const THICKEN_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.025,
-    (yard)       : 0.01
-} as LengthBoundSpec;
-
-export const NONNEGATIVE_LENGTH_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [1e-5, 0.025, 500],
-    (centimeter) : 2.5,
-    (millimeter) : 25.0,
-    (inch)       : 1.0,
-    (foot)       : 0.1,
-    (yard)       : 0.025
-} as LengthBoundSpec;
-
-export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [0.0, 0.025, 500],
-    (centimeter) : 2.5,
-    (millimeter) : 25.0,
-    (inch)       : 1.0,
-    (foot)       : 0.1,
-    (yard)       : 0.025
-} as LengthBoundSpec;
-
-export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
-{
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
-    (meter)      : [0.0, 0.0, 500],
-    (centimeter) : 0.0,
-    (millimeter) : 0.0,
-    (inch)       : 0.0,
-    (foot)       : 0.0,
-    (yard)       : 0.0
-} as LengthBoundSpec;
-
+/**
+ * A `LengthBoundSpec` for a positive or negative length.
+ */
 export const LENGTH_BOUNDS =
 {
     "min"        : -500 * meter,
@@ -150,6 +105,54 @@ export const LENGTH_BOUNDS =
     (yard)       : 0.025
 } as LengthBoundSpec;
 
+/**
+ * A `LengthBoundSpec` for a length strictly greater than 0.
+ */
+export const NONNEGATIVE_LENGTH_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [1e-5, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for a length greater than or equal to 0.
+ */
+export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for a length greater than or equal to 0, with UI defaults of 0.0 for all units.
+ */
+export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.0, 500],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for a positive or negative length, with UI defaults of 0.0 for all units.
+ */
 export const ZERO_DEFAULT_LENGTH_BOUNDS =
 {
     "min"        : -500 * meter,
@@ -162,6 +165,57 @@ export const ZERO_DEFAULT_LENGTH_BOUNDS =
     (yard)       : 0.0
 } as LengthBoundSpec;
 
+/**
+ * A `LengthBoundSpec` for fillets and chamfers, with smaller defaults than `NONNEGATIVE_LENGTH_BOUNDS`
+ * (`0.2 * inch`, etc.).
+ */
+export const BLEND_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.2,
+    (foot)       : 0.015,
+    (yard)       : 0.005
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for a shell or offset thickness, with smaller defaults than `NONNEGATIVE_LENGTH_BOUNDS`.
+ * (`0.1 * inch`, etc.).
+ */
+export const SHELL_OFFSET_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [1e-5, 0.0025, 500],
+    (centimeter) : 0.25,
+    (millimeter) : 2.5,
+    (inch)       : 0.1,
+    (foot)       : 0.01,
+    (yard)       : 0.0025
+} as LengthBoundSpec;
+
+/**
+ * @internal
+ * A `LengthBoundSpec` for the size of a construction plane.
+ */
+export const PLANE_SIZE_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [1e-5, 0.15, 500],
+    (centimeter) : 15,
+    (millimeter) : 150,
+    (inch)       : 6,
+    (foot)       : 0.5,
+    (yard)       : 0.166667
+} as LengthBoundSpec;
+
+/**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 30 degrees.
+ */
 export const ANGLE_360_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -170,6 +224,9 @@ export const ANGLE_360_BOUNDS =
     (radian) : 1
 } as AngleBoundSpec;
 
+/**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 330 degrees.
+ */
 export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -178,6 +235,9 @@ export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
     (radian) : 2
 } as AngleBoundSpec;
 
+/**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 0 degrees.
+ */
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -186,6 +246,9 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
     (radian) : 0
 } as AngleBoundSpec;
 
+/**
+ * An `AngleBoundSpec` for an angle strictly less than 180 degrees.
+ */
 export const ANGLE_STRICT_180_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -194,6 +257,9 @@ export const ANGLE_STRICT_180_BOUNDS =
     (radian) : 0.1667 * PI
 } as AngleBoundSpec;
 
+/**
+ * An `AngleBoundSpec` for an angle strictly less than 90 degrees.
+ */
 export const ANGLE_STRICT_90_BOUNDS =
 {
     "min"    : -TOLERANCE.zeroAngle * radian,
@@ -202,14 +268,9 @@ export const ANGLE_STRICT_90_BOUNDS =
     (radian) : 0.01667 * PI
 } as AngleBoundSpec;
 
-export const CHAMFER_ANGLE_BOUNDS =
-{
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
-    (degree) : [0.1, 45, 179.9],
-    (radian) : 0.25 * PI
-} as AngleBoundSpec;
-
+/**
+ * An `IntegerBoundSpec` for an integer strictly greater than zero, defaulting to 2.
+ */
 export const POSITIVE_COUNT_BOUNDS =
 {
     "min"      : 1,
@@ -217,6 +278,9 @@ export const POSITIVE_COUNT_BOUNDS =
     (unitless) : [1, 2, 1e5]
 } as IntegerBoundSpec;
 
+/**
+ * A `RealBoundSpec` for a number greater than or equal to zero, defaulting to 1.
+ */
 export const POSITIVE_REAL_BOUNDS =
 {
     "min"      : 0,
@@ -224,13 +288,9 @@ export const POSITIVE_REAL_BOUNDS =
     (unitless) : [0, 1, 1e5]
 } as RealBoundSpec;
 
-export const FILLET_RHO_BOUNDS =
-{
-    "min"      : 0.0,
-    "max"      : 1.0,
-    (unitless) : [0.0, 0.5, 0.99999]
-} as RealBoundSpec;
-
+/**
+ * A `RealBoundSpec` for the positive or negative scale factor on a transform, defaulting to `1`.
+ */
 export const SCALE_BOUNDS =
 {
     "min"      : 0,
@@ -238,13 +298,10 @@ export const SCALE_BOUNDS =
     (unitless) : [1e-5, 1, 1e5]
 } as RealBoundSpec;
 
-export const HELIX_TURN_BOUNDS =
-{
-    "min"      : 0,
-    "max"      : 1e9,
-    (unitless) : [1e-5, 4, 1e5]
-} as RealBoundSpec;
-
+/**
+ * @internal
+ * Count bounds for a circular pattern, and the primary direction of linear patterns
+ */
 export const PRIMARY_PATTERN_BOUNDS =
 {
     "min"      : 1,
@@ -252,6 +309,10 @@ export const PRIMARY_PATTERN_BOUNDS =
     (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
+/**
+ * @internal
+ * Bounds for the secondary direction of a linear patterns
+ */
 export const SECONDARY_PATTERN_BOUNDS =
 {
     "min"      : 1,
@@ -260,10 +321,11 @@ export const SECONDARY_PATTERN_BOUNDS =
 } as IntegerBoundSpec;
 
 /**
+ * @internal
  * Return the intersection of all bounds in a BoundSpec as an
  * array with the first element being the lower bound, and the second element being the upper bound.
  * For example, if a BoundSpec allows 1/32 inch to 1 yard for Imperial
- * units and and 1 mm to 1 meter for metric, the result is `[1 * mm, 1 * yard]`.
+ * units and 1 mm to 1 meter for metric, the result is `[1 * mm, 1 * yard]`.
  */
 export function tightestBounds(boundSpec is map) returns array
 precondition
@@ -285,25 +347,7 @@ precondition
     return bounds;
 }
 
-//Type checking follows
-
-/**
- * TODO: description
- */
-export type LengthBoundSpec typecheck canBeLengthBoundSpec;
-/**
- * TODO: description
- */
-export type AngleBoundSpec typecheck canBeAngleBoundSpec;
-/**
- * TODO: description
- */
-export type IntegerBoundSpec typecheck canBeIntegerBoundSpec;
-/**
- * TODO: description
- */
-export type RealBoundSpec typecheck canBeRealBoundSpec;
-
+/** @internal */
 export predicate canBeBoundSpec(value)
 {
     value is map;
@@ -332,6 +376,45 @@ export predicate canBeBoundSpec(value)
     }
 }
 
+/**
+ * A spec to be used with the `isLength` predicate to define allowable lengths
+ * and customize UI behaviors for feature dialog parameters that take in a length.
+ *
+ * A typical declaration looks like:
+ * ```
+ * const MY_LENGTH_BOUNDS =
+ * {
+ *     "min"        : -500 * meter,
+ *     "max"        : 500 * meter,
+ *     (meter)      : [-400, 0.0025, 400],
+ *     (centimeter) : .25,
+ *     (millimeter) : 2.50,
+ *     (inch)       : 0.1,
+ *     (foot)       : 0.01,
+ *     (yard)       : 0.0025
+ * } as LengthBoundSpec;
+ * ```
+ *
+ * The "min" and "max" values refer to bounds checked in the FeatureScript
+ * precondition. Thus, `isLength(1000 * meter, MY_LENGTH_BOUNDS)` returns `false`.
+ *
+ * The values for `(meter)`, `(inch)`, etc. define UI behaviors for a feature
+ * parameter defined with `MY_LENGTH_BOUNDS`. These behaviors will be different
+ * for users who have set different default units.
+ *
+ * Secifically, the center value of the array defined for a unit (or the only
+ * value, if only one is provided) defines the default value, when a user with
+ * those default units first opens the dialog.
+ *
+ * The end two values define the UI minimum and maximum. A user who types a
+ * value of 1000 meters will see that value change to 400 meters. A user who
+ * types a value of -1000 meters will see that values change to -400 meters.
+ * If no min and max values are provided for some units, the values from
+ * another unit will be used.
+ */
+export type LengthBoundSpec typecheck canBeLengthBoundSpec;
+
+/** Typecheck for LengthBoundSpec */
 export predicate canBeLengthBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -340,6 +423,27 @@ export predicate canBeLengthBoundSpec(value)
         entry.key == "min" || entry.key == "max" || isLength(entry.key);
 }
 
+/**
+ * A spec to be used with the `isAngle` predicate to define allowable angles
+ * and customize UI behaviors for feature dialog parameters that take in an angle.
+ *
+ * A typical declaration looks like:
+ * ```
+ * const ANGLE_360_BOUNDS =
+ * {
+ *     "min"    : -TOLERANCE.zeroAngle * radian,
+ *     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
+ *     (degree) : [0, 30, 360],
+ *     (radian) : 1
+ * } as AngleBoundSpec;
+ * ```
+ *
+ * For more information on what the various fields signify, see
+ * `LengthBoundSpec`.
+ */
+export type AngleBoundSpec typecheck canBeAngleBoundSpec;
+
+/** Typecheck for AngleBoundSpec */
 export predicate canBeAngleBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -348,6 +452,26 @@ export predicate canBeAngleBoundSpec(value)
         entry.key == "min" || entry.key == "max" || isAngle(entry.key);
 }
 
+/**
+ * A spec to be used with the `isInteger` predicate to define allowable numbers
+ * and customize UI behaviors for feature dialog parameters that take in a number.
+ *
+ * A typical declaration looks like:
+ * ```
+ * const POSITIVE_COUNT_BOUNDS =
+ * {
+ *     "min"      : 1,
+ *     "max"      : 1e9,
+ *     (unitless) : [1, 2, 1e5]
+ * } as IntegerBoundSpec;
+ * ```
+ *
+ * For more information on what the various fields signify, see
+ * `LengthBoundSpec`.
+ */
+export type IntegerBoundSpec typecheck canBeIntegerBoundSpec;
+
+/** Typecheck for IntegerBoundSpec */
 export predicate canBeIntegerBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -357,6 +481,26 @@ export predicate canBeIntegerBoundSpec(value)
     value[unitless] is array;
 }
 
+/**
+ * A spec to be used with the `isReal` predicate to define allowable real numbers
+ * and customize UI behaviors for feature dialog parameters that take in a real number.
+ *
+ * A typical declaration looks like:
+ * ```
+ * const POSITIVE_REAL_BOUNDS =
+ * {
+ *     "min"      : 0,
+ *     "max"      : 1e9,
+ *     (unitless) : [0, 1, 1e5]
+ * } as RealBoundSpec;
+ * ```
+ *
+ * For more information on what the various fields signify, see
+ * `LengthBoundSpec`.
+ */
+export type RealBoundSpec typecheck canBeRealBoundSpec;
+
+/** Typecheck for RealBoundSpec */
 export predicate canBeRealBoundSpec(value)
 {
     canBeBoundSpec(value);

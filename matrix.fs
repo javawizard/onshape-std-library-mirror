@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -13,6 +13,7 @@ import(path : "onshape/std/math.fs", version : "");
  */
 export type Matrix typecheck canBeMatrix;
 
+/** Typecheck for `Matrix` */
 export predicate canBeMatrix(val)
 {
     @isMatrix(val);
@@ -154,6 +155,15 @@ export function svd(m is Matrix) returns map
 {
     const result = @matrixSvd(m);
     return { "u" : result.u as Matrix, "s" : result.s as Matrix, "v" : result.v as Matrix };
+}
+
+/**
+ * Return the determinant of the matrix.
+ *
+ */
+export function determinant(m is Matrix) returns number
+{
+   return @matrixDeterminant(m);
 }
 
 export function toString(value is Matrix) returns string

@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -51,6 +51,7 @@ import(path : "onshape/std/units.fs", version : "");
  */
 export type Query typecheck canBeQuery;
 
+/** Typecheck for `Query` */
 export predicate canBeQuery(value)
 {
     value is map;
@@ -59,7 +60,7 @@ export predicate canBeQuery(value)
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * An enumeration which specifies the critereon of a `Query`.
  *
@@ -221,7 +222,7 @@ export enum BodyType
  * @value VERTEX : A zero-dimensional point or vertex
  * @value EDGE : A one-dimensional line, curve, or edge
  * @value FACE : A two-dimensional surface, planar face, or non-planar face
- * @value BODY : A solid, surface, wire, or point body
+ * @default @value BODY : A solid, surface, wire, or point body
  */
 export enum EntityType
 {
@@ -310,7 +311,7 @@ export enum SketchObject
  * talking about fliud dynamics...
  *
  * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
- * @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
+ * @default @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
  */
 export enum EdgeTopology
 {
@@ -348,11 +349,7 @@ export enum CompareType
 }
 
 //Don't strip units off historical queries
-/**
- * For Onshape internal use.
- *
- * @param value
- */
+/** @internal */
 export function stripUnits(value is Query)
 {
     if (value.historyType != undefined)
@@ -900,7 +897,7 @@ export function qIntersectsPlane(subquery is Query, plane is Plane) returns Quer
 // ==================================== Historical Query stuff ================================
 
 /**
- * For Onshape internal use.
+ * @internal
  */
 export function makeQuery(value is map) returns Query
 {
@@ -1023,6 +1020,7 @@ export function ownerDisambiguation(topology is array)
  */
 export type TransientId typecheck canBeTransientId;
 
+/** Typecheck for `TransientId` */
 export predicate canBeTransientId(value)
 {
     @isTransientId(value); /* implies (value is builtin) */
@@ -1045,7 +1043,9 @@ export function notFoundErrorKey(paramName is string) returns string
 }
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.
-annotation { "Deprecated" : true }
+
+/** @internal */
+annotation { "Deprecated" : "Prefer `makeQuery`" }
 export function query(operationId is Id, queryType is string, entityType, value is map) returns Query
 precondition
 {
@@ -1055,7 +1055,8 @@ precondition
     return makeQuery(operationId, queryType, entityType, value);
 }
 
-annotation { "Deprecated" : true }
+/** @internal */
+annotation { "Deprecated" : "Prefer `makeQuery`" }
 export function query(value is map) returns Query
 {
     return makeQuery(value);

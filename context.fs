@@ -1,4 +1,4 @@
-FeatureScript 316; /* Automatically generated version */
+FeatureScript 328; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -30,6 +30,7 @@ export function libraryLanguageVersion()
  */
 export type Context typecheck canBeContext;
 
+/** Typecheck for `Context` */
 export predicate canBeContext(value)
 {
     @isContext(value); /* implies (value is builtin) */
@@ -64,6 +65,7 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
  */
 export type Id typecheck canBeId;
 
+/** Typecheck for `Id` */
 export predicate canBeId(value)
 {
     value is array;
@@ -84,24 +86,31 @@ export function newId() returns Id
 
 /**
  * Returns an id specified by the given string.
- * @param idComp
  */
 export function makeId(idComp is string) returns Id
 {
     return [idComp] as Id;
 }
 
+/**
+ * True if the `Id` represents a top-level feature or default geometry (i.e.
+ * if the `Id` has length `1`)
+ */
 export predicate isTopLevelId(id is Id)
 {
     size(id) == 1;
 }
 
+/**
+ * The string literal `"*"`, which matches any id inside certain queries.
+ * @ex `qCreatedBy(id + ANY_ID + "fillet")`
+ */
 export const ANY_ID = '*';
 
 /**
- * Marks a given id component as "unstable" causing queries to treat it as a wildcard. This is useful for when the id
- * component is not expected to be robust, such as an index into the results of an evaluated query.
- * @param addend
+ * Marks a given id component as "unstable" causing queries to treat it as a
+ * wildcard. This is useful for when the id component is not expected to be
+ * robust, such as an index into the results of an evaluated query.
  */
 export function unstableIdComponent(addend) returns string
 {
@@ -129,11 +138,17 @@ export operator+(id is Id, addend is Id) returns Id
 
 //====================== Variable builtins ========================
 
+/**
+ * TODO: description
+ */
 export function setVariable(context is Context, name is string, value)
 {
     @setVariable(context, { "name" : name, "value" : value });
 }
 
+/**
+ * TODO: description
+ */
 export function getVariable(context is Context, name is string)
 {
     return @getVariable(context, { "name" : name });
