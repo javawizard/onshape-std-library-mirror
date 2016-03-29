@@ -47,6 +47,7 @@ export enum LoftShapeControlType
     ADD_END_CONDITIONS
 }
 
+/** @internal */
 export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 {
     "min"      : -1e9,

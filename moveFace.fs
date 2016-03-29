@@ -20,8 +20,11 @@ import(path : "onshape/std/mathUtils.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
+/** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
+/** @internal */
 export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
+/** @internal */
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
 /**

@@ -22,6 +22,7 @@ import(path : "onshape/std/units.fs", version : "");
  */
 export type Line typecheck canBeLine;
 
+/** Typecheck for `Line` */
 export predicate canBeLine(value)
 {
     value is map;
@@ -40,7 +41,7 @@ export function line(origin is Vector, direction is Vector) returns Line
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Line` from the result of a builtin call.
  */
@@ -117,6 +118,7 @@ export function toString(value is Line) returns string
  */
 export type Circle typecheck canBeCircle;
 
+/** Typecheck for `Circle` */
 export predicate canBeCircle(value)
 {
     value is map;
@@ -138,7 +140,7 @@ export function circle(center is Vector, xDirection is Vector, normal is Vector,
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Circle` from the result of a builtin call.
  */
@@ -175,6 +177,7 @@ export function toString(value is Circle) returns string
  */
 export type Ellipse typecheck canBeEllipse;
 
+/** Typecheck for `Ellipse` */
 export predicate canBeEllipse(value)
 {
     value is map;
@@ -198,7 +201,7 @@ export function ellipse(center is Vector, xDirection is Vector, normal is Vector
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create an `Ellipse` from the result of a builtin call.
  */

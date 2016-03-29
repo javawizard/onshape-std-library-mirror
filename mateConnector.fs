@@ -179,6 +179,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
     });
 
 
+/** @internal */
 export function connectorEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
    specifiedParameters is map) returns map
 {

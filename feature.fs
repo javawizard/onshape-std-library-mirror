@@ -32,7 +32,7 @@ import(path : "onshape/std/transform.fs", version : "");
  *
  * TODO: precondition spec, Manipulator Change Function, Editing Logic Function
  *
- * @param feature : A function that takes a `context`, and `id`, and a `definition` and regenerates the feature.
+ * @param feature : A function that takes a `context`, an `id`, and a `definition` and regenerates the feature.
  * @param defaults : A map of default parameter values that are used to supplement the definition.
  */
 export function defineFeature(feature is function, defaults is map) returns function
@@ -83,7 +83,7 @@ export function defineFeature(feature is function) returns function
 
 // =====================================================================
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Starts the feature and associates the queries with the feature id in the context.
  */
@@ -100,7 +100,7 @@ export function startFeature(context is Context, id is Id)
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Rolls back the feature.
  */
@@ -110,7 +110,7 @@ export function abortFeature(context is Context, id is Id)
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Ends the feature; if the feature has an associated error, it is rolled back.
  */
@@ -127,7 +127,7 @@ export function endFeature(context is Context, id is Id)
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Returns the id used by the innermost call to `startFeature`.  Temporary operations may be started by adding to this id.
  */
@@ -137,7 +137,7 @@ export function getCurrentSubfeatureId(context is Context) returns Id
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  */
 export function recordQueries(context is Context, id is Id, definition is map)
 {
@@ -164,7 +164,7 @@ export function setFeatureComputedParameter(context is Context, id is Id, defini
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Builds stack of patternInstanceData, endFeature/abortFeature on id parent pops the stack.
  * @param id {Id} : instance id
@@ -178,7 +178,7 @@ export function setFeaturePatternInstanceData(context is Context, id is Id, defi
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * pop patternInstanceData stack if id matches throw otherwice
  * @param id {Id} : instance id

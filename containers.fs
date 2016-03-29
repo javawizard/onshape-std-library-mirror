@@ -162,7 +162,7 @@ export function reverse(arr is array) returns array
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * `mapLookup(a, ["b","c","d","e"])` is the same as `try (a.b.c.d.e)`
  * except it does not log a warning when used in the standard library.

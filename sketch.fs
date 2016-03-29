@@ -21,6 +21,7 @@ import(path : "onshape/std/mathUtils.fs", version : "");
 import(path : "onshape/std/surfaceGeometry.fs", version : "");
 import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/matrix.fs", version : "");
 
 // These are not used in the library, but are made available to programs.
 export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
@@ -31,7 +32,10 @@ export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", versio
 export import(path : "onshape/std/constrainttype.gen.fs", version : "");
 
 
-annotation { "Deprecated" : true }
+/**
+ * TODO: Is this really deprecated, or just internal?
+ */
+annotation { "Deprecated" : "" }
 export enum DimensionDirection
 {
     MINIMUM,
@@ -39,7 +43,10 @@ export enum DimensionDirection
     VERTICAL
 }
 
-annotation { "Deprecated" : true }
+/**
+ * TODO: Is this really deprecated, or just internal?
+ */
+annotation { "Deprecated" : "" }
 export enum SketchProjectionType
 {
     USE,
@@ -57,9 +64,7 @@ export enum SketchProjectionType
  */
 export type Sketch typecheck canBeSketch;
 
-/**
- * Succeeds if argument is builtin Sketch type understood by the runtime.
- */
+/** Typecheck for builtin `Sketch` */
 export predicate canBeSketch(value)
 {
     @isSketch(value); /* implies (value is builtin) */
@@ -98,16 +103,19 @@ precondition
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
         value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
 
-    //TODO : this approach for sketch transforms does not work for feature mirroring of sketches.
-    // We chose this approach (as opposed to post transforming sketch wires) to not block potential support for
-    // external references in patterned sketches in the future.
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
     {
-        //R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
+        // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
         var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
         planeOriginal = alignCanonically(context, planeOriginal);
         planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
-        value.sketchPlane = fullTransform * planeOriginal;
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
+        {
+            value.sketchPlane = planeOriginal;
+            value.transform = fullTransform;
+        }
+        else
+            value.sketchPlane = fullTransform * planeOriginal;
     }
     return newSketchOnPlane(context, id, value);
 }
@@ -228,7 +236,7 @@ precondition
 }
 
 /**
- * Add an image rectangle, and return ids of corner points.
+ * Add an image rectangle and return ids of corner points.
  *
  * @param value {{
  *      @field blobInfo {map} : TODO: what goes here?
@@ -350,7 +358,7 @@ precondition
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Add a closed spline.
  */
@@ -365,7 +373,7 @@ precondition
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Add a spline segment (i.e open spline or piece of a closed spline)
  */
@@ -396,8 +404,7 @@ precondition
 }
 
 /**
- * For Onshape internal use.
- *
+ * @internal
  * Add a spline segment (i.e open spline or piece of a closed spline)
  */
 export function skInterpolatedSplineSegment(sketch is Sketch, splineId is string, value is map)
@@ -410,6 +417,7 @@ precondition
 }
 
 /**
+ * @internal
  * Create an interpolated spline through the given points.
  * @param value {{
  *      @field points : An array of points, each a `Vector` of two lengths

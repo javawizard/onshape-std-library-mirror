@@ -6,15 +6,14 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /** TODO: documentation */
-export enum MeasureLabelTypeEnum
+export enum SplitOperationKeepType
 {
-    EMPTY,
-    CENTER,
-    START_POINT,
-    END_POINT,
-    ELLIPSE_CENTER,
-    MAX_RADIUS_POINT,
-    MIN_RADIUS_POINT
+    annotation {"Name" : "Keep all"}
+    KEEP_ALL,
+    annotation {"Name" : "Keep front"}
+    KEEP_FRONT,
+    annotation {"Name" : "Keep back"}
+    KEEP_BACK
 }
 
 

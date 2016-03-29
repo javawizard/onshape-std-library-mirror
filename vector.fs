@@ -20,6 +20,7 @@ import(path : "onshape/std/string.fs", version : "");
  */
 export type Vector typecheck canBeVector;
 
+/** Typecheck for `Vector` */
 export predicate canBeVector(value)
 {
     value is array;
@@ -54,6 +55,10 @@ export function vector(x, y, z) returns Vector
     return [x, y, z] as Vector;
 }
 
+/**
+ * True for a `Vector` where all members are values with length units.
+ * @ex `vector([1, 2, 3, 4, 5]) * inch`
+ */
 export predicate isLengthVector(value)
 {
     value is Vector;
@@ -61,6 +66,10 @@ export predicate isLengthVector(value)
         isLength(v);
 }
 
+/**
+ * True for a `Vector` where all members are simple `number`s.
+ * @ex `vector([1, 2, 3, 4, 5])`
+ */
 export predicate isUnitlessVector(value)
 {
     value is Vector;
@@ -68,12 +77,20 @@ export predicate isUnitlessVector(value)
         v is number;
 }
 
+/**
+ * True for a single 2D length `Vector`
+ * @ex `vector(0.5, 1) * inch`
+ */
 export predicate is2dPoint(value)
 {
     isLengthVector(value);
     size(value) == 2;
 }
 
+/**
+ * True for an `array` where all members are 2D lengths.
+ * @ex `[vector(0, 0) * inch, vector(0, 1) * inch, vector(1, 0) * inch]`
+ */
 export predicate is2dPointVector(value)
 {
    value is array;
@@ -81,12 +98,20 @@ export predicate is2dPointVector(value)
         is2dPoint(point);
 }
 
+/**
+ * True for a 3D `Vector` where all members are values with length units.
+ * @ex `vector(0, 1.5, 30) * inch`
+ */
 export predicate is3dLengthVector(value)
 {
     isLengthVector(value);
     @size(value) == 3;
 }
 
+/**
+ * True for a unitless 3D `Vector` that is normalized (i.e. has length `1`)
+ * @ex `vector(0, 0, 1)`
+ */
 export predicate is3dDirection(value)
 {
     isUnitlessVector(value);

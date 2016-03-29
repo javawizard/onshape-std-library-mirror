@@ -31,50 +31,55 @@ annotation { "Feature Type Name" : "Mirror",
 export const mirror = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Face mirror", "Default" : false }
-        definition.isFaceMirror is boolean;
+        annotation { "Name" : "Mirror type" }
+        definition.patternType is MirrorType;
 
-        if (!definition.isFaceMirror)
+        if (definition.patternType == MirrorType.PART)
         {
             booleanStepTypePredicate(definition);
 
             annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
             definition.entities is Query;
         }
-        else
+        else if (definition.patternType == MirrorType.FACE)
         {
             annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             definition.faces is Query;
+        }
+        else if (definition.patternType == MirrorType.FEATURE)
+        {
+            annotation { "Name" : "Features to mirror" }
+            definition.instanceFunction is FeatureList;
         }
 
         annotation { "Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1 }
         definition.mirrorPlane is Query;
 
-        if (!definition.isFaceMirror)
+        if (definition.patternType == MirrorType.PART)
         {
             booleanStepScopePredicate(definition);
         }
     }
     {
-        const isFaceMirror = definition.isFaceMirror;
-
-        if (isFaceMirror)
+       if (definition.patternType == MirrorType.FACE)
             definition.entities = definition.faces;
 
-        if (size(evaluateQuery(context, definition.entities)) == 0)
-        {
-            if (isFaceMirror)
-                throw regenError(ErrorStringEnum.MIRROR_SELECT_FACES, ["faces"]);
-            else
-                throw regenError(ErrorStringEnum.MIRROR_SELECT_PARTS, ["entities"]);
-            return;
-        }
+        checkInput(context, id, definition, true);
 
-        var remainingTransform = getRemainderPatternTransform(context,
-                {"references" : qUnion([definition.entities, definition.mirrorPlane])});
+        if (definition.patternType == MirrorType.FEATURE)
+            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
+
+        var remainingTransform;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
+            remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities])});
+        else
+            remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities, definition.mirrorPlane])});
 
         definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
-        const planeResult = try(evPlane(context, { "face" : definition.mirrorPlane }));
+        var planeResult = try(evPlane(context, { "face" : definition.mirrorPlane}));
+        if (planeResult != undefined && isFeaturePattern(definition.patternType))
+            planeResult = inverse(remainingTransform) * planeResult; // we don't want to transform the mirror plane
+
         if (planeResult == undefined)
             throw regenError(ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
 
@@ -84,10 +89,10 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition.instanceNames = ["1"];
         definition[notFoundErrorKey("entities")] = ErrorStringEnum.MIRROR_SELECT_PARTS;
         // We only include original body in the tools if the operation is UNION
-        if (!definition.isFaceMirror && definition.operationType == NewBodyOperationType.ADD)
+        if (definition.patternType == MirrorType.PART && definition.operationType == NewBodyOperationType.ADD)
             definition.seed = definition.entities;
         applyPattern(context, id, definition, remainingTransform);
-    }, { isFaceMirror : false, operationType : NewBodyOperationType.NEW });
+    }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW });
 
  /**
  * implements heuristics for mirror feature

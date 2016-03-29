@@ -39,6 +39,13 @@ export enum HelixType
 
 const needConeOrCylinderMessage = ErrorStringEnum.HELIX_INPUT_CONE;
 
+const HELIX_TURN_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 1e9,
+    (unitless) : [1e-5, 4, 1e5]
+} as RealBoundSpec;
+
 /**
  * TODO: description
  * @param context

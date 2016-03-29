@@ -5,6 +5,14 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
+/**
+ * Specifies a single degree of freedom of a mate.
+ *
+ * @value Tx : Translation along the X axis.
+ * @value Ty : Translation along the Y axis.
+ * @value Tz : Translation along the Z axis.
+ * @value Rz : Rotation around the Z axis.
+ */
 export enum MateDOFType
 {
     annotation {"Name" : "Translational X"}

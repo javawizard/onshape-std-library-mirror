@@ -3657,6 +3657,7 @@ const ISO_ThroughScrewTable = {
     }
 };
 
+/** @internal */
 export const tappedOrClearanceHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
@@ -3687,6 +3688,7 @@ const ISO_BlindInLastHoleTable = {
     }
 };
 
+/** @internal */
 export const blindInLastHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",

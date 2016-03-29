@@ -38,7 +38,7 @@ export function regenError(message is ErrorStringEnum, faultyParameters is array
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Used by defineFeature to try to process the thrown error by attaching it to the feature status and showing the
  * entities.
@@ -58,12 +58,14 @@ export function processError(context is Context, id is Id, error is map) returns
     return true;
 }
 
+/** @internal */
 export function processError(context is Context, id is Id, error is ErrorStringEnum) returns boolean
 {
     @reportFeatureError(context, id, { "message" : error });
     return true;
 }
 
+/** @internal */
 export function processError(context is Context, id is Id, error) returns boolean // Default overload
 {
     @reportFeatureError(context, id, { "message" : ErrorStringEnum.REGEN_ERROR });
@@ -71,7 +73,7 @@ export function processError(context is Context, id is Id, error) returns boolea
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * To report errors from features, use `throw regenError(...);`.
  *
@@ -86,6 +88,7 @@ export function reportFeatureError(context is Context, id is Id, message is Erro
     return true;
 }
 
+/** @internal */
 export function reportFeatureError(context is Context, id is Id, message is ErrorStringEnum, faultyParameters is array) returns boolean
 {
     @reportFeatureError(context, id, { "message" : message, "faultyParameters" : faultyParameters });
@@ -147,7 +150,7 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
 }
 
 /**
- * Returns the error associated with the given feature id and `undefined` if none.
+ * Returns the error associated with the given feature id or `undefined` if none.
  */
 export function getFeatureError(context is Context, id is Id)
 {
@@ -156,7 +159,7 @@ export function getFeatureError(context is Context, id is Id)
 }
 
 /**
- * Returns the warning associated with the given feature id and `undefined` if none.
+ * Returns the warning associated with the given feature id or `undefined` if none.
  */
 export function getFeatureWarning(context is Context, id is Id)
 {
@@ -165,7 +168,7 @@ export function getFeatureWarning(context is Context, id is Id)
 }
 
 /**
- * Returns the info-level status associated with the given feature id and `undefined` if none.
+ * Returns the info-level status associated with the given feature id or `undefined` if none.
  */
 export function getFeatureInfo(context is Context, id is Id)
 {

@@ -17,6 +17,7 @@ import(path : "onshape/std/transform.fs", version : "");
  */
 export type BuildFunction typecheck canBeBuildFunction;
 
+/** Typecheck for `BuildFunction` */
 export predicate canBeBuildFunction(value)
 {
     value is function;

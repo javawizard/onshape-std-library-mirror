@@ -13,6 +13,7 @@ import(path : "onshape/std/math.fs", version : "");
  */
 export type Matrix typecheck canBeMatrix;
 
+/** Typecheck for `Matrix` */
 export predicate canBeMatrix(val)
 {
     @isMatrix(val);
@@ -154,6 +155,15 @@ export function svd(m is Matrix) returns map
 {
     const result = @matrixSvd(m);
     return { "u" : result.u as Matrix, "s" : result.s as Matrix, "v" : result.v as Matrix };
+}
+
+/**
+ * Return the determinant of the matrix.
+ *
+ */
+export function determinant(m is Matrix) returns number
+{
+   return @matrixDeterminant(m);
 }
 
 export function toString(value is Matrix) returns string

@@ -16,6 +16,7 @@ import(path : "onshape/std/vector.fs", version : "");
  */
 export type Box3d typecheck canBeBox3d;
 
+/** Typecheck for `Box3d` */
 export predicate canBeBox3d(value)
 {
     value is map;

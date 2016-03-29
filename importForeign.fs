@@ -11,6 +11,7 @@ import(path : "onshape/std/valueBounds.fs", version : "");
  */
 export type ForeignId typecheck canBeForeignId;
 
+/** Typecheck for `ForeignId` */
 export predicate canBeForeignId(value)
 {
     value is string;

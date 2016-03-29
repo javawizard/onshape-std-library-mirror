@@ -18,6 +18,13 @@ import(path : "onshape/std/tool.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 import(path : "onshape/std/vector.fs", version : "");
 
+const FILLET_RHO_BOUNDS =
+{
+    "min"      : 0.0,
+    "max"      : 1.0,
+    (unitless) : [0.0, 0.5, 0.99999]
+} as RealBoundSpec;
+
 /**
  * TODO: description
  * @param context

@@ -14,6 +14,7 @@ import(path : "onshape/std/vector.fs", version : "");
  */
 export type Transform typecheck canBeTransform;
 
+/** Typecheck for `Transform` */
 export predicate canBeTransform(value)
 {
     value is map;
@@ -54,7 +55,7 @@ precondition
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a `Transform` from the result of a builtin call.
  */

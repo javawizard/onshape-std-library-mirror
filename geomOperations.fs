@@ -24,8 +24,8 @@ import(path : "onshape/std/context.fs", version : "");
  *      @field targets {Query} : The target bodies. Required if the operation is `SUBTRACTION` or `SUBTRACT_COMPLEMENT` or
  *          if `targetsAndToolsNeedGrouping` is true. Otherwise ignored.
  *      @field operationType {BooleanOperationType} : The boolean operation to perform.
- *          @eg `BooleanOperationType.UNION` will merge any tool bodies that intersect or abut. When several bodies merge, the first one inherits
- *              the identity.
+ *          @eg `BooleanOperationType.UNION` will merge any tool bodies that intersect or abut. When several bodies merge, the identity
+ *              of the tool that appears earliest in the query is preserved (in particular, part color and part name are taken from it).
  *          @eg `BooleanOperationType.SUBTRACTION` will remove the union of all tools bodies from every target body.
  *          @eg `BooleanOperationType.INTERSECTION` will create the intersection of all tool bodies.
  *          @eg `BooleanOperationType.SUBTRACT_COMPLEMENT` will remove the complement of the union of all tool bodies from every target body.
@@ -324,8 +324,7 @@ export function opPlane(context is Context, id is Id, definition is map)
 }
 
 /**
- * Creates a construction point (a `BodyType.POINT` with one vertex). TODO: doesn't seem to display if `origin` is
- * false.
+ * Creates a construction point (a `BodyType.POINT` with one vertex).
  * @param id : @autocomplete `id + "point1"`
  * @param definition {{
  *      @field point {Vector} : The location of the point. Has length units.
@@ -393,6 +392,7 @@ export function opShell(context is Context, id is Id, definition is map)
  *      @field targets {Query} : The solid and sheet bodies to split. TODO: why not wires?
  *      @field tool {Query} : The sheet body or construction plane to cut with.
  *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
+ *      @field keepType {string} : KEEP_ALL (default), KEEP_FRONT, KEEP_BACK controls which pieces to keep. @optional
  * }}
  */
 export function opSplitPart(context is Context, id is Id, definition is map)
@@ -425,6 +425,7 @@ export function opSplitFace(context is Context, id is Id, definition is map)
  *          must form a connected path.
  *      @field keepProfileOrientation {boolean} : If true, the profile maintains its original orientation as it is
  *          swept. If false (default), the profile rotates to remain normal to the path. @optional
+ *      @field lockFaces {Query} : Keep profile aligned to the normals of these faces. @optional
  * }}
  */
 export function opSweep(context is Context, id is Id, definition is map)

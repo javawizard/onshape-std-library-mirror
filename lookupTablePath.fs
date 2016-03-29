@@ -14,6 +14,7 @@ import(path : "onshape/std/units.fs", version : "");
  */
 export type LookupTablePath typecheck canBeLookupTablePath;
 
+/** Typecheck for `LookupTablePath` */
 export predicate canBeLookupTablePath(value)
 {
     value is map;

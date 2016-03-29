@@ -18,6 +18,18 @@ import(path : "onshape/std/evaluate.fs", version : "");
 import(path : "onshape/std/feature.fs", version : "");
 import(path : "onshape/std/valueBounds.fs", version : "");
 
+const THICKEN_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.025,
+    (yard)       : 0.01
+} as LengthBoundSpec;
+
 /**
  * TODO: description
  * @param context

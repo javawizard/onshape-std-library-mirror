@@ -19,6 +19,7 @@ import(path : "onshape/std/valueBounds.fs", version : "");
  */
 export type Manipulator typecheck canBeManipulator;
 
+/** Typecheck for `Manipulator` */
 export predicate canBeManipulator(value)
 {
     value is map;

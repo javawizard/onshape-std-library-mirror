@@ -75,12 +75,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardThrough != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup table" : tappedOrClearanceHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
             definition.standardTappedOrClearance is LookupTablePath;
         }
         else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST && definition.standardBlindInLast != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup table" : blindInLastHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
             definition.standardBlindInLast is LookupTablePath;
         }
 
@@ -370,6 +370,9 @@ const HOLE_BORE_DEPTH_BOUNDS =
     (yard)       : 0.007
 } as LengthBoundSpec;
 
+/**
+ * Angle bounds for a hole countersink
+ */
 export const CSINK_ANGLE_BOUNDS =
 {
     "min"    : (0.25 * PI - TOLERANCE.zeroAngle) * radian,

@@ -20,7 +20,7 @@ import(path : "onshape/std/valueBounds.fs", version : "");
 
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * If the number of parts hit by the tools is equal to 1 then we default to add.
  * If the number of parts hit by the tools is other than 1 then we default to new.
@@ -31,6 +31,7 @@ export function autoSelectionForBooleanStep2(context is Context, featureDefiniti
      return autoSelectionForBooleanStep(context, makeId(featureInfo.featureId), featureDefinition, featureInfo.excludeBodies);
 }
 
+/** @internal */
 export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query, toolBodiesOp is function) returns map
 {
@@ -79,9 +80,8 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
 }
 
 /**
-* Used by features using boolean heuristics
-*/
-
+ * Used by features using boolean heuristics
+ */
 export function canSetBooleanFlip (oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
 {
     if (specifiedParameters.booleanScope || oldDefinition.operationType == definition.operationType)

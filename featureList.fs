@@ -11,6 +11,8 @@ import(path : "onshape/std/context.fs", version : "");
  * Parameter type that has a list of feature lambdas
  */
 export type FeatureList typecheck canBeFeatureList;
+
+/** Typecheck for `FeatureList` */
 export predicate canBeFeatureList(value)
 {
     value is map;

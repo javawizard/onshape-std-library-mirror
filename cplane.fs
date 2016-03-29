@@ -55,6 +55,18 @@ const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
 
+const PLANE_OFFSET_BOUNDS =
+{
+    "min"        : -TOLERANCE.zeroLength * meter,
+    "max"        : 500 * meter,
+    (meter)      : [0.0, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25,
+    (inch)       : 1,
+    (foot)       : 0.0833,
+    (yard)       : 0.0277
+} as LengthBoundSpec;
+
 /**
  * Creates a construction plane.  @see `opPlane`.
  * @param definition {{

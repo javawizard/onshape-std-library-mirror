@@ -28,6 +28,7 @@ import(path : "onshape/std/units.fs", version : "");
  */
 export type CoordSystem typecheck canBeCoordSystem;
 
+/** @internal */
 export predicate canBeCoordSystem(value)
 {
     value is map;
@@ -50,7 +51,7 @@ precondition perpendicularVectors(xAxis, zAxis);
 }
 
 /**
- * For Onshape internal use.
+ * @internal
  *
  * Create a CoordSystem from the result of a builtin call.
  */
