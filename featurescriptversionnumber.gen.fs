@@ -1,11 +1,11 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/** @internal */
 export enum FeatureScriptVersionNumber
 {
     V0_ORIGINAL_VERSION,
@@ -302,7 +302,11 @@ export enum FeatureScriptVersionNumber
     V325_FEATURE_MIRROR,
     V326_PS_VERSION_28_1_224,
     V327_LOOKUP_TABLE_CAPITALIZE,
-    V328_INTERNAL_DOCUMENTATION
+    V328_INTERNAL_DOCUMENTATION,
+    V333_UPDATE_SKETCH_IMPRINT,
+    V334_PS_VERSION_28_1_228,
+    V335_REQUIRE_STD_VERSIONS,
+    V336_FS_ATTRIBUTES_IN_MERGE
 }
 
 /**
@@ -312,6 +316,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V328_INTERNAL_DOCUMENTATION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V336_FS_ATTRIBUTES_IN_MERGE;
 
 

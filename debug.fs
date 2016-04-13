@@ -1,32 +1,52 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/primitives.fs", version : "");
-import(path : "onshape/std/sketch.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/coordSystem.fs", version : "336.0");
+import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/primitives.fs", version : "336.0");
+import(path : "onshape/std/sketch.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
 const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
 
 /**
- * Dump and, if applicable, display `value`, whatever it may be (query, geometry, etc.)
- * Current values that can be displayed are:
+ * Print and, if applicable, display `value` in a Part Studio, highlighting or
+ * creating entities in red.
  *
- * `Query`,
- * 3D `Vector` (as a 3D point if entries are lengths, or as a direction from the origin if it is normalized),
- * `Line`,
- * `CoordSystem`,
- * `Plane`.
+ * The displayed data will ONLY be visible when the feature calling the
+ * `debug` function is being edited. Entities displayed during debug are for
+ * display only, and will not appear in any queries.
+ *
+ * Values which can be debugged are:
+ *
+ * `Query`: Highlights entities matching the `Query` (bodies, faces, edges,
+ * and vertices) in red.
+ *
+ * 3D length `Vector`: Displays a single point in world space.
+ *
+ * Unitless, normalized 3D `Vector`: Displays an arrow starting at the world
+ * origin, pointing in the given direction.
+ *
+ * `Line`: Displays an arrow starting at the line's origin, pointing in the
+ * line's direction.
+ *
+ * `CoordSystem`: Displays three perpendicular arrows from the coordinate
+ * system's origin, along its three axes. The arrowhead for the x-axis is
+ * largest, and the z-axis is smallest.
+ *
+ * `Plane`: Displays a large square in the positive quadrant of the plane,
+ * along with three arrows along the plane's x-axis, y-axis, and normal.
+ *
+ * The overloads in this module define these behaviors.
  */
 export function debug(context is Context, value) // TODO: `Circle`, `Ellipse`, `Cylinder`, `Cone`, `Torus`, `Transform`, `Box`.
 {
@@ -127,7 +147,9 @@ export function debug(context is Context, value is Plane)
     abortFeature(context, planeId);
 }
 
-/** Draws a line between point1 and point2 */
+/**
+ * Draws a line between `point1` and `point2` and prints the points with the distance between them.
+ */
 export function debug(context is Context, point1 is Vector, point2 is Vector)
 {
     print("debug: Two vectors: ");

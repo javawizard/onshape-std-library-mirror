@@ -1,22 +1,22 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
-import(path : "onshape/std/vector.fs", version : "");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/tool.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/vector.fs", version : "336.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -26,12 +26,7 @@ const FILLET_RHO_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opFillet`.
  */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange", "Filter Selector" : "allparts" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
@@ -101,18 +96,9 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
     }
 }
 
-/*
- * Respond to drag changes to the fillet manipulator
- */
 /**
- * TODO: description
- * @param context
- * @param definition {{
- *      @field TODO
- * }}
- * @param newManipulators {{
- *      @field TODO
- * }}
+ * @internal
+ * Manipulator change function for `fillet`.
  */
 export function filletManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {

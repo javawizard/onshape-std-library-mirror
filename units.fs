@@ -1,11 +1,11 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/math.fs", version : "336.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -338,6 +338,7 @@ precondition value1.unit == value2.unit;
  *          period of a pendulum, in seconds.
  * @example `sqrt(4 * meter)` throws an error, since FeatureScript has no
  *          concept of the square root of a meter.
+ * @param value : @autocomplete `4 * inch^2`
  */
 export function sqrt(value is ValueWithUnits) returns ValueWithUnits
 precondition
@@ -358,6 +359,7 @@ precondition
  *
  * @example `sin(30 * degree)` returns `0.5`
  * @example `sin(PI * radian)` returns `0`
+ * @param value : @autocomplete `30 * degree`
  */
 export function sin(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -371,6 +373,7 @@ precondition isAngle(value);
  *
  * @example `cos(60 * degree)` returns `0.5`
  * @example `cos(PI * radian)` returns `-1`
+ * @param value : @autocomplete `30 * degree`
  */
 export function cos(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -384,6 +387,7 @@ precondition isAngle(value);
  *
  * @example `tan(45 * degree)` returns `1`
  * @example `tan(PI * radian)` returns `0`
+ * @param value : @autocomplete `30 * degree`
  */
 export function tan(value is ValueWithUnits) returns number
 precondition isAngle(value);
@@ -450,15 +454,17 @@ export function atan2(y is number, x is number) returns ValueWithUnits
 
 /**
  * Returns the counterclockwise angle from the vector `[0, 1]`
- * to the vector `[value2, value1]`, assuming the units of value1 and value2
+ * to the vector `[x, y]`, assuming the units of `y` and `x`
  * match.
  *
  * @see `atan2(number, number)`
+ * @param y : @autocomplete `1 * inch`
+ * @param x : @autocomplete `-1 * inch`
  */
-export function atan2(value1 is ValueWithUnits, value2 is ValueWithUnits) returns ValueWithUnits
-precondition value1.units == value2.units;
+export function atan2(y is ValueWithUnits, x is ValueWithUnits) returns ValueWithUnits
+precondition y.units == x.units;
 {
-    return @atan2(value1.value, value2.value) * radian;
+    return @atan2(y.value, x.value) * radian;
 }
 
 /**

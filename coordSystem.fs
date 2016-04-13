@@ -1,10 +1,10 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
 
 /**
  * A right-handed cartesian coordinate system. Used for converting points and
@@ -21,8 +21,8 @@ import(path : "onshape/std/units.fs", version : "");
  *
  * @type {{
  *      @field origin {Vector}: A 3D point, in world space, representing the origin of the coordinate system.
- *      @field xAxis {Vector}: A 3D unit vector, in world space, respresenting the x-axis of the coordinate system.
- *      @field zAxis {Vector}: A 3D unit vector, in world space, respresenting the z-axis of the coordinate system.
+ *      @field xAxis {Vector}: A 3D unit vector, in world space, representing the x-axis of the coordinate system.
+ *      @field zAxis {Vector}: A 3D unit vector, in world space, representing the z-axis of the coordinate system.
  *          Must be perpendicular to the `xAxis`.
  * }}
  */
@@ -143,7 +143,6 @@ export function yAxis(cSys is CoordSystem) returns Vector
 
 /**
  * Returns a representation of the coordinate system as a string.
- * @param cSys
  */
 export function toString(cSys is CoordSystem) returns string
 {

@@ -1,29 +1,29 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/boundingtype.gen.fs", version : "");
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/clashtype.gen.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/extrude.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/revolve.fs", version : "");
-import(path : "onshape/std/sketch.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/holetables.gen.fs", version : "");
-import(path : "onshape/std/lookupTablePath.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "336.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "336.0");
+import(path : "onshape/std/box.fs", version : "336.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/coordSystem.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/extrude.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/revolve.fs", version : "336.0");
+import(path : "onshape/std/sketch.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/tool.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/holetables.gen.fs", version : "336.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "336.0");
 
 /**
- * TODO: description
+ * Defines whether each hole should have a countersink, a counterbore, or neither.
  */
 export enum HoleStyle
 {
@@ -36,7 +36,11 @@ export enum HoleStyle
 }
 
 /**
- * TODO: description
+ * Defines the end bound for the hole cut.
+ * @value THROUGH : Cut holes with a through-all extrude.
+ * @value BLIND : Cut holes to a specific depth.
+ * @value BLIND_IN_LAST : Cut holes through all parts but the last, then cut
+ *          to a specific depth in the last part.
  */
 export enum HoleEndStyle
 {
@@ -52,14 +56,10 @@ const CSINK_ANGLE = 90 * degree;
 const MAX_LOCATIONS = 100;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Creates holes of specific dimensions and style, based either on standard
+ * hole size, or by user-defined values. Each hole's position and orientation
+ * are specified using sketch points.
  */
-
 annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic"}
 export const hole = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -371,7 +371,7 @@ const HOLE_BORE_DEPTH_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Angle bounds for a hole countersink
+ * Angle bounds for a hole countersink.
  */
 export const CSINK_ANGLE_BOUNDS =
 {
@@ -1004,20 +1004,8 @@ function scopeSize(context is Context, definition is map) returns map
 }
 
 /**
- * implements heuristics for hole feature
- * @param context
- * @param id
- * @param oldDefinition {{
- *      @field TODO
- * }}
- * @param definition {{
- *      @field TODO
- * }}
- * @param isCreating
- * @param specifiedParameters {{
- *      @field TODO
- * }}
- * @param hiddenBodies
+ * @internal
+ * Editing logic for hole feature.
  */
 export function holeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
                               isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
@@ -1066,12 +1054,10 @@ function getStandardTable(definition is map) returns map
 }
 
 /**
- * implements standard hole sizes. Set the appropriate standard string for the hole type
+ * @internal
+ * Implements standard hole sizes. Set the appropriate standard string for the hole type
  * in the same format as the UI specification and it will set the appropriate values,
- * and then return an updated definition
- * @param definition {{
- *      @field TODO
- * }}
+ * and then return an updated definition.
  */
 export function updateHoleDefinitionWithStandard(oldDefinition is map, definition is map) returns map
 {
@@ -1124,15 +1110,7 @@ function setToCustomIfStandardViolated(definition is map) returns map
 }
 
 /**
- * TODO: description
- * @param context
- * @param holeDefinition {{
- *      @field TODO
- * }}
- * @param specifiedParameters {{
- *      @field TODO
- * }}
- * @param hiddenBodies
+ * @internal
  */
 export function holeScopeFlipHeuristicsCall(context is Context, holeDefinition is map, specifiedParameters is map, hiddenBodies is Query) returns map
 {

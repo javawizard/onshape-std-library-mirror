@@ -1,15 +1,19 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/context.fs", version : "");
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "");
+/**
+ * This module contains methods for creating and working with primative
+ * surfaces: planes, cylinders, cones, spheres, and tori.
+ */
+import(path : "onshape/std/context.fs", version : "336.0");
+import(path : "onshape/std/coordSystem.fs", version : "336.0");
+import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "336.0");
 
 //===================================== Plane ======================================
 
@@ -65,7 +69,6 @@ export function plane(origin is Vector, normal is Vector) returns Plane //Arbitr
 
 /**
  * @internal
- *
  * Create a `Plane` from the result of a builtin call.
  */
 export function planeFromBuiltin(definition is map) returns Plane
@@ -103,8 +106,8 @@ export predicate tolerantEquals(plane1 is Plane, plane2 is Plane)
 /**
  * Create a coordinate system whose XY-plane is a specified plane, with its origin at the
  * plane's origin.
- * TODO: rename this to coordSystem(plane is Plane)?
  */
+// TODO: rename this to coordSystem(plane is Plane)?
 export function planeToCSys(plane is Plane) returns CoordSystem
 {
     return coordSystem(plane.origin, plane.x, plane.normal);
@@ -116,9 +119,7 @@ export function toString(value is Plane) returns string
 }
 
 /**
- * TODO: description
- * @param plane
- * @param point
+ * Projects a 3D `point` onto a `plane`, returning a 3D point on the plane.
  */
 export function project(plane is Plane, point is Vector) returns Vector
 precondition
@@ -137,9 +138,8 @@ export operator*(transform is Transform, planeRhs is Plane) returns Plane
 }
 
 /**
- * TODO: description
- * @param plane
- * @param planePoint
+ * Transforms a 2D `point` in a `plane`'s coordinates to its corresponding 3D
+ * point in world coordinates.
  */
 export function planeToWorld(plane is Plane, planePoint is Vector) returns Vector
 precondition
@@ -151,30 +151,38 @@ precondition
     return plane.origin + plane.x * planePoint[0] + cross(plane.normal, plane.x) * planePoint[1];
 }
 
+/**
+ * Returns a `Transform` which takes 3D points measured with respect to a `plane`
+ * (such that points which lie on the plane will have a z-coordinate of
+ * approximately `0`) and transforms them into world coordinates.
+ */
 export function planeToWorld(plane is Plane) returns Transform
 {
     return toWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
 
 /**
- * TODO: description
- * @param plane
- * @param worldPoint
+ * Transforms a 3D `point` in world coordinates into a 3D point measured in a
+ * `plane`'s coordinates. If the `point` lies on the `plane`, the result will
+ * have a z-coordinate of approximately `0`.
  */
 export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vector
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal), worldPoint);
 }
 
+/**
+ * Returns a `Transform` which takes 3D points measured in world coordinates
+ * and transforms them into 3D points measured in plane coordinates (such that
+ * points which lie on the plane will have a z-coordinate of approximately `0`).
+ */
 export function worldToPlane(plane is Plane) returns Transform
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
 
 /**
- * TODO: description
- * @param from
- * @param to
+ * Returns a `Transform` which maps the plane `from` to the plane `to`.
  */
 export function transform(from is Plane, to is Plane) returns Transform
 {
@@ -182,8 +190,10 @@ export function transform(from is Plane, to is Plane) returns Transform
 }
 
 /**
- * TODO: description
- * @param plane
+ * Returns a `Transform` which takes points on one side of a plane and
+ * transforms them to the other side. The resulting transform is non-rigid,
+ * and using this transform in an `opTransform` or similar operations will
+ * invert the transformed bodies.
  */
 export function mirrorAcross(plane is Plane) returns Transform
 {
@@ -193,24 +203,32 @@ export function mirrorAcross(plane is Plane) returns Transform
 }
 
 /**
- * TODO: description
- * @param p1
- * @param p2
+ * Returns a `Line` at the intersection between the two `Plane`s. If the planes
+ * are parallel or coincident, returns `undefined`.
  */
-export function intersection(p1 is Plane, p2 is Plane) // Returns Line or undefined if there's no good intersection
+export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line or undefined if there's no good intersection
 {
-    var direction = cross(p1.normal, p2.normal);
+    var direction = cross(plane1.normal, plane2.normal);
     if (norm(direction) < TOLERANCE.zeroAngle)
         return;
     direction = normalize(direction);
-    const rhs = vector(dot(p1.normal, p1.origin), dot(p2.normal, p2.origin),
-        dot(direction, 0.5 * (p1.origin + p2.origin)));
-    const point = inverse([p1.normal, p2.normal, direction] as Matrix) * rhs;
+    const rhs = vector(dot(plane1.normal, plane1.origin), dot(plane2.normal, plane2.origin),
+        dot(direction, 0.5 * (plane1.origin + plane2.origin)));
+    const point = inverse([plane1.normal, plane2.normal, direction] as Matrix) * rhs;
     return line(point, direction);
 }
 
 /**
- * TODO: description
+ * Represents an intersection between a line an a plane. Depending on the
+ * line and plane, this intersection may be a point, a line, or nothing.
+ *
+ * @type {{
+ *      @field dim {number} : Integer representing the dimension of the intersection.
+ *              @eg `0` indicates that `intersection` is a 3D length `Vector`.
+ *              @eg `1` indicates that `intersection` is a `Line`.
+ *              @eg `-1` indicates that the intersection does not exist (i.e.
+ *                  the line and the plane are parallel).
+ * }}
  */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
 
@@ -225,24 +243,35 @@ export predicate canBeLinePlaneIntersection(value)
         value.intersection is Line;
 }
 
-export function intersection(p is Plane, l is Line) // Returns LinePlaneIntersection or undefined
+/**
+ * Returns a `LinePlaneIntersection` representing the intersection between
+ * `line` and `plane`.
+ */
+export function intersection(plane is Plane, line is Line) returns LinePlaneIntersection
 {
-    const dotPr = dot(p.normal, l.direction);
+    const dotPr = dot(plane.normal, line.direction);
     if (abs(dotPr) < TOLERANCE.zeroAngle)
     {
-        if (tolerantEquals(l.origin, project(p, l.origin)))
-            return { 'dim' : 1, 'intersection' : l } as LinePlaneIntersection;
+        if (tolerantEquals(line.origin, project(plane, line.origin)))
+            return { 'dim' : 1, 'intersection' : line } as LinePlaneIntersection;
         else
             return { 'dim' : -1 } as LinePlaneIntersection; //line is parallel to plane
     }
-    const t = dot(p.origin - l.origin, p.normal) / dotPr;
-    return { 'dim' : 0, 'intersection' : l.origin + t * l.direction } as LinePlaneIntersection;
+    const t = dot(plane.origin - line.origin, plane.normal) / dotPr;
+    return { 'dim' : 0, 'intersection' : line.origin + t * line.direction } as LinePlaneIntersection;
 }
 
 // ===================================== Cone ======================================
 
 /**
- * TODO: description
+ * Type representing a cone which extends infinitely down the positive z-axis of its
+ * `coordSystem`.
+ *
+ * @type {{
+ *      @field coordSystem {CoordSystem} : The position and orientation of the cone.
+ *      @field halfAngle {ValueWithUnits} : The angle from z-axis of `coordSystem`
+ *              to the surface of the cone.
+ * }}
  */
 export type Cone typecheck canBeCone;
 
@@ -255,7 +284,7 @@ export predicate canBeCone(value)
 }
 
 /**
- * Constructs a cone from a coordinate system and a half angle.
+ * Constructs a `Cone` from a coordinate system and a half angle.
  */
 export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns Cone
 {
@@ -289,7 +318,13 @@ export function toString(value is Cone) returns string
 // ===================================== Cylinder ======================================
 
 /**
- * TODO: description
+ * Type representing a Cylinder which extends infinitely along the z-axis of its
+ * `coordSystem`.
+ *
+ * @type {{
+ *      @field coordSystem {CoordSystem} : The position and orientation of the cylinder.
+ *      @field radius {ValueWithUnits} : The cylinder's radius.
+ * }}
  */
 export type Cylinder typecheck canBeCylinder;
 
@@ -311,7 +346,6 @@ export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns 
 
 /**
  * @internal
- *
  * Create a `Cylinder` from the result of a builtin call.
  */
 export function cylinderFromBuiltin(definition is map) returns Cylinder
@@ -336,7 +370,19 @@ export function toString(value is Cylinder) returns string
 // ===================================== Torus ======================================
 
 /**
- * TODO: description
+ * Type representing a torus, the shape of a circle revolved around a
+ * coplanar axis.
+ *
+ * The torus represented is revolved about the z-axis of the `coordSystem`
+ * and centered in its xy-plane.
+ *
+ * @type {{
+ *      @field coordSystem {CoordSystem} : The position and orientation of the torus.
+ *      @field radius {ValueWithUnits} : The major radius, i.e. the distance from the center of
+ *              the torus to the center of the revolved circle.
+ *      @field minorRadius {ValueWithUnits} : The minor radius, i.e. the radius of the revolved
+ *              circle.
+ * }}
  */
 export type Torus typecheck canBeTorus;
 
@@ -359,7 +405,6 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 
 /**
  * @internal
- *
  * Create a `Torus` from the result of a builtin call.
  */
 export function torusFromBuiltin(definition is map) returns Torus
@@ -385,7 +430,12 @@ export function toString(value is Torus) returns string
 // ===================================== Sphere ======================================
 
 /**
- * TODO: description
+ * Type representing a sphere of a given radius centered around a 3D point.
+ *
+ * @type {{
+ *      @field coordSystem {CoordSystem} : The position and orientation of the sphere.
+ *      @field radius {ValueWithUnits} : The sphere's radius.
+ * }}
  */
 export type Sphere typecheck canBeSphere;
 
@@ -404,7 +454,6 @@ export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sp
 
 /**
  * @internal
- *
  * Create a `Sphere` from the result of a builtin call.
  */
 export function sphereFromBuiltin(definition is map) returns Sphere

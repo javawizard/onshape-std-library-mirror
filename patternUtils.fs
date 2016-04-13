@@ -1,23 +1,28 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/containers.fs", version : "");
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/feature.fs", version : "");
-export import(path : "onshape/std/featureList.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+export import(path : "onshape/std/boolean.fs", version : "336.0");
+export import(path : "onshape/std/containers.fs", version : "336.0");
+export import(path : "onshape/std/evaluate.fs", version : "336.0");
+export import(path : "onshape/std/feature.fs", version : "336.0");
+export import(path : "onshape/std/featureList.fs", version : "336.0");
+export import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
 
 /**
  * The type of pattern.
+ * @value PART : Creates copies of bodies.
+ * @value FEATURE : Calls a feature function multiple times, first informing the
+ *          `context` of the transform to be applied.
+ * @value FACE : Creates copies of faces and attempts to merge them with
+ *          existing bodies.
  */
 export enum PatternType
 {
@@ -31,6 +36,7 @@ export enum PatternType
 
 /**
  * The type of mirror.
+ * @see `PatternType`
  */
 export enum MirrorType
 {
@@ -43,11 +49,8 @@ export enum MirrorType
 }
 
 /**
- * TODO: description
- * @param context
- * @param entity
- * @param oppositeDir
- * @param distance
+ * @internal
+ * TODO: Is this worth exposing?
  */
 export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits,
     isFeaturePattern is boolean, remainingTransform is Transform) returns map
@@ -86,12 +89,7 @@ export function computePatternAxis(context is Context, axisQuery is Query, isFea
         return rawDirectionResult;
 }
 
-/**
- * TODO: description
- * @param context
- * @param id
- * @param instances
- */
+/** @internal */
 export function verifyPatternSize(context is Context, id is Id, instances is number)
 {
     if (instances <= 2500)
@@ -102,7 +100,7 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
 /**
  * @internal
  * @param patternType : Either a `PatternType` or a `FeatureType`
- * @return {boolean} : @ex `true` if the given enum value represents a feature pattern.
+ * @return {boolean} : `true` if the given enum value represents a feature pattern.
  */
 export function isFeaturePattern(patternType)
 {
@@ -119,14 +117,7 @@ function isFacePattern(patternType)
     return (patternType == PatternType.FACE || patternType == MirrorType.FACE);
 }
 
-/**
- * TODO: description
- * @param context
- * @param id
- * @param definition {{
- *      @field TODO
- * }}
- */
+/** @internal */
 export function checkInput(context is Context, id is Id, definition is map, isMirror is boolean)
 {
     if (isFeaturePattern(definition.patternType))
@@ -143,14 +134,7 @@ export function checkInput(context is Context, id is Id, definition is map, isMi
     }
 }
 
-/**
- * TODO: description
- * @param context
- * @param id
- * @param definition {{
- *      @field TODO
- * }}
- */
+/** @internal */
 export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
 {
     if (isPartPattern(definition.patternType))
@@ -163,9 +147,12 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
 /**
  * Applies the body, face, or feature pattern, given just transforms and instance names
  * @param definition {{
- *      @field patternType
- *      @field transforms
- *      @field instanceNames
+ *      @field patternType {PatternType}
+ *      @field transforms {array} : An `array` of `Transform`s in which to place
+ *              new instances.
+ *      @field instanceNames {array} : An `array` of the same size as
+ *              `transforms` with a `string` for each transform, used in later
+ *              features to identify the entities created.
  * }}
  */
 export function applyPattern(context is Context, id is Id, definition is map, remainingTransform is Transform)

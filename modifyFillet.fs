@@ -1,18 +1,18 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /**
- * TODO: description
+ * Defines the action of a `modifyFillet` feature.
  */
 export enum ModifyFilletType
 {
@@ -23,12 +23,7 @@ export enum ModifyFilletType
 }
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opModifyFillet`.
  */
 annotation { "Feature Type Name" : "Modify fillet", "Filter Selector" : "allparts", "Editing Logic Function" : "modifyFilletLogic" }
 export const modifyFillet = defineFeature(function(context is Context, id is Id, definition is map)
@@ -55,6 +50,7 @@ export const modifyFillet = defineFeature(function(context is Context, id is Id,
     }, { reFillet : false });
 
 /**
+ * @internal
  * Editing logic function for automatically setting the radius of the fillet.
  */
 export function modifyFilletLogic(context is Context, id is Id, oldDefinition is map, definition is map, specified is map) returns map

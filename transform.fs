@@ -1,16 +1,38 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/math.fs", version : "");
-import(path : "onshape/std/matrix.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
-import(path : "onshape/std/vector.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/math.fs", version : "336.0");
+import(path : "onshape/std/matrix.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
+import(path : "onshape/std/vector.fs", version : "336.0");
 
 /**
- * A transform is rotation and scaling followed by a vector translation.
+ * Type typically representing a change of position, orientation in 3D space
+ * (other affine transformations such as scaling and sheering can also be
+ * represented).
+ *
+ * Transforms are commonly used with their `*` operator overloads to easily work
+ * with geometry in multiple coordinate systems.
+ *
+ * @example `transform * (vector(1, 1, 1) * inch)` yields a point which is the
+ *      given point, transformed by the `transform`.
+ * @example `transform2 * transform1` yields a new transform which is equivalent
+ *      to applying `transform1` followed by `transform2`.
+ *
+ * When applying a single transform transform, the linear potion is applied
+ * first, followed by the vector translation. Generally, the individual fields
+ * on this type don't need to be directly used, and everything you need can be
+ * accomplished through the operator overloads above, and the functions in this
+ * module and the `coordSystem` module.
+ *
+ * @type {{
+ *      @field linear {Matrix} : A linear motion, which is generally a rotation,
+ *              but can also be a scaling, inversion, or sheering.
+ *      @field translation {Vector} : A 3D translation vector.
+ * }}
  */
 export type Transform typecheck canBeTransform;
 
@@ -21,11 +43,6 @@ export predicate canBeTransform(value)
     value.linear is Matrix;
     matrixSize(value.linear) == [3, 3];
     is3dLengthVector(value.translation);
-}
-
-export function transform(value is map) returns Transform
-{
-    return value as Transform;
 }
 
 /**
@@ -54,9 +71,13 @@ precondition
     return { "linear" : identityMatrix(3), "translation" : translation } as Transform;
 }
 
+export function transform(value is map) returns Transform
+{
+    return value as Transform;
+}
+
 /**
  * @internal
- *
  * Create a `Transform` from the result of a builtin call.
  */
 export function transformFromBuiltin(definition is map) returns Transform
@@ -65,7 +86,7 @@ export function transformFromBuiltin(definition is map) returns Transform
 }
 
 /**
- * Construct a transform that does nothing, no rotation, scaling, or translation.
+ * Construct a transform that does nothing (no rotation, scaling, or translation).
  */
 export function identityTransform() returns Transform
 {

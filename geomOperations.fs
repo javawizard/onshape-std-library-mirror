@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -12,53 +12,60 @@ FeatureScript 328; /* Automatically generated version */
  * When an operation parameter that requires one entity receives a query that resolves to multiple entities, it takes
  * the first resolved entity.
  *
- * This file contains wrappers around builtin operations and no actual logic.
+ * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "");
+import(path : "onshape/std/context.fs", version : "336.0");
+/* opSplitPart uses enumerations from SplitOperationKeepType */
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "336.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "336.0");
 
 /**
- * Performs boolean operations on solid bodies.
+ * Performs a boolean operation on multiple solid bodies.
  * @param id : @autocomplete `id + "boolean1"`
  * @param definition {{
  *      @field tools {Query} : The tool bodies.
- *      @field targets {Query} : The target bodies. Required if the operation is `SUBTRACTION` or `SUBTRACT_COMPLEMENT` or
- *          if `targetsAndToolsNeedGrouping` is true. Otherwise ignored.
+ *      @field targets {Query} : @requiredif {`OperationType` is `SUBTRACTION` or `SUBTRACT_COMPLEMENT`, or
+ *          if `targetsAndToolsNeedGrouping` is true.} The target bodies.
  *      @field operationType {BooleanOperationType} : The boolean operation to perform.
  *          @eg `BooleanOperationType.UNION` will merge any tool bodies that intersect or abut. When several bodies merge, the identity
  *              of the tool that appears earliest in the query is preserved (in particular, part color and part name are taken from it).
  *          @eg `BooleanOperationType.SUBTRACTION` will remove the union of all tools bodies from every target body.
  *          @eg `BooleanOperationType.INTERSECTION` will create the intersection of all tool bodies.
  *          @eg `BooleanOperationType.SUBTRACT_COMPLEMENT` will remove the complement of the union of all tool bodies from every target body.
- *      @field targetsAndToolsNeedGrouping {boolean} : This option is for adjusting the behavior to be more suitable for doing the boolean
- *          as part of a body-creating feature (such as extrude). Default is false.  If it is set to true, the changes are as follows:
- *
- *          For `BooleanOperationType.UNION`, unions together connected components of the bipartite tool/target intersection graph. In other words,
- *          if two tool bodies intersect each other, they may not end up unioned together if the targets they intersect are disjoint.
- *          TODO: this may not actually be accurate.
- *          @optional
+ *      @field targetsAndToolsNeedGrouping {boolean} : @optional
+ *              This option is for adjusting the behavior to be more suitable for doing the boolean
+ *              as part of a body-creating feature (such as extrude). Default is `false`.
  *
  *      @field keepTools {boolean} : If true, the tools do not get consumed by the operation. Default is false. @optional
  * }}
  */
+/* TODO: describe `targetsAndToolsNeedGrouping` in fuller detail */
 export function opBoolean(context is Context, id is Id, definition is map)
 {
     return @opBoolean(context, id, definition);
 }
 
 /**
- * Adds a chamfer to given edges and faces.  TODO: make this interface more like an operation and less like a feature.
+ * Adds a chamfer to given edges and faces.
  * @param id : @autocomplete `id + "chamfer1"`
  * @param definition {{
  *      @field entities {Query} : Edges and faces to chamfer.
- *      @field chamferType {ChamferType} : Determines how the offsets are specified.
- *      @field width {ValueWithUnits} : If `chamferType` is `EQUAL_OFFSETS` or `OFFSET_ANGLE`.
- *      @field width1 {ValueWithUnits} : If `chamferType` is `TWO_OFFSETS`.
- *      @field width2 {ValueWithUnits} : If `chamferType` is `TWO_OFFSETS`.
- *      @field angle {ValueWithUnits} : If `chamferType` is `OFFSET_ANGLE`.
- *      @field oppositeDirection {boolean} : If `chamferType` is `OFFSET_ANGLE` or `TWO_OFFSETS`.
- *      @field tangentPropagation {boolean} : Whether to propagate the chamfer along edges tangent to those passed in. Defaults to false. @optional
+ *      @field chamferType {ChamferType} : Determines where the new edges of the chamfer are positioned.
+ *              @eg `EQUAL_OFFSETS` places both new edges `width` away from each original edge.
+ *              @eg `TWO_OFFSETS` places edges `width1` and `width2` away.
+ *              @eg `OFFSET_ANGLE` places one edge `width` away, and chamfers at an angle from that edge.
+ *      @field width {ValueWithUnits} : @requiredif {`chamferType` is `EQUAL_OFFSETS` or `OFFSET_ANGLE`.}
+ *              @eg `0.2 * inch`
+ *      @field width1 {ValueWithUnits} : @requiredIf {`chamferType` is `TWO_OFFSETS`.}
+ *      @field width2 {ValueWithUnits} : @requiredIf {`chamferType` is `TWO_OFFSETS`.}
+ *      @field angle {ValueWithUnits} : @requiredIf {`chamferType` is `OFFSET_ANGLE`.}
+ *      @field oppositeDirection {boolean} : @requiredIf {`chamferType` is `OFFSET_ANGLE` or `TWO_OFFSETS`.}
+ *              `true` to reverse the two edges.
+ *      @field tangentPropagation {boolean} : @optional
+ *              `true` to propagate the chamfer along edges tangent to those passed in. Defaults to `false`.
  * }}
  */
+/* TODO: make this interface more like an operation and less like a feature. */
 export function opChamfer(context is Context, id is Id, definition is map)
 {
     return @opChamfer(context, id, definition);
@@ -81,8 +88,12 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "deleteFace1"`
  * @param definition {{
  *      @field deleteFaces {Query} : Faces to delete.
- *      @field includeFillet {boolean} : If true, also delete fillets adjacent to the input faces.
- *      @field capVoid {boolean} : TODO
+ *      @field includeFillet {boolean} : `true` to also delete fillets adjacent to the input faces.
+ *              @autocomplete `false`
+ *      @field capVoid {boolean} : If `capVoid` is `true` and the deleted face
+ *              cannot be filled by extending the surrounding faces, will
+ *              attempt to replace the face with a planar face.
+ *              @autocomplete `false`
  * }}
  */
 export function opDeleteFace(context is Context, id is Id, definition is map)
@@ -97,11 +108,15 @@ export function opDeleteFace(context is Context, id is Id, definition is map)
  *      @field neutralPlane {Query} : The face defining the neutral plane.  The intersection of the drafted faces
  *          and the neutral plane remains unchanged.
  *      @field pullVec {Vector} : The 3d direction relative to which the draft is applied.
+ *              @eg `evPlane(context, {"face" : neutralPlane}).normal` will draft uniformly away from the neutral plane.
  *      @field draftFaces {Query} : The faces to draft.
  *      @field angle {ValueWithUnits} : The draft angle, must be between 0 and 89 degrees.
- *      @field tangentPropagation {boolean} : If true, propagate draft across tangent faces. Defaults to false. @optional
- *      @field reFillet {boolean} : If true, attempt to defillet draft faces before the draft and reapply the fillets
- *          after. Defaults to false. TODO: Verify that this works right... @optional
+ *              @eg `3 * degree`
+ *      @field tangentPropagation {boolean} : @optional
+ *              `true` to propagate draft across tangent faces. Default is `false`.
+ *      @field reFillet {boolean} : @optional
+ *              `true` to attempt to defillet draft faces before the draft and reapply the fillets
+ *              after. Default is `false`.
  * }}
  */
 export function opDraft(context is Context, id is Id, definition is map)
@@ -115,12 +130,20 @@ export function opDraft(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field entities {Query} : Edges and faces to extrude.
  *      @field direction {Vector} : The 3d direction in which to extrude.
- *      @field endBound {BoundingType} : The type of bound of the end of the extrusion.  Cannot be `SYMMETRIC`.
- *      @field endDepth {ValueWithUnits} : When `endBound` is `BLIND`, how far from the `entities` to extrude.
- *      @field endBoundEntity {Query} : When `endBound` is `UP_TO_SURFACE` or `UP_TO_BODY`, the face or body that provides the bound.
- *      @field startBound {BoundingType} : The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`. @optional
- *      @field startDepth {ValueWithUnits} : When `startBound` is `BLIND`, how far from the `entities` to start the extrude.
- *      @field startBoundEntity {Query} : When `startBound` is `UP_TO_SURFACE` or `UP_TO_BODY`, the face or body that provides the bound.
+ *              @eg `evPlane(context, {"face" : entities}).normal` to extrude perpendicular to the first planar entity
+ *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC`.
+ *              @eg `BoundingType.BLIND`
+ *      @field endDepth {ValueWithUnits} : @requiredif {`endBound` is `BLIND`.}
+ *              How far from the `entities` to extrude.
+ *              @eg `1 * inch`
+ *      @field endBoundEntity {Query} : @requiredif {`endBound` is `UP_TO_SURFACE` or `UP_TO_BODY`.}
+ *              The face or body that provides the bound.
+ *      @field startBound {BoundingType} : @optional
+ *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
+ *      @field startDepth {ValueWithUnits} : @requiredif {`startBound` is `BLIND`.}
+ *              How far from the `entities` to start the extrude.
+ *      @field startBoundEntity {Query} : @requiredif {`startBound` is `UP_TO_SURFACE` or `UP_TO_BODY`.}
+ *              The face or body that provides the bound.
  * }}
  */
 export function opExtrude(context is Context, id is Id, definition is map)
@@ -134,10 +157,15 @@ export function opExtrude(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field entities {Query} : Edges and faces to fillet.
  *      @field radius {ValueWithUnits} : The fillet radius.
- *      @field tangentPropagation {boolean} : Whether to propagate the fillet along edges tangent to those passed in. Defaults to false. @optional
- *      @field conicFillet {boolean} : If true, the fillet is conic, rather than rolling ball. Defaults to false. @optional
- *      @field rho {number} : For conic fillets, a number between 0 and 1.  Rho close to zero makes the fillet behave
- *          like a chamfer, while rho close to 1 makes the fillet sharper.
+ *              @eg `1 * inch`
+ *      @field tangentPropagation {boolean} : @optional
+ *              `true` to propagate the fillet along edges tangent to those passed in. Default is `false`.
+ *      @field conicFillet {boolean} : @optional
+ *              `true` to make a conic fillet, rather than rolling ball. Default is `false`.
+ *      @field rho {number} : @requiredif {`conicFillet` is `true`.}
+ *              A number between 0 and 1, specifying the Rho value of a conic fillet
+ *              @ex `0.01` creates a flat, nearly-chamfered shape.
+ *              @ex `0.99` creates a pointed, nearly-unchanged shape.
  * }}
  */
 export function opFillet(context is Context, id is Id, definition is map)
@@ -151,6 +179,16 @@ export function opFillet(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field points {array} : An array of `Vector`s with length units for the spline to interpolate. If the first
  *          point is the same as the last point, the spline is closed.
+ *              @eg
+ * ```
+ * [
+ *     vector( 1,  1,  1) * inch,
+ *     vector(-1,  1, -1) * inch,
+ *     vector( 1, -1, -1) * inch,
+ *     vector(-1, -1,  1) * inch,
+ *     vector( 1,  1,  1) * inch
+ * ]
+ * ```
  * }}
  */
 export function opFitSpline(context is Context, id is Id, definition is map)
@@ -163,12 +201,18 @@ export function opFitSpline(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "helix1"`
  * @param definition {{
  *      @field direction {Vector} : The direction of the helix axis.
+ *              @eg `vector(0, 0, 1)`
  *      @field axisStart {Vector} : A point on the helix axis.
+ *              @eg `vector(0, 0, 0)`
  *      @field startPoint {Vector} : The start point of the infinite helix.  Must be off the axis.  This is the point at
  *          which the created curve would actually start if the first number of `interval` is 0.
+ *              @eg `vector(1, 0, 0) * inch`
  *      @field interval {Vector} : An array of two numbers denoting the interval of the helix in terms of revolution counts.
- *      @field clockwise {boolean} : True if this is a clockwise helix when viewed along `direction`.
+ *              @eg `[0, 10]` will create a curve with 10 revolutions.
+ *      @field clockwise {boolean} :
+ *              @eg `true` if this is a clockwise helix when viewed along `direction`.
  *      @field helicalPitch {ValueWithUnits} : Distance along the axis between successive revolutions.
+ *              @eg `0.1 * inch` will create a helix with 10 revolutions per inch.
  *          @eg `0 * inch` produces a planar Archimedean spiral.
  *      @field spiralPitch {ValueWithUnits} : Change in radius between successive revolutions.
  *          @eg `0 * inch` produces a helix that lies on a cylinder.
@@ -179,14 +223,15 @@ export function opHelix(context is Context, id is Id, definition is map)
     return @opHelix(context, id, definition);
 }
 
+/* TODO: Example of importing from a blob tab */
 /**
  * Brings foreign geometry into the context. This function is used for importing uploaded parts.
  * @param id : @autocomplete `id + "importForeign1"`
  * @param definition {{
- *      @field foreignId {string} : The foreign data id (dataId from an imported blob tab).
+ *      @field foreignId {string} : The foreign data id (`dataId` from an imported blob tab).
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
  *      @field yAxisIsUp {boolean} : If true, the y axis in the import maps to the z axis and z maps to -y.
-            If false (default), the coordinates are unchanged. @optional
+ *              If false (default), the coordinates are unchanged. @optional
  * }}
  */
 export function opImportForeign(context is Context, id is Id, definition is map)
@@ -239,6 +284,7 @@ export function opMateConnector(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "mergeContexts1"`
  * @param definition {{
  *      @field contextFrom {Context} : The source context. It is rendered unusable by this operation.
+ *              @eg `MyPartStudio::build()`
  * }}
  */
 export function opMergeContexts(context is Context, id is Id, definition is map)
@@ -252,9 +298,9 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field faces {Query} : The fillets to modify.
  *      @field modifyFilletType {ModifyFilletType} : Whether to change the fillet radii or remove them altogether.
- *      @field radius {ValueWithUnits} : If `modifyFilletType` is `CHANGE_RADIUS`, the new radius.
- *      @field reFillet {boolean} : If `modifyFilletType` is `CHANGE_RADIUS` whether to reapply adjacent fillets.
- *          Defaults to false. @optional
+ *      @field radius {ValueWithUnits} : @requiredif {`modifyFilletType` is `CHANGE_RADIUS`.} The new radius.
+ *      @field reFillet {boolean} : @requiredif {`modifyFilletType` is `CHANGE_RADIUS`.}
+ *              `true` to reapply adjacent fillets. Default is `false`.
  * }}
  */
 export function opModifyFillet(context is Context, id is Id, definition is map)
@@ -267,9 +313,11 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "moveFace1"`
  * @param definition {{
  *      @field moveFaces {Query} : The faces to transform.
- *      @field transform {Transform} : The transform to apply.
- *      @field reFillet {boolean} : If true, attempt defillet `moveFaces` prior to the move and reapply the fillet
- *          after. Defaults to false. @optional
+ *      @field transform {Transform} : The transform to apply to the face.
+ *              @eg `transform(vector(0, 0, 1) * inch)` will translate the face 1 inch along the world's z-axis.
+ *      @field reFillet {boolean} : @optional
+ *              `true` to attempt to defillet `moveFaces` prior to the move and reapply the fillet
+ *              after. Default is `false`.
  * }}
  */
 export function opMoveFace(context is Context, id is Id, definition is map)
@@ -283,8 +331,10 @@ export function opMoveFace(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field moveFaces {Query} : The faces to offset.
  *      @field offsetDistance {ValueWithUnits} : The positive or negative distance by which to offset.
- *      @field reFillet {boolean} : If true, attempt defillet `moveFaces` prior to the offset and reapply the fillet
- *          after. Defaults to false. @optional
+ *              @eg `0.1 * inch` will offset the face 0.1 inches, normal to the face.
+ *      @field reFillet {boolean} : @optional
+ *              `true` to attempt to defillet `moveFaces` prior to the offset and reapply the fillet
+ *              after. Default is `false`.
  * }}
  */
 export function opOffsetFace(context is Context, id is Id, definition is map)
@@ -300,9 +350,10 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
  *      @field transforms {array} : An array of `transforms` to apply to `entities`. The transforms do not have to be
  *          rigid.
  *      @field instanceNames {array} : An array of distinct non-empty strings the same size as `transforms` to identify
- *          the patterned entities. TODO: make it easy to query for them.
+ *              the patterned entities.
  * }}
  */
+/* TODO: make it easy to query for instance names */
 export function opPattern(context is Context, id is Id, definition is map)
 {
     return @opPattern(context, id, definition);
@@ -314,7 +365,9 @@ export function opPattern(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
  *      @field width {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *              @autocomplete `6 * inch`
  *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
+ *              @autocomplete `6 * inch`
  *      @field defaultType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */
@@ -327,7 +380,8 @@ export function opPlane(context is Context, id is Id, definition is map)
  * Creates a construction point (a `BodyType.POINT` with one vertex).
  * @param id : @autocomplete `id + "point1"`
  * @param definition {{
- *      @field point {Vector} : The location of the point. Has length units.
+ *      @field point {Vector} : The location of the point.
+ *              @eg `vector(0, 0, 1) * inch`
  *      @field origin {boolean} : For Onshape internal use. @optional
  * }}
  */
@@ -343,9 +397,12 @@ export function opPoint(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field replaceFaces {Query} : The faces whose geometry to replace.
  *      @field templateFace {Query} : The face whose geometry to use as the replacement.
- *      @field offset {ValueWithUnits} : The positive or negative distance by which to offset the `templateFace`. @optional
- *      @field oppositeSense {boolean} : If true, flip the normal of the templateFace. Default is false. In many cases,
- *          only one of these settings will work. @optional
+ *      @field offset {ValueWithUnits} : @optional
+ *              The positive or negative distance by which to offset the resulting face.
+ *      @field oppositeSense {boolean} : @optional
+ *              If true, flip the surface normal of the resulting face, which may
+ *              be necessary to match the surface normals of surrounding faces.
+ *              Default is `false`.
  * }}
  */
 export function opReplaceFace(context is Context, id is Id, definition is map)
@@ -360,9 +417,11 @@ export function opReplaceFace(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field entities {Query} : The edges and faces to revolve.
  *      @field axis {Line} : The axis around which to revolve.
+ *              @eg `line(vector(0, 0, 0) * inch, vector(0, 0, 1))`
  *      @field angleForward {ValueWithUnits} : The angle where the revolve ends relative to `entities`. Normalized to the range \[0, 2 PI).
+ *              @eg `30 * degree`
  *      @field angleBack {ValueWithUnits} : The angle where the revolve starts relative to `entities`. Normalized to the range \[0, 2 PI).
- *          If `angleForward == angleBack`, the revolve is a full (360-degree) revolve. Defaults to 0. @optional
+ *          If `angleForward == angleBack`, the revolve is a full (360-degree) revolve. Defaults to `0`. @optional
  * }}
  */
 export function opRevolve(context is Context, id is Id, definition is map)
@@ -371,13 +430,13 @@ export function opRevolve(context is Context, id is Id, definition is map)
 }
 
 /**
- * Shell solid bodies. The bodies that are passed in are hollowed. The faces passed in are removed in order to hollow
- * their bodies.
+ * Create a shell of a solid body with uniform thickness. The bodies that are passed
+ * in are hollowed, omitting the walls on the `face` entities passed in.
  * @param id : @autocomplete `id + "shell1"`
  * @param definition {{
  *      @field entities {Query} : The faces to shell and solid bodies to hollow.
  *      @field thickness {ValueWithUnits} : The distance by which to shell. Positive means shell outward, and negative
- *          means shell inward.
+ *              means shell inward. @autocomplete `0.1 * inch`
  * }}
  */
 export function opShell(context is Context, id is Id, definition is map)
@@ -389,12 +448,14 @@ export function opShell(context is Context, id is Id, definition is map)
  * Split solid and sheet bodies with the given sheet body.
  * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
- *      @field targets {Query} : The solid and sheet bodies to split. TODO: why not wires?
+ *      @field targets {Query} : The solid and sheet bodies to split.
  *      @field tool {Query} : The sheet body or construction plane to cut with.
+ *              If a planar face is passed in, the split will extend the plane infinitely.
  *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
- *      @field keepType {string} : KEEP_ALL (default), KEEP_FRONT, KEEP_BACK controls which pieces to keep. @optional
+ *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
  * }}
  */
+/* TODO: why not wires? */
 export function opSplitPart(context is Context, id is Id, definition is map)
 {
     return @opSplitPart(context, id, definition);
@@ -405,10 +466,14 @@ export function opSplitPart(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "splitFace1"`
  * @param definition {{
  *      @field faceTargets {Query} : The faces to split.
- *      @field edgeTools {Query} : The edges to cut with. @optional
- *      @field direction {Vector} : The projection direction. It has to be set when there are edge tools. @optional
- *      @field bodyTools {Query} : The bodies to cut with. @optional
- *      @field planeTools {Query} : The planes to cut with. @optional
+ *      @field edgeTools {Query} : @optional
+ *              The edges to cut with.
+ *      @field direction {Vector} : @requiredif {there are edge tools.}
+ *              The projection direction.
+ *      @field bodyTools {Query} : @optional
+ *              The bodies to cut with.
+ *      @field planeTools {Query} : @optional
+ *              The planes to cut with.
  * }}
  */
 export function opSplitFace(context is Context, id is Id, definition is map)
@@ -417,14 +482,14 @@ export function opSplitFace(context is Context, id is Id, definition is map)
 }
 
 /**
- * Sweep the given edges and faces along a path resulting in sheet and solid bodies.
+ * Sweep the given edges and faces along a path resulting in solid and/or sheet bodies.
  * @param id : @autocomplete `id + "sweep1"`
  * @param definition {{
  *      @field profiles {Query} : Edges and faces to sweep.
  *      @field path {Query} : Edges that comprise the path along which to sweep. The edges can be in any order but
  *          must form a connected path.
- *      @field keepProfileOrientation {boolean} : If true, the profile maintains its original orientation as it is
- *          swept. If false (default), the profile rotates to remain normal to the path. @optional
+ *      @field keepProfileOrientation {boolean} : If `true`, the profile maintains its original orientation as it is
+ *              swept. If `false` (default), the profile rotates to remain normal to the path. @optional
  *      @field lockFaces {Query} : Keep profile aligned to the normals of these faces. @optional
  * }}
  */
@@ -438,8 +503,10 @@ export function opSweep(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "thicken1"`
  * @param definition {{
  *      @field entities {Query} : The sheet bodies and faces to thicken.
- *      @field thickness1 {ValueWithUnits} : The distance by which to thicken in the direction along the normal. @autocomplete `0.1 * inch`
- *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction. @autocomplete `0.1 * inch`
+ *      @field thickness1 {ValueWithUnits} : The distance by which to thicken in the direction along the normal.
+ *              @autocomplete `0.1 * inch`
+ *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction.
+ *              @autocomplete `0.1 * inch`
  * }}
  */
 export function opThicken(context is Context, id is Id, definition is map)
@@ -452,7 +519,15 @@ export function opThicken(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "transform1"`
  * @param definition {{
  *      @field bodies {Query} : The bodies to transform.
- *      @field transform {Transform} : The transform to apply. Need not be rigid.
+ *      @field transform {Transform} : The transform to apply.
+ *              @eg `transform(vector(0, 0, 1) * inch)` will translate the body 1 inch along the world's z-axis.
+ *              @eg `rotationAround(myLine, 30 * degree)` will rotate around a `Line` object.
+ *              @eg `transform(identityMatrix(3) * scale, vector(0, 0, 0))` will scale uniformly about the origin.
+ *              @eg `toWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
+ *                  the world's origin and axes will move to the `cSys` origin and axes.
+ *              @eg `fromWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
+ *                  the `cSys` origin and axes will move to the world origin and axes.
+ *              @eg `transform2 * transform1` will perform `transform1`, followed by `transform2`.
  * }}
  */
 export function opTransform(context is Context, id is Id, definition is map)

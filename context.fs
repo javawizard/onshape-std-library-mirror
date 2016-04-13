@@ -1,11 +1,11 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
 
 /**
  * Returns the language version of the library. Note that the return value of `@getLanguageVersion` (but not of this
@@ -19,14 +19,19 @@ export function libraryLanguageVersion()
 //====================== Context ========================
 
 /**
- * A context is a builtin that stores modeling data, including bodies (solid, sheet, wire, and point), their
- * constituent topological entities (faces, edges, and vertices), variables, feature error states, etc.
- * All features, operations, and evaluation functions require a context to operate on. Different contexts do not
- * interact, but data may be transferred from one to another using `opMergeContexts`.
+ * A `Context` is a `builtin` that stores modeling data, including bodies
+ * (solids, sheets, wires, and points), their constituent topological entities
+ * (faces, edges, and vertices), variables, feature error states, etc.
  *
- * Each context keeps track of the version at which it was created. While regenerating a feature that has been
- * "held back" to an older version, the version reported by the context will be the older version, causing subfeatures
- * and operations to emulate old behavior.
+ * Every Onshape Part Studio uses a single `Context`. All features, operations,
+ * and evaluation functions require a context to operate on. Different contexts
+ * do not interact, but data may be transferred from one to another using
+ * `opMergeContexts`.
+ *
+ * Each context keeps track of the version of the Onshape Standard Library at
+ * which it was created. While regenerating a feature that has been "held back"
+ * to an older version, the version reported by the context will be the older
+ * version, causing subfeatures and operations to emulate old behavior.
  */
 export type Context typecheck canBeContext;
 
@@ -37,7 +42,8 @@ export predicate canBeContext(value)
 }
 
 /**
- * Returns a new empty context.
+ * @internal
+ * Returns a new, empty `Context`.
  */
 export function newContext() returns Context
 {
@@ -45,9 +51,9 @@ export function newContext() returns Context
 }
 
 /**
- * Return false if the active feature is running at a version number at least as new as `introduced`.
- * @param context
- * @param introduced
+ * @internal
+ * Returns `false` if the active feature of `context` is running at a version
+ * number at least as new as `introduced`.
  */
 export function isAtVersionOrLater(context is Context, introduced is FeatureScriptVersionNumber) returns boolean
 {
@@ -57,11 +63,80 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
 //====================== Id ========================
 
 /**
- * An Id identifies a feature in a context. Each feature, subfeature, and operation must have a unique id. Ids are
- * used in queries, error reporting, and accessing data associated with features. Ids are hierarchical: each subfeature
- * must have an id that is the id of its parent feature plus optionally its own subId. The root id is constructed by
- * `newId()` and subIds are added with the overloadeded addition operator: `id + "foo"` represents the id `id` with the
- * extra level "foo".
+ * An Id identifies a feature or operation in a context. Each feature,
+ * subfeature, and operation must have a unique id. Ids are used in queries,
+ * error reporting, and accessing data associated with features.
+ *
+ * Ids are hierarchical. That is, each operation's id must have a parent id.
+ * The root id is constructed with `newId()` and subIds are added with the
+ * overloaded `+` operator.
+ *
+ * @example `id + "foo"` represents an id named `"foo"` whose parent is `id`
+ * @example `id + "foo" + "bar"` represents an id named `"bar"` whose parent
+ *          equals `id + "foo"`
+ *
+ * Internally, an `Id` is just an array whose elements are strings,
+ * representing the full path of the `Id`.
+ * @example `newId() + "foo" + "bar"` is equivalent to `["foo", "bar"] as Id`,
+ *          though the expressions like the latter are not recommended in
+ *          practice.
+ *
+ * Within a feature, all operations' ids should be children of the feature's
+ * `Id` (which is always passed into the feature function as the variable
+ * `id`).
+ *
+ * Subfeatures should use a similar pattern. For instance, in the snippet
+ * below, `mySubfeature` is a minimal example following good practices
+ * for breaking out a set of operations into a subroutine.
+ * ```
+ * annotation { "Feature Type Name" : "My Feature" }
+ * export const myFeature = defineFeature(function(context is Context, id is Id, definition is map)
+ *     precondition {}
+ *     {
+ *         fCuboid(context, id + "startingCube", {
+ *                 "corner1" : vector(0, 0, 0) * inch,
+ *                 "corner2" : vector(1, 1, 1) * inch
+ *         });
+ *
+ *         mySubfeature(context, id + "subFeature", qCreatedBy(id + "startingCube", EntityType.EDGE));
+ *
+ *         fCuboid(context, id + "endingCube", {
+ *                 "corner1" : vector(0, 0, 0) * inch,
+ *                 "corner2" : vector(-1, -1, -1) * inch
+ *         });
+ *     }, {});
+ *
+ * function mySubfeature(context is Context, id is Id, entities is Query)
+ * {
+ *     opChamfer(context, id + "chamfer", {
+ *             "entities" : entities,
+ *             "chamferType" : ChamferType.EQUAL_OFFSETS,
+ *             "width" : 0.1 * inch
+ *     });
+ *     opFillet(context, id + "fillet1", {
+ *         "entities" : qCreatedBy(id + "chamfer", EntityType.EDGE),
+ *         "radius" : 0.05 * inch
+ *     });
+ * }
+ * ```
+ *
+ * The full id hierarchy must reflect creation history. That is, each `Id`
+ * (including parents) must refer to a contiguous region of operations on the
+ * context.
+ *
+ * Thus, the following code will fail because `id + "extrude"` alone refers to
+ * two non-contiguous regions of history:
+ * ```
+ * for (var i in [1, 2])
+ * {
+ *     opExtrude(context, id + "extrude" + i, {...}); // Fails on second iteration.
+ *     opChamfer(context, id + "chamfer" + i, {...});
+ * }
+ * ```
+ *
+ * For the above code, a pattern like `id + i + "extrude"` or
+ * `id + ("loop" ~ i) + "extrude"` would work as expected, as would the
+ * unnested `id + ("extrude" ~ i)`.
  */
 export type Id typecheck canBeId;
 
@@ -139,7 +214,14 @@ export operator+(id is Id, addend is Id) returns Id
 //====================== Variable builtins ========================
 
 /**
- * TODO: description
+ * Attach a variable to the context, which can be retrieved by another feature
+ * defined later. If a variable of the same name already exists, this function
+ * will overwrite it.
+ *
+ * @example `setVariable(context, "foo", 1)` attaches a variable named `"foo"`,
+ *      with value set to `1`, on the context.
+ *
+ * @param value : Can be any value, including an array or map with many elements.
  */
 export function setVariable(context is Context, name is string, value)
 {
@@ -147,7 +229,15 @@ export function setVariable(context is Context, name is string, value)
 }
 
 /**
- * TODO: description
+ * Retrieve a variable attached to the context by name.
+ *
+ * @example `getVariable(context, "foo")` returns the value assigned to a
+ *      previously-set variable named `"foo"`.
+ *
+ * Variables on a context can also be accessed within a Part Studio using
+ * `#` syntax (e.g. `#foo`) inside any parameter which allows an expression.
+ *
+ * @param name : Must be a valid identifier.
  */
 export function getVariable(context is Context, name is string)
 {

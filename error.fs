@@ -1,27 +1,70 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "");
+import(path : "onshape/std/context.fs", version : "336.0");
 
 /**
- * regenError functions are used to construct maps for throwing to signal feature regeneration errors.
- * @eg ```throw regenError(ErrorStringEnum.POINTS_COINCIDENT, ["points"]);```
+ * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
+ * Can either take a string for a custom message or an `ErrorStringEnum` for a built-in message.
  * Overloads allow for specifying parameters for the UI to indicate error state and error entities for the UI to
  * display in red.
- * @param message
+ * @example `throw regenError("Failed to attach widget: Boolean union failed")`
+ * @example `throw regenError("Wall is too thin for this feature", ["wallWidth"]);`
+ * @example `throw regenError(ErrorStringEnum.POINTS_COINCIDENT, ["points"]);`
+ *
+ * @param customMessage : @autocomplete `"message"`
+ */
+export function regenError(customMessage is string)
+{
+    return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage };
+}
+
+/**
+ * @param customMessage : @autocomplete `"message"`
+ * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ */
+export function regenError(customMessage is string, faultyParameters is array)
+{
+    return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "faultyParameters" : faultyParameters };
+}
+/**
+ * @param customMessage : @autocomplete `"message"`
+ */
+export function regenError(customMessage is string, entities is Query)
+{
+    return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "entities" : entities };
+}
+
+/**
+ * @param customMessage : @autocomplete `"message"`
+ * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ */
+export function regenError(customMessage is string, faultyParameters is array, entities is Query)
+{
+    return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "faultyParameters" : faultyParameters, "entities" : entities };
+}
+
+/**
+ * The following overloads take an `ErrorStringEnum` rather than a custom
+ * message, and are using for all errors withing the Onshape Standard Library.
+ * The enum values correspond to messages which can be translated into multiple
+ * languages.
  */
 export function regenError(message is ErrorStringEnum)
 {
     return { "message" : message };
 }
 
+/**
+ * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ */
 export function regenError(message is ErrorStringEnum, faultyParameters is array)
 {
     return { "message" : message, "faultyParameters" : faultyParameters };
@@ -32,6 +75,9 @@ export function regenError(message is ErrorStringEnum, entities is Query)
     return { "message" : message, "entities" : entities };
 }
 
+/**
+ * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ */
 export function regenError(message is ErrorStringEnum, faultyParameters is array, entities is Query)
 {
     return { "message" : message, "faultyParameters" : faultyParameters, "entities" : entities };
@@ -52,7 +98,7 @@ export function processError(context is Context, id is Id, error is map) returns
     var messageEnum = try(error.message as ErrorStringEnum);
     if (messageEnum == undefined)
         messageEnum = ErrorStringEnum.REGEN_ERROR;
-    @reportFeatureError(context, id, { "message" : messageEnum, "faultyParameters" : error.faultyParameters });
+    @reportFeatureError(context, id, { "message" : messageEnum, "customMessage" : error.customMessage, "faultyParameters" : error.faultyParameters });
     if (error.entities != undefined)
         @setErrorEntities(context, id, error);
     return true;
@@ -95,12 +141,28 @@ export function reportFeatureError(context is Context, id is Id, message is Erro
     return true;
 }
 
+/** @internal */
+export function reportFeatureError(context is Context, id is Id, customMessage is string) returns boolean
+{
+    @reportFeatureError(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
+    return true;
+}
+
 /**
  * Attaches a warning-level status to the given feature id.
  */
 export function reportFeatureWarning(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
     @reportFeatureWarning(context, id, { "message" : message });
+    return true;
+}
+
+/**
+ * Attaches a custom warning-level status to the given feature id.
+ */
+export function reportFeatureWarning(context is Context, id is Id, customMessage is string) returns boolean
+{
+    @reportFeatureWarning(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
     return true;
 }
 
@@ -114,12 +176,21 @@ export function reportFeatureInfo(context is Context, id is Id, message is Error
 }
 
 /**
+ * Attaches a custom info-level status to the given feature id.
+ */
+export function reportFeatureInfo(context is Context, id is Id, customMessage is string) returns boolean
+{
+    @reportFeatureInfo(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
+    return true;
+}
+
+/**
  * This function propagates a warning or info from a subfeature to the current feature.
- * TODO: precondition check that `id` is the prefix of `subId`.
  *
  * @param subId : The id of the subfeature
  * @param id : The id of the current feature.
  */
+// TODO: precondition check that `id` is the prefix of `subId`.
 export function processSubfeatureStatus(context is Context, subId is Id, id is Id) returns boolean
 {
     // If an operation contains sub-operations, e.g. an extruded boss is an extrusion and a boolean
@@ -150,30 +221,36 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
 }
 
 /**
- * Returns the error associated with the given feature id or `undefined` if none.
+ * Returns the error (as a string or an `ErrorStringEnum`) associated with the given feature id or `undefined` if none.
  */
 export function getFeatureError(context is Context, id is Id)
 {
     const result = @getFeatureError(context, id);
-    return result == undefined ? undefined : result as ErrorStringEnum;
+    if (ErrorStringEnum[result] != undefined)
+        return result as ErrorStringEnum;
+    return result;
 }
 
 /**
- * Returns the warning associated with the given feature id or `undefined` if none.
+ * Returns the warning (as a string or an `ErrorStringEnum`) associated with the given feature id or `undefined` if none.
  */
 export function getFeatureWarning(context is Context, id is Id)
 {
     const result = @getFeatureWarning(context, id);
-    return result == undefined ? undefined : result as ErrorStringEnum;
+    if (ErrorStringEnum[result] != undefined)
+        return result as ErrorStringEnum;
+    return result;
 }
 
 /**
- * Returns the info-level status associated with the given feature id or `undefined` if none.
+ * Returns the info status (as a string or an `ErrorStringEnum`) associated with the given feature id or `undefined` if none.
  */
 export function getFeatureInfo(context is Context, id is Id)
 {
     const result = @getFeatureInfo(context, id);
-    return result == undefined ? undefined : result as ErrorStringEnum;
+    if (ErrorStringEnum[result] != undefined)
+        return result as ErrorStringEnum;
+    return result;
 }
 
 /**

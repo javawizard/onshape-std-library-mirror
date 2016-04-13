@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -14,61 +14,60 @@ FeatureScript 328; /* Automatically generated version */
  * explicitly importing other modules.
  */
 /* Feature basics */
-export import(path : "onshape/std/context.fs", version : "");
-export import(path : "onshape/std/defaultFeatures.fs", version : "");
-export import(path : "onshape/std/feature.fs", version : "");
-export import(path : "onshape/std/featureList.fs", version : "");
+export import(path : "onshape/std/context.fs", version : "336.0");
+export import(path : "onshape/std/defaultFeatures.fs", version : "336.0");
+export import(path : "onshape/std/feature.fs", version : "336.0");
+export import(path : "onshape/std/featureList.fs", version : "336.0");
 
-/* Query and evaluation */
-export import(path : "onshape/std/evaluate.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/evaluate.fs", version : "336.0");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "336.0");
 
-/* Units and bounds */
-export import(path : "onshape/std/units.fs", version : "");
-export import(path : "onshape/std/valueBounds.fs", version : "");
+export import(path : "onshape/std/units.fs", version : "336.0");
+export import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /* Math, string, vector, matrix, and support functions */
-export import(path : "onshape/std/box.fs", version : "");
-export import(path : "onshape/std/containers.fs", version : "");
-export import(path : "onshape/std/coordSystem.fs", version : "");
-export import(path : "onshape/std/curveGeometry.fs", version : "");
-export import(path : "onshape/std/debug.fs", version : "");
-export import(path : "onshape/std/mathUtils.fs", version : "");
-export import(path : "onshape/std/string.fs", version : "");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "");
-export import(path : "onshape/std/attributes.fs", version : "");
-export import(path : "onshape/std/lookupTablePath.fs", version : "");
+export import(path : "onshape/std/box.fs", version : "336.0");
+export import(path : "onshape/std/containers.fs", version : "336.0");
+export import(path : "onshape/std/coordSystem.fs", version : "336.0");
+export import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+export import(path : "onshape/std/debug.fs", version : "336.0");
+export import(path : "onshape/std/mathUtils.fs", version : "336.0");
+export import(path : "onshape/std/string.fs", version : "336.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+export import(path : "onshape/std/attributes.fs", version : "336.0");
+export import(path : "onshape/std/lookupTablePath.fs", version : "336.0");
 
 /* Onshape standard library features */
-export import(path : "onshape/std/boolean.fs", version : "");
-export import(path : "onshape/std/chamfer.fs", version : "");
-export import(path : "onshape/std/cplane.fs", version : "");
-export import(path : "onshape/std/deleteBodies.fs", version : "");
-export import(path : "onshape/std/deleteFace.fs", version : "");
-export import(path : "onshape/std/draft.fs", version : "");
-export import(path : "onshape/std/extrude.fs", version : "");
-export import(path : "onshape/std/fillet.fs", version : "");
-export import(path : "onshape/std/helix.fs", version : "");
-export import(path : "onshape/std/hole.fs", version : "");
-export import(path : "onshape/std/importDerived.fs", version : "");
-export import(path : "onshape/std/importForeign.fs", version : "");
-export import(path : "onshape/std/loft.fs", version : "");
-export import(path : "onshape/std/mateConnector.fs", version : "");
-export import(path : "onshape/std/mirror.fs", version : "");
-export import(path : "onshape/std/modifyFillet.fs", version : "");
-export import(path : "onshape/std/moveFace.fs", version : "");
-export import(path : "onshape/std/pattern.fs", version : "");
-export import(path : "onshape/std/primitives.fs", version : "");
-export import(path : "onshape/std/replaceFace.fs", version : "");
-export import(path : "onshape/std/revolve.fs", version : "");
-export import(path : "onshape/std/shell.fs", version : "");
-export import(path : "onshape/std/sketch.fs", version : "");
-export import(path : "onshape/std/sectionpart.fs", version : "");
-export import(path : "onshape/std/splitpart.fs", version : "");
-export import(path : "onshape/std/sweep.fs", version : "");
-export import(path : "onshape/std/thicken.fs", version : "");
-export import(path : "onshape/std/transformCopy.fs", version : "");
-export import(path : "onshape/std/variable.fs", version : "");
-export import(path : "onshape/std/booleanHeuristics.fs", version : "");
+export import(path : "onshape/std/boolean.fs", version : "336.0");
+export import(path : "onshape/std/chamfer.fs", version : "336.0");
+export import(path : "onshape/std/cplane.fs", version : "336.0");
+export import(path : "onshape/std/deleteBodies.fs", version : "336.0");
+export import(path : "onshape/std/deleteFace.fs", version : "336.0");
+export import(path : "onshape/std/draft.fs", version : "336.0");
+export import(path : "onshape/std/extrude.fs", version : "336.0");
+export import(path : "onshape/std/fillet.fs", version : "336.0");
+export import(path : "onshape/std/helix.fs", version : "336.0");
+export import(path : "onshape/std/hole.fs", version : "336.0");
+export import(path : "onshape/std/importDerived.fs", version : "336.0");
+export import(path : "onshape/std/importForeign.fs", version : "336.0");
+export import(path : "onshape/std/loft.fs", version : "336.0");
+export import(path : "onshape/std/mateConnector.fs", version : "336.0");
+export import(path : "onshape/std/mirror.fs", version : "336.0");
+export import(path : "onshape/std/modifyFillet.fs", version : "336.0");
+export import(path : "onshape/std/moveFace.fs", version : "336.0");
+export import(path : "onshape/std/pattern.fs", version : "336.0");
+export import(path : "onshape/std/primitives.fs", version : "336.0");
+export import(path : "onshape/std/replaceFace.fs", version : "336.0");
+export import(path : "onshape/std/revolve.fs", version : "336.0");
+export import(path : "onshape/std/shell.fs", version : "336.0");
+export import(path : "onshape/std/sketch.fs", version : "336.0");
+export import(path : "onshape/std/sectionpart.fs", version : "336.0");
+export import(path : "onshape/std/splitpart.fs", version : "336.0");
+export import(path : "onshape/std/sweep.fs", version : "336.0");
+export import(path : "onshape/std/thicken.fs", version : "336.0");
+export import(path : "onshape/std/transformCopy.fs", version : "336.0");
+export import(path : "onshape/std/variable.fs", version : "336.0");
+export import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
 
 

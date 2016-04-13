@@ -1,10 +1,15 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "");
-import(path : "onshape/std/vector.fs", version : "");
+/**
+ * This module refers to 3D bounding boxes. For more info on the `box` standard
+ * type used for references, see `Types and values` in the language reference.
+ */
+
+import(path : "onshape/std/units.fs", version : "336.0");
+import(path : "onshape/std/vector.fs", version : "336.0");
 
 /**
  * A three-dimensional bounding box.
@@ -47,7 +52,7 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
  * Enlarge a bounding box.
  * @param bBox
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
- *     each face of the box.  The corners move sqrt(3) times as far.
+ *     each face of the box.  The corners move `sqrt(3)` times as far.
  * @param factor {number} : The relative amount to expand the box, with
  *     `0` leaving it unchanged.
  */

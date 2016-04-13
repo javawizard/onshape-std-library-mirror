@@ -1,24 +1,24 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "336.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /**
- * TODO: description
+ * Specifies how a revolve's end condition should be defined.
  */
 export enum RevolveType
 {
@@ -33,15 +33,8 @@ export enum RevolveType
 }
 
 /**
- * Create a revolve, as used in Onshape's revolve feature.
- *
- * Internally, performs an `opRevolve`, followed by an `opBoolean`. For simple revolves, prefer using
+ * Feature performing an `opRevolve`, followed by an `opBoolean`. For simple revolves, prefer using
  * `opRevolve` directly.
- *
- * @param id : @autocomplete `id + "revolve1"`
- * @param definition {{
- *      @field TODO
- * }}
  */
 annotation { "Feature Type Name" : "Revolve",
              "Manipulator Change Function" : "revolveManipulatorChange",
@@ -276,14 +269,8 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
 }
 
 /**
- * TODO: description
- * @param context
- * @param revolveDefinition {{
- *      @field TODO
- * }}
- * @param newManipulators {{
- *      @field TODO
- * }}
+ * @internal
+ * Manipulator change function for `revolve` feature.
  */
 export function revolveManipulatorChange(context is Context, revolveDefinition is map, newManipulators is map) returns map
 {
@@ -315,7 +302,8 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
 
 
 /**
- * implements heuristics for revolve feature
+ * @internal
+ * Editing logic function for `revolve` feature.
  */
 export function revolveEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map

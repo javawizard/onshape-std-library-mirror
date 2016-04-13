@@ -1,22 +1,22 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "");
+export import(path : "onshape/std/curvetype.gen.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/coordSystem.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
 
 // ===================================== Line ======================================
 
 /**
- * Represents a parameterized line in space.
+ * Represents a parameterized line in 3D space.
  * @type {{
- *      @field origin {Vector} : A 3D Vector with length units.
+ *      @field origin {Vector} : A point on the line, as a 3D Vector with length units.
  *      @field direction {Vector} : A unitless normalized 3D Vector.
  * }}
  */
@@ -31,8 +31,7 @@ export predicate canBeLine(value)
 }
 
 /**
- * Creates a line from an origin and a direction.
- * @param origin
+ * Creates a line from a point and a direction.
  * @param direction : The direction gets normalized by this function.
  */
 export function line(origin is Vector, direction is Vector) returns Line
@@ -112,7 +111,7 @@ export function toString(value is Line) returns string
  * Represents a circle in 3D space.
  * @type {{
  *      @field coordSystem {CoordSystem} : The circle lies in the xy plane of this coordinate
- *          system and the origin of its parameterization is the x axis.
+ *              system and the origin of its parameterization is the x axis.
  *      @field radius {ValueWithUnits} : The radius of the circle.
  * }}
  */
@@ -127,13 +126,16 @@ export predicate canBeCircle(value)
 }
 
 /**
- * Returns a circle given a `CoordSystem` and a radius.
+ * Returns a new `Circle` in the given coordinate system `cSys`.
  */
 export function circle(cSys is CoordSystem, radius is ValueWithUnits) returns Circle
 {
     return { "coordSystem" : cSys, "radius" : radius } as Circle;
 }
 
+/**
+ * Returns a new `Circle` with the given parameters. `xDirection` and `normal` must be perpendicular.
+ */
 export function circle(center is Vector, xDirection is Vector, normal is Vector, radius is ValueWithUnits) returns Circle
 {
     return circle(coordSystem(center, xDirection, normal), radius);
@@ -170,7 +172,7 @@ export function toString(value is Circle) returns string
  * Represents an ellipse in 3D space.
  * @type {{
  *      @field coordSystem {CoordSystem} : The ellipse lies in the xy plane of this coordinate
- *          system and the x axis corresponds to the major radius.
+ *              system and the x axis corresponds to the major radius.
  *      @field majorRadius {ValueWithUnits} : The larger of the two radii.
  *      @field minorRadius {ValueWithUnits} : The smaller of the two radii.
  * }}
@@ -188,13 +190,16 @@ export predicate canBeEllipse(value)
 }
 
 /**
- * Constructs an ellipse according to the definition.
+ * Returns a new `Ellipse` with the given parameters.
  */
 export function ellipse(cSys is CoordSystem, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
 {
     return { "coordSystem" : cSys, "majorRadius" : majorRadius, "minorRadius" : minorRadius } as Ellipse;
 }
 
+/**
+ * Returns a new `Ellipse` with the given parameters. `xDirection` and `normal` must be perpendicular.
+ */
 export function ellipse(center is Vector, xDirection is Vector, normal is Vector, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
 {
     return ellipse(coordSystem(center, xDirection, normal), majorRadius, minorRadius);

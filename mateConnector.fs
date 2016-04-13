@@ -1,30 +1,25 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "336.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "336.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "336.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/tool.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opMateConnector`.
  */
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)

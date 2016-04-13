@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -16,10 +16,10 @@ FeatureScript 328; /* Automatically generated version */
  * nested queries.
  *
  * Queries in general do not contain a list of entities in any form. Rather,
- * they contain criteria that specify a subset of the topological entites in a
+ * they contain criteria that specify a subset of the topological entities in a
  * context. To get an array of the entities (if any) which match a query in
  * a context, use `evaluateQuery`. There is no need to evaluate a query before
- * passing it into a function, including any of the Standard Libary's operation
+ * passing it into a function, including any of the Standard Library's operation
  * and evaluation functions.
  *
  * There are two general types of queries: state-based and historical.
@@ -31,14 +31,14 @@ FeatureScript 328; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/context.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/context.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
 
 /**
- * A `Query` indentifies a specific subset of a context's entities (points, lines,
+ * A `Query` identifies a specific subset of a context's entities (points, lines,
  * planes, and bodies).
  *
  * The fields on a Query map depend on its `QueryType`, and may include one or
@@ -239,7 +239,7 @@ export enum EntityType
  * @value CIRCLE : A circle of constant radius
  * @value ARC : A segment of a circle
  * @value OTHER_CURVE : Any one-dimensional entity which is not described above
- *      (e.g. splines, elipses, etc.)
+ *      (e.g. splines, ellipses, etc.)
  * @value PLANE : A construction plane or planar face
  * @value CYLINDER : A surface which forms the side of a right circular cylinder
  * @value CONE : A surface which forms the side of a right circular cone
@@ -307,12 +307,12 @@ export enum SketchObject
  * annotation { "Name" : "Surface edges", "Filter" : EntityType.EDGE && EdgeTopology.LAMINAR }
  * definition.edges is Query;
  * ```
- * TODO: rename LAMINAR to "boundary" or somesuch that sounds less like we're
- * talking about fliud dynamics...
  *
  * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
  * @default @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
  */
+// TODO: rename LAMINAR to "boundary" or somesuch that sounds less like we're
+// talking about fluid dynamics...
 export enum EdgeTopology
 {
     LAMINAR,
@@ -469,13 +469,13 @@ export function qTransient(id is TransientId) returns Query
 
 /**
  * A query for the true dependency of the query. For instance, the true dependency of the extruded
- * body will be the face or sketch edges of the profile.
- * TODO: Explain this
+ * body will be the face or sketch edges of the profile from which it is extruded.
  */
 export function qDependency(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
 }
+
 /**
 * A query for start/end cap entities created by featureId.
 * Cap entities are produced by extrude, revolve, sweep and loft features
@@ -487,9 +487,7 @@ export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
             "startCap" : isStartCap} as Query;
 }
 
-/**
- * TODO: description
- */
+/** @internal */
 export function transientQueriesToStrings(query is Query)
 {
     if (query.queryType == QueryType.TRANSIENT)
@@ -578,7 +576,7 @@ export function qSymmetricDifference(query1 is Query, query2 is Query) returns Q
 // ======================= Topological Queries ================================
 
 /**
- * A query for all of the entities (faces, verticies, edges, and bodies) in a
+ * A query for all of the entities (faces, vertices, edges, and bodies) in a
  * context which belong to a specified body or bodies.
  * @param entityType : @optional
  */
@@ -721,7 +719,7 @@ export function qPlanarNormal(subquery is Query, normal is Vector) returns Query
  * edge.
  *
  * A convex edge is an edge which forms a convex angle along the full length of
- * the edge. A convex angle is strictly less than 180 degress for flat faces,
+ * the edge. A convex angle is strictly less than 180 degrees for flat faces,
  * or faces with negative curvature. If one face has positive curvature, and
  * the other has flat or positive curvature, a convex angle is less than or
  * equal to 180 degrees. Thus, the two bounding edges of an exterior fillet are
@@ -738,7 +736,7 @@ export function qConvexConnectedFaces(subquery is Query) returns Query
  * edge.
  *
  * A concave edge is an edge which forms a concave angle along the full length of
- * the edge. A concave angle is strictly greater than 180 degress for flat faces,
+ * the edge. A concave angle is strictly greater than 180 degrees for flat faces,
  * or faces with positive curvature. If one face has negative curvature, and
  * the other has flat or negative curvature, a concave angle is less than or
  * equal to 180 degrees. Thus, the two bounding edges of an interior fillet are
@@ -764,8 +762,14 @@ export function qTangentConnectedFaces(subquery is Query) returns Query
 }
 
 /**
- * TODO: description
- * @param subquery
+ * Given a face and an edge, query for all faces bounded by the given face, on
+ * the side of the given edge.
+ *
+ * For example, to select an entire pocket, pass in a the face which surrounds
+ * the pocket, and an edge of the face which touches that pocket.
+ *
+ * @param subquery : Should match a face and an edge. If multiple faces and
+ *          edges match, used the first face and the first edge.
  */
 export function qLoopBoundedFaces(subquery is Query) returns Query
 {
@@ -773,8 +777,12 @@ export function qLoopBoundedFaces(subquery is Query) returns Query
 }
 
 /**
- * TODO: description
- * @param subquery
+ * Given a seed face and bounding entities, matches all adjacent faces inside
+ * the bounding entities, expanding from the seed face.
+ *
+ * @param subquery : A Query for the seed face, followed by any boundary faces
+ *          or edges. The seed face must be first, so a `qUnion` should be used
+ *          to gaurantee the order.
  */
 export function qFaceOrEdgeBoundedFaces(subquery is Query) returns Query
 {
@@ -782,8 +790,9 @@ export function qFaceOrEdgeBoundedFaces(subquery is Query) returns Query
 }
 
 /**
- * TODO: description
- * @param subquery
+ * Given a single face inside a hole or hole-like geometry, returns all faces of that hole.
+ *
+ * @param subquery : A query for a single face inside the hole.
  */
 export function qHoleFaces(subquery is Query) returns Query
 {
@@ -796,7 +805,6 @@ export function qHoleFaces(subquery is Query) returns Query
  *
  * @param filterInnerLoops : Specifies whether to exclude sketch regions fully
  *      contained in other sketch regions. Default is false.
- *      TODO: Is this right?
  *      @optional
  */
 export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) returns Query
@@ -810,7 +818,13 @@ export function qSketchRegion(featureId is Id) returns Query
 }
 
 /**
- * TODO: description
+ * @internal
+ * This is designed as a stable way of associating an edge with its
+ * orientation, and it used in generated code.
+ *
+ * However, since it cannot be evaluated like normal queries,
+ * it's marked internal to avoid confusion.
+ *
  * @param faceQuery
  * @param edgeQuery
  */
@@ -833,7 +847,9 @@ export function qMateConnectorsOfParts(subquery is Query) returns Query
  * match any faces. Will find the fillet radius from the faces and then compare to find all the faces
  * of fillets that satisfy the compareType.
  *
- * TODO: What if subquery has multiple fillets with different radii?
+ * If `subquery` resolves to multiple fillet faces, all are matched independently. That is,
+ * `qFilletFaces(qUnion([q1, q2], compareType))` returns the same thing as
+ * `qUnion([qFilletFaces(q1, compareType), qFilletFaces(q2, compareType)])`.
  */
 export function qFilletFaces(subquery is Query, compareType is CompareType) returns Query
 precondition
@@ -845,8 +861,12 @@ precondition
 }
 
 /**
- * TODO: description
- * @param subquery
+ * Matches any faces in the `context` which are geometrically identical (same size and shape) to the face in
+ * `subquery`.
+ *
+ * If `subquery` resolves to multiple faces, all are matched independently. That is,
+ * `qMatchingFaces(qUnion([q1, q2]))` returns the same thing as
+ * `qUnion([qMatchingFaces(q1), qMatchingFaces(q2)])`.
  */
 export function qMatchingFaces(subquery is Query) returns Query
 {
@@ -896,17 +916,13 @@ export function qIntersectsPlane(subquery is Query, plane is Plane) returns Quer
 
 // ==================================== Historical Query stuff ================================
 
-/**
- * @internal
- */
+/** @internal */
 export function makeQuery(value is map) returns Query
 {
     return value as Query;
 }
 
-/**
- * TODO: description
- */
+/** @internal */
 export function makeQuery(operationId is Id, queryType is string, entityType, value is map) returns Query
 precondition
 {
@@ -918,12 +934,7 @@ precondition
                        "entityType" : entityType, "historyType" : "CREATION" }) as Query;
 }
 
-/**
- * TODO: description
- * @param operationId
- * @param entityType
- * @param disambiguationOrder
- */
+/** @internal */
 export function dummyQuery(operationId is Id, entityType is EntityType, disambiguationOrder is number) returns Query
 {
     return makeQuery({ "operationId" : operationId,
@@ -940,10 +951,13 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
 }
 
 /**
- * TODO: description
- * @param featureId
- * @param entityType
- * @param backBody
+ * Given the id of a split feature, get entities of a given `EntityType` on
+ * either the front body or the back body after the split.
+ * @param featureId : @eg `id + "split1"`
+ * @param backBody {boolean} :
+ *          @eg `false` indicates the body in front (i.e. in the direction of
+ *              the split tool's surface normal).
+ *          @eg `true` indicates the body in back.
  */
 export function qSplitBy(featureId is Id, entityType, backBody is boolean)
 precondition
@@ -955,10 +969,16 @@ precondition
 }
 
 /**
- * TODO: description
- * @param operationId
- * @param entityType
- * @param sketchEntityId
+ * Gets the wire body entities created for a specific sketch entity. If the
+ * sketch id created multiple sketch entities, will return all the wire
+ * bodies.
+ *
+ * @param operationId : Id of the sketch feature.
+ * @param entityType :
+ *          @ex `EntityType.EDGE` to match the edges on the wire bodies.
+ *          @eg `EntityType.BODY` to match the bodies themselves.
+ *          @ex `undefined` to match both.
+ * @param sketchEntityId : Sketch id.
  */
 export function sketchEntityQuery(operationId is Id, entityType, sketchEntityId is string) returns Query
 precondition
@@ -970,53 +990,44 @@ precondition
             { "sketchEntityId" : sketchEntityId });
 }
 
-/**
- * TODO: description
- * @param order
- */
+/** @internal */
 export function orderDisambiguation(order is number)
 {
     return { disambiguationType : "ORDER", "order" : order };
 }
 
-/**
- * TODO: description
- * @param topology
- */
+/** @internal */
 export function topologyDisambiguation(topology is array)
 {
     return { disambiguationType : "TOPOLOGY", entities : topology };
 }
 
-/**
- * TODO: description
- * @param queries
- */
+/** @internal */
 export function originalSetDisambiguation(queries is array)
 {
     return { disambiguationType : "ORIGINAL_DEPENDENCY", originals : queries };
 }
 
-/**
- * TODO: description
- * @param queries
- */
+/** @internal */
 export function trueDependencyDisambiguation(queries is array)
 {
     return { disambiguationType : "TRUE_DEPENDENCY", derivedFrom : queries };
 }
 
-/**
- * TODO: description
- * @param topology
- */
+/** @internal */
 export function ownerDisambiguation(topology is array)
 {
     return { disambiguationType : "OWNER", owners : topology };
 }
 
 /**
- * TODO: description
+ * A `TransientId` is a deterministic id assigned to a specific topological
+ * entity.
+ *
+ * Transient ids should generally not be used directly because they are not
+ * stable. If a user modifies an upstream feature, the transient ids of all
+ * entities can potentially change. To refer to geometry in a robust way,
+ * use non-transient queries.
  */
 export type TransientId typecheck canBeTransientId;
 
@@ -1034,7 +1045,7 @@ export function toString(value is TransientId)
 //==================
 
 /**
- * TODO: description
+ * @internal
  * @param paramName
  */
 export function notFoundErrorKey(paramName is string) returns string

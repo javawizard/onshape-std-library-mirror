@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,18 +9,18 @@ FeatureScript 328; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits or a FeatureScript geometry type (like Line or Plane). They
  * may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/clashtype.gen.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/context.fs", version : "");
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/query.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/box.fs", version : "336.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/context.fs", version : "336.0");
+import(path : "onshape/std/coordSystem.fs", version : "336.0");
+import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/query.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
 
 /**
  * Given a face, calculate and return a Plane tangent to that face,
@@ -105,7 +105,7 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
  *             because the result will be identical.
  *          @optional
  * }}
- * @returns {array} : array of `Line`
+ * @returns {array} : An array of `Line`s.
  */
 export function evEdgeTangentLines(context is Context, arg is map) returns array
 precondition
@@ -543,13 +543,13 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
 }
 
 /**
-* For Onshape internal use
-*/
+ * @internal
+ */
 export type OffsetGroup typecheck isOffsetGroup;
 
 /**
-* For Onshape internal use
-*/
+ * @internal
+ */
 export predicate isOffsetGroup(value)
 {
     value is map;
@@ -561,9 +561,9 @@ export predicate isOffsetGroup(value)
 }
 
 /**
-* For Onshape internal use
-* Detects pairs of offset faces in the bodies
-*/
+ * @internal
+ * Detects pairs of offset faces in the bodies
+ */
 export function evOffsetDetection(context is Context, definition is map) returns array
 precondition
 {

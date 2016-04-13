@@ -1,23 +1,23 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /**
- * The type of construction plane.
+ * The method of defining a construction plane.
  */
 export enum CPlaneType
 {
@@ -68,10 +68,7 @@ const PLANE_OFFSET_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Creates a construction plane.  @see `opPlane`.
- * @param definition {{
- *      @field TODO
- * }}
+ * Creates a construction plane feature by calling `opPlane`.
  */
 annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
@@ -494,7 +491,7 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
 }
 
 /**
- * Figures out the type of plane based on the preselection.
+ * Heuristics to determine the type of plane to be constructed, based on user preselection.
  */
 export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map
 {

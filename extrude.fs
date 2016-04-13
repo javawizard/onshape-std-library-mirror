@@ -1,31 +1,32 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "336.0");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/draft.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "336.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
+import(path : "onshape/std/box.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/curveGeometry.fs", version : "336.0");
+import(path : "onshape/std/draft.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /**
- * TODO: description
+ * Similar to `BoundingType`, but made for the second direction of an `extrude`.
+ * Thus, `SYMMETRIC` is not an option.
  */
 export enum SecondDirectionBoundingType
 {
@@ -666,14 +667,8 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
 }
 
 /**
- * TODO: description
- * @param context
- * @param definition {{
- *      @field TODO
- * }}
- * @param newManipulators {{
- *      @field TODO
- * }}
+ * @internal
+ * The manipulator change function used in the `extrude` feature.
  */
 export function extrudeManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
@@ -742,16 +737,6 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
             stripUnits(boxResult.maxCorner[2]) < TOLERANCE.zeroLength);
 }
 
-
-/**
- * @param context
- * @param featureDefinition {{
- *      @field TODO
- * }}
- * @param featureInfo {{
- *      @field TODO
- * }}
- */
 function upToBoundaryFlip(context is Context, featureDefinition is map) returns map
 {
     const usedEntities = getEntitiesToUse(context, featureDefinition);
@@ -802,7 +787,8 @@ function canSetUpToFlip(definition is map, specifiedParameters is map) returns b
 }
 
 /**
- * implements heuristics for extrude feature
+ * @internal
+ * The editing logic function used in the `extrude` feature.
  */
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map

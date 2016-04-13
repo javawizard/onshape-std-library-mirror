@@ -1,22 +1,22 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "336.0");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/clashtype.gen.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/primitives.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "336.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/primitives.fs", version : "336.0");
+import(path : "onshape/std/transform.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
 
 /**
  * The boolean feature.  Performs an `opBoolean` after a possible `opOffsetFaces` if the operation is subtraction.
@@ -171,7 +171,7 @@ function constructToolsComplement(context is Context, id is Id, booleanDefinitio
 }
 
 /**
- * Maps the new body operation type that features like `extrude` take to the boolean operation type.
+ * Maps a `NewBodyOperationType` (used in features like `extrude`) to its corresponding `BooleanOperationType`.
  */
 export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
 {
@@ -183,8 +183,11 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
 }
 
 /**
- * Used by body-creating feature preconditions to allow post-creation booleans.  For example, the boolean after
+ * Used by body-creating feature preconditions to allow post-creation booleans. For example, the boolean after
  * extrude, revolve, sweep or loft.
+ *
+ * When used in a precondition, this predicate creates UI like the extrude
+ * feature, with a horizontal list of the words "New", "Add", etc.
  */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
@@ -192,7 +195,9 @@ export predicate booleanStepTypePredicate(booleanDefinition is map)
     booleanDefinition.operationType is NewBodyOperationType;
 }
 
-/** Used by body-creating feature preconditions to allow post-creation booleans. Use together with `booleanStepTypePredicate`. */
+/**
+ * Used by body-creating feature preconditions to allow post-creation booleans. Use together with `booleanStepTypePredicate`.
+ */
 export predicate booleanStepScopePredicate(booleanDefinition is map)
 {
     if (booleanDefinition.operationType != NewBodyOperationType.NEW)
@@ -216,17 +221,7 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
  *
  * @param context {Context}
  * @param id {Id}: identifier of the tools feature
- * @param definition {{
- *      @field operationType {NewBodyOperationType}:
- *          @eg `NewBodyOperationType.ADD` performs a boolean union
- *          @eg `NewBodyOperationType.NEW` does nothing
- *      @field defaultScope {boolean}: @optional
- *          @eg `true`  indicates merge scope of "everything else" (default)
- *          @eg `false` indicates merge scope is specified in `booleanScope`
- *      @field booleanScope {Query}: targets to use if `defaultScope` is false
- *      @field seed {Query}: if set, will be included in the tools section of the boolean
- *          @optional
- * }}
+ * @param definition {map} : See `definition` of `preocessNewBodyIfNeeded` for details.
  * @returns {{
  *    @field targets {Query}: targets to use
  *    @field tools {Query}: tools to use
@@ -262,14 +257,23 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 }
 
 /**
- * Performs a boolean operation (optionally). Used by body-creating features (like Extrude) as the boolean step.
+ * Performs a boolean operation (optionally). Used by body-creating features (like `extrude`) as the boolean step.
  * On top of the regular boolean feature, converts the `operationType` and creates error bodies on failure.
  *
  * @param id : identifier of the main feature
- * @param definition {map} : @see `subfeatureToolsTargets#definition` definition specifying how to contruct tools and targets
- *                           on subfeatureToolsTargets.
+ * @param definition {{
+ *      @field operationType {NewBodyOperationType}:
+ *              @eg `NewBodyOperationType.ADD` performs a boolean union
+ *              @eg `NewBodyOperationType.NEW` does nothing
+ *      @field defaultScope {boolean}: @optional
+ *              @eg `true`  indicates merge scope of "everything else" (default)
+ *              @eg `false` indicates merge scope is specified in `booleanScope`
+ *      @field booleanScope {Query}: targets to use if `defaultScope` is false
+ *      @field seed {Query}: @optional
+ *              If set, will be included in the tools section of the boolean.
+ * }}
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
- *      in case the input is problematic or the boolean itself fails.
+ *          in case the input is problematic or the boolean itself fails.
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {

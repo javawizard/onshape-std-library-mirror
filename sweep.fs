@@ -1,21 +1,22 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "336.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
 
 /**
- * @see `opSweep`.
+ * Feature performing an `opSweep`, followed by an `opBoolean`. For simple sweeps, prefer using
+ * `opSweep` directly.
  */
 annotation { "Feature Type Name" : "Sweep",
              "Filter Selector" : "allparts",
@@ -95,7 +96,8 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
 
 
 /**
- * implements heuristics for sweep feature
+ * @internal
+ * Editing logic function for sweep feature.
  */
 export function sweepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map

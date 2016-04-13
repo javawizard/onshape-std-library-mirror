@@ -1,11 +1,42 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/math.fs", version : "");
-export import(path : "onshape/std/units.fs", version : "");
+/**
+ * Value bounds are used to define minimum, maximum, and default values for
+ * numbers and values with units. These bounds are in the feature dialog UI
+ * for parameters with the given bounds.
+ *
+ * In standard usage, a parameter can be specified with e.g. angle bounds
+ * in a feature precondition as follows:
+ * ```
+ * isAngle(definition.myAngle, ANGLE_360_BOUNDS);
+ * ```
+ *
+ * To change the bounds and defaults on the above declaration, a user may
+ * replace ANGLE_360_BOUNDS with another `AngleBoundSpec` in this module, or
+ * define their own. For instance, the following code creates a parameter whose
+ * default value is 45 degrees (if the user's settings have degrees as the
+ * default) or 1 radian (if the user's settings have radians as the default).
+ * ```
+ * const MY_BOUNDS =
+ * {
+ *     "min"    : -TOLERANCE.zeroAngle * radian,
+ *     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
+ *     (degree) : [0, 45, 360],
+ *     (radian) : 1
+ * } as AngleBoundSpec;
+ *
+ * ...
+ *     isAngle(definition.myAngle, MY_BOUNDS);
+ * ...
+ * ```
+ */
+
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/math.fs", version : "336.0");
+export import(path : "onshape/std/units.fs", version : "336.0");
 
 /** @internal */
 export predicate defineBounds(value, boundSpec is map)
@@ -402,7 +433,7 @@ export predicate canBeBoundSpec(value)
  * parameter defined with `MY_LENGTH_BOUNDS`. These behaviors will be different
  * for users who have set different default units.
  *
- * Secifically, the center value of the array defined for a unit (or the only
+ * Specifically, the center value of the array defined for a unit (or the only
  * value, if only one is provided) defines the default value, when a user with
  * those default units first opens the dialog.
  *

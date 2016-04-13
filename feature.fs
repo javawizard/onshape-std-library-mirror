@@ -1,18 +1,18 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "");
-export import(path : "onshape/std/error.fs", version : "");
-export import(path : "onshape/std/geomOperations.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/context.fs", version : "336.0");
+export import(path : "onshape/std/error.fs", version : "336.0");
+export import(path : "onshape/std/geomOperations.fs", version : "336.0");
+export import(path : "onshape/std/query.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/transform.fs", version : "336.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
@@ -23,17 +23,43 @@ import(path : "onshape/std/transform.fs", version : "");
  *     precondition
  *     {
  *         ... // Specify the parameters that this feature takes
- *         definition.useMoreFillets is boolean;
+ *         definition.shouldFillet is boolean;
  *     }
  *     {
  *     ... // Specify what the feature does when regenerating
- *     }, { "useMoreFillets" : false }); // if useMoreFillets is not passed, set it to false.
+ *     }, {});
  * ```
  *
- * TODO: precondition spec, Manipulator Change Function, Editing Logic Function
+ * For more information on writing features, see `Specifying feature UI` in the
+ * language reference.
  *
- * @param feature : A function that takes a `context`, an `id`, and a `definition` and regenerates the feature.
- * @param defaults : A map of default parameter values that are used to supplement the definition.
+ * @param feature : A function that takes a `context`, an `id`, and a
+ *          `definition` and regenerates the feature.
+ *          @autocomplete
+ * ```
+ * function(context is Context, id is Id, definition is map)
+ *     precondition
+ *     {
+ *         // Specify the parameters that this feature takes
+ *     }
+ *     {
+ *         // Specify what the feature does when regenerating
+ *     }
+ * ```
+ *
+ * @param defaults : A map of default parameter values for when this feature is
+ *          called in FeatureScript.
+ *
+ *          This does NOT control the user-visible default value when creating
+ *          this feature. To change the user-visible default for booleans, enums,
+ *          and strings, use the "Default" annotation. To change the user-visible
+ *          default for a length, angle, or number, see the `valueBounds`
+ *          module.
+ *
+ *          @eg `{}` will not modify the `definition`.
+ *          @eg `{ "shouldFillet" : false }` will set the parameter
+ *              `"shouldFillet"` to `false` if the feature is called from
+ *              FeatureScript without the "shouldFillet" parameter.
  */
 export function defineFeature(feature is function, defaults is map) returns function
 {
@@ -52,7 +78,7 @@ export function defineFeature(feature is function, defaults is map) returns func
                 started = true;
                 feature(context, id, visible);
                 const error = getFeatureError(context, id);
-                if (error != undefined)
+                if (error != undefined && error != ErrorStringEnum.NO_ERROR)
                 {
                     if (!isTopLevelId(id))
                         throw regenError(error);
@@ -152,7 +178,7 @@ export function recordQueries(context is Context, id is Id, definition is map)
 
 /**
  * Associates a FeatureScript value with a given string. This value can then be referenced in a feature name using
- * the string. See `variable.fs` for an example of this usage.
+ * the string. See the `variable` module for an example of this usage.
  * @param definition {{
  *      @field name {string}
  *      @field value
@@ -198,12 +224,13 @@ export function getFullPatternTransform(context is Context) returns Transform
 }
 
 /**
- *  Among references find topology created by pattern instance deepest in the stack.
- *  If transformation on the stack in that instance is S and full transformation is F, the remainder R is such that R * S = F
+ * Among references find topology created by pattern instance deepest in the stack.
+ * If transformation on the stack in that instance is S and full transformation is F,
+ * the remainder R is such that R * S = F
  *
- *  @param definition {{
- *      @field references {Query}
- *  }}
+ * @param definition {{
+ *     @field references {Query}
+ * }}
  */
 export function getRemainderPatternTransform(context is Context, definition is map) returns Transform
 precondition
@@ -259,7 +286,11 @@ export function evaluateQuery(context is Context, query is Query) returns array
 //================ Compatibility with early expressions ================
 /**
  * A predicate which always returns true.
- * Used to create a generic feature parameter that can be any featurescript expression.
+ * Used to create a generic feature parameter that can be any featurescript
+ * expression.
+ *
+ * Note that for non-hidden parameters, some internal validation is done to
+ * only allow this parameter to be a `number` or a `ValueWithUnits`.
  */
 export predicate isAnything(value)
 {
@@ -267,8 +298,10 @@ export predicate isAnything(value)
 
 
 /**
- * Returns id of operation that created or last modified the first entity to which query resolves.
- * Throws if query resolves to nothing.
+ * Returns id of operation that created or last modified the first entity to
+ * which `query` resolves.
+ *
+ * Throws if `query` resolves to nothing.
  * @param context
  * @param query
  */
@@ -283,11 +316,13 @@ export function lastModifyingOperationId(context is Context, query is Query) ret
 * Generates a tracking query, which will evaluate to entities derived from subquery in features between
 * startTracking and when query is evaluated. If secondarySubquery is specified, the query would evaluate to
 * entities derived from both objects. Use example:
-* ```//"sketch1" constructs a polygon of "line0", "line1", etc.
+ * ```
+ * // "sketch1" constructs a polygon of "line0", "line1", etc.
 * var extrudedFromLine0 = startTracking(context, id + "sketch1", "line0");
 * extrudeOp(context, id + "extrude1", {"entities" : qSketchRegion(id + "sketch1",....});
-* var fromLine0 = evaluateQuery(context, extrudedFromLine1);
-* //fromLine0 contains a face and two edges (top and bottom) corresponding to line0 in the extrude.```
+ * var fromLine0 = evaluateQuery(context, extrudedFromLine0);
+ * // fromLine0 contains a face and two edges (top and bottom) corresponding to line0 in the extrude.
+ * ```
 */
 export function startTracking(context is Context, arg is map) returns Query
 precondition
@@ -326,7 +361,7 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
 }
 /**
 * @internal
-* used in startTracking
+ * Used in `startTracking`
 */
 function lastOperationId(context is Context) returns Id
 {

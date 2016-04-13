@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,6 +7,11 @@ FeatureScript 328; /* Automatically generated version */
 
 /**
  * Return a string representation of any value.
+ *
+ * Overloads of this method are found for many standard and custom types in
+ * this and other modules. When overloaded, the `toString` method will be
+ * called inside `print` and `println`, allowing users to change how custom
+ * types are printed.
  */
 export function toString(value) returns string
 {
@@ -49,7 +54,8 @@ export function toString(value is map) returns string
 }
 
 /**
- * Print a message to the FeatureScript message area.
+ * Print a message to the FeatureScript notices flyout.
+ *
  * This has no effect on model state or rendering.
  */
 export function print(value)
@@ -58,7 +64,8 @@ export function print(value)
 }
 
 /**
- * Print a message to the FeatureScript message area.
+ * Print a message to the FeatureScript notices flyout, followed by a newline.
+ *
  * This has no effect on model state or rendering.
  */
 export function println(value)
@@ -67,7 +74,7 @@ export function println(value)
 }
 
 /**
- * Split a string into characters, each represented as a string.
+ * Split a string into an array of characters, each represented as a string.
  */
 export function splitIntoCharacters(s is string) returns array
 {
@@ -99,10 +106,13 @@ export function addCustomNumberMatching(regExp is string) returns string
   }
 
 /**
- * Test if s matches regExp in it's entirety.
- * Returns a map with the test result in `result.hasMatch` and any captures
- * in `result.captures`.
- * `result.captures[0]` is always equal to the input string `s`
+ * Test if `s` matches `regExp` in it's entirety.
+ *
+ * @returns {{
+ *      @field hasMatch {boolean} : `true` if `regExp` matches `s`
+ *      @field captures {array} : The first element is always the input string `s`.
+ *              The following elements are a list of all captured groups.
+ * }}
  */
 export function match(s is string, regExp is string) returns map
 {
@@ -110,10 +120,9 @@ export function match(s is string, regExp is string) returns map
 }
 
 /**
- * TODO: description
- * @param s
- * @param regExp
- * @param replacement
+ * Returns a copy of `s` with every match of `regExp` replaced with the string `replacement`.
+ *
+ * @example `replace("a~~aa~a", "a.", "X")` returns `X~X~a`
  */
 export function replace(s is string, regExp is string, replacement is string) returns string
 {
@@ -124,7 +133,10 @@ export function replace(s is string, regExp is string, replacement is string) re
  * Convert a number in string form, into a FS number.
  * Note that this function will not accept trailing non numeric text,
  * the entire string must be a single valid number.
- * @param s
+ *
+ * @example `stringToNumber("1")` returns the number `1`
+ * @example `stringToNumber("1.0")` returns the number `1`
+ * @example `stringToNumber("1e2")` returns the number `100`
  */
 export function stringToNumber(s is string) returns number
 {

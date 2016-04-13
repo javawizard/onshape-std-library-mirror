@@ -1,4 +1,4 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,33 +6,60 @@ FeatureScript 328; /* Automatically generated version */
 /**
  * Functions used to create sketches, and add entities to sketches.
  *
- * Unless otherwise specified, vectors passed into sketch functions are 2D
- * `Vector`s in sketch coordinates, where `Vector(0, 0)` indicates the origin
- * of the sketch plane.
+ * A sketch used in FeatureScript generally has the following form:
+ * ```
+ * var sketch1 = newSketch(context, id + "sketch1", {
+ *         "sketchPlane" : qCreatedBy(makeId("Top"), EntityType.FACE)
+ * });
+ * skRectangle(sketch1, "rectangle1", {
+ *         "firstCorner" : vector(0, 0),
+ *         "secondCorner" : vector(1, 1)
+ * });
+ * skSolve(sketch1);
+ *
+ * extrude(context, id + "extrude1", {
+ *         "entities" : qSketchRegion(id + "sketch1"),
+ *         "endBound" : BoundingType.BLIND,
+ *         "depth" : 0.5 * inch
+ * });
+ * ```
+ *
+ * A `Sketch` object should always be created first, with either `newSketch`
+ * or `newSketchOnPlane`.
+ *
+ * Next, any number of sketch entities and constraints may be added ot the
+ * sketch. When building sketches in FeatureScript, constraints are usually
+ * unnecessary, since you already have hte ability to place the entities
+ * precisely where you intend them to be.
+ *
+ * Finally, the sketch is solved and added to the context by calling `skSolve`,
+ * which results in the new wire bodies and sketch regions being added to the
+ * context. These new entities can be queried for and used in operations and
+ * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
-import(path : "onshape/std/matrix.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/mathUtils.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/tool.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/matrix.fs", version : "336.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "");
-
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "336.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "336.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "336.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "336.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "336.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "336.0");
 
 /**
+ * @internal
  * TODO: Is this really deprecated, or just internal?
  */
 annotation { "Deprecated" : "" }
@@ -44,6 +71,7 @@ export enum DimensionDirection
 }
 
 /**
+ * @internal
  * TODO: Is this really deprecated, or just internal?
  */
 annotation { "Deprecated" : "" }
@@ -57,10 +85,10 @@ export enum SketchProjectionType
 
 
 /**
- * A `Sketch` object represents a sketch.  Sketches can be created
- * by calls to `newSketch`, to attach a sketch to existing or user-selected
- * geometry, or by `newSketchOnPlane`, to sketch on an arbitrary plane that
- * need not belong to any part.
+ * A `Sketch` object represents a Onshape sketch, to which sketch entities
+ * can be added.
+ *
+ * Sketches can be created by calls to `newSketch` or `newSketchOnPlane`.
  */
 export type Sketch typecheck canBeSketch;
 
@@ -71,8 +99,14 @@ export predicate canBeSketch(value)
 }
 
 /**
- * Create a new sketch as a feature.
+ * Create a new sketch on an existing planar entity.
+ *
+ * @param value {{
+ *      @field sketchPlane {Query} : A Query for a single, planar entity.
+ *              @eg `qCreatedBy(makeId("Top"), EntityType.FACE)` to sketch on default "Top" plane.
+ * }}
  */
+// TODO: Is there a nice way to combine this and newSketchOnPlane without upsetting precondition analysis?
 annotation { "Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY" }
 export function newSketch(context is Context, id is Id, value is map) returns Sketch
 precondition
@@ -121,8 +155,12 @@ precondition
 }
 
 /**
- * Create a new sketch for internal use within a feature.
- * @param value {{ @field sketchPlane }}
+ * Create a new sketch on a custom plane, specified by a `Plane` object.
+ *
+ * @param value {{
+ *      @field sketchPlane {Plane} :
+ *              @eg `plane(vector(0, 0, 0) * inch, vector(0, 0, 1))` to sketch on the world XY plane.
+ * }}
  */
 export function newSketchOnPlane(context is Context, id is Id, value is map) returns Sketch
 precondition
@@ -135,8 +173,11 @@ precondition
 }
 
 /**
- * Call this function once all entities and constraints are created.
- * A sketch is not complete until solved, even if there are no constraints.
+ * Solve any constraints in the sketch and add all sketch entities form the
+ * `sketch` to its context.
+ *
+ * Even if there are no constraints, a sketch must be solved before its
+ * entities are created.
  */
 export function skSolve(sketch is Sketch)
 {
@@ -144,14 +185,12 @@ export function skSolve(sketch is Sketch)
 }
 
 /**
- * This function should not be called by user code.
- * Pass values to individual sketch functions instead.
+ * @internal
  *
  * The initial guess is a map from string (sketch entity ID)
  * to array of number (entity-dependent values).  It is used
  * when sketch data is written out of line, as in generated
  * Part Studios.
- * @param initialGuess {map}
  */
 export function skSetInitialGuess(sketch is Sketch, initialGuess is map)
 {
@@ -160,10 +199,15 @@ export function skSetInitialGuess(sketch is Sketch, initialGuess is map)
 
 /**
  * Add a point to a sketch.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param pointId : @autocomplete `"point1"`
  * @param value {{
- *      @field position {Vector}
+ *      @field position {Vector} : @eg `vector(0, 1) * inch`
  * }}
- * @return {{ @field pointId }}
+ * @return {{
+ *      @field pointId
+ * }}
  */
 export function skPoint(sketch is Sketch, pointId is string, value is map)
 precondition
@@ -177,10 +221,12 @@ precondition
 /**
  * Add a line segment to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param lineId : @autocomplete `"line1"`
  * @param value {{
- *      @field start {Vector}
- *      @field end {Vector}
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field start {Vector} : @eg `vector(0, 0) * inch`
+ *      @field end {Vector} : @eg `vector(1, 1) * inch`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  * @return {{ @field startId @field endId }}
  */
@@ -198,13 +244,14 @@ precondition
 /**
  * Add a text rectangle to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param textId : @autocomplete `"text1"`
  * @param value {{
  *      @field text {string}: A string of text to write. May contain newlines.
  *
  *      @field fontName {string}: A font name, with extension ".ttf" or ".otf".
  *              To change font weight, replace "-Regular" with "-Bold",
  *              "-Italic", or "-BoldItalic".
- *              TODO: Can we just make this accept a name and two booleans instead?
  *
  *          Must be one of the following fonts:
  *
@@ -216,14 +263,18 @@ precondition
  *          @eg `"NotoSansCJKjp-Regular.otf"`   Japanese font. No italic options.
  *          @eg `"NotoSansCJKkr-Regular.otf"`   Korean font. No italic options.
  *          @eg `"NotoSansCJKsc-Regular.otf"`   Chinese (simplified) font. No italic options.
- *          @eg `"NotoSansCJKtc-Regular.otf"`   Chinese (tranditional) font. No italic options.
+ *          @eg `"NotoSansCJKtc-Regular.otf"`   Chinese (traditional) font. No italic options.
  *          @eg `"NotoSans-Regular.ttf"`        Serif font.
  *          @eg `"RobotoSlab-Regular.ttf"`      Sans-serif font. No italic options.
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field construction {boolean} : `true` for a construction line @optional
+ * }}
+ * @return {{
+ *      @field textId
  * }}
  */
+// TODO: Can we just make `fontName` accept a name and two booleans for bold/italic instead?
 export function skText(sketch is Sketch, textId is string, value is map)
 precondition
 {
@@ -238,10 +289,21 @@ precondition
 /**
  * Add an image rectangle and return ids of corner points.
  *
+ * To use an image uploaded in your document, import the image (possibly into a namespace).
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param imageId : @autocomplete `"image1"`
  * @param value {{
- *      @field blobInfo {map} : TODO: what goes here?
+ *      @field blobInfo {map} :
+ *          @eg `BLOB_DATA` will use the image from an image file imported into this Feature Studio.
+ *          @eg `MyImage::BLOB_DATA` will use an image imported into the namespace `MyImage` (e.g. using `MyImage::import(...)`)
  *      @field firstCorner {Vector}  : One corner of the rectangle into which the image will be placed.
+ *          @eg `vector(0, 0) * inch`
  *      @field secondCorner {Vector} : The other corner of the rectangle into which the image will be placed.
+ *          @eg `vector(1, 1) * inch`
+ * }}
+ * @return {{
+ *      @field imageId
  * }}
  */
 export function skImage(sketch is Sketch, imageId is string, value is map)
@@ -260,12 +322,16 @@ precondition
 /**
  * Add a circle to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param circleId : @autocomplete `"circle1"`
  * @param value {{
- *      @field center {Vector}
- *      @field radius {ValueWithUnits} : A non-negative value with length units.
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field center {Vector} : @eg `vector(0, 0) * inch`
+ *      @field radius {ValueWithUnits} : @eg `1 * inch`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
- * @return {{ @field centerId }}
+ * @return {{
+ *      @field centerId
+ * }}
  */
 export function skCircle(sketch is Sketch, circleId is string, value is map)
 precondition
@@ -279,15 +345,19 @@ precondition
 }
 
 /**
- * Add an ellipse
+ * Add an ellipse to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param ellipseId : @autocomplete `"ellipse1"`
  * @param value {{
- *      @field center {Vector}
- *      @field majorRadius {Vector}
- *      @field minorRadius {Vector}
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field center {Vector} : @eg `vector(0, 0) * inch`
+ *      @field majorRadius {Vector} : @eg `2 * inch`
+ *      @field minorRadius {Vector} : @eg `1 * inch`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
- * @return {{ @field centerId }}
+ * @return {{
+ *      @field centerId
+ * }}
  */
 export function skEllipse(sketch is Sketch, ellipseId is string, value is map)
 precondition
@@ -303,15 +373,20 @@ precondition
 }
 
 /**
- * Add an arc.
+ * Add an arc to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param arcId : @autocomplete `"arc1"`
  * @param value {{
- *      @field start {Vector}
- *      @field mid {Vector}
- *      @field end {Vector}
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field start {Vector} : @eg `vector(1, 0) * inch`
+ *      @field mid {Vector} : @eg `vector(0, 1) * inch`
+ *      @field end {Vector} : @eg `vector(-1, 0) * inch`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
- * @return {{ @field startId @field endId }}
+ * @return {{
+ *      @field startId
+ *      @field endId
+ * }}
  */
 export function skArc(sketch is Sketch, arcId is string, value is map)
 precondition
@@ -326,21 +401,32 @@ precondition
 }
 
 /**
- * Add an elliptical arc
+ * Add an elliptical arc to a sketch.
  * The ellipse has a period of 1, a parameter of 0 at the major axis and 0.25 at the minor axis.
  * The arc is drawn counterclockwise from the start point to the end point.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param arcId : @autocomplete `"ellipticalArc1"`
  * @param value {{
- *      @field center {Vector}
+ *      @field center {Vector} :
+ *              @eg `vector(0, 0) * inch`
  *      @field majorAxis {Vector} : The direction, in sketch coordinates, in which the major axis of the ellipse lies.
+ *              @eg `vector(1, 0) * inch`
  *      @field minorRadius {ValueWithUnits} : A non-negative value with length units.
+ *              @eg `1 * inch`
  *      @field majorRadius {ValueWithUnits} : A non-negative value with length units. Does not need to be greater than
- *              the minor radius
+ *              the minor radius.
+ *              @eg `2 * inch`
  *      @field startParameter {number} : The parameter of the start point.
+ *              @eg `0`
  *      @field endParameter {number} : The parameter of the end point.
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *              @eg `0.25`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
- * @return {{ @field startId @field endId }}
+ * @return {{
+ *      @field startId
+ *      @field endId
+ * }}
  */
 export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
 precondition
@@ -387,10 +473,17 @@ precondition
 }
 
 /**
- * Create a closed spline through a list of points. TODO: how to pass the list of points?
+ * @internal
+ * Create a closed spline through a list of points.
+ *
+ * This function relies on the positions of the points being set in the
+ * initial guess data. In custom features, prefer using `skFitSpline`.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param splineId : @autocomplete `"spline1"`
  * @param value {{
  *      @field splinePointCount {number} : The number of points in this spline.
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  */
 export function skInterpolatedSpline(sketch is Sketch, splineId is string, value is map)
@@ -417,14 +510,23 @@ precondition
 }
 
 /**
- * @internal
  * Create an interpolated spline through the given points.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param splineId : @autocomplete `"spline1"`
  * @param value {{
- *      @field points : An array of points, each a `Vector` of two lengths
- *                   (x and y in the sketch plane coordinate system).
- *                   If the start and end points are the same the spline
- *                   is closed.
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field points : An array of points. If the start and end points are
+ *              the same, the spline is closed.
+ * @eg ```
+ * [
+ *     vector( 0,  0) * inch,
+ *     vector( 0, -1) * inch,
+ *     vector( 1,  1) * inch,
+ *     vector(-1,  0) * inch,
+ *     vector( 0,  0) * inch
+ * ]
+ * ```
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  */
 export function skFitSpline(sketch is Sketch, splineId is string, value is map)
@@ -436,31 +538,6 @@ precondition
 }
 {
     return @skFitSpline(sketch, splineId, value);
-}
-
-
-/**
- * Add a constraint.  (TODO: Explain how constraints work.)
- *
- * @param value {{
- *      @field constraintType {ConstraintType}
- *      @field length {ValueWithUnits} : For constraints that require a length. Must have length units. @optional
- *      @field angle {ValueWithUnits}  : For constraints that require a angle. Must have angle units. @optional
- * }}
- */
-export function skConstraint(sketch is Sketch, constraintId is string, value is map)
-precondition
-{
-    value.constraintType is ConstraintType;
-}
-{
-    // If the units are wrong, make sure that the constraint is in error
-    if (value.length != undefined && !isLength(value.length))
-        value.length = undefined;
-    if (value.angle != undefined && !isAngle(value.angle))
-        value.angle = undefined;
-
-    return @skConstraint(sketch, constraintId, value);
 }
 
 function rectangleSideStartPoint(value, side)
@@ -510,10 +587,12 @@ function rectangleSideEndPoint(value, side)
 /**
  * Add a rectangle (four line segments, properly constrained) to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param rectangleId : @autocomplete `"rectangle1"`
  * @param value {{
- *      @field firstCorner {Vector}
- *      @field secondCorner {Vector}
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *      @field firstCorner {Vector} : @eg `vector(0, 0) * inch`
+ *      @field secondCorner {Vector} : @eg `vector(1, 1) * inch`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  */
 export function skRectangle(sketch is Sketch, rectangleId is string, value is map)
@@ -591,14 +670,18 @@ precondition
 /**
  * Add a regular polygon to the sketch.  Unconstrained.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param polygonId : @autocomplete `"polygon1"`
  * @param value {{
- *      @field center {Vector}
+ *      @field center {Vector} : @eg `vector(0, 0) * inch`
  *      @field firstVertex {Vector} : Distance to the center determines the radius.
- *      @field sides {number} : Must be an integer 3 or greater.
- *      @field construction {boolean} : @ex `true` for a construction line @optional
+ *              @eg `vector(0, 1) * inch`
+ *      @field sides {number} : Number of polygon sides. Must be an integer 3 or greater.
+ *              @autocomplete `6`
+ *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  */
-export function skRegularPolygon(sketch is Sketch, id is string, value is map)
+export function skRegularPolygon(sketch is Sketch, polygonId is string, value is map)
 precondition
 {
     is2dPoint(value.center);
@@ -621,21 +704,31 @@ precondition
         points = append(points, value.center + rotated);
     }
     points = append(points, value.firstVertex);
-    skPolyline(sketch, id, { "points" : points, "construction" : value.construction, "constrained" : false });
+    skPolyline(sketch, polygonId, { "points" : points, "construction" : value.construction, "constrained" : false });
 }
 
 /**
  * Add a polyline (line segments, optionally with constrained endpoints) or a polygon to a sketch.
  *
+ * @param sketch : @autocomplete `sketch1`
+ * @param polylineId : @autocomplete `"polyline1"`
  * @param value {{
  *      @field points {array} : An array of points, each a `Vector` of two lengths.
- *                              If first and last point are the same, the polyline is closed.
- *      @field secondCorner {Vector}
- *      @field construction {boolean} : @ex `true` for a construction line.  Default false. @optional
- *      @field constrained {boolean} : @ex `true` if constraints should be created.  Default false. @optional
+ *              If first and last point are the same, the polyline is closed.
+ * @eg ```
+ * [
+ *     vector( 0,  0) * inch,
+ *     vector( 0, -1) * inch,
+ *     vector( 1,  1) * inch,
+ *     vector(-1,  0) * inch,
+ *     vector( 0,  0) * inch
+ * ]
+ * ```
+ *      @field construction {boolean} : `true` for a construction line.  Default false. @optional
+ *      @field constrained {boolean} : `true` if constraints should be created.  Default false. @optional
  * }}
  */
-export function skPolyline(sketch is Sketch, id is string, value is map)
+export function skPolyline(sketch is Sketch, polylineId is string, value is map)
 precondition
 {
     is2dPointVector(value.points);
@@ -650,7 +743,7 @@ precondition
     var numPoints = size(value.points);
     for (var i = 0; i + 1 < numPoints; i += 1)
     {
-        const fullId = id ~ ".line" ~ i;
+        const fullId = polylineId ~ ".line" ~ i;
 
         skLineSegment(sketch, fullId,
                 { "start" : value.points[i],
@@ -659,19 +752,46 @@ precondition
 
         if (i > 0 && value.constrained == true)
         {
-            skConstraint(sketch, id ~ ".constraint" ~ i,
+            skConstraint(sketch, polylineId ~ ".constraint" ~ i,
                     { "constraintType" : ConstraintType.COINCIDENT,
-                        "localFirst" : id ~ ".line" ~ (i - 1) ~ ".end",
-                        "localSecond" : id ~ ".line" ~ i ~ ".start" });
+                        "localFirst" : polylineId ~ ".line" ~ (i - 1) ~ ".end",
+                        "localSecond" : polylineId ~ ".line" ~ i ~ ".start" });
         }
     }
 
     if (value.constrained == true && tolerantEquals(value.points[0], value.points[numPoints - 1])) // closed
     {
-        skConstraint(sketch, id ~ ".closed",
+        skConstraint(sketch, polylineId ~ ".closed",
                 { "constraintType" : ConstraintType.COINCIDENT,
-                    "localFirst" : id ~ ".line0" ~ ".start",
-                    "localSecond" : id ~ ".line" ~ (numPoints - 2) ~ ".end" });
+                    "localFirst" : polylineId ~ ".line0" ~ ".start",
+                    "localSecond" : polylineId ~ ".line" ~ (numPoints - 2) ~ ".end" });
     }
+}
+
+/**
+ * Add a constraint.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param constraintId : @autocomplete `"constraint1"`
+ * @param value {{
+ *      @field constraintType {ConstraintType}
+ *      @field length {ValueWithUnits} : For constraints that require a length. Must have length units. @optional
+ *      @field angle {ValueWithUnits}  : For constraints that require a angle. Must have angle units. @optional
+ * }}
+ */
+// TODO: Explain how constraints work.
+export function skConstraint(sketch is Sketch, constraintId is string, value is map)
+precondition
+{
+    value.constraintType is ConstraintType;
+}
+{
+    // If the units are wrong, make sure that the constraint is in error
+    if (value.length != undefined && !isLength(value.length))
+        value.length = undefined;
+    if (value.angle != undefined && !isAngle(value.angle))
+        value.angle = undefined;
+
+    return @skConstraint(sketch, constraintId, value);
 }
 

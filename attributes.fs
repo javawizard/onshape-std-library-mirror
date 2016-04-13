@@ -1,26 +1,30 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
-* Attribute functionality allows us to associate any value with topology. The value can be of any type except undefined.
-* Multiple attributes can be associated with the same topological entity. Entities can be queried by attributes.
-* The attributePattern field accepted by some of the methods here supports partial match.
-*  @eg `attributePattern : "anyString"` would match any string attribute that does not have a custom type,
-*  @eg `attributePattern : "anyString" as StringAttributeType` would match all attributes of StringAttributeType
-*  @eg `attributePattern : {"odd" : true} as MapAttributeType` would match all attributes of MapAttributeType that have a field "odd" with value true
-*
-*/
-
-import(path : "onshape/std/context.fs", version : "");
-import(path : "onshape/std/query.fs", version : "");
+ * Attributes are data attached to entities, which can be set and retrieved in
+ * FeatureScript. The data can be of any type (except undefined), and multiple
+ * attributes can be associated with the same topological entity.
+ *
+ * The common use case for attributes is to set attributes on an entity in one
+ * feature, and get them in another. For global data, this can be done more
+ * simply via `getVariable` and `setVariable`.
+ *
+ * Entities can be queried by attributes with `qAttributeFilter` and
+ * `qAttributeQuery`.
+ */
+import(path : "onshape/std/context.fs", version : "336.0");
+import(path : "onshape/std/query.fs", version : "336.0");
 
 /**
- * Associate an attribute with entities
+ * Attach an attribute to one or several entities.
+ *
  * @param definition {{
- *      @field entities {Query} : entities to assign attribute to
- *      @field attribute
+ *      @field entities {Query} : Entities to attach attribute to. Throws an
+ *              error if the query resolves to nothing.
+ *      @field attribute : The data to attach. @eg `"myAttribute"`
  * }}
  */
 export function setAttribute(context is Context, definition is map)
@@ -34,12 +38,27 @@ precondition
 }
 
 /**
- * Get attributes assigned to entities
+ * Get attributes attached to entities.
+ *
  * @param definition {{
- *      @field entities {Query} : entities to query attributes on
- *      @field attributePattern : pattern to match. Here and below matching means matching of type.
- *      If attribute is a map, then all fields specified in attributePattern will be matched. @optional
+ *      @field entities {Query} : Entities to get attributes on. Throws an error
+ *              if the query resolves to nothing.
+ *              @eg `qEverything()`
+ *      @field attributePattern : @optional
+ *              If provided, will only return attributes of this type. If a map
+ *              is provided, will also only match attributes whose fields match
+ *              every field of the map provided.
+ *
+ *              @ex `""` matches all `string` attributes.
+ *              @ex `{}` matches all `map` attributes.
+ *              @ex `"" as MyStringAttributeType` matches all attributes of
+ *                      type `MyStringAttributeType`.
+ *              @ex `{"odd" : true}` matches all `map` attributes that have a
+ *                      field `"odd"` whose value is `true`.
  * }}
+ *
+ * @return {array} : An array of all unique attributes on the given entities
+ *          matching the pattern.
  */
 export function getAttributes(context is Context, definition is map) returns array
 precondition
@@ -51,10 +70,14 @@ precondition
 }
 
 /**
- * Remove matching attributes from entities
+ * Remove matching attributes attached to entities
+ *
  * @param definition {{
- *      @field entities {Query} : entities to remove attributes from. If query is not specified all matching attributes are removed. @optional
- *      @field attributePattern : pattern to match @optional
+ *      @field entities {Query} : @optional
+ *              Entities to remove attributes from. Default is everything.
+ *      @field attributePattern : @optional
+ *              If provided, will only remove attributes of this type. See
+ *              `getAttributes` for details.
  * }}
  */
 export function removeAttributes(context is Context, definition is map)

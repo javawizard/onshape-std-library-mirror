@@ -1,24 +1,25 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/boolean.fs", version : "336.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/vector.fs", version : "336.0");
 
 /**
- * TODO: description
+ * Specifies an end condition for one side of a loft.
  */
 export enum LoftEndDerivativeType
 {
@@ -35,7 +36,7 @@ export enum LoftEndDerivativeType
 }
 
 /**
- * TODO: description
+ * Specifies how the shape of the sides of a loft should be controlled.
  */
 export enum LoftShapeControlType
 {
@@ -56,12 +57,7 @@ export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opLoft`.
  */
 annotation { "Feature Type Name" : "Loft",
              "Filter Selector" : "allparts",
@@ -208,14 +204,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1 });
 
-/**
- * TODO: description
- * @param context
- * @param endCondition
- * @param profileQuery
- * @param profileIndex
- * @param magnitude
- */
+/** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
 {
     if (endCondition == LoftEndDerivativeType.NORMAL_TO_PROFILE || endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE)
@@ -259,11 +248,7 @@ export function createProfileConditions(context is Context, endCondition is Loft
     }
 }
 
-/**
- * TODO: description
- * @param context
- * @param subqueries
- */
+/** @internal */
 export function wrapSubqueriesInConstructionFilter(context is Context, subqueries is array) returns array
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
@@ -279,7 +264,8 @@ export function wrapSubqueriesInConstructionFilter(context is Context, subquerie
 }
 
 /**
- * implements heuristics for loft feature
+ * @internal
+ * Editing logic function for loft feature.
  */
 export function loftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map

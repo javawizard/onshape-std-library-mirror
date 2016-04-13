@@ -1,30 +1,25 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/tool.fs", version : "336.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "336.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
-import(path : "onshape/std/vector.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/evaluate.fs", version : "336.0");
+import(path : "onshape/std/feature.fs", version : "336.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
+import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/vector.fs", version : "336.0");
+import(path : "onshape/std/string.fs", version : "336.0");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opReplaceFace`.
  */
 annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts", "Editing Logic Function" : "replaceFaceEditLogic" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)
@@ -94,14 +89,8 @@ function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)
 }
 
 /**
- * TODO: description
- * @param context
- * @param replaceFaceDefinition {{
- *      @field TODO
- * }}
- * @param newManipulators {{
- *      @field TODO
- * }}
+ * @internal
+ * Manipulator change function for `replaceFace`.
  */
 export function replaceFaceManipulatorChange(context is Context, replaceFaceDefinition is map, newManipulators is map) returns map
 {
@@ -115,7 +104,8 @@ export function replaceFaceManipulatorChange(context is Context, replaceFaceDefi
 }
 
 /**
- * implements heuristics for replace face feature
+ * @internal
+ * Editing logic funtion for `replaceFace`.
  */
 export function replaceFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map

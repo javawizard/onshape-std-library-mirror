@@ -1,11 +1,11 @@
-FeatureScript 328; /* Automatically generated version */
+FeatureScript 336; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Matrices are in row major order so that the first index is the row and the second is the column.
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "336.0");
+import(path : "onshape/std/math.fs", version : "336.0");
 
 /**
  * A Matrix is an array of rows, all the same size, each of which
@@ -143,12 +143,14 @@ export function norm(m is Matrix) returns number
 
 /**
  * Compute the singular value decomposition of a matrix,
- * m = usv where s is a diagonal matrix of eigenvalues.
- * @param m{Matrix}
+ * i.e. `s`, `u`, and `v`, where `m == u * s * v` and s is a
+ * diagonal matrix of singular values.
+ *
+ * @param m {Matrix}
  * @return {{
- *     @field u{Matrix} : A unitary matrix
- *     @field s{Matrix} : A diagonal matrix
- *     @field v{Matrix} : A unitary matrix
+ *     @field u {Matrix} : A unitary matrix
+ *     @field s {Matrix} : A diagonal matrix
+ *     @field v {Matrix} : A unitary matrix
  * }}
  */
 export function svd(m is Matrix) returns map
@@ -159,7 +161,6 @@ export function svd(m is Matrix) returns map
 
 /**
  * Return the determinant of the matrix.
- *
  */
 export function determinant(m is Matrix) returns number
 {
