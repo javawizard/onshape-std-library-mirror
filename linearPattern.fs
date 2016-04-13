@@ -4,19 +4,18 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
-export import(path : "onshape/std/patternUtils.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
+export import(path : "onshape/std/patternUtils.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
+import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
 
 /**
- * Performs a body,face, or feature linear pattern.
- * @param definition {{
- *      @field TODO
- * }}
+ * Performs a body, face, or feature linear pattern. Internally, performs
+ * an `applyPattern`, which in turn performs an `opPattern` or, for a feature
+ * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allparts" }
 export const linearPattern = defineFeature(function(context is Context, id is Id, definition is map)

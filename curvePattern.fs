@@ -4,12 +4,13 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/patternUtils.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/patternUtils.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
  * The curve pattern feature. Currently incomplete and disabled.

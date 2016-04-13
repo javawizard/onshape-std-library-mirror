@@ -4,16 +4,17 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 
 /**
- * TODO: description
+ * A special type for functions defined as the `build` function for a Part
+ * Studio, which return a context containing parts.
  */
 export type BuildFunction typecheck canBeBuildFunction;
 
@@ -24,12 +25,17 @@ export predicate canBeBuildFunction(value)
 }
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opMergeContexts`, used for including parts in one
+ * Part Studio that were designed in another.
+ *
+ * When a derived part from Part Studio 1 is created in a Part Studio 2, code
+ * is generated in Part Studio 2 which imports Part Studio 1 into a namespace.
+ * The `build` function from that namespace is passed into this feature,
+ * where the `build` function is called and run in its entirety.
+ *
+ * If not all bodies from the derived Part Studio are included, the missing
+ * bodies are deleted after building the Part Studio, but before merging in
+ * its context.
  */
 annotation { "Feature Type Name" : "Derived" }
 export const importDerived = defineFeature(function(context is Context, id is Id, definition is map)

@@ -5,7 +5,10 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/**
+ * Specifies how a constraint between lines or axes (such as parallel or
+ * coincident) should align the two constrained axes.
+ */
 export enum DimensionAlignment
 {
     UNSPECIFIED,

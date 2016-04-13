@@ -4,19 +4,21 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "✨");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * TODO: description
+ * Describes the direction a helix turns while traveling along its axis.
+ * @value CW : Clockwise.
+ * @value CCW : Counterclockwise.
  */
 export enum Direction
 {
@@ -27,7 +29,10 @@ export enum Direction
 }
 
 /**
- * TODO: description
+ * Specifies how the helical pitch will be defined.
+ * @value TURNS : User defines the number of turns, and the pitch defined based
+ *          on the input entity's height.
+ * @default @value PITCH : User defines the helical pitch directly.
  */
 export enum HelixType
 {
@@ -47,12 +52,7 @@ const HELIX_TURN_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opHelix`.
  */
 annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY" }
 export const helix = defineFeature(function(context is Context, id is Id, definition is map)

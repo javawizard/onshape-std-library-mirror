@@ -4,19 +4,19 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "✨");
+import(path : "onshape/std/booleanHeuristics.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const THICKEN_BOUNDS =
 {
@@ -31,12 +31,8 @@ const THICKEN_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opThicken`, followed by an `opBoolean`. For simple thickens, prefer using
+ * `opThicken` directly.
  */
 annotation { "Feature Type Name" : "Thicken",
              "Filter Selector" : "allparts",

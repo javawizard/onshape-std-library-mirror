@@ -3,11 +3,11 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
-import(path : "onshape/std/vector.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
  * Creates a `Context` with default planes and an origin.
@@ -17,6 +17,7 @@ export function newContextWithDefaults() returns Context
     return newContextWithDefaults(meter);
 }
 
+/** @internal */
 export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
 {
     var context = newContext();

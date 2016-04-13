@@ -4,21 +4,16 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opShell`.
  */
 annotation { "Feature Type Name" : "Shell", "Filter Selector" : "allparts" }
 export const shell = defineFeature(function(context is Context, id is Id, definition is map)

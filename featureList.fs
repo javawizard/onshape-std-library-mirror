@@ -5,10 +5,12 @@ FeatureScript ✨; /* Automatically generated version */
 
 /** Support functions for feature lists (as used for featurePattern) */
 
-import(path : "onshape/std/context.fs", version : "");
+import(path : "onshape/std/context.fs", version : "✨");
 
 /**
- * Parameter type that has a list of feature lambdas
+ * Parameter type for inputting a list of features, stored as a map from
+ * feature `Id` to feature function. For an example, see the `circularPattern`
+ * module.
  */
 export type FeatureList typecheck canBeFeatureList;
 
@@ -32,8 +34,9 @@ export function featureList(features is map) returns FeatureList
 }
 
 /**
- * Takes a context and a map whose keys are subfeature ids from that context.  Returns the values
- * from that map sorted in the order that the subfeatures were started.
+ * Takes a context and a map whose keys are subfeature ids from that context.
+ * Returns the values from that map sorted in the order that the subfeatures
+ * were started.
  */
 export function valuesSortedById(context is Context, idToValue is map) returns array
 {

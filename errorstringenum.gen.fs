@@ -5,7 +5,14 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/**
+ * @internal
+ * The built-in user-facing errors available within Onshape.
+ *
+ * To report a custom error, pass a string as the first argument of regenError.
+ *
+ * @see `error.fs` for usage.
+ * @default @value INVALID_RESULT */
 export enum ErrorStringEnum
 {
     NO_ERROR,
@@ -481,7 +488,8 @@ export enum ErrorStringEnum
     REST_ASSEMBLY_EXTERNAL_REFERENCE_DISALLOWS_MICROVERSION,
     REST_ASSEMBLY_VERSION_SUPPORTED_ONLY_FOR_EXTERNAL_REFERENCES,
     SWEEP_BAD_LOCK_FACES,
-    SKETCH_TEXT_CANNOT_BE_CONSTRUCTION
+    SKETCH_TEXT_CANNOT_BE_CONSTRUCTION,
+    CUSTOM_ERROR
 }
 
 

@@ -4,18 +4,23 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
+import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * This feature allows a user to assign a FeatureScript value to a context variable.
+ * Feature performing a `setVariable` allowing a user to assign a FeatureScript
+ * value to a context variable. This variable may be retrieved within a feature by
+ * calling `getVariable`, or in a Part Studio using `#` syntax (e.g. `#foo`)
+ * inside any parameter which allows an expression (including the `value`
+ * parameter of another variable!)
+ *
  * @param definition {{
  *      @field name : Must be an identifier.
  *      @field value : Can be anything, including a length, an array, or a function.
@@ -38,7 +43,9 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         setFeatureComputedParameter(context, id, { "name" : "value", "value" : definition.value });
     });
 
-/** Throws an error if something other than a valid identifier is passed in */
+/**
+ * Throws an error if `name` is not a valid identifier.
+ */
 export function verifyVariableName(name is string)
 {
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');

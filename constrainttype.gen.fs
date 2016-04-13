@@ -5,7 +5,10 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/**
+ * Specifies a type of sketch constraint.
+ * @see `skConstraint`
+ */
 export enum ConstraintType
 {
     NONE,

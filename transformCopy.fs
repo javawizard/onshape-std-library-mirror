@@ -4,26 +4,27 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "✨");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/coordSystem.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/coordSystem.fs", version : "✨");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * TODO: description
+ * Defines how a the transform for a `transform` feature should be specified.
  */
 export enum TransformType
 {
@@ -105,7 +106,7 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  *          @ex `true` to flip the transform direction.
  *
  *      @field transformAxis {Query} : @requiredIf {`transformType` is `TransformType.ROTATION`}
- *          A `Query` for a line, cylinder, etc. to specify the transform diection.
+ *          A `Query` for a line, cylinder, etc. to specify the transform direction.
  *      @field angle {ValueWithUnits} : @requiredIf {`transformType` is `TransformType.ROTATION`}
  *          A value with angle units specifying the angle to rotate.
  *
@@ -423,14 +424,8 @@ function extractOffset(input is map, axis is string)
 }
 
 /**
- * TODO: description
- * @param context
- * @param output {{
- *      @field TODO
- * }}
- * @param input {{
- *      @field TODO
- * }}
+ * @internal
+ * Manipulator change function for `transform`.
  */
 export function transformManipulatorChange(context is Context, output is map, input is map) returns map
 {

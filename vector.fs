@@ -4,11 +4,11 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/math.fs", version : "");
-import(path : "onshape/std/units.fs", version : "");
-import(path : "onshape/std/matrix.fs", version : "");
-import(path : "onshape/std/string.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/matrix.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -133,7 +133,7 @@ precondition
 }
 
 /**
- * Return the squared length of a vector.
+ * Returns the squared length of a vector.
  * This is slightly faster to calculate than the length.
  */
 export function squaredNorm(vector is Vector)
@@ -142,7 +142,7 @@ export function squaredNorm(vector is Vector)
 }
 
 /**
- * Return the length (norm) of a vector.
+ * Returns the length (norm) of a vector.
  */
 export function norm(vector is Vector)
 {
@@ -185,7 +185,7 @@ export operator-(vector is Vector) returns Vector
 }
 
 /**
- * Return the dot product of two vectors.
+ * Returns the dot product of two vectors.
  */
 export function dot(vector1 is Vector, vector2 is Vector)
 precondition
@@ -202,7 +202,7 @@ precondition
 }
 
 /**
- * Return the cross product of two 3-dimensional vectors.
+ * Returns the cross product of two 3-dimensional vectors.
  */
 export function cross(vector1 is Vector, vector2 is Vector) returns Vector
 precondition
@@ -218,7 +218,7 @@ precondition
 }
 
 /**
- * Return the angle between two 3-dimensional vectors.
+ * Returns the angle between two 3-dimensional vectors.
  */
 export function angleBetween(vector1 is Vector, vector2 is Vector)
 precondition
@@ -300,7 +300,7 @@ export function project(target is Vector, source is Vector) returns Vector
 }
 
 /**
- * Return a vector perpendicular to the given vector.
+ * Returns a vector perpendicular to the given vector.
  * The choice of which perpendicular vector to return
  * is arbitrary but consistent for the same input.
  */
@@ -369,7 +369,7 @@ precondition size(axis) == 3;
 }
 
 /**
- * Return the scalar triple product, a dot b cross c, of
+ * Returns the scalar triple product, a dot b cross c, of
  * three 3-dimensional vectors.
  */
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
@@ -396,7 +396,7 @@ export function toString(value is Vector) returns string
 }
 
 /**
- * Return true if two vectors designate the same point (within tolerance) or the same direction (within tolerance).
+ * Returns true if two vectors designate the same point (within tolerance) or the same direction (within tolerance).
  */
 export predicate tolerantEquals(point1 is Vector, point2 is Vector)
 {
@@ -407,7 +407,7 @@ export predicate tolerantEquals(point1 is Vector, point2 is Vector)
 }
 
 /**
- * Return true if two vectors are parallel (within tolerance).
+ * Returns true if two vectors are parallel (within tolerance).
  */
 export function parallelVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
@@ -417,7 +417,7 @@ export function parallelVectors(vector1 is Vector, vector2 is Vector) returns bo
 }
 
 /**
- * Return true if two vectors are perpendicular (within tolerance).
+ * Returns true if two vectors are perpendicular (within tolerance).
  */
 export function perpendicularVectors(vector1 is Vector, vector2 is Vector) returns boolean
 {
@@ -427,10 +427,14 @@ export function perpendicularVectors(vector1 is Vector, vector2 is Vector) retur
 }
 
 /**
-*  Groups points into clusters. Two points farther than tolerance apart are guaranteed to be in separate clusters.
-*  A set of points all within tolerance of each other that has no other points within tolerance is guaranteed to be a single cluster.
-*  @returns : array of arrays of indices into points array.
-*/
+ * Groups points into clusters. Two points farther than tolerance apart are
+ * guaranteed to be in separate clusters. A set of points all within tolerance
+ * of each other that has no other points within tolerance is guaranteed to be
+ * a single cluster.
+ *
+ * @returns {array} : Array of arrays, where each array is a cluster of nearby
+ *          points, represented as indices into points array.
+ */
 export function clusterPoints( points is array, tolerance is number) returns array
 precondition
 {
@@ -442,5 +446,4 @@ precondition
 {
     return @clusterPoints(stripUnits(points), tolerance);
 }
-
 

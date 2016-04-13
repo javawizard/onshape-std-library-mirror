@@ -4,13 +4,13 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "✨");
 
 /**
- * @see `opDeleteBodies`.
+ * Feature performing an `opDeleteBodies`.
  */
 annotation { "Feature Type Name" : "Delete part" }
 export const deleteBodies = defineFeature(function(context is Context, id is Id, definition is map)

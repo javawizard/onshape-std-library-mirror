@@ -4,18 +4,18 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
-export import(path : "onshape/std/patternUtils.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
+export import(path : "onshape/std/patternUtils.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/math.fs", version : "");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
 
 /**
- * Performs a body, face, or feature circular pattern.
- * @param definition {{
- *      @field TODO
- * }}
+ * Performs a body, face, or feature circular pattern. Internally, performs
+ * an `applyPattern`, which in turn performs an `opPattern` or, for a feature
+ * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allparts" }
 export const circularPattern = defineFeature(function(context is Context, id is Id, definition is map)

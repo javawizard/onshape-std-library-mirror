@@ -4,26 +4,25 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
-export import(path : "onshape/std/patternUtils.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
+export import(path : "onshape/std/patternUtils.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "");
-import(path : "onshape/std/booleanHeuristics.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
+import(path : "onshape/std/boolean.fs", version : "✨");
+import(path : "onshape/std/booleanHeuristics.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature creating a single copy of some features, bodies, or faces, mirrored
+ * about a given entity. Internally, performs an `applyPattern`, which in turn
+ * performs an `opPattern` or, for a feature mirror, calls the feature
+ * function.
  */
 annotation { "Feature Type Name" : "Mirror",
              "Filter Selector" : "allparts",

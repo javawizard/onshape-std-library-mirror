@@ -6,9 +6,10 @@ FeatureScript ✨; /* Automatically generated version */
 /* This file contains enum types shared by multiple features. */
 // TODO: these should be generated
 
-// Used by boolean, moveFace
 /**
- * TODO: description
+ * Defines how face should be transformed in a `moveFace` feature.
+ *
+ * Also used by `boolean`.
  */
 export enum MoveFaceType
 {
@@ -20,9 +21,9 @@ export enum MoveFaceType
     OFFSET
 }
 
-// Used by extrude, hole, loft, revolve, sweep
 /**
- * TODO: description
+ * Defines what type of body a body-creating feature (extrude, revolve, etc.)
+ * should create.
  */
 export enum ToolBodyType
 {
@@ -32,9 +33,9 @@ export enum ToolBodyType
     SURFACE
 }
 
-// Used by boolean, extrude, hole, loft, mirror, pattern, sweep, thicken
 /**
- * TODO: description
+ * Defines how a new body from a body-creating feature (extrude, revolve, etc.)
+ * should be merged with other bodies in the context.
  */
 export enum NewBodyOperationType
 {

@@ -5,7 +5,9 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/**
+ * Specifies how a mate connector origin is defined, and how many entities define it.
+ */
 export enum OriginCreationType
 {
     annotation {"Name" : "On entity"}

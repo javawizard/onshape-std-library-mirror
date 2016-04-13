@@ -4,13 +4,13 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "✨");
+export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/math.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const CHAMFER_ANGLE_BOUNDS =
 {

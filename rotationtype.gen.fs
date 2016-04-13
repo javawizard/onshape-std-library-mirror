@@ -5,7 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** TODO: documentation */
+/** Specifies an axis for rotation. */
 export enum RotationType
 {
     annotation {"Name" : "Rotate about X"}

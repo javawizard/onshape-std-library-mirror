@@ -4,21 +4,21 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "");
+export import(path : "onshape/std/manipulator.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/curveGeometry.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/mathUtils.fs", version : "");
-import(path : "onshape/std/surfaceGeometry.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -28,12 +28,7 @@ export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opMoveFace`.
  */
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",
@@ -212,14 +207,8 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
 }
 
 /**
- * TODO: description
- * @param context
- * @param moveFaceDefinition {{
- *      @field TODO
- * }}
- * @param newManipulators {{
- *      @field TODO
- * }}
+ * @internal
+ * Manipulator change function for `moveFace`.
  */
 export function moveFaceManipulatorChange(context is Context, moveFaceDefinition is map, newManipulators is map) returns map
 precondition

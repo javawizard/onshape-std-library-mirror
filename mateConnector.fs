@@ -4,27 +4,22 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "✨");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "✨");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "✨");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/tool.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
- * TODO: description
- * @param context
- * @param id : @eg `id + TODO`
- * @param definition {{
- *      @field TODO
- * }}
+ * Feature performing an `opMateConnector`.
  */
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)

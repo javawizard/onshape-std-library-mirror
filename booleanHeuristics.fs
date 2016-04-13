@@ -4,19 +4,19 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "");
-export import(path : "onshape/std/query.fs", version : "");
-export import(path : "onshape/std/tool.fs", version : "");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
+export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "");
-import(path : "onshape/std/clashtype.gen.fs", version : "");
-import(path : "onshape/std/containers.fs", version : "");
-import(path : "onshape/std/evaluate.fs", version : "");
-import(path : "onshape/std/feature.fs", version : "");
-import(path : "onshape/std/primitives.fs", version : "");
-import(path : "onshape/std/transform.fs", version : "");
-import(path : "onshape/std/valueBounds.fs", version : "");
+import(path : "onshape/std/box.fs", version : "✨");
+import(path : "onshape/std/clashtype.gen.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/primitives.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 
 /**
@@ -80,6 +80,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
 }
 
 /**
+ * @internal
  * Used by features using boolean heuristics
  */
 export function canSetBooleanFlip (oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
