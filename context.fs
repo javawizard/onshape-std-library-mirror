@@ -7,15 +7,6 @@ export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : 
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 
-/**
- * Returns the language version of the library. Note that the return value of `@getLanguageVersion` (but not of this
- * function) depends on the module it is called from.
- */
-export function libraryLanguageVersion()
-{
-    return @getLanguageVersion();
-}
-
 //====================== Context ========================
 
 /**
@@ -137,6 +128,10 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
  * For the above code, a pattern like `id + i + "extrude"` or
  * `id + ("loop" ~ i) + "extrude"` would work as expected, as would the
  * unnested `id + ("extrude" ~ i)`.
+ *
+ * Only the following characters are allowed in a string that makes up an `Id`: `a-z`,
+ * `A-Z`, `0-9`, `_`, `+`, `-`, `/`.  An asterisk `*` is allowed at the beginning of
+ * the string to mark it an "unstable" component (see below).
  */
 export type Id typecheck canBeId;
 
@@ -236,11 +231,18 @@ export function setVariable(context is Context, name is string, value)
  *
  * Variables on a context can also be accessed within a Part Studio using
  * `#` syntax (e.g. `#foo`) inside any parameter which allows an expression.
- *
- * @param name : Must be a valid identifier.
  */
 export function getVariable(context is Context, name is string)
 {
     return @getVariable(context, { "name" : name });
+}
+
+/**
+ * Returns the language version of the library. Note that the return value of `@getLanguageVersion` (but not of this
+ * function) depends on the module it is called from.
+ */
+export function libraryLanguageVersion()
+{
+    return @getLanguageVersion();
 }
 

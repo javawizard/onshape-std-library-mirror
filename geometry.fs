@@ -7,11 +7,11 @@ FeatureScript ✨; /* Automatically generated version */
  * This module makes all Onshape standard library features and functions
  * available.
  *
- * Generated Feature Studios begin with an import of this module,
- * ```export import(path : "onshape/std/geometry.fs", version : "");```
- * (with current version inserted) for user convenience.  The module
- * does not provide any features or functions not also available by
- * explicitly importing other modules.
+ * New Feature Studios begin with an import of this module,
+ * ```import(path : "onshape/std/geometry.fs", version : "");```
+ * with current version inserted (e.g. `300.0`). This gives that Feature Studio
+ * access to all functions, types, enums, and constants defined in
+ * the Onshape Standard Library.
  */
 /* Feature basics */
 export import(path : "onshape/std/context.fs", version : "✨");
@@ -42,6 +42,7 @@ export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 export import(path : "onshape/std/boolean.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
 export import(path : "onshape/std/cplane.fs", version : "✨");
+export import(path : "onshape/std/cpoint.fs", version : "✨");
 export import(path : "onshape/std/deleteBodies.fs", version : "✨");
 export import(path : "onshape/std/deleteFace.fs", version : "✨");
 export import(path : "onshape/std/draft.fs", version : "✨");

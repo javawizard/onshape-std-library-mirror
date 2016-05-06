@@ -13,6 +13,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
@@ -31,7 +32,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
  * ```
  *
  * For more information on writing features, see `Specifying feature UI` in the
- * language reference.
+ * language guide.
  *
  * @param feature : A function that takes a `context`, an `id`, and a
  *          `definition` and regenerates the feature.
@@ -116,7 +117,7 @@ export function defineFeature(feature is function) returns function
 export function startFeature(context is Context, id is Id, definition is map)
 {
     var token = @startFeature(context, id, definition);
-    recordQueries(context, id, definition);
+    recordParameters(context, id, definition);
     return token;
 }
 
@@ -165,13 +166,17 @@ export function getCurrentSubfeatureId(context is Context) returns Id
 /**
  * @internal
  */
-export function recordQueries(context is Context, id is Id, definition is map)
+export function recordParameters(context is Context, id is Id, definition is map)
 {
     for (var paramEntry in definition)
     {
         if (paramEntry.value is Query)
         {
             @recordQuery(context, id, { paramEntry.key : paramEntry.value });
+        }
+        else if (paramEntry.value is number || paramEntry.value is ValueWithUnits || paramEntry.value is string || paramEntry.value is boolean)
+        {
+            setFeatureComputedParameter(context, id, { "name" : paramEntry.key, "value" : paramEntry.value });
         }
     }
 }

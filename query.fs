@@ -62,7 +62,7 @@ export predicate canBeQuery(value)
 /**
  * @internal
  *
- * An enumeration which specifies the critereon of a `Query`.
+ * An enumeration describing how a query searches for matching entities.
  *
  * Queries of a given type can instead be created using their corresponding constructor.
  * For instance, the query
@@ -496,6 +496,7 @@ export function transientQueriesToStrings(query is Query)
         return transientQueriesToStrings(query as map);
 }
 
+/** @internal */
 export function transientQueriesToStrings(value is map) returns map
 {
     for (var entry in value)
@@ -511,6 +512,7 @@ export function transientQueriesToStrings(value is map) returns map
     return value;
 }
 
+/** @internal */
 export function transientQueriesToStrings(value is array) returns array
 {
     for (var i = 0; i < @size(value); i += 1)
@@ -520,6 +522,7 @@ export function transientQueriesToStrings(value is array) returns array
     return value;
 }
 
+/** @internal */
 export function transientQueriesToStrings(value)
 {
     return value;
@@ -580,23 +583,23 @@ export function qSymmetricDifference(query1 is Query, query2 is Query) returns Q
  * context which belong to a specified body or bodies.
  * @param entityType : @optional
  */
-export function qOwnedByBody(part is Query, entityType is EntityType) returns Query
+export function qOwnedByBody(body is Query, entityType is EntityType) returns Query
 {
-    return { "queryType" : QueryType.OWNED_BY_PART, "part" : part, "entityType" : entityType } as Query;
+    return { "queryType" : QueryType.OWNED_BY_PART, "part" : body, "entityType" : entityType } as Query;
 }
 
-export function qOwnedByBody(part is Query) returns Query
+export function qOwnedByBody(body is Query) returns Query
 {
-    return { "queryType" : QueryType.OWNED_BY_PART, "part" : part } as Query;
+    return { "queryType" : QueryType.OWNED_BY_PART, "part" : body } as Query;
 }
 
 /**
  * A query for all of the entities which match a subquery, and belong to the
  * specified body or bodies.
  */
-export function qOwnedByBody(subquery is Query, part is Query) returns Query
+export function qOwnedByBody(subquery is Query, body is Query) returns Query
 {
-    return { "queryType" : QueryType.OWNED_BY_PART, "subquery" : subquery, "part" : part } as Query;
+    return { "queryType" : QueryType.OWNED_BY_PART, "subquery" : subquery, "part" : body } as Query;
 }
 
 /**

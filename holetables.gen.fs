@@ -3662,7 +3662,7 @@ export const tappedOrClearanceHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
     "entries" : {
-        "Custom" : "",
+        "Custom" : {},
         "ANSI" : ANSI_ThroughScrewTable,
         "ISO" : ISO_ThroughScrewTable
     }
@@ -3693,7 +3693,7 @@ export const blindInLastHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
     "entries" : {
-        "Custom" : "",
+        "Custom" : {},
         "ANSI" : ANSI_BlindInLastHoleTable,
         "ISO" : ISO_BlindInLastHoleTable
     }

@@ -290,6 +290,8 @@ precondition
 }
 
 /**
+ * @internal
+ *
  * Returns a map representing the difference between `oldDefinition` and
  * `newDefinition`. The result will include added or changed entries (with
  * the value set to the new value), and removed entries (with the value set

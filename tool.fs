@@ -36,6 +36,18 @@ export enum ToolBodyType
 /**
  * Defines how a new body from a body-creating feature (extrude, revolve, etc.)
  * should be merged with other bodies in the context.
+ *
+ * To include this enum with the same styling as the extrude dialog (and others),
+ * use `booleanStepTypePredicate(definition)`.
+ *
+ * @value NEW : Creates a new body in the context with the geometry resulting
+ *          from the operation.
+ * @value ADD : Performs a boolean union between the new body and all bodies
+ *          in the merge scope.
+ * @value REMOVE : Performs a boolean subtraction of the new body from all
+ *          bodies in the merge scope.
+ * @value INTERSECT : Performs a boolean intersection between each new body
+ *          and each body in the merge scope.
  */
 export enum NewBodyOperationType
 {
@@ -48,5 +60,4 @@ export enum NewBodyOperationType
     annotation { "Name" : "Intersect" }
     INTERSECT
 }
-
 

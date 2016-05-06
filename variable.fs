@@ -40,7 +40,6 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         verifyVariableName(definition.name);
 
         setVariable(context, definition.name, definition.value);
-        setFeatureComputedParameter(context, id, { "name" : "value", "value" : definition.value });
     });
 
 /**

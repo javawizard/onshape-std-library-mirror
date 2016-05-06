@@ -13,6 +13,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
+ * @internal
  * The curve pattern feature. Currently incomplete and disabled.
  */
 //annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }

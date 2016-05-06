@@ -115,7 +115,7 @@ export function planeToCSys(plane is Plane) returns CoordSystem
 
 export function toString(value is Plane) returns string
 {
-    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
+    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x" ~ toString(value.x);
 }
 
 /**

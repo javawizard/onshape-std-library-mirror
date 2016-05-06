@@ -8,6 +8,7 @@ FeatureScript ✨; /* Automatically generated version */
  *
  * Some math functions that accept a `ValueWithUnits`, rather than
  * a `number` (such as `sin` and `cos`), are defined in the `units` module.
+ * There is no `pow` function: exponentiation is done using the `^` operator.
  *
  * When writing a FeatureScript module which uses only basic math functionality,
  * importing `mathUtils` (which imports this module along with `matrix`,

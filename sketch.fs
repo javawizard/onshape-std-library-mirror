@@ -60,9 +60,7 @@ export import(path : "onshape/std/constrainttype.gen.fs", version : "✨");
 
 /**
  * @internal
- * TODO: Is this really deprecated, or just internal?
  */
-annotation { "Deprecated" : "" }
 export enum DimensionDirection
 {
     MINIMUM,
@@ -72,9 +70,7 @@ export enum DimensionDirection
 
 /**
  * @internal
- * TODO: Is this really deprecated, or just internal?
  */
-annotation { "Deprecated" : "" }
 export enum SketchProjectionType
 {
     USE,
@@ -99,7 +95,9 @@ export predicate canBeSketch(value)
 }
 
 /**
- * Create a new sketch on an existing planar entity.
+ * Create a new sketch on an existing planar entity.  The sketch coordinate system follows the canonical plane
+ * orientation and the sketch origin is the projection of the world origin onto the plane.  For more control over
+ * the sketch coordinate system use `newSketchOnPlane`.
  *
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
@@ -117,7 +115,7 @@ precondition
     value.sketchPlane is Query;
 }
 {
-    recordQueries(context, id, value);
+    recordParameters(context, id, value);
 
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
@@ -155,7 +153,8 @@ precondition
 }
 
 /**
- * Create a new sketch on a custom plane, specified by a `Plane` object.
+ * Create a new sketch on a custom plane, specified by a `Plane` object.  The sketch coordinate system
+ * will match the coordinate system of the plane.
  *
  * @param value {{
  *      @field sketchPlane {Plane} :

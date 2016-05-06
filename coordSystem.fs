@@ -7,7 +7,7 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 
 /**
- * A right-handed cartesian coordinate system. Used for converting points and
+ * A right-handed Cartesian coordinate system. Used for converting points and
  * geometry between different reference frames, or for creating planes and
  * mate connectors.
  *
@@ -39,7 +39,10 @@ export predicate canBeCoordSystem(value)
 }
 
 /**
- * A creates cartesian coordinate system.
+ * Creates a Cartesian coordinate system.
+ *
+ * @see `CoordSystem`
+ *
  * @param origin : A 3D point in world space.
  * @param xAxis : A 3D vector in world space. Need not be normalized.
  * @param zAxis : A 3D vector in world space. Need not be normalized but must be orthogonal to xAxis.

@@ -183,11 +183,18 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
 }
 
 /**
- * Used by body-creating feature preconditions to allow post-creation booleans. For example, the boolean after
- * extrude, revolve, sweep or loft.
+ * Predicate which specifies a field `operationType` of type `NewBodyOperationType`.
+ * Used by body-creating feature preconditions such as extrude, revolve, sweep or loft.
  *
- * When used in a precondition, this predicate creates UI like the extrude
- * feature, with a horizontal list of the words "New", "Add", etc.
+ * When used in a precondition, `NewBodyOperationType` creates UI like the extrude
+ * feature, with a horizontal list of the words "New", "Add", etc. When using this
+ * predicate in features, make sure to export an import of `tool.fs` so that `NewBodyOperationType`
+ * is visible to the Part Studios:
+ * ```
+ * export import(path : "onshape/std/tool.fs", version : "");
+ * ```
+ *
+ * @param booleanDefinition : @autocomplete `definition`
  */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
@@ -196,7 +203,12 @@ export predicate booleanStepTypePredicate(booleanDefinition is map)
 }
 
 /**
- * Used by body-creating feature preconditions to allow post-creation booleans. Use together with `booleanStepTypePredicate`.
+ * Used by body-creating feature preconditions to allow post-creation booleans,
+ * speifying the merge scope (or "Merge with all") for that boolean.
+ *
+ * Designed to be used together with `booleanStepTypePredicate`.
+ *
+ * @param booleanDefinition : @autocomplete `definition`
  */
 export predicate booleanStepScopePredicate(booleanDefinition is map)
 {

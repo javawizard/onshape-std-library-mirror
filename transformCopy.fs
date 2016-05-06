@@ -86,6 +86,8 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  * transforms, prefer calling `opTransform` or `opPattern` directly.
  *
  * @param definition {{
+ *      @field entities {Query} : The bodies to transform.
+ *
  *      @field transformType {TransformType} : Defines how the transform type should be specified.
  *          @eg `TransformType.TRANSLATION_3D`
  *

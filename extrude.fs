@@ -104,6 +104,14 @@ export enum SecondDirectionBoundingType
  *      @field secondDirectionDraftPullDirection {boolean} : @optional
  *              @ex `false` to draft the second direction outwards (default)
  *              @ex `true` to draft the second direction inwards
+ *
+ *      @field operationType {NewBodyOperationType} : @optional
+ *              Specifies how the newly created body will be merged with existing bodies.
+ *      @field defaultScope {boolean} : @optional
+ *              @ex `true` to merge with all other bodies
+ *              @ex `false` to merge with `booleanScope`
+ *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
+ *              The specified bodies to merge with.
  * }}
  */
 annotation { "Feature Type Name" : "Extrude",

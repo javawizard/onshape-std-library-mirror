@@ -64,7 +64,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             if (size(evaluateQuery(otherContext, definition.parts)) == 0)
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
-            recordQueries(otherContext, id, definition);
+            recordParameters(otherContext, id, definition);
             const bodiesToKeep = qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]);
 
             const deleteDefinition = {

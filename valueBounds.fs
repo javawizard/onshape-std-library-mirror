@@ -122,7 +122,8 @@ export predicate isReal(value, boundSpec is RealBoundSpec)
 }
 
 /**
- * A `LengthBoundSpec` for a positive or negative length.
+ * A `LengthBoundSpec` for a positive or negative length, whose UI allows
+ * only strictly positive lengths.
  */
 export const LENGTH_BOUNDS =
 {
