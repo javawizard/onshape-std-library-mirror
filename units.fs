@@ -1,11 +1,11 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "336.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "336.0");
-import(path : "onshape/std/string.fs", version : "336.0");
+import(path : "onshape/std/math.fs", version : "347.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "347.0");
+import(path : "onshape/std/string.fs", version : "347.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -198,13 +198,21 @@ precondition lhs.unit == rhs.unit;
 }
 
 export operator<(lhs is ValueWithUnits, rhs is number) returns boolean
-precondition rhs == 0;
+precondition
+{
+    annotation { 'Message' : 'ValueWithUnits compared to nonzero number' }
+    rhs == 0;
+}
 {
     return lhs.value < rhs;
 }
 
 export operator<(lhs is number, rhs is ValueWithUnits) returns boolean
-precondition lhs == 0;
+precondition
+{
+    annotation { 'Message' : 'ValueWithUnits compared to nonzero number' }
+    lhs == 0;
+}
 {
     return lhs < rhs.value;
 }
@@ -351,6 +359,18 @@ precondition
     for (var unit in value.unit)
         value.unit[unit.key] = unit.value / 2;
     return value;
+}
+
+/**
+ * Hypotenuse function, as `sqrt(a^2 + b^2)`, but without any
+ * surprising results due to finite numeric precision.
+ *
+ * @example `hypot(3 * foot, 4 * foot)` equals `5 * foot`
+ */
+export function hypot(a is ValueWithUnits, b is ValueWithUnits)
+precondition a.unit == b.unit;
+{
+    return { value : @hypot(a.value, b.value), unit : a.unit } as ValueWithUnits;
 }
 
 /**

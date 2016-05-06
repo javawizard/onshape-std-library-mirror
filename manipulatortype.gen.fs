@@ -1,4 +1,4 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,8 @@ FeatureScript 336; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies a specific type of interactive manipulator. *
+ * Specifies a specific type of interactive manipulator.
+ *
  * @value LINEAR_1D : A single arrow which can move along a single axis. See
  *         `extrude` for an example.
  * @value LINEAR_3D : A triad of perpendicular arrows which specify a 3D

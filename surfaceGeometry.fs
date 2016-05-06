@@ -1,4 +1,4 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 336; /* Automatically generated version */
  * This module contains methods for creating and working with primative
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "336.0");
-import(path : "onshape/std/coordSystem.fs", version : "336.0");
-import(path : "onshape/std/curveGeometry.fs", version : "336.0");
-import(path : "onshape/std/mathUtils.fs", version : "336.0");
-import(path : "onshape/std/string.fs", version : "336.0");
-import(path : "onshape/std/units.fs", version : "336.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "336.0");
+import(path : "onshape/std/context.fs", version : "347.0");
+import(path : "onshape/std/coordSystem.fs", version : "347.0");
+import(path : "onshape/std/curveGeometry.fs", version : "347.0");
+import(path : "onshape/std/mathUtils.fs", version : "347.0");
+import(path : "onshape/std/string.fs", version : "347.0");
+import(path : "onshape/std/units.fs", version : "347.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "347.0");
 
 //===================================== Plane ======================================
 
@@ -115,7 +115,7 @@ export function planeToCSys(plane is Plane) returns CoordSystem
 
 export function toString(value is Plane) returns string
 {
-    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x-axis" ~ toString(value.x);
+    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x" ~ toString(value.x);
 }
 
 /**

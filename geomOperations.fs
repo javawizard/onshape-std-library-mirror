@@ -1,23 +1,25 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
  * Operations are the basic modeling primitives of FeatureScript. Operations can do extrusion, filleting, transforms,
- * etc. An operation takes a context, an id, and a definition and modifies the context in accordance to the
- * definition. The modifications can be referenced by the passed-in id. Operations can fail by throwing an error or
- * they can report warnings or infos. The status can be read with the getFeature... functions in error.fs.
+ * etc. An operation takes a context, an id, and a definition and modifies the context in accordance with the
+ * definition. The modifications can be referenced by the passed-in id. Operations return `undefined` but can fail by
+ * throwing an error or they can report warnings or infos. The status can be read with the getFeature... functions in
+ * error.fs.
  *
  * When an operation parameter that requires one entity receives a query that resolves to multiple entities, it takes
  * the first resolved entity.
  *
  * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "336.0");
+import(path : "onshape/std/context.fs", version : "347.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "336.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "336.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "347.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "347.0");
+export import(path : "onshape/std/bendoptions.fs", version : "347.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -130,6 +132,7 @@ export function opDraft(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field entities {Query} : Edges and faces to extrude.
  *      @field direction {Vector} : The 3d direction in which to extrude.
+ *              @eg `evOwnerSketchPlane(context, {"entity" : entities}).normal` to extrude perpendicular to the owner sketch
  *              @eg `evPlane(context, {"face" : entities}).normal` to extrude perpendicular to the first planar entity
  *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC`.
  *              @eg `BoundingType.BLIND`
@@ -141,7 +144,8 @@ export function opDraft(context is Context, id is Id, definition is map)
  *      @field startBound {BoundingType} : @optional
  *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
  *      @field startDepth {ValueWithUnits} : @requiredif {`startBound` is `BLIND`.}
- *              How far from the `entities` to start the extrude.
+ *              How far from the `entities` to start the extrude.  The direction vector for this is the negative of `direction`:
+ *              positive values make the extrusion longer when `endDepth` is positive.
  *      @field startBoundEntity {Query} : @requiredif {`startBound` is `UP_TO_SURFACE` or `UP_TO_BODY`.}
  *              The face or body that provides the bound.
  * }}
@@ -533,5 +537,98 @@ export function opThicken(context is Context, id is Id, definition is map)
 export function opTransform(context is Context, id is Id, definition is map)
 {
     return @opTransform(context, id, definition);
+}
+
+/**
+ * @internal
+ * Call prior to a flatten or fold operation to imprint any needed break edges on the part.
+ * Bending requires a different imprint operation implemented in feature script.
+ * @param id : @autocomplete `id + "bendFace1"`
+ * @param definition {{
+ *    @field tolerance {Enum} : Tolerance used to determine if an edge is tangent.
+ *    @field useFaces {boolean} : If true, provide a list of faces to imprint on, if false provide a list of bodies.
+ *    @field faces {Query} : @requiredif{`useFaces` is `true`} List of faces to have break edges imprinted.
+ *    @field bodies {Query} : @requiredif{`useFaces` is `false`} List of bodies to have break edges imprinted.
+ * }}
+ */
+export function opPrepareForBendingInternal(context is Context, id is Id, definition is map)
+{
+    return @opPrepareForBendingInternal(context, id, definition);
+}
+
+/**
+ * @internal
+ * Bends a face of a body at a given edge, the body must be split in order to allow the bend.
+ * @param id : @autocomplete `id + "bendFace1"`
+ * @param definition {{
+ *    @field bendEdge {Query} : Edge to indicate start of bend, can be either model edge or sketch edge.
+ *    @field seedEntity {Query} : Vertex, edge or face to indicate which side of the edge will be bent. Be sure this is not
+ *        the face containing a sketch edge as this will be not indicate the desired side.
+ *    @field radius {ValueWithUnits} : Inside radius of the bend.
+ *    @field angle {ValueWithUnits} : Angle of the bend.
+ *    @field bendOptions {BendOptions} : Options for bend.
+ * }}
+ */
+export function opBendAtEdgeInternal(context is Context, id is Id, definition is map)
+{
+    return @opBendAtEdgeInternal(context, id, definition);
+}
+
+/**
+ * @internal
+ * Flattens faces or edges
+ * @param id : @autocomplete `id + "flatten1"`
+ * @param definition {{
+ *    @field tolerance {Enum} : Tolerance used to determine if an edge is tangent.
+ *    @field pickEdges {boolean} : Whether to unbend individual edges, or use a seed face.
+ *    @field bendEdges {Query} : @requiredif{`pickEdges` is `true`} Edges to unbend. Must be an edge joining a planar face with an approximately tangent cylindrical face.
+ *    @field seedFace {Query} : @requiredif{`pickEdges` is `false`} Face to remain fixed while adjacent faces are flattened. Must be a planar face.
+ *    @field bendOptions {BendOptions} : Options for bend.
+ * }}
+ */
+export function opFlattenInternal(context is Context, id is Id, definition is map)
+{
+    return @opFlattenInternal(context, id, definition);
+}
+
+/**
+ * @internal
+ * Folds a previously flattened body.
+ * @param id : @autocomplete `id + "fold1"`
+ * @param definition {{
+ *    @field body {Query} : Body to rebend.
+ * }}
+ */
+export function opFoldInternal(context is Context, id is Id, definition is map)
+{
+    return @opFoldInternal(context, id, definition);
+}
+
+/**
+ * Extends the perimiter of a sheet body.
+ * @param id : @autocomplete `id + "extendBody1"`
+ * @param definition {{
+ *    @field bodies {Query} : Bodies to extend.
+ *    @field growSize {ValueWithUnits} : The distance to extend by, may be negative.
+ * }}
+ */
+export function opExtendSheetBody(context is Context, id is Id, definition is map)
+{
+    return @opExtendSheetBody(context, id, definition);
+}
+
+/**
+ * This function takes a list of faces and creates one or more surfaces from those faces.
+ * The source faces and body are not affected.
+ * @param id : @autocomplete `id + "extractSurface1"`
+ * @param definition {{
+ *    @field propagateTangents {boolean} : Whether additional faces should be added to the selection by tangent propagation
+ *    @field tolerance {Enum} : @optional If propagateTangents is `true` tolerance used to determine if an edge is tangent.
+ *    @field faces {Query} : List of faces to be converted, if propagateTangents is true these are the seed faces.
+ * }}
+ */
+export function opExtractSurface(context is Context, id is Id, definition is map)
+{
+    @opExtractSurface(context, id, definition);
 }
 

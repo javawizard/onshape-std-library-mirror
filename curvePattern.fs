@@ -1,18 +1,19 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "336.0");
-export import(path : "onshape/std/tool.fs", version : "336.0");
+export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/tool.fs", version : "347.0");
 
 // Imports used internally
-import(path : "onshape/std/patternUtils.fs", version : "336.0");
-import(path : "onshape/std/transform.fs", version : "336.0");
-import(path : "onshape/std/vector.fs", version : "336.0");
+import(path : "onshape/std/patternUtils.fs", version : "347.0");
+import(path : "onshape/std/transform.fs", version : "347.0");
+import(path : "onshape/std/vector.fs", version : "347.0");
 
 /**
+ * @internal
  * The curve pattern feature. Currently incomplete and disabled.
  */
 //annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }

@@ -1,8 +1,8 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "336.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "336.0");
+import(path : "onshape/std/units.fs", version : "347.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "347.0");
 
 const ANSI_drillTable = {
     "name" : "size",
@@ -3662,7 +3662,7 @@ export const tappedOrClearanceHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
     "entries" : {
-        "Custom" : "",
+        "Custom" : {},
         "ANSI" : ANSI_ThroughScrewTable,
         "ISO" : ISO_ThroughScrewTable
     }
@@ -3693,7 +3693,7 @@ export const blindInLastHoleTable = {
     "name" : "standard",
     "displayName" : "Standard",
     "entries" : {
-        "Custom" : "",
+        "Custom" : {},
         "ANSI" : ANSI_BlindInLastHoleTable,
         "ISO" : ISO_BlindInLastHoleTable
     }

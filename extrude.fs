@@ -1,28 +1,28 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "336.0");
-export import(path : "onshape/std/query.fs", version : "336.0");
-export import(path : "onshape/std/tool.fs", version : "336.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/tool.fs", version : "347.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "336.0");
+export import(path : "onshape/std/manipulator.fs", version : "347.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "336.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "336.0");
-import(path : "onshape/std/box.fs", version : "336.0");
-import(path : "onshape/std/containers.fs", version : "336.0");
-import(path : "onshape/std/curveGeometry.fs", version : "336.0");
-import(path : "onshape/std/draft.fs", version : "336.0");
-import(path : "onshape/std/evaluate.fs", version : "336.0");
-import(path : "onshape/std/feature.fs", version : "336.0");
-import(path : "onshape/std/mathUtils.fs", version : "336.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
-import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/boolean.fs", version : "347.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "347.0");
+import(path : "onshape/std/box.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "347.0");
+import(path : "onshape/std/curveGeometry.fs", version : "347.0");
+import(path : "onshape/std/draft.fs", version : "347.0");
+import(path : "onshape/std/evaluate.fs", version : "347.0");
+import(path : "onshape/std/feature.fs", version : "347.0");
+import(path : "onshape/std/mathUtils.fs", version : "347.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "347.0");
+import(path : "onshape/std/valueBounds.fs", version : "347.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -104,6 +104,14 @@ export enum SecondDirectionBoundingType
  *      @field secondDirectionDraftPullDirection {boolean} : @optional
  *              @ex `false` to draft the second direction outwards (default)
  *              @ex `true` to draft the second direction inwards
+ *
+ *      @field operationType {NewBodyOperationType} : @optional
+ *              Specifies how the newly created body will be merged with existing bodies.
+ *      @field defaultScope {boolean} : @optional
+ *              @ex `true` to merge with all other bodies
+ *              @ex `false` to merge with `booleanScope`
+ *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
+ *              The specified bodies to merge with.
  * }}
  */
 annotation { "Feature Type Name" : "Extrude",

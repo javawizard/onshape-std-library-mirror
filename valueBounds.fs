@@ -1,4 +1,4 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -34,9 +34,9 @@ FeatureScript 336; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "336.0");
-import(path : "onshape/std/math.fs", version : "336.0");
-export import(path : "onshape/std/units.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "347.0");
+import(path : "onshape/std/math.fs", version : "347.0");
+export import(path : "onshape/std/units.fs", version : "347.0");
 
 /** @internal */
 export predicate defineBounds(value, boundSpec is map)
@@ -122,7 +122,8 @@ export predicate isReal(value, boundSpec is RealBoundSpec)
 }
 
 /**
- * A `LengthBoundSpec` for a positive or negative length.
+ * A `LengthBoundSpec` for a positive or negative length, whose UI allows
+ * only strictly positive lengths.
  */
 export const LENGTH_BOUNDS =
 {

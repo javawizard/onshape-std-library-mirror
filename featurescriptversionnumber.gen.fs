@@ -1,4 +1,4 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -306,16 +306,23 @@ export enum FeatureScriptVersionNumber
     V333_UPDATE_SKETCH_IMPRINT,
     V334_PS_VERSION_28_1_228,
     V335_REQUIRE_STD_VERSIONS,
-    V336_FS_ATTRIBUTES_IN_MERGE
+    V336_FS_ATTRIBUTES_IN_MERGE,
+    V342_CHECK_INITIAL_GUESS,
+    V343_SUBFEATURES,
+    V344_BOOLEAN_BLEND_BUGS,
+    V345_PS_VERSION_28_1_231,
+    V346_TRACKING_WITH_DET_IDS,
+    V347_SHEET_METAL_FLATTEN
 }
 
 /**
+ * @internal
  * The current FeatureScript version.
  *
  * The version at regeneration stored on the `context`, so logic which checks the
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V336_FS_ATTRIBUTES_IN_MERGE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V347_SHEET_METAL_FLATTEN;
 
 

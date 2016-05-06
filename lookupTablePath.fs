@@ -1,7 +1,7 @@
-FeatureScript 336; /* Automatically generated version */
-import(path : "onshape/std/math.fs", version : "336.0");
-import(path : "onshape/std/string.fs", version : "336.0");
-import(path : "onshape/std/units.fs", version : "336.0");
+FeatureScript 347; /* Automatically generated version */
+import(path : "onshape/std/math.fs", version : "347.0");
+import(path : "onshape/std/string.fs", version : "347.0");
+import(path : "onshape/std/units.fs", version : "347.0");
 
 /**
  * A `LookupTablePath` identifies a map of keys into a multi-level table.
@@ -105,17 +105,21 @@ export function lookupTableFixExpression(expression is string) returns string
 /**
  * Find a terminal/content table from a path and convert into expression/value form
  */
-export function getLookupTable(table is map, path is LookupTablePath) returns map
+export function getLookupTable(table is map, path is LookupTablePath)
 {
     while (table != undefined && table.entries != undefined && table.name != undefined)
     {
         var pathKey = path[table.name];
-        if (table.entries[pathKey] == undefined || !(table.entries[pathKey] is map))
+        var nextEntry = table.entries[pathKey];
+        if (nextEntry == undefined)
         {
             return {};
         }
-
-        table = table.entries[pathKey];
+        if (!(nextEntry is map))
+        {
+            return nextEntry;
+        }
+        table = nextEntry;
     }
     return table;
 }

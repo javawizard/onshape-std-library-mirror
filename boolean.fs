@@ -1,22 +1,22 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "336.0");
-export import(path : "onshape/std/query.fs", version : "336.0");
-export import(path : "onshape/std/tool.fs", version : "336.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/tool.fs", version : "347.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "336.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "336.0");
-import(path : "onshape/std/containers.fs", version : "336.0");
-import(path : "onshape/std/evaluate.fs", version : "336.0");
-import(path : "onshape/std/feature.fs", version : "336.0");
-import(path : "onshape/std/primitives.fs", version : "336.0");
-import(path : "onshape/std/transform.fs", version : "336.0");
-import(path : "onshape/std/valueBounds.fs", version : "336.0");
+import(path : "onshape/std/box.fs", version : "347.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "347.0");
+import(path : "onshape/std/evaluate.fs", version : "347.0");
+import(path : "onshape/std/feature.fs", version : "347.0");
+import(path : "onshape/std/primitives.fs", version : "347.0");
+import(path : "onshape/std/transform.fs", version : "347.0");
+import(path : "onshape/std/valueBounds.fs", version : "347.0");
 
 /**
  * The boolean feature.  Performs an `opBoolean` after a possible `opOffsetFaces` if the operation is subtraction.
@@ -183,11 +183,18 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
 }
 
 /**
- * Used by body-creating feature preconditions to allow post-creation booleans. For example, the boolean after
- * extrude, revolve, sweep or loft.
+ * Predicate which specifies a field `operationType` of type `NewBodyOperationType`.
+ * Used by body-creating feature preconditions such as extrude, revolve, sweep or loft.
  *
- * When used in a precondition, this predicate creates UI like the extrude
- * feature, with a horizontal list of the words "New", "Add", etc.
+ * When used in a precondition, `NewBodyOperationType` creates UI like the extrude
+ * feature, with a horizontal list of the words "New", "Add", etc. When using this
+ * predicate in features, make sure to export an import of `tool.fs` so that `NewBodyOperationType`
+ * is visible to the Part Studios:
+ * ```
+ * export import(path : "onshape/std/tool.fs", version : "");
+ * ```
+ *
+ * @param booleanDefinition : @autocomplete `definition`
  */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
@@ -196,7 +203,12 @@ export predicate booleanStepTypePredicate(booleanDefinition is map)
 }
 
 /**
- * Used by body-creating feature preconditions to allow post-creation booleans. Use together with `booleanStepTypePredicate`.
+ * Used by body-creating feature preconditions to allow post-creation booleans,
+ * speifying the merge scope (or "Merge with all") for that boolean.
+ *
+ * Designed to be used together with `booleanStepTypePredicate`.
+ *
+ * @param booleanDefinition : @autocomplete `definition`
  */
 export predicate booleanStepScopePredicate(booleanDefinition is map)
 {

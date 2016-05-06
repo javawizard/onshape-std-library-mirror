@@ -1,257 +1,43 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
  * Evaluation functions return information about the topological entities in the context, like bounding boxes, tangent
- * planes, projections, and collisions. Evaluation functions typically take a context and a map that specifies the
- * computation to be performed and return a ValueWithUnits or a FeatureScript geometry type (like Line or Plane). They
- * may also throw errors if a query fails to evaluate or the input is otherwise invalid.
+ * planes, projections, and collisions. Evaluation functions take a context and a map that specifies the
+ * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like `Line` or `Plane`), or a special
+ * type like `DistanceResult`. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "336.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "336.0");
-import(path : "onshape/std/containers.fs", version : "336.0");
-import(path : "onshape/std/context.fs", version : "336.0");
-import(path : "onshape/std/coordSystem.fs", version : "336.0");
-import(path : "onshape/std/curveGeometry.fs", version : "336.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "336.0");
-import(path : "onshape/std/mathUtils.fs", version : "336.0");
-import(path : "onshape/std/query.fs", version : "336.0");
-import(path : "onshape/std/string.fs", version : "336.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "336.0");
-import(path : "onshape/std/units.fs", version : "336.0");
+import(path : "onshape/std/box.fs", version : "347.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "347.0");
+import(path : "onshape/std/context.fs", version : "347.0");
+import(path : "onshape/std/coordSystem.fs", version : "347.0");
+import(path : "onshape/std/curveGeometry.fs", version : "347.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "347.0");
+import(path : "onshape/std/mathUtils.fs", version : "347.0");
+import(path : "onshape/std/query.fs", version : "347.0");
+import(path : "onshape/std/string.fs", version : "347.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "347.0");
+import(path : "onshape/std/units.fs", version : "347.0");
 
 /**
- * Given a face, calculate and return a Plane tangent to that face,
- * where the plane's origin is at the point specified by its parameter-space coordinates.
- * @param context {Context}
+ * Return the total area of all the entities.
+ * If no matching 2D faces are found the total area will be zero.
  * @param arg {{
- *      @field face {Query}: The face to evaluate
- *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
- *      @field parameter {Vector}: 2d unitless parameter-space vector specifying the location of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
- *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
+ *      @field entities{Query}
  * }}
  */
-export function evFaceTangentPlane(context is Context, arg is map) returns Plane
-{
-    arg.parameters = [arg.parameter];
-    return evFaceTangentPlanes(context, arg)[0];
-}
-
-/**
- * Given a face, calculate and return an array of Planes tangent to that face,
- * where each plane's origin is located at the point specified by its parameter-space coordinates.
- * @param context {Context}
- * @param arg {{
- *      @field face {Query}: The face to evaluate
- *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
- *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
- *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
- * }}
- */
-export function evFaceTangentPlanes(context is Context, arg is map) returns array
+export function evArea(context is Context, arg is map) returns ValueWithUnits
 precondition
 {
-    arg.face is Query;
-    arg.parameters is array;
-    for (var uv in arg.parameters)
-    {
-        uv is Vector;
-        @size(uv) == 2;
-    }
+    arg.entities is Query;
 }
 {
-    var result = @evFaceTangentPlanes(context, arg);
-    for (var i = 0; i < @size(result); i += 1)
-        result[i] = planeFromBuiltin(result[i]);
-    return result;
-}
-
-/**
- * Return one tangent line to an edge.
- * @param arg {{
- *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
- *      @field parameter {number}:
- *             A number in the range 0..1 indicating a point along
- *             the curve to evaluate the tangent at.
- *      @field arcLengthParameterization :
- *             If true (default), the parameter measures distance
- *             along the edge, so `0.5` is the midpoint.
- *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
- *          @optional
- * }}
- */
-export function evEdgeTangentLine(context is Context, arg is map) returns Line
-{
-    arg.parameters = [arg.parameter];
-    return evEdgeTangentLines(context, arg)[0];
-}
-
-/**
- * Return tangent lines to a edge.
- * @param arg {{
- *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
- *      @field parameters {array}:
- *             An array of numbers in the range 0..1 indicating points along
- *             the curve to evaluate tangents at.
- *      @field arcLengthParameterization :
- *             If true (default), the parameter measures distance
- *             along the edge, so `0.5` is the midpoint.
- *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
- *          @optional
- * }}
- * @returns {array} : An array of `Line`s.
- */
-export function evEdgeTangentLines(context is Context, arg is map) returns array
-precondition
-{
-    arg.edge is Query;
-    arg.parameters is array;
-    if (arg.arcLengthParameterization != undefined)
-        arg.arcLengthParameterization is boolean;
-
-    for (var i in arg.parameters)
-        i is number;
-}
-{
-    if (arg.arcLengthParameterization == undefined)
-        arg.arcLengthParameterization = true;
-
-    var result = @evEdgeTangentLines(context, arg);
-    for (var i = 0; i < @size(result); i += 1)
-        result[i] = lineFromBuiltin(result[i]);
-    return result;
-}
-
-/**
- * Return the coordinates of a point.
- * @param arg {{
- *      @field vertex {Query}
- * }}
- */
-export function evVertexPoint(context is Context, arg is map) returns Vector
-precondition
-{
-    arg.vertex is Query;
-}
-{
-    return meter * vector(@evVertexPoint(context, arg));
-}
-
-/**
- * If the edge is a line, return a Line value for the given edge.
- * @param arg {{
- *      @field edge{Query}
- * }}
- */
-export function evLine(context is Context, arg is map) returns Line
-precondition
-{
-    arg.edge is Query;
-}
-{
-    return lineFromBuiltin(@evLine(context, arg));
-}
-
-/**
- * If the face is a plane, return a `Plane` value for the given face.
- * @param arg {{
- *      @field face{Query}
- * }}
- */
-export function evPlane(context is Context, arg is map) returns Plane
-precondition
-{
-    arg.face is Query;
-}
-{
-    return planeFromBuiltin(@evPlane(context, arg));
-}
-
-/**
- * Return a descriptive value for a face, or the first face if the query
- * finds more than one.  Return a `Cone`, `Cylinder`, `Plane`, `Sphere`,
- * or `Torus` as appropriate for the face, or an unspecified map value
- * if the face is none of these.
- *
- * If the first result is not a face, throw an exception.
- * @param arg {{
- *      @field face{Query}
- * }}
- */
-export function evSurfaceDefinition(context is Context, arg is map) returns map
-precondition
-{
-    arg.face is Query;
-}
-{
-    var result = @evSurfaceDefinition(context, arg);
-    if (result is map)
-    {
-        if (result.surfaceType == (SurfaceType.CYLINDER as string))
-        {
-            result = cylinderFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.CONE as string))
-        {
-            result = coneFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.TORUS as string))
-        {
-            result = torusFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.SPHERE as string))
-        {
-            result = sphereFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.PLANE as string))
-        {
-            result = planeFromBuiltin(result);
-        }
-    }
-
-    return result;
-}
-
-/**
- * Given a query for a curve, return a `Circle`, `Ellipse`, or `Line`
- * value for the curve.  If the curve is none of these types, return
- * a map with unspecified contents.  If the query does not find a curve,
- * throw an exception.
- * @param arg {{
- *      @field edge{Query} : The curve to evaluate.
- * }}
- * @throws
- */
-export function evCurveDefinition(context is Context, arg is map) returns map
-precondition
-{
-    arg.edge is Query;
-}
-{
-    var result = @evCurveDefinition(context, arg);
-    if (result is map)
-    {
-        if (result.curveType == (CurveType.CIRCLE as string))
-        {
-            result = circleFromBuiltin(result);
-        }
-        else if (result.curveType == (CurveType.ELLIPSE as string))
-        {
-            result = ellipseFromBuiltin(result);
-        }
-        else if (result.curveType == (CurveType.LINE as string))
-        {
-            result = lineFromBuiltin(result);
-        }
-    }
-
-    return result;
+    var faces = qEntityFilter(arg.entities, EntityType.FACE);
+    var ownedFaces = qOwnedByBody(arg.entities, EntityType.FACE);
+    return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
 }
 
 /**
@@ -273,89 +59,23 @@ precondition
 }
 
 /**
- * Return the plane of the sketch that created the given entity. Throws if the entity was not created by a sketch.
- * @param context
+ * Find a bounding box around an entity, optionally with respect
+ * to a given coordinate system.
  * @param arg {{
- *      @field entity {Query} : The sketch entity. May be a vertex, edge, face, or body.
+ *      @field topology{Query} : The entity to find the bounding box of.
+ *      @field cSys{CoordSystem} : The coordinate system to use (if not the standard coordinate system). @optional
  * }}
  */
-export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
+export function evBox3d(context is Context, arg is map) returns Box3d
 precondition
 {
-    arg.entity is Query;
+    arg.topology is Query;
+    arg.cSys == undefined || arg.cSys is CoordSystem;
 }
 {
-    return planeFromBuiltin(@evOwnerSketchPlane(context, arg));
+    var result = @evBox(context, arg);
+    return box3d(meter * vector(result.minCorner), meter * vector(result.maxCorner));
 }
-
-/**
- * Return the total length of all the entities (if they are edges)
- * and edges belonging to entities (if they are bodies).  If no edges
- * are found the total length will be zero.
- * @param arg {{
- *      @field entities{Query}
- * }}
- */
-export function evLength(context is Context, arg is map) returns ValueWithUnits
-precondition
-{
-    arg.entities is Query;
-}
-{
-    var edges = qEntityFilter(arg.entities, EntityType.EDGE);
-    var ownedEdges = qOwnedByBody(arg.entities, EntityType.EDGE);
-    return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
-}
-
-/**
- * Return the total area of all the entities.
- * If no matching 2D faces are found the total area will be zero.
- * @param arg {{
- *      @field entities{Query}
- * }}
- */
-export function evArea(context is Context, arg is map) returns ValueWithUnits
-precondition
-{
-    arg.entities is Query;
-}
-{
-    var faces = qEntityFilter(arg.entities, EntityType.FACE);
-    var ownedFaces = qOwnedByBody(arg.entities, EntityType.FACE);
-    return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
-}
-
-/**
- * Return the total volume of all the entities.
- * If no matching 3D bodies are found, the total volume will be zero.
- * @param arg {{
- *      @field entities{Query}
- * }}
- */
-export function evVolume(context is Context, arg is map) returns ValueWithUnits
-precondition
-{
-    arg.entities is Query;
-}
-{
-    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY) }) * meter ^ 3;
-}
-
-/**
- * Given a face of a fillet, return the radius of the fillet.
- * @param arg {{
- *      @field face{Query}
- * }}
- */
-export function evFilletRadius(context is Context, arg is map) returns ValueWithUnits
-precondition
-{
-    arg.face is Query;
-}
-{
-    return @evFilletRadius(context, arg) * meter;
-}
-
 
 /**
  * Find collisions between tools and targets.  Each collision is a
@@ -396,64 +116,39 @@ precondition
 }
 
 /**
- * Return the convexity type of the given edge,
- * `CONVEX`, `CONCAVE`, `SMOOTH`, or `VARIABLE`.
- * If the edge is part of a body with inside and outside
- * convex and concave have the obvious meanings.
- * Throws an exception if the query does not evaluate to a single edge.
- * @param context
+ * Given a query for a curve, return a `Circle`, `Ellipse`, or `Line`
+ * value for the curve.  If the curve is none of these types, return
+ * a map with unspecified contents.  If the query does not find a curve,
+ * throw an exception.
  * @param arg {{
- *      @field edge
+ *      @field edge{Query} : The curve to evaluate.
  * }}
+ * @throws
  */
-export function evEdgeConvexity(context is Context, arg is map) returns EdgeConvexityType
+export function evCurveDefinition(context is Context, arg is map) returns map
 precondition
 {
     arg.edge is Query;
 }
 {
-    return @evEdgeConvexity(context, arg) as EdgeConvexityType;
-}
+    var result = @evCurveDefinition(context, arg);
+    if (result is map)
+    {
+        if (result.curveType == (CurveType.CIRCLE as string))
+        {
+            result = circleFromBuiltin(result);
+        }
+        else if (result.curveType == (CurveType.ELLIPSE as string))
+        {
+            result = ellipseFromBuiltin(result);
+        }
+        else if (result.curveType == (CurveType.LINE as string))
+        {
+            result = lineFromBuiltin(result);
+        }
+    }
 
-/**
- * @internal
- *
- * Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
- */
-export function evMateConnectorCoordSystem(context is Context, arg is map) returns CoordSystem
-{
-    return coordSystemFromBuiltin(@evMateConnectorCoordSystem(context, arg));
-}
-
-/**
- * Find a bounding box around an entity, optionally with respect
- * to a given coordinate system.
- * @param arg {{
- *      @field topology{Query} : The entity to find the bounding box of.
- *      @field cSys{CoordSystem} : The coordinate system to use (if not the standard coordinate system). @optional
- * }}
- */
-export function evBox3d(context is Context, arg is map) returns Box3d
-precondition
-{
-    arg.topology is Query;
-    arg.cSys == undefined || arg.cSys is CoordSystem;
-}
-{
-    var result = @evBox(context, arg);
-    return box3d(meter * vector(result.minCorner), meter * vector(result.maxCorner));
-}
-
-/**
- * Gets the coordinate system of the given mate connector
- * @param context
- * @param arg {{
- *      @field mateConnector{Query} : The mate connector to evaluate.
- * }}
- */
-export function evMateConnector(context is Context, arg is map) returns CoordSystem
-{
-    return coordSystemFromBuiltin(@evMateConnector(context, arg));
+    return result;
 }
 
 // =========== evDistance stuff ===========
@@ -541,6 +236,314 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
     }
     return result as DistanceResult;
 }
+
+// =========== end of evDistance stuff ===========
+
+/**
+ * Return the convexity type of the given edge,
+ * `CONVEX`, `CONCAVE`, `SMOOTH`, or `VARIABLE`.
+ * If the edge is part of a body with inside and outside
+ * convex and concave have the obvious meanings.
+ * Throws an exception if the query does not evaluate to a single edge.
+ * @param context
+ * @param arg {{
+ *      @field edge{Query}
+ * }}
+ */
+export function evEdgeConvexity(context is Context, arg is map) returns EdgeConvexityType
+precondition
+{
+    arg.edge is Query;
+}
+{
+    return @evEdgeConvexity(context, arg) as EdgeConvexityType;
+}
+
+/**
+ * Return one tangent line to an edge.
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating a point along
+ *             the curve to evaluate the tangent at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
+ *          @optional
+ * }}
+ */
+export function evEdgeTangentLine(context is Context, arg is map) returns Line
+{
+    arg.parameters = [arg.parameter];
+    return evEdgeTangentLines(context, arg)[0];
+}
+
+/**
+ * Return tangent lines to a edge.
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameters {array}:
+ *             An array of numbers in the range 0..1 indicating points along
+ *             the curve to evaluate tangents at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
+ *          @optional
+ * }}
+ * @returns {array} : An array of `Line`s.
+ */
+export function evEdgeTangentLines(context is Context, arg is map) returns array
+precondition
+{
+    arg.edge is Query;
+    arg.parameters is array;
+    if (arg.arcLengthParameterization != undefined)
+        arg.arcLengthParameterization is boolean;
+
+    for (var i in arg.parameters)
+        i is number;
+}
+{
+    if (arg.arcLengthParameterization == undefined)
+        arg.arcLengthParameterization = true;
+
+    var result = @evEdgeTangentLines(context, arg);
+    for (var i = 0; i < @size(result); i += 1)
+        result[i] = lineFromBuiltin(result[i]);
+    return result;
+}
+
+/**
+ * Given a face, calculate and return a Plane tangent to that face,
+ * where the plane's origin is at the point specified by its parameter-space coordinates.
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face to evaluate
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameter {Vector}: 2d unitless parameter-space vector specifying the location of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
+ * }}
+ */
+export function evFaceTangentPlane(context is Context, arg is map) returns Plane
+{
+    arg.parameters = [arg.parameter];
+    return evFaceTangentPlanes(context, arg)[0];
+}
+
+/**
+ * Given a face, calculate and return an array of Planes tangent to that face,
+ * where each plane's origin is located at the point specified by its parameter-space coordinates.
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face to evaluate
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
+ * }}
+ */
+export function evFaceTangentPlanes(context is Context, arg is map) returns array
+precondition
+{
+    arg.face is Query;
+    arg.parameters is array;
+    for (var uv in arg.parameters)
+    {
+        uv is Vector;
+        @size(uv) == 2;
+    }
+}
+{
+    var result = @evFaceTangentPlanes(context, arg);
+    for (var i = 0; i < @size(result); i += 1)
+        result[i] = planeFromBuiltin(result[i]);
+    return result;
+}
+
+/**
+ * Given a face of a fillet, return the radius of the fillet.
+ * @param arg {{
+ *      @field face{Query}
+ * }}
+ */
+export function evFilletRadius(context is Context, arg is map) returns ValueWithUnits
+precondition
+{
+    arg.face is Query;
+}
+{
+    return @evFilletRadius(context, arg) * meter;
+}
+
+/**
+ * Return the total length of all the entities (if they are edges)
+ * and edges belonging to entities (if they are bodies).  If no edges
+ * are found the total length will be zero.
+ * @param arg {{
+ *      @field entities{Query}
+ * }}
+ */
+export function evLength(context is Context, arg is map) returns ValueWithUnits
+precondition
+{
+    arg.entities is Query;
+}
+{
+    var edges = qEntityFilter(arg.entities, EntityType.EDGE);
+    var ownedEdges = qOwnedByBody(arg.entities, EntityType.EDGE);
+    return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
+}
+
+/**
+ * If the edge is a line, return a Line value for the given edge.
+ * @param arg {{
+ *      @field edge{Query}
+ * }}
+ */
+export function evLine(context is Context, arg is map) returns Line
+precondition
+{
+    arg.edge is Query;
+}
+{
+    return lineFromBuiltin(@evLine(context, arg));
+}
+
+/**
+ * Gets the coordinate system of the given mate connector
+ * @param context
+ * @param arg {{
+ *      @field mateConnector{Query} : The mate connector to evaluate.
+ * }}
+ */
+export function evMateConnector(context is Context, arg is map) returns CoordSystem
+{
+    return coordSystemFromBuiltin(@evMateConnector(context, arg));
+}
+
+/**
+ * @internal
+ *
+ * Given the picks and inferences for defining a mate connector, returns the desired coordinate system.
+ */
+export function evMateConnectorCoordSystem(context is Context, arg is map) returns CoordSystem
+{
+    return coordSystemFromBuiltin(@evMateConnectorCoordSystem(context, arg));
+}
+
+/**
+ * Return the plane of the sketch that created the given entity. Throws if the entity was not created by a sketch.
+ * @param context
+ * @param arg {{
+ *      @field entity {Query} : The sketch entity. May be a vertex, edge, face, or body.
+ * }}
+ */
+export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
+precondition
+{
+    arg.entity is Query;
+}
+{
+    return planeFromBuiltin(@evOwnerSketchPlane(context, arg));
+}
+
+/**
+ * If the face is a plane, return a `Plane` value for the given face.
+ * @param arg {{
+ *      @field face{Query}
+ * }}
+ */
+export function evPlane(context is Context, arg is map) returns Plane
+precondition
+{
+    arg.face is Query;
+}
+{
+    return planeFromBuiltin(@evPlane(context, arg));
+}
+
+/**
+ * Return a descriptive value for a face, or the first face if the query
+ * finds more than one.  Return a `Cone`, `Cylinder`, `Plane`, `Sphere`,
+ * or `Torus` as appropriate for the face, or an unspecified map value
+ * if the face is none of these.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field face{Query}
+ * }}
+ */
+export function evSurfaceDefinition(context is Context, arg is map) returns map
+precondition
+{
+    arg.face is Query;
+}
+{
+    var result = @evSurfaceDefinition(context, arg);
+    if (result is map)
+    {
+        if (result.surfaceType == (SurfaceType.CYLINDER as string))
+        {
+            result = cylinderFromBuiltin(result);
+        }
+        else if (result.surfaceType == (SurfaceType.CONE as string))
+        {
+            result = coneFromBuiltin(result);
+        }
+        else if (result.surfaceType == (SurfaceType.TORUS as string))
+        {
+            result = torusFromBuiltin(result);
+        }
+        else if (result.surfaceType == (SurfaceType.SPHERE as string))
+        {
+            result = sphereFromBuiltin(result);
+        }
+        else if (result.surfaceType == (SurfaceType.PLANE as string))
+        {
+            result = planeFromBuiltin(result);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Return the coordinates of a point.
+ * @param arg {{
+ *      @field vertex {Query}
+ * }}
+ */
+export function evVertexPoint(context is Context, arg is map) returns Vector
+precondition
+{
+    arg.vertex is Query;
+}
+{
+    return meter * vector(@evVertexPoint(context, arg));
+}
+
+/**
+ * Return the total volume of all the entities.
+ * If no matching 3D bodies are found, the total volume will be zero.
+ * @param arg {{
+ *      @field entities{Query}
+ * }}
+ */
+export function evVolume(context is Context, arg is map) returns ValueWithUnits
+precondition
+{
+    arg.entities is Query;
+}
+{
+    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY) }) * meter ^ 3;
+}
+
+// ========================= Internal stuff follows ==========================
 
 /**
  * @internal

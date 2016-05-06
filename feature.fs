@@ -1,18 +1,19 @@
-FeatureScript 336; /* Automatically generated version */
+FeatureScript 347; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "336.0");
-export import(path : "onshape/std/error.fs", version : "336.0");
-export import(path : "onshape/std/geomOperations.fs", version : "336.0");
-export import(path : "onshape/std/query.fs", version : "336.0");
+export import(path : "onshape/std/context.fs", version : "347.0");
+export import(path : "onshape/std/error.fs", version : "347.0");
+export import(path : "onshape/std/geomOperations.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "347.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "336.0");
-import(path : "onshape/std/string.fs", version : "336.0");
-import(path : "onshape/std/transform.fs", version : "336.0");
+import(path : "onshape/std/containers.fs", version : "347.0");
+import(path : "onshape/std/string.fs", version : "347.0");
+import(path : "onshape/std/transform.fs", version : "347.0");
+import(path : "onshape/std/units.fs", version : "347.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
@@ -31,7 +32,7 @@ import(path : "onshape/std/transform.fs", version : "336.0");
  * ```
  *
  * For more information on writing features, see `Specifying feature UI` in the
- * language reference.
+ * language guide.
  *
  * @param feature : A function that takes a `context`, an `id`, and a
  *          `definition` and regenerates the feature.
@@ -116,7 +117,7 @@ export function defineFeature(feature is function) returns function
 export function startFeature(context is Context, id is Id, definition is map)
 {
     var token = @startFeature(context, id, definition);
-    recordQueries(context, id, definition);
+    recordParameters(context, id, definition);
     return token;
 }
 
@@ -165,13 +166,17 @@ export function getCurrentSubfeatureId(context is Context) returns Id
 /**
  * @internal
  */
-export function recordQueries(context is Context, id is Id, definition is map)
+export function recordParameters(context is Context, id is Id, definition is map)
 {
     for (var paramEntry in definition)
     {
         if (paramEntry.value is Query)
         {
             @recordQuery(context, id, { paramEntry.key : paramEntry.value });
+        }
+        else if (paramEntry.value is number || paramEntry.value is ValueWithUnits || paramEntry.value is string || paramEntry.value is boolean)
+        {
+            setFeatureComputedParameter(context, id, { "name" : paramEntry.key, "value" : paramEntry.value });
         }
     }
 }
