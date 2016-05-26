@@ -65,7 +65,14 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
             recordParameters(otherContext, id, definition);
-            const bodiesToKeep = qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]);
+
+            //don't want to merge default bodies
+            const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
+                                          qCreatedBy(makeId("Front"), EntityType.BODY),
+                                          qCreatedBy(makeId("Top"), EntityType.BODY),
+                                          qCreatedBy(makeId("Right"), EntityType.BODY)]);
+
+            const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
             const deleteDefinition = {
                 "entities" : qSubtraction(qEverything(EntityType.BODY), bodiesToKeep)

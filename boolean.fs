@@ -204,7 +204,7 @@ export predicate booleanStepTypePredicate(booleanDefinition is map)
 
 /**
  * Used by body-creating feature preconditions to allow post-creation booleans,
- * speifying the merge scope (or "Merge with all") for that boolean.
+ * specifying the merge scope (or "Merge with all") for that boolean.
  *
  * Designed to be used together with `booleanStepTypePredicate`.
  *

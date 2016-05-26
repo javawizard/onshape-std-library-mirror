@@ -785,7 +785,7 @@ export function qLoopBoundedFaces(subquery is Query) returns Query
  *
  * @param subquery : A Query for the seed face, followed by any boundary faces
  *          or edges. The seed face must be first, so a `qUnion` should be used
- *          to gaurantee the order.
+ *          to guarantee the order.
  */
 export function qFaceOrEdgeBoundedFaces(subquery is Query) returns Query
 {

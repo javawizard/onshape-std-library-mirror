@@ -29,7 +29,7 @@ FeatureScript ✨; /* Automatically generated version */
  *
  * Next, any number of sketch entities and constraints may be added ot the
  * sketch. When building sketches in FeatureScript, constraints are usually
- * unnecessary, since you already have hte ability to place the entities
+ * unnecessary, since you already have the ability to place the entities
  * precisely where you intend them to be.
  *
  * Finally, the sketch is solved and added to the context by calling `skSolve`,
@@ -96,8 +96,9 @@ export predicate canBeSketch(value)
 
 /**
  * Create a new sketch on an existing planar entity.  The sketch coordinate system follows the canonical plane
- * orientation and the sketch origin is the projection of the world origin onto the plane.  For more control over
- * the sketch coordinate system use `newSketchOnPlane`.
+ * orientation and the sketch origin is the projection of the world origin onto the plane.
+ *
+ * To make a sketch in the coordinate system of an arbitrary `Plane`, use `newSketchOnPlane`.
  *
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
@@ -372,7 +373,7 @@ precondition
 }
 
 /**
- * Add an arc to a sketch.
+ * Add an arc through three points to a sketch.
  *
  * @param sketch : @autocomplete `sketch1`
  * @param arcId : @autocomplete `"arc1"`

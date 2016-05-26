@@ -4,7 +4,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
- * This module contains methods for creating and working with primative
+ * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
 import(path : "onshape/std/context.fs", version : "✨");
@@ -228,6 +228,7 @@ export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line o
  *              @eg `1` indicates that `intersection` is a `Line`.
  *              @eg `-1` indicates that the intersection does not exist (i.e.
  *                  the line and the plane are parallel).
+ *      @field intersection : `undefined` or `Vector` or `Line` (depending on `dim`) that represents the intersection.
  * }}
  */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
