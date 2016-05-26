@@ -1,4 +1,4 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -504,7 +504,10 @@ export enum ErrorStringEnum
     BEND_PREP_NO_FACES,
     BEND_PREP_NO_BODIES,
     BEND_PREP_ERROR_FINDING_EDGE_LOCATIONS,
-    BEND_PREP_ERROR_IMPRINTING_EDGES
+    BEND_PREP_ERROR_IMPRINTING_EDGES,
+    ASSEMBLY_ANIMATE_MATE_START_AFTER_END,
+    ASSEMBLY_ANIMATE_NO_MATE,
+    ASSEMBLY_ANIMATE_MATE_SUPPRESSED
 }
 
 

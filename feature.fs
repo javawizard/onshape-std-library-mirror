@@ -1,52 +1,24 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "347.0");
-export import(path : "onshape/std/error.fs", version : "347.0");
-export import(path : "onshape/std/geomOperations.fs", version : "347.0");
-export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/context.fs", version : "355.0");
+export import(path : "onshape/std/error.fs", version : "355.0");
+export import(path : "onshape/std/geomOperations.fs", version : "355.0");
+export import(path : "onshape/std/query.fs", version : "355.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "347.0");
-import(path : "onshape/std/string.fs", version : "347.0");
-import(path : "onshape/std/transform.fs", version : "347.0");
-import(path : "onshape/std/units.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "355.0");
+import(path : "onshape/std/string.fs", version : "355.0");
+import(path : "onshape/std/transform.fs", version : "355.0");
+import(path : "onshape/std/units.fs", version : "355.0");
 
 /**
- * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
- * recording for the UI, default parameters, and error handling.  A typical usage is something like:
- * ```
- * annotation { "Feature Type Name" : "Widget" } // This annotation is required for Onshape to recognize widget as a feature.
- * export const widget = defineFeature(function(context is Context, id is Id, definition is map)
- *     precondition
- *     {
- *         ... // Specify the parameters that this feature takes
- *         definition.shouldFillet is boolean;
- *     }
- *     {
- *     ... // Specify what the feature does when regenerating
- *     }, {});
- * ```
- *
- * For more information on writing features, see `Specifying feature UI` in the
- * language guide.
- *
- * @param feature : A function that takes a `context`, an `id`, and a
- *          `definition` and regenerates the feature.
- *          @autocomplete
- * ```
- * function(context is Context, id is Id, definition is map)
- *     precondition
- *     {
- *         // Specify the parameters that this feature takes
- *     }
- *     {
- *         // Specify what the feature does when regenerating
- *     }
- * ```
+ * This function takes a regeneration function and wraps it to create a feature. It is exactly like
+ * the one-argument version of `defineFeature` but the additional argument enables setting
+ * default values for feature parameters when they are not passed in.
  *
  * @param defaults : A map of default parameter values for when this feature is
  *          called in FeatureScript.
@@ -103,6 +75,38 @@ export function defineFeature(feature is function, defaults is map) returns func
         };
 }
 
+/**
+ * This function takes a regeneration function and wraps it to create a feature. The wrapper handles certain argument
+ * recording for the UI and error handling.  A typical usage is something like:
+ * ```
+ * annotation { "Feature Type Name" : "Widget" } // This annotation is required for Onshape to recognize widget as a feature.
+ * export const widget = defineFeature(function(context is Context, id is Id, definition is map)
+ *     precondition
+ *     {
+ *         ... // Specify the parameters that this feature takes
+ *     }
+ *     {
+ *         ... // Specify what the feature does when regenerating
+ *     });
+ * ```
+ *
+ * For more information on writing features, see `Specifying feature UI` in the
+ * language guide.
+ *
+ * @param feature : A function that takes a `context`, an `id`, and a
+ *          `definition` and regenerates the feature.
+ *          @autocomplete
+ * ```
+ * function(context is Context, id is Id, definition is map)
+ *     precondition
+ *     {
+ *         // Specify the parameters that this feature takes
+ *     }
+ *     {
+ *         // Specify what the feature does when regenerating
+ *     }
+ * ```
+ */
 export function defineFeature(feature is function) returns function
 {
     return defineFeature(feature, {});
@@ -220,7 +224,7 @@ export function unsetFeaturePatternInstanceData(context is Context, id is Id)
 }
 
 /**
- * When in feature pattern scope returns composition of all pattern transforms pushed by setFeaturePatternInstanceData
+ * When in feature pattern scope returns composition of all pattern transforms pushed by `setFeaturePatternInstanceData`
  * returns identity transform when out of scope
  */
 export function getFullPatternTransform(context is Context) returns Transform
@@ -229,9 +233,54 @@ export function getFullPatternTransform(context is Context) returns Transform
 }
 
 /**
- * Among references find topology created by pattern instance deepest in the stack.
- * If transformation on the stack in that instance is S and full transformation is F,
+ * Making a feature work correctly with feature patterns is usually done with two functions: this one
+ * and `transformResultIfNecessary`.
+ *
+ * Feature patterns work by first computing a sequence of transforms, one for each instance.  For each
+ * transform, the pattern pushes it onto the pattern stack (using `setFeaturePatternInstanceData`), executes
+ * the patterned features, and then pops the transform off the stack (using `unsetFeaturePatternInstanceData`)
+ * before pushing the next one.  The stack depth corresponds to the level of nesting of feature patterns.
+ * Feature authors are responsible for reading the pattern stack and transforming themselves accordingly.
+ *
+ * The basic principle is that inside one feature pattern (as opposed to nested feature patterns), if any
+ * entities that the feature references come from a feature that is also being patterned, then the feature
+ * ignores the pattern transform.  Otherwise, the feature uses the pattern transform in a "natural" way,
+ * applying it to an input, the output, or somewhere in between.
+ *
+ * For example, suppose the patterned feature creates a 3D line between two arbitrary vertices.  If the
+ * first vertex is also patterned, but not the second, then the result should be a bunch of lines from
+ * different instances of the first vertex to the unpatterned second vertex (this is accomplished by not
+ * applying any transform to the line).  If neither vertex is patterned, the line should be transformed
+ * by the pattern transform and the result will be as expected, as if a body pattern of these lines was
+ * performed.  Other features may need to apply the transform differently: for example, a sweep can
+ * transform the result of `opSweep` prior to the boolean, but an extrude needs to transform the profile
+ * prior to `opExtrude` to accommodate up-to-next correctly.
+ *
+ * The general case is more complicated because feature patterns may be nested, and this function is
+ * designed to handle them.  This function takes `references`, a query for everything the feature
+ * geometrically depends on (typically a `qUnion` of the queries in the feature definition), and computes
+ * the portion of the pattern transform that is not applied to any of the references and hence should
+ * be applied to the feature.  For example, if one of the references is patterned by the current feature
+ * pattern or if there is no feature pattern, it will return the identity transform.  If `references`
+ * evaluates to nothing, it will return the current feature pattern transform.
+ *
+ * More precisely:
+ * Among references find topology created by pattern instance deepest in the pattern transform stack.
+ * If the transformation on the stack for that instance is S and the full transformation is F,
  * the remainder R is such that R * S = F
+ *
+ * A simple feature may use this function and `transformResultIfNecessary` as follows:
+ * ```
+ * ... // Feature definition boilerplate and precondition
+ *     { // Feature body
+ *         // Call getRemainderPatternTransform before performing any operations
+ *         var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.vertexToBuildOn });
+ *         ... // Create a cube using definition.vertexToBuildOn as the reference location
+ *         // Inside a feature pattern, the following will transform the cube if definition.vertexToBuildOn is not getting patterned:
+ *         transformResultIfNecessary(context, id, remainingTransform);
+ *         ... // Perhaps boolean the results to something in the context
+ *     });
+ * ```
  *
  * @param definition {{
  *     @field references {Query}

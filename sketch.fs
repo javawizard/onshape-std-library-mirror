@@ -1,4 +1,4 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,7 +29,7 @@ FeatureScript 347; /* Automatically generated version */
  *
  * Next, any number of sketch entities and constraints may be added ot the
  * sketch. When building sketches in FeatureScript, constraints are usually
- * unnecessary, since you already have hte ability to place the entities
+ * unnecessary, since you already have the ability to place the entities
  * precisely where you intend them to be.
  *
  * Finally, the sketch is solved and added to the context by calling `skSolve`,
@@ -38,25 +38,25 @@ FeatureScript 347; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "355.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "347.0");
-import(path : "onshape/std/evaluate.fs", version : "347.0");
-import(path : "onshape/std/feature.fs", version : "347.0");
-import(path : "onshape/std/mathUtils.fs", version : "347.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "347.0");
-import(path : "onshape/std/tool.fs", version : "347.0");
-import(path : "onshape/std/valueBounds.fs", version : "347.0");
-import(path : "onshape/std/matrix.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "355.0");
+import(path : "onshape/std/evaluate.fs", version : "355.0");
+import(path : "onshape/std/feature.fs", version : "355.0");
+import(path : "onshape/std/mathUtils.fs", version : "355.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "355.0");
+import(path : "onshape/std/tool.fs", version : "355.0");
+import(path : "onshape/std/valueBounds.fs", version : "355.0");
+import(path : "onshape/std/matrix.fs", version : "355.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "347.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "347.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "347.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "347.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "347.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "347.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "355.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "355.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "355.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "355.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "355.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "355.0");
 
 /**
  * @internal
@@ -96,8 +96,9 @@ export predicate canBeSketch(value)
 
 /**
  * Create a new sketch on an existing planar entity.  The sketch coordinate system follows the canonical plane
- * orientation and the sketch origin is the projection of the world origin onto the plane.  For more control over
- * the sketch coordinate system use `newSketchOnPlane`.
+ * orientation and the sketch origin is the projection of the world origin onto the plane.
+ *
+ * To make a sketch in the coordinate system of an arbitrary `Plane`, use `newSketchOnPlane`.
  *
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
@@ -372,7 +373,7 @@ precondition
 }
 
 /**
- * Add an arc to a sketch.
+ * Add an arc through three points to a sketch.
  *
  * @param sketch : @autocomplete `sketch1`
  * @param arcId : @autocomplete `"arc1"`

@@ -1,4 +1,4 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,11 +15,11 @@ FeatureScript 347; /* Automatically generated version */
  *
  * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "347.0");
+import(path : "onshape/std/context.fs", version : "355.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "347.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "347.0");
-export import(path : "onshape/std/bendoptions.fs", version : "347.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "355.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "355.0");
+export import(path : "onshape/std/bendoptions.fs", version : "355.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -526,7 +526,7 @@ export function opThicken(context is Context, id is Id, definition is map)
  *      @field transform {Transform} : The transform to apply.
  *              @eg `transform(vector(0, 0, 1) * inch)` will translate the body 1 inch along the world's z-axis.
  *              @eg `rotationAround(myLine, 30 * degree)` will rotate around a `Line` object.
- *              @eg `transform(identityMatrix(3) * scale, vector(0, 0, 0))` will scale uniformly about the origin.
+ *              @eg `transform(identityMatrix(3) * scale, vector(0, 0, 0) * inch)` will scale uniformly about the origin.
  *              @eg `toWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
  *                  the world's origin and axes will move to the `cSys` origin and axes.
  *              @eg `fromWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
@@ -605,11 +605,11 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
 }
 
 /**
- * Extends the perimiter of a sheet body.
+ * Extends the perimeter of a sheet body.
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
  *    @field bodies {Query} : Bodies to extend.
- *    @field growSize {ValueWithUnits} : The distance to extend by, may be negative.
+ *    @field growSize {ValueWithUnits} : The distance to extend by. May be negative.
  * }}
  */
 export function opExtendSheetBody(context is Context, id is Id, definition is map)
@@ -623,8 +623,8 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  * @param id : @autocomplete `id + "extractSurface1"`
  * @param definition {{
  *    @field propagateTangents {boolean} : Whether additional faces should be added to the selection by tangent propagation
- *    @field tolerance {Enum} : @optional If propagateTangents is `true` tolerance used to determine if an edge is tangent.
- *    @field faces {Query} : List of faces to be converted, if propagateTangents is true these are the seed faces.
+ *    @field tolerance {Enum} : @requiredif {`propagateTangents` is `true`} Tolerance used to determine if an edge is tangent.
+ *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

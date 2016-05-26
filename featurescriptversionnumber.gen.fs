@@ -1,4 +1,4 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -312,7 +312,10 @@ export enum FeatureScriptVersionNumber
     V344_BOOLEAN_BLEND_BUGS,
     V345_PS_VERSION_28_1_231,
     V346_TRACKING_WITH_DET_IDS,
-    V347_SHEET_METAL_FLATTEN
+    V347_SHEET_METAL_FLATTEN,
+    V353_DCM_VERSION_65_5_6,
+    V354_BETWEEN_ENTITY_ADDITIONAL_QUERY_REQUIRED,
+    V355_DOCUMENTATION_UPDATE
 }
 
 /**
@@ -323,6 +326,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V347_SHEET_METAL_FLATTEN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V355_DOCUMENTATION_UPDATE;
 
 

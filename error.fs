@@ -1,14 +1,14 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "347.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "355.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "355.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "347.0");
+import(path : "onshape/std/context.fs", version : "355.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.

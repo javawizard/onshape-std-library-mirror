@@ -1,16 +1,16 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "355.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "347.0");
-import(path : "onshape/std/feature.fs", version : "347.0");
-import(path : "onshape/std/tool.fs", version : "347.0");
-import(path : "onshape/std/transform.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "355.0");
+import(path : "onshape/std/feature.fs", version : "355.0");
+import(path : "onshape/std/tool.fs", version : "355.0");
+import(path : "onshape/std/transform.fs", version : "355.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -65,7 +65,14 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
             recordParameters(otherContext, id, definition);
-            const bodiesToKeep = qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]);
+
+            //don't want to merge default bodies
+            const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
+                                          qCreatedBy(makeId("Front"), EntityType.BODY),
+                                          qCreatedBy(makeId("Top"), EntityType.BODY),
+                                          qCreatedBy(makeId("Right"), EntityType.BODY)]);
+
+            const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
             const deleteDefinition = {
                 "entities" : qSubtraction(qEverything(EntityType.BODY), bodiesToKeep)

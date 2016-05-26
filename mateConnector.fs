@@ -1,21 +1,21 @@
-FeatureScript 347; /* Automatically generated version */
+FeatureScript 355; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "347.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "347.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "347.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "347.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "347.0");
+export import(path : "onshape/std/query.fs", version : "355.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "355.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "355.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "355.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "355.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "347.0");
-import(path : "onshape/std/evaluate.fs", version : "347.0");
-import(path : "onshape/std/feature.fs", version : "347.0");
-import(path : "onshape/std/tool.fs", version : "347.0");
-import(path : "onshape/std/valueBounds.fs", version : "347.0");
+import(path : "onshape/std/containers.fs", version : "355.0");
+import(path : "onshape/std/evaluate.fs", version : "355.0");
+import(path : "onshape/std/feature.fs", version : "355.0");
+import(path : "onshape/std/tool.fs", version : "355.0");
+import(path : "onshape/std/valueBounds.fs", version : "355.0");
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
