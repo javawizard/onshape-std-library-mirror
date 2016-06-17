@@ -37,6 +37,7 @@ export import(path : "onshape/std/string.fs", version : "✨");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 export import(path : "onshape/std/attributes.fs", version : "✨");
 export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 
 /* Onshape standard library features */
 export import(path : "onshape/std/boolean.fs", version : "✨");
@@ -66,6 +67,9 @@ export import(path : "onshape/std/sketch.fs", version : "✨");
 export import(path : "onshape/std/sectionpart.fs", version : "✨");
 export import(path : "onshape/std/splitpart.fs", version : "✨");
 export import(path : "onshape/std/sweep.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalRecognize.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
 export import(path : "onshape/std/variable.fs", version : "✨");

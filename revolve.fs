@@ -73,7 +73,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.revolveType != RevolveType.SYMMETRIC
             && definition.revolveType != RevolveType.FULL)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
             definition.oppositeDirection is boolean;
         }
 

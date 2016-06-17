@@ -20,7 +20,7 @@ export function toString(value) returns string
 
 export function toString(value is string) returns string
 {
-    return value;
+    return value as string; // Strip off type tag
 }
 
 export function toString(value is array) returns string

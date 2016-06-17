@@ -513,7 +513,7 @@ precondition
 }
 
 /**
- * Return the coordinates of a point.
+ * Return the coordinates of a point, or the origin of a mate connector.
  * @param arg {{
  *      @field vertex {Query}
  * }}
@@ -598,7 +598,41 @@ function offsetGroup(group is map) returns OffsetGroup
         side1[i] = qTransient(group.side1[i] as TransientId);
     }
     return {'side0' : side0, 'side1' : side1,
-        'offsetLow' : group.offsetLow * meter, 'offsethHigh' : group.offsetHigh * meter} as OffsetGroup;
+        'offsetLow' : group.offsetLow * meter, 'offsetHigh' : group.offsetHigh * meter} as OffsetGroup;
 }
 
+/**
+ * Return the surface normal of a face at a position on one of its edges.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameter{number}
+ * }}
+ */
+export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
+precondition
+{
+    arg is map;
+    arg.edge is Query;
+    arg.face is Query;
+    arg.parameter is number;
+}
+{
+    var edgeTangent = evEdgeTangentLine(context, {
+            "edge" : arg.edge,
+            "parameter" : arg.parameter
+    });
+    var distData = evDistance(context, {
+            "side0" : arg.face,
+            "side1" : edgeTangent.origin
+    });
+    var parameter = distData.sides[0].parameter;
+    var faceTangent = evFaceTangentPlane(context, {
+            "face" : arg.face,
+            "parameter" : parameter
+    });
+    return faceTangent.normal;
+}
 
