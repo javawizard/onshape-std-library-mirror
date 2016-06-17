@@ -1,4 +1,4 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -315,7 +315,17 @@ export enum FeatureScriptVersionNumber
     V347_SHEET_METAL_FLATTEN,
     V353_DCM_VERSION_65_5_6,
     V354_BETWEEN_ENTITY_ADDITIONAL_QUERY_REQUIRED,
-    V355_DOCUMENTATION_UPDATE
+    V355_DOCUMENTATION_UPDATE,
+    V360_FEATURE_MAP,
+    V361_DETECT_INFINITE_SKETCH_DIMENSION,
+    V362_HOLE_IMPROVED_DEPTH_FINDING,
+    V363_FS_ATTRIBUTE_MANAGEMENT,
+    V364_HOLE_FIX_FEATURE_MIRROR,
+    V365_BOOLEAN_SURFACE_ERROR_FIX,
+    V366_OPPOSITE_DIRECTION_CIRCULAR_UIHINT,
+    V367_VERTEX_EXTRUDE_DEGENERATE_FIX,
+    V368_HOLE_FIELD_NAME_MISMATCH_FIX,
+    V369_FS_ERROR_EXTRUDE_FIX
 }
 
 /**
@@ -326,6 +336,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V355_DOCUMENTATION_UPDATE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V369_FS_ERROR_EXTRUDE_FIX;
 
 

@@ -1,4 +1,4 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,18 +9,18 @@ FeatureScript 355; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like `Line` or `Plane`), or a special
  * type like `DistanceResult`. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "355.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "355.0");
-import(path : "onshape/std/containers.fs", version : "355.0");
-import(path : "onshape/std/context.fs", version : "355.0");
-import(path : "onshape/std/coordSystem.fs", version : "355.0");
-import(path : "onshape/std/curveGeometry.fs", version : "355.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "355.0");
-import(path : "onshape/std/mathUtils.fs", version : "355.0");
-import(path : "onshape/std/query.fs", version : "355.0");
-import(path : "onshape/std/string.fs", version : "355.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "355.0");
-import(path : "onshape/std/units.fs", version : "355.0");
+import(path : "onshape/std/box.fs", version : "369.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "369.0");
+import(path : "onshape/std/containers.fs", version : "369.0");
+import(path : "onshape/std/context.fs", version : "369.0");
+import(path : "onshape/std/coordSystem.fs", version : "369.0");
+import(path : "onshape/std/curveGeometry.fs", version : "369.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "369.0");
+import(path : "onshape/std/mathUtils.fs", version : "369.0");
+import(path : "onshape/std/query.fs", version : "369.0");
+import(path : "onshape/std/string.fs", version : "369.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "369.0");
+import(path : "onshape/std/units.fs", version : "369.0");
 
 /**
  * Return the total area of all the entities.
@@ -513,7 +513,7 @@ precondition
 }
 
 /**
- * Return the coordinates of a point.
+ * Return the coordinates of a point, or the origin of a mate connector.
  * @param arg {{
  *      @field vertex {Query}
  * }}
@@ -598,7 +598,41 @@ function offsetGroup(group is map) returns OffsetGroup
         side1[i] = qTransient(group.side1[i] as TransientId);
     }
     return {'side0' : side0, 'side1' : side1,
-        'offsetLow' : group.offsetLow * meter, 'offsethHigh' : group.offsetHigh * meter} as OffsetGroup;
+        'offsetLow' : group.offsetLow * meter, 'offsetHigh' : group.offsetHigh * meter} as OffsetGroup;
 }
 
+/**
+ * Return the surface normal of a face at a position on one of its edges.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameter{number}
+ * }}
+ */
+export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
+precondition
+{
+    arg is map;
+    arg.edge is Query;
+    arg.face is Query;
+    arg.parameter is number;
+}
+{
+    var edgeTangent = evEdgeTangentLine(context, {
+            "edge" : arg.edge,
+            "parameter" : arg.parameter
+    });
+    var distData = evDistance(context, {
+            "side0" : arg.face,
+            "side1" : edgeTangent.origin
+    });
+    var parameter = distData.sides[0].parameter;
+    var faceTangent = evFaceTangentPlane(context, {
+            "face" : arg.face,
+            "parameter" : parameter
+    });
+    return faceTangent.normal;
+}
 

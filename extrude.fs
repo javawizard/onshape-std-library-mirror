@@ -1,28 +1,29 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "355.0");
-export import(path : "onshape/std/query.fs", version : "355.0");
-export import(path : "onshape/std/tool.fs", version : "355.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "369.0");
+export import(path : "onshape/std/query.fs", version : "369.0");
+export import(path : "onshape/std/tool.fs", version : "369.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "355.0");
+export import(path : "onshape/std/manipulator.fs", version : "369.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "355.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "355.0");
-import(path : "onshape/std/box.fs", version : "355.0");
-import(path : "onshape/std/containers.fs", version : "355.0");
-import(path : "onshape/std/curveGeometry.fs", version : "355.0");
-import(path : "onshape/std/draft.fs", version : "355.0");
-import(path : "onshape/std/evaluate.fs", version : "355.0");
-import(path : "onshape/std/feature.fs", version : "355.0");
-import(path : "onshape/std/mathUtils.fs", version : "355.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "355.0");
-import(path : "onshape/std/valueBounds.fs", version : "355.0");
+import(path : "onshape/std/boolean.fs", version : "369.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "369.0");
+import(path : "onshape/std/box.fs", version : "369.0");
+import(path : "onshape/std/containers.fs", version : "369.0");
+import(path : "onshape/std/coordSystem.fs", version : "369.0");
+import(path : "onshape/std/curveGeometry.fs", version : "369.0");
+import(path : "onshape/std/draft.fs", version : "369.0");
+import(path : "onshape/std/evaluate.fs", version : "369.0");
+import(path : "onshape/std/feature.fs", version : "369.0");
+import(path : "onshape/std/mathUtils.fs", version : "369.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "369.0");
+import(path : "onshape/std/valueBounds.fs", version : "369.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -38,6 +39,8 @@ export enum SecondDirectionBoundingType
     UP_TO_SURFACE,
     annotation { "Name" : "Up to part" }
     UP_TO_BODY,
+    annotation { "Name" : "Up to vertex" }
+    UP_TO_VERTEX,
     annotation { "Name" : "Through all" }
     THROUGH_ALL
 }
@@ -72,6 +75,8 @@ export enum SecondDirectionBoundingType
  *              Specifies the face or surface to bound the extrude.
  *      @field endBoundEntityBody {Query}: @requiredif {`endBound` is `UP_TO_BODY`}
  *              Specifies the surface or solid body to bound the extrude.
+ *      @field endBoundEntityVertex {Query}: @requiredif {`endBound` is `UP_TO_VERTEX`}
+ *              Specifies the vertex to bound the extrude.
  *
  *      @field oppositeDirection {boolean}: @optional
  *              @ex `true` to flip the direction of the extrude to point opposite the face/sketch
@@ -96,6 +101,8 @@ export enum SecondDirectionBoundingType
  *              specifies the face or surface to bound the extrude.
  *      @field secondDirectionBoundEntityBody {Query}: @requiredif {`secondDirectionBound` is `UP_TO_BODY`}
  *              specifies the surface or solid body to bound the extrude.
+ *      @field secondDirectionBoundEntityVertex {Query}: @requiredif {`secondDirectionBound` is `UP_TO_VERTEX`}
+ *              specifies the vertex to bound the extrude.
  *      @field secondDirectionOppositeDirection {boolean} : @optional
  *              @ex `true` will flip the second end direction to align with the plane/face's normal.
  *
@@ -166,6 +173,13 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                          "MaxNumberOfPicks" : 1 }
             definition.endBoundEntityBody is Query;
         }
+        else if (definition.endBound == BoundingType.UP_TO_VERTEX)
+        {
+            annotation {"Name" : "Up to vertex or mate connector",
+                "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+                "MaxNumberOfPicks" : 1 }
+            definition.endBoundEntityVertex is Query;
+        }
 
         if (definition.endBound == BoundingType.BLIND ||
             definition.endBound == BoundingType.SYMMETRIC)
@@ -215,6 +229,14 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                                  "Filter" : EntityType.BODY && SketchObject.NO,
                                  "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityBody is Query;
+                }
+
+                else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
+                {
+                    annotation { "Name" : "Up to vertex or mate connector",
+                        "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+                        "MaxNumberOfPicks" : 1 }
+                    definition.secondDirectionBoundEntityVertex is Query;
                 }
 
                 if (definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
@@ -290,6 +312,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         // ------------- Determine the bounds ---------------
 
+        var vertexPlaneId = undefined;
+        var secondVertexPlaneId = undefined;
+
         if (definition.endBound == BoundingType.UP_TO_SURFACE)
         {
             definition.endBoundEntity = definition.endBoundEntityFace;
@@ -297,6 +322,12 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         else if (definition.endBound == BoundingType.UP_TO_BODY)
         {
             definition.endBoundEntity = definition.endBoundEntityBody;
+        }
+        else if (definition.endBound == BoundingType.UP_TO_VERTEX)
+        {
+            vertexPlaneId = id + "vertexPlane";
+            definition.endBoundEntity = createVertexBoundaryPlane(context, definition, vertexPlaneId);
+            definition.endBound = BoundingType.UP_TO_SURFACE;
         }
 
         definition.startBound = BoundingType.BLIND;
@@ -321,6 +352,12 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             {
                 definition.secondDirectionBoundEntity = definition.secondDirectionBoundEntityBody;
             }
+            else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
+            {
+                secondVertexPlaneId = id + "secondVertexPlane";
+                definition.secondDirectionBoundEntity = createVertexBoundaryPlane(context, definition, secondVertexPlaneId);
+                definition.secondDirectionBound = SecondDirectionBoundingType.UP_TO_SURFACE;
+            }
 
             definition.startBound = definition.secondDirectionBound as BoundingType;
             definition.startBoundEntity = definition.secondDirectionBoundEntity;
@@ -344,6 +381,18 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         {
             const reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
+        }
+
+        if (vertexPlaneId != undefined)
+        {
+            opDeleteBodies(context, id + "deleteVertexPlane", {
+                "entities" : qCreatedBy(vertexPlaneId, EntityType.BODY)});
+        }
+
+        if (secondVertexPlaneId != undefined)
+        {
+            opDeleteBodies(context, id + "deleteSecondVertexPlane", {
+                "entities" : qCreatedBy(secondVertexPlaneId, EntityType.BODY)});
         }
 
     }, { endBound : BoundingType.BLIND, oppositeDirection : false,
@@ -395,7 +444,7 @@ function extrudeWithDraft(context is Context, id is Id, definition is map, draft
 
     if (draftCondition.firstDirectionNeedsDraft || draftCondition.secondDirectionNeedsDraft)
     {
-        const extrudeBodies = qCreatedBy(id, EntityType.BODY);
+        const extrudeBodies = qSubtraction(qCreatedBy(id, EntityType.BODY), qUnion([qCreatedBy(id + "vertexPlane", EntityType.BODY), qCreatedBy(id + "secondVertexPlane", EntityType.BODY)]));
         const extrudeBodyArray = evaluateQuery(context, extrudeBodies);
         for (var i = 0; i < size(extrudeBodyArray); i += 1)
         {
@@ -452,6 +501,24 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     const splitPlaneDefinition = { "plane" : neutralPlane, "width" : 1 * meter, "height" : 1 * meter };
     opPlane(context, id, splitPlaneDefinition);
     return neutralPlane;
+}
+
+function createVertexBoundaryPlane(context is Context, definition is map, id is Id)
+{
+    if (definition.endBound == BoundingType.UP_TO_VERTEX)
+    {
+        opPlane(context, id, {
+            "plane" : plane(evVertexPoint(context, {
+                "vertex" : definition.endBoundEntityVertex}), definition.direction)});
+        return qCreatedBy(id, EntityType.FACE);
+    }
+    else // If this is called and the first endBound isn't UP_TO_VERTEX, then the second bound must be.
+    {
+        opPlane(context, id, {
+            "plane" : plane(evVertexPoint(context, {
+                "vertex" : definition.secondDirectionBoundEntityVertex}), definition.direction)});
+        return qCreatedBy(id, EntityType.FACE);
+    }
 }
 
 function draftExtrudeBody(context is Context, id is Id, suffix is number, definition is map, extrudeBody is Query, conditions is map)
@@ -721,7 +788,8 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
     extrudeAxis is Line)
 {
     if (endBound != BoundingType.UP_TO_SURFACE &&
-        endBound != BoundingType.UP_TO_BODY)
+        endBound != BoundingType.UP_TO_BODY &&
+        endBound != BoundingType.UP_TO_VERTEX)
         return false;
 
     if (endBound == BoundingType.UP_TO_SURFACE)
@@ -733,8 +801,16 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
         if (isecResult == undefined || isecResult.dim != 0)
             return false;
 
-        const dotPr = stripUnits(dot(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
-        return dotPr < -TOLERANCE.zeroLength;
+        const dotProduct = stripUnits(dot(isecResult.intersection - extrudeAxis.origin, extrudeAxis.direction));
+        return dotProduct < -TOLERANCE.zeroLength;
+    }
+    if (endBound == BoundingType.UP_TO_VERTEX)
+    {
+        const targetVertex = try(evVertexPoint(context, { "vertex" : endBoundEntity}));
+        if (targetVertex == undefined)
+            return false;
+        const dotProduct = stripUnits(dot(targetVertex - extrudeAxis.origin, extrudeAxis.direction));
+        return dotProduct < -TOLERANCE.zeroLength;
     }
     const pln = plane(extrudeAxis.origin, extrudeAxis.direction);
     const boxResult = try(evBox3d(context, { 'topology' : endBoundEntity, 'cSys' : planeToCSys(pln) }));
@@ -770,6 +846,10 @@ function upToBoundaryFlip(context is Context, featureDefinition is map) returns 
     {
         endBoundEntity = featureDefinition.endBoundEntityBody;
     }
+    else if (featureDefinition.endBound == BoundingType.UP_TO_VERTEX)
+    {
+        endBoundEntity = featureDefinition.endBoundEntityVertex;
+    }
     if (endBoundEntity is Query &&
         shouldFlipExtrudeDirection(context,
                                    featureDefinition.endBound,
@@ -790,6 +870,10 @@ function canSetUpToFlip(definition is map, specifiedParameters is map) returns b
     if (definition.endBound == BoundingType.UP_TO_BODY)
     {
         return specifiedParameters.endBoundEntityBody;
+    }
+    if (definition.endBound == BoundingType.UP_TO_VERTEX)
+    {
+        return specifiedParameters.endBoundEntityVertex;
     }
     return false;
 }

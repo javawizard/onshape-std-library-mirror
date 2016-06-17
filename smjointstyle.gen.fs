@@ -6,14 +6,14 @@ FeatureScript 369; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * The subset of `GeometryType` which applies to 1-dimensional entities.
+ * @internal.
  */
-export enum CurveType
+export enum SMJointStyle
 {
-    CIRCLE,
-    LINE,
-    OTHER,
-    ELLIPSE
+    annotation {"Name" : "Edge Joint"}
+    EDGE,
+    annotation {"Name" : "Butt Joint"}
+    BUTT
 }
 
 

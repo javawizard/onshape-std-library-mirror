@@ -1,4 +1,4 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,11 +15,11 @@ FeatureScript 355; /* Automatically generated version */
  *
  * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "355.0");
+import(path : "onshape/std/context.fs", version : "369.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "355.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "355.0");
-export import(path : "onshape/std/bendoptions.fs", version : "355.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "369.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "369.0");
+export import(path : "onshape/std/bendoptions.fs", version : "369.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.

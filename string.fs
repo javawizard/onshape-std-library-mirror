@@ -1,4 +1,4 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -20,7 +20,7 @@ export function toString(value) returns string
 
 export function toString(value is string) returns string
 {
-    return value;
+    return value as string; // Strip off type tag
 }
 
 export function toString(value is array) returns string

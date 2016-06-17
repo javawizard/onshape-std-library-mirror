@@ -1,4 +1,4 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -507,7 +507,10 @@ export enum ErrorStringEnum
     BEND_PREP_ERROR_IMPRINTING_EDGES,
     ASSEMBLY_ANIMATE_MATE_START_AFTER_END,
     ASSEMBLY_ANIMATE_NO_MATE,
-    ASSEMBLY_ANIMATE_MATE_SUPPRESSED
+    ASSEMBLY_ANIMATE_MATE_SUPPRESSED,
+    TANGENT_MATE_GEOMETRY_NOT_SUPPORTED,
+    SKETCH_DIMENSION_INFINITY,
+    BOLEAN_INPUTS_NOT_SOLID
 }
 
 

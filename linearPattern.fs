@@ -1,16 +1,16 @@
-FeatureScript 355; /* Automatically generated version */
+FeatureScript 369; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "355.0");
-export import(path : "onshape/std/tool.fs", version : "355.0");
-export import(path : "onshape/std/patternUtils.fs", version : "355.0");
+export import(path : "onshape/std/query.fs", version : "369.0");
+export import(path : "onshape/std/tool.fs", version : "369.0");
+export import(path : "onshape/std/patternUtils.fs", version : "369.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "355.0");
-import(path : "onshape/std/units.fs", version : "355.0");
+import(path : "onshape/std/mathUtils.fs", version : "369.0");
+import(path : "onshape/std/units.fs", version : "369.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -94,10 +94,6 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         var remainingTransform = getRemainderPatternTransform(context,
             { "references" : definition.entities});
 
-        // Compute a vector of transforms
-        var transforms = [];
-        var instanceNames = [];
-
         //Dir 1
         const result = try(computePatternOffset(context, definition.directionOne,
                     definition.oppositeDirection, definition.distance, isFeaturePattern(definition.patternType), remainingTransform));
@@ -134,22 +130,25 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         verifyPatternSize(context, id, count1 * count2);
 
-        //Create the transforms and instance names, create along the first direction first then the second direction
+        // Compute a vector of transforms
+        // Adding just the values and mutating the transform rather than creating the translation from scratch on each iteration
+        // is necessary for performance since it is in an inner loop bottleneck.
+        var transforms = [];
+        var instanceNames = [];
+        const identity = identityMatrix(3);
+        var instanceTransform = transform(identity, zeroVector(3) * meter);
         for (var j = 0; j < count2; j += 1)
         {
-            for (var i = 0; i < count1; i += 1)
+            const instName = j == 0 ? "" : ("_" ~ j);
+            instanceTransform.translation = offset2 * j + offset1 * (j == 0 ? 1 : 0);
+            // skip recreating original
+            for (var i = (j == 0 ? 1 : 0); i < count1; i += 1)
             {
-                if (j == 0 && i == 0) //skip recreating original
-                    continue;
-
-                var instanceTransform = transform(identityMatrix(3), offset1 * i + offset2 * j);
                 transforms = append(transforms, instanceTransform);
-                var instName = "" ~ i;
-                if (j > 0)
-                {
-                    instName ~= "_" ~ j;
-                }
-                instanceNames = append(instanceNames, instName);
+                instanceNames = append(instanceNames, i ~ instName);
+                instanceTransform.translation[0].value += offset1[0].value;
+                instanceTransform.translation[1].value += offset1[1].value;
+                instanceTransform.translation[2].value += offset1[2].value;
             }
         }
 
