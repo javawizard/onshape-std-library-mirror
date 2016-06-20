@@ -1,4 +1,4 @@
-FeatureScript 369; /* Automatically generated version */
+FeatureScript 370; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -325,7 +325,8 @@ export enum FeatureScriptVersionNumber
     V366_OPPOSITE_DIRECTION_CIRCULAR_UIHINT,
     V367_VERTEX_EXTRUDE_DEGENERATE_FIX,
     V368_HOLE_FIELD_NAME_MISMATCH_FIX,
-    V369_FS_ERROR_EXTRUDE_FIX
+    V369_FS_ERROR_EXTRUDE_FIX,
+    V370_UPGRADE_COMPRESS_FIX
 }
 
 /**
@@ -336,6 +337,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V369_FS_ERROR_EXTRUDE_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V370_UPGRADE_COMPRESS_FIX;
 
 
