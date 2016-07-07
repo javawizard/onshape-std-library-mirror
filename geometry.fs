@@ -70,6 +70,8 @@ export import(path : "onshape/std/sweep.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalRecognize.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalEnclosure.fs", version : "✨");
+export import(path : "onshape/std/facesToSurface.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
 export import(path : "onshape/std/variable.fs", version : "✨");

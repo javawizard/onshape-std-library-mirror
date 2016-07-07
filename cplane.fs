@@ -75,7 +75,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities",
-                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE }
+                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR }
         definition.entities is Query;
 
         annotation { "Name" : "Plane type" }

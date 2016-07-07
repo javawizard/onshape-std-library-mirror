@@ -48,15 +48,15 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         definition.axis is Query;
 
         annotation { "Name" : "Angle" }
-        isAngle(definition.angle, ANGLE_360_BOUNDS);
+        isAngle(definition.angle, ANGLE_360_FULL_DEFAULT_BOUNDS);
 
         annotation { "Name" : "Instance count" }
-        isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
+        isInteger(definition.instanceCount, CIRCULAR_PATTERN_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
         definition.oppositeDirection is boolean;
 
-        annotation { "Name" : "Equal spacing" }
+        annotation { "Name" : "Equal spacing", "Default" : true }
         definition.equalSpace is boolean;
 
         if (definition.patternType == PatternType.PART)

@@ -113,7 +113,7 @@ precondition
 }
 {
     worldPoint -= cSys.origin;
-    return vector(dot(worldPoint, cSys.xAxis), dot(worldPoint, cross(cSys.zAxis, cSys.xAxis)));
+    return vector(dot(worldPoint, cSys.xAxis), dot(worldPoint, cross(cSys.zAxis, cSys.xAxis)), dot(worldPoint, cSys.zAxis));
 }
 
 /**

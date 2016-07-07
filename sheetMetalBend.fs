@@ -3,6 +3,13 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+/*
+ ******************************************
+ * Under development, not for general use!!
+ ******************************************
+ */
+
+
 export import(path : "onshape/std/query.fs", version : "✨");
 
 import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
@@ -134,13 +141,20 @@ export const smBend = defineFeature(function(context is Context, id is Id, defin
         opBendAtEdgeInternal(context, id + "bend", definition);
 
         var bendFaces = qGeometry(changedFaces, GeometryType.CYLINDER);
-        setBendAttributes(context, id, bendFaces, faceTangent);
+        setBendAttributes(context, id, bendFaces, faceTangent, definition);
     }, { "pickEdges" : false, "useKFactor" : true, "kFactor" : 0.45 });
 
-function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query, topFacePlane is Plane)
+function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query, topFacePlane is Plane, definition is map)
 {
     var attributeId = toAttributeId(id);
     var wallAttrib = makeSMWallAttribute(attributeId);
+    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    bendAttribute.radius = {
+        "value" : definition.radius,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "radius",
+        "canBeEdited" : true
+    };
     clearSmAttributes(context, bendFaceQuery);
     var bendFaces = evaluateQuery(context, bendFaceQuery);
     for (var bendFace in bendFaces)
@@ -150,11 +164,6 @@ function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query,
         });
         if (cylinder is Cylinder)
         {
-            var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
-            bendAttribute.radius = {
-                'value' : cylinder.radius,
-                'canBeEdited' : true
-            };
             setAttribute(context, {
                 "entities" : bendFace,
                 "attribute" : bendAttribute

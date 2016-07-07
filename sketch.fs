@@ -27,7 +27,7 @@ FeatureScript ✨; /* Automatically generated version */
  * A `Sketch` object should always be created first, with either `newSketch`
  * or `newSketchOnPlane`.
  *
- * Next, any number of sketch entities and constraints may be added ot the
+ * Next, any number of sketch entities and constraints may be added to the
  * sketch. When building sketches in FeatureScript, constraints are usually
  * unnecessary, since you already have the ability to place the entities
  * precisely where you intend them to be.

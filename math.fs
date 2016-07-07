@@ -322,41 +322,36 @@ export function argMax(arr is array)
 }
 
 /**
- * Return an array of numbers (normally integers) in a range.
- *
+ * Return an array of numbers in a range.
+ * Only integers are allowed.
  * @example `range(0, 3)` returns `[0, 1, 2, 3]`
  */
 export function range(from is number, to is number)
-{
-    return range(from, (to < from) ? -1 : 1, to);
-}
-
-/**
- * Return an array of numbers, (normally of type `number` or
- * `ValueWithUnits`), in a range.  If the difference between
- * bounds is a multiple of step size, the upper bound is included.
- *
- * @example `range(0, 2, 10)` returns `[0, 2, 4, 6, 8, 10]`
- * @example `range(0, 1.5, 5)` returns `[0, 1.5, 3, 4.5]`
- * @example `range(1 * inch, 0.2 * inch, 1.5 * inch)` returns
- *      `[1 * inch, 1.2 * inch, 1.4 * inch]`
- */
-export function range(from, step, to)
 precondition
 {
-    (step > 0 && (from <= to)) ||
-        (step < 0 && (from >= to));
+    isInteger(from);
+    isInteger(to);
 }
 {
-    const num = floor(1 + (to - from) / step);
-    var out = @resize([], num);
-    var cur = from;
-    for (var i = 0; i < num; i += 1)
-    {
-        out[i] = cur;
-        cur += step;
-    }
-    return out;
+    var count = to - from;
+    return range(from, to, ((to < from) ? -count : count) + 1);
+}
+
+
+/**
+ * Return an array of numbers, (of type `number` or
+ * `ValueWithUnits`), in a range.
+ * Note: before FeatureScript 372 this function received as input the
+ * step size instead of the number of steps
+ *
+ * @example `range(0, 10, 6)` returns `[0, 2, 4, 6, 8, 10]`
+ * @example `range(0, 4.5, 4)` returns `[0, 1.5, 3, 4.5]`
+ * @example `range(1 * inch, 1.4 * inch, 3)` returns
+ *      `[1 * inch, 1.2 * inch, 1.4 * inch]`
+ */
+export function range(from, to, count)
+{
+    return @range(from, to, count);
 }
 
 /**

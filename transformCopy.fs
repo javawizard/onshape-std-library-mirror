@@ -401,7 +401,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
              definition.oppositeDirection))
             transformMatrix = inverse(transformMatrix);
 
-        if (definition.makeCopy || transformType == TransformType.COPY)
+        if (transformType == TransformType.COPY || definition.makeCopy)
         {
             opPattern(context, id,
                       { "entities" : definition.entities,

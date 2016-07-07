@@ -279,6 +279,17 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 } as AngleBoundSpec;
 
 /**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 360 degrees.
+ */
+export const ANGLE_360_FULL_DEFAULT_BOUNDS =
+{
+    "min"    : -TOLERANCE.zeroAngle * radian,
+    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
+    (degree) : [0, 360, 360],
+    (radian) : 2 * PI
+} as AngleBoundSpec;
+
+/**
  * An `AngleBoundSpec` for an angle strictly less than 180 degrees.
  */
 export const ANGLE_STRICT_180_BOUNDS =
@@ -332,7 +343,7 @@ export const SCALE_BOUNDS =
 
 /**
  * @internal
- * Count bounds for a circular pattern, and the primary direction of linear patterns
+ * Count bounds for the primary direction of linear patterns
  */
 export const PRIMARY_PATTERN_BOUNDS =
 {
@@ -350,6 +361,17 @@ export const SECONDARY_PATTERN_BOUNDS =
     "min"      : 1,
     "max"      : 2500,
     (unitless) : [1, 1, 2500]
+} as IntegerBoundSpec;
+
+/**
+ * @internal
+ * Count bounds for a circular pattern
+ */
+export const CIRCULAR_PATTERN_BOUNDS =
+{
+    "min"      : 1,
+    "max"      : 2500,
+    (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
 /**

@@ -605,6 +605,7 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
  * Extends the perimeter of a sheet body.
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
@@ -618,6 +619,7 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
 }
 
 /**
+ * @internal
  * This function takes a list of faces and creates one or more surfaces from those faces.
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`

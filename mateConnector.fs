@@ -221,4 +221,3 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     return ownerPartQuery;
 }
 
-

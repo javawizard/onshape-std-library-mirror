@@ -5,7 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
-
+import(path : "onshape/std/units.fs", version: "✨");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -21,6 +21,25 @@ export predicate canBeForeignId(value)
 }
 
 /**
+ * @internal
+ */
+export enum LengthUnitNames
+{
+    annotation { "Name" : "Centimeter" }
+    Centimeter,
+    annotation { "Name" : "Foot" }
+    Foot,
+    annotation { "Name" : "Inch" }
+    Inch,
+    annotation { "Name" : "Millimeter" }
+    Millimeter,
+    annotation { "Name" : "Meter" }
+    Meter,
+    annotation { "Name" : "Yard" }
+    Yard
+}
+
+/**
  * Feature performing an `opImportForeign`, transforming the result if necessary.
  */
 annotation { "Feature Type Name" : "Import" }
@@ -33,6 +52,15 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
 
+        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        definition.specifyUnits is boolean;
+
+        if (definition.specifyUnits)
+        {
+            annotation { "Name" : "Unit" }
+            definition.unit is LengthUnitNames;
+        }
+
         annotation {"Name" : "Flatten assembly", "UIHint" : "ALWAYS_HIDDEN"}
         definition.flatten is boolean;
 
@@ -42,9 +70,17 @@ export const importForeign = defineFeature(function(context is Context, id is Id
     {
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qNothing()});
+        if (definition.specifyUnits)
+        {
+            definition.scale = stringToUnit(definition.unit as string).value;
+        }
+        else
+        {
+            definition.scale = 1.0;
+        }
         opImportForeign(context, id, definition);
 
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10});
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter });
 

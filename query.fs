@@ -246,6 +246,7 @@ export enum EntityType
  * @value SPHERE : A surface which forms the boundary of a sphere
  * @value TORUS : A surface which forms the boundary of a torus
  * @value OTHER_SURFACE : Any two-dimensional entity which is not described
+ * @value MESH : A surface or a body that contains surface that is a mesh
  *      above (e.g. the side of an arbitrary extrude, revolve, or loft)
  */
 export enum GeometryType
@@ -259,7 +260,8 @@ export enum GeometryType
     CONE,
     SPHERE,
     TORUS,
-    OTHER_SURFACE
+    OTHER_SURFACE,
+    MESH
 }
 
 /**

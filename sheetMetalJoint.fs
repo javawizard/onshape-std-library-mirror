@@ -3,6 +3,13 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+/*
+ ******************************************
+ * Under development, not for general use!!
+ ******************************************
+ */
+
+
 export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
 
