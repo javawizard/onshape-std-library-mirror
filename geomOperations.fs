@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,11 +15,11 @@ FeatureScript 370; /* Automatically generated version */
  *
  * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "370.0");
+import(path : "onshape/std/context.fs", version : "376.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "370.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "370.0");
-export import(path : "onshape/std/bendoptions.fs", version : "370.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "376.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "376.0");
+export import(path : "onshape/std/bendoptions.fs", version : "376.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -605,6 +605,7 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
  * Extends the perimeter of a sheet body.
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
@@ -618,6 +619,7 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
 }
 
 /**
+ * @internal
  * This function takes a list of faces and creates one or more surfaces from those faces.
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`

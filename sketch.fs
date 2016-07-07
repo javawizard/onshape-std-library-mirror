@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -27,7 +27,7 @@ FeatureScript 370; /* Automatically generated version */
  * A `Sketch` object should always be created first, with either `newSketch`
  * or `newSketchOnPlane`.
  *
- * Next, any number of sketch entities and constraints may be added ot the
+ * Next, any number of sketch entities and constraints may be added to the
  * sketch. When building sketches in FeatureScript, constraints are usually
  * unnecessary, since you already have the ability to place the entities
  * precisely where you intend them to be.
@@ -38,25 +38,25 @@ FeatureScript 370; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "370.0");
+export import(path : "onshape/std/query.fs", version : "376.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/evaluate.fs", version : "370.0");
-import(path : "onshape/std/feature.fs", version : "370.0");
-import(path : "onshape/std/mathUtils.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/tool.fs", version : "370.0");
-import(path : "onshape/std/valueBounds.fs", version : "370.0");
-import(path : "onshape/std/matrix.fs", version : "370.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/mathUtils.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/tool.fs", version : "376.0");
+import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/matrix.fs", version : "376.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "370.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "370.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "370.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "370.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "370.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "370.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "376.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "376.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "376.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "376.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "376.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "376.0");
 
 /**
  * @internal

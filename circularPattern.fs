@@ -1,16 +1,16 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "370.0");
-export import(path : "onshape/std/tool.fs", version : "370.0");
-export import(path : "onshape/std/patternUtils.fs", version : "370.0");
+export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/tool.fs", version : "376.0");
+export import(path : "onshape/std/patternUtils.fs", version : "376.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
-import(path : "onshape/std/math.fs", version : "370.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+import(path : "onshape/std/math.fs", version : "376.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -48,15 +48,15 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         definition.axis is Query;
 
         annotation { "Name" : "Angle" }
-        isAngle(definition.angle, ANGLE_360_BOUNDS);
+        isAngle(definition.angle, ANGLE_360_FULL_DEFAULT_BOUNDS);
 
         annotation { "Name" : "Instance count" }
-        isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
+        isInteger(definition.instanceCount, CIRCULAR_PATTERN_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
         definition.oppositeDirection is boolean;
 
-        annotation { "Name" : "Equal spacing" }
+        annotation { "Name" : "Equal spacing", "Default" : true }
         definition.equalSpace is boolean;
 
         if (definition.patternType == PatternType.PART)

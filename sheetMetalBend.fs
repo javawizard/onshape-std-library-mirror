@@ -1,25 +1,32 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/query.fs", version : "370.0");
+/*
+ ******************************************
+ * Under development, not for general use!!
+ ******************************************
+ */
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "370.0");
-import(path : "onshape/std/coordSystem.fs", version : "370.0");
-import(path : "onshape/std/attributes.fs", version : "370.0");
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
-import(path : "onshape/std/evaluate.fs", version : "370.0");
-import(path : "onshape/std/feature.fs", version : "370.0");
-import(path : "onshape/std/math.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
-import(path : "onshape/std/sketch.fs", version : "370.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/tool.fs", version : "370.0");
-import(path : "onshape/std/valueBounds.fs", version : "370.0");
-import(path : "onshape/std/vector.fs", version : "370.0");
+
+export import(path : "onshape/std/query.fs", version : "376.0");
+
+import(path : "onshape/std/boundingtype.gen.fs", version : "376.0");
+import(path : "onshape/std/coordSystem.fs", version : "376.0");
+import(path : "onshape/std/attributes.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/math.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/sketch.fs", version : "376.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/tool.fs", version : "376.0");
+import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/vector.fs", version : "376.0");
 
 const STARTING_THICKNESS = 0.25 * inch;
 
@@ -134,13 +141,20 @@ export const smBend = defineFeature(function(context is Context, id is Id, defin
         opBendAtEdgeInternal(context, id + "bend", definition);
 
         var bendFaces = qGeometry(changedFaces, GeometryType.CYLINDER);
-        setBendAttributes(context, id, bendFaces, faceTangent);
+        setBendAttributes(context, id, bendFaces, faceTangent, definition);
     }, { "pickEdges" : false, "useKFactor" : true, "kFactor" : 0.45 });
 
-function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query, topFacePlane is Plane)
+function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query, topFacePlane is Plane, definition is map)
 {
     var attributeId = toAttributeId(id);
     var wallAttrib = makeSMWallAttribute(attributeId);
+    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    bendAttribute.radius = {
+        "value" : definition.radius,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "radius",
+        "canBeEdited" : true
+    };
     clearSmAttributes(context, bendFaceQuery);
     var bendFaces = evaluateQuery(context, bendFaceQuery);
     for (var bendFace in bendFaces)
@@ -150,11 +164,6 @@ function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query,
         });
         if (cylinder is Cylinder)
         {
-            var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
-            bendAttribute.radius = {
-                'value' : cylinder.radius,
-                'canBeEdited' : true
-            };
             setAttribute(context, {
                 "entities" : bendFace,
                 "attribute" : bendAttribute

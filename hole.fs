@@ -1,28 +1,28 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "370.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "370.0");
-import(path : "onshape/std/box.fs", version : "370.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "370.0");
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/coordSystem.fs", version : "370.0");
-import(path : "onshape/std/evaluate.fs", version : "370.0");
-import(path : "onshape/std/extrude.fs", version : "370.0");
-import(path : "onshape/std/feature.fs", version : "370.0");
-import(path : "onshape/std/mathUtils.fs", version : "370.0");
-import(path : "onshape/std/revolve.fs", version : "370.0");
-import(path : "onshape/std/sketch.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/tool.fs", version : "370.0");
-import(path : "onshape/std/valueBounds.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
-import(path : "onshape/std/holetables.gen.fs", version : "370.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "370.0");
-import(path : "onshape/std/cylinderCast.fs", version : "370.0");
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
+import(path : "onshape/std/boolean.fs", version : "376.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "376.0");
+import(path : "onshape/std/box.fs", version : "376.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/coordSystem.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "376.0");
+import(path : "onshape/std/extrude.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/mathUtils.fs", version : "376.0");
+import(path : "onshape/std/revolve.fs", version : "376.0");
+import(path : "onshape/std/sketch.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/tool.fs", version : "376.0");
+import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/holetables.gen.fs", version : "376.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "376.0");
+import(path : "onshape/std/cylinderCast.fs", version : "376.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
 
 /**
  * Defines whether each hole should have a countersink, a counterbore, or neither.
@@ -136,6 +136,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
     }
     {
+        var trackedBodies = [];
+        for (var body in evaluateQuery(context, definition.scope))
+        {
+            trackedBodies = append(trackedBodies, qUnion([startTracking(context, body), body]));
+        }
         definition.mainId = id;
         // V206 was the current version when it was determined that a version check was needed
         if (definition.style == HoleStyle.C_BORE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
@@ -227,9 +232,28 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             }
             else
             {
-                const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
-                if (finalBodyCount > startingBodyCount)
-                    reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V371_HOLE_IMPROVED_DISJOINT_CHECK))
+                {
+                    // BEL-32383
+                    for (var trackedBody in trackedBodies)
+                    {
+                        var trackedCount = size(evaluateQuery(context, trackedBody));
+                        if (trackedCount > 1)
+                        {
+                            reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+                        }
+                        else if (trackedCount < 1)
+                        {
+                            reportFeatureError(context, id, ErrorStringEnum.HOLE_DESTROY_SOLID, ["scope"]);
+                        }
+                    }
+                }
+                else
+                {
+                    const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+                    if (finalBodyCount > startingBodyCount)
+                        reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+                }
             }
         }
         // Test for errors again, now with success and disjoint check
@@ -697,7 +721,7 @@ precondition
     {
         const distance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V299_HOLE_FEATURE_FIX_BLIND_IN_LAST_FLIP) ? 0 * meter : arg.holeDefinition.scopeSize * 2;
         var resultFront = arg.startDistances.resultFront;
-        if (resultFront != undefined && resultFront is array)
+        if (resultFront != undefined && resultFront is array && isAtVersionOrLater(context, FeatureScriptVersionNumber.V362_HOLE_IMPROVED_DEPTH_FINDING))
         {
             var startDist = 0 * meter;
             if (arg.holeDefinition.generateErrorBodies)
@@ -805,20 +829,17 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition.locations =  clusterVertexQueries(context, definition.locations);
     }
-    var evaluatedDefinition = definition;
     if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
         oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
         oldDefinition.endStyle != definition.endStyle)
     {
-        var result = updateHoleDefinitionWithStandard(oldDefinition, definition);
-        definition = result.definition;
-        evaluatedDefinition = result.evaluatedDefinition;
+        definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
     }
     definition = setToCustomIfStandardViolated(definition);
 
     if (isCreating && (!specifiedParameters.scope || !specifiedParameters.oppositeDirection))
     {
-        definition = holeScopeFlipHeuristicsCall(context, id, evaluatedDefinition, specifiedParameters, hiddenBodies);
+        definition = holeScopeFlipHeuristicsCall(context, id, definition, specifiedParameters, hiddenBodies);
     }
     return definition;
 }
@@ -866,18 +887,18 @@ export function updateHoleDefinitionWithStandard(oldDefinition is map, definitio
 
     if (evaluatedDefinition.tapDrillDiameter > evaluatedDefinition.holeDiameter)
     {
-      definition.tapDrillDiameter = definition.holeDiameter;
+        definition.tapDrillDiameter = definition.holeDiameter;
     }
     if (evaluatedDefinition.cBoreDiameter < evaluatedDefinition.holeDiameter)
     {
-      definition.cBoreDiameter = definition.holeDiameter;
+        definition.cBoreDiameter = definition.holeDiameter;
     }
     if (evaluatedDefinition.cSinkDiameter < evaluatedDefinition.holeDiameter)
     {
-      definition.cSinkDiameter = definition.holeDiameter;
+        definition.cSinkDiameter = definition.holeDiameter;
     }
 
-    return { "definition" : definition, "evaluatedDefinition" : evaluatedDefinition };
+    return definition;
 }
 
 function syncStandards(oldDefinition is map, definition is map) returns map

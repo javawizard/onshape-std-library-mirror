@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -326,7 +326,13 @@ export enum FeatureScriptVersionNumber
     V367_VERTEX_EXTRUDE_DEGENERATE_FIX,
     V368_HOLE_FIELD_NAME_MISMATCH_FIX,
     V369_FS_ERROR_EXTRUDE_FIX,
-    V370_UPGRADE_COMPRESS_FIX
+    V370_UPGRADE_COMPRESS_FIX,
+    V371_HOLE_IMPROVED_DISJOINT_CHECK,
+    V372_EVDISTANCE_INTERIOR_FIX,
+    V373_MESH_SUPPORT,
+    V374_HELIX_ALIGNMENT,
+    V375_HOLE_FIX_EDIT_LOGIC,
+    V376_FS_VERSION_BUMP
 }
 
 /**
@@ -337,6 +343,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V370_UPGRADE_COMPRESS_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V376_FS_VERSION_BUMP;
 
 

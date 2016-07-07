@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 370; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "370.0");
-import(path : "onshape/std/coordSystem.fs", version : "370.0");
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
-import(path : "onshape/std/mathUtils.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
-import(path : "onshape/std/units.fs", version : "370.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "370.0");
+import(path : "onshape/std/context.fs", version : "376.0");
+import(path : "onshape/std/coordSystem.fs", version : "376.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+import(path : "onshape/std/mathUtils.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/units.fs", version : "376.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "376.0");
 
 //===================================== Plane ======================================
 
@@ -156,7 +156,7 @@ precondition
  * (such that points which lie on the plane will have a z-coordinate of
  * approximately `0`) and transforms them into world coordinates.
  */
-export function planeToWorld(plane is Plane) returns Transform
+export function planeToWorld3D(plane is Plane) returns Transform
 {
     return toWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
@@ -166,9 +166,24 @@ export function planeToWorld(plane is Plane) returns Transform
  * `plane`'s coordinates. If the `point` lies on the `plane`, the result will
  * have a z-coordinate of approximately `0`.
  */
-export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vector
+export function worldToPlane3D(plane is Plane, worldPoint is Vector) returns Vector
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal), worldPoint);
+}
+
+/**
+* Transforms a 3D `worldPoint` in world coordinates into a 2D point measured in a
+* `plane`'s (x,y) coordinates.
+*
+* This is modified as of FeatureScript version 363.0. Older versions of FeatureScript
+* use `worldToPlane` to return 3D vectors composed of the plane coordinate system baseis.
+* This functionality is still available in the `worldToPlane` function above.
+*/
+export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vector
+{
+    var planeY = cross(plane.normal, plane.x);
+    var planeOriginToPoint = worldPoint - plane.origin;
+    return vector(dot(plane.x, planeOriginToPoint), dot(planeY, planeOriginToPoint));
 }
 
 /**
@@ -176,7 +191,7 @@ export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vecto
  * and transforms them into 3D points measured in plane coordinates (such that
  * points which lie on the plane will have a z-coordinate of approximately `0`).
  */
-export function worldToPlane(plane is Plane) returns Transform
+export function worldToPlane3D(plane is Plane) returns Transform
 {
     return fromWorld(coordSystem(plane.origin, plane.x, plane.normal));
 }
@@ -186,7 +201,7 @@ export function worldToPlane(plane is Plane) returns Transform
  */
 export function transform(from is Plane, to is Plane) returns Transform
 {
-    return planeToWorld(to) * worldToPlane(from);
+    return planeToWorld3D(to) * worldToPlane3D(from);
 }
 
 /**

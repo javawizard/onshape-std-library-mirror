@@ -1,11 +1,11 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "370.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
+import(path : "onshape/std/math.fs", version : "376.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -377,8 +377,8 @@ precondition a.unit == b.unit;
  * Sine, the ratio of the opposite side over the hypotenuse in a right triangle
  * of the specified angle.
  *
- * @example `sin(30 * degree)` returns `0.5`
- * @example `sin(PI * radian)` returns `0`
+ * @example `sin(30 * degree)` returns approximately `0.5`
+ * @example `sin(PI * radian)` returns approximately `0`
  * @param value : @autocomplete `30 * degree`
  */
 export function sin(value is ValueWithUnits) returns number
@@ -391,8 +391,8 @@ precondition isAngle(value);
  * Cosine, the ratio of the adjacent side over the hypotenuse in a right triangle
  * of the specified angle.
  *
- * @example `cos(60 * degree)` returns `0.5`
- * @example `cos(PI * radian)` returns `-1`
+ * @example `cos(60 * degree)` returns approximately `0.5`
+ * @example `cos(PI * radian)` returns approximately `-1`
  * @param value : @autocomplete `30 * degree`
  */
 export function cos(value is ValueWithUnits) returns number
@@ -405,8 +405,8 @@ precondition isAngle(value);
  * Tangent, the ratio of the opposite side over the adjacent side in a right
  * triangle of the specified angle.
  *
- * @example `tan(45 * degree)` returns `1`
- * @example `tan(PI * radian)` returns `0`
+ * @example `tan(45 * degree)` returns approximately `1`
+ * @example `tan(PI * radian)` returns approximately `0`
  * @param value : @autocomplete `30 * degree`
  */
 export function tan(value is ValueWithUnits) returns number
@@ -420,7 +420,7 @@ precondition isAngle(value);
  *
  * Returns a value between `-90 * degree` and `90 * degree`.
  *
- * @example `asin(0.5)` equals `30 * degree`
+ * @example `asin(0.5)` equals approximately `30 * degree`
  * @example `asin(1.5)` throws an error, since there is no value where
  *          `sin(value)` is `1.5`
  */
@@ -434,7 +434,7 @@ export function asin(value is number) returns ValueWithUnits
  *
  * Returns a value between `0 * degree` and `180 * degree`.
  *
- * @example `acos(0.5)` equals `60 * degree`
+ * @example `acos(0.5)` equals approximately `60 * degree`
  * @example `acos(1.5)` throws an error, since there is no value where
  *          `cos(value)` is `1.5`
  */
@@ -448,8 +448,8 @@ export function acos(value is number) returns ValueWithUnits
  *
  * Returns a value between `-90 * degree` and `90 * degree`.
  *
- * @example `atan(1)` equals `45 * degree`
- * @example `atan(inf)` equals `90 * degree`
+ * @example `atan(1)` equals approximately `45 * degree`
+ * @example `atan(inf)` equals approximately `90 * degree`
  */
 export function atan(value is number) returns ValueWithUnits
 {
@@ -462,10 +462,10 @@ export function atan(value is number) returns ValueWithUnits
  * except the result respects the quadrant of the input and is well-behaved
  * near x == 0.
  *
- * @example `atan2(0, 1)` equals `0 * degree`
- * @example `atan2(1, 0)` equals `90 * degree`
- * @example `atan2(0, -1)` equals `180 * degree`
- * @example `atan2(-1, 0)` equals `-90 * degree`
+ * @example `atan2(0, 1)` equals approximately `0 * degree`
+ * @example `atan2(1, 0)` equals approximately `90 * degree`
+ * @example `atan2(0, -1)` equals approximately `180 * degree`
+ * @example `atan2(-1, 0)` equals approximately `-90 * degree`
  */
 export function atan2(y is number, x is number) returns ValueWithUnits
 {

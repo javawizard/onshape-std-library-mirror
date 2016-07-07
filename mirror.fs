@@ -1,21 +1,21 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "370.0");
-export import(path : "onshape/std/tool.fs", version : "370.0");
-export import(path : "onshape/std/patternUtils.fs", version : "370.0");
+export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/tool.fs", version : "376.0");
+export import(path : "onshape/std/patternUtils.fs", version : "376.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "370.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "370.0");
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/evaluate.fs", version : "370.0");
-import(path : "onshape/std/feature.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/transform.fs", version : "370.0");
+import(path : "onshape/std/boolean.fs", version : "376.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/transform.fs", version : "376.0");
 
 
 /**

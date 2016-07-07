@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -510,7 +510,15 @@ export enum ErrorStringEnum
     ASSEMBLY_ANIMATE_MATE_SUPPRESSED,
     TANGENT_MATE_GEOMETRY_NOT_SUPPORTED,
     SKETCH_DIMENSION_INFINITY,
-    BOLEAN_INPUTS_NOT_SOLID
+    BOLEAN_INPUTS_NOT_SOLID,
+    FACE_IS_NOT_RECTANGLE,
+    HOLE_DESTROY_SOLID,
+    HELIX_INPUT_CIRCLE,
+    IMPORT_SCALING_NON_MESH_DATA,
+    EVALUATE_FACE_TANGENT_FOR_MESHES,
+    CANNOT_COMPUTE_CENTROID,
+    CANNOT_EVALUATE_DIMENSION,
+    CANNOT_IMPORT_MESH
 }
 
 

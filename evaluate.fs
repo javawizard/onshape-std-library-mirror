@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,18 +9,19 @@ FeatureScript 370; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like `Line` or `Plane`), or a special
  * type like `DistanceResult`. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "370.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "370.0");
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/context.fs", version : "370.0");
-import(path : "onshape/std/coordSystem.fs", version : "370.0");
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "370.0");
-import(path : "onshape/std/mathUtils.fs", version : "370.0");
-import(path : "onshape/std/query.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/units.fs", version : "370.0");
+import(path : "onshape/std/box.fs", version : "376.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/context.fs", version : "376.0");
+import(path : "onshape/std/coordSystem.fs", version : "376.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "376.0");
+import(path : "onshape/std/mathUtils.fs", version : "376.0");
+import(path : "onshape/std/query.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/units.fs", version : "376.0");
 
 /**
  * Return the total area of all the entities.
@@ -78,6 +79,28 @@ precondition
 }
 
 /**
+ * Find the centroid of an entity or group of entities. This is
+ * equivalent to the center of mass for a constant density object.
+ * Warning: This is an approximate value and it is not recommended to use this
+ * for modelling purposes that will be negatively affected in case the
+ * approximation changes. Consider using the center of a bounding box
+ * instead.
+ * @param arg {{
+ *      @field entities : The entities to take the center of mass of.
+ * }}
+ */
+export function evApproximateCentroid(context is Context, arg is map) returns Vector
+precondition
+{
+    arg.entities is Query;
+}
+{
+    var centroid = @evApproximateCentroid(context, { "entities" : arg.entities });
+
+    return vector(centroid) * meter;
+}
+
+/**
  * Find collisions between tools and targets.  Each collision is a
  * map with field `type` of type `ClashType` and fields `target`,
  * `targetBody`, `tool`, and `toolBody` of type `Query`.
@@ -118,12 +141,12 @@ precondition
 /**
  * Given a query for a curve, return a `Circle`, `Ellipse`, or `Line`
  * value for the curve.  If the curve is none of these types, return
- * a map with unspecified contents.  If the query does not find a curve,
- * throw an exception.
+ * a map with unspecified contents.
  * @param arg {{
  *      @field edge{Query} : The curve to evaluate.
  * }}
- * @throws
+ * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not an edge.
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_ENTITIES} : Input entities are invalid or there are no input entities.
  */
 export function evCurveDefinition(context is Context, arg is map) returns map
 precondition
@@ -169,6 +192,7 @@ precondition
  *                  `evEdgeTangentLine` consumes (with `arcLengthParameterization` set to `false`).  If the side has `Line`(s),
  *                  the parameter is a length representing the distance along the direction.
  *                  If the `index` refers to a face, the parameter is a 2D `Vector` in the form that `evFaceTangentPlane` consumes.
+ *                  If the face is a mesh, the parameter is a 2D `Vector` of 0.
  * }}
  */
 export type DistanceResult typecheck canBeDistanceResult;
@@ -244,11 +268,12 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
  * `CONVEX`, `CONCAVE`, `SMOOTH`, or `VARIABLE`.
  * If the edge is part of a body with inside and outside
  * convex and concave have the obvious meanings.
- * Throws an exception if the query does not evaluate to a single edge.
  * @param context
  * @param arg {{
  *      @field edge{Query}
  * }}
+ * @throws {GBTErrorStringEnum.TOO_MANY_ENTITIES_SELECTED} : The query evaluates to more than one entity
+ * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single edge.
  */
 export function evEdgeConvexity(context is Context, arg is map) returns EdgeConvexityType
 precondition
@@ -273,7 +298,13 @@ precondition
  *             For efficiency, use false if calculating the tangent only to an end point of the edge
  *             because the result will be identical.
  *          @optional
+ *      @field face {Query} :
+ *             If present, the edge orientation used is such that walking along the edge
+ *             with "up" being the `face` normal will keep `face` to the left.
+ *             Must be adjacent to `edge`.
+ *          @optional
  * }}
+ * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A tangent line could not be evaluated for the given query.
  */
 export function evEdgeTangentLine(context is Context, arg is map) returns Line
 {
@@ -295,8 +326,14 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
  *             For efficiency, use false if calculating the tangent only to an end point of the edge
  *             because the result will be identical.
  *          @optional
+ *      @field face {Query} :
+ *             If present, the edge orientation used is such that walking along the edge
+ *             with "up" being the `face` normal will keep `face` to the left.
+ *             Must be adjacent to `edge`.
+ *          @optional
  * }}
  * @returns {array} : An array of `Line`s.
+ * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A tangent line could not be evaluated for the given query.
  */
 export function evEdgeTangentLines(context is Context, arg is map) returns array
 precondition
@@ -324,11 +361,12 @@ precondition
  * where the plane's origin is at the point specified by its parameter-space coordinates.
  * @param context {Context}
  * @param arg {{
- *      @field face {Query}: The face to evaluate
+ *      @field face {Query}: The face to evaluate. The face cannot be a mesh.
  *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
  *      @field parameter {Vector}: 2d unitless parameter-space vector specifying the location of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
  *          @eg `vector(0.5, 0.5)` places the origin at the bounding box's center.
  * }}
+ * @throws {GBTErrorStringEnum.NO_TANGENT_PLANE} : Could not find a tangent plane or there was a problem with face parameterization.
  */
 export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 {
@@ -341,11 +379,12 @@ export function evFaceTangentPlane(context is Context, arg is map) returns Plane
  * where each plane's origin is located at the point specified by its parameter-space coordinates.
  * @param context {Context}
  * @param arg {{
- *      @field face {Query}: The face to evaluate
+ *      @field face {Query}: The face to evaluate. The face cannot be a mesh.
  *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
  *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
  *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
  * }}
+ * @throws {GBTErrorStringEnum.NO_TANGENT_PLANE} : Could not find a tangent plane or there was a problem with face parameterization.
  */
 export function evFaceTangentPlanes(context is Context, arg is map) returns array
 precondition
@@ -370,6 +409,7 @@ precondition
  * @param arg {{
  *      @field face{Query}
  * }}
+ * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The first resolved entity was not a filleted face.
  */
 export function evFilletRadius(context is Context, arg is map) returns ValueWithUnits
 precondition
@@ -404,6 +444,7 @@ precondition
  * @param arg {{
  *      @field edge{Query}
  * }}
+ * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not a line.
  */
 export function evLine(context is Context, arg is map) returns Line
 precondition
@@ -437,11 +478,12 @@ export function evMateConnectorCoordSystem(context is Context, arg is map) retur
 }
 
 /**
- * Return the plane of the sketch that created the given entity. Throws if the entity was not created by a sketch.
+ * Return the plane of the sketch that created the given entity.
  * @param context
  * @param arg {{
  *      @field entity {Query} : The sketch entity. May be a vertex, edge, face, or body.
  * }}
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : Entity was not created by a sketch.
  */
 export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
 precondition
@@ -457,6 +499,7 @@ precondition
  * @param arg {{
  *      @field face{Query}
  * }}
+ * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not a planar face.
  */
 export function evPlane(context is Context, arg is map) returns Plane
 precondition
@@ -472,11 +515,10 @@ precondition
  * finds more than one.  Return a `Cone`, `Cylinder`, `Plane`, `Sphere`,
  * or `Torus` as appropriate for the face, or an unspecified map value
  * if the face is none of these.
- *
- * If the first result is not a face, throw an exception.
  * @param arg {{
  *      @field face{Query}
  * }}
+ * @throws {"GBTErrorStringEnum.CANNOT_RESOLVE_PLANE"} : The first result is not a face.
  */
 export function evSurfaceDefinition(context is Context, arg is map) returns map
 precondition

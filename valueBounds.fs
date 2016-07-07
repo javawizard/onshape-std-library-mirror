@@ -1,4 +1,4 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -34,9 +34,9 @@ FeatureScript 370; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/math.fs", version : "370.0");
-export import(path : "onshape/std/units.fs", version : "370.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/math.fs", version : "376.0");
+export import(path : "onshape/std/units.fs", version : "376.0");
 
 /** @internal */
 export predicate defineBounds(value, boundSpec is map)
@@ -279,6 +279,17 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 } as AngleBoundSpec;
 
 /**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 360 degrees.
+ */
+export const ANGLE_360_FULL_DEFAULT_BOUNDS =
+{
+    "min"    : -TOLERANCE.zeroAngle * radian,
+    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
+    (degree) : [0, 360, 360],
+    (radian) : 2 * PI
+} as AngleBoundSpec;
+
+/**
  * An `AngleBoundSpec` for an angle strictly less than 180 degrees.
  */
 export const ANGLE_STRICT_180_BOUNDS =
@@ -332,7 +343,7 @@ export const SCALE_BOUNDS =
 
 /**
  * @internal
- * Count bounds for a circular pattern, and the primary direction of linear patterns
+ * Count bounds for the primary direction of linear patterns
  */
 export const PRIMARY_PATTERN_BOUNDS =
 {
@@ -350,6 +361,17 @@ export const SECONDARY_PATTERN_BOUNDS =
     "min"      : 1,
     "max"      : 2500,
     (unitless) : [1, 1, 2500]
+} as IntegerBoundSpec;
+
+/**
+ * @internal
+ * Count bounds for a circular pattern
+ */
+export const CIRCULAR_PATTERN_BOUNDS =
+{
+    "min"      : 1,
+    "max"      : 2500,
+    (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
 /**

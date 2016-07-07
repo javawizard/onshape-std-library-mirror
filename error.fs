@@ -1,20 +1,20 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "370.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "370.0");
+export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "376.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "370.0");
+import(path : "onshape/std/context.fs", version : "376.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
  * Can either take a string for a custom message or an `ErrorStringEnum` for a built-in message.
- * Overloads allow for specifying parameters for the UI to indicate error state and error entities for the UI to
- * display in red.
+ * Custom messages are limited to ASCII characters. Messages longer than 200 characters will not
+ * be displayed fully.
  * @example `throw regenError("Failed to attach widget: Boolean union failed")`
  * @example `throw regenError("Wall is too thin for this feature", ["wallWidth"]);`
  * @example `throw regenError(ErrorStringEnum.POINTS_COINCIDENT, ["points"]);`
@@ -29,12 +29,18 @@ export function regenError(customMessage is string)
 /**
  * @param customMessage : @autocomplete `"message"`
  * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ * @param faultyParameters : An array of strings that correspond to keys in the feature definition
+ *      map. Throwing a regenError with faultyParameters will highlight them in red inside the
+ *      feature dialog.
  */
 export function regenError(customMessage is string, faultyParameters is array)
 {
     return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "faultyParameters" : faultyParameters };
 }
 /**
+ * @param entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *      combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *      when the feature dialog is open.
  * @param customMessage : @autocomplete `"message"`
  */
 export function regenError(customMessage is string, entities is Query)
@@ -45,6 +51,12 @@ export function regenError(customMessage is string, entities is Query)
 /**
  * @param customMessage : @autocomplete `"message"`
  * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ * @param faultyParameters : An array of strings that correspond to keys in the feature definition
+ *      map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *      feature dialog.
+ * @param entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *      combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *      when the feature dialog is open.
  */
 export function regenError(customMessage is string, faultyParameters is array, entities is Query)
 {
@@ -64,12 +76,20 @@ export function regenError(message is ErrorStringEnum)
 
 /**
  * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ * @param faultyParameters : An array of strings that correspond to keys in the feature definition
+ *      map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *      feature dialog.
  */
 export function regenError(message is ErrorStringEnum, faultyParameters is array)
 {
     return { "message" : message, "faultyParameters" : faultyParameters };
 }
 
+/**
+ * @param entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *      combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *      when the feature dialog is open.
+ */
 export function regenError(message is ErrorStringEnum, entities is Query)
 {
     return { "message" : message, "entities" : entities };
@@ -77,6 +97,12 @@ export function regenError(message is ErrorStringEnum, entities is Query)
 
 /**
  * @param faultyParameters : @autocomplete `["faultyParameter"]`
+ * @param faultyParameters : An array of strings that correspond to keys in the feature definition
+ *      map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *      feature dialog.
+ * @param entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *      combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *      when the feature dialog is open.
  */
 export function regenError(message is ErrorStringEnum, faultyParameters is array, entities is Query)
 {
@@ -158,7 +184,7 @@ export function reportFeatureWarning(context is Context, id is Id, message is Er
 }
 
 /**
- * Attaches a custom warning-level status to the given feature id.
+ * Attaches a custom warning-level status to the given feature id. Will display a notification to the user containing the specified message.
  */
 export function reportFeatureWarning(context is Context, id is Id, customMessage is string) returns boolean
 {
@@ -167,7 +193,7 @@ export function reportFeatureWarning(context is Context, id is Id, customMessage
 }
 
 /**
- * Attaches an info-level status to the given feature id.
+ * Attaches an info-level status to the given feature id. Will display a notification to the user containing the specified message.
  */
 export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {

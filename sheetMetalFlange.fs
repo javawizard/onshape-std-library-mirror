@@ -1,29 +1,30 @@
-FeatureScript 370; /* Automatically generated version */
+FeatureScript 376; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "370.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "370.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "370.0");
-import(path : "onshape/std/containers.fs", version : "370.0");
-import(path : "onshape/std/coordSystem.fs", version : "370.0");
-import(path : "onshape/std/curveGeometry.fs", version : "370.0");
-import(path : "onshape/std/evaluate.fs", version : "370.0");
-import(path : "onshape/std/feature.fs", version : "370.0");
-import(path : "onshape/std/math.fs", version : "370.0");
-import(path : "onshape/std/manipulator.fs", version : "370.0");
-import(path : "onshape/std/sketch.fs", version : "370.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "370.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "370.0");
-import(path : "onshape/std/string.fs", version : "370.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "370.0");
-import(path : "onshape/std/tool.fs", version : "370.0");
-import(path : "onshape/std/valueBounds.fs", version : "370.0");
-import(path : "onshape/std/vector.fs", version : "370.0");
+import(path : "onshape/std/attributes.fs", version : "376.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "376.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "376.0");
+import(path : "onshape/std/coordSystem.fs", version : "376.0");
+import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "376.0");
+import(path : "onshape/std/math.fs", version : "376.0");
+import(path : "onshape/std/manipulator.fs", version : "376.0");
+import(path : "onshape/std/sketch.fs", version : "376.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "376.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "376.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "376.0");
+import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
+import(path : "onshape/std/tool.fs", version : "376.0");
+import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/vector.fs", version : "376.0");
 
-export import(path : "onshape/std/query.fs", version : "370.0");
-export import(path : "onshape/std/sheetMetalBend.fs", version : "370.0");
+export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/sheetMetalBend.fs", version : "376.0");
 
 const RIP_GAP = 0.0005 * inch;
 const HEIGHT_MANIPULATOR = "heightManipulator";
@@ -112,27 +113,45 @@ export const smFlange = defineFeature(function(context is Context, id is Id, def
         definition.topols is Query;
     }
     {
-        var edges = getSelectedEdges(context, definition);
-        edges = orientEdges(context, edges, definition);
-        if (size(edges) != 0)
-        {
-            edges = makeRelief(context, id, edges, definition);
-
-            // Add manipulator
-            addHeightManipulator(context, id, edges, definition);
-            addAngleManipulator(context, id, edges, definition);
-
-            var index = -1;
-            for (var edge in edges)
-            {
-                index += 1;
-                makeFlange(context, id, index, edge, definition);
-            }
-        }
+        smFlangeFunction(context, id, true, definition);
     },{
         "mitered" : false,
         "symmetricMiter" : true
     });
+
+/**
+* @internal
+*/
+export function smFlangeFunction(context is Context, id is Id, wantManipulators is boolean, definition is map) returns map
+{
+    var innerEdgeQueries = [];
+    var outerEdgeQueries = [];
+    var edges = getSelectedEdges(context, definition);
+    edges = orientEdges(context, edges, definition);
+    if (size(edges) != 0)
+    {
+        edges = makeRelief(context, id, edges, definition);
+
+        if (wantManipulators)
+        {
+        // Add manipulator
+        addHeightManipulator(context, id, edges, definition);
+        addAngleManipulator(context, id, edges, definition);
+        }
+        var index = -1;
+        for (var edge in edges)
+        {
+            index += 1;
+            var flangeResult = makeFlange(context, id, index, edge, definition);
+            innerEdgeQueries = append(innerEdgeQueries, flangeResult.innerEdgeQuery);
+            outerEdgeQueries = append(outerEdgeQueries, flangeResult.outerEdgeQuery);
+        }
+    }
+    return {
+        "innerEdgeQueries" : qUnion(innerEdgeQueries),
+        "outerEdgeQueries" : qUnion(outerEdgeQueries)
+    };
+}
 
 function getSelectedEdges(context is Context, definition is map) returns array
 {
@@ -286,8 +305,9 @@ function calculateOffset(offsetDistance is ValueWithUnits, definition is map)
     return offset;
 }
 
-function makeFlange(context is Context, id is Id, index is number, edge is Query, definition is map)
+function makeFlange(context is Context, id is Id, index is number, edge is Query, definition is map) returns map
 {
+    var result = {};
     var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(faces) != 2)
         throw regenError("Edges does not have two faces");
@@ -309,29 +329,30 @@ function makeFlange(context is Context, id is Id, index is number, edge is Query
     var sideFace = offsetEdgeData.sideFace;
 
     if (definition.mitered)
-        makeMiteredFlange(context, id + index, edge, offsetEdge, thickness, sideFace, definition);
+        result = makeMiteredFlange(context, id + index, edge, offsetEdge, thickness, sideFace, definition);
         // Mitered flange calls smBend, which sets the bend attributes
     else
     {
-        makeSimpleFlange(context, id + index, edge, offsetEdge, thickness, sideFace, definition);
-        setBendAttributes(context, id, index);
+        result = makeSimpleFlange(context, id + index, edge, offsetEdge, thickness, sideFace, definition);
+        setBendAttributes(context, id, index, definition);
     }
+    return result;
 }
 
-function setBendAttributes(context is Context, id is Id, index is number)
+function setBendAttributes(context is Context, id is Id, index is number, definition is map)
 {
     var cylFaces = evaluateQuery(context, qGeometry(qCreatedBy(id + index, EntityType.FACE), GeometryType.CYLINDER));
-    var attributeId = toAttributeId(id);
+    var attributeId = toAttributeId(id + index);
     var wallAttrib = makeSMWallAttribute(attributeId);
+    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    bendAttribute.radius = {
+        "value" : definition.innerRadius,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "radius",
+        "canBeEdited" : true
+    };
     for (var cylFace in cylFaces)
     {
-        var cylinder = evSurfaceDefinition(context, {
-                "face" : cylFace
-        });
-        var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
-        bendAttribute.radius = {
-            'value' : cylinder.radius / meter,
-            'canBeEdited' : true };
         setAttribute(context, {
             "entities" : cylFace,
             "attribute" : bendAttribute
@@ -352,9 +373,9 @@ function setBendAttributes(context is Context, id is Id, index is number)
     }
 }
 
-function makeMiteredFlange(context is Context, id is Id, edge is Query, offsetEdge is Query, thickness is ValueWithUnits, sideFace is Query, definition is map)
+function makeMiteredFlange(context is Context, id is Id, edge is Query, offsetEdge is Query, thickness is ValueWithUnits, sideFace is Query, definition is map) returns map
 {
-    makeTab(context, id, edge, offsetEdge, thickness, sideFace, definition);
+    var result = makeTab(context, id, edge, offsetEdge, thickness, sideFace, definition);
     var seedQuery = makeQuery(id + "flange", "CAP_EDGE", EntityType.EDGE ,{
         "disambiguationData":[
             originalSetDisambiguation([
@@ -369,6 +390,7 @@ function makeMiteredFlange(context is Context, id is Id, edge is Query, offsetEd
         "bendEdge" : edge,
         "seedEntity" : seedQuery
     });
+    return result;
 }
 
 function makeTab(context is Context, id is Id, edge is Query, offsetEdge is Query, thickness is ValueWithUnits, sideFace is Query, definition is map)
@@ -472,6 +494,20 @@ function makeTab(context is Context, id is Id, edge is Query, offsetEdge is Quer
         "entities" : qCreatedBy(sketchId, EntityType.BODY)
     });
 
+    return {
+        "innerEdgeQuery" : makeQuery(id + "flange", "CAP_EDGE", EntityType.EDGE, {
+                "disambiguationData":[
+                    originalSetDisambiguation([
+                        sketchEntityQuery(id + "top_sketch", EntityType.EDGE, "top")
+                    ])
+                ], "isStart" : true}),
+        "outerEdgeQuery" : makeQuery(id + "flange", "CAP_EDGE", EntityType.EDGE, {
+                "disambiguationData":[
+                    originalSetDisambiguation([
+                        sketchEntityQuery(id + "top_sketch", EntityType.EDGE, "top")
+                    ])
+                ], "isStart" : false})
+    };
 }
 
 function addSpline(sketch is Sketch, label is string, startPoint is Vector, sign is number, radius is ValueWithUnits, midRadius is ValueWithUnits, miterAngle is ValueWithUnits, definition is map)
@@ -499,7 +535,7 @@ function ptAtAngle(startPoint is Vector, sign is number, radius is ValueWithUnit
     return pt;
 }
 
-function makeSimpleFlange(context is Context, id is Id, edge is Query, offsetEdge is Query, thickness is ValueWithUnits, sideFace is Query, definition is map)
+function makeSimpleFlange(context is Context, id is Id, edge is Query, offsetEdge is Query, thickness is ValueWithUnits, sideFace is Query, definition is map) returns map
 {
     var edgeLine = evEdgeTangentLine(context, {
             "edge" : edge,
@@ -523,7 +559,7 @@ function makeSimpleFlange(context is Context, id is Id, edge is Query, offsetEdg
     var cSys = coordSystem(edgeLine.origin, xAxis, zAxis);
 
     makeBend(context, id, edge, cSys, thickness, definition);
-    makeWall(context, id, edge, sidePlane, thickness, definition);
+    return makeWall(context, id, edge, sidePlane, thickness, definition);
 }
 
 function makeBend(context is Context, id is Id, edge is Query, cSys is CoordSystem, thickness is ValueWithUnits, definition is map)
@@ -669,7 +705,7 @@ function findWallData(context is Context, edge is Query, sidePlane is Plane, inn
     };
 }
 
-function makeWall(context is Context, id is Id, edge is Query, sidePlane is Plane, thickness is ValueWithUnits, definition is map)
+function makeWall(context is Context, id is Id, edge is Query, sidePlane is Plane, thickness is ValueWithUnits, definition is map) returns map
 {
     var innerBendFace = makeQuery(id + "bend_1", "SWEPT_FACE" ,EntityType.FACE, { "disambiguationData":[
         originalSetDisambiguation([sketchEntityQuery(id + "bend_1_sketch", EntityType.EDGE, "innerArc")])]});
@@ -773,95 +809,19 @@ function makeWall(context is Context, id is Id, edge is Query, sidePlane is Plan
         "entities" : qCreatedBy(id + "wall_sketch", EntityType.BODY)
     });
 
-}
-
-function tolerantParallel(line0 is Line, line1 is Line) returns boolean
-{
-    return squaredNorm(cross(line0.direction, line1.direction)) < TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
-}
-
-function tolerantCoLinear(line0 is Line, line1 is Line) returns boolean
-{
-    if (tolerantParallel(line0, line1)) {
-        var v = line1.origin - line0.origin;
-        v = v - line0.direction * dot(v, line0.direction);
-        var lengthTolerance = TOLERANCE.zeroLength * meter;
-        return squaredNorm(v) < lengthTolerance * lengthTolerance;
-    }
-    return false;
-}
-
-// TODO BRT - Change this to use sheet metal attributes instead of geometry.
-function findOffsetEdgeData(context is Context, edge is Query) returns map
-{
-    const BIG_NUMBER = 1.0e20 * meter;
-    var attr = getAttributes(context, {
-            "entities" : qOwnerBody(edge)
-    });
-    if (size(attr) != 1 || attr[0].thickness == undefined || attr[0].thickness.value == undefined)
-        throw regenError("Bad sheet metal attribute");
-    var offsetDistance = attr[0].thickness.value;
-    if (offsetDistance is number)
-        offsetDistance *= meter;
-    var edgeLine = evEdgeTangentLine(context, {
-            "edge" : edge,
-            "parameter" : 0.0
-    });
-    var edgeLength = evLength(context, {
-            "entities" : edge
-    });
-    var minDistance = BIG_NUMBER;
-    var offsetEdge;
-    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-    if (size(faces) != 2)
-        throw regenError("Could not find offset data");
-
-    var topFace;
-    var sideFace;
-    if (hasSheetMetalAttribute(context, faces[0], SMObjectType.WALL))
-    {
-        topFace = faces[0];
-        sideFace = faces[1];
-    }
-    else
-    {
-        topFace = faces[1];
-        sideFace = faces[0];
-    }
-    var edges = evaluateQuery(context, qEdgeAdjacent(sideFace, EntityType.EDGE));
-    for (var testEdge in edges)
-    {
-        if (testEdge == edge)
-            continue;
-        var testEdgeLine = evEdgeTangentLine(context, {
-                "edge" : testEdge,
-                "parameter" : 0.0
-        });
-        if (!tolerantParallel(edgeLine, testEdgeLine) || tolerantCoLinear(edgeLine, testEdgeLine))
-            continue;
-        var testEdgeLength = evLength(context, {
-                "entities" : testEdge
-        });
-        if (abs(testEdgeLength - edgeLength) > TOLERANCE.zeroLength * meter)
-            continue;
-        var v = testEdgeLine.origin - edgeLine.origin;
-        v = v - edgeLine.direction * dot(edgeLine.direction, v);
-        var distance = norm(v);
-        if (distance < minDistance)
-        {
-            minDistance = distance;
-            offsetEdge = testEdge;
-        }
-    }
-
-    if (minDistance == BIG_NUMBER)
-        throw regenError("Could not find offset edge");
-
     return {
-        "offsetEdge" : offsetEdge,
-        "offsetDistance" : minDistance,
-        "sideFace" : sideFace,
-        "topFace" : topFace
+        "innerEdgeQuery" : makeQuery(id + "extrude_wall", "CAP_EDGE", EntityType.EDGE, {
+                "disambiguationData":[
+                    originalSetDisambiguation([
+                        sketchEntityQuery(id + "wall_sketch", EntityType.EDGE, "top")
+                    ])
+                ], "isStart" : true}),
+        "outerEdgeQuery" : makeQuery(id + "extrude_wall", "CAP_EDGE", EntityType.EDGE, {
+                "disambiguationData":[
+                    originalSetDisambiguation([
+                        sketchEntityQuery(id + "wall_sketch", EntityType.EDGE, "top")
+                    ])
+                ], "isStart" : false})
     };
 }
 
@@ -881,34 +841,6 @@ function orientEdges(context is Context, edges is array, definition is map) retu
         }
     }
     return result;
-}
-
-function getEdgeCSys(context is Context, edge is Query) returns CoordSystem
-{
-    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-    if (size(faces) != 2)
-        throw regenError("Bad edge");
-    var offsetData = findOffsetEdgeData(context, edge);
-
-    var topPlane = evPlane(context, {
-            "face" : offsetData.topFace
-    });
-
-    var sidePlane = evPlane(context, {
-            "face" : offsetData.sideFace
-    });
-
-    var edgeLine = evEdgeTangentLine(context, {
-            "edge" : edge,
-            "parameter" : 0.5
-    });
-
-    var normal = cross(sidePlane.normal, edgeLine.direction);
-    if (dot(normal, topPlane.normal) < 0)
-    {
-        edgeLine.direction = -edgeLine.direction;
-    }
-    return coordSystem(edgeLine.origin, edgeLine.direction, topPlane.normal);
 }
 
 function addAngleManipulator(context is Context, id is Id, edges is array, definition is map)
@@ -989,10 +921,5 @@ export function flangeManipulatorChange(context is Context, definition is map, n
     }
 
     return definition;
-}
-
-function hasSheetMetalAttribute(context is Context, entities is Query, objectType is SMObjectType) returns boolean
-{
-    return size(getSmObjectTypeAttributes(context, entities, objectType)) != 0;
 }
 
