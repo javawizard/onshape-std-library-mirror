@@ -1,4 +1,4 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,23 +10,23 @@ FeatureScript 376; /* Automatically generated version */
  */
 
 
-export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "376.0");
-import(path : "onshape/std/coordSystem.fs", version : "376.0");
-import(path : "onshape/std/attributes.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/curveGeometry.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/math.fs", version : "376.0");
-import(path : "onshape/std/string.fs", version : "376.0");
-import(path : "onshape/std/sketch.fs", version : "376.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/tool.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
-import(path : "onshape/std/vector.fs", version : "376.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "392.0");
+import(path : "onshape/std/coordSystem.fs", version : "392.0");
+import(path : "onshape/std/attributes.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/curveGeometry.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/math.fs", version : "392.0");
+import(path : "onshape/std/string.fs", version : "392.0");
+import(path : "onshape/std/sketch.fs", version : "392.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/tool.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
+import(path : "onshape/std/vector.fs", version : "392.0");
 
 const STARTING_THICKNESS = 0.25 * inch;
 
@@ -148,7 +148,8 @@ function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query,
 {
     var attributeId = toAttributeId(id);
     var wallAttrib = makeSMWallAttribute(attributeId);
-    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    var bendAttribute = makeSMJointAttribute(attributeId);
+    bendAttribute.jointType = { "value" : "BEND", "canBeEdited": true };
     bendAttribute.radius = {
         "value" : definition.radius,
         "controllingFeatureId" : toAttributeId(id),

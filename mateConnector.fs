@@ -1,21 +1,32 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "376.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "376.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "376.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "376.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "376.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "392.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "392.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "392.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "392.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/tool.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/tool.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
+
+/**
+ * @internal
+ * A `RealBoundSpec` for the x, y, z of the normal.
+ */
+export const NORMAL_PARAMETER_BOUNDS =
+{
+    "min"      : -1.0,
+    "max"      : 1.0,
+    (unitless) : [-1.0, 0, 1]
+} as RealBoundSpec;
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
@@ -129,8 +140,24 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.ownerPart != undefined)
         {
-            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH) && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
             definition.ownerPart is Query;
+        }
+
+        if (definition.specifyNormal != undefined)
+        {
+            annotation { "Name" : "Specify normal", "UIHint" : "ALWAYS_HIDDEN" }
+            definition.specifyNormal is boolean;
+        }
+
+        if (definition.specifyNormal == true)
+        {
+            annotation { "Name" : "Normal x", "UIHint" : "ALWAYS_HIDDEN" }
+            isReal(definition.nx, NORMAL_PARAMETER_BOUNDS);
+            annotation { "Name" : "Normal y", "UIHint" : "ALWAYS_HIDDEN" }
+            isReal(definition.ny, NORMAL_PARAMETER_BOUNDS);
+            annotation { "Name" : "Normal z", "UIHint" : "ALWAYS_HIDDEN" }
+            isReal(definition.nz, NORMAL_PARAMETER_BOUNDS);
         }
     }
     {
@@ -211,6 +238,12 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     var ownerPartQuery;
     for (var i = 0; i < size(possiblePartOwners); i += 1)
     {
+        const meshQuery = qSourceMesh(possiblePartOwners[i]);
+        if (size(evaluateQuery(context, meshQuery)) != 0)
+        {
+            ownerPartQuery = meshQuery;
+            break;
+        }
         const currentQuery = qBodyType(qOwnerBody(possiblePartOwners[i]), BodyType.SOLID);
         if (size(evaluateQuery(context, currentQuery)) != 0)
         {

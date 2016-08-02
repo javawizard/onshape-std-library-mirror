@@ -1,4 +1,4 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -518,7 +518,12 @@ export enum ErrorStringEnum
     EVALUATE_FACE_TANGENT_FOR_MESHES,
     CANNOT_COMPUTE_CENTROID,
     CANNOT_EVALUATE_DIMENSION,
-    CANNOT_IMPORT_MESH
+    CANNOT_IMPORT_MESH,
+    SKETCH_ELLIPSE_ZERO_AXIS,
+    TRANSFORM_SCALE_UNIFORMLY,
+    TRANSFORM_MATE_CONNECTORS,
+    ASSEMBLY_WRONG_ELEMENT_TYPE,
+    ASSEMBLY_ELEMENT_NOT_FOUND
 }
 
 

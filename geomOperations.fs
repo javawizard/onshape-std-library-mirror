@@ -1,4 +1,4 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,11 +15,11 @@ FeatureScript 376; /* Automatically generated version */
  *
  * This file contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "376.0");
+import(path : "onshape/std/context.fs", version : "392.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "376.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "376.0");
-export import(path : "onshape/std/bendoptions.fs", version : "376.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "392.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "392.0");
+export import(path : "onshape/std/bendoptions.fs", version : "392.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -193,6 +193,11 @@ export function opFillet(context is Context, id is Id, definition is map)
  *     vector( 1,  1,  1) * inch
  * ]
  * ```
+ *      @field startDerivative {Vector} : A `Vector` with length units that specifies the derivative at the start of
+ *          the resulting spline (according to the `arcLengthParameterization` set to `false`).  Ignored if spline
+ *          is closed.  @optional
+ *      @field endDerivative {Vector} : A `Vector` with length units that specifies the derivative at the end of
+ *          the resulting spline.  Ignored if spline is closed.  @optional
  * }}
  */
 export function opFitSpline(context is Context, id is Id, definition is map)
@@ -520,13 +525,15 @@ export function opThicken(context is Context, id is Id, definition is map)
 
 /**
  * Applies a given transform to one or more bodies. To make transformed copies of bodies, use `opPattern`.
+ *
  * @param id : @autocomplete `id + "transform1"`
  * @param definition {{
  *      @field bodies {Query} : The bodies to transform.
  *      @field transform {Transform} : The transform to apply.
  *              @eg `transform(vector(0, 0, 1) * inch)` will translate the body 1 inch along the world's z-axis.
  *              @eg `rotationAround(myLine, 30 * degree)` will rotate around a `Line` object.
- *              @eg `transform(identityMatrix(3) * scale, vector(0, 0, 0) * inch)` will scale uniformly about the origin.
+ *              @eg `scaleUniformly(factor)` will scale uniformly about the origin.
+ *              @eg `scaleUniformly(factor, point)` will scale uniformly about a given point.
  *              @eg `toWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
  *                  the world's origin and axes will move to the `cSys` origin and axes.
  *              @eg `fromWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
@@ -624,9 +631,10 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`
  * @param definition {{
- *    @field propagateTangents {boolean} : Whether additional faces should be added to the selection by tangent propagation
+ *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
  *    @field tolerance {Enum} : @requiredif {`propagateTangents` is `true`} Tolerance used to determine if an edge is tangent.
  *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
+ *    @field offset {ValueWithUnits} : "Offset extracted surface faces by this distance along normal" @optional
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

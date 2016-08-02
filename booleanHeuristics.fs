@@ -1,35 +1,23 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "376.0");
-export import(path : "onshape/std/query.fs", version : "376.0");
-export import(path : "onshape/std/tool.fs", version : "376.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "392.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
+export import(path : "onshape/std/tool.fs", version : "392.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "376.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/primitives.fs", version : "376.0");
-import(path : "onshape/std/transform.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/box.fs", version : "392.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/primitives.fs", version : "392.0");
+import(path : "onshape/std/transform.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
 
-
-/**
- * @internal
- *
- * If the number of parts hit by the tools is equal to 1 then we default to add.
- * If the number of parts hit by the tools is other than 1 then we default to new.
- */
- //TODO - remove in rel-1.42
-export function autoSelectionForBooleanStep2(context is Context, featureDefinition is map, featureInfo is map) returns map
-{
-     return autoSelectionForBooleanStep(context, makeId(featureInfo.featureId), featureDefinition, featureInfo.excludeBodies);
-}
 
 /** @internal */
 export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,

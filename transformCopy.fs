@@ -1,27 +1,27 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "376.0");
-export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "392.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "376.0");
-export import(path : "onshape/std/tool.fs", version : "376.0");
+export import(path : "onshape/std/manipulator.fs", version : "392.0");
+export import(path : "onshape/std/tool.fs", version : "392.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/coordSystem.fs", version : "376.0");
-import(path : "onshape/std/curveGeometry.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/mathUtils.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/tool.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/box.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/coordSystem.fs", version : "392.0");
+import(path : "onshape/std/curveGeometry.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/mathUtils.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/tool.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -65,7 +65,7 @@ precondition
 /* Find a point to attach the manipulator bar. */
 function findCenter(context is Context, id is Id, entities is Query) returns Vector
 {
-    const boxResult = evBox3d(context, { topology : entities });
+    const boxResult = evBox3d(context, { topology : entities, 'tight' : false });
     return (boxResult.minCorner + boxResult.maxCorner) / 2;
 }
 
@@ -146,7 +146,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     precondition
     {
         annotation { "Name" : "Parts to transform or copy",
-                     "Filter" : EntityType.BODY }
+                     "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }
@@ -361,6 +361,11 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.SCALE_UNIFORMLY)
         {
+            const vertices = evaluateQuery(context, definition.scalePoint);
+            if (@size(vertices) == 0)
+            {
+                throw regenError(ErrorStringEnum.TRANSFORM_SCALE_UNIFORMLY);
+            }
 
             const matrix = identityMatrix(3) * definition.scale;
 
@@ -369,6 +374,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
         {
+            const q1 = evaluateQuery(context, definition.baseConnector);
+            const q2 = evaluateQuery(context, definition.destinationConnector);
+            if ((@size(q1) == 0) || (@size(q2) == 0))
+            {
+                throw regenError(ErrorStringEnum.TRANSFORM_MATE_CONNECTORS);
+            }
+
             const c1 = evMateConnector(context, { "mateConnector" : definition.baseConnector });
             const c2 = evMateConnector(context, { "mateConnector" : definition.destinationConnector });
             var xAxis = c2.xAxis;

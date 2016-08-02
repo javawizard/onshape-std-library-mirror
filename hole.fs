@@ -1,28 +1,28 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "376.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "376.0");
-import(path : "onshape/std/box.fs", version : "376.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/coordSystem.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/extrude.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/mathUtils.fs", version : "376.0");
-import(path : "onshape/std/revolve.fs", version : "376.0");
-import(path : "onshape/std/sketch.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/tool.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
-import(path : "onshape/std/string.fs", version : "376.0");
-import(path : "onshape/std/holetables.gen.fs", version : "376.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "376.0");
-import(path : "onshape/std/cylinderCast.fs", version : "376.0");
-import(path : "onshape/std/curveGeometry.fs", version : "376.0");
+import(path : "onshape/std/boolean.fs", version : "392.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "392.0");
+import(path : "onshape/std/box.fs", version : "392.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/coordSystem.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/extrude.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/mathUtils.fs", version : "392.0");
+import(path : "onshape/std/revolve.fs", version : "392.0");
+import(path : "onshape/std/sketch.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/tool.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
+import(path : "onshape/std/string.fs", version : "392.0");
+import(path : "onshape/std/holetables.gen.fs", version : "392.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "392.0");
+import(path : "onshape/std/cylinderCast.fs", version : "392.0");
+import(path : "onshape/std/curveGeometry.fs", version : "392.0");
 
 /**
  * Defines whether each hole should have a countersink, a counterbore, or neither.
@@ -309,7 +309,7 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
     return result;
 }
 
-function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
+function computeCSys(context is Context, location is Query, definition is map) returns map
 {
     const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
     var startPointCSys;
@@ -334,8 +334,21 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
         }
     }
 
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V388_HOLE_FIX_FEATURE_PATTERN_TRANSFORM))
+    {
+        point = startPointCSys.origin;
+    }
+
     const sign = definition.oppositeDirection ? 1 : -1;
     startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
+
+    return {"point" : point, "startPointCSys" : startPointCSys};
+}
+
+function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
+{
+    var startPointData = computeCSys(context, location, definition);
+    var startPointCSys = startPointData.startPointCSys;
 
     const holeId = id + ("hole-" ~ holeNumber);
 
@@ -860,6 +873,10 @@ function getStandardTable(definition is map) returns map
         table = tappedOrClearanceHoleTable;
     }
 
+    if (standard == undefined)
+    {
+        return {};
+    }
     table = getLookupTable(table, standard);
     if (table == undefined)
     {
@@ -958,6 +975,15 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
 
     var minSize = holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST ? 2 : 1;
 
+    var evaluatedDefinition = holeDefinition;
+    var table = getStandardTable(holeDefinition);
+    if (table != {})
+    {
+        for (var entry in table)
+        {
+            evaluatedDefinition[entry.key] = lookupTableGetValue(holeDefinition[entry.key]);
+        }
+    }
     const locations = evaluateQuery(context, holeDefinition.locations);
     var numOpposite = 0;
     var numSame = 0;
@@ -982,11 +1008,11 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
 
         if (doSame)
         {
-            resultSame = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, false, holeDefinition);
+            resultSame = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, false, evaluatedDefinition);
         }
         if (doOpposite)
         {
-            resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, holeDefinition);
+            resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, evaluatedDefinition);
         }
         newCollisions[location] = {
             "resultSame" : resultSame,

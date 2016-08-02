@@ -1,20 +1,20 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/mathUtils.fs", version : "376.0");
-import(path : "onshape/std/curveGeometry.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
+import(path : "onshape/std/box.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/mathUtils.fs", version : "392.0");
+import(path : "onshape/std/curveGeometry.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
 
 /**
  * The method of defining a construction plane.
@@ -346,7 +346,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         var isConstruction = false;
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys, 'tight' : false });
 
         if (planeType == CPlaneType.OFFSET)
         {
@@ -376,7 +376,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     else if (planeType == CPlaneType.PLANE_POINT)
     {
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys, 'tight' : false });
 
         var isConstruction = false;
         var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(qEntityFilter(definition.entities, EntityType.FACE), ConstructionObject.NO));
@@ -398,7 +398,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
         }
 
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' : qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' : qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys, 'tight' : false });
 
         if (bounds == undefined)
         {
@@ -532,3 +532,4 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     return definition;
 }
+

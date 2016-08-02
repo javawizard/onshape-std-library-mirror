@@ -1,13 +1,13 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/units.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
-import(path : "onshape/std/vector.fs", version : "376.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/units.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
+import(path : "onshape/std/vector.fs", version : "392.0");
 
 /**
  * Creates a `Context` with default planes and an origin.
@@ -18,13 +18,13 @@ export function newContextWithDefaults() returns Context
 }
 
 /** @internal */
-export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
+export function newContextWithDefaults(defaultLengthUnit is ValueWithUnits)
 {
     var context = newContext();
     origin(context);
 
-    const range = PLANE_SIZE_BOUNDS[defLengthUnit];
-    const size = (range is number ? range : range[1]) * defLengthUnit;
+    const range = PLANE_SIZE_BOUNDS[defaultLengthUnit];
+    const size = (range is number ? range : range[1]) * defaultLengthUnit;
 
     defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
     defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);

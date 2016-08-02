@@ -1,4 +1,4 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,19 +9,19 @@ FeatureScript 376; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like `Line` or `Plane`), or a special
  * type like `DistanceResult`. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "376.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "376.0");
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/context.fs", version : "376.0");
-import(path : "onshape/std/coordSystem.fs", version : "376.0");
-import(path : "onshape/std/curveGeometry.fs", version : "376.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "376.0");
-import(path : "onshape/std/mathUtils.fs", version : "376.0");
-import(path : "onshape/std/query.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/string.fs", version : "376.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "376.0");
-import(path : "onshape/std/units.fs", version : "376.0");
+import(path : "onshape/std/box.fs", version : "392.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/context.fs", version : "392.0");
+import(path : "onshape/std/coordSystem.fs", version : "392.0");
+import(path : "onshape/std/curveGeometry.fs", version : "392.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "392.0");
+import(path : "onshape/std/mathUtils.fs", version : "392.0");
+import(path : "onshape/std/query.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/string.fs", version : "392.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
+import(path : "onshape/std/units.fs", version : "392.0");
 
 /**
  * Return the total area of all the entities.
@@ -61,10 +61,15 @@ precondition
 
 /**
  * Find a bounding box around an entity, optionally with respect
- * to a given coordinate system.
+ * to a given coordinate system. There is also an option to use
+ * a faster but less accurate method.
  * @param arg {{
  *      @field topology{Query} : The entity to find the bounding box of.
  *      @field cSys{CoordSystem} : The coordinate system to use (if not the standard coordinate system). @optional
+ *      @field tight{boolean} : Get the tightest possible bounding box. Defaults to `true`.
+ *              @eg `true`for a bounding box precisely at the extents of the given entities (and no bigger).
+ *              @eg `false` for a bounding box at least as big as the given entities, using a faster algorithm.
+ *              @optional
  * }}
  */
 export function evBox3d(context is Context, arg is map) returns Box3d
@@ -72,6 +77,7 @@ precondition
 {
     arg.topology is Query;
     arg.cSys == undefined || arg.cSys is CoordSystem;
+    arg.tight == undefined || arg.tight is boolean;
 }
 {
     var result = @evBox(context, arg);

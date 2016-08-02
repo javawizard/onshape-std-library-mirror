@@ -5,15 +5,13 @@ FeatureScript 392; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @see `opSplitPart` */
-export enum SplitOperationKeepType
+/**
+ * Specifies the filter type when requesting inference mate connectors.
+ */
+export enum CoordinateSystemInferenceSelectionFilter
 {
-    annotation {"Name" : "Keep all"}
-    KEEP_ALL,
-    annotation {"Name" : "Keep front"}
-    KEEP_FRONT,
-    annotation {"Name" : "Keep back"}
-    KEEP_BACK
+    NONE,
+    HOLE_GEOMETRY
 }
 
 

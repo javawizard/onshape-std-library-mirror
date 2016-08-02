@@ -1,17 +1,17 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "376.0");
+export import(path : "onshape/std/query.fs", version : "392.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "376.0");
-import(path : "onshape/std/feature.fs", version : "376.0");
-import(path : "onshape/std/geomOperations.fs", version : "376.0");
-import(path : "onshape/std/valueBounds.fs", version : "376.0");
-import(path : "onshape/std/vector.fs", version : "376.0");
+import(path : "onshape/std/evaluate.fs", version : "392.0");
+import(path : "onshape/std/feature.fs", version : "392.0");
+import(path : "onshape/std/geomOperations.fs", version : "392.0");
+import(path : "onshape/std/valueBounds.fs", version : "392.0");
+import(path : "onshape/std/vector.fs", version : "392.0");
 
 /**
  * @internal
@@ -61,7 +61,7 @@ export const cPoint = defineFeature(function(context is Context, id is Id, defin
         else if (definition.pointType == PointType.MESH_POINT)
         {
             // The owner mesh face of the point
-            annotation { "Name" : "Mesh", "Filter" : EntityType.FACE && GeometryType.MESH, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Mesh", "Filter" : EntityType.FACE && AllowMeshGeometry.YES && GeometryType.MESH, "MaxNumberOfPicks" : 1 }
             definition.mesh is Query;
 
             annotation { "Name" : "X" }
@@ -84,5 +84,5 @@ export const cPoint = defineFeature(function(context is Context, id is Id, defin
             definition.point = vector(definition.x, definition.y, definition.z);
         }
         opPoint(context, id, definition);
-    }, { pointType: PointType.EDGE_POINT, parameter: 0.5 });
+    }, { pointType: PointType.EDGE_POINT, parameter: 0.5, x: 0 * meter, y: 0 * meter, z: 0 * meter });
 

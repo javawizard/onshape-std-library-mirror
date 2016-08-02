@@ -1,4 +1,4 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -332,7 +332,21 @@ export enum FeatureScriptVersionNumber
     V373_MESH_SUPPORT,
     V374_HELIX_ALIGNMENT,
     V375_HOLE_FIX_EDIT_LOGIC,
-    V376_FS_VERSION_BUMP
+    V376_FS_VERSION_BUMP,
+    V379_EDITING_LOGIC_QUERIES,
+    V380_UPDATE_ELLIPSE_OFFSET_DATA,
+    V381_SKIP,
+    V382_NORMALIZE_ELLIPSE_AXIS,
+    V383_PS_VERSION_29_0_155,
+    V384_DCM_VERSION_66_0_0,
+    V385_IMPORT_RECORD,
+    V386_NEW_IMPRINT_API,
+    V387_PROPER_CIRCLE_INVERSION,
+    V388_HOLE_FIX_FEATURE_PATTERN_TRANSFORM,
+    V389_FACE_PATTERN_SKIP_LOOP_CHECK,
+    V390_TIGHT_BOUNDING_BOX,
+    V391_DOCUMENTATION_CORRECTION,
+    V392_HOLE_FIX_EDIT_LOGIC
 }
 
 /**
@@ -343,6 +357,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V376_FS_VERSION_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V392_HOLE_FIX_EDIT_LOGIC;
 
 

@@ -1,14 +1,14 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/math.fs", version : "376.0");
-import(path : "onshape/std/units.fs", version : "376.0");
-import(path : "onshape/std/matrix.fs", version : "376.0");
-import(path : "onshape/std/string.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/math.fs", version : "392.0");
+import(path : "onshape/std/units.fs", version : "392.0");
+import(path : "onshape/std/matrix.fs", version : "392.0");
+import(path : "onshape/std/string.fs", version : "392.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -303,6 +303,7 @@ export function project(target is Vector, source is Vector) returns Vector
  * Returns a vector perpendicular to the given vector.
  * The choice of which perpendicular vector to return
  * is arbitrary but consistent for the same input.
+ * The returned vector is unitless and of length 1.
  */
 export function perpendicularVector(vec is Vector) returns Vector
 precondition @size(vec) == 3;

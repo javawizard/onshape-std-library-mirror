@@ -1,13 +1,13 @@
-FeatureScript 376; /* Automatically generated version */
+FeatureScript 392; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "376.0");
-import(path : "onshape/std/math.fs", version : "376.0");
-import(path : "onshape/std/matrix.fs", version : "376.0");
-import(path : "onshape/std/units.fs", version : "376.0");
-import(path : "onshape/std/vector.fs", version : "376.0");
+import(path : "onshape/std/containers.fs", version : "392.0");
+import(path : "onshape/std/math.fs", version : "392.0");
+import(path : "onshape/std/matrix.fs", version : "392.0");
+import(path : "onshape/std/units.fs", version : "392.0");
+import(path : "onshape/std/vector.fs", version : "392.0");
 
 /**
  * Type typically representing a change of position, orientation in 3D space
@@ -27,6 +27,9 @@ import(path : "onshape/std/vector.fs", version : "376.0");
  * on this type don't need to be directly used, and everything you need can be
  * accomplished through the operator overloads above, and the functions in this
  * module and the `coordSystem` module.
+ *
+ * `rotationAround`, `scaleUniformly`, `toWorld` and `fromWorld` return
+ * transforms for common operations.
  *
  * @type {{
  *      @field linear {Matrix} : A linear motion, which is generally a rotation,
@@ -124,5 +127,23 @@ export function inverse(t is Transform) returns Transform
 {
     const linear = inverse(t.linear);
     return transform(linear, -linear * t.translation);
+}
+
+/**
+ * Returns a `Transform` that represents a uniform scaling around
+ * the origin.
+ */
+export function scaleUniformly(scale is number) returns Transform
+{
+    return transform(identityMatrix(3) * scale, vector(0, 0, 0) * meter);
+}
+
+/**
+ * Returns a `Transform` that represents a uniform scaling around
+ * the given point.
+ */
+export function scaleUniformly(scale is number, point is Vector) returns Transform
+{
+    return transform(identityMatrix(3) * scale, point * (1 - scale));
 }
 
