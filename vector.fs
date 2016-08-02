@@ -303,6 +303,7 @@ export function project(target is Vector, source is Vector) returns Vector
  * Returns a vector perpendicular to the given vector.
  * The choice of which perpendicular vector to return
  * is arbitrary but consistent for the same input.
+ * The returned vector is unitless and of length 1.
  */
 export function perpendicularVector(vec is Vector) returns Vector
 precondition @size(vec) == 3;

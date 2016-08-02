@@ -61,10 +61,15 @@ precondition
 
 /**
  * Find a bounding box around an entity, optionally with respect
- * to a given coordinate system.
+ * to a given coordinate system. There is also an option to use
+ * a faster but less accurate method.
  * @param arg {{
  *      @field topology{Query} : The entity to find the bounding box of.
  *      @field cSys{CoordSystem} : The coordinate system to use (if not the standard coordinate system). @optional
+ *      @field tight{boolean} : Get the tightest possible bounding box. Defaults to `true`.
+ *              @eg `true`for a bounding box precisely at the extents of the given entities (and no bigger).
+ *              @eg `false` for a bounding box at least as big as the given entities, using a faster algorithm.
+ *              @optional
  * }}
  */
 export function evBox3d(context is Context, arg is map) returns Box3d
@@ -72,6 +77,7 @@ precondition
 {
     arg.topology is Query;
     arg.cSys == undefined || arg.cSys is CoordSystem;
+    arg.tight == undefined || arg.tight is boolean;
 }
 {
     var result = @evBox(context, arg);

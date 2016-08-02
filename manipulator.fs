@@ -297,7 +297,7 @@ precondition
  * the value set to the new value), and removed entries (with the value set
  * to `[undefined]`).
  */
-export function processDefinitionDifference(oldDefinition is map, newDefinition is map) returns map
+export function processDefinitionDifference(context is Context, oldDefinition is map, newDefinition is map) returns map
 {
     var result = {};
     for (var newEntry in newDefinition)
@@ -311,7 +311,11 @@ export function processDefinitionDifference(oldDefinition is map, newDefinition 
             //We have to distinguish removal from no change, so we use [undefined] to indicate parameter removal
             result[oldEntry.key] = [undefined];
     }
-    //TODO: if we need queries, make this function take a context and evaluate the new ones.
+    for (var entry in result)
+    {
+        if (entry.value is Query)
+            result[entry.key] = qUnion(evaluateQuery(context, entry.value));
+    }
 
     return result;
 }

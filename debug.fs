@@ -185,6 +185,46 @@ export function debug(context is Context, point1 is Vector, point2 is Vector)
     }
 }
 
+// Timers for very basic profiling
+
+/** Starts the timer associated with the string `timer` or resets it.  Use with `printTimer`. */
+export function startTimer(timer is string)
+{
+    @startTimer(timer);
+}
+
+/** Starts the global timer associated with the empty string or resets it.  Use with `printTimer`. */
+export function startTimer()
+{
+    startTimer("");
+}
+
+/**
+ * Prints the elapsed milliseconds for the timer associated with the string `timer`.  Use with `startTimer`.
+ *
+ * Note that if the timer was set in a prior feature, the elapsed time may be very large because features can
+ * be regenerated at different times.
+ *
+ * Throws an error if no such timer has been started.
+ */
+export function printTimer(timer is string)
+{
+    @printTimer(timer);
+}
+
+/**
+ * Prints the elapsed milliseconds for the global timer associated with the empty string.  Use with `startTimer`.
+ *
+ * Note that if the timer was set in a prior feature, the elapsed time may be very large because features can
+ * be regenerated at different times.
+ *
+ * Throws an error if no such timer has been started.
+ */
+export function printTimer()
+{
+    printTimer("");
+}
+
 // Utility functions below
 
 function addDebugPoint(context is Context, point is Vector)

@@ -16,6 +16,8 @@ export import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * @internal
@@ -26,6 +28,15 @@ export type SMAttribute typecheck canBeSMAttribute ;
 /**
  * @internal
  */
+
+ /* parameters in SMAttribute (e.g. radius in BEND, angle in JOINT, thickness in MODEL)
+ *  are specified as maps {
+ *  value : {ValueWithUnits},
+ *  canBeEdited : {boolean},
+ *  controllingFeatureId : {string}, : feature to be edited when editing this parameter
+ *  parameterIdInFeature : {string}
+ *  }
+ */
 export predicate canBeSMAttribute (value)
 {
     value is map;
@@ -33,14 +44,20 @@ export predicate canBeSMAttribute (value)
     value.objectType == undefined || value.objectType is SMObjectType;
     if (value.objectType == SMObjectType.MODEL)
     {
-        value.thickness == undefined || isLength(value.thickness);
+        value.thickness == undefined || isLength(value.thickness.value);
     }
     else if (value.objectType == SMObjectType.JOINT)
     {
-        value.jointType == undefined || value.jointType is SMJointType;
+        value.jointType == undefined || value.jointType.value is SMJointType;
+    }
+    if (value.jointType != undefined && value.jointType.value == SMJointType.BEND)
+    {
+        value.radius == undefined || isLength(value.radius.value);
     }
 
 }
+
+
 
 /**
  * @internal
@@ -58,11 +75,10 @@ export function asSMAttribute(value is map) returns SMAttribute
 /**
 * @internal
 */
-export function makeSMJointAttribute(attributeId is string, jointType is SMJointType) returns SMAttribute
+export function makeSMJointAttribute(attributeId is string) returns SMAttribute
 {
     return asSMAttribute({'objectType' : SMObjectType.JOINT,
-            'attributeId' : attributeId,
-            'jointType' : jointType });
+            'attributeId' : attributeId });
 }
 
 /**
@@ -120,5 +136,41 @@ export function clearSmAttributes(context is Context, entities is Query)
         "entities" : entities,
         "attributePattern" : asSMAttribute({})
     });
+}
+
+/**
+ * @internal
+ */
+export type SMAssociationAttribute typecheck canBeSMAssociationAttribute;
+
+/**
+ * @internal
+ */
+export predicate canBeSMAssociationAttribute (value)
+{
+    value is map;
+    value.attributeId == undefined || value.attributeId is string;
+}
+
+/**
+ * @internal
+ */
+export function makeSMAssociationAttribute(attributeId is string) returns SMAssociationAttribute
+{
+    return {"attributeId" : attributeId} as SMAssociationAttribute;
+}
+
+/**
+ * @internal
+ */
+export function assignSmAssociationAttributes(context is Context, entities is Query)
+{
+    for (var ent in evaluateQuery(context, entities))
+    {
+        setAttribute(context, {
+                "entities" : ent,
+                "attribute" : makeSMAssociationAttribute(toString(ent))
+        });
+    }
 }
 

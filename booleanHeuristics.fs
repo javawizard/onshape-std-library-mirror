@@ -19,18 +19,6 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 
-/**
- * @internal
- *
- * If the number of parts hit by the tools is equal to 1 then we default to add.
- * If the number of parts hit by the tools is other than 1 then we default to new.
- */
- //TODO - remove in rel-1.42
-export function autoSelectionForBooleanStep2(context is Context, featureDefinition is map, featureInfo is map) returns map
-{
-     return autoSelectionForBooleanStep(context, makeId(featureInfo.featureId), featureDefinition, featureInfo.excludeBodies);
-}
-
 /** @internal */
 export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query, toolBodiesOp is function) returns map

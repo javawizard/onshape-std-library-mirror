@@ -115,6 +115,7 @@ export predicate canBeQuery(value)
  * @value DEPENDENCY                 : Used in `qDependency`
  * @value TRACKING                   : Used in `startTracking`
  * @value CAP_ENTITY                 : Used in `qCapEntity`
+ * @value SOURCE_MESH                : Used in `qSourceMesh`
  ******************************************************************************/
 export enum QueryType
 {
@@ -171,7 +172,8 @@ export enum QueryType
     CONSTRUCTION_FILTER,
     DEPENDENCY,
     TRACKING,
-    CAP_ENTITY
+    CAP_ENTITY,
+    SOURCE_MESH
 }
 
 /**
@@ -279,6 +281,24 @@ export enum GeometryType
  * @value NO  : Matches only entities which are not created for construction
  */
 export enum ConstructionObject
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies whether we allow meshes. It is default to NO.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Bodies", "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : Allow meshes
+ * @value NO  : Disallow meshes
+ */
+export enum AllowMeshGeometry
 {
     YES,
     NO
@@ -613,6 +633,14 @@ export function qOwnerBody(query is Query) returns Query
 }
 
 /**
+ * A query for each mesh that the mesh vertices in the `query` belong to.
+ */
+export function qSourceMesh(query is Query) returns Query
+{
+ return { "queryType" : QueryType.SOURCE_MESH, "query" : query } as Query;
+}
+
+/**
  * A query for all entities of specified `EntityType` that share a vertex with
  * any entities that match the input query. Examples:
  * @eg `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
@@ -897,6 +925,8 @@ precondition
 
 /**
  * A query for all entities (bodies, faces, edges, or points) touching a specified infinite plane.
+ * @param plane :
+ *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
  */
 export function qIntersectsPlane(subquery is Query, plane is Plane) returns Query
 {

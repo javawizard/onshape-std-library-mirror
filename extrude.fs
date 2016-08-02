@@ -813,7 +813,7 @@ function shouldFlipExtrudeDirection(context is Context, endBound is BoundingType
         return dotProduct < -TOLERANCE.zeroLength;
     }
     const pln = plane(extrudeAxis.origin, extrudeAxis.direction);
-    const boxResult = try(evBox3d(context, { 'topology' : endBoundEntity, 'cSys' : planeToCSys(pln) }));
+    const boxResult = try(evBox3d(context, { 'topology' : endBoundEntity, 'cSys' : planeToCSys(pln), 'tight' : false }));
     if (boxResult == undefined)
         return false;
 

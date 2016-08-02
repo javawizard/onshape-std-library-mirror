@@ -346,7 +346,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         var isConstruction = false;
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys, 'tight' : false });
 
         if (planeType == CPlaneType.OFFSET)
         {
@@ -376,7 +376,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     else if (planeType == CPlaneType.PLANE_POINT)
     {
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys, 'tight' : false });
 
         var isConstruction = false;
         var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(qEntityFilter(definition.entities, EntityType.FACE), ConstructionObject.NO));
@@ -398,7 +398,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
         }
 
         const cSys = planeToCSys(definition.plane);
-        var bounds = evBox3d(context, { 'topology' : qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys });
+        var bounds = evBox3d(context, { 'topology' : qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys, 'tight' : false });
 
         if (bounds == undefined)
         {
@@ -532,3 +532,4 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     return definition;
 }
+

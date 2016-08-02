@@ -58,7 +58,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             return;
         }
 
-        const otherContext = definition.buildFunction();
+        const otherContext = @convert(definition.buildFunction(), undefined);
         if (otherContext != undefined)
         {
             if (size(evaluateQuery(otherContext, definition.parts)) == 0)

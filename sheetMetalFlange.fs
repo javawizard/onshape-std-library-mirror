@@ -344,7 +344,9 @@ function setBendAttributes(context is Context, id is Id, index is number, defini
     var cylFaces = evaluateQuery(context, qGeometry(qCreatedBy(id + index, EntityType.FACE), GeometryType.CYLINDER));
     var attributeId = toAttributeId(id + index);
     var wallAttrib = makeSMWallAttribute(attributeId);
-    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    var bendAttribute = makeSMJointAttribute(attributeId);
+    bendAttribute.jointType = { "value" : "BEND", "canBeEdited": true };
+
     bendAttribute.radius = {
         "value" : definition.innerRadius,
         "controllingFeatureId" : toAttributeId(id),

@@ -183,3 +183,171 @@ export function hasSheetMetalAttribute(context is Context, entities is Query, ob
     return size(getSmObjectTypeAttributes(context, entities, objectType)) != 0;
 }
 
+/**
+ * @internal
+ */
+export function startSheetMetalFeature(context is Context, id is Id)
+{
+    @startSheetMetalFeature(context, id);
+}
+
+
+/**
+ * @internal
+ */
+ export function endSheetMetalFeature(context is Context, id is Id, args is map)
+ {
+    @endSheetMetalFeature(context, id, args);
+ }
+
+
+/**
+* @internal
+* @param args {{
+*       @field surfaceBodies{Query}
+*       @field bendEdges{Query}
+*       @field specialRadiiBends{array} : array of pairs "(edge, bendRadius)"
+*       @field defaultRadius{ValueWithUnits} : bend radius to be applied to bendEdges
+*       @field controllsThickness{boolean}
+*       @field thickness{ValueWithUnits}
+* }}
+*/
+export function annotateSmSurfaceBodies(context is Context, id is Id, args is map, objectCount is number) returns number
+{
+    var surfaceBodies = evaluateQuery(context, args.surfaceBodies);
+    if (size(surfaceBodies) == 0)
+    {
+        return;
+    }
+    var featureIdString = toAttributeId(id);
+    var thicknessData = {"value" : args.thickness, "canBeEdited" : args.controllsThickness};
+    if (args.controllsThickness)
+    {
+        thicknessData.controllingFeatureId = featureIdString;
+        thicknessData.parameterIdInFeature = "thickness";
+    }
+    var modelAttribute = asSMAttribute({"attributeId" : featureIdString,
+                    "objectType" : SMObjectType.MODEL,
+                    "active" : true,
+                    "thickness" : thicknessData,
+                    "defaultBendRadius" : {"value" : args.defaultRadius}});
+
+    var facesQ =  qOwnedByBody(args.surfaceBodies, EntityType.FACE);
+    var count = objectCount;
+    for (var face in evaluateQuery(context, facesQ))
+    {
+        var surface = evSurfaceDefinition(context, {
+                "face" : face
+        });
+        if (surface is Plane)
+        {
+            setAttribute(context, {
+                    "entities" : face,
+                    "attribute" : makeSMWallAttribute(toAttributeId(id + count))
+            });
+            count += 1;
+        }
+        else if (surface is Cylinder)
+        {
+            var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
+            bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+
+            var bendRadius = surface.radius - 0.5 * args.thickness;
+            bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
+            setAttribute(context, {
+                    "entities" : face,
+                    "attribute" : bendAttribute
+            });
+            count += 1;
+        }
+        else
+        {
+            regenError("Only planar walls are supported");
+        }
+    }
+    var bendMap = {};
+    for (var edge in evaluateQuery(context, args.bendEdges))
+    {
+        bendMap[edge] = true;
+    }
+    for (var edgeAndRadius in args.specialRadiiBends)
+    {
+        bendMap[edgeAndRadius[0]] = edgeAndRadius[1];
+    }
+    var edgesQ = qOwnedByBody(args.surfaceBodies, EntityType.EDGE);
+    for (var edge in evaluateQuery(context, edgesQ))
+    {
+        var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        if (size(faces) != 2)
+        {
+            continue; // TODO : warning if edge is selected as a bend
+        }
+        if (size(getSmObjectTypeAttributes(context, qUnion(faces), SMObjectType.WALL)) != 2)
+        {
+            continue;
+        }
+        var bendRadius = bendMap[edge];
+        if (bendRadius != undefined)
+        {
+            var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
+            bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+            if (bendRadius == true)
+            {
+                bendRadius = args.defaultRadius;
+            }
+            bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : true, "isDefault" : true};
+            bendAttribute.angle = {"value" : edgeAngle(context, edge), "canBeEdited" : false};
+            setAttribute(context, {
+                    "entities" : edge,
+                    "attribute" : bendAttribute
+            });
+            count += 1;
+        }
+        else
+        {
+            var ripAttribute = makeSMJointAttribute(toAttributeId(id + count));
+            ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
+            var angle = try(edgeAngle(context, edge));
+            if (angle != undefined)
+            {
+                ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
+            }
+            setAttribute(context, {
+                    "entities" : edge,
+                    "attribute" : ripAttribute
+            });
+        }
+        count += 1;
+    }
+    for (var body in surfaceBodies)
+    {
+        setAttribute(context, {
+                "entities" : body,
+                "attribute" : modelAttribute
+        });
+    }
+    var verticesQ = qOwnedByBody(args.surfaceBodies, EntityType.VERTEX);
+    assignSmAssociationAttributes(context, qUnion([args.surfaceBodies, facesQ, edgesQ, verticesQ]));
+    return count;
+}
+
+/**
+ * @internal
+ * For an edge between two planes computes angle between plane normals
+ */
+export function edgeAngle(context is Context, edge is Query) returns ValueWithUnits
+{
+    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    if (size(faces) != 2)
+    {
+        throw "Expects 2-sided faces";
+    }
+    var plane0 = evPlane(context, {
+            "face" : faces[0]
+    });
+    var plane1 = evPlane(context, {
+            "face" : faces[1]
+    });
+    return angleBetween(plane0.normal, plane1.normal);
+}
+

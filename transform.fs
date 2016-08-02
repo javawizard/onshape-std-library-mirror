@@ -28,6 +28,9 @@ import(path : "onshape/std/vector.fs", version : "✨");
  * accomplished through the operator overloads above, and the functions in this
  * module and the `coordSystem` module.
  *
+ * `rotationAround`, `scaleUniformly`, `toWorld` and `fromWorld` return
+ * transforms for common operations.
+ *
  * @type {{
  *      @field linear {Matrix} : A linear motion, which is generally a rotation,
  *              but can also be a scaling, inversion, or sheering.
@@ -124,5 +127,23 @@ export function inverse(t is Transform) returns Transform
 {
     const linear = inverse(t.linear);
     return transform(linear, -linear * t.translation);
+}
+
+/**
+ * Returns a `Transform` that represents a uniform scaling around
+ * the origin.
+ */
+export function scaleUniformly(scale is number) returns Transform
+{
+    return transform(identityMatrix(3) * scale, vector(0, 0, 0) * meter);
+}
+
+/**
+ * Returns a `Transform` that represents a uniform scaling around
+ * the given point.
+ */
+export function scaleUniformly(scale is number, point is Vector) returns Transform
+{
+    return transform(identityMatrix(3) * scale, point * (1 - scale));
 }
 

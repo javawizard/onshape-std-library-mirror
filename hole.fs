@@ -309,7 +309,7 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
     return result;
 }
 
-function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
+function computeCSys(context is Context, location is Query, definition is map) returns map
 {
     const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
     var startPointCSys;
@@ -334,8 +334,21 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
         }
     }
 
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V388_HOLE_FIX_FEATURE_PATTERN_TRANSFORM))
+    {
+        point = startPointCSys.origin;
+    }
+
     const sign = definition.oppositeDirection ? 1 : -1;
     startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
+
+    return {"point" : point, "startPointCSys" : startPointCSys};
+}
+
+function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
+{
+    var startPointData = computeCSys(context, location, definition);
+    var startPointCSys = startPointData.startPointCSys;
 
     const holeId = id + ("hole-" ~ holeNumber);
 
@@ -860,6 +873,10 @@ function getStandardTable(definition is map) returns map
         table = tappedOrClearanceHoleTable;
     }
 
+    if (standard == undefined)
+    {
+        return {};
+    }
     table = getLookupTable(table, standard);
     if (table == undefined)
     {
@@ -958,6 +975,15 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
 
     var minSize = holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST ? 2 : 1;
 
+    var evaluatedDefinition = holeDefinition;
+    var table = getStandardTable(holeDefinition);
+    if (table != {})
+    {
+        for (var entry in table)
+        {
+            evaluatedDefinition[entry.key] = lookupTableGetValue(holeDefinition[entry.key]);
+        }
+    }
     const locations = evaluateQuery(context, holeDefinition.locations);
     var numOpposite = 0;
     var numSame = 0;
@@ -982,11 +1008,11 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
 
         if (doSame)
         {
-            resultSame = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, false, holeDefinition);
+            resultSame = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, false, evaluatedDefinition);
         }
         if (doOpposite)
         {
-            resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, holeDefinition);
+            resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, evaluatedDefinition);
         }
         newCollisions[location] = {
             "resultSame" : resultSame,

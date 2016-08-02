@@ -148,7 +148,8 @@ function setBendAttributes(context is Context, id is Id, bendFaceQuery is Query,
 {
     var attributeId = toAttributeId(id);
     var wallAttrib = makeSMWallAttribute(attributeId);
-    var bendAttribute = makeSMJointAttribute(attributeId, SMJointType.BEND);
+    var bendAttribute = makeSMJointAttribute(attributeId);
+    bendAttribute.jointType = { "value" : "BEND", "canBeEdited": true };
     bendAttribute.radius = {
         "value" : definition.radius,
         "controllingFeatureId" : toAttributeId(id),

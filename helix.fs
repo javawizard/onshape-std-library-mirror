@@ -17,6 +17,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
 
 
 /**
@@ -33,7 +34,7 @@ export enum Direction
 }
 
 /**
- * Specifies how the helical pitch will be defined.
+ * Specifies how the helix will be defined.
  * @value TURNS : User defines the number of turns, and the helical pitch is
  *                  computed based on the input entity's height.
  * @value PITCH : User defines the helical pitch, and the number of turns is
@@ -73,10 +74,15 @@ const HELIX_TURN_BOUNDS =
  * Feature performing an `opHelix`.
  */
 annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY",
-             "Manipulator Change Function" : "helixManipulatorChange" }
+             "Manipulator Change Function" : "helixManipulatorChange",
+             "Editing Logic Function" : "helixLogic" }
 export const helix = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+
+        // This hidden "placeholder" Query allows preselection of both cones/cylinders AND circles/arcs
+        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || GeometryType.CIRCLE || GeometryType.ARC }
+        definition.initEntities is Query;
 
         annotation { "Name" : "Helix type" }
         definition.helixType is HelixType;
@@ -238,7 +244,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         opHelix(context, id, definitionOut);
         transformResultIfNecessary(context, id, remainingTransform);
 
-    });
+    }, { "initEntities" : qNothing() } );
 
 
 function updateDefinition(context is Context, definitionOut is map, geometry is map, baseRadius is map,
@@ -294,6 +300,31 @@ export function helixManipulatorChange(context is Context, definition is map, ne
     var newOffset = newManipulators[HEIGHT_MANIPULATOR].offset;
     definition.oppositeDirection = newOffset < 0 * meter;
     definition.height = abs(newOffset);
+    return definition;
+}
+
+
+/**
+ * Preselection Logic:  Heuristics to determine the type of helix to be constructed, based on user preselection.
+ */
+export function helixLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map
+{
+    // Preselection only
+    if (oldDefinition == {})
+    {
+        const faces = qEntityFilter(definition.initEntities, EntityType.FACE);
+        const edges = qEntityFilter(definition.initEntities, EntityType.EDGE);
+        if (size(evaluateQuery(context, faces)) == 1)
+        {
+            definition.helixType = HelixType.TURNS;
+            definition.entities = faces;
+        }
+        else if (size(evaluateQuery(context, edges)) == 1)
+        {
+            definition.helixType = HelixType.HEIGHT_TURNS;
+            definition.edge = edges;
+        }
+    }
     return definition;
 }
 

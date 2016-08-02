@@ -18,13 +18,13 @@ export function newContextWithDefaults() returns Context
 }
 
 /** @internal */
-export function newContextWithDefaults(defLengthUnit is ValueWithUnits)
+export function newContextWithDefaults(defaultLengthUnit is ValueWithUnits)
 {
     var context = newContext();
     origin(context);
 
-    const range = PLANE_SIZE_BOUNDS[defLengthUnit];
-    const size = (range is number ? range : range[1]) * defLengthUnit;
+    const range = PLANE_SIZE_BOUNDS[defaultLengthUnit];
+    const size = (range is number ? range : range[1]) * defaultLengthUnit;
 
     defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
     defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);

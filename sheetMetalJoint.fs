@@ -14,6 +14,7 @@ export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
 
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
@@ -22,6 +23,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/modifyFillet.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * @internal
@@ -33,215 +35,111 @@ export const smJoint = defineFeature(function(context is Context, id is Id, defi
         annotation { "Name" : "entity", "Filter" : EntityType.FACE || EntityType.EDGE, "MaxNumberOfPicks" : 1 }
         definition.entity is Query;
 
-        annotation { "Name" : "Joint type" }
+        annotation { "Name" : "Joint type", "Default" : SMJointType.BEND }
         definition.jointType is SMJointType;
 
         if (definition.jointType == SMJointType.BEND)
         {
-            annotation { "Name" : "Radius" }
+            annotation { "Name" : "Bend Radius" }
             isLength(definition.radius, BLEND_BOUNDS);
         }
 
         if (definition.jointType == SMJointType.RIP)
         {
-            annotation { "Name" : "Joint style"}
+            annotation { "Name" : "Joint style" }
             definition.jointStyle is SMJointStyle;
         }
     }
     {
-        var modelAttributes = getSmObjectTypeAttributes(context,  qOwnerBody(definition.entity), SMObjectType.MODEL);
-        if (size(modelAttributes) != 1)
+        startSheetMetalFeature(context, id);
+
+        var jointEdge = findJointDefinitionEdge(context, definition.entity);
+        var existingAttribute = getJointAttribute(context, jointEdge);
+        var newAttribute;
+        if (definition.jointType == SMJointType.BEND)
         {
-            throw "Selected entity does not belong to a recognized sheet metal model";
+            newAttribute = createNewBendAttribute(id, existingAttribute, definition.radius);
         }
-
-        if (!(modelAttributes[0].thickness is map) || !isLength(modelAttributes[0].thickness.value))
+        else if (definition.jointType == SMJointType.RIP)
         {
-            throw "Thickness is not defined for sheet metal model";
-        }
-        definition.thickness = modelAttributes[0].thickness.value;
-        var jointData = getJointData(context, definition);
-
-
-        removeAttributes(context, {
-            "entities" : jointData.jointTopology,
-            "attributePattern" : asSMAttribute({})
-        });
-
-
-        if (definition.jointType == jointData.jointType)
-        {
-            jointData.result = modifyJoint(context, id, jointData, definition);
+            newAttribute = createNewRipAttribute(id, existingAttribute);
         }
         else
         {
-            jointData.result = changeJointType(context, id, jointData, definition);
+            throw "This joint type is not supported";
         }
-        if (jointData.result != undefined)
-        {
-            assignJointAttribute(context, id, jointData, definition);
-        }
-        else if (definition.jointType == jointData.jointType)
-        {
-            throw "Modifying " ~ jointData.jointType ~ "is not implemented";
-        }
-        else
-        {
-            throw "Changing " ~  jointData.jointType ~ " to " ~ definition.jointType ~ " is not implemented";
-        }
+        replaceJointAttribute(context, jointEdge, existingAttribute, newAttribute);
+        endSheetMetalFeature(context, id, { "entities" : jointEdge });
     });
 
-    /**
-     * @internal
-     * @param arg {{
-     * @field entity {Query}
-     * @field thickness {ValueWithUnits}
-     * }}
-     */
-    export function getJointData(context is Context, arg is map) returns map
+function findJointDefinitionEdge(context is Context, entity is Query) returns Query
+{
+    var entityAssociations = getAttributes(context, {
+            "entities" : entity,
+            "attributePattern" : {} as SMAssociationAttribute
+        });
+    if (size(entityAssociations) != 1)
     {
-        var attributes =  getSmObjectTypeAttributes(context, arg.entity, SMObjectType.JOINT);
-        if (size(attributes) != 1)
-        {
-            throw "Selected entity does not belong to a recognized sheet metal joint";
-        }
-        var out = attributes[0];
-        out.jointTopology = qUnion(evaluateQuery(context, qAttributeQuery(asSMAttribute({'attributeId' : out.attributeId}))));
-        if (out.jointType == SMJointType.BEND)
-        {
-            var bendFaces = evaluateQuery(context, qGeometry(out.jointTopology, GeometryType.CYLINDER));
-            var nCylinders = size(bendFaces);
-            if (nCylinders < 2)
-            {
-                throw "Bend is expected to have 2 or more cylindrical faces, found " ~ nCylinders;
-            }
-            out.radius = out.radius.value;
-            out.outerRadius = out.radius + arg.thickness;
-            out.innerFaces = [];
-            out.outerFaces = [];
-            for (var f in bendFaces)
-            {
-                var cylinder = evSurfaceDefinition(context, { "face" : f}) as Cylinder;
-                if (abs(cylinder.radius - out.radius) < abs(cylinder.radius - out.outerRadius))
-                {
-                    out.innerFaces = append(out.innerFaces, f);
-                }
-                else
-                {
-                    out.outerFaces = append(out.outerFaces, f);
-                }
-            }
-            if (size(out.innerFaces) == 0)
-            {
-                throw "No inner faces found for bend";
-            }
-            if (size(out.outerFaces) == 0)
-            {
-                throw "No outer faces found for bend";
-            }
-        }
-        else if (out.jointType == SMJointType.SHARP)
-        {
-            var sharpEdges = evaluateQuery(context, qEntityFilter(arg.entity, EntityType.EDGE));
-            var nEdges = size(sharpEdges);
-            if (nEdges < 2)
-            {
-                throw "Sharp joint is expected to have at least two edges, found " ~ nEdges;
-            }
-            out.outerEdges = [];
-            out.innterEdges = [];
-            for (var edge in sharpEdges)
-            {
-                var convexity = evEdgeConvexity(context, {"edge" : edge });
-                if (convexity == EdgeConvexityType.CONVEX)
-                {
-                    out.outerEdges = append(out.outerEdges, edge);
-                }
-                else if (convexity == EdgeConvexityType.CONCAVE)
-                {
-                    out.innerEdges = append(out.innerEdges, edge);
-                }
-            }
-            if (size(out.outerEdges) == 0)
-            {
-                throw "No outer edges in sharp joint";
-            }
-            if (size(out.innerEdges) == 0)
-            {
-                throw "No inner edges in sharp joint";
-            }
-        }
-        else
-        {
-            throw "Not implemented for " ~ out.jointType;
-        }
-        return out;
+        throw "Selected entity does not belong to a recognized sheet metal joint";
     }
-
-    function modifyJoint(context is Context, id is Id, jointData is map, definition is map)
+    var sheetEdges = qEntityFilter(qBodyType(qAttributeQuery(entityAssociations[0]), BodyType.SHEET), EntityType.EDGE);
+    if (size(evaluateQuery(context, sheetEdges)) != 1)
     {
-        if (jointData.jointType == SMJointType.BEND)
-        {
-            var trackingQuery = startTracking(context, jointData.jointTopology);
-            modifyBend(context, id, jointData, definition);
-            return trackingQuery;
-        }
-        return undefined;
+        throw "Selected entity does not belong to a recognized sheet metal joint";
     }
+    return sheetEdges;
+}
 
-    function modifyBend(context is Context, id is Id, jointData is map, definition is map)
+function getJointAttribute(context is Context, jointEdge is Query) returns map
+{
+    var attributes = getSmObjectTypeAttributes(context, jointEdge, SMObjectType.JOINT);
+    if (size(attributes) != 1)
     {
-        if (definition.radius < jointData.radius) //outer, then inner
-        {
-            opModifyFillet(context, id + "outer", {
-                    "faces" : qUnion(jointData.outerFaces),
-                    "modifyFilletType" : ModifyFilletType.CHANGE_RADIUS,
-                    "radius" : definition.radius + definition.thickness
-            });
-
-            opModifyFillet(context, id + "inner", {
-                    "faces" : qUnion(jointData.innerFaces),
-                    "modifyFilletType" : ModifyFilletType.CHANGE_RADIUS,
-                    "radius" : definition.radius
-            });
-        }
-        else // inner, then outer
-        {
-            opModifyFillet(context, id + "inner", {
-                    "faces" : qUnion(jointData.innerFaces),
-                    "modifyFilletType" : ModifyFilletType.CHANGE_RADIUS,
-                    "radius" : definition.radius
-            });
-
-            opModifyFillet(context, id + "outer", {
-                    "faces" : qUnion(jointData.outerFaces),
-                    "modifyFilletType" : ModifyFilletType.CHANGE_RADIUS,
-                    "radius" : definition.radius + definition.thickness
-            });
-        }
+        throw "Selected entity does not belong to a recognized sheet metal joint";
     }
-
-    function changeJointType(context is Context, id is Id, jointData is map, definition is map) returns boolean
+    else
     {
-        return false;
+        return attributes[0];
     }
+}
 
-    function assignJointAttribute(context is Context, id is Id, jointData is map, definition is map)
-    {
-       var attribute = makeSMJointAttribute(jointData.attributeId, definition.jointType);
-       if (definition.jointType == SMJointType.BEND)
-       {
-           attribute.radius = {'value' : definition.radius,
-                        'controllingFeatureId' : toAttributeId(id),
-                        'parameterIdInFeature' : "radius",
-                        'canBeEdited' : true};
-       }
-       else
-       {
-           throw "Not implemented for joint type " ~ definition.jointType;
-       }
-       setAttribute(context, {
-               "entities" : jointData.result,
-               "attribute" : attribute
-       });
-    }
+function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius) returns SMAttribute
+{
+    isLength(radius);
+    var bendAttribute = makeSMJointAttribute(existingAttribute.attributeId);
+    bendAttribute.jointType = {
+        "value" : SMJointType.BEND,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "jointType",
+        "canBeEdited" : true
+    };
+    bendAttribute.radius = {
+            "value" : radius,
+            "canBeEdited" : true,
+            "isDefault" : false,
+            "controllingFeatureId" : toAttributeId(id),
+            "parameterIdInFeature" : "radius" };
+    bendAttribute.angle = existingAttribute.angle;
+    return bendAttribute;
+}
+
+function createNewRipAttribute(id is Id, existingAttribute is SMAttribute) returns SMAttribute
+{
+    var ripAttribute = makeSMJointAttribute(existingAttribute.attributeId);
+    ripAttribute.jointType = {
+        "value" : SMJointType.RIP,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "jointType",
+        "canBeEdited" : true
+    };
+    ripAttribute.angle = existingAttribute.angle;
+    return ripAttribute;
+}
+
+function replaceJointAttribute(context is Context, entity is Query, existingAttribute is SMAttribute, newAttribute is SMAttribute)
+{
+    removeAttributes(context, { "entities" : entity, "attributePattern" : existingAttribute });
+    setAttribute(context, { "entities" : entity, "attribute" : newAttribute });
+}
+
+

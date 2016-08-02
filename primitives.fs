@@ -45,8 +45,7 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
  *
  * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{
- *      @field center {Vector} : A single point marking the sphere's center.
- *              @eg `vector(0, 0, 0) * inch`
+ *      @field center {Query} : A vertex query marking the sphere's center.
  *      @field radius {ValueWithUnits} :
  *              @eg `1 * inch`
  * }}

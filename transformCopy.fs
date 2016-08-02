@@ -65,7 +65,7 @@ precondition
 /* Find a point to attach the manipulator bar. */
 function findCenter(context is Context, id is Id, entities is Query) returns Vector
 {
-    const boxResult = evBox3d(context, { topology : entities });
+    const boxResult = evBox3d(context, { topology : entities, 'tight' : false });
     return (boxResult.minCorner + boxResult.maxCorner) / 2;
 }
 
@@ -146,7 +146,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     precondition
     {
         annotation { "Name" : "Parts to transform or copy",
-                     "Filter" : EntityType.BODY }
+                     "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }
@@ -361,6 +361,11 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.SCALE_UNIFORMLY)
         {
+            const vertices = evaluateQuery(context, definition.scalePoint);
+            if (@size(vertices) == 0)
+            {
+                throw regenError(ErrorStringEnum.TRANSFORM_SCALE_UNIFORMLY);
+            }
 
             const matrix = identityMatrix(3) * definition.scale;
 
@@ -369,6 +374,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
         {
+            const q1 = evaluateQuery(context, definition.baseConnector);
+            const q2 = evaluateQuery(context, definition.destinationConnector);
+            if ((@size(q1) == 0) || (@size(q2) == 0))
+            {
+                throw regenError(ErrorStringEnum.TRANSFORM_MATE_CONNECTORS);
+            }
+
             const c1 = evMateConnector(context, { "mateConnector" : definition.baseConnector });
             const c2 = evMateConnector(context, { "mateConnector" : definition.destinationConnector });
             var xAxis = c2.xAxis;
