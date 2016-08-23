@@ -186,18 +186,19 @@ export function hasSheetMetalAttribute(context is Context, entities is Query, ob
 /**
  * @internal
  */
-export function startSheetMetalFeature(context is Context, id is Id)
+export function defineSheetMetalFeature(feature is function, defaults is map) returns function
 {
-    @startSheetMetalFeature(context, id);
+    defaults.isSheetMetal = true;
+    return defineFeature(feature, defaults);
 }
 
 
 /**
  * @internal
  */
- export function endSheetMetalFeature(context is Context, id is Id, args is map)
+ export function updateSheetMetalGeometry(context is Context, id is Id, args is map)
  {
-    @endSheetMetalFeature(context, id, args);
+    @updateSheetMetalGeometry(context, id, args);
  }
 
 
@@ -208,7 +209,7 @@ export function startSheetMetalFeature(context is Context, id is Id)
 *       @field bendEdges{Query}
 *       @field specialRadiiBends{array} : array of pairs "(edge, bendRadius)"
 *       @field defaultRadius{ValueWithUnits} : bend radius to be applied to bendEdges
-*       @field controllsThickness{boolean}
+*       @field controlsThickness{boolean}
 *       @field thickness{ValueWithUnits}
 * }}
 */
@@ -217,19 +218,25 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
     var surfaceBodies = evaluateQuery(context, args.surfaceBodies);
     if (size(surfaceBodies) == 0)
     {
-        return;
+        return 0;
     }
     var featureIdString = toAttributeId(id);
-    var thicknessData = {"value" : args.thickness, "canBeEdited" : args.controllsThickness};
-    if (args.controllsThickness)
+    var thicknessData = {"value" : args.thickness, "canBeEdited" : args.controlsThickness};
+    if (args.controlsThickness)
     {
         thicknessData.controllingFeatureId = featureIdString;
         thicknessData.parameterIdInFeature = "thickness";
     }
+    var kFactorData = {"value" : args.kFactor,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "kFactor"
+        };
     var modelAttribute = asSMAttribute({"attributeId" : featureIdString,
                     "objectType" : SMObjectType.MODEL,
                     "active" : true,
                     "thickness" : thicknessData,
+                    "k-factor" : kFactorData,
                     "defaultBendRadius" : {"value" : args.defaultRadius}});
 
     var facesQ =  qOwnedByBody(args.surfaceBodies, EntityType.FACE);
@@ -350,4 +357,16 @@ export function edgeAngle(context is Context, edge is Query) returns ValueWithUn
     });
     return angleBetween(plane0.normal, plane1.normal);
 }
+
+
+/**
+ * @internal
+ * A `RealBoundSpec` for sheet metal K-factor between 0. and 1., defaulting to `.45`.
+ */
+export const K_FACTOR_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 1,
+    (unitless) : [0, 0.45, 1]
+} as RealBoundSpec;
 

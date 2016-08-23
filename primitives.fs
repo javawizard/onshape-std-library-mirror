@@ -33,15 +33,17 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
         isLength(definition.sideLength, NONNEGATIVE_LENGTH_BOUNDS);
     }
     {
+        var remainingTransform = getRemainderPatternTransform(context, {"references" : qNothing()});
         definition.corner1 = vector(0, 0, 0) * meter;
         definition.corner2 = vector(1, 1, 1) * definition.sideLength;
         fCuboid(context, id, definition);
+        transformResultIfNecessary(context, id, remainingTransform);
     });
 
 // Defined in the old way to overload with the sphere functions in surfaceGeometry.
 // TODO: rename and merge this with fSphere.
 /**
- * Feature performing an creating a sphere. Internally, calls `fEllipsoid`.
+ * Feature creating a sphere. Internally, calls `opSphere`.
  *
  * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{
@@ -75,16 +77,20 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
         {
             remainingTransform = getRemainderPatternTransform(context, {"references" : definition.center});
         }
-        startFeature(context, id, definition);
         if (definition.center is Query)
             definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
         if (definition.center == undefined)
             definition.center = vector(0, 0, 0) * meter;
 
-        definition.radius = vector(1, 1, 1) * definition.radius;
-
-        fEllipsoid(context, id, definition);
-        endFeature(context, id);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V406_SPHERE_PRIMITIVE))
+        {
+            opSphere(context, id, definition);
+        }
+        else
+        {
+            definition.radius = vector(1, 1, 1) * definition.radius;
+            fEllipsoid(context, id, definition);
+        }
 
         if (remainingTransform != undefined)
         {
@@ -109,7 +115,6 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
         is3dLengthVector(definition.corner2);
     }
     {
-        var remainingTransform = getRemainderPatternTransform(context, {"references" : qNothing()});
         const sketchId = id + "sketch";
         {
             var plane = XY_PLANE;
@@ -137,7 +142,6 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
             const query = qCreatedBy(sketchId, EntityType.BODY);
             opDeleteBodies(context, id + "deleteSketch", { "entities" : query });
         }
-        transformResultIfNecessary(context, id, remainingTransform);
     });
 
 /**

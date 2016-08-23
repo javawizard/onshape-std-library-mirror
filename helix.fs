@@ -81,7 +81,9 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
     {
 
         // This hidden "placeholder" Query allows preselection of both cones/cylinders AND circles/arcs
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || GeometryType.CIRCLE || GeometryType.ARC }
+        // We purposely accept all all EDGEs to allow for preselection in the feature tree.
+        // Further constraints are applied in the helixLogic preselection function
+        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || EntityType.EDGE }
         definition.initEntities is Query;
 
         annotation { "Name" : "Helix type" }
@@ -250,7 +252,6 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
 function updateDefinition(context is Context, definitionOut is map, geometry is map, baseRadius is map,
                           endRadius is map, revolutions is number) returns map
 {
-    definitionOut.spiralPitch = (endRadius - baseRadius) / revolutions;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V374_HELIX_ALIGNMENT))
     {
         // Align the "base" of the helix based on the alignCanonically() function
@@ -258,6 +259,24 @@ function updateDefinition(context is Context, definitionOut is map, geometry is 
         var alignmentPlane = plane(geometry.coordSystem);
         alignmentPlane = alignCanonically(context, alignmentPlane);
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V397_FLIP_CONE_HELIX))
+        {
+            // Cones always start drawing the helix from the "wrong" side (the tip)
+            // This turns it around
+            if (geometry is Cone)
+            {
+                // Relocate the origin:  Direction (unit vector) * Height (magnitude)
+                alignmentPlane.origin += alignmentPlane.normal * definitionOut.helicalPitch * revolutions;
+                // Flip the direction
+                alignmentPlane.normal *= -1;
+                // Realign the plane in its new location
+                alignmentPlane = alignCanonically(context, alignmentPlane);
+                // Swap base and end radius
+                const swp = baseRadius;
+                baseRadius = endRadius;
+                endRadius = swp;
+            }
+        }
         definitionOut.direction = alignmentPlane.normal;
         definitionOut.axisStart = alignmentPlane.origin;
         definitionOut.startPoint = (alignmentPlane.x * baseRadius) + definitionOut.axisStart;
@@ -268,6 +287,7 @@ function updateDefinition(context is Context, definitionOut is map, geometry is 
         definitionOut.axisStart = geometry.coordSystem.origin;
         definitionOut.startPoint = (geometry.coordSystem.xAxis * baseRadius) + definitionOut.axisStart;
     }
+    definitionOut.spiralPitch = (endRadius - baseRadius) / revolutions;
     return definitionOut;
 }
 
@@ -313,7 +333,9 @@ export function helixLogic(context is Context, id is Id, oldDefinition is map, d
     if (oldDefinition == {})
     {
         const faces = qEntityFilter(definition.initEntities, EntityType.FACE);
-        const edges = qEntityFilter(definition.initEntities, EntityType.EDGE);
+        const circles = qGeometry(definition.initEntities, GeometryType.CIRCLE);
+        const arcs = qGeometry(definition.initEntities, GeometryType.ARC);
+        const edges = qUnion([circles, arcs]);
         if (size(evaluateQuery(context, faces)) == 1)
         {
             definition.helixType = HelixType.TURNS;

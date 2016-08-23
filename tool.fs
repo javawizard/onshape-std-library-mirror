@@ -3,7 +3,7 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/* This file contains enum types shared by multiple features. */
+/** The tool.fs module contains enum types shared by multiple features. */
 // TODO: these should be generated
 
 /**

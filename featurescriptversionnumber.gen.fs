@@ -346,7 +346,20 @@ export enum FeatureScriptVersionNumber
     V389_FACE_PATTERN_SKIP_LOOP_CHECK,
     V390_TIGHT_BOUNDING_BOX,
     V391_DOCUMENTATION_CORRECTION,
-    V392_HOLE_FIX_EDIT_LOGIC
+    V392_HOLE_FIX_EDIT_LOGIC,
+    V396_WILD_CARD_IN_QUERIES,
+    V397_FLIP_CONE_HELIX,
+    V398_NORMAL_BY_ROTATION,
+    V399_PS_VERSION_29_0_166,
+    V400_SHELL_FIX_TRACKING_ID,
+    V401_HOLE_CLEAR_START_FROM_SKETCH,
+    V402_FACE_PATTERN_TRACKING,
+    V403_ACCOUNT_FOR_REVERSED_CURVE,
+    V404_HANDLE_COLLAPSED_TEXT,
+    V405_ERROR_DISPLAY_AND_FEATURE_STATUS,
+    V406_SPHERE_PRIMITIVE,
+    V407_WITHIN_RADIUS,
+    V408_ERROR_ENUM_ASSEMBLY_PATTERN_NOT_SUPPORTED
 }
 
 /**
@@ -357,6 +370,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V392_HOLE_FIX_EDIT_LOGIC;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V408_ERROR_ENUM_ASSEMBLY_PATTERN_NOT_SUPPORTED;
 
 

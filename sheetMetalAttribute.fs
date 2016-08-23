@@ -53,6 +53,7 @@ export predicate canBeSMAttribute (value)
     if (value.jointType != undefined && value.jointType.value == SMJointType.BEND)
     {
         value.radius == undefined || isLength(value.radius.value);
+        value.unfolded == undefined || value.unfolded is boolean;
     }
 
 }
@@ -102,23 +103,6 @@ export function makeSMModelAttribute(attributeId is string) returns SMAttribute
 /**
 * @internal
 */
-export function toAttributeId(id is Id) returns string
-{
-    var out = "";
-    for (var i = 0; i < size(id); i += 1)
-    {
-        if (i > 0)
-        {
-            out = out ~ ".";
-        }
-        out = out ~ id[i];
-    }
-    return out;
-}
-
-/**
-* @internal
-*/
 export function getSmObjectTypeAttributes(context is Context, topology is Query, objectType is SMObjectType) returns array
 {
     return getAttributes(context, {
@@ -137,6 +121,16 @@ export function clearSmAttributes(context is Context, entities is Query)
         "attributePattern" : asSMAttribute({})
     });
 }
+
+/**
+ * @internal
+ */
+export function replaceSMAttribute(context is Context, entity is Query, existingAttribute is SMAttribute, newAttribute is SMAttribute)
+{
+    removeAttributes(context, { "entities" : entity, "attributePattern" : existingAttribute });
+    setAttribute(context, { "entities" : entity, "attribute" : newAttribute });
+}
+
 
 /**
  * @internal
@@ -172,5 +166,23 @@ export function assignSmAssociationAttributes(context is Context, entities is Qu
                 "attribute" : makeSMAssociationAttribute(toString(ent))
         });
     }
+}
+
+/**
+ * @internal
+ */
+export function getSMDefinitionEntities(context is Context, selection is Query) returns array
+{
+    var entityAssociations = getAttributes(context, {
+            "entities" : selection,
+            "attributePattern" : {} as SMAssociationAttribute
+        });
+    var out = [];
+    for (var attribute in entityAssociations)
+    {
+        var associatedEntities = evaluateQuery(context, qBodyType(qAttributeQuery(attribute), BodyType.SHEET));
+        out = concatenateArrays([out, associatedEntities]);
+    }
+    return out;
 }
 

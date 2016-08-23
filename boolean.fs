@@ -108,8 +108,8 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 "keepTools" : false };
 
             const tempBooleanSuffix = "tempBoolean";
-            opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition);
-            processSubfeatureStatus(context, id + tempBooleanSuffix, id);
+            try(opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition));
+            processSubfeatureStatus(context, id, {"subfeatureId" : id + tempBooleanSuffix, "propagateErrorDisplay" : true});
 
             if (!definition.keepTools)
             {
@@ -311,11 +311,10 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
 
     booleanDefinition.targetsAndToolsNeedGrouping = true;
     const boolId = id + "boolean";
-    booleanBodies(context, boolId, booleanDefinition);
+    try(booleanBodies(context, boolId, booleanDefinition));
+    processSubfeatureStatus(context, id, {"subfeatureId" : boolId, "propagateErrorDisplay" : true});
     if (getFeatureWarning(context, boolId) != undefined || getFeatureInfo(context, boolId) != undefined)
     {
-        processSubfeatureStatus(context, boolId, id);
-
         const errorId = id + "errorEntities";
         reconstructOp(errorId);
         setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });

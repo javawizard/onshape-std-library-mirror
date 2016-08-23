@@ -446,9 +446,20 @@ function extrudeWithDraft(context is Context, id is Id, definition is map, draft
     {
         const extrudeBodies = qSubtraction(qCreatedBy(id, EntityType.BODY), qUnion([qCreatedBy(id + "vertexPlane", EntityType.BODY), qCreatedBy(id + "secondVertexPlane", EntityType.BODY)]));
         const extrudeBodyArray = evaluateQuery(context, extrudeBodies);
+        const useWildCard = isAtVersionOrLater(context, FeatureScriptVersionNumber.V396_WILD_CARD_IN_QUERIES);
         for (var i = 0; i < size(extrudeBodyArray); i += 1)
         {
-            draftExtrudeBody(context, id, i, definition, extrudeBodyArray[i], draftCondition);
+            const getSubfeatureId = function (subfeatureType is string) returns Id {
+                    if (useWildCard)
+                    {
+                        return id + ("*" ~ i) + subfeatureType;
+                    }
+                    else
+                    {
+                        return id + (subfeatureType ~ i);
+                    }
+                };
+            draftExtrudeBody(context, id, getSubfeatureId, definition, extrudeBodyArray[i], draftCondition);
         }
     }
 }
@@ -521,13 +532,13 @@ function createVertexBoundaryPlane(context is Context, definition is map, id is 
     }
 }
 
-function draftExtrudeBody(context is Context, id is Id, suffix is number, definition is map, extrudeBody is Query, conditions is map)
+function draftExtrudeBody(context is Context, id is Id, getSubfeatureId is function, definition is map, extrudeBody is Query, conditions is map)
 {
-    const neutralPlaneId = id + ("neutralPlane" ~ suffix);
+    const neutralPlaneId = getSubfeatureId("neutralPlane");
     const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction, definition.transform));
 
     if (neutralPlane == undefined)
-        throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane" ~ suffix]);
+        throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL);
 
     const neutralPlaneFace = qCreatedBy(neutralPlaneId, EntityType.FACE);
     const neutralPlaneQuery = qOwnerBody(qCreatedBy(neutralPlaneId));
@@ -535,7 +546,7 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
     if (conditions.needsSplit)
     {
         // Split the body
-        const splitId = id + ("split" ~ suffix);
+        const splitId = getSubfeatureId("split");
         opSplitPart(context, splitId, { targets: extrudeBody, tool: neutralPlaneQuery, keepTools: false });
 
         const firstBodies = qSplitBy(splitId, EntityType.BODY, false);
@@ -543,10 +554,10 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
         const firstBodyArray = evaluateQuery(context, firstBodies);
         const secondBodyArray = evaluateQuery(context, secondBodies);
         if (size(firstBodyArray) != size(secondBodyArray))
-            throw regenError(ErrorStringEnum.SPLIT_INVALID_INPUT, ["split" ~ suffix]);
+            throw regenError(ErrorStringEnum.SPLIT_INVALID_INPUT);
 
-        const draftFirstId = id + ("draftFirst" ~ suffix);
-        const draftSecondId = id + ("draftSecond" ~ suffix);
+        const draftFirstId = getSubfeatureId("draftFirst");
+        const draftSecondId = getSubfeatureId("draftSecond");
 
         const firstFaces = qSplitBy(splitId, EntityType.FACE, false);
         const secondFaces = qSplitBy(splitId, EntityType.FACE, true);
@@ -581,7 +592,7 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
             applyDraft(context, draftSecondId, secondFaces, draftSecondDefinition, neutralPlaneFace, neutralPlane);
 
         const toolsQ = qUnion([firstBodies, secondBodies]);
-        booleanBodies(context, id + ("booleanUnion" ~ suffix),
+        booleanBodies(context, getSubfeatureId("booleanUnion"),
                       { "operationType" : BooleanOperationType.UNION, "tools" : toolsQ });
     }
     else
@@ -590,10 +601,10 @@ function draftExtrudeBody(context is Context, id is Id, suffix is number, defini
                                   "pullDirection" : definition.draftPullDirection };
         // TODO: replace this with the merged query enum
         const draftFaces = qOwnedByBody(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
-        applyDraft(context, id + ("draft" ~ suffix), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane);
+        applyDraft(context, getSubfeatureId("draft"), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane);
     }
 
-    opDeleteBodies(context, id + ("deleteNeutralPlane" ~ suffix), { "entities" : qCreatedBy(neutralPlaneId) });
+    opDeleteBodies(context, getSubfeatureId("deleteNeutralPlane"), { "entities" : qCreatedBy(neutralPlaneId) });
 }
 
 function getEntitiesToUse(context is Context, definition is map)
@@ -919,4 +930,3 @@ function canSetSecondDirectionFlip(definition is map, specifiedParameters is map
 
     return (definition.secondDirectionOppositeDirection == definition.oppositeDirection);
 }
-

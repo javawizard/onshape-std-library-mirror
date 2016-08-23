@@ -17,6 +17,7 @@ FeatureScript ✨; /* Automatically generated version */
  */
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
 
 /**
  * Attach an attribute to one or several entities.
@@ -84,4 +85,23 @@ export function removeAttributes(context is Context, definition is map)
 {
     @removeAttributes(context, definition);
 }
+
+/**
+* @internal
+*/
+export function toAttributeId(id is Id) returns string
+{
+    var out = "";
+    for (var i = 0; i < size(id); i += 1)
+    {
+        if (i > 0)
+        {
+            out = out ~ ".";
+        }
+        out = out ~ id[i];
+    }
+    return out;
+}
+
+
 

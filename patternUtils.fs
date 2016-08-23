@@ -59,7 +59,7 @@ export function computePatternOffset(context is Context, entity is Query, opposi
         distance = -distance;
 
     var direction;
-    const rawDirectionResult = try(evAxis(context, { "axis" : entity }));
+    const rawDirectionResult = try silent(evAxis(context, { "axis" : entity }));
     if (rawDirectionResult == undefined)
         direction = evPlane(context, { "face" : entity }).normal * distance;
     else

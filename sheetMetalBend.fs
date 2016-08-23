@@ -119,7 +119,7 @@ export const smBend = defineFeature(function(context is Context, id is Id, defin
                     "endDepth" : growTol
                 });
 
-        opExtendSheetBody(context, id + "extend1", { "bodies" : qCreatedBy(id + "cut1", EntityType.BODY), "growSize" : growTol });
+        opExtendSheetBody(context, id + "extend1", { "entities" : qCreatedBy(id + "cut1", EntityType.BODY), "distance" : growTol });
         var changedFaces = startTracking(context, bendFaceData.splitFaces);
         opSplitFace(context, id + "split1", { "faceTargets" : bendFaceData.splitFaces, "bodyTools" : qCreatedBy(id + "cut1", EntityType.BODY) });
 
