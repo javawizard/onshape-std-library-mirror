@@ -3,17 +3,17 @@ FeatureScript 408; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/* Automatically generated file -- DO NOT EDIT */
-
 /**
- * @internal.
+ * Defines whether each hole should have a countersink, a counterbore, or neither.
  */
-export enum SMJointStyle
+export enum HoleStyle
 {
-    annotation {"Name" : "Edge Joint"}
-    EDGE,
-    annotation {"Name" : "Butt Joint"}
-    BUTT
+    annotation { "Name" : "Simple" }
+    SIMPLE,
+    annotation { "Name" : "Counterbore" }
+    C_BORE,
+    annotation { "Name" : "Countersink" }
+    C_SINK
 }
 
 

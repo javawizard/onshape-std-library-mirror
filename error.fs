@@ -1,14 +1,15 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "392.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "392.0");
+export import(path : "onshape/std/query.fs", version : "408.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "408.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "392.0");
+import(path : "onshape/std/context.fs", version : "408.0");
+import(path : "onshape/std/containers.fs", version : "408.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -124,7 +125,7 @@ export function processError(context is Context, id is Id, error is map) returns
     var messageEnum = try(error.message as ErrorStringEnum);
     if (messageEnum == undefined)
         messageEnum = ErrorStringEnum.REGEN_ERROR;
-    @reportFeatureError(context, id, { "message" : messageEnum, "customMessage" : error.customMessage, "faultyParameters" : error.faultyParameters });
+    @functionReportFeatureStatus(context, id, {"statusType" : "ERROR", "statusEnum" : messageEnum, "statusMsg" : error.customMessage, "faultyParameters" : error.faultyParameters});
     if (error.entities != undefined)
         @setErrorEntities(context, id, error);
     return true;
@@ -133,14 +134,14 @@ export function processError(context is Context, id is Id, error is map) returns
 /** @internal */
 export function processError(context is Context, id is Id, error is ErrorStringEnum) returns boolean
 {
-    @reportFeatureError(context, id, { "message" : error });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.ERROR, "statusEnum" : error} as FeatureStatus);
     return true;
 }
 
 /** @internal */
 export function processError(context is Context, id is Id, error) returns boolean // Default overload
 {
-    @reportFeatureError(context, id, { "message" : ErrorStringEnum.REGEN_ERROR });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.ERROR, "statusEnum" : ErrorStringEnum.REGEN_ERROR} as FeatureStatus);
     return true;
 }
 
@@ -156,21 +157,21 @@ export function processError(context is Context, id is Id, error) returns boolea
  */
 export function reportFeatureError(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
-    @reportFeatureError(context, id, { "message" : message });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.ERROR, "statusEnum" : message} as FeatureStatus);
     return true;
 }
 
 /** @internal */
 export function reportFeatureError(context is Context, id is Id, message is ErrorStringEnum, faultyParameters is array) returns boolean
 {
-    @reportFeatureError(context, id, { "message" : message, "faultyParameters" : faultyParameters });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.ERROR, "faultyParameters" : faultyParameters, "statusEnum" : message} as FeatureStatus);
     return true;
 }
 
 /** @internal */
 export function reportFeatureError(context is Context, id is Id, customMessage is string) returns boolean
 {
-    @reportFeatureError(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.ERROR, "statusEnum" : ErrorStringEnum.CUSTOM_ERROR, "statusMsg" :customMessage} as FeatureStatus);
     return true;
 }
 
@@ -179,7 +180,7 @@ export function reportFeatureError(context is Context, id is Id, customMessage i
  */
 export function reportFeatureWarning(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
-    @reportFeatureWarning(context, id, { "message" : message });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.WARNING, "statusEnum" : message} as FeatureStatus);
     return true;
 }
 
@@ -188,7 +189,7 @@ export function reportFeatureWarning(context is Context, id is Id, message is Er
  */
 export function reportFeatureWarning(context is Context, id is Id, customMessage is string) returns boolean
 {
-    @reportFeatureWarning(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.WARNING, "statusEnum" : ErrorStringEnum.CUSTOM_ERROR, "statusMsg" : customMessage} as FeatureStatus);
     return true;
 }
 
@@ -197,7 +198,7 @@ export function reportFeatureWarning(context is Context, id is Id, customMessage
  */
 export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum) returns boolean
 {
-    @reportFeatureInfo(context, id, { "message" : message });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.INFO, "statusEnum" : message} as FeatureStatus);
     return true;
 }
 
@@ -206,44 +207,96 @@ export function reportFeatureInfo(context is Context, id is Id, message is Error
  */
 export function reportFeatureInfo(context is Context, id is Id, customMessage is string) returns boolean
 {
-    @reportFeatureInfo(context, id, { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage });
+    reportFeatureStatus(context, id, {"statusType" : StatusType.INFO, "statusEnum" : ErrorStringEnum.CUSTOM_ERROR, "statusMsg" : customMessage} as FeatureStatus);
     return true;
 }
 
 /**
- * This function propagates a warning or info from a subfeature to the current feature.
- *
- * @param subId : The id of the subfeature
- * @param id : The id of the current feature.
+ * Propagate the status of a subfeature to a feature.
+ * @param definition {{
+ *      @field subfeatureId {Id} : The Id of the subfeature.
+ *      @field featureParameterMap {map} : A mapping of the field names from subfeature to feature. @optional
+ *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present. @optional
+ * }}
  */
-// TODO: precondition check that `id` is the prefix of `subId`.
-export function processSubfeatureStatus(context is Context, subId is Id, id is Id) returns boolean
+export function processSubfeatureStatus(context is Context, id is Id, definition is map) returns boolean
 {
-    // If an operation contains sub-operations, e.g. an extruded boss is an extrusion and a boolean
-    // then we want to propagate any errors/warning from the boolean (subId) to the extrusion (id)
-    // We return true if anything was copied over
+    var subStatus is FeatureStatus = getFeatureStatus(context, definition.subfeatureId);
+    if (subStatus == undefined)
+    {
+        return false;
+    }
+    var status = subStatus;
+    status.faultyParameters = undefined;
+    if (subStatus.faultyParameters != undefined)
+    {
+        var faultyParameters = [];
+        var featureParameterMap = definition.featureParameterMap;
+        if (featureParameterMap != undefined)
+        {
+            for (var param in subStatus.faultyParameters)
+            {
+                var mappedParam = featureParameterMap[param];
+                if (mappedParam != undefined)
+                {
+                    faultyParameters = append(faultyParameters, mappedParam);
+                }
+            }
+            if (size(faultyParameters) != 0)
+            {
+                status.faultyParameters = faultyParameters;
+            }
+        }
+    }
+    reportFeatureStatus(context, id, status);
+    if (definition.propagateErrorDisplay == true)
+    {
+        @transferSubfeatureErrorDisplay(context, id, {"subfeatureId" : definition.subfeatureId});
+    }
+    return true;
+}
 
-    var madeChanges = false;
-    var result = getFeatureError(context, subId);
-    if (result != undefined)
-    {
-        reportFeatureError(context, id, result);
-        madeChanges = true;
-    }
-    result = getFeatureWarning(context, subId);
-    if (result != undefined)
-    {
-        reportFeatureWarning(context, id, result);
-        madeChanges = true;
-    }
-    result = getFeatureInfo(context, subId);
-    if (result != undefined)
-    {
-        reportFeatureInfo(context, id, result);
-        madeChanges = true;
-    }
+/**
+ * Return the status of a feature as a FeatureStatus
+ * @param id {Id}
+ */
+export function getFeatureStatus(context is Context, id is Id) returns FeatureStatus
+{
+    var builtInStatus = @functionGetFeatureStatus(context, id);
+    builtInStatus.statusType = builtInStatus.statusType as StatusType;
+    if (ErrorStringEnum[builtInStatus.statusEnum] != undefined)
+        builtInStatus.statusEnum = builtInStatus.statusEnum as ErrorStringEnum;
+    return featureStatus(builtInStatus);
+}
 
-    return madeChanges;
+/**
+ * Report the status of a feature
+ * @param id {Id}
+ * @param status {FeatureStatus}
+ */
+export function reportFeatureStatus(context is Context, id is Id, status is FeatureStatus) returns boolean
+{
+    @functionReportFeatureStatus(context, id, status);
+    return true;
+}
+
+/**
+ * @internal
+ *
+ * To get the statusEnum as ErrorStringEnum or the statusMsg as a string of a feature if feature status is of statusType
+ * @param id {Id}
+ * @param statusType {StatusType}
+ */
+function getFeatureStatusString(context is Context, id is Id, statusType is StatusType)
+{
+    var status is FeatureStatus = getFeatureStatus(context, id);
+    if (status != undefined && status.statusType == statusType)
+    {
+        if (status.statusEnum != ErrorStringEnum.CUSTOM_ERROR)
+            return status.statusEnum as ErrorStringEnum;
+        else
+            return status.statusMsg;
+    }
 }
 
 /**
@@ -251,10 +304,7 @@ export function processSubfeatureStatus(context is Context, subId is Id, id is I
  */
 export function getFeatureError(context is Context, id is Id)
 {
-    const result = @getFeatureError(context, id);
-    if (ErrorStringEnum[result] != undefined)
-        return result as ErrorStringEnum;
-    return result;
+    return getFeatureStatusString(context, id, StatusType.ERROR);
 }
 
 /**
@@ -262,10 +312,7 @@ export function getFeatureError(context is Context, id is Id)
  */
 export function getFeatureWarning(context is Context, id is Id)
 {
-    const result = @getFeatureWarning(context, id);
-    if (ErrorStringEnum[result] != undefined)
-        return result as ErrorStringEnum;
-    return result;
+    return getFeatureStatusString(context, id, StatusType.WARNING);
 }
 
 /**
@@ -273,10 +320,7 @@ export function getFeatureWarning(context is Context, id is Id)
  */
 export function getFeatureInfo(context is Context, id is Id)
 {
-    const result = @getFeatureInfo(context, id);
-    if (ErrorStringEnum[result] != undefined)
-        return result as ErrorStringEnum;
-    return result;
+    return getFeatureStatusString(context, id, StatusType.INFO);
 }
 
 /**
@@ -297,6 +341,55 @@ export function setErrorEntities(context is Context, id is Id, definition is map
  */
 export function featureHasError(context is Context, id is Id) returns boolean
 {
-    return @getFeatureError(context, id) != undefined;
+    return getFeatureError(context, id) != undefined;
 }
 
+/** @internal */
+enum StatusType {OK, ERROR, WARNING, INFO}
+
+/**
+ * The status of a feature
+ *
+ * @type {{
+ *      @field statusType {StatusType}
+ *      @field faultyParameters {array}
+ *      @field statusEnum {ErrorStringEnum}
+ *      @field statusMsg {string}
+ * }}
+ */
+export type FeatureStatus typecheck canBeFeatureStatus;
+
+/**
+ * The faultyParameters cannot exist when the statusType is StatusType.OK.
+ * The statusEnum must be ErrorStringEnum.CUSTOM_ERROR if the statusMsg exists.
+ */
+export predicate canBeFeatureStatus(value)
+{
+    value is map;
+    value.statusType is StatusType;
+    if (value.statusType != StatusType.OK)
+    {
+        value.faultyParameters == undefined || value.faultyParameters is array;
+        value.statusEnum is ErrorStringEnum;
+    }
+    if (value.statusEnum == ErrorStringEnum.CUSTOM_ERROR)
+    {
+        value.statusMsg is string;
+    }
+}
+
+/**
+ * @internal
+ *
+ * Construct a FeatureStatus from a map
+ * @param status {{
+ *              @field statusType {string}
+ *              @field faultyParameters {array}
+ *              @field statusEnum {ErrorStringEnum}
+ *              @field statusMsg {string}
+ * }}
+ */
+function featureStatus(status is map)
+{
+    return status as FeatureStatus;
+}

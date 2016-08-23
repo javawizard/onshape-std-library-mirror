@@ -1,4 +1,4 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,11 +31,12 @@ FeatureScript 392; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "392.0");
-import(path : "onshape/std/context.fs", version : "392.0");
-import(path : "onshape/std/mathUtils.fs", version : "392.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
-import(path : "onshape/std/units.fs", version : "392.0");
+import(path : "onshape/std/containers.fs", version : "408.0");
+import(path : "onshape/std/context.fs", version : "408.0");
+import(path : "onshape/std/mathUtils.fs", version : "408.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
+import(path : "onshape/std/units.fs", version : "408.0");
+import(path : "onshape/std/curveGeometry.fs", version : "408.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -90,7 +91,7 @@ export predicate canBeQuery(value)
  * @value SHELL_CONTAINING_FACE      : Not yet implemented
  * @value GEOMETRY                   : Used in `qGeometry`
  * @value BODY_TYPE                  : Used in `qBodyType`
- * @value PLANE_NORMAL               : Not yet implemented
+ * @value PLANE_NORMAL               : Used in `qParallelPlane`
  * @value TANGENT_EDGES              : Not yet implemented
  * @value TANGENT_FACES              : Not yet implemented
  * @value CONVEX_CONNECTED_FACES     : Used in `qConvexConnectedFaces`
@@ -102,11 +103,11 @@ export predicate canBeQuery(value)
  * @value FILLET_FACES               : Used in `qFilletFaces`
  * @value PATTERN                    : Used in `qMatchingFaces`
  * @value CONTAINS_POINT             : Used in `qContainsPoint`
- * @value INTERSECTS_LINE            : Not yet implemented
+ * @value INTERSECTS_LINE            : Used in `qIntersectsLine`
  * @value INTERSECTS_PLANE           : Used in `qIntersectsPlane`
- * @value INTERSECTS_BALL            : Not yet implemented
+ * @value INTERSECTS_BALL            : Used in `qWithinRadius`
  * @value CLOSEST_TO                 : Used in `qClosestTo`
- * @value FARTHEST_ALONG             : Not yet implemented
+ * @value FARTHEST_ALONG             : Used in 'qFarthestAlong'
  * @value LARGEST                    : Not yet implemented
  * @value SMALLEST                   : Not yet implemented
  * @value COEDGE                     : Used in `qCoedge`
@@ -735,12 +736,46 @@ export function qConstructionFilter(subquery is Query, constructionFilter is Con
 }
 
 // ======================= Geometry matching Queries ==========================
-/* Not done yet
-export function qPlanarNormal(subquery is Query, normal is Vector) returns Query
+/**
+ * A query for all planar face entities that are parallel to the `referencePlane`.
+ * @param referencePlane : The plane to reference when checking for parallelism.
+ * @param allowAntiparallel : Whether to also return entities that are antiparallel.
+ */
+export function qParallelPlanes(subquery is Query, referencePlane is Plane, allowAntiparallel is boolean) returns Query
 {
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal} as Query;
+    var normal is Vector = referencePlane.normal;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
 }
-*/
+
+/**
+ * A query for all planar face entities that are parallel to the `referencePlane`.
+ * @param referencePlane : The plane to reference when checking for parallelism.
+ */
+export function qParallelPlanes(subquery is Query, referencePlane is Plane) returns Query
+{
+    var normal is Vector = referencePlane.normal;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : true } as Query;
+}
+
+/**
+ * A query for all planar face entities that are parallel to a plane specified by the `normal` vector.
+ * @param normal : The normal vector to reference when checking for parallelism.
+ * @param allowAntiparallel : Whether to also return entities that are antiparallel.
+ */
+export function qParallelPlanes(subquery is Query, normal is Vector, allowAntiparallel is boolean) returns Query
+{
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
+}
+
+/**
+ * A query for all planar face entities that are parallel to a plane specified by the `normal` vector.
+ * @param normal : The normal vector to reference when checking for parallelism.
+ */
+export function qParallelPlanes(subquery is Query, normal is Vector) returns Query
+{
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : true } as Query;
+}
+
 // ======================= Tangency Queries ===================================
 //TANGENT_EDGES,
 //TANGENT_FACES,
@@ -921,7 +956,13 @@ precondition
     return { "queryType" : QueryType.CONTAINS_POINT, "subquery" : subquery, "point" : stripUnits(point) } as Query;
 }
 
-//INTERSECTS_LINE,
+/**
+ * A query for all entities (bodies, faces, edges, or points) touching a specified infinite line.
+ */
+export function qIntersectsLine(subquery is Query, line is Line) returns Query
+{
+    return { "queryType" : QueryType.INTERSECTS_LINE, "subquery" : subquery, "line" : stripUnits(line) } as Query;
+}
 
 /**
  * A query for all entities (bodies, faces, edges, or points) touching a specified infinite plane.
@@ -933,19 +974,46 @@ export function qIntersectsPlane(subquery is Query, plane is Plane) returns Quer
     return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
 }
 
-//INTERSECTS_BALL,
-//===================================== Optimization Queries =====================================
-/* Not done yet
-   export function qClosestTo(subquery is Query, point is Vector) returns Query
-   precondition
-   {
-   is3dLengthVector(point);
-   }
-   {
-   return { "queryType" : QueryType.CLOSEST_TO, "subquery" : subquery, "point" : point} as Query;
-   }
+/**
+ * A query for all entities (bodies, faces, edges or points) that are within a specified radius from a point.
+ * @param point : The point from which to check distance from.
+ * @param radius : The distance away from the point.
  */
-//FARTHEST_ALONG, //direction
+export function qWithinRadius(subquery is Query, point is Vector, radius is ValueWithUnits)
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    return { "queryType" : QueryType.INTERSECTS_BALL, "subquery" : subquery, "point" : stripUnits(point), "radius" : stripUnits(radius) } as Query;
+}
+
+//===================================== Optimization Queries =====================================
+/**
+ *  A query for the entity closest to a point.
+ *
+ *  In the case of a tie, resolves to all entities within `TOLERANCE.zeroLength` of being the closest.
+ *  @param point : A position vector for the point to find entities closest to.
+ */
+export function qClosestTo(subquery is Query, point is Vector) returns Query
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    return { "queryType" : QueryType.CLOSEST_TO, "subquery" : subquery, "point" : stripUnits(point)} as Query;
+}
+
+/**
+ *  A query for the entity farthest along a `direction` in world space.
+ *  In the case of a tie, resolves to all entities within `TOLERANCE.zeroLength` of being the farthest.
+ *  @param direction : A vector for the direction to find the entity farthest away.
+ */
+export function qFarthestAlong(subquery is Query, direction is Vector)
+{
+    return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : subquery, "direction" : stripUnits(direction) } as Query;
+}
+
 //LARGEST,
 //SMALLEST
 

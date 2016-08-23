@@ -1,4 +1,4 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -13,13 +13,13 @@ FeatureScript 392; /* Automatically generated version */
  * When an operation parameter that requires one entity receives a query that resolves to multiple entities, it takes
  * the first resolved entity.
  *
- * This file contains wrappers around built-in Onshape operations and no actual logic.
+ * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "392.0");
+import(path : "onshape/std/context.fs", version : "408.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "392.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "392.0");
-export import(path : "onshape/std/bendoptions.fs", version : "392.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "408.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "408.0");
+export import(path : "onshape/std/bendoptions.fs", version : "408.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -383,6 +383,20 @@ export function opPattern(context is Context, id is Id, definition is map)
 export function opPlane(context is Context, id is Id, definition is map)
 {
     return @opPlane(context, id, definition);
+}
+
+/**
+ * Creates a sphere.
+ * @param definition {{
+ *      @field radius {ValueWithUnits} : The radius of the sphere.
+            @eg `1 * inch`
+ *      @field center {Vector} : The location of the center of the sphere.
+            @eg `vector(1, 1, 1) * inch`
+ * }}
+ */
+export function opSphere(context is Context, id is Id, definition is map)
+{
+    return @opSphere(context, id, definition);
 }
 
 /**

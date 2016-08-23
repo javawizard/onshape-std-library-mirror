@@ -1,4 +1,4 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,8 +15,9 @@ FeatureScript 392; /* Automatically generated version */
  * Entities can be queried by attributes with `qAttributeFilter` and
  * `qAttributeQuery`.
  */
-import(path : "onshape/std/context.fs", version : "392.0");
-import(path : "onshape/std/query.fs", version : "392.0");
+import(path : "onshape/std/context.fs", version : "408.0");
+import(path : "onshape/std/query.fs", version : "408.0");
+import(path : "onshape/std/containers.fs", version : "408.0");
 
 /**
  * Attach an attribute to one or several entities.
@@ -84,4 +85,23 @@ export function removeAttributes(context is Context, definition is map)
 {
     @removeAttributes(context, definition);
 }
+
+/**
+* @internal
+*/
+export function toAttributeId(id is Id) returns string
+{
+    var out = "";
+    for (var i = 0; i < size(id); i += 1)
+    {
+        if (i > 0)
+        {
+            out = out ~ ".";
+        }
+        out = out ~ id[i];
+    }
+    return out;
+}
+
+
 

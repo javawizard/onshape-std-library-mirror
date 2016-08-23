@@ -1,24 +1,24 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "392.0");
-export import(path : "onshape/std/tool.fs", version : "392.0");
+export import(path : "onshape/std/query.fs", version : "408.0");
+export import(path : "onshape/std/tool.fs", version : "408.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "392.0");
+export import(path : "onshape/std/manipulator.fs", version : "408.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "392.0");
-import(path : "onshape/std/containers.fs", version : "392.0");
-import(path : "onshape/std/curveGeometry.fs", version : "392.0");
-import(path : "onshape/std/evaluate.fs", version : "392.0");
-import(path : "onshape/std/feature.fs", version : "392.0");
-import(path : "onshape/std/mathUtils.fs", version : "392.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
-import(path : "onshape/std/valueBounds.fs", version : "392.0");
+import(path : "onshape/std/box.fs", version : "408.0");
+import(path : "onshape/std/containers.fs", version : "408.0");
+import(path : "onshape/std/curveGeometry.fs", version : "408.0");
+import(path : "onshape/std/evaluate.fs", version : "408.0");
+import(path : "onshape/std/feature.fs", version : "408.0");
+import(path : "onshape/std/mathUtils.fs", version : "408.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
+import(path : "onshape/std/valueBounds.fs", version : "408.0");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;

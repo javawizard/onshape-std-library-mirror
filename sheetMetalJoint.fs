@@ -1,4 +1,4 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,29 +10,31 @@ FeatureScript 392; /* Automatically generated version */
  */
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "392.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "392.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "408.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "408.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "392.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "392.0");
-import(path : "onshape/std/feature.fs", version : "392.0");
-import(path : "onshape/std/valueBounds.fs", version : "392.0");
-import(path : "onshape/std/containers.fs", version : "392.0");
-import(path : "onshape/std/attributes.fs", version : "392.0");
-import(path : "onshape/std/evaluate.fs", version : "392.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "392.0");
-import(path : "onshape/std/math.fs", version : "392.0");
-import(path : "onshape/std/modifyFillet.fs", version : "392.0");
-import(path : "onshape/std/string.fs", version : "392.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "408.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "408.0");
+import(path : "onshape/std/feature.fs", version : "408.0");
+import(path : "onshape/std/valueBounds.fs", version : "408.0");
+import(path : "onshape/std/containers.fs", version : "408.0");
+import(path : "onshape/std/attributes.fs", version : "408.0");
+import(path : "onshape/std/evaluate.fs", version : "408.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
+import(path : "onshape/std/math.fs", version : "408.0");
+import(path : "onshape/std/modifyFillet.fs", version : "408.0");
+import(path : "onshape/std/string.fs", version : "408.0");
 
 /**
  * @internal
  */
 annotation { "Feature Type Name" : "smJoint" }
-export const smJoint = defineFeature(function(context is Context, id is Id, definition is map)
+export const smJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "entity", "Filter" : EntityType.FACE || EntityType.EDGE, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "entity",
+                     "Filter" : (EntityType.FACE || EntityType.EDGE) && SketchObject.NO && BodyType.SOLID,
+                     "MaxNumberOfPicks" : 1 }
         definition.entity is Query;
 
         annotation { "Name" : "Joint type", "Default" : SMJointType.BEND }
@@ -51,8 +53,6 @@ export const smJoint = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
-        startSheetMetalFeature(context, id);
-
         var jointEdge = findJointDefinitionEdge(context, definition.entity);
         var existingAttribute = getJointAttribute(context, jointEdge);
         var newAttribute;
@@ -68,21 +68,13 @@ export const smJoint = defineFeature(function(context is Context, id is Id, defi
         {
             throw "This joint type is not supported";
         }
-        replaceJointAttribute(context, jointEdge, existingAttribute, newAttribute);
-        endSheetMetalFeature(context, id, { "entities" : jointEdge });
-    });
+        replaceSMAttribute(context, jointEdge, existingAttribute, newAttribute);
+        updateSheetMetalGeometry(context, id, { "entities" : jointEdge });
+    }, {});
 
 function findJointDefinitionEdge(context is Context, entity is Query) returns Query
 {
-    var entityAssociations = getAttributes(context, {
-            "entities" : entity,
-            "attributePattern" : {} as SMAssociationAttribute
-        });
-    if (size(entityAssociations) != 1)
-    {
-        throw "Selected entity does not belong to a recognized sheet metal joint";
-    }
-    var sheetEdges = qEntityFilter(qBodyType(qAttributeQuery(entityAssociations[0]), BodyType.SHEET), EntityType.EDGE);
+    var sheetEdges = qEntityFilter(qUnion(getSMDefinitionEntities(context, entity)), EntityType.EDGE);
     if (size(evaluateQuery(context, sheetEdges)) != 1)
     {
         throw "Selected entity does not belong to a recognized sheet metal joint";
@@ -104,9 +96,22 @@ function getJointAttribute(context is Context, jointEdge is Query) returns map
 }
 
 function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius) returns SMAttribute
+precondition
 {
     isLength(radius);
-    var bendAttribute = makeSMJointAttribute(existingAttribute.attributeId);
+}
+{
+    var bendAttribute;
+    if ( existingAttribute.jointType.value != SMJointType.BEND )
+    {
+        bendAttribute = makeSMJointAttribute(existingAttribute.attributeId);
+        bendAttribute.angle = existingAttribute.angle;
+    }
+    else
+    {
+        bendAttribute = existingAttribute;
+    }
+
     bendAttribute.jointType = {
         "value" : SMJointType.BEND,
         "controllingFeatureId" : toAttributeId(id),
@@ -119,7 +124,6 @@ function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radi
             "isDefault" : false,
             "controllingFeatureId" : toAttributeId(id),
             "parameterIdInFeature" : "radius" };
-    bendAttribute.angle = existingAttribute.angle;
     return bendAttribute;
 }
 

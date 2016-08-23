@@ -1,17 +1,17 @@
-FeatureScript 392; /* Automatically generated version */
+FeatureScript 408; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "392.0");
-export import(path : "onshape/std/containers.fs", version : "392.0");
-export import(path : "onshape/std/evaluate.fs", version : "392.0");
-export import(path : "onshape/std/feature.fs", version : "392.0");
-export import(path : "onshape/std/featureList.fs", version : "392.0");
-export import(path : "onshape/std/valueBounds.fs", version : "392.0");
+export import(path : "onshape/std/boolean.fs", version : "408.0");
+export import(path : "onshape/std/containers.fs", version : "408.0");
+export import(path : "onshape/std/evaluate.fs", version : "408.0");
+export import(path : "onshape/std/feature.fs", version : "408.0");
+export import(path : "onshape/std/featureList.fs", version : "408.0");
+export import(path : "onshape/std/valueBounds.fs", version : "408.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "392.0");
+import(path : "onshape/std/mathUtils.fs", version : "408.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -59,7 +59,7 @@ export function computePatternOffset(context is Context, entity is Query, opposi
         distance = -distance;
 
     var direction;
-    const rawDirectionResult = try(evAxis(context, { "axis" : entity }));
+    const rawDirectionResult = try silent(evAxis(context, { "axis" : entity }));
     if (rawDirectionResult == undefined)
         direction = evPlane(context, { "face" : entity }).normal * distance;
     else
