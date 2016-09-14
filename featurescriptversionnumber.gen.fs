@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -359,7 +359,18 @@ export enum FeatureScriptVersionNumber
     V405_ERROR_DISPLAY_AND_FEATURE_STATUS,
     V406_SPHERE_PRIMITIVE,
     V407_WITHIN_RADIUS,
-    V408_ERROR_ENUM_ASSEMBLY_PATTERN_NOT_SUPPORTED
+    V408_ERROR_ENUM_ASSEMBLY_PATTERN_NOT_SUPPORTED,
+    V412_CHECK_VALID_BSPLINE_APPROX,
+    V413_AUTOFIX_HELP_POINTS,
+    V414_ASYMMETRIC_CHAMFER_MIRROR_BUG,
+    V415_CPLANE_MANIPULATOR,
+    V416_MESH_NOT_SUPPORTED_ERROR,
+    V417_HOLE_CHANGE_TAP_CLEARANCE_TOOLTIP,
+    V418_RIB_FIX_EXTEND_LOGIC,
+    V419_EVBOX3D_FIXES,
+    V420_RIB_SIMPLER_HEURISTICS,
+    V421_TRIM_HELIX_AT_CONE_APEX,
+    V422_RIB_DELETE_ERROR_BODIES
 }
 
 /**
@@ -370,6 +381,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V408_ERROR_ENUM_ASSEMBLY_PATTERN_NOT_SUPPORTED;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V422_RIB_DELETE_ERROR_BODIES;
 
 

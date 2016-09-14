@@ -1,32 +1,32 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "408.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "408.0");
-import(path : "onshape/std/box.fs", version : "408.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "408.0");
-import(path : "onshape/std/containers.fs", version : "408.0");
-import(path : "onshape/std/coordSystem.fs", version : "408.0");
-import(path : "onshape/std/evaluate.fs", version : "408.0");
-import(path : "onshape/std/extrude.fs", version : "408.0");
-import(path : "onshape/std/feature.fs", version : "408.0");
-import(path : "onshape/std/mathUtils.fs", version : "408.0");
-import(path : "onshape/std/revolve.fs", version : "408.0");
-import(path : "onshape/std/sketch.fs", version : "408.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
-import(path : "onshape/std/tool.fs", version : "408.0");
-import(path : "onshape/std/valueBounds.fs", version : "408.0");
-import(path : "onshape/std/string.fs", version : "408.0");
-import(path : "onshape/std/holetables.gen.fs", version : "408.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "408.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "408.0");
-import(path : "onshape/std/cylinderCast.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
-import(path : "onshape/std/attributes.fs", version : "408.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "408.0");
-export import(path : "onshape/std/holeUtils.fs", version : "408.0");
+import(path : "onshape/std/boolean.fs", version : "422.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "422.0");
+import(path : "onshape/std/box.fs", version : "422.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "422.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
+import(path : "onshape/std/coordSystem.fs", version : "422.0");
+import(path : "onshape/std/evaluate.fs", version : "422.0");
+import(path : "onshape/std/extrude.fs", version : "422.0");
+import(path : "onshape/std/feature.fs", version : "422.0");
+import(path : "onshape/std/mathUtils.fs", version : "422.0");
+import(path : "onshape/std/revolve.fs", version : "422.0");
+import(path : "onshape/std/sketch.fs", version : "422.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
+import(path : "onshape/std/tool.fs", version : "422.0");
+import(path : "onshape/std/valueBounds.fs", version : "422.0");
+import(path : "onshape/std/string.fs", version : "422.0");
+import(path : "onshape/std/holetables.gen.fs", version : "422.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "422.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "422.0");
+import(path : "onshape/std/cylinderCast.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
+import(path : "onshape/std/attributes.fs", version : "422.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "422.0");
+export import(path : "onshape/std/holeUtils.fs", version : "422.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -57,10 +57,10 @@ annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditL
 export const hole = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Hole style", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Style", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         definition.style is HoleStyle;
 
-        annotation { "Name" : "Hole termination", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Termination", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         definition.endStyle is HoleEndStyle;
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
@@ -77,7 +77,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             definition.standardBlindInLast is LookupTablePath;
         }
 
-        annotation { "Name" : "Hole diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+        annotation { "Name" : "Diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
         isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
 
         if (definition.style == HoleStyle.C_BORE)
@@ -105,10 +105,30 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                 isLength(definition.tapDrillDiameter, HOLE_DIAMETER_BOUNDS);
             }
         }
-        if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+
+        /*
+         * showTappedDepth, tappedDepth and tapClearance are for hole annotations;
+         * they currently have no effect on regeneration. If we modeled the hole's
+         * threads, then they would have an effect.
+         */
+        annotation { "Name" : "Tapped details", "UIHint" : "ALWAYS_HIDDEN" }
+        definition.showTappedDepth is boolean;
+
+        if (definition.endStyle != HoleEndStyle.THROUGH)
         {
-            annotation { "Name" : "Hole depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
             isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
+        }
+        if (definition.showTappedDepth)
+        {
+            annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+
+            if (definition.endStyle != HoleEndStyle.THROUGH)
+            {
+                annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                isInteger(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
+            }
         }
 
         if (definition.endStyle == HoleEndStyle.BLIND || (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
@@ -269,7 +289,10 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         cSinkAngle : 90 * degree,
         generateErrorBodies : false,
         startFromSketch : false,
-        collisions : {}
+        collisions : {},
+        showTappedDepth : false,
+        tappedDepth : 0.5 * inch,
+        tapClearance : 3
     });
 
 function hasErrors(context is Context, id is Id) returns boolean
@@ -413,6 +436,13 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
     }
     return locations;
 }
+
+const HOLE_CLEARANCE_BOUNDS =
+{
+    "min"      : 0,
+    "max"      : 100,
+    (unitless) : [0, 3, 100]
+} as IntegerBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {
@@ -951,6 +981,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
 
     // Through, Blind or Blind in Last
     resultAttribute.endType = holeDefinition.endStyle;
+    resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -981,11 +1012,14 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
         {
             if (entry.key == "type")
             {
-                resultAttribute.isTappedHole = entry.value == "Tapped";
-            } else if (entry.key == "size")
+                var matchResult = match(entry.value, ".*[Tt]apped.*");
+                resultAttribute.isTappedHole = matchResult.hasMatch;
+            }
+            else if (entry.key == "size")
             {
                 tapSize = entry.value;
-            } else  if (entry.key == "pitch")
+            }
+            else  if (entry.key == "pitch")
             {
                 tapPitch = entry.value;
             }
@@ -997,6 +1031,11 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     {
         // set tap size
         resultAttribute.tapSize = tapSize ~ " x " ~  tapPitch;
+        if (holeDefinition.tappedDepth != undefined)
+            resultAttribute.tappedDepth = holeDefinition.tappedDepth;
+
+        if (resultAttribute.endType != HoleEndStyle.THROUGH && holeDefinition.tapClearance != undefined)
+            resultAttribute.tapClearance = holeDefinition.tapClearance;
     }
 
     // add properties specific to the hole type
@@ -1136,15 +1175,75 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     }
     definition = setToCustomIfStandardViolated(definition);
 
+    definition = adjustThreadDepth(oldDefinition, definition);
+
     if (isCreating && (!specifiedParameters.scope || !specifiedParameters.oppositeDirection))
     {
-        definition = holeScopeFlipHeuristicsCall(context, id, definition, specifiedParameters, hiddenBodies);
+        try
+        {
+            definition = holeScopeFlipHeuristicsCall(context, id, definition, specifiedParameters, hiddenBodies);
+        }
     }
     return definition;
 }
 
+/*
+ * Accounts for tapped holes by computing depth or threaded depth based on pitch
+ */
+function adjustThreadDepth(oldDefinition is map, definition is map) returns map
+{
+    if (threadPitchChanged(oldDefinition, definition))
+    {
+        definition.showTappedDepth = false;
+        var standard = getStandardAndTable(definition).standard;
+        if (standard != undefined && standard.pitch != undefined)
+        {
+            // Check for NN.N tpi or NN.N mm
+            var result = match(standard.pitch, "([0123456789.]*)\\s*(tpi|mm)");
+            if (result.hasMatch)
+            {
+                var pitch;
+                if (result.captures[2] == "tpi")
+                {
+                    pitch = 1.0 / stringToNumber(result.captures[1]) * inch;
+                }
+                else if (result.captures[2] == "mm")
+                {
+                    pitch = stringToNumber(result.captures[1]) * millimeter;
+                }
+                else
+                {
+                    return definition;
+                }
+                definition.showTappedDepth = true;
+                if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+                {
+                    if (definition.holeDepth != oldDefinition.holeDepth)
+                    {
+                        definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                    }
+                    else
+                    {
+                        definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
+                    }
+                }
+            }
+        }
+    }
+    return definition;
+}
 
-function getStandardTable(definition is map) returns map
+function threadPitchChanged(oldDefinition is map, definition is map) returns boolean
+{
+    return oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
+        oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
+        oldDefinition.endStyle != definition.endStyle ||
+        oldDefinition.holeDepth != definition.holeDepth ||
+        oldDefinition.tappedDepth != definition.tappedDepth ||
+        oldDefinition.tapClearance != definition.tapClearance;
+}
+
+function getStandardAndTable(definition is map) returns map
 {
     var standard;
     var table;
@@ -1158,17 +1257,23 @@ function getStandardTable(definition is map) returns map
         standard = definition.standardTappedOrClearance;
         table = tappedOrClearanceHoleTable;
     }
+    return {"standard" : standard, "table" : table };
+}
 
-    if (standard == undefined)
+function getStandardTable(definition is map) returns map
+{
+    var result = getStandardAndTable(definition);
+
+    if (result.standard == undefined)
     {
         return {};
     }
-    table = getLookupTable(table, standard);
-    if (table == undefined)
+    result.table = getLookupTable(result.table, result.standard);
+    if (result.table == undefined)
     {
         return {};
     }
-    return table;
+    return result.table;
 }
 
 /**
@@ -1258,7 +1363,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
     }
     else
     {
-        solidBodiesQuery = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
+        solidBodiesQuery = qAllNonMeshSolidBodies();
         solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
     }
 

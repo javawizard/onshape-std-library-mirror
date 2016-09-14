@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 408; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "408.0");
-import(path : "onshape/std/context.fs", version : "408.0");
-import(path : "onshape/std/mathUtils.fs", version : "408.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
-import(path : "onshape/std/units.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
+import(path : "onshape/std/context.fs", version : "422.0");
+import(path : "onshape/std/mathUtils.fs", version : "422.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
+import(path : "onshape/std/units.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -107,9 +107,9 @@ export predicate canBeQuery(value)
  * @value INTERSECTS_PLANE           : Used in `qIntersectsPlane`
  * @value INTERSECTS_BALL            : Used in `qWithinRadius`
  * @value CLOSEST_TO                 : Used in `qClosestTo`
- * @value FARTHEST_ALONG             : Used in 'qFarthestAlong'
- * @value LARGEST                    : Not yet implemented
- * @value SMALLEST                   : Not yet implemented
+ * @value FARTHEST_ALONG             : Used in `qFarthestAlong`
+ * @value LARGEST                    : Used in `qLargest`
+ * @value SMALLEST                   : Used in `qSmallest`
  * @value COEDGE                     : Used in `qCoedge`
  * @value MATE_CONNECTOR             : Used in `qMateConnector`
  * @value CONSTRUCTION_FILTER        : Used in `qConstructionFilter`
@@ -174,7 +174,8 @@ export enum QueryType
     DEPENDENCY,
     TRACKING,
     CAP_ENTITY,
-    SOURCE_MESH
+    SOURCE_MESH,
+    MESH_GEOMETRY_FILTER
 }
 
 /**
@@ -306,6 +307,21 @@ export enum AllowMeshGeometry
 }
 
 /**
+ * Specifies whether the entities are mesh geometries.
+ *
+ *
+ * @see `qMeshGeometryFilter`
+ *
+ * @value YES : Matches only entities (edges, faces, and bodies) which are meshes
+ * @value NO  : Matches only entities (edges, faces, and bodies) which are not meshes
+ */
+export enum MeshGeometry
+{
+    YES,
+    NO
+}
+
+/**
  * Specifies whether the entity is a part of a sketch.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
@@ -403,6 +419,14 @@ export function qEverything(entityType is EntityType) returns Query
 export function qEverything() returns Query
 {
     return { queryType : QueryType.EVERYTHING } as Query;
+}
+
+/**
+ * A query for all solid bodies that do not have mesh geometry.
+ */
+export function qAllNonMeshSolidBodies() returns Query
+{
+    return qBodyType(qMeshGeometryFilter(qEverything(EntityType.BODY), MeshGeometry.NO), BodyType.SOLID);
 }
 
 /**
@@ -643,9 +667,9 @@ export function qSourceMesh(query is Query) returns Query
 
 /**
  * A query for all entities of specified `EntityType` that share a vertex with
- * any entities that match the input query. Examples:
- * @eg `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
- * @eg `qVertexAdjacent(face, EntityType.VERTEX)` matches all vertices adjacent to the given face.
+ * any entities that match the input query.
+ * @ex `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
+ * @ex `qVertexAdjacent(face, EntityType.VERTEX)` matches all vertices adjacent to the given face.
  */
 export function qVertexAdjacent(query is Query, entityType is EntityType) returns Query
 precondition
@@ -658,9 +682,9 @@ precondition
 
 /**
  * A query for all entities of specified `EntityType` that share an edge with
- * any entities that match the input query. Examples:
- * @eg `qEdgeAdjacent(edge, EntityType.FACE)` matches all faces adjacent to the given edge.
- * @eg `qEdgeAdjacent(face, EntityType.EDGE)` matches all edges adjacent to the given face.
+ * any entities that match the input query.
+ * @ex `qEdgeAdjacent(edge, EntityType.FACE)` matches all faces adjacent to the given edge.
+ * @ex `qEdgeAdjacent(face, EntityType.EDGE)` matches all edges adjacent to the given face.
  *
  * More complicated queries are also possible.  For instance to match edges that bound a set `faces` on a solid body:
  * ```
@@ -733,6 +757,16 @@ precondition
 export function qConstructionFilter(subquery is Query, constructionFilter is ConstructionObject) returns Query
 {
     return { "queryType" : QueryType.CONSTRUCTION_FILTER, "constructionFilter" : constructionFilter, "subquery" : subquery } as Query;
+}
+
+/**
+ * Depending on meshGeometryFilter, a query for filtering out all mesh entities or allowing only mesh entities matching a subquery.
+ * A body is considered a "mesh entity" if any of its faces or edges have mesh geometry.
+ * @see `MeshGeometry`
+ */
+export function qMeshGeometryFilter(subquery is Query, meshGeometryFilter is MeshGeometry) returns Query
+{
+    return { "queryType" : QueryType.MESH_GEOMETRY_FILTER, "meshGeometryFilter" : meshGeometryFilter, "subquery" : subquery } as Query;
 }
 
 // ======================= Geometry matching Queries ==========================
@@ -1014,8 +1048,27 @@ export function qFarthestAlong(subquery is Query, direction is Vector)
     return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : subquery, "direction" : stripUnits(direction) } as Query;
 }
 
-//LARGEST,
-//SMALLEST
+/**
+ * A query to find the largest entity (by length, area, or volume) within a subquery. If subquery contains entities
+ * of different dimensionality (e.g. solid bodies and faces), only entities of the highest dimension are
+ * considered. Entities are compared by length, area or volume. Multiple entities may be returned if they tie
+ * within tolerance.
+ */
+export function qLargest(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.LARGEST, "subquery" : subquery } as Query;
+}
+
+/**
+ * A query to find the smallest entity (by length, area, or volume) within a subquery. If subquery contains entities
+ * of different dimensionality (e.g. solid bodies and faces), only entities of the highest dimension are
+ * considered. Entities are compared by length, area or volume. Multiple entities may be returned if they tie
+ * within tolerance.
+ */
+export function qSmallest(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.SMALLEST, "subquery" : subquery } as Query;
+}
 
 // ==================================== Historical Query stuff ================================
 

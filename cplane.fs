@@ -1,20 +1,23 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "408.0");
+export import(path : "onshape/std/query.fs", version : "422.0");
+
+// Features using manipulators must export manipulator.fs.
+export import(path : "onshape/std/manipulator.fs", version : "422.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "408.0");
-import(path : "onshape/std/containers.fs", version : "408.0");
-import(path : "onshape/std/evaluate.fs", version : "408.0");
-import(path : "onshape/std/feature.fs", version : "408.0");
-import(path : "onshape/std/mathUtils.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
-import(path : "onshape/std/valueBounds.fs", version : "408.0");
+import(path : "onshape/std/box.fs", version : "422.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
+import(path : "onshape/std/evaluate.fs", version : "422.0");
+import(path : "onshape/std/feature.fs", version : "422.0");
+import(path : "onshape/std/mathUtils.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
+import(path : "onshape/std/valueBounds.fs", version : "422.0");
 
 /**
  * The method of defining a construction plane.
@@ -70,7 +73,7 @@ const PLANE_OFFSET_BOUNDS =
 /**
  * Creates a construction plane feature by calling `opPlane`.
  */
-annotation { "Feature Type Name" : "Plane", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
+annotation { "Feature Type Name" : "Plane", "Manipulator Change Function" : "cplaneManipulatorChange", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -81,19 +84,22 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         annotation { "Name" : "Plane type" }
         definition.cplaneType is CPlaneType;
 
-        if (definition.cplaneType == CPlaneType.OFFSET)
+                if (definition.cplaneType == CPlaneType.OFFSET)
         {
             annotation { "Name" : "Offset distance" }
             isLength(definition.offset, PLANE_OFFSET_BOUNDS);
-
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-            definition.oppositeDirection is boolean;
         }
 
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
         {
             annotation { "Name" : "Angle" }
             isAngle(definition.angle, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+        }
+
+        if (definition.cplaneType == CPlaneType.OFFSET || definition.cplaneType == CPlaneType.LINE_ANGLE)
+        {
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirection is boolean;
         }
 
         if (definition.cplaneType == CPlaneType.MID_PLANE)
@@ -116,16 +122,22 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : definition.entities});
 
+        var planeBounds = new box(undefined);
+        var directionSign = 1;
+        if (definition.oppositeDirection)
+            directionSign = -1;
+
         if (definition.cplaneType == CPlaneType.OFFSET)
         {
             if (numEntities < 1)
                 throw regenError(requiresPlaneToOffsetMessage, ["entities"]);
             if (numEntities > 1)
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            definition.plane = evPlane(context, { "face" : definition.entities });
-            if (definition.oppositeDirection)
-                definition.offset = -definition.offset;
+            var referencePlane = evPlane(context, { "face" : definition.entities });
+            definition.plane = referencePlane;
+            definition.offset = definition.offset * directionSign;
             definition.plane.origin += definition.plane.normal * definition.offset;
+            addOffsetManipulator(context, id, definition, referencePlane.origin);
         }
 
         if (definition.cplaneType == CPlaneType.PLANE_POINT)
@@ -140,7 +152,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
         {
-            definition.plane = lineAnglePlane(context, id, entities, definition.angle);
+            definition.plane = lineAnglePlane(context, id, definition, entities, definition.angle * directionSign, planeBounds);
         }
 
         if (definition.cplaneType == CPlaneType.LINE_POINT) // Point normal
@@ -267,24 +279,26 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX))
         {
-            var planeSize = getPlaneDefaultSize(context, definition);
+            var planeSize = planeBounds[] == undefined ? getPlaneDefaultSize(context, definition) : planeBounds[];
             definition.width = planeSize[0];
             definition.height = planeSize[1];
         }
-
         opPlane(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
-
     }, { oppositeDirection : false, flipAlignment : false, width : 1 * meter, height : 1 * meter });
 
-function lineAnglePlane(context is Context, id is Id, entities is array, angle is ValueWithUnits) returns Plane
+function lineAnglePlane(context is Context, id is Id, definition is map, entities is array, angle is ValueWithUnits, planeBounds is box) returns Plane
 {
     if (size(entities) == 1)
     {
         reportFeatureInfo(context, id, requiresLineAngleSelectMessage);
         const lineResult = evAxis(context, { "axis" : entities[0] });
-        var normal = perpendicularVector(lineResult.direction);
-        normal = rotationMatrix3d(lineResult.direction, angle) * normal;
+        definition.axis = lineResult;
+
+        var baseNormal = perpendicularVector(lineResult.direction);
+        var normal = rotationMatrix3d(lineResult.direction, angle) * baseNormal;
+
+        addAngleManipulator(context, id, definition, angle, cross(baseNormal, lineResult.direction) * meter, planeBounds);
         return plane(lineResult.origin, normal, lineResult.direction);
     }
 
@@ -304,21 +318,23 @@ function lineAnglePlane(context is Context, id is Id, entities is array, angle i
         entities[1] = entities[0];
     }
 
-    // The second entity can be an axis, a plane, or a point
     var secondInPlaneDirection;
+    definition.axis = axis1;
+
+    // The second entity can be an axis, a plane, or a point
     if (axis2 != undefined)
     {
         if (parallelVectors(axis1.direction, axis2.direction))
             secondInPlaneDirection = axis2.origin - axis1.origin;
         else
-            secondInPlaneDirection = axis2.direction;
+            secondInPlaneDirection = axis2.direction * meter;
     }
     else
     {
         var plane = try(evPlane(context, { "face" : entities[1] }));
         if (plane != undefined)
         {
-            secondInPlaneDirection = cross(axis1.direction, plane.normal);
+            secondInPlaneDirection = cross(axis1.direction, plane.normal) * meter;
         }
         else
         {
@@ -327,6 +343,8 @@ function lineAnglePlane(context is Context, id is Id, entities is array, angle i
                 secondInPlaneDirection = point - axis1.origin;
         }
     }
+
+    // Above should be parsed by parseEntities
     if (secondInPlaneDirection == undefined)
         throw regenError(requiresLineAxisMessage, ["entities"]);
 
@@ -335,6 +353,8 @@ function lineAnglePlane(context is Context, id is Id, entities is array, angle i
         throw regenError(degenerateSelectionMessage, ["entities"]);
 
     normal = rotationMatrix3d(axis1.direction, angle) * normal;
+
+    addAngleManipulator(context, id, definition, angle, secondInPlaneDirection, planeBounds);
     return plane(axis1.origin, normal, axis1.direction);
 }
 
@@ -488,6 +508,65 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     }
 
     return cplaneDefinition.plane;
+}
+
+// Manipulator functions
+
+const DEPTH_MANIPULATOR = "depthManipulator";
+const ROTATE_MANIPULATOR = "rotateManipulator";
+
+function addOffsetManipulator(context is Context, id is Id, definition is map, referencePoint is Vector)
+{
+    addManipulators(context, id, { (DEPTH_MANIPULATOR) :
+    linearManipulator(referencePoint,
+                      definition.plane.normal,
+                      definition.offset) });
+}
+
+function addAngleManipulator(context is Context, id is Id, definition is map, angle is ValueWithUnits, revolvePoint is Vector, planeBounds is box)
+{
+    planeBounds[] = getPlaneDefaultSize(context, definition);
+    const size = planeBounds[][0];
+    const minValue = -2 * PI * radian;
+    const maxValue = 2 * PI * radian;
+    const axisOrigin = definition.axis.origin;
+    const axisDirection = definition.axis.direction;
+
+    revolvePoint = project(plane(axisOrigin, axisDirection), revolvePoint); // Project revolvePoint to be on the plane normal to the rotation axis
+    revolvePoint = project(plane(axisOrigin, cross(revolvePoint, axisDirection)), revolvePoint); // Project revolvePoint onto the plane at 0-degrees
+    revolvePoint = axisOrigin + normalize(revolvePoint - axisOrigin) * size / 4; // Scale manipulator to reach halfway across the plane
+
+    addManipulators(context, id, { (ROTATE_MANIPULATOR) :
+        angularManipulator({
+                "axisOrigin" : axisOrigin,
+                "axisDirection" : axisDirection,
+                "rotationOrigin" : revolvePoint,
+                "angle": angle,
+                "minValue": minValue,
+                "maxValue": maxValue })});
+}
+
+/**
+ * @internal
+ * Manipulator change function for `cPlane`.
+ */
+export function cplaneManipulatorChange(context is Context, cplaneDefinition is map, newManipulators is map) returns map
+{
+    var newValue = 0 * meter;
+    if (newManipulators[DEPTH_MANIPULATOR] is map && cplaneDefinition.cplaneType == CPlaneType.OFFSET)
+    {
+        newValue = newManipulators[DEPTH_MANIPULATOR].offset;
+        cplaneDefinition.offset = abs(newValue);
+    }
+    else if (newManipulators[ROTATE_MANIPULATOR] is map && cplaneDefinition.cplaneType == CPlaneType.LINE_ANGLE)
+    {
+        newValue = newManipulators[ROTATE_MANIPULATOR].angle;
+        cplaneDefinition.angle = abs(newValue);
+    }
+
+    cplaneDefinition.oppositeDirection = newValue < 0;
+
+    return cplaneDefinition;
 }
 
 /**

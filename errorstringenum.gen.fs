@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -553,7 +553,16 @@ export enum ErrorStringEnum
     ASSEMBLY_NAMED_POSITIONS_NO_MATES_TO_SAVE,
     ASSEMBLY_NAMED_POSITIONS_POSITION_NOT_FOUND,
     SPHERE_FAILED,
-    ASSEMBLY_PATTERN_NOT_SUPPORTED
+    ASSEMBLY_PATTERN_NOT_SUPPORTED,
+    ASSEMBLY_NAMED_POSITIONS_PARTIAL_LOAD_FAILURE,
+    ASSEMBLY_NAMED_POSITIONS_LOAD_SUCCEEDED_WITH_EXTRA_MATES,
+    ASSEMBLY_NAMED_POSITIONS_SAVED_MATE_NOT_FOUND_ON_LOAD,
+    SHEET_METAL_SINGLE_MODEL_NEEDED,
+    SHEET_METAL_ACTIVE_JOIN_NEEDED,
+    INSTANCE_QUERY_FAILED,
+    SHEET_METAL_ACTIVE_EDGE_NEEDED,
+    SHEET_METAL_FLANGE_NO_EDGES,
+    MESH_NOT_SUPPORTED
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,15 +9,15 @@ FeatureScript 408; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "408.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "408.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "422.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "422.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "408.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "408.0");
-import(path : "onshape/std/attributes.fs", version : "408.0");
-import(path : "onshape/std/feature.fs", version : "408.0");
-import(path : "onshape/std/containers.fs", version : "408.0");
-import(path : "onshape/std/string.fs", version : "408.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "422.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "422.0");
+import(path : "onshape/std/attributes.fs", version : "422.0");
+import(path : "onshape/std/feature.fs", version : "422.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
+import(path : "onshape/std/string.fs", version : "422.0");
 
 /**
  * @internal
@@ -55,6 +55,11 @@ export const smRefold = defineSheetMetalFeature(function(context is Context, id 
 
 function  annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is Query, setUnfolded is boolean)
 {
+    if (!areEntitiesFromSingleActiveSheetMetalModel(context, bodiesOrBends))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_SINGLE_MODEL_NEEDED, ["toRefold"]);
+    }
+
     var jointEntities = [];
     var countNonBendSelections = 0;
     var smEntities = qUnion(getSMDefinitionEntities(context, bodiesOrBends));

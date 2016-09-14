@@ -1,23 +1,23 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "408.0");
+export import(path : "onshape/std/query.fs", version : "422.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "408.0");
+export import(path : "onshape/std/manipulator.fs", version : "422.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
-import(path : "onshape/std/evaluate.fs", version : "408.0");
-import(path : "onshape/std/feature.fs", version : "408.0");
-import(path : "onshape/std/mathUtils.fs", version : "408.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
-import(path : "onshape/std/valueBounds.fs", version : "408.0");
-import(path : "onshape/std/containers.fs", version : "408.0");
+import(path : "onshape/std/box.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
+import(path : "onshape/std/evaluate.fs", version : "422.0");
+import(path : "onshape/std/feature.fs", version : "422.0");
+import(path : "onshape/std/mathUtils.fs", version : "422.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
+import(path : "onshape/std/valueBounds.fs", version : "422.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
 
 
 /**
@@ -153,7 +153,8 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
                 var endRadius;
                 var baseRadius;
                 const boxResult = evBox3d(context, { "topology" : definition.entities, "cSys" : surface.coordSystem });
-                const height = boxResult.maxCorner[2] - boxResult.minCorner[2];
+                var minZ = boxResult.minCorner[2];
+                var maxZ = boxResult.maxCorner[2];
                 if (surface is Cylinder)
                 {
                     endRadius = surface.radius;
@@ -161,11 +162,18 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
                 }
                 else if (surface is Cone)
                 {
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V421_TRIM_HELIX_AT_CONE_APEX))
+                    {
+                        // Origin of coordinate system is guaranteed to be on the apex of a cone. The bounding box can be
+                        // oversized by some tolerance (~1E-10m), so ensure helix won't cross through apex.
+                        minZ = max(0 * meter, minZ);
+                    }
                     const slope = tan(surface.halfAngle);
-                    baseRadius = slope * boxResult.minCorner[2];
-                    endRadius = slope * boxResult.maxCorner[2];
+                    baseRadius = slope * minZ;
+                    endRadius = slope * maxZ;
                 }
-                surface.coordSystem.origin += boxResult.minCorner[2] * surface.coordSystem.zAxis;
+                const height = maxZ - minZ;
+                surface.coordSystem.origin += minZ * surface.coordSystem.zAxis;
 
                 if (definition.helixType == HelixType.PITCH)
                 {

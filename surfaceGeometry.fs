@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 408; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "408.0");
-import(path : "onshape/std/coordSystem.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
-import(path : "onshape/std/mathUtils.fs", version : "408.0");
-import(path : "onshape/std/string.fs", version : "408.0");
-import(path : "onshape/std/units.fs", version : "408.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "408.0");
+import(path : "onshape/std/context.fs", version : "422.0");
+import(path : "onshape/std/coordSystem.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
+import(path : "onshape/std/mathUtils.fs", version : "422.0");
+import(path : "onshape/std/string.fs", version : "422.0");
+import(path : "onshape/std/units.fs", version : "422.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "422.0");
 
 //===================================== Plane ======================================
 
@@ -23,7 +23,7 @@ export import(path : "onshape/std/surfacetype.gen.fs", version : "408.0");
 export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
 
 /**
- * A plane is represented by an origin, a normal vector, and an X direction,
+ * A `Plane` is a data type representing an origin, a normal vector, and an X direction,
  * perpendicular to the normal direction.
  * @type {{
  *      @field origin {Vector} : A 3D point, in world space.
@@ -52,7 +52,8 @@ export function plane(cSys is CoordSystem) returns Plane
 }
 
 /**
- * Create a `Plane`.
+ * Create a `Plane` which fully specifies its orientation.
+ *
  * @param origin : A 3D point in world space.
  * @param normal : A 3D vector in world space. Need not be normalized.
  * @param x      : A 3D vector in world space. Need not be normalized.
@@ -62,7 +63,16 @@ export function plane(origin is Vector, normal is Vector, x is Vector) returns P
     return { "origin" : origin, "normal" : normalize(normal), "x" : normalize(x) } as Plane;
 }
 
-export function plane(origin is Vector, normal is Vector) returns Plane //Arbitrary x
+/**
+ * Create a `Plane` from a point and a normal.
+ *
+ * The x-axis of this `Plane`'s coordinate system will be an arbitrary vector
+ * perpindicular to the `normal`.
+ *
+ * @param origin : A 3D point in world space.
+ * @param normal : A 3D vector in world space. Need not be normalized.
+ */
+export function plane(origin is Vector, normal is Vector) returns Plane
 {
     return plane(origin, normal, perpendicularVector(normal));
 }
@@ -107,10 +117,20 @@ export predicate tolerantEquals(plane1 is Plane, plane2 is Plane)
  * Create a coordinate system whose XY-plane is a specified plane, with its origin at the
  * plane's origin.
  */
-// TODO: rename this to coordSystem(plane is Plane)?
 export function planeToCSys(plane is Plane) returns CoordSystem
 {
     return coordSystem(plane.origin, plane.x, plane.normal);
+}
+
+/**
+ * Create a coordinate system whose XY-plane is a specified plane, with its origin at the
+ * plane's origin.
+ *
+ * Alias for `planeToCSys`.
+ */
+export function coordSystem(plane is Plane) returns CoordSystem
+{
+    return planeToCSys(plane);
 }
 
 export function toString(value is Plane) returns string

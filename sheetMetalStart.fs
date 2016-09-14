@@ -1,4 +1,4 @@
-FeatureScript 408; /* Automatically generated version */
+FeatureScript 422; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,30 +9,32 @@ FeatureScript 408; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/sheetMetalFlange.fs", version : "408.0");
-export import(path : "onshape/std/query.fs", version : "408.0");
+export import(path : "onshape/std/sheetMetalFlange.fs", version : "422.0");
+export import(path : "onshape/std/sheetMetalFlangeOld.fs", version : "422.0");
 
-import(path : "onshape/std/attributes.fs", version : "408.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "408.0");
-import(path : "onshape/std/box.fs", version : "408.0");
-import(path : "onshape/std/containers.fs", version : "408.0");
-import(path : "onshape/std/coordSystem.fs", version : "408.0");
-import(path : "onshape/std/curveGeometry.fs", version : "408.0");
-import(path : "onshape/std/error.fs", version : "408.0");
-import(path : "onshape/std/evaluate.fs", version : "408.0");
-import(path : "onshape/std/feature.fs", version : "408.0");
-import(path : "onshape/std/geomOperations.fs", version : "408.0");
-import(path : "onshape/std/manipulator.fs", version : "408.0");
-import(path : "onshape/std/math.fs", version : "408.0");
-import(path : "onshape/std/modifyFillet.fs", version : "408.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "408.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "408.0");
-import(path : "onshape/std/sketch.fs", version : "408.0");
-import(path : "onshape/std/string.fs", version : "408.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "408.0");
-import(path : "onshape/std/tool.fs", version : "408.0");
-import(path : "onshape/std/valueBounds.fs", version : "408.0");
-import(path : "onshape/std/vector.fs", version : "408.0");
+export import(path : "onshape/std/query.fs", version : "422.0");
+
+import(path : "onshape/std/attributes.fs", version : "422.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "422.0");
+import(path : "onshape/std/box.fs", version : "422.0");
+import(path : "onshape/std/containers.fs", version : "422.0");
+import(path : "onshape/std/coordSystem.fs", version : "422.0");
+import(path : "onshape/std/curveGeometry.fs", version : "422.0");
+import(path : "onshape/std/error.fs", version : "422.0");
+import(path : "onshape/std/evaluate.fs", version : "422.0");
+import(path : "onshape/std/feature.fs", version : "422.0");
+import(path : "onshape/std/geomOperations.fs", version : "422.0");
+import(path : "onshape/std/manipulator.fs", version : "422.0");
+import(path : "onshape/std/math.fs", version : "422.0");
+import(path : "onshape/std/modifyFillet.fs", version : "422.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "422.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "422.0");
+import(path : "onshape/std/sketch.fs", version : "422.0");
+import(path : "onshape/std/string.fs", version : "422.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
+import(path : "onshape/std/tool.fs", version : "422.0");
+import(path : "onshape/std/valueBounds.fs", version : "422.0");
+import(path : "onshape/std/vector.fs", version : "422.0");
 
 /**
  * @internal
@@ -850,7 +852,7 @@ function makeEnclosure(context is Context, id is Id, topolQuery is Query, cSys i
         });
     if (definition.topFlange)
     {
-        smFlange(context, id + "top_flange", {
+        smFlangeOld(context, id + "top_flange", {
                     "innerRadius" : definition.radius,
                     "height" : definition.width,
                     "bendAngle" : ANGLE_90_DEGREE,
