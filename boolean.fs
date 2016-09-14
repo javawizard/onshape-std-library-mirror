@@ -253,7 +253,7 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 
     var output = {};
     output.tools = defaultTools;
-    output.targets = (definition.defaultScope != false) ? qBodyType(qEverything(EntityType.BODY), BodyType.SOLID) : definition.booleanScope;
+    output.targets = (definition.defaultScope != false) ? qAllNonMeshSolidBodies() : definition.booleanScope;
     output.targets = qSubtraction(output.targets, defaultTools);
 
     // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.

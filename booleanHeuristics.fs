@@ -93,7 +93,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         excludeQ = qUnion([toolQ, excludeBodies]);
     else
         excludeQ = toolQ;
-    const targetQ = qSubtraction(qBodyType(qEverything(EntityType.BODY), BodyType.SOLID), excludeQ);
+    const targetQ = qSubtraction(qAllNonMeshSolidBodies(), excludeQ);
     const collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
     if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);

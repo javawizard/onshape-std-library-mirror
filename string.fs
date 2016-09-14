@@ -54,7 +54,7 @@ export function toString(value is map) returns string
 }
 
 /**
- * Print a message to the FeatureScript notices flyout.
+ * Print a message to the FeatureScript notices pane.
  *
  * This has no effect on model state or rendering.
  */
@@ -64,7 +64,7 @@ export function print(value)
 }
 
 /**
- * Print a message to the FeatureScript notices flyout, followed by a newline.
+ * Print a message to the FeatureScript notices pane, followed by a newline.
  *
  * This has no effect on model state or rendering.
  */

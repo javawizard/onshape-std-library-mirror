@@ -594,7 +594,7 @@ const ANSI_TappedHoleTable = {
         "1/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "28 tpi",
+            "default" : "20 tpi",
             "entries" : {
                 "20 tpi" : {
                     "name" : "engagement",
@@ -628,7 +628,7 @@ const ANSI_TappedHoleTable = {
         "5/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "24 tpi",
+            "default" : "18 tpi",
             "entries" : {
                 "18 tpi" : {
                     "name" : "engagement",
@@ -662,7 +662,7 @@ const ANSI_TappedHoleTable = {
         "3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "24 tpi",
+            "default" : "16 tpi",
             "entries" : {
                 "16 tpi" : {
                     "name" : "engagement",
@@ -696,7 +696,7 @@ const ANSI_TappedHoleTable = {
         "7/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "20 tpi",
+            "default" : "14 tpi",
             "entries" : {
                 "14 tpi" : {
                     "name" : "engagement",
@@ -730,7 +730,7 @@ const ANSI_TappedHoleTable = {
         "1/2" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "20 tpi",
+            "default" : "13 tpi",
             "entries" : {
                 "13 tpi" : {
                     "name" : "engagement",
@@ -764,7 +764,7 @@ const ANSI_TappedHoleTable = {
         "5/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "18 tpi",
+            "default" : "11 tpi",
             "entries" : {
                 "11 tpi" : {
                     "name" : "engagement",
@@ -798,7 +798,7 @@ const ANSI_TappedHoleTable = {
         "3/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "16 tpi",
+            "default" : "10 tpi",
             "entries" : {
                 "10 tpi" : {
                     "name" : "engagement",
@@ -832,7 +832,7 @@ const ANSI_TappedHoleTable = {
         "7/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "14 tpi",
+            "default" : "9 tpi",
             "entries" : {
                 "9 tpi" : {
                     "name" : "engagement",
@@ -866,7 +866,7 @@ const ANSI_TappedHoleTable = {
         "1" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "8 tpi",
             "entries" : {
                 "8 tpi" : {
                     "name" : "engagement",
@@ -900,7 +900,7 @@ const ANSI_TappedHoleTable = {
         "1 1/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "7 tpi",
             "entries" : {
                 "7 tpi" : {
                     "name" : "engagement",
@@ -934,7 +934,7 @@ const ANSI_TappedHoleTable = {
         "1 1/2" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {
                     "name" : "engagement",
@@ -1464,7 +1464,7 @@ const ANSI_ThroughTappedScrewTable = {
         "1/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "28 tpi",
+            "default" : "20 tpi",
             "entries" : {
                 "20 tpi" : {
                     "name" : "fit",
@@ -1546,7 +1546,7 @@ const ANSI_ThroughTappedScrewTable = {
         "5/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "24 tpi",
+            "default" : "18 tpi",
             "entries" : {
                 "18 tpi" : {
                     "name" : "fit",
@@ -1628,7 +1628,7 @@ const ANSI_ThroughTappedScrewTable = {
         "3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "24 tpi",
+            "default" : "16 tpi",
             "entries" : {
                 "16 tpi" : {
                     "name" : "fit",
@@ -1710,7 +1710,7 @@ const ANSI_ThroughTappedScrewTable = {
         "7/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "20 tpi",
+            "default" : "14 tpi",
             "entries" : {
                 "14 tpi" : {
                     "name" : "fit",
@@ -1792,7 +1792,7 @@ const ANSI_ThroughTappedScrewTable = {
         "1/2" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "20 tpi",
+            "default" : "13 tpi",
             "entries" : {
                 "13 tpi" : {
                     "name" : "fit",
@@ -1874,7 +1874,7 @@ const ANSI_ThroughTappedScrewTable = {
         "5/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "18 tpi",
+            "default" : "11 tpi",
             "entries" : {
                 "11 tpi" : {
                     "name" : "fit",
@@ -1956,7 +1956,7 @@ const ANSI_ThroughTappedScrewTable = {
         "3/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "16 tpi",
+            "default" : "10 tpi",
             "entries" : {
                 "10 tpi" : {
                     "name" : "fit",
@@ -2038,7 +2038,7 @@ const ANSI_ThroughTappedScrewTable = {
         "7/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "14 tpi",
+            "default" : "9 tpi",
             "entries" : {
                 "9 tpi" : {
                     "name" : "fit",
@@ -2120,7 +2120,7 @@ const ANSI_ThroughTappedScrewTable = {
         "1" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "8 tpi",
             "entries" : {
                 "8 tpi" : {
                     "name" : "fit",
@@ -2202,7 +2202,7 @@ const ANSI_ThroughTappedScrewTable = {
         "1 1/4" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "7 tpi",
             "entries" : {
                 "7 tpi" : {
                     "name" : "fit",
@@ -2284,7 +2284,7 @@ const ANSI_ThroughTappedScrewTable = {
         "1 1/2" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "12 tpi",
+            "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {
                     "name" : "fit",
@@ -2687,7 +2687,7 @@ const ISO_TappedHoleTable = {
         "M5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.90 mm",
+            "default" : "0.80 mm",
             "entries" : {
                 "0.80 mm" : {
                     "name" : "engagement",
@@ -2771,7 +2771,7 @@ const ISO_TappedHoleTable = {
         "M10" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.25 mm",
+            "default" : "1.50 mm",
             "entries" : {
                 "1.00 mm" : {
                     "name" : "engagement",
@@ -2805,7 +2805,7 @@ const ISO_TappedHoleTable = {
         "M12" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "1.75 mm",
             "entries" : {
                 "1.25 mm" : {
                     "name" : "engagement",
@@ -2839,7 +2839,7 @@ const ISO_TappedHoleTable = {
         "M14" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.00 mm",
             "entries" : {
                 "1.25 mm" : {
                     "name" : "engagement",
@@ -2898,7 +2898,7 @@ const ISO_TappedHoleTable = {
         "M20" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.00 mm",
+            "default" : "2.50 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "engagement",
@@ -3054,7 +3054,7 @@ const ISO_ThroughTappedScrewTable = {
         "M5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.90 mm",
+            "default" : "0.80 mm",
             "entries" : {
                 "0.80 mm" : {
                     "name" : "fit",
@@ -3250,7 +3250,7 @@ const ISO_ThroughTappedScrewTable = {
         "M10" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.25 mm",
+            "default" : "1.50 mm",
             "entries" : {
                 "1.00 mm" : {
                     "name" : "fit",
@@ -3332,7 +3332,7 @@ const ISO_ThroughTappedScrewTable = {
         "M12" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "1.75 mm",
             "entries" : {
                 "1.25 mm" : {
                     "name" : "fit",
@@ -3414,7 +3414,7 @@ const ISO_ThroughTappedScrewTable = {
         "M14" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.00 mm",
             "entries" : {
                 "1.25 mm" : {
                     "name" : "fit",
@@ -3553,7 +3553,7 @@ const ISO_ThroughTappedScrewTable = {
         "M20" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.00 mm",
+            "default" : "2.50 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "fit",

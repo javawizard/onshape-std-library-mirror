@@ -153,7 +153,8 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
                 var endRadius;
                 var baseRadius;
                 const boxResult = evBox3d(context, { "topology" : definition.entities, "cSys" : surface.coordSystem });
-                const height = boxResult.maxCorner[2] - boxResult.minCorner[2];
+                var minZ = boxResult.minCorner[2];
+                var maxZ = boxResult.maxCorner[2];
                 if (surface is Cylinder)
                 {
                     endRadius = surface.radius;
@@ -161,11 +162,18 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
                 }
                 else if (surface is Cone)
                 {
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V421_TRIM_HELIX_AT_CONE_APEX))
+                    {
+                        // Origin of coordinate system is guaranteed to be on the apex of a cone. The bounding box can be
+                        // oversized by some tolerance (~1E-10m), so ensure helix won't cross through apex.
+                        minZ = max(0 * meter, minZ);
+                    }
                     const slope = tan(surface.halfAngle);
-                    baseRadius = slope * boxResult.minCorner[2];
-                    endRadius = slope * boxResult.maxCorner[2];
+                    baseRadius = slope * minZ;
+                    endRadius = slope * maxZ;
                 }
-                surface.coordSystem.origin += boxResult.minCorner[2] * surface.coordSystem.zAxis;
+                const height = maxZ - minZ;
+                surface.coordSystem.origin += minZ * surface.coordSystem.zAxis;
 
                 if (definition.helixType == HelixType.PITCH)
                 {

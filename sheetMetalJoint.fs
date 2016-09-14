@@ -53,6 +53,11 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         }
     }
     {
+        if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.entity))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
+        }
+
         var jointEdge = findJointDefinitionEdge(context, definition.entity);
         var existingAttribute = getJointAttribute(context, jointEdge);
         var newAttribute;
@@ -77,7 +82,7 @@ function findJointDefinitionEdge(context is Context, entity is Query) returns Qu
     var sheetEdges = qEntityFilter(qUnion(getSMDefinitionEntities(context, entity)), EntityType.EDGE);
     if (size(evaluateQuery(context, sheetEdges)) != 1)
     {
-        throw "Selected entity does not belong to a recognized sheet metal joint";
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
     }
     return sheetEdges;
 }
@@ -87,7 +92,7 @@ function getJointAttribute(context is Context, jointEdge is Query) returns map
     var attributes = getSmObjectTypeAttributes(context, jointEdge, SMObjectType.JOINT);
     if (size(attributes) != 1)
     {
-        throw "Selected entity does not belong to a recognized sheet metal joint";
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
     }
     else
     {

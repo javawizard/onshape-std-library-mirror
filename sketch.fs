@@ -527,6 +527,10 @@ precondition
  * ]
  * ```
  *      @field construction {boolean} : `true` for a construction line @optional
+ *      @field startDerivative {Vector} : A 2D `Vector` with length units that specifies the derivative at the start of
+ *          the resulting spline.  Ignored if spline is closed.  @optional
+ *      @field endDerivative {Vector} : A 2D `Vector` with length units that specifies the derivative at the end of
+ *          the resulting spline.  Ignored if spline is closed.  @optional
  * }}
  */
 export function skFitSpline(sketch is Sketch, splineId is string, value is map)

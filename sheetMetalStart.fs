@@ -10,6 +10,8 @@ FeatureScript ✨; /* Automatically generated version */
  */
 
 export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalFlangeOld.fs", version : "✨");
+
 export import(path : "onshape/std/query.fs", version : "✨");
 
 import(path : "onshape/std/attributes.fs", version : "✨");
@@ -850,7 +852,7 @@ function makeEnclosure(context is Context, id is Id, topolQuery is Query, cSys i
         });
     if (definition.topFlange)
     {
-        smFlange(context, id + "top_flange", {
+        smFlangeOld(context, id + "top_flange", {
                     "innerRadius" : definition.radius,
                     "height" : definition.width,
                     "bendAngle" : ANGLE_90_DEGREE,

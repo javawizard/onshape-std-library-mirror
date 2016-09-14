@@ -86,7 +86,8 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  * transforms, prefer calling `opTransform` or `opPattern` directly.
  *
  * @param definition {{
- *      @field entities {Query} : The bodies to transform.
+ *      @field entities {Query} : The bodies to transform. An error is thrown if non-bodies are included.
+ *          @eg `qCreatedBy(id + "extrude1", EntityType.BODY)`
  *
  *      @field transformType {TransformType} : Defines how the transform type should be specified.
  *          @eg `TransformType.TRANSLATION_3D`
@@ -132,6 +133,8 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  *      @field secondaryAxisType {MateConnectorAxisType} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
  *
  *      @field makeCopy {boolean} : @requiredIf {`transformType` is not `TransformType.COPY`}
+ *          @autocomplete `false`
+ *          @ex `true` to keep the original bodies.
  * }}
  */
 annotation { "Feature Type Name" : "Transform",

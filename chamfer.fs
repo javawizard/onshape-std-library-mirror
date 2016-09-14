@@ -10,6 +10,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/matrix.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const CHAMFER_ANGLE_BOUNDS =
@@ -75,6 +76,16 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
         definition.tangentPropagation is boolean;
     }
     {
+        if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V414_ASYMMETRIC_CHAMFER_MIRROR_BUG) &&
+             (definition.chamferType == ChamferType.OFFSET_ANGLE || definition.chamferType == ChamferType.TWO_OFFSETS))
+        {
+            var fullTransform = getFullPatternTransform(context);
+            if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+            {
+                //we have a reflection on the input body, flip direction
+                definition.oppositeDirection = !definition.oppositeDirection;
+            }
+        }
         opChamfer(context, id, definition);
     }, { oppositeDirection : false, tangentPropagation : false });
 

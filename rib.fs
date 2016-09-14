@@ -35,10 +35,10 @@ const RIB_THICKEN_BOUNDS =
  */
 export enum RibExtrusionDirection
 {
-    annotation { "Name" : "Normal to sketch plane" }
-    NORMAL_TO_SKETCH_PLANE,
     annotation { "Name" : "Parallel to sketch plane" }
-    PARALLEL_TO_SKETCH_PLANE
+    PARALLEL_TO_SKETCH_PLANE,
+    annotation { "Name" : "Normal to sketch plane" }
+    NORMAL_TO_SKETCH_PLANE
 }
 
 function isClosed(context is Context, edge is Query) returns boolean
@@ -152,6 +152,9 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             {
                 throw regenError(ErrorStringEnum.RIB_NO_INTERSECTIONS);
             }
+            opDeleteBodies(context, id + "deleteBadSubtractions", {
+                    "entities" : qUnion(badSubtractions)
+            });
         }
         // Optionally, merge the new ribs with the original parts.
         if (definition.mergeRibs)
@@ -175,7 +178,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
     },
         {
             oppositeDirection : true,
-            ribExtrusionDirection : RibExtrusionDirection.NORMAL_TO_SKETCH_PLANE,
+            ribExtrusionDirection : RibExtrusionDirection.PARALLEL_TO_SKETCH_PLANE,
             extendProfilesUpToPart : false,
             mergeRibs : true
         });
@@ -238,7 +241,7 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
 
     for (var end in [0, 1]) // Potentially extend both endpoints of the profile curve
     {
-        extendProfiles[end] = !isProfileClosed && definition.extendProfilesUpToPart || partsContainPoint(profileEndTangentLines[end].origin);
+        extendProfiles[end] = !isProfileClosed && (definition.extendProfilesUpToPart || partsContainPoint(profileEndTangentLines[end].origin));
         if (extendProfiles[end])
         {
             extendedEndPoints[end] = profileEndTangentLines[end].origin + (extendDirections[end] * extendLength);
@@ -469,36 +472,37 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
  * Edit logic function for rib
  */
 export function ribEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-                              isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+                              specifiedParameters is map, hiddenBodies is Query) returns map
 {
     var partsAreSet = specifiedParameters.parts;
     var oppositeDirectionSet = specifiedParameters.oppositeDirection;
+    var numParts = size(evaluateQuery(context, definition.parts));
+
+    // If editing or the user changes any heuristic setting, no heuristics.
+    if (partsAreSet || (oppositeDirectionSet && numParts != 0))
+    {
+        return definition;
+    }
     var numProfiles = size(evaluateQuery(context, definition.profiles));
 
     if (numProfiles == 0)
     {
-        if (!partsAreSet)
-            definition.parts = qUnion([]);
+        definition.parts = qUnion([]);
         return definition;
     }
-    if (partsAreSet && oppositeDirectionSet)
-        return definition;
 
     var solidBodiesQuery is Query = qNothing();
-    if (partsAreSet)
-    {
-        solidBodiesQuery = definition.parts;
-    }
-    else
-    {
-        solidBodiesQuery = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
-        solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
-    }
+    solidBodiesQuery = qAllNonMeshSolidBodies();
+    solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
 
     var scopeSize = calculateLength(context, qUnion([solidBodiesQuery, definition.profiles]));
 
     var tempDefinition = definition;
     tempDefinition.extendProfilesUpToPart = false;
+    if (!partsAreSet)
+    {
+        tempDefinition.parts = qUnion([]);
+    }
     if (oppositeDirectionSet)
     {
         var hits = getBodyCollisions(context, id, solidBodiesQuery, scopeSize, tempDefinition);
@@ -523,10 +527,7 @@ export function ribEditLogic(context is Context, id is Id, oldDefinition is map,
             newParts = qUnion(negativeHits);
             definition.oppositeDirection = true;
         }
-        if (!partsAreSet)
-        {
-            definition.parts = newParts;
-        }
+        definition.parts = newParts;
     }
 
     return definition;

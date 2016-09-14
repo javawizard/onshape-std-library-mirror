@@ -37,7 +37,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
+            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
             definition.entities is Query;
         }
         else if (definition.patternType == MirrorType.FACE)

@@ -28,7 +28,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
             definition.entities is Query;
         }
         else if (definition.patternType == PatternType.FACE)

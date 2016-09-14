@@ -55,6 +55,11 @@ export const smRefold = defineSheetMetalFeature(function(context is Context, id 
 
 function  annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is Query, setUnfolded is boolean)
 {
+    if (!areEntitiesFromSingleActiveSheetMetalModel(context, bodiesOrBends))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_SINGLE_MODEL_NEEDED, ["toRefold"]);
+    }
+
     var jointEntities = [];
     var countNonBendSelections = 0;
     var smEntities = qUnion(getSMDefinitionEntities(context, bodiesOrBends));

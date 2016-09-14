@@ -69,6 +69,7 @@ export import(path : "onshape/std/sketch.fs", version : "✨");
 export import(path : "onshape/std/sectionpart.fs", version : "✨");
 export import(path : "onshape/std/splitpart.fs", version : "✨");
 export import(path : "onshape/std/sweep.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalEnd.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalStart.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalUnfold.fs", version : "✨");

@@ -186,3 +186,42 @@ export function getSMDefinitionEntities(context is Context, selection is Query) 
     return out;
 }
 
+/**
+ * @internal
+ */
+export function isSheetMetalModelActive(context is Context, sheetMetalModel is Query) returns boolean
+{
+    const attributes = getSmObjectTypeAttributes(context, sheetMetalModel, SMObjectType.MODEL);
+    return size(attributes) == 1 && attributes[0].active == true;
+}
+
+/**
+ * @internal
+ */
+export function areEntitiesFromSingleSheetMetalModel(context is Context, entities is Query) returns map
+{
+    var result = {
+        "fromSingleSheetMetalModel" : false,
+        "active" : false
+    };
+    const partFaces = qOwnedByBody(qEntityFilter(entities, EntityType.BODY), EntityType.FACE);
+    const sheetMetalEntities = getSMDefinitionEntities(context, qUnion([entities, partFaces]));
+    const sheetMetalModels = qOwnerBody(qUnion(sheetMetalEntities));
+    const sheetMetalModelArray = evaluateQuery(context, sheetMetalModels);
+    if (size(sheetMetalModelArray) == 1)
+    {
+        result.fromSingleSheetMetalModel = true;
+        result.active = isSheetMetalModelActive(context, sheetMetalModelArray[0]);
+    }
+    return result;
+}
+
+/**
+ * @internal
+ */
+export function areEntitiesFromSingleActiveSheetMetalModel(context is Context, entities is Query) returns boolean
+{
+    const info = areEntitiesFromSingleSheetMetalModel(context, entities);
+    return info.fromSingleSheetMetalModel && info.active;
+}
+
