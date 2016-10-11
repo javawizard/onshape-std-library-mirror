@@ -1,4 +1,4 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -562,7 +562,12 @@ export enum ErrorStringEnum
     INSTANCE_QUERY_FAILED,
     SHEET_METAL_ACTIVE_EDGE_NEEDED,
     SHEET_METAL_FLANGE_NO_EDGES,
-    MESH_NOT_SUPPORTED
+    MESH_NOT_SUPPORTED,
+    SHEET_METAL_PARTS_PROHIBITED,
+    VARIABLE_CANNOT_EVALUATE,
+    DRAWING_ASSEMBLY_INVALID_SECTION_CUT,
+    DRAWING_PARTSTUDIO_INVALID_SECTION_CUT,
+    SHEET_METAL_COULD_NOT_UNFOLD
 }
 
 

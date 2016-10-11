@@ -1,30 +1,18 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "422.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "422.0");
-import(path : "onshape/std/containers.fs", version : "422.0");
-import(path : "onshape/std/evaluate.fs", version : "422.0");
-import(path : "onshape/std/feature.fs", version : "422.0");
-import(path : "onshape/std/math.fs", version : "422.0");
-import(path : "onshape/std/string.fs", version : "422.0");
-import(path : "onshape/std/transform.fs", version : "422.0");
-import(path : "onshape/std/valueBounds.fs", version : "422.0");
-import(path : "onshape/std/vector.fs", version : "422.0");
-
-const RIB_THICKEN_BOUNDS =
-{
-    "min" : -TOLERANCE.zeroLength * meter,
-    "max" : 500 * meter,
-    (meter) : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch) : 0.25,
-    (foot) : 0.025,
-    (yard) : 0.01
-} as LengthBoundSpec;
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "432.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "432.0");
+import(path : "onshape/std/evaluate.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "432.0");
+import(path : "onshape/std/math.fs", version : "432.0");
+import(path : "onshape/std/string.fs", version : "432.0");
+import(path : "onshape/std/transform.fs", version : "432.0");
+import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/vector.fs", version : "432.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -78,7 +66,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
-        isLength(definition.thickness, RIB_THICKEN_BOUNDS);
+        isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
 
         annotation { "Name" : "Rib extrusion direction" }
         definition.ribExtrusionDirection is RibExtrusionDirection;
@@ -159,16 +147,29 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         // Optionally, merge the new ribs with the original parts.
         if (definition.mergeRibs)
         {
-            // The original parts are first in the tools query so that they
-            // will maintain their names.
-            var toMerge = qUnion([definition.parts, qCreatedBy(id, EntityType.BODY)]);
-
+            var parameters;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V432_RIB_GROUP_BOOLEANS))
+            {
+                parameters = {
+                    "tools" : qCreatedBy(id, EntityType.BODY),
+                    "targets" : definition.parts,
+                    "targetsAndToolsNeedGrouping" : true,
+                    "operationType" : BooleanOperationType.UNION
+                };
+            }
+            else
+            {
+                // The original parts are first in the tools query so that they
+                // will maintain their names.
+                var toMerge = qUnion([definition.parts, qCreatedBy(id, EntityType.BODY)]);
+                parameters =  {
+                    "tools" : toMerge,
+                    "operationType" : BooleanOperationType.UNION
+                };
+            }
             try
             {
-                opBoolean(context, id + "mergeRibsWithParts", {
-                            "tools" : toMerge,
-                            "operationType" : BooleanOperationType.UNION
-                        });
+                opBoolean(context, id + "mergeRibsWithParts", parameters);
             }
             catch
             {
@@ -439,6 +440,7 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
                     "tools" : thickenQuery,
                     "targets" : targetQuery
             });
+            var profileHitIds = {};
             for (var collision in collisionResult)
             {
                 const clash is ClashType = collision['type'];
@@ -446,8 +448,12 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
                     clash == ClashType.TARGET_IN_TOOL ||
                     clash == ClashType.TOOL_IN_TARGET)
                 {
-                    targetHitIds[collision.targetBody] = 1;
+                    profileHitIds[collision.targetBody] = 1;
                 }
+            }
+            if (size(profileHitIds) == 1)
+            {
+                targetHitIds = mergeMaps(targetHitIds, profileHitIds);
             }
         }
         try

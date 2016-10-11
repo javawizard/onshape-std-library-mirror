@@ -1,32 +1,32 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "422.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "422.0");
-import(path : "onshape/std/box.fs", version : "422.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "422.0");
-import(path : "onshape/std/containers.fs", version : "422.0");
-import(path : "onshape/std/coordSystem.fs", version : "422.0");
-import(path : "onshape/std/evaluate.fs", version : "422.0");
-import(path : "onshape/std/extrude.fs", version : "422.0");
-import(path : "onshape/std/feature.fs", version : "422.0");
-import(path : "onshape/std/mathUtils.fs", version : "422.0");
-import(path : "onshape/std/revolve.fs", version : "422.0");
-import(path : "onshape/std/sketch.fs", version : "422.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
-import(path : "onshape/std/tool.fs", version : "422.0");
-import(path : "onshape/std/valueBounds.fs", version : "422.0");
-import(path : "onshape/std/string.fs", version : "422.0");
-import(path : "onshape/std/holetables.gen.fs", version : "422.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "422.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "422.0");
-import(path : "onshape/std/cylinderCast.fs", version : "422.0");
-import(path : "onshape/std/curveGeometry.fs", version : "422.0");
-import(path : "onshape/std/attributes.fs", version : "422.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "422.0");
-export import(path : "onshape/std/holeUtils.fs", version : "422.0");
+import(path : "onshape/std/boolean.fs", version : "432.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "432.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "432.0");
+import(path : "onshape/std/coordSystem.fs", version : "432.0");
+import(path : "onshape/std/evaluate.fs", version : "432.0");
+import(path : "onshape/std/extrude.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "432.0");
+import(path : "onshape/std/mathUtils.fs", version : "432.0");
+import(path : "onshape/std/revolve.fs", version : "432.0");
+import(path : "onshape/std/sketch.fs", version : "432.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
+import(path : "onshape/std/tool.fs", version : "432.0");
+import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/string.fs", version : "432.0");
+import(path : "onshape/std/holetables.gen.fs", version : "432.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "432.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "432.0");
+import(path : "onshape/std/cylinderCast.fs", version : "432.0");
+import(path : "onshape/std/curveGeometry.fs", version : "432.0");
+import(path : "onshape/std/attributes.fs", version : "432.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "432.0");
+export import(path : "onshape/std/holeUtils.fs", version : "432.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -634,7 +634,14 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     const axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
     const sketchQuery = qSketchRegion(sketchId, false);
     var doCut = holeDefinition.generateErrorBodies != true && holeDefinition.heuristics != true;
-    spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
+    {
+        try(spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut));
+    }
+    else
+    {
+        spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+    }
     opDeleteBodies(context, id + "delete_sketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
 
     const newFaces = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));

@@ -1,4 +1,4 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,20 +8,20 @@ FeatureScript 422; /* Automatically generated version */
  * Finds the projection of a cylinder against a part.
  */
 
-import(path : "onshape/std/boolean.fs", version : "422.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "422.0");
-import(path : "onshape/std/box.fs", version : "422.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "422.0");
-import(path : "onshape/std/containers.fs", version : "422.0");
-import(path : "onshape/std/coordSystem.fs", version : "422.0");
-import(path : "onshape/std/evaluate.fs", version : "422.0");
-import(path : "onshape/std/extrude.fs", version : "422.0");
-import(path : "onshape/std/feature.fs", version : "422.0");
-import(path : "onshape/std/mathUtils.fs", version : "422.0");
-import(path : "onshape/std/sketch.fs", version : "422.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
-import(path : "onshape/std/tool.fs", version : "422.0");
-import(path : "onshape/std/string.fs", version : "422.0");
+import(path : "onshape/std/boolean.fs", version : "432.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "432.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "432.0");
+import(path : "onshape/std/coordSystem.fs", version : "432.0");
+import(path : "onshape/std/evaluate.fs", version : "432.0");
+import(path : "onshape/std/extrude.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "432.0");
+import(path : "onshape/std/mathUtils.fs", version : "432.0");
+import(path : "onshape/std/sketch.fs", version : "432.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
+import(path : "onshape/std/tool.fs", version : "432.0");
+import(path : "onshape/std/string.fs", version : "432.0");
 
 /**
  * @internal
@@ -345,27 +345,30 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
         var hasCollision is boolean = false;
         try
         {
+            var extrudeDefinition;
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V364_HOLE_FIX_FEATURE_MIRROR))
             {
-                var extrudeDefinition = {
+                extrudeDefinition = {
                     "entities" : sketchEntityQuery,
                     "direction" : direction,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntity" : targetQuery
                 };
-                opExtrude(context, extrudeId, extrudeDefinition);
             }
             else
             {
-                var extrudeDefinition = {
+                extrudeDefinition = {
                     "bodyType" : ToolBodyType.SURFACE,
                     "operationType" : NewBodyOperationType.NEW,
                     "surfaceEntities" : sketchEntityQuery,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntityBody" : targetQuery
                 };
-                extrude(context, extrudeId, extrudeDefinition);
             }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
+                try silent(opExtrude(context, extrudeId, extrudeDefinition));
+            else
+                opExtrude(context, extrudeId, extrudeDefinition);
             const bodyQuery = qCreatedBy(extrudeId, EntityType.BODY);
             const cylBox = evBox3d(context, { "topology" : bodyQuery, "cSys" : cSys } );
             d = cylBox.maxCorner[2];

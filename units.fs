@@ -1,11 +1,11 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "422.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "422.0");
-import(path : "onshape/std/string.fs", version : "422.0");
+import(path : "onshape/std/math.fs", version : "432.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "432.0");
+import(path : "onshape/std/string.fs", version : "432.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -129,7 +129,7 @@ export const gram = 0.001 * kilogram;
 annotation { "Name" : "Ounce", "Abbreviation" : "oz" }
 export const ounce = 28.349523 * gram;
 
-/** A constant equal to 1 kilogram. */
+/** A constant equal to 1 pound. */
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
 

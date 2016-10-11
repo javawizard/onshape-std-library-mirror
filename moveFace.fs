@@ -1,24 +1,24 @@
-FeatureScript 422; /* Automatically generated version */
+FeatureScript 432; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "422.0");
-export import(path : "onshape/std/tool.fs", version : "422.0");
+export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/tool.fs", version : "432.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "422.0");
+export import(path : "onshape/std/manipulator.fs", version : "432.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "422.0");
-import(path : "onshape/std/containers.fs", version : "422.0");
-import(path : "onshape/std/curveGeometry.fs", version : "422.0");
-import(path : "onshape/std/evaluate.fs", version : "422.0");
-import(path : "onshape/std/feature.fs", version : "422.0");
-import(path : "onshape/std/mathUtils.fs", version : "422.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "422.0");
-import(path : "onshape/std/valueBounds.fs", version : "422.0");
+import(path : "onshape/std/box.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "432.0");
+import(path : "onshape/std/curveGeometry.fs", version : "432.0");
+import(path : "onshape/std/evaluate.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "432.0");
+import(path : "onshape/std/mathUtils.fs", version : "432.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
+import(path : "onshape/std/valueBounds.fs", version : "432.0");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -86,6 +86,17 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         var directionSign = 1;
         if (definition.oppositeDirection)
             directionSign = -1;
+
+        if (definition.moveFaceType != MoveFaceType.OFFSET &&
+            isAtVersionOrLater(context, FeatureScriptVersionNumber.V426_MOVE_FACE_IN_MIRROR))
+        {
+            var fullTransform = getFullPatternTransform(context);
+            if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+            {
+                //we have a reflection on the input body, flip direction
+                directionSign = -directionSign;
+            }
+        }
 
         // Extract an axis defined by the moved face for use in the manipulators.
         const facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));

@@ -5,15 +5,11 @@ FeatureScript 432; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * @internal.
- */
-export enum SMJointStyle
+/** @internal */
+export enum ExtendSheetBoundingType
 {
-    annotation {"Name" : "Edge Joint"}
-    EDGE,
-    annotation {"Name" : "Butt Joint"}
-    BUTT
+    EXTEND_BY_DISTANCE,
+    EXTEND_TO_SURFACE
 }
 
 
