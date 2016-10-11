@@ -370,7 +370,17 @@ export enum FeatureScriptVersionNumber
     V419_EVBOX3D_FIXES,
     V420_RIB_SIMPLER_HEURISTICS,
     V421_TRIM_HELIX_AT_CONE_APEX,
-    V422_RIB_DELETE_ERROR_BODIES
+    V422_RIB_DELETE_ERROR_BODIES,
+    V423_UNWRAP_POINT_BODIES,
+    V424_VARIABLE_WARNINGS,
+    V425_MORE_DEGENERATE_SKETCH_WIRE_CHECKS,
+    V426_MOVE_FACE_IN_MIRROR,
+    V427_LOCK_SWEEP_DIRECTION_HELIX,
+    V428_EDGE_DISAMBIGUATION_BY_SIDES,
+    V429_HOLE_SAFE_SKETCH_CLEANUP,
+    V430_CONFIGURATIONS_PREP,
+    V431_FIX_BODY_FILTERS,
+    V432_RIB_GROUP_BOOLEANS
 }
 
 /**
@@ -381,6 +391,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V422_RIB_DELETE_ERROR_BODIES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V432_RIB_GROUP_BOOLEANS;
 
 

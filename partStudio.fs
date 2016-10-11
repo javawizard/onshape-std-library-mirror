@@ -10,15 +10,22 @@ export function definePartStudio(partStudio is function, defaultLengthUnit is Va
 {
     return function(configuration is map) returns Context
         {
-            configuration = mergeMaps(defaults, configuration);
+            var mergedConfiguration = defaults;
+            for (var configurationParameter in defaults)
+            {
+                var specified = configuration[configurationParameter.key];
+                if (specified != undefined)
+                    mergedConfiguration[configurationParameter.key] = specified;
+            }
             var context is Context = newContextWithDefaults(defaultLengthUnit);
             const lookup is function = function(name is string) { return getVariable(context, name); };
-            for (var configurationParameter in configuration)
+            for (var configurationParameter in mergedConfiguration)
             {
                 if (configurationParameter.key is string)
                     setVariable(context, configurationParameter.key, configurationParameter.value);
             }
-            return partStudio(context, configuration, lookup);
+            try(partStudio(context, mergedConfiguration, lookup));
+            return context;
         };
 }
 

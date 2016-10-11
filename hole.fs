@@ -634,7 +634,14 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     const axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
     const sketchQuery = qSketchRegion(sketchId, false);
     var doCut = holeDefinition.generateErrorBodies != true && holeDefinition.heuristics != true;
-    spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
+    {
+        try(spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut));
+    }
+    else
+    {
+        spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+    }
     opDeleteBodies(context, id + "delete_sketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
 
     const newFaces = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));

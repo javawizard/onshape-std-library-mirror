@@ -87,6 +87,17 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         if (definition.oppositeDirection)
             directionSign = -1;
 
+        if (definition.moveFaceType != MoveFaceType.OFFSET &&
+            isAtVersionOrLater(context, FeatureScriptVersionNumber.V426_MOVE_FACE_IN_MIRROR))
+        {
+            var fullTransform = getFullPatternTransform(context);
+            if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+            {
+                //we have a reflection on the input body, flip direction
+                directionSign = -directionSign;
+            }
+        }
+
         // Extract an axis defined by the moved face for use in the manipulators.
         const facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)

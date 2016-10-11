@@ -14,18 +14,6 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
-const RIB_THICKEN_BOUNDS =
-{
-    "min" : -TOLERANCE.zeroLength * meter,
-    "max" : 500 * meter,
-    (meter) : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch) : 0.25,
-    (foot) : 0.025,
-    (yard) : 0.01
-} as LengthBoundSpec;
-
 /**
  * Specifies the direction of the rib extrusion starting from the profile
  * going up to the part.
@@ -78,7 +66,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
-        isLength(definition.thickness, RIB_THICKEN_BOUNDS);
+        isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
 
         annotation { "Name" : "Rib extrusion direction" }
         definition.ribExtrusionDirection is RibExtrusionDirection;
@@ -159,16 +147,29 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         // Optionally, merge the new ribs with the original parts.
         if (definition.mergeRibs)
         {
-            // The original parts are first in the tools query so that they
-            // will maintain their names.
-            var toMerge = qUnion([definition.parts, qCreatedBy(id, EntityType.BODY)]);
-
+            var parameters;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V432_RIB_GROUP_BOOLEANS))
+            {
+                parameters = {
+                    "tools" : qCreatedBy(id, EntityType.BODY),
+                    "targets" : definition.parts,
+                    "targetsAndToolsNeedGrouping" : true,
+                    "operationType" : BooleanOperationType.UNION
+                };
+            }
+            else
+            {
+                // The original parts are first in the tools query so that they
+                // will maintain their names.
+                var toMerge = qUnion([definition.parts, qCreatedBy(id, EntityType.BODY)]);
+                parameters =  {
+                    "tools" : toMerge,
+                    "operationType" : BooleanOperationType.UNION
+                };
+            }
             try
             {
-                opBoolean(context, id + "mergeRibsWithParts", {
-                            "tools" : toMerge,
-                            "operationType" : BooleanOperationType.UNION
-                        });
+                opBoolean(context, id + "mergeRibsWithParts", parameters);
             }
             catch
             {
@@ -439,6 +440,7 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
                     "tools" : thickenQuery,
                     "targets" : targetQuery
             });
+            var profileHitIds = {};
             for (var collision in collisionResult)
             {
                 const clash is ClashType = collision['type'];
@@ -446,8 +448,12 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
                     clash == ClashType.TARGET_IN_TOOL ||
                     clash == ClashType.TOOL_IN_TARGET)
                 {
-                    targetHitIds[collision.targetBody] = 1;
+                    profileHitIds[collision.targetBody] = 1;
                 }
+            }
+            if (size(profileHitIds) == 1)
+            {
+                targetHitIds = mergeMaps(targetHitIds, profileHitIds);
             }
         }
         try

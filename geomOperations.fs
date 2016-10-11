@@ -20,6 +20,8 @@ import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "✨");
 export import(path : "onshape/std/topologymatchtype.gen.fs", version : "✨");
 export import(path : "onshape/std/bendoptions.fs", version : "✨");
+/* opExtendSheet uses enumerations from ExtendSheetBoundingType */
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "✨");
 
 /**
  * Performs a boolean operation on multiple solid bodies.

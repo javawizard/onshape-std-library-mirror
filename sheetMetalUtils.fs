@@ -314,6 +314,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         {
             var ripAttribute = makeSMJointAttribute(toAttributeId(id + count));
             ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
+            ripAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited": true };
             var angle = try(edgeAngle(context, edge));
             if (angle != undefined)
             {

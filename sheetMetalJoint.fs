@@ -42,8 +42,13 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
 
         if (definition.jointType == SMJointType.BEND)
         {
-            annotation { "Name" : "Bend Radius" }
-            isLength(definition.radius, BLEND_BOUNDS);
+            annotation { "Name" : "Use default radius", "Default" : true }
+            definition.useDefaultRadius is boolean;
+            if (!definition.useDefaultRadius)
+            {
+                annotation { "Name" : "Bend Radius" }
+                isLength(definition.radius, BLEND_BOUNDS);
+            }
         }
 
         if (definition.jointType == SMJointType.RIP)
@@ -63,11 +68,15 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         var newAttribute;
         if (definition.jointType == SMJointType.BEND)
         {
-            newAttribute = createNewBendAttribute(id, existingAttribute, definition.radius);
+            if (definition.useDefaultRadius)
+            {
+                definition.radius = getDefaultSheetMetalRadius(context, definition.entity);
+            }
+            newAttribute = createNewBendAttribute(id, existingAttribute, definition.radius, definition.useDefaultRadius);
         }
         else if (definition.jointType == SMJointType.RIP)
         {
-            newAttribute = createNewRipAttribute(id, existingAttribute);
+            newAttribute = createNewRipAttribute(id, existingAttribute, definition.jointStyle);
         }
         else
         {
@@ -75,7 +84,19 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         }
         replaceSMAttribute(context, jointEdge, existingAttribute, newAttribute);
         updateSheetMetalGeometry(context, id, { "entities" : jointEdge });
-    }, {});
+    }, { jointStyle : SMJointStyle.EDGE, useDefaultRadius : true });
+
+function getDefaultSheetMetalRadius(context is Context, entity is Query)
+{
+    var sheetmetalEntity = qUnion(getSMDefinitionEntities(context, entity));
+    var sheetmetalBody = qOwnerBody(sheetmetalEntity);
+    var attr = getAttributes(context, {"entities" : sheetmetalBody, "attributePattern" : asSMAttribute({})});
+    if (size(attr) != 1 || attr[0].defaultBendRadius == undefined || attr[0].defaultBendRadius.value == undefined)
+    {
+        throw regenError("Bad sheet metal attribute");
+    }
+    return attr[0].defaultBendRadius.value;
+}
 
 function findJointDefinitionEdge(context is Context, entity is Query) returns Query
 {
@@ -100,7 +121,7 @@ function getJointAttribute(context is Context, jointEdge is Query) returns map
     }
 }
 
-function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius) returns SMAttribute
+function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius, useDefaultRadius is boolean) returns SMAttribute
 precondition
 {
     isLength(radius);
@@ -126,13 +147,16 @@ precondition
     bendAttribute.radius = {
             "value" : radius,
             "canBeEdited" : true,
-            "isDefault" : false,
-            "controllingFeatureId" : toAttributeId(id),
-            "parameterIdInFeature" : "radius" };
+            "isDefault" : useDefaultRadius
+    };
+    if (!useDefaultRadius) {
+        bendAttribute.radius.controllingFeatureId = toAttributeId(id);
+        bendAttribute.radius.parameterIdInFeature = "radius";
+    }
     return bendAttribute;
 }
 
-function createNewRipAttribute(id is Id, existingAttribute is SMAttribute) returns SMAttribute
+function createNewRipAttribute(id is Id, existingAttribute is SMAttribute, jointStyle) returns SMAttribute
 {
     var ripAttribute = makeSMJointAttribute(existingAttribute.attributeId);
     ripAttribute.jointType = {
@@ -142,6 +166,12 @@ function createNewRipAttribute(id is Id, existingAttribute is SMAttribute) retur
         "canBeEdited" : true
     };
     ripAttribute.angle = existingAttribute.angle;
+    ripAttribute.jointStyle = {
+        "value" : jointStyle,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "jointStyle",
+        "canBeEdited": true
+    };
     return ripAttribute;
 }
 

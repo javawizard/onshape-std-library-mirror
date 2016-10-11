@@ -36,6 +36,7 @@ export import(path : "onshape/std/debug.fs", version : "✨");
 export import(path : "onshape/std/mathUtils.fs", version : "✨");
 export import(path : "onshape/std/string.fs", version : "✨");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+export import(path : "onshape/std/topologyUtils.fs", version : "✨");
 export import(path : "onshape/std/attributes.fs", version : "✨");
 export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");

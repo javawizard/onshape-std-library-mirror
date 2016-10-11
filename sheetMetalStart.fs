@@ -33,6 +33,7 @@ import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
@@ -646,13 +647,6 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
     }
     return out;
 }
-
-function edgeIsTwoSided(context is Context, edge is Query) returns boolean
-{
-    return size(evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE))) == 2;
-}
-
-
 
 /*
  * Methods for ENCLOSE

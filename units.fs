@@ -129,7 +129,7 @@ export const gram = 0.001 * kilogram;
 annotation { "Name" : "Ounce", "Abbreviation" : "oz" }
 export const ounce = 28.349523 * gram;
 
-/** A constant equal to 1 kilogram. */
+/** A constant equal to 1 pound. */
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
 

@@ -345,27 +345,30 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
         var hasCollision is boolean = false;
         try
         {
+            var extrudeDefinition;
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V364_HOLE_FIX_FEATURE_MIRROR))
             {
-                var extrudeDefinition = {
+                extrudeDefinition = {
                     "entities" : sketchEntityQuery,
                     "direction" : direction,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntity" : targetQuery
                 };
-                opExtrude(context, extrudeId, extrudeDefinition);
             }
             else
             {
-                var extrudeDefinition = {
+                extrudeDefinition = {
                     "bodyType" : ToolBodyType.SURFACE,
                     "operationType" : NewBodyOperationType.NEW,
                     "surfaceEntities" : sketchEntityQuery,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntityBody" : targetQuery
                 };
-                extrude(context, extrudeId, extrudeDefinition);
             }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
+                try silent(opExtrude(context, extrudeId, extrudeDefinition));
+            else
+                opExtrude(context, extrudeId, extrudeDefinition);
             const bodyQuery = qCreatedBy(extrudeId, EntityType.BODY);
             const cylBox = evBox3d(context, { "topology" : bodyQuery, "cSys" : cSys } );
             d = cylBox.maxCorner[2];

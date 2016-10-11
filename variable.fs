@@ -40,6 +40,14 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         verifyVariableName(definition.name);
 
         setVariable(context, definition.name, definition.value);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
+        {
+            if (definition.value == undefined)
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
+            }
+        }
     });
 
 /**

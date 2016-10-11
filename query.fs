@@ -1159,6 +1159,12 @@ export function topologyDisambiguation(topology is array)
 }
 
 /** @internal */
+export function topologyDisambiguationEdgeConnected(topology is array)
+{
+    return { disambiguationType : "TOPOLOGY", entities : topology,  edgeConnectivityOnly : true};
+}
+
+/** @internal */
 export function originalSetDisambiguation(queries is array)
 {
     return { disambiguationType : "ORIGINAL_DEPENDENCY", originals : queries };
