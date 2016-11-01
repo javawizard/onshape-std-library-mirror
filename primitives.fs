@@ -1,27 +1,27 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/sketch.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/sketch.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 /**
  * Create a cube of a specified size, with one corner on the origin.
  * @param definition {{
- *      @field sideLength {valueWithUnits} :
+ *      @field sideLength {ValueWithUnits} :
  *              @eg `1 * inch`
  * }}
  */
@@ -43,7 +43,7 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
 // Defined in the old way to overload with the sphere functions in surfaceGeometry.
 // TODO: rename and merge this with fSphere.
 /**
- * Feature creating a sphere. Internally, calls `opSphere`.
+ * Feature creating a sphere. Internally, calls [opSphere].
  *
  * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{

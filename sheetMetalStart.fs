@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,33 +9,33 @@ FeatureScript 432; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/sheetMetalFlange.fs", version : "432.0");
-export import(path : "onshape/std/sheetMetalFlangeOld.fs", version : "432.0");
+export import(path : "onshape/std/sheetMetalFlange.fs", version : "442.0");
+export import(path : "onshape/std/sheetMetalFlangeOld.fs", version : "442.0");
 
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
-import(path : "onshape/std/attributes.fs", version : "432.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/error.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/geomOperations.fs", version : "432.0");
-import(path : "onshape/std/manipulator.fs", version : "432.0");
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/modifyFillet.fs", version : "432.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "432.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "432.0");
-import(path : "onshape/std/sketch.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/topologyUtils.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
-import(path : "onshape/std/vector.fs", version : "432.0");
+import(path : "onshape/std/attributes.fs", version : "442.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/error.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/geomOperations.fs", version : "442.0");
+import(path : "onshape/std/manipulator.fs", version : "442.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/modifyFillet.fs", version : "442.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "442.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "442.0");
+import(path : "onshape/std/sketch.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/topologyUtils.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/vector.fs", version : "442.0");
 
 /**
  * @internal
@@ -45,11 +45,7 @@ export enum SMProcessType
     annotation { "Name" : "Convert" }
     CONVERT,
     annotation { "Name" : "Extrude" }
-    EXTRUDE,
-    annotation { "Name" : "Recognize" }
-    RECOGNIZE,
-    annotation { "Name" : "Enclose" }
-    ENCLOSE
+    EXTRUDE
 }
 
 /**
@@ -97,46 +93,21 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
             annotation { "Name" : "Bends", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO}
             definition.bends is Query;
         }
-        else if (definition.process == SMProcessType.RECOGNIZE)
-        {
-            annotation { "Name" : "Thin parts", "Filter" : EntityType.BODY && BodyType.SOLID }
-            definition.bodies is Query;
-        }
-        else if (definition.process == SMProcessType.ENCLOSE)
-        {
-            annotation { "Name" : "Enclosure type" }
-            definition.SMEnclosureType is SMEnclosureType;
-
-            if (definition.SMEnclosureType == SMEnclosureType.PROFILE)
-            {
-                annotation { "Name" : "Faces", "Filter" : EntityType.FACE && GeometryType.PLANE }
-                definition.profileFaces is Query;
-            }
-            else
-            {
-                annotation { "Name" : "Parts", "Filter" : EntityType.BODY }
-                definition.parts is Query;
-
-                annotation { "Name" : "Reference mate connector",
-                            "Filter" : BodyType.MATE_CONNECTOR,
-                            "MaxNumberOfPicks" : 1 }
-                definition.refConnector is Query;
-            }
-        }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
-            annotation { "Name" : "Sketch curves to extrude",
-                        "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO && GeometryType.LINE }
-            definition.sketchCurves is Query;
+            annotation { "Name" : "Sketch curves and regions to extrude",
+                        "Filter" : SketchObject.YES && ConstructionObject.NO &&
+                         ((EntityType.EDGE && GeometryType.LINE) || EntityType.FACE) }
+            definition.entities is Query;
 
             annotation { "Name" : "End type" }
             definition.endBound is SMExtrudeBoundingType;
+            annotation { "Name" : "Depth" }
+            isLength(definition.depth, NONNEGATIVE_LENGTH_BOUNDS);
             if (definition.endBound == SMExtrudeBoundingType.BLIND)
             {
                 annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : false }
                 definition.oppositeExtrudeDirection is boolean;
-                annotation { "Name" : "Depth" }
-                isLength(definition.depth, LENGTH_BOUNDS);
             }
         }
 
@@ -144,83 +115,66 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
         annotation { "Name" : "K Factor" }
         isReal(definition.kFactor, K_FACTOR_BOUNDS);
 
-        if (definition.process == SMProcessType.RECOGNIZE)
-        {
-            annotation { "Name" : "Change Thickness", "Default" : false }
-            definition.changeThickness is boolean;
-        }
-        if (definition.process != SMProcessType.RECOGNIZE || definition.changeThickness)
-        {
-            annotation { "Name" : "Thickness" }
-            isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
+        annotation { "Name" : "Minimal clearance" }
+        isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
 
-            if (definition.process == SMProcessType.CONVERT)
-            {
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-                definition.oppositeDirection is boolean;
-            }
-        }
+        annotation { "Name" : "Thickness" }
+        isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
+
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        definition.oppositeDirection is boolean;
 
         annotation { "Name" : "Bend Radius" }
         isLength(definition.radius, BLEND_BOUNDS);
-        if (definition.process == SMProcessType.RECOGNIZE || definition.process == SMProcessType.CONVERT)
+        if (definition.process == SMProcessType.CONVERT)
         {
             annotation { "Name" : "Keep Input Parts" }
             definition.keepInputParts is boolean;
-        }
 
-        if (definition.process == SMProcessType.CONVERT)
-        {
             annotation { "Name" : "Clearance" }
             isLength(definition.clearance, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
             annotation { "Name" : "Bends Included in Clearance" }
             definition.bendsIncluded is boolean;
         }
-
-        if (definition.process == SMProcessType.ENCLOSE)
-        {
-            if (definition.SMEnclosureType == SMEnclosureType.PROFILE)
-            {
-                annotation { "Name" : "Height" }
-                isLength(definition.height, LENGTH_BOUNDS);
-
-                annotation { "Name" : "Bend type" }
-                definition.bendType is smFlangeJointType;
-            }
-            else
-            {
-                annotation { "Name" : "Margin" }
-                isLength(definition.margin, LENGTH_BOUNDS);
-            }
-
-            annotation { "Name" : "Top flange" }
-            definition.topFlange is boolean;
-
-            if (definition.topFlange)
-            {
-                annotation { "Name" : "Width" }
-                isLength(definition.width, LENGTH_BOUNDS);
-            }
-
-            annotation { "Name" : "Cover" }
-            definition.cover is boolean;
-        }
     }
     {
-        if (definition.process == SMProcessType.RECOGNIZE)
+        if (definition.process == SMProcessType.CONVERT)
         {
-            smRecognize(context, id, definition);
+            convertExistingPart(context, id, definition);
         }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
             extrudeSheetMetal(context, id, definition);
         }
-        else if (definition.process == SMProcessType.CONVERT)
+    }, {"kFactor" : 0.45, "minimalClearance" : 2e-5 * meter, "oppositeDirection" : false});
+
+/**
+ * @internal
+ */
+export enum SMProcessTypeInternal
+{
+    annotation { "Name" : "Recognize" }
+    RECOGNIZE,
+    annotation { "Name" : "Enclose" }
+    ENCLOSE
+}
+
+/**
+ * @internal
+ * For testing use only, to expose enclose and recognize options to tests.
+ */
+annotation { "Feature Type Name" : "Start Sheet Metal", "Manipulator Change Function" : "smStartManipulatorChange", "UIHint" : "ALWAYS_HIDDEN" }
+export const smStartSheetMetalInternal = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+precondition
+    {
+    }
+    {
+        if (definition.process == SMProcessTypeInternal.RECOGNIZE)
         {
-            convertExistingPart(context, id, definition);
+            smRecognize(context, id, definition);
         }
-        else if (definition.process == SMProcessType.ENCLOSE)
+        else if (definition.process == SMProcessTypeInternal.ENCLOSE)
         {
             throw regenError("Functionality pending adjustment to new SM approach", ['process']);
             if (definition.SMEnclosureType == SMEnclosureType.PROFILE)
@@ -232,8 +186,7 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
                 makeBoundingBoxEnclosure(context, id, definition);
             }
         }
-    }, {"kFactor" : 0.45});
-
+    }, {"kFactor" : 0.45, "minimalClearance" : 2e-5 * meter});
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
 {
@@ -325,7 +278,12 @@ function convertExistingPart(context is Context, id is Id, definition is map)
                 "defaultRadius" : definition.radius,
                 "controlsThickness" : true,
                 "thickness" : definition.thickness,
+                "minimalClearance" : definition.minimalClearance,
                 "kFactor" : definition.kFactor }, 0);
+        if (getFeatureError(context, id) != undefined)
+        {
+            return;
+        }
     }
     catch
     {
@@ -358,7 +316,7 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
         {
             for (var edge in edges)
             {
-                var adjacentWalls = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), definition.faces);
+                var adjacentWalls = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), definition.facesToExclude);
                 if (size(evaluateQuery(context, adjacentWalls)) == 0)
                 {
                     continue;
@@ -404,50 +362,100 @@ const DEPTH_MANIPULATOR = "depthManipulator";
 
 function extrudeSheetMetal(context is Context, id is Id, definition is map)
 {
-    const resolvedEntities = evaluateQuery(context, definition.sketchCurves);
-    if (size(resolvedEntities) == 0)
+    const sheetQuery = qUnion([
+                               convertSketchRegion(context, id + "region", definition),
+                               extrudeSketchCurves(context, id, definition)
+                             ]);
+    const createdSheetBodies = evaluateQuery(context, sheetQuery);
+    if (size(createdSheetBodies) == 0)
     {
-        throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["sketchCurves"]);
+            throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
     }
 
-    const extrudeAxis = getExtrudeDirection(context, resolvedEntities[0]);
-    addExtrudeManipulator(context, id, definition, extrudeAxis);
+    // Regardless of whether the sheets were created by curves or regions
+    // we want to offset the sheet by half the thickness
+    var oppositeOffset = definition.oppositeDirection;
+    if (definition.oppositeExtrudeDirection == true)
+    {
+        oppositeOffset = !oppositeOffset;
+    }
+    offsetSheets(context, id, sheetQuery, definition.thickness, oppositeOffset);
 
-    const extrudeId = id + "extrude";
-    extrudeSketch(context, extrudeId, definition, extrudeAxis);
-
-    const facesAndEdges = addSheetMetalDataToSheet(context, id, qCreatedBy(extrudeId, EntityType.BODY), definition);
-
+    const facesAndEdges = addSheetMetalDataToSheet(context, id, sheetQuery, definition);
     finalizeSheetMetalGeometry(context, id, facesAndEdges);
 }
 
-function extrudeSketch(context is Context, id is Id, definition is map, extrudeAxis is Line)
+function offsetSheets(context is Context, id is Id, sheetQuery is Query, thickness is ValueWithUnits, oppositeDirection is boolean)
 {
-    definition.entities = definition.sketchCurves;
-    definition.direction = extrudeAxis.direction;
-    if (definition.oppositeExtrudeDirection)
-        definition.direction *= -1;
+    opOffsetFace(context, id + "offsetFaces", {
+            "moveFaces" : qOwnedByBody(sheetQuery, EntityType.FACE),
+            "offsetDistance" : thickness * 0.5 * (oppositeDirection ? -1 : 1)
+    });
+}
 
-    if (definition.depth != undefined && definition.depth < 0)
+
+function convertSketchRegion(context is Context, id is Id, definition is map) returns Query
+{
+    const sketchRegions = qBodyType(definition.entities, BodyType.SHEET);
+    const resolvedSurface = evaluateQuery(context, sketchRegions);
+    if (size(resolvedSurface) > 0)
     {
-        definition.depth *= -1;
-        if (definition.endBound == SMExtrudeBoundingType.BLIND)
+        const surfaceId = id + "surface";
+        opExtrude(context, surfaceId, {
+                    "entities" : sketchRegions,
+                    "direction" : evOwnerSketchPlane(context, { "entity" : resolvedSurface[0] }).normal,
+                    "endBound" : BoundingType.BLIND,
+                    "endDepth" : definition.thickness
+                });
+        var createdQuery = qCreatedBy(surfaceId, EntityType.BODY);
+        var isStartCap = true;
+        opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(surfaceId, isStartCap), EntityType.FACE) });
+        opDeleteBodies(context, id + "deleteBodies", {
+                    "entities" : createdQuery
+                });
+        return qCreatedBy(id + "extract", EntityType.BODY);
+    }
+    return qNothing();
+}
+
+function extrudeSketchCurves(context is Context, id is Id, definition is map) returns Query
+{
+    var sketchCurves = qGeometry(definition.entities, GeometryType.LINE);
+    const resolvedEntities = evaluateQuery(context, sketchCurves);
+    if (size(resolvedEntities) > 0)
+    {
+        const extrudeAxis = getExtrudeDirection(context, resolvedEntities[0]);
+        addExtrudeManipulator(context, id, definition, extrudeAxis);
+        const extrudeId = id + "extrude";
+
+        definition.entities = sketchCurves;
+        definition.direction = extrudeAxis.direction;
+        if (definition.oppositeExtrudeDirection)
             definition.direction *= -1;
+
+        if (definition.depth != undefined && definition.depth < 0)
+        {
+            definition.depth *= -1;
+            if (definition.endBound == SMExtrudeBoundingType.BLIND)
+                definition.direction *= -1;
+        }
+
+        definition.startBound = BoundingType.BLIND;
+        definition.startDepth = 0;
+        definition.endDepth = definition.depth;
+        definition.isStartBoundOpposite = false;
+
+        if (definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
+        {
+            definition.endBound = BoundingType.BLIND;
+            definition.startDepth = definition.depth * -0.5;
+            definition.endDepth = definition.depth * 0.5;
+        }
+
+        opExtrude(context, extrudeId, definition);
+        return qCreatedBy(extrudeId, EntityType.BODY);
     }
-
-    definition.startBound = BoundingType.BLIND;
-    definition.startDepth = 0;
-    definition.endDepth = definition.depth;
-    definition.isStartBoundOpposite = false;
-
-    if (definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
-    {
-        definition.endBound = BoundingType.BLIND;
-        definition.startDepth = definition.depth * -0.5;
-        definition.endDepth = definition.depth * 0.5;
-    }
-
-    opExtrude(context, id, definition);
+    return qNothing();
 }
 
 function getExtrudeDirection(context is Context, entity is Query)
@@ -469,7 +477,7 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
                     linearManipulator(extrudeAxis.origin,
                         extrudeAxis.direction,
                         offset,
-                        definition.sketchCurves) });
+                        definition.entities) });
 }
 
 function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is Query, definition is map)
@@ -495,12 +503,17 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "specialRadiiBends" : [],
         "thickness" : definition.thickness,
         "controlsThickness" : true,
+        "minimalClearance" : definition.minimalClearance,
         "kFactor" : definition.kFactor
     };
 
     try
     {
         annotateSmSurfaceBodies(context, id, surfaceData, 0);
+        if (getFeatureError(context, id) != undefined)
+        {
+            return;
+        }
     }
     catch
     {
@@ -553,9 +566,14 @@ function smRecognize(context is Context, id is Id, definition is map)
             surfaceData.thickness = definition.thickness;
         }
         surfaceData.kFactor = definition.kFactor;
+        surfaceData.minimalClearance = definition.minimalClearance;
         groupCount += 1;
         smFacesAndEdgesQ = qUnion([smFacesAndEdgesQ, qCreatedBy(surfaceId, EntityType.FACE), qCreatedBy(surfaceId, EntityType.EDGE)]);
         objectCount = annotateSmSurfaceBodies(context, id, surfaceData, objectCount);
+        if (getFeatureError(context, id) != undefined)
+        {
+            return;
+        }
     }
     if (!definition.keepInputParts)
     {

@@ -1,10 +1,10 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
 
 /**
  * A right-handed Cartesian coordinate system. Used for converting points and
@@ -14,10 +14,11 @@ import(path : "onshape/std/units.fs", version : "432.0");
  * The y-axis of a coordinate system is not stored, but it can be obtained by
  * calling `yAxis`, which simply performs a cross product.
  *
- * @see `toWorld`
- * @see `fromWorld`
- * @see `plane`
- * @see `opMateConnector`
+ * @seealso [toWorld(CoordSystem)]
+ * @seealso [fromWorld(CoordSystem)]
+ * @seealso [coordSystem(Plane)]
+ * @seealso [plane(CoordSystem)]
+ * @seealso [opMateConnector]
  *
  * @type {{
  *      @field origin {Vector}: A 3D point, in world space, representing the origin of the coordinate system.
@@ -41,7 +42,7 @@ export predicate canBeCoordSystem(value)
 /**
  * Creates a Cartesian coordinate system.
  *
- * @see `CoordSystem`
+ * @seealso [CoordSystem]
  *
  * @param origin : A 3D point in world space.
  * @param xAxis : A 3D vector in world space. Need not be normalized.
@@ -64,7 +65,7 @@ export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
 }
 
 /**
- * Check that two `CoordSystem`s are the same up to tolerance.
+ * Check that two [CoordSystem]s are the same up to tolerance.
  */
 export predicate tolerantEquals(cSys1 is CoordSystem, cSys2 is CoordSystem)
 {
@@ -90,10 +91,10 @@ precondition
 }
 
 /**
- * Returns a `Transform` which will move geometry from a specified coordinate system into world
+ * Returns a [Transform] which will move geometry from a specified coordinate system into world
  * space.
  *
- * @see `opTransform`
+ * @seealso [opTransform]
  */
 export function toWorld(cSys is CoordSystem) returns Transform
 {
@@ -117,10 +118,10 @@ precondition
 }
 
 /**
- * Returns a `Transform` which will move geometry from world space into a
+ * Returns a [Transform] which will move geometry from world space into a
  * specified coordinate system.
  *
- * @see `opTransform`
+ * @seealso [opTransform]
  */
 export function fromWorld(cSys is CoordSystem) returns Transform
 {

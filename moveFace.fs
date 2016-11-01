@@ -1,24 +1,24 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
-export import(path : "onshape/std/tool.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/tool.fs", version : "442.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "432.0");
+export import(path : "onshape/std/manipulator.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -28,7 +28,7 @@ export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
 /**
- * Feature performing an `opMoveFace`.
+ * Feature performing an [opMoveFace].
  */
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",

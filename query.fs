@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 432; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/context.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/context.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -52,7 +52,7 @@ import(path : "onshape/std/curveGeometry.fs", version : "432.0");
  */
 export type Query typecheck canBeQuery;
 
-/** Typecheck for `Query` */
+/** Typecheck for [Query] */
 export predicate canBeQuery(value)
 {
     value is map;
@@ -72,51 +72,51 @@ export predicate canBeQuery(value)
  * described on the documentation for the function `qEverything`.
  *
  ******************************************************************************
- * @value NOTHING                    : Used in `qNothing`
- * @value EVERYTHING                 : Used in `qEverything`
- * @value NTH_ELEMENT                : Used in `qNthElement`
- * @value ENTITY_FILTER              : Used in `qEntityFilter`
- * @value HISTORICAL                 : Used in `qHistorical`
- * @value CREATED_BY                 : Used in `qCreatedBy`
- * @value SKETCH_REGION              : Used in `qSketchRegion`
- * @value TRANSIENT                  : Used in `qTransient`
- * @value UNION                      : Used in `qUnion`
- * @value INTERSECTION               : Used in `qIntersection`
- * @value SUBTRACTION                : Used in `qSubtraction`
- * @value OWNED_BY_PART              : Used in `qOwnedByBody`
- * @value OWNER_PART                 : Used in `qOwnerBody`
- * @value VERTEX_ADJACENT            : Used in `qVertexAdjacent`
- * @value EDGE_ADJACENT              : Used in `qEdgeAdjacent`
+ * @value NOTHING                    : Used in [qNothing]
+ * @value EVERYTHING                 : Used in [qEverything]
+ * @value NTH_ELEMENT                : Used in [qNthElement]
+ * @value ENTITY_FILTER              : Used in [qEntityFilter]
+ * @value HISTORICAL                 : Used in historical queries
+ * @value CREATED_BY                 : Used in [qCreatedBy]
+ * @value SKETCH_REGION              : Used in [qSketchRegion]
+ * @value TRANSIENT                  : Used in [qTransient]
+ * @value UNION                      : Used in [qUnion]
+ * @value INTERSECTION               : Used in [qIntersection]
+ * @value SUBTRACTION                : Used in [qSubtraction]
+ * @value OWNED_BY_PART              : Used in [qOwnedByBody]
+ * @value OWNER_PART                 : Used in [qOwnerBody]
+ * @value VERTEX_ADJACENT            : Used in [qVertexAdjacent]
+ * @value EDGE_ADJACENT              : Used in [qEdgeAdjacent]
  * @value LOOP_AROUND_FACE           : Not yet implemented
  * @value SHELL_CONTAINING_FACE      : Not yet implemented
- * @value GEOMETRY                   : Used in `qGeometry`
- * @value BODY_TYPE                  : Used in `qBodyType`
- * @value PLANE_NORMAL               : Used in `qParallelPlane`
+ * @value GEOMETRY                   : Used in [qGeometry]
+ * @value BODY_TYPE                  : Used in [qBodyType]
+ * @value PLANE_NORMAL               : Used in [qParallelPlanes]
  * @value TANGENT_EDGES              : Not yet implemented
  * @value TANGENT_FACES              : Not yet implemented
- * @value CONVEX_CONNECTED_FACES     : Used in `qConvexConnectedFaces`
- * @value CONCAVE_CONNECTED_FACES    : Used in `qConcaveConnectedFaces`
- * @value TANGENT_CONNECTED_FACES    : Used in `qTangentConnectedFaces`
- * @value LOOP_BOUNDED_FACES         : Used in `qLoopBoundedFaces`
- * @value FACE_OR_EDGE_BOUNDED_FACES : Used in `qFaceOrEdgeBoundedFaces`
- * @value HOLE_FACES                 : Used in `qHoleFaces`
- * @value FILLET_FACES               : Used in `qFilletFaces`
- * @value PATTERN                    : Used in `qMatchingFaces`
- * @value CONTAINS_POINT             : Used in `qContainsPoint`
- * @value INTERSECTS_LINE            : Used in `qIntersectsLine`
- * @value INTERSECTS_PLANE           : Used in `qIntersectsPlane`
- * @value INTERSECTS_BALL            : Used in `qWithinRadius`
- * @value CLOSEST_TO                 : Used in `qClosestTo`
- * @value FARTHEST_ALONG             : Used in `qFarthestAlong`
- * @value LARGEST                    : Used in `qLargest`
- * @value SMALLEST                   : Used in `qSmallest`
- * @value COEDGE                     : Used in `qCoedge`
- * @value MATE_CONNECTOR             : Used in `qMateConnector`
- * @value CONSTRUCTION_FILTER        : Used in `qConstructionFilter`
- * @value DEPENDENCY                 : Used in `qDependency`
- * @value TRACKING                   : Used in `startTracking`
- * @value CAP_ENTITY                 : Used in `qCapEntity`
- * @value SOURCE_MESH                : Used in `qSourceMesh`
+ * @value CONVEX_CONNECTED_FACES     : Used in [qConvexConnectedFaces]
+ * @value CONCAVE_CONNECTED_FACES    : Used in [qConcaveConnectedFaces]
+ * @value TANGENT_CONNECTED_FACES    : Used in [qTangentConnectedFaces]
+ * @value LOOP_BOUNDED_FACES         : Used in [qLoopBoundedFaces]
+ * @value FACE_OR_EDGE_BOUNDED_FACES : Used in [qFaceOrEdgeBoundedFaces]
+ * @value HOLE_FACES                 : Used in [qHoleFaces]
+ * @value FILLET_FACES               : Used in [qFilletFaces]
+ * @value PATTERN                    : Used in [qMatchingFaces]
+ * @value CONTAINS_POINT             : Used in [qContainsPoint]
+ * @value INTERSECTS_LINE            : Used in [qIntersectsLine]
+ * @value INTERSECTS_PLANE           : Used in [qIntersectsPlane]
+ * @value INTERSECTS_BALL            : Used in [qWithinRadius]
+ * @value CLOSEST_TO                 : Used in [qClosestTo]
+ * @value FARTHEST_ALONG             : Used in [qFarthestAlong]
+ * @value LARGEST                    : Used in [qLargest]
+ * @value SMALLEST                   : Used in [qSmallest]
+ * @value COEDGE                     : Used in [qCoEdge]
+ * @value MATE_CONNECTOR             : Used in [qMateConnectorsOfParts]
+ * @value CONSTRUCTION_FILTER        : Used in [qConstructionFilter]
+ * @value DEPENDENCY                 : Used in [qDependency]
+ * @value TRACKING                   : Used in [startTracking]
+ * @value CAP_ENTITY                 : Used in [qCapEntity]
+ * @value SOURCE_MESH                : Used in [qSourceMesh]
  ******************************************************************************/
 export enum QueryType
 {
@@ -190,7 +190,7 @@ export enum QueryType
  * many geometric entities in the context (faces, edges, or vertices), which
  * are owned by the body, and have the `BodyType` of their owning body.
  *
- * @see `qBodyType`
+ * @seealso [qBodyType]
  *
  * @value SOLID : A three-dimensional part (e.g. the result of a solid extrude)
  * @value SHEET : A two-dimensional sheet body (e.g. a sketch region, or the
@@ -213,7 +213,7 @@ export enum BodyType
 
 /**
  * Specifies the topological type of a given entity. Used in several queries as
- * a filter, or on any query explicitly with `qEntityFilter`
+ * a filter, or on any query explicitly with [qEntityFilter]
  *
  * Thus, one can obtain all the vertices in a part studio with
  *`qEverything(EntityType.VERTEX)`,
@@ -237,7 +237,9 @@ export enum EntityType
 }
 
 /**
- * Specifies the geometric type of queried entities. @see `qGeometry`.
+ * Specifies the geometric type of queried entities.
+ *
+ * @seealso [qGeometry]
  *
  * @value LINE : A straight line or edge
  * @value CIRCLE : A circle of constant radius
@@ -277,7 +279,7 @@ export enum GeometryType
  * annotation { "Name" : "Edges to use", "Filter" : EntityType.EDGE && ConstructionObject.NO }
  * definition.edges is Query;
  * ```
- * @see `qConstructionFilter`
+ * @seealso [qConstructionFilter]
  *
  * @value YES : Matches only entities which are created for construction
  * @value NO  : Matches only entities which are not created for construction
@@ -289,7 +291,7 @@ export enum ConstructionObject
 }
 
 /**
- * Specifies whether we allow meshes. It is default to NO.
+ * Specifies whether we allow meshes. It is default to `NO`.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
  * ```
@@ -309,8 +311,7 @@ export enum AllowMeshGeometry
 /**
  * Specifies whether the entities are mesh geometries.
  *
- *
- * @see `qMeshGeometryFilter`
+ * @seealso [qMeshGeometryFilter]
  *
  * @value YES : Matches only entities (edges, faces, and bodies) which are meshes
  * @value NO  : Matches only entities (edges, faces, and bodies) which are not meshes
@@ -376,7 +377,7 @@ export enum QueryFilterCompound
 
 /**
  * Specifies a method of comparing two items.
- * @see `qFilletFaces`
+ * @seealso [qFilletFaces]
  */
 export enum CompareType
 {
@@ -408,7 +409,7 @@ export function qNothing() returns Query
 }
 
 /**
- * A query for all entities of a specified EntityType
+ * A query for all entities of a specified [EntityType]
  * @param entityType : @optional
  */
 export function qEverything(entityType is EntityType) returns Query
@@ -446,7 +447,7 @@ precondition
 }
 
 /**
- * A query for entities of a subquery which match a given `EntityType`.
+ * A query for entities of a subquery which match a given [EntityType].
  */
 export function qEntityFilter(subquery is Query, entityType is EntityType) returns Query
 {
@@ -454,7 +455,8 @@ export function qEntityFilter(subquery is Query, entityType is EntityType) retur
 }
 
 /**
-* A query for entities of a subquery which have been assigned an attribute matching a given `attributePattern` @see `getAttributes`
+* A query for entities of a subquery which have been assigned an attribute matching a given `attributePattern`.
+* @seealso [getAttributes]
 */
 export function qAttributeFilter(subquery is Query, attributePattern) returns Query
 {
@@ -507,7 +509,7 @@ export function qCreatedBy(featureId is Id) returns Query
  *
  * This constructor should not be used directly. To obtain a list of transient
  * queries for specific entities, simply pass any other query into
- * `evaluateQuery`.
+ * [evaluateQuery].
  */
 export function qTransient(id is TransientId) returns Query
 {
@@ -708,8 +710,7 @@ precondition
 //======================== Geometry Type Queries ==============================
 
 /**
- * A query for all entities of a specified `GeometryType` matching a subquery.
- * @see `GeometryType`
+ * A query for all entities of a specified [GeometryType] matching a subquery.
  */
 export function qGeometry(subquery is Query, geometryType is GeometryType) returns Query
 {
@@ -717,8 +718,7 @@ export function qGeometry(subquery is Query, geometryType is GeometryType) retur
 }
 
 /**
- * A query for all entities of a specified `BodyType` matching a subquery.
- * @see `BodyType`
+ * A query for all entities of a specified [BodyType] matching a subquery.
  */
 export function qBodyType(subquery is Query, bodyType is BodyType) returns Query
 {
@@ -726,11 +726,9 @@ export function qBodyType(subquery is Query, bodyType is BodyType) returns Query
 }
 
 /**
- * A query for all entities with any of a list of `BodyType`s matching a
- * subquery.
- * @see `BodyType`
+ * A query for all entities of a `subquery` with any of a list of [BodyType]s.
  *
- * @param bodyTypes : An array of `BodyType`s.
+ * @param bodyTypes : An array of [BodyType]s.
  */
 export function qBodyType(subquery is Query, bodyTypes is array) returns Query
 precondition
@@ -752,7 +750,7 @@ precondition
 /**
  * A query for all construction entities, or all non-construction entities,
  * matching a subquery.
- * @see `ConstructionObject`
+ * @seealso [ConstructionObject]
  */
 export function qConstructionFilter(subquery is Query, constructionFilter is ConstructionObject) returns Query
 {
@@ -762,7 +760,7 @@ export function qConstructionFilter(subquery is Query, constructionFilter is Con
 /**
  * Depending on meshGeometryFilter, a query for filtering out all mesh entities or allowing only mesh entities matching a subquery.
  * A body is considered a "mesh entity" if any of its faces or edges have mesh geometry.
- * @see `MeshGeometry`
+ * @seealso [MeshGeometry]
  */
 export function qMeshGeometryFilter(subquery is Query, meshGeometryFilter is MeshGeometry) returns Query
 {
@@ -1193,7 +1191,7 @@ export function ownerDisambiguation(topology is array)
  */
 export type TransientId typecheck canBeTransientId;
 
-/** Typecheck for `TransientId` */
+/** Typecheck for [TransientId] */
 export predicate canBeTransientId(value)
 {
     @isTransientId(value); /* implies (value is builtin) */

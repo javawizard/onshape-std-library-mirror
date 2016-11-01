@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -11,7 +11,7 @@ FeatureScript 432; /* Automatically generated version */
  *
  * To report a custom error, pass a string as the first argument of regenError.
  *
- * @see `error.fs` for usage.
+ * See `error.fs` for usage.
  * @default @value INVALID_RESULT */
 export enum ErrorStringEnum
 {
@@ -567,7 +567,18 @@ export enum ErrorStringEnum
     VARIABLE_CANNOT_EVALUATE,
     DRAWING_ASSEMBLY_INVALID_SECTION_CUT,
     DRAWING_PARTSTUDIO_INVALID_SECTION_CUT,
-    SHEET_METAL_COULD_NOT_UNFOLD
+    SHEET_METAL_COULD_NOT_UNFOLD,
+    PARAMETER_OUT_OF_RANGE,
+    SHEET_METAL_NO_0_ANGLE_BEND,
+    SHEET_METAL_FLAT_RIP_NO_EDIT,
+    SHEET_METAL_CANT_CHANGE_TO_FLAT,
+    PARAMETER_PRECONDITION_FAILED,
+    PARAMETER_SYNTAX_ERROR,
+    SHEET_METAL_CAN_ONLY_REMOVE,
+    SHEET_METAL_CAN_ONLY_SUBTRACT,
+    REST_ASSEMBLY_INVALID_FEATURE,
+    REST_ASSEMBLY_INVALID_BODY_TYPE,
+    PARTING_OUT_TARGET_READONLY
 }
 
 

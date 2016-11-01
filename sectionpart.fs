@@ -1,24 +1,24 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/extrude.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/sketch.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
-import(path : "onshape/std/vector.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/extrude.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/sketch.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
+import(path : "onshape/std/vector.fs", version : "442.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -79,7 +79,7 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
 /**
  * Feature creating a section of a part behind a plane. Internally, performs
- * an `opSplitPart` followed by an `opDeleteBodies`.
+ * an [opSplitPart] followed by an [opDeleteBodies].
  *
  * Not exposed in the Part Studio UI.
  */

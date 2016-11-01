@@ -1,32 +1,32 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "432.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/extrude.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/revolve.fs", version : "432.0");
-import(path : "onshape/std/sketch.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/holetables.gen.fs", version : "432.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "432.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "432.0");
-import(path : "onshape/std/cylinderCast.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/attributes.fs", version : "432.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "432.0");
-export import(path : "onshape/std/holeUtils.fs", version : "432.0");
+import(path : "onshape/std/boolean.fs", version : "442.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/extrude.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/revolve.fs", version : "442.0");
+import(path : "onshape/std/sketch.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/holetables.gen.fs", version : "442.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "442.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "442.0");
+import(path : "onshape/std/cylinderCast.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/attributes.fs", version : "442.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "442.0");
+export import(path : "onshape/std/holeUtils.fs", version : "442.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -439,15 +439,11 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 
 const HOLE_CLEARANCE_BOUNDS =
 {
-    "min"      : 0,
-    "max"      : 100,
     (unitless) : [0, 3, 100]
 } as IntegerBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.005, 500],
     (centimeter) : 0.5,
     (millimeter) : 5.0,
@@ -458,8 +454,6 @@ const HOLE_DIAMETER_BOUNDS =
 
 const HOLE_BORE_DIAMETER_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.01, 500],
     (centimeter) : 1.0,
     (millimeter) : 10.0,
@@ -470,8 +464,6 @@ const HOLE_BORE_DIAMETER_BOUNDS =
 
 const HOLE_DEPTH_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.012, 500],
     (centimeter) : 1.2,
     (millimeter) : 12.0,
@@ -482,8 +474,6 @@ const HOLE_DEPTH_BOUNDS =
 
 const HOLE_BORE_DEPTH_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.005, 500],
     (centimeter) : 0.5,
     (millimeter) : 5.0,
@@ -497,10 +487,8 @@ const HOLE_BORE_DEPTH_BOUNDS =
  */
 export const CSINK_ANGLE_BOUNDS =
 {
-    "min"    : (0.25 * PI - TOLERANCE.zeroAngle) * radian,
-    "max"    : (0.75 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [44.9, 90, 135.1],
-    (radian) : [0.25 * PI, 0.5 * PI,  0.75 * PI]
+    (radian) : 0.5 * PI
 } as AngleBoundSpec;
 
 function depthOfRadius(context is Context, radius is ValueWithUnits, halfAngle is ValueWithUnits)
@@ -1036,8 +1024,27 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     // is this a tapped hole and we found its size?
     if (resultAttribute.isTappedHole && tapSize != undefined && tapPitch != undefined)
     {
+        // format tap pitch based upon units
+        var pitch = tapPitch;
+        var delimiter = "x";
+        var result = match(tapPitch, "([0123456789.]*)\\s*(tpi|mm)");
+        if (result.hasMatch)
+        {
+            if (result.captures[2] == "tpi")
+            {
+                pitch = result.captures[1];
+
+                // use '-' instead of 'x'
+                delimiter = "-";
+            }
+            else if (result.captures[2] == "mm")
+            {
+                pitch = result.captures[1];
+            }
+        }
+
         // set tap size
-        resultAttribute.tapSize = tapSize ~ " x " ~  tapPitch;
+        resultAttribute.tapSize = tapSize ~ delimiter ~  pitch;
         if (holeDefinition.tappedDepth != undefined)
             resultAttribute.tappedDepth = holeDefinition.tappedDepth;
 

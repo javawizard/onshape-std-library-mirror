@@ -1,27 +1,27 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "432.0");
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "432.0");
-export import(path : "onshape/std/tool.fs", version : "432.0");
+export import(path : "onshape/std/manipulator.fs", version : "442.0");
+export import(path : "onshape/std/tool.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -79,11 +79,11 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
 // Note that transform() is also defined in transform.fs
 // with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
 /**
- * Move and/or rotate a body or bodies with a single `Transform`, constructed with input according to the
- * selected `TransformType`.
+ * Move and/or rotate a body or bodies with a single [Transform], constructed with input according to the
+ * selected [TransformType].
  *
- * Internally, performs an `opTransform` when not copying, and an `opPattern` when copying. For simple
- * transforms, prefer calling `opTransform` or `opPattern` directly.
+ * Internally, performs an [opTransform] when not copying, and an [opPattern] when copying. For simple
+ * transforms, prefer calling [opTransform] or [opPattern] directly.
  *
  * @param definition {{
  *      @field entities {Query} : The bodies to transform. An error is thrown if non-bodies are included.
@@ -468,7 +468,7 @@ export function transformManipulatorChange(context is Context, output is map, in
     return output;
 }
 
-annotation { "Deprecated" : "Use `opPattern`, or the `transform` feature instead.",
+annotation { "Deprecated" : "Use [opPattern], or the [transform] feature instead.",
     "Feature Type Name" : "Copy part", "Filter Selector" : "allparts" }
 export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition

@@ -1,7 +1,7 @@
-FeatureScript 432; /* Automatically generated version */
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
+FeatureScript 442; /* Automatically generated version */
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
 
 /**
  * A `LookupTablePath` identifies a map of keys into a multi-level table.
@@ -14,7 +14,7 @@ import(path : "onshape/std/units.fs", version : "432.0");
  */
 export type LookupTablePath typecheck canBeLookupTablePath;
 
-/** Typecheck for `LookupTablePath` */
+/** Typecheck for [LookupTablePath] */
 export predicate canBeLookupTablePath(value)
 {
     value is map;

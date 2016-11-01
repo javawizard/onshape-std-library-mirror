@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -37,6 +37,7 @@ FeatureScript 432; /* Automatically generated version */
  * @value SHOW_EXPRESSION : If an expression (like #foo or 1/4 in) is entered, always show the expression,
  *      and never the resulting value.
  * @value OPPOSITE_DIRECTION_CIRCULAR : Like `OPPOSITE_DIRECTION`, but with circular arrows.
+ * @value SHOW_LABEL : Show a label above an enum parameter.
  */
 export enum UIHint
 {
@@ -51,7 +52,8 @@ export enum UIHint
     MATE_CONNECTOR_AXIS_TYPE,
     PRIMARY_AXIS,
     SHOW_EXPRESSION,
-    OPPOSITE_DIRECTION_CIRCULAR
+    OPPOSITE_DIRECTION_CIRCULAR,
+    SHOW_LABEL
 }
 
 

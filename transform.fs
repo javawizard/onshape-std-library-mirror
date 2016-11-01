@@ -1,13 +1,13 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/matrix.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
-import(path : "onshape/std/vector.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/matrix.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
+import(path : "onshape/std/vector.fs", version : "442.0");
 
 /**
  * Type typically representing a change of position, orientation in 3D space
@@ -28,7 +28,7 @@ import(path : "onshape/std/vector.fs", version : "432.0");
  * accomplished through the operator overloads above, and the functions in this
  * module and the `coordSystem` module.
  *
- * `rotationAround`, `scaleUniformly`, `toWorld` and `fromWorld` return
+ * [rotationAround], [scaleUniformly], [toWorld(CoordSystem)] and [fromWorld(CoordSystem)] return
  * transforms for common operations.
  *
  * @type {{
@@ -39,7 +39,7 @@ import(path : "onshape/std/vector.fs", version : "432.0");
  */
 export type Transform typecheck canBeTransform;
 
-/** Typecheck for `Transform` */
+/** Typecheck for [Transform] */
 export predicate canBeTransform(value)
 {
     value is map;
@@ -49,7 +49,7 @@ export predicate canBeTransform(value)
 }
 
 /**
- * Construct a `Transform` using the matrix argument for rotation
+ * Construct a [Transform] using the matrix argument for rotation
  * and scaling and the vector argument for translation.
  */
 export function transform(linear is Matrix, translation is Vector) returns Transform
@@ -63,7 +63,7 @@ precondition
 }
 
 /**
- * Construct a `Transform` that translates without rotation or scaling.
+ * Construct a [Transform] that translates without rotation or scaling.
  */
 export function transform(translation is Vector) returns Transform
 precondition
@@ -81,7 +81,7 @@ export function transform(value is map) returns Transform
 
 /**
  * @internal
- * Create a `Transform` from the result of a builtin call.
+ * Create a [Transform] from the result of a builtin call.
  */
 export function transformFromBuiltin(definition is map) returns Transform
 {
@@ -97,7 +97,7 @@ export function identityTransform() returns Transform
 }
 
 /**
- * Check that two `Transform`s are the same up to tolerance.
+ * Check that two [Transform]s are the same up to tolerance.
  */
 export predicate tolerantEquals(transform1 is Transform, transform2 is Transform)
 {
@@ -120,7 +120,7 @@ precondition
 }
 
 /**
- * Compute the inverse of a `Transform`, such that
+ * Compute the inverse of a [Transform], such that
  * `inverse(t) * t == identityTransform()`.
  */
 export function inverse(t is Transform) returns Transform
@@ -130,7 +130,7 @@ export function inverse(t is Transform) returns Transform
 }
 
 /**
- * Returns a `Transform` that represents a uniform scaling around
+ * Returns a [Transform] that represents a uniform scaling around
  * the origin.
  */
 export function scaleUniformly(scale is number) returns Transform
@@ -139,7 +139,7 @@ export function scaleUniformly(scale is number) returns Transform
 }
 
 /**
- * Returns a `Transform` that represents a uniform scaling around
+ * Returns a [Transform] that represents a uniform scaling around
  * the given point.
  */
 export function scaleUniformly(scale is number, point is Vector) returns Transform

@@ -1,15 +1,15 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "432.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
 
 // ===================================== Line ======================================
 
@@ -22,7 +22,7 @@ import(path : "onshape/std/units.fs", version : "432.0");
  */
 export type Line typecheck canBeLine;
 
-/** Typecheck for `Line` */
+/** Typecheck for [Line] */
 export predicate canBeLine(value)
 {
     value is map;
@@ -42,7 +42,7 @@ export function line(origin is Vector, direction is Vector) returns Line
 /**
  * @internal
  *
- * Create a `Line` from the result of a builtin call.
+ * Create a [Line] from the result of a builtin call.
  */
 export function lineFromBuiltin(definition is map) returns Line
 {
@@ -50,7 +50,7 @@ export function lineFromBuiltin(definition is map) returns Line
 }
 
 /**
- * Check that two `Line`s are the same up to tolerance, including the origin.
+ * Check that two [Line]s are the same up to tolerance, including the origin.
  */
 export predicate tolerantEquals(line1 is Line, line2 is Line)
 {
@@ -86,7 +86,7 @@ precondition
 }
 
 /**
- * Returns a `Transform` that represents the rotation around the given line by the given angle. The rotation is
+ * Returns a [Transform] that represents the rotation around the given line by the given angle. The rotation is
  * counterclockwise looking against the line direction.
  */
 export function rotationAround(line is Line, angle is ValueWithUnits) returns Transform
@@ -117,7 +117,7 @@ export function toString(value is Line) returns string
  */
 export type Circle typecheck canBeCircle;
 
-/** Typecheck for `Circle` */
+/** Typecheck for [Circle] */
 export predicate canBeCircle(value)
 {
     value is map;
@@ -179,7 +179,7 @@ export function toString(value is Circle) returns string
  */
 export type Ellipse typecheck canBeEllipse;
 
-/** Typecheck for `Ellipse` */
+/** Typecheck for [Ellipse] */
 export predicate canBeEllipse(value)
 {
     value is map;

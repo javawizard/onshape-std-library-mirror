@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,22 +6,22 @@ FeatureScript 432; /* Automatically generated version */
 /**
  * Evaluation functions return information about the topological entities in the context, like bounding boxes, tangent
  * planes, projections, and collisions. Evaluation functions take a context and a map that specifies the
- * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like `Line` or `Plane`), or a special
- * type like `DistanceResult`. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
+ * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
+ * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "432.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/context.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/query.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/context.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/query.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
 
 /**
  * Return the total area of all the entities.
@@ -108,8 +108,8 @@ precondition
 
 /**
  * Find collisions between tools and targets.  Each collision is a
- * map with field `type` of type `ClashType` and fields `target`,
- * `targetBody`, `tool`, and `toolBody` of type `Query`.
+ * map with field `type` of type [ClashType] and fields `target`,
+ * `targetBody`, `tool`, and `toolBody` of type [Query].
  * @param context
  * @param arg {{
  *      @field tools{Query} @field targets{Query}
@@ -183,19 +183,19 @@ precondition
 // =========== evDistance stuff ===========
 
 /**
- * The result of an evDistance call -- information about the extremal distance and the attaining point / line / entity.
+ * The result of an [evDistance] call -- information about the extremal distance and the attaining point / line / entity.
  *
  * @type {{
  *      @field distance {ValueWithUnits} : The minimal or maximal distance.
  *      @field sides {array} : An array of 2 maps, containing information about where the extremum was found for each side.  Each map has a:
  *
- *          `point` (`Vector` of lengths) : represents the position that attains the minimum or maximum on that side.
+ *          `point` ([Vector] of lengths) : represents the position that attains the minimum or maximum on that side.
  *
  *          `index` (integer) :  the index into the line or point array or into the query results, if a query is passed in.
  *
  *          `parameter` (number or length or array of two numbers) : If the `index` refers to an edge,
  *                  the parameter is a number between 0 and 1 (unless extend for that side was passed in).  It is in the form that
- *                  `evEdgeTangentLine` consumes (with `arcLengthParameterization` set to `false`).  If the side has `Line`(s),
+ *                  [evEdgeTangentLine] consumes (with `arcLengthParameterization` set to `false`).  If the side has `Line`(s),
  *                  the parameter is a length representing the distance along the direction.
  *                  If the `index` refers to a face, the parameter is a 2D `Vector` in the form that `evFaceTangentPlane` consumes.
  *                  If the face is a mesh, the parameter is a 2D `Vector` of 0.
@@ -228,14 +228,20 @@ predicate canBeDistanceResult(value)
 
 /**
  * Computes the minimum or maximum distance between geometry on `side0` and geometry on `side1`.  "Geometry" means entities, points, or lines.
- * When the minimum or the maximum is not uniquely defined, ties will be broken arbitrarily.  @see `DistanceResult`
- * @example `evDistance(context, { "side0" : vector(1, 2, 3) * meter, "side1" : query }).distance` returns the minimum distance from any entity
- * returned by `query` to the point `(1, 2, 3) meters`.
+ * When the minimum or the maximum is not uniquely defined, ties will be broken arbitrarily.
+ *
+ * @example `evDistance(context, { "side0" : vector(1, 2, 3) * meter, "side1" : query }).distance`
+ *          returns the minimum distance from any entity returned by `query` to the point `(1, 2, 3) meters`.
+ *
  * @example `result = evDistance(context, { "side0" : qEverything(EntityType.VERTEX), "side1" : qEverything(EntityType.VERTEX), "maximum" : true })`
- * computes the pair of vertices farthest apart.  `qNthElement(qEverything(EntityType.VERTEX), result.sides[0].index)` queries for one of these vertices.
+ *          computes the pair of vertices farthest apart. `qNthElement(qEverything(EntityType.VERTEX), result.sides[0].index)`
+ *          queries for one of these vertices.
+ *
+ * @seealso [DistanceResult]
+ *
  * @param context {Context}
  * @param arg {{
- *      @field side0 : One of the following: A query, or a point (3D Length Vector), or a `Line`, or an array of points, or an array of `Line`s.
+ *      @field side0 : One of the following: A query, or a point (3D Length Vector), or a [Line], or an array of points, or an array of [Line]s.
  *          @eg `qNthElement(qEverything(EntityType.FACE), 0)` or `vector(1, 2, 3) * meter` or `line(vector(1, 0, 1) * meter, vector(1, 1, 1)`
  *      @field extendSide0 {boolean} : If `true` and side0 is a query, bodies will be ignored and edges and faces extended to
  *          their possibly infinite underlying surfaces.  Defaults to `false`. @optional
@@ -338,7 +344,7 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
  *             Must be adjacent to `edge`.
  *          @optional
  * }}
- * @returns {array} : An array of `Line`s.
+ * @returns {array} : An array of [Line]s.
  * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A tangent line could not be evaluated for the given query.
  */
 export function evEdgeTangentLines(context is Context, arg is map) returns array
@@ -501,7 +507,7 @@ precondition
 }
 
 /**
- * If the face is a plane, return a `Plane` value for the given face.
+ * If the face is a plane, return a [Plane] value for the given face.
  * @param arg {{
  *      @field face{Query}
  * }}

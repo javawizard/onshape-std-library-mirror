@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,14 +10,14 @@ FeatureScript 432; /* Automatically generated version */
  *
  * The common use case for attributes is to set attributes on an entity in one
  * feature, and get them in another. For global data, this can be done more
- * simply via `getVariable` and `setVariable`.
+ * simply via [setVariable] and [getVariable].
  *
- * Entities can be queried by attributes with `qAttributeFilter` and
- * `qAttributeQuery`.
+ * Entities can be queried by attributes with [qAttributeFilter] and
+ * [qAttributeQuery].
  */
-import(path : "onshape/std/context.fs", version : "432.0");
-import(path : "onshape/std/query.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
+import(path : "onshape/std/context.fs", version : "442.0");
+import(path : "onshape/std/query.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
 
 /**
  * Attach an attribute to one or several entities.
@@ -54,7 +54,7 @@ precondition
  *              @ex `{}` matches all `map` attributes.
  *              @ex `"" as MyStringAttributeType` matches all attributes of
  *                      type `MyStringAttributeType`.
- *              @ex `{"odd" : true}` matches all `map` attributes that have a
+ *              @ex `{ "odd" : true }` matches all `map` attributes that have a
  *                      field `"odd"` whose value is `true`.
  * }}
  *

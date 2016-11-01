@@ -1,32 +1,30 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "432.0");
+export import(path : "onshape/std/manipulator.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
-import(path : "onshape/std/vector.fs", version : "432.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/vector.fs", version : "442.0");
 
 const FILLET_RHO_BOUNDS =
 {
-    "min"      : 0.0,
-    "max"      : 1.0,
     (unitless) : [0.0, 0.5, 0.99999]
 } as RealBoundSpec;
 
 /**
- * Feature performing an `opFillet`.
+ * Feature performing an [opFillet].
  */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange", "Filter Selector" : "allparts" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
@@ -73,7 +71,7 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
             const direction = normalize(normals[0] + normals[1]);
 
             var convexity = 1.0;
-            const bounds = tightestBounds(BLEND_BOUNDS);
+            const bounds = boundsRange(BLEND_BOUNDS);
             var minDragValue = bounds[0];
             var maxDragValue = bounds[1];
             if (isEdgeConvex(context, operativeEntity))

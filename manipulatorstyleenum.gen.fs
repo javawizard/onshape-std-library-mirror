@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,7 +8,7 @@ FeatureScript 432; /* Automatically generated version */
 /**
  * Specifies the style of a manipulator intended to look unique. For instance,
  * the `SECONDARY` style of a linear manipulator has two arrow heads.
- * @see `addManipulators`
+ * @seealso [addManipulators]
  */
 export enum ManipulatorStyleEnum
 {

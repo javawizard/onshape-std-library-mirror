@@ -1,11 +1,11 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version: "432.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version: "442.0");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -13,7 +13,7 @@ import(path : "onshape/std/units.fs", version: "432.0");
  */
 export type ForeignId typecheck canBeForeignId;
 
-/** Typecheck for `ForeignId` */
+/** Typecheck for [ForeignId] */
 export predicate canBeForeignId(value)
 {
     value is string;
@@ -40,7 +40,7 @@ export enum LengthUnitNames
 }
 
 /**
- * Feature performing an `opImportForeign`, transforming the result if necessary.
+ * Feature performing an [opImportForeign], transforming the result if necessary.
  */
 annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
@@ -66,6 +66,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
         isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
+
+        annotation { "Name" : "Modifiable", "UIHint" : "ALWAYS_HIDDEN", "Default" : true  }
+        definition.isModifiable is boolean;
     }
     {
         var remainingTransform = getRemainderPatternTransform(context,
@@ -82,5 +85,5 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isModifiable : true });
 

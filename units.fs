@@ -1,11 +1,11 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -477,7 +477,7 @@ export function atan2(y is number, x is number) returns ValueWithUnits
  * to the vector `[x, y]`, assuming the units of `y` and `x`
  * match.
  *
- * @see `atan2(number, number)`
+ * @seealso [atan2(number, number)]
  * @param y : @autocomplete `1 * inch`
  * @param x : @autocomplete `-1 * inch`
  */

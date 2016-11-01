@@ -1,23 +1,23 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "432.0");
+export import(path : "onshape/std/manipulator.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 /**
  * The method of defining a construction plane.
@@ -60,8 +60,6 @@ const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
 
 const PLANE_OFFSET_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.025, 500],
     (centimeter) : 2.5,
     (millimeter) : 25,
@@ -71,7 +69,7 @@ const PLANE_OFFSET_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Creates a construction plane feature by calling `opPlane`.
+ * Creates a construction plane feature by calling [opPlane].
  */
 annotation { "Feature Type Name" : "Plane", "Manipulator Change Function" : "cplaneManipulatorChange", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
@@ -384,13 +382,15 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
         const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
         if (edgeQueries != undefined && @size(edgeQueries) > 0)
         {
-            const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
-            if (edgeEndPoints != undefined && @size(edgeEndPoints) > 1)
-            {
-                var normal = edgeEndPoints[0].origin - edgeEndPoints[1].origin;
-                var size = norm(normal) * (1 + PLANE_SIZE_EXTENSION_FACTOR);
-                planeBounds = [size, size];
-            }
+            var curveDefinition = evCurveDefinition(context, { "edge" : edgeQueries[0] });
+            var size;
+            if (curveDefinition is Circle)
+                size = curveDefinition.radius * 2;
+            else
+                size = evLength(context, { "entities" : edgeQueries[0] });
+
+            size *= 1 + PLANE_SIZE_EXTENSION_FACTOR;
+            planeBounds = [size, size];
         }
     }
     else if (planeType == CPlaneType.PLANE_POINT)
@@ -592,6 +592,8 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
             definition.cplaneType = CPlaneType.OFFSET;
         else if ((lines + curves) == 1 && size(evaluateQuery(context, qVertexAdjacent(entities, EntityType.VERTEX))) == 2)
             definition.cplaneType = CPlaneType.MID_PLANE;
+        else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
+            definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
     if (total == 2)
     {

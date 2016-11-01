@@ -1,28 +1,26 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "432.0");
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/matrix.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/matrix.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
     (degree) : [0.1, 45, 179.9],
     (radian) : 0.25 * PI
 } as AngleBoundSpec;
 
 /**
- * The chamfer feature just performs a chamfer operation.  @see `opChamfer`.
+ * The chamfer feature directly performs an [opChamfer] operation.
  */
 annotation { "Feature Type Name" : "Chamfer", "Filter Selector" : "allparts" }
 export const chamfer = defineFeature(function(context is Context, id is Id, definition is map)

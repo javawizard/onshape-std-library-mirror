@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,32 +10,30 @@ FeatureScript 432; /* Automatically generated version */
  */
 
 
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/attributes.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/math.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/sketch.fs", version : "432.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "432.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
-import(path : "onshape/std/vector.fs", version : "432.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/attributes.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/math.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/sketch.fs", version : "442.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "442.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/vector.fs", version : "442.0");
 
 const STARTING_THICKNESS = 0.25 * inch;
 
 const K_FACTOR_BOUNDS =
 {
-            "min" : 0.0,
-            "max" : 0.5,
-            (unitless) : [0.0, 0.45, 0.5]
-        } as RealBoundSpec;
+    (unitless) : [0.0, 0.45, 0.5]
+} as RealBoundSpec;
 
 /**
 * @internal
@@ -69,16 +67,16 @@ export const smBend = defineFeature(function(context is Context, id is Id, defin
         else if (definition.deformationForm == SMDeformationForm.DEDUCTION)
         {
             annotation { "Name" : "Deduction", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-            isLength(definition.deduction, LENGTH_BOUNDS);
+            isLength(definition.deduction, NONNEGATIVE_LENGTH_BOUNDS);
         }
         else
         {
             annotation { "Name" : "Allowance", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-            isLength(definition.allowance, LENGTH_BOUNDS);
+            isLength(definition.allowance, NONNEGATIVE_LENGTH_BOUNDS);
         }
 
         annotation { "Name" : "Radius", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-        isLength(definition.radius, LENGTH_BOUNDS);
+        isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
 
         annotation { "Name" : "Angle", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
         isAngle(definition.angle, ANGLE_360_BOUNDS);

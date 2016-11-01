@@ -1,17 +1,17 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "432.0");
-export import(path : "onshape/std/containers.fs", version : "432.0");
-export import(path : "onshape/std/evaluate.fs", version : "432.0");
-export import(path : "onshape/std/feature.fs", version : "432.0");
-export import(path : "onshape/std/featureList.fs", version : "432.0");
-export import(path : "onshape/std/valueBounds.fs", version : "432.0");
+export import(path : "onshape/std/boolean.fs", version : "442.0");
+export import(path : "onshape/std/containers.fs", version : "442.0");
+export import(path : "onshape/std/evaluate.fs", version : "442.0");
+export import(path : "onshape/std/feature.fs", version : "442.0");
+export import(path : "onshape/std/featureList.fs", version : "442.0");
+export import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -36,7 +36,7 @@ export enum PatternType
 
 /**
  * The type of mirror.
- * @see `PatternType`
+ * @seealso [PatternType]
  */
 export enum MirrorType
 {
@@ -148,7 +148,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
  * Applies the body, face, or feature pattern, given just transforms and instance names
  * @param definition {{
  *      @field patternType {PatternType}
- *      @field transforms {array} : An `array` of `Transform`s in which to place
+ *      @field transforms {array} : An `array` of [Transform]s in which to place
  *              new instances.
  *      @field instanceNames {array} : An `array` of the same size as
  *              `transforms` with a `string` for each transform, used in later

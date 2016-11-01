@@ -1,4 +1,4 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 432; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "432.0");
-import(path : "onshape/std/coordSystem.fs", version : "432.0");
-import(path : "onshape/std/curveGeometry.fs", version : "432.0");
-import(path : "onshape/std/mathUtils.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "432.0");
+import(path : "onshape/std/context.fs", version : "442.0");
+import(path : "onshape/std/coordSystem.fs", version : "442.0");
+import(path : "onshape/std/curveGeometry.fs", version : "442.0");
+import(path : "onshape/std/mathUtils.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "442.0");
 
 //===================================== Plane ======================================
 
@@ -33,7 +33,7 @@ export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
  */
 export type Plane typecheck canBePlane;
 
-/** Typecheck for `Plane` */
+/** Typecheck for [Plane] */
 export predicate canBePlane(value)
 {
     value is map;
@@ -44,7 +44,7 @@ export predicate canBePlane(value)
 }
 
 /**
- * Create a `Plane` on the XY plane of a specified coordinate system.
+ * Create a [Plane] on the XY plane of a specified coordinate system.
  */
 export function plane(cSys is CoordSystem) returns Plane
 {
@@ -52,7 +52,7 @@ export function plane(cSys is CoordSystem) returns Plane
 }
 
 /**
- * Create a `Plane` which fully specifies its orientation.
+ * Create a [Plane] which fully specifies its orientation.
  *
  * @param origin : A 3D point in world space.
  * @param normal : A 3D vector in world space. Need not be normalized.
@@ -64,9 +64,9 @@ export function plane(origin is Vector, normal is Vector, x is Vector) returns P
 }
 
 /**
- * Create a `Plane` from a point and a normal.
+ * Create a [Plane] from a point and a normal.
  *
- * The x-axis of this `Plane`'s coordinate system will be an arbitrary vector
+ * The x-axis of this [Plane]'s coordinate system will be an arbitrary vector
  * perpindicular to the `normal`.
  *
  * @param origin : A 3D point in world space.
@@ -79,7 +79,7 @@ export function plane(origin is Vector, normal is Vector) returns Plane
 
 /**
  * @internal
- * Create a `Plane` from the result of a builtin call.
+ * Create a [Plane] from the result of a builtin call.
  */
 export function planeFromBuiltin(definition is map) returns Plane
 {
@@ -104,7 +104,7 @@ export function yAxis(plane is Plane) returns Vector
 }
 
 /**
- * Check that two `Plane`s are the same up to tolerance, including the origin and local coordinate system.
+ * Check that two [Plane]s are the same up to tolerance, including the origin and local coordinate system.
  */
 export predicate tolerantEquals(plane1 is Plane, plane2 is Plane)
 {
@@ -139,7 +139,7 @@ export function toString(value is Plane) returns string
 }
 
 /**
- * Projects a 3D `point` onto a `plane`, returning a 3D point on the plane.
+ * Projects a 3D `point` onto a [Plane], returning a 3D point on the plane.
  */
 export function project(plane is Plane, point is Vector) returns Vector
 precondition
@@ -158,7 +158,7 @@ export operator*(transform is Transform, planeRhs is Plane) returns Plane
 }
 
 /**
- * Transforms a 2D `point` in a `plane`'s coordinates to its corresponding 3D
+ * Transforms a 2D `point` in a [Plane]'s coordinates to its corresponding 3D
  * point in world coordinates.
  */
 export function planeToWorld(plane is Plane, planePoint is Vector) returns Vector
@@ -172,7 +172,7 @@ precondition
 }
 
 /**
- * Returns a `Transform` which takes 3D points measured with respect to a `plane`
+ * Returns a [Transform] which takes 3D points measured with respect to a [Plane]
  * (such that points which lie on the plane will have a z-coordinate of
  * approximately `0`) and transforms them into world coordinates.
  */
@@ -183,7 +183,7 @@ export function planeToWorld3D(plane is Plane) returns Transform
 
 /**
  * Transforms a 3D `point` in world coordinates into a 3D point measured in a
- * `plane`'s coordinates. If the `point` lies on the `plane`, the result will
+ * [Plane]'s coordinates. If the `point` lies on the [Plane], the result will
  * have a z-coordinate of approximately `0`.
  */
 export function worldToPlane3D(plane is Plane, worldPoint is Vector) returns Vector
@@ -193,7 +193,7 @@ export function worldToPlane3D(plane is Plane, worldPoint is Vector) returns Vec
 
 /**
 * Transforms a 3D `worldPoint` in world coordinates into a 2D point measured in a
-* `plane`'s (x,y) coordinates.
+* [Plane]'s (x,y) coordinates.
 *
 * This is modified as of FeatureScript version 363.0. Older versions of FeatureScript
 * use `worldToPlane` to return 3D vectors composed of the plane coordinate system baseis.
@@ -207,7 +207,7 @@ export function worldToPlane(plane is Plane, worldPoint is Vector) returns Vecto
 }
 
 /**
- * Returns a `Transform` which takes 3D points measured in world coordinates
+ * Returns a [Transform] which takes 3D points measured in world coordinates
  * and transforms them into 3D points measured in plane coordinates (such that
  * points which lie on the plane will have a z-coordinate of approximately `0`).
  */
@@ -217,7 +217,7 @@ export function worldToPlane3D(plane is Plane) returns Transform
 }
 
 /**
- * Returns a `Transform` which maps the plane `from` to the plane `to`.
+ * Returns a [Transform] which maps the plane `from` to the plane `to`.
  */
 export function transform(from is Plane, to is Plane) returns Transform
 {
@@ -225,9 +225,9 @@ export function transform(from is Plane, to is Plane) returns Transform
 }
 
 /**
- * Returns a `Transform` which takes points on one side of a plane and
+ * Returns a [Transform] which takes points on one side of a plane and
  * transforms them to the other side. The resulting transform is non-rigid,
- * and using this transform in an `opTransform` or similar operations will
+ * and using this transform in an [opTransform] or similar operations will
  * invert the transformed bodies.
  */
 export function mirrorAcross(plane is Plane) returns Transform
@@ -238,7 +238,7 @@ export function mirrorAcross(plane is Plane) returns Transform
 }
 
 /**
- * Returns a `Line` at the intersection between the two `Plane`s. If the planes
+ * Returns a [Line] at the intersection between the two [Plane]s. If the planes
  * are parallel or coincident, returns `undefined`.
  */
 export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line or undefined if there's no good intersection
@@ -260,15 +260,15 @@ export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line o
  * @type {{
  *      @field dim {number} : Integer representing the dimension of the intersection.
  *              @eg `0` indicates that `intersection` is a 3D length `Vector`.
- *              @eg `1` indicates that `intersection` is a `Line`.
+ *              @eg `1` indicates that `intersection` is a [Line].
  *              @eg `-1` indicates that the intersection does not exist (i.e.
  *                  the line and the plane are parallel).
- *      @field intersection : `undefined` or `Vector` or `Line` (depending on `dim`) that represents the intersection.
+ *      @field intersection : `undefined` or `Vector` or [Line] (depending on `dim`) that represents the intersection.
  * }}
  */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
 
-/** Typecheck for `LinePlaneIntersection` */
+/** Typecheck for [LinePlaneIntersection] */
 export predicate canBeLinePlaneIntersection(value)
 {
     value is map;
@@ -281,7 +281,7 @@ export predicate canBeLinePlaneIntersection(value)
 
 /**
  * Returns a `LinePlaneIntersection` representing the intersection between
- * `line` and `plane`.
+ * `line` and [Plane].
  */
 export function intersection(plane is Plane, line is Line) returns LinePlaneIntersection
 {
@@ -311,7 +311,7 @@ export function intersection(plane is Plane, line is Line) returns LinePlaneInte
  */
 export type Cone typecheck canBeCone;
 
-/** Typecheck for `Cone` */
+/** Typecheck for [Cone] */
 export predicate canBeCone(value)
 {
     value is map;
@@ -364,7 +364,7 @@ export function toString(value is Cone) returns string
  */
 export type Cylinder typecheck canBeCylinder;
 
-/** Typecheck for `Cylinder` */
+/** Typecheck for [Cylinder] */
 export predicate canBeCylinder(value)
 {
     value is map;
@@ -422,7 +422,7 @@ export function toString(value is Cylinder) returns string
  */
 export type Torus typecheck canBeTorus;
 
-/** Typecheck for `Torus` */
+/** Typecheck for [Torus] */
 export predicate canBeTorus(value)
 {
     value is map;
@@ -475,7 +475,7 @@ export function toString(value is Torus) returns string
  */
 export type Sphere typecheck canBeSphere;
 
-/** Typecheck for `Sphere` */
+/** Typecheck for [Sphere] */
 export predicate canBeSphere(value)
 {
     value is map;

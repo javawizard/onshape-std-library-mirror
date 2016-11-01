@@ -1,15 +1,15 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/tool.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/tool.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
 
 /**
  * Defines whether a `spit` should split whole parts, or just faces.
@@ -23,7 +23,7 @@ export enum SplitType
 }
 
 /**
- * Feature performing an `opSplit`.
+ * Feature performing an [opSplitPart].
  */
 annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)

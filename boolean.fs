@@ -1,25 +1,30 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "432.0");
-export import(path : "onshape/std/query.fs", version : "432.0");
-export import(path : "onshape/std/tool.fs", version : "432.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/tool.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "432.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "432.0");
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/primitives.fs", version : "432.0");
-import(path : "onshape/std/transform.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/attributes.fs", version : "442.0");
+import(path : "onshape/std/box.fs", version : "442.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/primitives.fs", version : "442.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "442.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/transform.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 /**
- * The boolean feature.  Performs an `opBoolean` after a possible `opOffsetFaces` if the operation is subtraction.
+ * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
  */
 annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
@@ -46,7 +51,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 if (!definition.offsetAll)
                 {
                     annotation { "Name" : "Faces to offset",
-                                 "Filter" : (EntityType.FACE && BodyType.SOLID) }
+                                "Filter" : (EntityType.FACE && BodyType.SOLID) }
                     definition.entitiesToOffset is Query;
                 }
 
@@ -76,7 +81,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             const suffix = "offsetTempBody";
             const transformMatrix = identityTransform();
             opPattern(context, id + suffix,
-                      { "entities" : definition.tools,
+                    { "entities" : definition.tools,
                         "transforms" : [transformMatrix],
                         "instanceNames" : ["1"] });
 
@@ -94,23 +99,36 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
 
             const tempMoveFaceSuffix = "offsetMoveFace";
             const moveFaceDefinition = {
-                "moveFaces" : faceQuery,
-                "moveFaceType" : MoveFaceType.OFFSET,
-                "offsetDistance" : definition.offsetDistance,
-                "reFillet" : definition.reFillet };
+                    "moveFaces" : faceQuery,
+                    "moveFaceType" : MoveFaceType.OFFSET,
+                    "offsetDistance" : definition.offsetDistance,
+                    "reFillet" : definition.reFillet };
 
             opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
 
+            const doSheetMetalBooleans = shouldPerformSheetMetalAwareBooleans(context, definition);
+
+            const toolBodies = qCreatedBy(id + suffix, EntityType.BODY);
             const tempBooleanDefinition = {
-                "operationType" : definition.operationType,
-                "tools" : qCreatedBy(id + suffix, EntityType.BODY),
-                "targets" : definition.targets,
-                "keepTools" : false };
+                    "operationType" : definition.operationType,
+                    "tools" : toolBodies,
+                    "targets" : definition.targets,
+                    "keepTools" : doSheetMetalBooleans };
 
             const tempBooleanSuffix = "tempBoolean";
-            try(opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition));
-            processSubfeatureStatus(context, id, {"subfeatureId" : id + tempBooleanSuffix, "propagateErrorDisplay" : true});
-
+            if (doSheetMetalBooleans)
+            {
+                try(sheetMetalAwareBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition));
+            }
+            else
+            {
+                try(opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition));
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + tempBooleanSuffix, "propagateErrorDisplay" : true });
+            }
+            if (doSheetMetalBooleans)
+            {
+                opDeleteBodies(context, id + "deleteTemp", { "entities" : toolBodies });
+            }
             if (!definition.keepTools)
             {
                 opDeleteBodies(context, id + "delete", { "entities" : definition.tools });
@@ -127,23 +145,38 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 definition.operationType = BooleanOperationType.SUBTRACTION;
                 definition.keepTools = false;
             }
-            opBoolean(context, id, definition);
+            if (shouldPerformSheetMetalAwareBooleans(context, definition))
+            {
+                sheetMetalAwareBoolean(context, id, definition);
+            }
+            else
+            {
+                opBoolean(context, id, definition);
+            }
             if (isSubtractComplement)
             {
                 var errorMessage = getFeatureInfo(context, id);
                 if (errorMessage == ErrorStringEnum.BOOLEAN_SUBTRACT_NO_OP)
                 {
-                    reportFeatureInfo(context, id,  ErrorStringEnum.BOOLEAN_INTERSECT_NO_OP);
+                    reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_INTERSECT_NO_OP);
                 }
             }
         }
     }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
 
+function shouldPerformSheetMetalAwareBooleans(context is Context, definition is map) returns boolean
+{
+    return definition.targets != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V440_SYNTAX_ERRORS);
+}
+
 function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
     if (query.queryType == QueryType.UNION)
     {
-        return qUnion(mapArray(query.subqueries, function(q) { return wrapFaceQueryInCopy(q, id); }));
+        return qUnion(mapArray(query.subqueries, function(q)
+                {
+                    return wrapFaceQueryInCopy(q, id);
+                }));
     }
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
@@ -155,40 +188,40 @@ function constructToolsComplement(context is Context, id is Id, booleanDefinitio
 {
     const inputTools = evaluateQuery(context, booleanDefinition.tools); // save tools here to avoid qCreatedBy confusion
 
-    const boxResult = evBox3d(context, {"topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets])});
+    const boxResult = evBox3d(context, { "topology" : qUnion([booleanDefinition.tools, booleanDefinition.targets]) });
     const extendedBox is Box3d = extendBox3d(boxResult, 0. * meter, 0.1);
     const boxId is Id = id + "containingBox";
-    fCuboid(context, boxId, {"corner1" : extendedBox.minCorner, "corner2" : extendedBox.maxCorner});
+    fCuboid(context, boxId, { "corner1" : extendedBox.minCorner, "corner2" : extendedBox.maxCorner });
 
     const complementId = id + "toolComplement";
     const complementDefinition = {
-                "operationType" : BooleanOperationType.SUBTRACTION,
-                "tools" : qUnion(inputTools),
-                "targets" : qCreatedBy(boxId, EntityType.BODY),
-                "keepTools" : booleanDefinition.keepTools };
+            "operationType" : BooleanOperationType.SUBTRACTION,
+            "tools" : qUnion(inputTools),
+            "targets" : qCreatedBy(boxId, EntityType.BODY),
+            "keepTools" : booleanDefinition.keepTools };
     opBoolean(context, complementId, complementDefinition);
     return qCreatedBy(boxId, EntityType.BODY); // Subtraction modifies target tool
 }
 
 /**
- * Maps a `NewBodyOperationType` (used in features like `extrude`) to its corresponding `BooleanOperationType`.
+ * Maps a [NewBodyOperationType] (used in features like [extrude]) to its corresponding [BooleanOperationType].
  */
 export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) returns BooleanOperationType
 {
     return {
-        NewBodyOperationType.ADD :       BooleanOperationType.UNION,
-        NewBodyOperationType.REMOVE :    BooleanOperationType.SUBTRACTION,
-        NewBodyOperationType.INTERSECT : BooleanOperationType.SUBTRACT_COMPLEMENT
-    }[operationType];
+                NewBodyOperationType.ADD : BooleanOperationType.UNION,
+                NewBodyOperationType.REMOVE : BooleanOperationType.SUBTRACTION,
+                NewBodyOperationType.INTERSECT : BooleanOperationType.SUBTRACT_COMPLEMENT
+            }[operationType];
 }
 
 /**
- * Predicate which specifies a field `operationType` of type `NewBodyOperationType`.
+ * Predicate which specifies a field `operationType` of type [NewBodyOperationType].
  * Used by body-creating feature preconditions such as extrude, revolve, sweep or loft.
  *
- * When used in a precondition, `NewBodyOperationType` creates UI like the extrude
+ * When used in a precondition, [NewBodyOperationType] creates UI like the extrude
  * feature, with a horizontal list of the words "New", "Add", etc. When using this
- * predicate in features, make sure to export an import of `tool.fs` so that `NewBodyOperationType`
+ * predicate in features, make sure to export an import of `tool.fs` so that [NewBodyOperationType]
  * is visible to the Part Studios:
  * ```
  * export import(path : "onshape/std/tool.fs", version : "");
@@ -206,7 +239,7 @@ export predicate booleanStepTypePredicate(booleanDefinition is map)
  * Used by body-creating feature preconditions to allow post-creation booleans,
  * specifying the merge scope (or "Merge with all") for that boolean.
  *
- * Designed to be used together with `booleanStepTypePredicate`.
+ * Designed to be used together with [booleanStepTypePredicate].
  *
  * @param booleanDefinition : @autocomplete `definition`
  */
@@ -233,7 +266,7 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
  *
  * @param context {Context}
  * @param id {Id}: identifier of the tools feature
- * @param definition {map} : See `definition` of `preocessNewBodyIfNeeded` for details.
+ * @param definition {map} : See `definition` of [preocessNewBodyIfNeeded] for details.
  * @returns {{
  *    @field targets {Query}: targets to use
  *    @field tools {Query}: tools to use
@@ -269,7 +302,7 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 }
 
 /**
- * Performs a boolean operation (optionally). Used by body-creating features (like `extrude`) as the boolean step.
+ * Performs a boolean operation (optionally). Used by body-creating features (like [extrude]) as the boolean step.
  * On top of the regular boolean feature, converts the `operationType` and creates error bodies on failure.
  *
  * @param id : identifier of the main feature
@@ -285,16 +318,21 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  *              If set, will be included in the tools section of the boolean.
  * }}
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
- *          in case the input is problematic or the boolean itself fails.
+ *      in case the input is problematic or the boolean itself fails.
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {
     if (definition.operationType == NewBodyOperationType.NEW)
         return;
 
-    const solidsQuery = qCreatedBy(id, EntityType.BODY);
+    const solidsQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
 
     var booleanDefinition = subfeatureToolsTargets(context, id, definition);
+    if (definition.operationType != NewBodyOperationType.REMOVE && queryContainsSheetMetal(context, booleanDefinition.targets))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_REMOVE, [], booleanDefinition.targets);
+    }
+
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
 
     if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
@@ -312,7 +350,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     booleanDefinition.targetsAndToolsNeedGrouping = true;
     const boolId = id + "boolean";
     try(booleanBodies(context, boolId, booleanDefinition));
-    processSubfeatureStatus(context, id, {"subfeatureId" : boolId, "propagateErrorDisplay" : true});
+    processSubfeatureStatus(context, id, { "subfeatureId" : boolId, "propagateErrorDisplay" : true });
     if (getFeatureWarning(context, boolId) != undefined || getFeatureInfo(context, boolId) != undefined)
     {
         const errorId = id + "errorEntities";
@@ -320,5 +358,230 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
         opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
     }
+}
+
+
+function performRegularBoolean(context is Context, id is Id, definition is map)
+{
+    try(opBoolean(context, id, definition));
+}
+
+function copyBodies(context is Context, id is Id, bodies is Query) returns Query
+{
+    const copyId = id + "bodyCopy";
+    opPattern(context, copyId, {
+                "entities" : bodies,
+                "transforms" : [identityTransform()],
+                "instanceNames" : ["copy"]
+            });
+    return qCreatedBy(copyId, EntityType.BODY);
+}
+
+function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
+{
+    const parts = partitionSheetMetalParts(context, definition.targets);
+    if (size(parts.sheetMetalPartsArray) == 0)
+    {
+        performRegularBoolean(context, id, definition);
+    }
+    else if (definition.operationType != BooleanOperationType.SUBTRACTION)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_SUBTRACT);
+    }
+    else
+    {
+        const deleteToolsAtEnd = !definition.keepTools;
+        definition.keepTools = true;
+        var evaluatedOriginalTools = qUnion(evaluateQuery(context, definition.tools));
+        if (size(evaluateQuery(context, parts.nonSheetMetalPartsQuery)) > 0)
+        {
+            definition.targets = parts.nonSheetMetalPartsQuery;
+            performRegularBoolean(context, id, definition);
+        }
+        // The query for the tools could change if it uses qCreatedBy(top-level-id), for example
+        // because subsequent operations are adding more bodies with different IDs
+        // so substitute the evaluated original tools
+        definition.tools = evaluatedOriginalTools;
+        for (var index = 0; index < size(parts.sheetMetalPartsArray); index += 1)
+        {
+            const subId = id + unstableIdComponent(index);
+            const booleanId = subId + "tempSMBoolean";
+
+            definition.sheetMetalPart = parts.sheetMetalPartsArray[index];
+
+            defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+                    {
+                        try
+                        {
+                            const sheetMetalModel = getSheetMetalModelForPart(context, definition.sheetMetalPart);
+                            const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
+                            const initialAssociationAttributes = getAttributes(context, {
+                                "entities" : qOwnedByBody(sheetMetalModel),
+                                "attributePattern" : {} as SMAssociationAttribute});
+
+                            definition.targets = sheetMetalModel;
+                            const modifiedFaces = performSheetMetalBoolean(context, id, definition);
+
+                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalModel,
+                                    originalEntities, initialAssociationAttributes);
+
+                            updateSheetMetalGeometry(context, id + "smUpdate", {
+                                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                                    "deletedAttributes" :  toUpdate.deletedAttributes});
+                        }
+                        catch
+                        {
+                        }
+                    }, {})(context, booleanId, definition);
+            processSubfeatureStatus(context, id, { "subfeatureId" : booleanId, "propagateErrorDisplay" : true });
+        }
+        if (deleteToolsAtEnd)
+        {
+            opDeleteBodies(context, id + "deleteTools", { "entities" : evaluatedOriginalTools });
+        }
+    }
+}
+
+function thickenFace(context is Context, id is Id, thickness is ValueWithUnits, planarFace is Query) returns Query
+{
+    const thickenId = id + "thicken";
+    opThicken(context, thickenId, {
+                "entities" : planarFace,
+                "thickness1" : thickness * 0.5,
+                "thickness2" : thickness * 0.5
+            });
+    return qOwnerBody(qCreatedBy(thickenId));
+}
+
+function trimTool(context is Context, id is Id, thickened is Query, tool is Query) returns Query
+{
+    const intersectionId = id + "intersect";
+    opBoolean(context, intersectionId, {
+                "tools" : qUnion([tool, thickened]),
+                "operationType" : BooleanOperationType.INTERSECTION,
+                "keepTools" : true
+            });
+    return qOwnerBody(qCreatedBy(intersectionId));
+}
+
+function createOutline(context is Context, id is Id, trimmed is Query, planarFace is Query)
+{
+    const outlineId = id + "outline";
+    opCreateOutline(context, outlineId, {
+                "tools" : trimmed,
+                "plane" : planarFace
+            });
+    return qCreatedBy(outlineId, EntityType.FACE);
+}
+
+function createBooleanToolsForFace(context is Context, id is Id, planarFace is Query, tool is Query, thickness is ValueWithUnits)
+{
+    const thickened = thickenFace(context, id, thickness, planarFace);
+    const toolCount = size(evaluateQuery(context, tool));
+    var tools = [];
+    var allTrimmed = [];
+    for (var index = 0; index < toolCount; index += 1)
+    {
+        const subId = id + unstableIdComponent(index);
+        const trimmed = trimTool(context, subId, thickened, qNthElement(tool, index));
+        if (trimmed != undefined && size(evaluateQuery(context, trimmed)) == 1)
+        {
+            allTrimmed = append(allTrimmed, trimmed);
+            const outline = createOutline(context, subId, trimmed, planarFace);
+            if (outline != undefined)
+            {
+                tools = append(tools, outline);
+            }
+        }
+    }
+    opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(append(allTrimmed, thickened)) });
+    if (size(tools) > 0)
+    {
+        return qOwnerBody(qUnion(tools));
+    }
+    else
+    {
+        return undefined;
+    }
+}
+
+function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targetFaces is Query, toolFaces is Query, thickness is ValueWithUnits) returns boolean
+{
+    definition.allowSheets = true;
+    definition.tools = toolFaces;
+    definition.targets = targetFaces;
+    definition.keepTools = false;
+    try(opBoolean(context, id, definition));
+    return true;
+}
+
+function clashBoxes(a is Box3d, b is Box3d) returns boolean {
+    for (var dim in [0, 1, 2])
+    {
+        if (a.minCorner[dim] > b.maxCorner[dim] || b.minCorner[dim] > a.maxCorner[dim])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+function faceBoxClashesWithBox(context is Context, face is Query, toolBox is Box3d) returns boolean
+{
+    const faceBox = evBox3d(context, {
+            "topology" : face,
+            "tight" : true
+    });
+    if (faceBox == undefined) {
+        return false;
+    }
+    else
+    {
+        return clashBoxes(toolBox, faceBox);
+    }
+}
+
+function performSheetMetalBoolean(context is Context, id is Id, definition is map) returns Query
+{
+    const attributes = getSmObjectTypeAttributes(context, definition.targets, SMObjectType.MODEL);
+    if (size(attributes) != 1 || attributes[0].thickness == undefined || attributes[0].thickness.value == undefined)
+    {
+        throw regenError(ErrorStringEnum.REGEN_ERROR);
+    }
+    var thickness = attributes[0].thickness.value;
+    // We get the faces not from the targets but from the faces of the source part that have associations
+    const definitionEntities = qUnion(getSMDefinitionEntities(context, qOwnedByBody(definition.sheetMetalPart, EntityType.FACE)));
+    const facesQ = qEntityFilter(definitionEntities, EntityType.FACE);
+
+    var planarFacesQ = qGeometry(facesQ, GeometryType.PLANE);
+    var planarFaceArray = evaluateQuery(context, planarFacesQ);
+    var index = 0;
+    var allToolBodies = [];
+    var modifiedFaces = [];
+    const toolBox = try(evBox3d(context, {
+            "topology" : definition.tools,
+            "tight" : true
+    }));
+    if (toolBox == undefined) {
+        throw regenError(ErrorStringEnum.REGEN_ERROR);
+    }
+    // Doesn't matter which box we extend. Extending the tool box reduces what we do
+    const thickenedBox = try(extendBox3d(toolBox, thickness * 0.5, 0));
+    for (var planarFace in planarFaceArray)
+    {
+        index += 1;
+        if (!faceBoxClashesWithBox(context, planarFace, thickenedBox)) {
+            continue;
+        }
+
+        const toolBodies = createBooleanToolsForFace(context, id + unstableIdComponent(index), planarFace, definition.tools, thickness);
+        if (toolBodies != undefined)
+        {
+            allToolBodies = append(allToolBodies, toolBodies);
+            modifiedFaces = append(modifiedFaces, planarFace);
+        }
+    }
+    performSheetMetalSurfaceBoolean(context, id, definition, definition.targets, qUnion(allToolBodies), thickness);
+    return qUnion(modifiedFaces);
 }
 

@@ -1,19 +1,19 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "432.0");
-export import(path : "onshape/std/error.fs", version : "432.0");
-export import(path : "onshape/std/geomOperations.fs", version : "432.0");
-export import(path : "onshape/std/query.fs", version : "432.0");
+export import(path : "onshape/std/context.fs", version : "442.0");
+export import(path : "onshape/std/error.fs", version : "442.0");
+export import(path : "onshape/std/geomOperations.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "432.0");
-import(path : "onshape/std/string.fs", version : "432.0");
-import(path : "onshape/std/transform.fs", version : "432.0");
-import(path : "onshape/std/units.fs", version : "432.0");
+import(path : "onshape/std/containers.fs", version : "442.0");
+import(path : "onshape/std/string.fs", version : "442.0");
+import(path : "onshape/std/transform.fs", version : "442.0");
+import(path : "onshape/std/units.fs", version : "442.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -253,8 +253,8 @@ export function getFullPatternTransform(context is Context) returns Transform
  * applying any transform to the line).  If neither vertex is patterned, the line should be transformed
  * by the pattern transform and the result will be as expected, as if a body pattern of these lines was
  * performed.  Other features may need to apply the transform differently: for example, a sweep can
- * transform the result of `opSweep` prior to the boolean, but an extrude needs to transform the profile
- * prior to `opExtrude` to accommodate up-to-next correctly.
+ * transform the result of [opSweep] prior to the boolean, but an extrude needs to transform the profile
+ * prior to [opExtrude] to accommodate up-to-next correctly.
  *
  * The general case is more complicated because feature patterns may be nested, and this function is
  * designed to handle them.  This function takes `references`, a query for everything the feature
@@ -327,7 +327,7 @@ export function transformResultIfNecessary(context is Context, id is Id, transfo
  * entities matched by earlier queries in the argument to `qUnion` are
  * returned first.
  *
- * @see `qTransient`
+ * @seealso [qTransient]
  */
 export function evaluateQuery(context is Context, query is Query) returns array
 {

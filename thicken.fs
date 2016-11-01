@@ -1,27 +1,25 @@
-FeatureScript 432; /* Automatically generated version */
+FeatureScript 442; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "432.0");
-export import(path : "onshape/std/tool.fs", version : "432.0");
+export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/tool.fs", version : "442.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "432.0");
-export import(path : "onshape/std/tool.fs", version : "432.0");
+export import(path : "onshape/std/manipulator.fs", version : "442.0");
+export import(path : "onshape/std/tool.fs", version : "442.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "432.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "432.0");
-import(path : "onshape/std/evaluate.fs", version : "432.0");
-import(path : "onshape/std/feature.fs", version : "432.0");
-import(path : "onshape/std/valueBounds.fs", version : "432.0");
+import(path : "onshape/std/boolean.fs", version : "442.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "442.0");
+import(path : "onshape/std/evaluate.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "442.0");
+import(path : "onshape/std/valueBounds.fs", version : "442.0");
 
 const THICKEN_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.005, 500],
     (centimeter) : 0.5,
     (millimeter) : 5.0,
@@ -31,8 +29,8 @@ const THICKEN_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Feature performing an `opThicken`, followed by an `opBoolean`. For simple thickens, prefer using
- * `opThicken` directly.
+ * Feature performing an [opThicken], followed by an [opBoolean]. For simple thickens, prefer using
+ * [opThicken] directly.
  */
 annotation { "Feature Type Name" : "Thicken",
              "Filter Selector" : "allparts",
