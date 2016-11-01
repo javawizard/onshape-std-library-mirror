@@ -28,7 +28,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
  * accomplished through the operator overloads above, and the functions in this
  * module and the `coordSystem` module.
  *
- * `rotationAround`, `scaleUniformly`, `toWorld` and `fromWorld` return
+ * [rotationAround], [scaleUniformly], [toWorld(CoordSystem)] and [fromWorld(CoordSystem)] return
  * transforms for common operations.
  *
  * @type {{
@@ -39,7 +39,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
  */
 export type Transform typecheck canBeTransform;
 
-/** Typecheck for `Transform` */
+/** Typecheck for [Transform] */
 export predicate canBeTransform(value)
 {
     value is map;
@@ -49,7 +49,7 @@ export predicate canBeTransform(value)
 }
 
 /**
- * Construct a `Transform` using the matrix argument for rotation
+ * Construct a [Transform] using the matrix argument for rotation
  * and scaling and the vector argument for translation.
  */
 export function transform(linear is Matrix, translation is Vector) returns Transform
@@ -63,7 +63,7 @@ precondition
 }
 
 /**
- * Construct a `Transform` that translates without rotation or scaling.
+ * Construct a [Transform] that translates without rotation or scaling.
  */
 export function transform(translation is Vector) returns Transform
 precondition
@@ -81,7 +81,7 @@ export function transform(value is map) returns Transform
 
 /**
  * @internal
- * Create a `Transform` from the result of a builtin call.
+ * Create a [Transform] from the result of a builtin call.
  */
 export function transformFromBuiltin(definition is map) returns Transform
 {
@@ -97,7 +97,7 @@ export function identityTransform() returns Transform
 }
 
 /**
- * Check that two `Transform`s are the same up to tolerance.
+ * Check that two [Transform]s are the same up to tolerance.
  */
 export predicate tolerantEquals(transform1 is Transform, transform2 is Transform)
 {
@@ -120,7 +120,7 @@ precondition
 }
 
 /**
- * Compute the inverse of a `Transform`, such that
+ * Compute the inverse of a [Transform], such that
  * `inverse(t) * t == identityTransform()`.
  */
 export function inverse(t is Transform) returns Transform
@@ -130,7 +130,7 @@ export function inverse(t is Transform) returns Transform
 }
 
 /**
- * Returns a `Transform` that represents a uniform scaling around
+ * Returns a [Transform] that represents a uniform scaling around
  * the origin.
  */
 export function scaleUniformly(scale is number) returns Transform
@@ -139,7 +139,7 @@ export function scaleUniformly(scale is number) returns Transform
 }
 
 /**
- * Returns a `Transform` that represents a uniform scaling around
+ * Returns a [Transform] that represents a uniform scaling around
  * the given point.
  */
 export function scaleUniformly(scale is number, point is Vector) returns Transform

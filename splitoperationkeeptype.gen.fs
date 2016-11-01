@@ -5,7 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @see `opSplitPart` */
+/** See [opSplitPart]. */
 export enum SplitOperationKeepType
 {
     annotation {"Name" : "Keep all"}

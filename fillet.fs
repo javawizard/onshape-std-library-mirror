@@ -20,13 +20,11 @@ import(path : "onshape/std/vector.fs", version : "✨");
 
 const FILLET_RHO_BOUNDS =
 {
-    "min"      : 0.0,
-    "max"      : 1.0,
     (unitless) : [0.0, 0.5, 0.99999]
 } as RealBoundSpec;
 
 /**
- * Feature performing an `opFillet`.
+ * Feature performing an [opFillet].
  */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange", "Filter Selector" : "allparts" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
@@ -73,7 +71,7 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
             const direction = normalize(normals[0] + normals[1]);
 
             var convexity = 1.0;
-            const bounds = tightestBounds(BLEND_BOUNDS);
+            const bounds = boundsRange(BLEND_BOUNDS);
             var minDragValue = bounds[0];
             var maxDragValue = bounds[1];
             if (isEdgeConvex(context, operativeEntity))

@@ -15,14 +15,12 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
     (degree) : [0.1, 45, 179.9],
     (radian) : 0.25 * PI
 } as AngleBoundSpec;
 
 /**
- * The chamfer feature just performs a chamfer operation.  @see `opChamfer`.
+ * The chamfer feature directly performs an [opChamfer] operation.
  */
 annotation { "Feature Type Name" : "Chamfer", "Filter Selector" : "allparts" }
 export const chamfer = defineFeature(function(context is Context, id is Id, definition is map)

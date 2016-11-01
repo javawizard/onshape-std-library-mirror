@@ -8,12 +8,12 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 
 /**
- * A Matrix is an array of rows, all the same size, each of which
+ * A `Matrix` is an array of rows, all the same size, each of which
  * is an array of numbers
  */
 export type Matrix typecheck canBeMatrix;
 
-/** Typecheck for `Matrix` */
+/** Typecheck for [Matrix] */
 export predicate canBeMatrix(val)
 {
     @isMatrix(val);

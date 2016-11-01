@@ -148,6 +148,19 @@ export function processError(context is Context, id is Id, error) returns boolea
 /**
  * @internal
  *
+ * For parameter syntax errors
+ */
+export function syntaxError()
+{
+    try
+    {
+        throw regenError(ErrorStringEnum.PARAMETER_SYNTAX_ERROR);
+    }
+}
+
+/**
+ * @internal
+ *
  * To report errors from features, use `throw regenError(...);`.
  *
  * Attaches an error to the given feature id. If it is a top-level id, when the feature finishes executing, it will
@@ -351,7 +364,7 @@ enum StatusType {OK, ERROR, WARNING, INFO}
  * The status of a feature
  *
  * @type {{
- *      @field statusType {StatusType}
+ *      @field statusType @internalType {StatusType}
  *      @field faultyParameters {array}
  *      @field statusEnum {ErrorStringEnum}
  *      @field statusMsg {string}

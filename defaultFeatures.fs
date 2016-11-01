@@ -10,7 +10,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
- * Creates a `Context` with default planes and an origin.
+ * Creates a [Context] with default planes and an origin.
  */
 export function newContextWithDefaults() returns Context
 {

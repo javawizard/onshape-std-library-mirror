@@ -22,8 +22,6 @@ FeatureScript ✨; /* Automatically generated version */
  * ```
  * const MY_BOUNDS =
  * {
- *     "min"    : -TOLERANCE.zeroAngle * radian,
- *     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
  *     (degree) : [0, 45, 360],
  *     (radian) : 1
  * } as AngleBoundSpec;
@@ -36,17 +34,22 @@ FeatureScript ✨; /* Automatically generated version */
 
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/error.fs", version : "✨");
 export import(path : "onshape/std/units.fs", version : "✨");
 
 /** @internal */
-export predicate defineBounds(value, boundSpec is map)
-precondition
+function verifyBounds(value, boundSpec is map) returns boolean
 {
-    canBeBoundSpec(boundSpec);
-}
-{
-    value >= boundSpec.min;
-    value <= boundSpec.max;
+    for (var entry in boundSpec)
+    {
+        if (entry.value is array)
+        {
+            if (entry.value[0] * entry.key <= value && value <= entry.value[2] * entry.key)
+                return true;
+            throw regenError(ErrorStringEnum.PARAMETER_OUT_OF_RANGE);
+        }
+    }
+    // Triggers error if boundSpec is invalid
 }
 
 /**
@@ -64,7 +67,7 @@ precondition
 export predicate isLength(value, boundSpec is LengthBoundSpec)
 {
     isLength(value);
-    defineBounds(value, boundSpec);
+    verifyBounds(value, boundSpec);
 }
 
 /**
@@ -82,7 +85,7 @@ export predicate isLength(value, boundSpec is LengthBoundSpec)
 export predicate isAngle(value, boundSpec is AngleBoundSpec)
 {
     isAngle(value);
-    defineBounds(value, boundSpec);
+    verifyBounds(value, boundSpec);
 }
 
 /**
@@ -100,7 +103,7 @@ export predicate isAngle(value, boundSpec is AngleBoundSpec)
 export predicate isInteger(value, boundSpec is IntegerBoundSpec)
 {
     isInteger(value);
-    defineBounds(value, boundSpec);
+    verifyBounds(value, boundSpec);
 }
 
 /**
@@ -118,18 +121,15 @@ export predicate isInteger(value, boundSpec is IntegerBoundSpec)
 export predicate isReal(value, boundSpec is RealBoundSpec)
 {
     value is number;
-    defineBounds(value, boundSpec);
+    verifyBounds(value, boundSpec);
 }
 
 /**
- * A `LengthBoundSpec` for a positive or negative length, whose UI allows
- * only strictly positive lengths.
+ * A `LengthBoundSpec` for a positive or negative length.
  */
 export const LENGTH_BOUNDS =
 {
-    "min"        : -500 * meter,
-    "max"        : 500 * meter,
-    (meter)      : [1e-5, 0.025, 500],
+    (meter)      : [-500, 0.025, 500],
     (centimeter) : 2.5,
     (millimeter) : 25.0,
     (inch)       : 1.0,
@@ -142,8 +142,6 @@ export const LENGTH_BOUNDS =
  */
 export const NONNEGATIVE_LENGTH_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.025, 500],
     (centimeter) : 2.5,
     (millimeter) : 25.0,
@@ -157,8 +155,6 @@ export const NONNEGATIVE_LENGTH_BOUNDS =
  */
 export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.025, 500],
     (centimeter) : 2.5,
     (millimeter) : 25.0,
@@ -172,8 +168,6 @@ export const NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS =
  */
 export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.0, 500],
     (centimeter) : 0.0,
     (millimeter) : 0.0,
@@ -187,8 +181,6 @@ export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
  */
 export const ZERO_DEFAULT_LENGTH_BOUNDS =
 {
-    "min"        : -500 * meter,
-    "max"        : 500 * meter,
     (meter)      : [-500, 0.0, 500],
     (centimeter) : 0.0,
     (millimeter) : 0.0,
@@ -203,8 +195,6 @@ export const ZERO_DEFAULT_LENGTH_BOUNDS =
  */
 export const BLEND_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.005, 500],
     (centimeter) : 0.5,
     (millimeter) : 5.0,
@@ -219,8 +209,6 @@ export const BLEND_BOUNDS =
  */
 export const SHELL_OFFSET_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.0025, 500],
     (centimeter) : 0.25,
     (millimeter) : 2.5,
@@ -235,8 +223,6 @@ export const SHELL_OFFSET_BOUNDS =
  */
 export const PLANE_SIZE_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [1e-5, 0.15, 500],
     (centimeter) : 15,
     (millimeter) : 150,
@@ -250,8 +236,6 @@ export const PLANE_SIZE_BOUNDS =
  */
 export const ANGLE_360_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 30, 360],
     (radian) : 1
 } as AngleBoundSpec;
@@ -261,8 +245,6 @@ export const ANGLE_360_BOUNDS =
  */
 export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 330, 360],
     (radian) : 2
 } as AngleBoundSpec;
@@ -272,8 +254,6 @@ export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 0, 360],
     (radian) : 0
 } as AngleBoundSpec;
@@ -283,8 +263,6 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_FULL_DEFAULT_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 360, 360],
     (radian) : 2 * PI
 } as AngleBoundSpec;
@@ -294,8 +272,6 @@ export const ANGLE_360_FULL_DEFAULT_BOUNDS =
  */
 export const ANGLE_STRICT_180_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI - TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 30, 179.9],
     (radian) : 0.1667 * PI
 } as AngleBoundSpec;
@@ -305,8 +281,6 @@ export const ANGLE_STRICT_180_BOUNDS =
  */
 export const ANGLE_STRICT_90_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI * 0.5 - TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 3, 89.9],
     (radian) : 0.01667 * PI
 } as AngleBoundSpec;
@@ -316,8 +290,6 @@ export const ANGLE_STRICT_90_BOUNDS =
  */
 export const POSITIVE_COUNT_BOUNDS =
 {
-    "min"      : 1,
-    "max"      : 1e9,
     (unitless) : [1, 2, 1e5]
 } as IntegerBoundSpec;
 
@@ -326,8 +298,6 @@ export const POSITIVE_COUNT_BOUNDS =
  */
 export const POSITIVE_REAL_BOUNDS =
 {
-    "min"      : 0,
-    "max"      : 1e9,
     (unitless) : [0, 1, 1e5]
 } as RealBoundSpec;
 
@@ -336,8 +306,6 @@ export const POSITIVE_REAL_BOUNDS =
  */
 export const SCALE_BOUNDS =
 {
-    "min"      : 0,
-    "max"      : 1e9,
     (unitless) : [1e-5, 1, 1e5]
 } as RealBoundSpec;
 
@@ -347,8 +315,6 @@ export const SCALE_BOUNDS =
  */
 export const PRIMARY_PATTERN_BOUNDS =
 {
-    "min"      : 1,
-    "max"      : 2500,
     (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
@@ -358,8 +324,6 @@ export const PRIMARY_PATTERN_BOUNDS =
  */
 export const SECONDARY_PATTERN_BOUNDS =
 {
-    "min"      : 1,
-    "max"      : 2500,
     (unitless) : [1, 1, 2500]
 } as IntegerBoundSpec;
 
@@ -369,64 +333,42 @@ export const SECONDARY_PATTERN_BOUNDS =
  */
 export const CIRCULAR_PATTERN_BOUNDS =
 {
-    "min"      : 1,
-    "max"      : 2500,
     (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
 /**
  * @internal
- * Return the intersection of all bounds in a BoundSpec as an
- * array with the first element being the lower bound, and the second element being the upper bound.
- * For example, if a BoundSpec allows 1/32 inch to 1 yard for Imperial
- * units and 1 mm to 1 meter for metric, the result is `[1 * mm, 1 * yard]`.
+ * Return the bounds in a BoundSpec as an array with the first element being
+ * the lower bound, and the second element being the upper bound.
  */
-export function tightestBounds(boundSpec is map) returns array
+export function boundsRange(boundSpec is map) returns array
 precondition
 {
     canBeBoundSpec(boundSpec);
 }
 {
-    var bounds = makeArray(2);
-    bounds[0] = boundSpec["min"];
-    bounds[1] = boundSpec["max"];
     for (var entry in boundSpec)
     {
-        if (entry.key != "min" && entry.key != "max" && entry.value is array)
-        {
-            bounds[0] = max(bounds[0], entry.value[0] * entry.key);
-            bounds[1] = min(bounds[1], entry.value[2] * entry.key);
-        }
+        if (entry.value is array)
+            return [entry.value[0] * entry.key, entry.value[2] * entry.key];
     }
-    return bounds;
+    // If not found will throw an error
 }
 
 /** @internal */
 export predicate canBeBoundSpec(value)
 {
     value is map;
-    if (!(value.min is number && value.max is number))
-    {
-        value.min is ValueWithUnits;
-        value.max is ValueWithUnits;
-        value.min.unit == value.max.unit;
-    }
-    value.min <= value.max;
     for (var entry in value)
     {
-        if (entry.key != "min" && entry.key != "max")
-        {
-            if (entry.value is number)
-                continue;
-            entry.value is array;
-            @size(entry.value) == 3;
-            for (var i = 0; i < 3; i += 1)
-            {
-                entry.value[i] is number;
-                if (i > 0)
-                    entry.value[i - 1] <= entry.value[i];
-            }
-        }
+        if (entry.value is number)
+            continue;
+        entry.value is array;
+        @size(entry.value) == 3;
+        for (var i = 0; i < 3; i += 1)
+            entry.value[i] is number;
+        entry.value[0] <= entry.value[1];
+        entry.value[1] <= entry.value[2];
     }
 }
 
@@ -438,9 +380,7 @@ export predicate canBeBoundSpec(value)
  * ```
  * const MY_LENGTH_BOUNDS =
  * {
- *     "min"        : -500 * meter,
- *     "max"        : 500 * meter,
- *     (meter)      : [-400, 0.0025, 400],
+ *     (meter)      : [-500, 0.0025, 500],
  *     (centimeter) : .25,
  *     (millimeter) : 2.50,
  *     (inch)       : 0.1,
@@ -449,22 +389,16 @@ export predicate canBeBoundSpec(value)
  * } as LengthBoundSpec;
  * ```
  *
- * The "min" and "max" values refer to bounds checked in the FeatureScript
- * precondition. Thus, `isLength(1000 * meter, MY_LENGTH_BOUNDS)` returns `false`.
+ * The values for `(meter)`, `(inch)`, etc. define the bounds and default values
+ * for a feature parameter defined with `MY_LENGTH_BOUNDS`. The default values will
+ * be different for users who have set different default units.
  *
- * The values for `(meter)`, `(inch)`, etc. define UI behaviors for a feature
- * parameter defined with `MY_LENGTH_BOUNDS`. These behaviors will be different
- * for users who have set different default units.
- *
- * Specifically, the center value of the array defined for a unit (or the only
- * value, if only one is provided) defines the default value, when a user with
- * those default units first opens the dialog.
- *
- * The end two values define the UI minimum and maximum. A user who types a
- * value of 1000 meters will see that value change to 400 meters. A user who
- * types a value of -1000 meters will see that values change to -400 meters.
- * If no min and max values are provided for some units, the values from
- * another unit will be used.
+ * Specifically, the first unit listed specified defines the minimum value, default value,
+ * and the maximum value (in terms of that unit) and the subsequent units define default
+ * values for those units, when a user with those default units first opens the dialog.
+ * The default value for a unit that is not listed is the default value of the first unit
+ * so `{ (inch) : [0, 1, 1e4] } as LengthBoundSpec` will give a default of `2.54 cm` in
+ * a Part Studio with centimeter units
  */
 export type LengthBoundSpec typecheck canBeLengthBoundSpec;
 
@@ -472,9 +406,8 @@ export type LengthBoundSpec typecheck canBeLengthBoundSpec;
 export predicate canBeLengthBoundSpec(value)
 {
     canBeBoundSpec(value);
-    isLength(value.min);
     for (var entry in value)
-        entry.key == "min" || entry.key == "max" || isLength(entry.key);
+        isLength(entry.key);
 }
 
 /**
@@ -485,8 +418,6 @@ export predicate canBeLengthBoundSpec(value)
  * ```
  * const ANGLE_360_BOUNDS =
  * {
- *     "min"    : -TOLERANCE.zeroAngle * radian,
- *     "max"    : (2 * PI + TOLERANCE.zeroAngle) * radian,
  *     (degree) : [0, 30, 360],
  *     (radian) : 1
  * } as AngleBoundSpec;
@@ -501,9 +432,8 @@ export type AngleBoundSpec typecheck canBeAngleBoundSpec;
 export predicate canBeAngleBoundSpec(value)
 {
     canBeBoundSpec(value);
-    isAngle(value.min);
     for (var entry in value)
-        entry.key == "min" || entry.key == "max" || isAngle(entry.key);
+        isAngle(entry.key);
 }
 
 /**
@@ -514,8 +444,6 @@ export predicate canBeAngleBoundSpec(value)
  * ```
  * const POSITIVE_COUNT_BOUNDS =
  * {
- *     "min"      : 1,
- *     "max"      : 1e9,
  *     (unitless) : [1, 2, 1e5]
  * } as IntegerBoundSpec;
  * ```
@@ -529,9 +457,7 @@ export type IntegerBoundSpec typecheck canBeIntegerBoundSpec;
 export predicate canBeIntegerBoundSpec(value)
 {
     canBeBoundSpec(value);
-    isInteger(value.min);
-    isInteger(value.max);
-    @size(value) == 3;
+    @size(value) == 1;
     value[unitless] is array;
 }
 
@@ -543,8 +469,6 @@ export predicate canBeIntegerBoundSpec(value)
  * ```
  * const POSITIVE_REAL_BOUNDS =
  * {
- *     "min"      : 0,
- *     "max"      : 1e9,
  *     (unitless) : [0, 1, 1e5]
  * } as RealBoundSpec;
  * ```
@@ -558,9 +482,7 @@ export type RealBoundSpec typecheck canBeRealBoundSpec;
 export predicate canBeRealBoundSpec(value)
 {
     canBeBoundSpec(value);
-    value.min is number;
-    value.max is number;
-    @size(value) == 3;
+    @size(value) == 1;
     value[unitless] is array;
 }
 

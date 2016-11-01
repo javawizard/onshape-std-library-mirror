@@ -6,7 +6,7 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the class of intersection between two bodies. * @see `evCollision`
+ * Specifies the class of intersection between two bodies. * @seealso [evCollision]
  *
  * @value NONE                 : No intersection.
  * @value INTERFERE            : Bounding topologies interfere.

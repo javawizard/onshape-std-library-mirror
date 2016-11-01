@@ -8,7 +8,7 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * Specifies the style of a manipulator intended to look unique. For instance,
  * the `SECONDARY` style of a linear manipulator has two arrow heads.
- * @see `addManipulators`
+ * @seealso [addManipulators]
  */
 export enum ManipulatorStyleEnum
 {

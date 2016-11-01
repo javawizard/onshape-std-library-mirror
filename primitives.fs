@@ -21,7 +21,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 /**
  * Create a cube of a specified size, with one corner on the origin.
  * @param definition {{
- *      @field sideLength {valueWithUnits} :
+ *      @field sideLength {ValueWithUnits} :
  *              @eg `1 * inch`
  * }}
  */
@@ -43,7 +43,7 @@ export const cube = defineFeature(function(context is Context, id is Id, definit
 // Defined in the old way to overload with the sphere functions in surfaceGeometry.
 // TODO: rename and merge this with fSphere.
 /**
- * Feature creating a sphere. Internally, calls `opSphere`.
+ * Feature creating a sphere. Internally, calls [opSphere].
  *
  * @param id : @autocomplete `id + "sphere1"`
  * @param definition {{

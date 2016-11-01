@@ -48,9 +48,9 @@ export enum SecondDirectionBoundingType
 /**
  * Create an extrude, as used in Onshape's extrude feature.
  *
- * Internally, performs an `opExtrude`, followed by an `opBoolean`, possibly followed by a
- * `draftExtrudeBody`, possibly in two directions. If creating a simple extrusion, prefer using
- * `opExtrude` alone.
+ * Internally, performs an [opExtrude], followed by an [opBoolean], possibly followed by a
+ * [opDraft], possibly in two directions. If creating a simple extrusion, prefer using
+ * [opExtrude] alone.
  *
  * @param id : @autocomplete `id + "extrude1"`
  * @param definition {{
@@ -269,6 +269,19 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
+        // Handle negative inputs
+        if (definition.endBound == BoundingType.BLIND && definition.depth < 0)
+        {
+            definition.depth *= -1;
+            definition.oppositeDirection = !definition.oppositeDirection;
+        }
+
+        if (definition.hasSecondDirection && definition.secondDirectionBound == SecondDirectionBoundingType.BLIND && definition.secondDirectionDepth < 0)
+        {
+            definition.secondDirectionDepth *= -1;
+            definition.secondDirectionOppositeDirection = !definition.secondDirectionOppositeDirection;
+        }
+
         definition.entities = getEntitiesToUse(context, definition);
 
         // ------------- Handle pattern feature instance transform if needed ----------
@@ -300,13 +313,6 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         if (definition.oppositeDirection)
             definition.direction *= -1;
-
-        if (definition.depth != undefined && definition.depth < 0)
-        {
-            definition.depth *= -1;
-            if (definition.endBound == BoundingType.BLIND)
-                definition.direction *= -1;
-        }
 
         definition.isStartBoundOpposite = false;
 
@@ -361,12 +367,6 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
             definition.startBound = definition.secondDirectionBound as BoundingType;
             definition.startBoundEntity = definition.secondDirectionBoundEntity;
-
-            if (definition.secondDirectionDepth != undefined &&
-                definition.secondDirectionDepth < 0)
-            {
-                definition.secondDirectionDepth *= -1;
-            }
 
             definition.startDepth = definition.secondDirectionDepth;
             if (definition.secondDirectionOppositeDirection != definition.oppositeDirection)
@@ -765,7 +765,7 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
         var newOffset = newManipulators[DEPTH_MANIPULATOR].offset;
         if (definition.endBound == BoundingType.SYMMETRIC)
             newOffset *= 2;
-        definition.oppositeDirection = newOffset < 0 * meter;
+        definition.oppositeDirection = newOffset < 0;
         definition.depth = abs(newOffset);
     }
     else if (newManipulators[FLIP_MANIPULATOR] is map &&
@@ -781,7 +781,7 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
             definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
         {
             const newSecondDirectionOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
-            definition.secondDirectionOppositeDirection = newSecondDirectionOffset < 0 * meter;
+            definition.secondDirectionOppositeDirection = newSecondDirectionOffset < 0;
             definition.secondDirectionDepth = abs(newSecondDirectionOffset);
         }
         else if (newManipulators[SECOND_FLIP_MANIPULATOR] is map &&
@@ -891,7 +891,7 @@ function canSetUpToFlip(definition is map, specifiedParameters is map) returns b
 
 /**
  * @internal
- * The editing logic function used in the `extrude` feature.
+ * The editing logic function used in the [extrude] feature.
  */
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
@@ -930,3 +930,4 @@ function canSetSecondDirectionFlip(definition is map, specifiedParameters is map
 
     return (definition.secondDirectionOppositeDirection == definition.oppositeDirection);
 }
+

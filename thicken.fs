@@ -20,8 +20,6 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const THICKEN_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.005, 500],
     (centimeter) : 0.5,
     (millimeter) : 5.0,
@@ -31,8 +29,8 @@ const THICKEN_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Feature performing an `opThicken`, followed by an `opBoolean`. For simple thickens, prefer using
- * `opThicken` directly.
+ * Feature performing an [opThicken], followed by an [opBoolean]. For simple thickens, prefer using
+ * [opThicken] directly.
  */
 annotation { "Feature Type Name" : "Thicken",
              "Filter Selector" : "allparts",

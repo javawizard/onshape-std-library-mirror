@@ -14,10 +14,10 @@ import(path : "onshape/std/string.fs", version : "✨");
  * (solids, sheets, wires, and points), their constituent topological entities
  * (faces, edges, and vertices), variables, feature error states, etc.
  *
- * Every Onshape Part Studio uses a single `Context`. All features, operations,
+ * Every Onshape Part Studio uses a single [Context]. All features, operations,
  * and evaluation functions require a context to operate on. Different contexts
  * do not interact, but data may be transferred from one to another using
- * `opMergeContexts`.
+ * [opMergeContexts].
  *
  * Each context keeps track of the version of the Onshape Standard Library at
  * which it was created. While regenerating a feature that has been "held back"
@@ -26,7 +26,7 @@ import(path : "onshape/std/string.fs", version : "✨");
  */
 export type Context typecheck canBeContext;
 
-/** Typecheck for `Context` */
+/** Typecheck for [Context] */
 export predicate canBeContext(value)
 {
     @isContext(value); /* implies (value is builtin) */
@@ -34,7 +34,7 @@ export predicate canBeContext(value)
 
 /**
  * @internal
- * Returns a new, empty `Context`.
+ * Returns a new, empty [Context].
  */
 export function newContext() returns Context
 {
@@ -135,7 +135,7 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
  */
 export type Id typecheck canBeId;
 
-/** Typecheck for `Id` */
+/** Typecheck for [Id] */
 export predicate canBeId(value)
 {
     value is array;
@@ -238,8 +238,10 @@ export function getVariable(context is Context, name is string)
 }
 
 /**
- * Returns the language version of the library. Note that the return value of `@getLanguageVersion` (but not of this
- * function) depends on the module it is called from.
+ * Returns the language version of the library.  Note: this function calls `@getLanguageVersion` internally,
+ * but if you call `@getLanguageVersion` directly, you may get a different result.  That is because
+ * `@getLanguageVersion` returns the language version of the module making the call (which, for a module in std
+ * will coincide with the version of std.)
  */
 export function libraryLanguageVersion()
 {

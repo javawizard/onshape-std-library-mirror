@@ -36,7 +36,7 @@ export enum PatternType
 
 /**
  * The type of mirror.
- * @see `PatternType`
+ * @seealso [PatternType]
  */
 export enum MirrorType
 {
@@ -148,7 +148,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
  * Applies the body, face, or feature pattern, given just transforms and instance names
  * @param definition {{
  *      @field patternType {PatternType}
- *      @field transforms {array} : An `array` of `Transform`s in which to place
+ *      @field transforms {array} : An `array` of [Transform]s in which to place
  *              new instances.
  *      @field instanceNames {array} : An `array` of the same size as
  *              `transforms` with a `string` for each transform, used in later

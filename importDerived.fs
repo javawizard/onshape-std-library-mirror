@@ -18,14 +18,14 @@ import(path : "onshape/std/transform.fs", version : "✨");
  */
 export type BuildFunction typecheck canBeBuildFunction;
 
-/** Typecheck for `BuildFunction` */
+/** Typecheck for [BuildFunction] */
 export predicate canBeBuildFunction(value)
 {
     value is function;
 }
 
 /**
- * Feature performing an `opMergeContexts`, used for including parts in one
+ * Feature performing an [opMergeContexts], used for including parts in one
  * Part Studio that were designed in another.
  *
  * When a derived part from Part Studio 1 is created in a Part Studio 2, code

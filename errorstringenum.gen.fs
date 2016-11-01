@@ -11,7 +11,7 @@ FeatureScript ✨; /* Automatically generated version */
  *
  * To report a custom error, pass a string as the first argument of regenError.
  *
- * @see `error.fs` for usage.
+ * See `error.fs` for usage.
  * @default @value INVALID_RESULT */
 export enum ErrorStringEnum
 {
@@ -567,7 +567,18 @@ export enum ErrorStringEnum
     VARIABLE_CANNOT_EVALUATE,
     DRAWING_ASSEMBLY_INVALID_SECTION_CUT,
     DRAWING_PARTSTUDIO_INVALID_SECTION_CUT,
-    SHEET_METAL_COULD_NOT_UNFOLD
+    SHEET_METAL_COULD_NOT_UNFOLD,
+    PARAMETER_OUT_OF_RANGE,
+    SHEET_METAL_NO_0_ANGLE_BEND,
+    SHEET_METAL_FLAT_RIP_NO_EDIT,
+    SHEET_METAL_CANT_CHANGE_TO_FLAT,
+    PARAMETER_PRECONDITION_FAILED,
+    PARAMETER_SYNTAX_ERROR,
+    SHEET_METAL_CAN_ONLY_REMOVE,
+    SHEET_METAL_CAN_ONLY_SUBTRACT,
+    REST_ASSEMBLY_INVALID_FEATURE,
+    REST_ASSEMBLY_INVALID_BODY_TYPE,
+    PARTING_OUT_TARGET_READONLY
 }
 
 

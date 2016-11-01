@@ -5,7 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @see `opChamfer` */
+/** See [opChamfer]. */
 export enum ChamferType
 {
     annotation {"Name" : "Equal distance"}

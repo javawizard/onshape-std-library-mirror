@@ -28,7 +28,7 @@ export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
 /**
- * Feature performing an `opMoveFace`.
+ * Feature performing an [opMoveFace].
  */
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",

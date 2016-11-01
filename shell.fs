@@ -13,7 +13,7 @@ import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * Feature performing an `opShell`.
+ * Feature performing an [opShell].
  */
 annotation { "Feature Type Name" : "Shell", "Filter Selector" : "allparts" }
 export const shell = defineFeature(function(context is Context, id is Id, definition is map)

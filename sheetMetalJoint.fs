@@ -65,9 +65,15 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
 
         var jointEdge = findJointDefinitionEdge(context, definition.entity);
         var existingAttribute = getJointAttribute(context, jointEdge);
+        if (existingAttribute.jointType.value == SMJointType.RIP &&
+            existingAttribute.jointStyle.value == SMJointStyle.FLAT)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLAT_RIP_NO_EDIT);
+        }
         var newAttribute;
         if (definition.jointType == SMJointType.BEND)
         {
+
             if (definition.useDefaultRadius)
             {
                 definition.radius = getDefaultSheetMetalRadius(context, definition.entity);
@@ -76,6 +82,10 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         }
         else if (definition.jointType == SMJointType.RIP)
         {
+            if (definition.jointStyle == SMJointStyle.FLAT)
+            {
+               throw regenError(ErrorStringEnum.SHEET_METAL_CANT_CHANGE_TO_FLAT);
+            }
             newAttribute = createNewRipAttribute(id, existingAttribute, definition.jointStyle);
         }
         else
@@ -108,18 +118,6 @@ function findJointDefinitionEdge(context is Context, entity is Query) returns Qu
     return sheetEdges;
 }
 
-function getJointAttribute(context is Context, jointEdge is Query) returns map
-{
-    var attributes = getSmObjectTypeAttributes(context, jointEdge, SMObjectType.JOINT);
-    if (size(attributes) != 1)
-    {
-        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
-    }
-    else
-    {
-        return attributes[0];
-    }
-}
 
 function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius, useDefaultRadius is boolean) returns SMAttribute
 precondition

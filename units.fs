@@ -477,7 +477,7 @@ export function atan2(y is number, x is number) returns ValueWithUnits
  * to the vector `[x, y]`, assuming the units of `y` and `x`
  * match.
  *
- * @see `atan2(number, number)`
+ * @seealso [atan2(number, number)]
  * @param y : @autocomplete `1 * inch`
  * @param x : @autocomplete `-1 * inch`
  */

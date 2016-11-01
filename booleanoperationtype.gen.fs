@@ -5,7 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @see `opBoolean` */
+/** See [opBoolean]. */
 export enum BooleanOperationType
 {
     annotation {"Name" : "Union"}

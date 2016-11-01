@@ -24,15 +24,20 @@ FeatureScript ✨; /* Automatically generated version */
  * });
  * ```
  *
- * A `Sketch` object should always be created first, with either `newSketch`
- * or `newSketchOnPlane`.
+ * A [Sketch] object should always be created first, with either [newSketch]
+ * or [newSketchOnPlane].
  *
- * Next, any number of sketch entities and constraints may be added to the
- * sketch. When building sketches in FeatureScript, constraints are usually
- * unnecessary, since you already have the ability to place the entities
- * precisely where you intend them to be.
+ * Next, any number of sketch entities may be added to the sketch using the
+ * functions in this module. The inputs to sketch functions usually involve 2D
+ * [Vector]s, which are positions relative to the sketch plane's origin and x-axis.
+ * To create such a point based on a projected 3D point in world space, use
+ * [worldToPlane(Plane, Vector)].
  *
- * Finally, the sketch is solved and added to the context by calling `skSolve`,
+ * When building sketches in FeatureScript, constraints may be added, but
+ * are almost always unnecessary, since you already have the ability to place
+ * the entities precisely where you intend them to be.
+ *
+ * Finally, the sketch is solved and added to the context by calling [skSolve],
  * which results in the new wire bodies and sketch regions being added to the
  * context. These new entities can be queried for and used in operations and
  * features.
@@ -84,7 +89,7 @@ export enum SketchProjectionType
  * A `Sketch` object represents a Onshape sketch, to which sketch entities
  * can be added.
  *
- * Sketches can be created by calls to `newSketch` or `newSketchOnPlane`.
+ * Sketches can be created by calls to [newSketch] or [newSketchOnPlane].
  */
 export type Sketch typecheck canBeSketch;
 
@@ -98,7 +103,7 @@ export predicate canBeSketch(value)
  * Create a new sketch on an existing planar entity.  The sketch coordinate system follows the canonical plane
  * orientation and the sketch origin is the projection of the world origin onto the plane.
  *
- * To make a sketch in the coordinate system of an arbitrary `Plane`, use `newSketchOnPlane`.
+ * To make a sketch in the coordinate system of an arbitrary [Plane], use `newSketchOnPlane`.
  *
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
@@ -154,7 +159,7 @@ precondition
 }
 
 /**
- * Create a new sketch on a custom plane, specified by a `Plane` object.  The sketch coordinate system
+ * Create a new sketch on a custom plane, specified by a [Plane] object.  The sketch coordinate system
  * will match the coordinate system of the plane.
  *
  * @param value {{

@@ -65,13 +65,11 @@ const needCircleMessage = ErrorStringEnum.HELIX_INPUT_CIRCLE;
 
 const HELIX_TURN_BOUNDS =
 {
-    "min"      : 0,
-    "max"      : 1e9,
     (unitless) : [1e-5, 4, 1000]
 } as RealBoundSpec;
 
 /**
- * Feature performing an `opHelix`.
+ * Feature performing an [opHelix].
  */
 annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY",
              "Manipulator Change Function" : "helixManipulatorChange",

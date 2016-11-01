@@ -23,7 +23,7 @@ export enum ModifyFilletType
 }
 
 /**
- * Feature performing an `opModifyFillet`.
+ * Feature performing an [opModifyFillet].
  */
 annotation { "Feature Type Name" : "Modify fillet", "Filter Selector" : "allparts", "Editing Logic Function" : "modifyFilletLogic" }
 export const modifyFillet = defineFeature(function(context is Context, id is Id, definition is map)

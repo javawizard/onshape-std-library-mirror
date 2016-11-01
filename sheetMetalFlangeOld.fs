@@ -34,8 +34,6 @@ const MULTIPLE_MANIPULATORS = false;
 
 const FLANGE_ANGLE_BOUNDS =
 {
-    "min"    : -TOLERANCE.zeroAngle * radian,
-    "max"    : (PI + TOLERANCE.zeroAngle) * radian,
     (degree) : [0, 90, 180],
     (radian) : 1
 } as AngleBoundSpec;
@@ -66,7 +64,7 @@ export const smFlangeOld = defineFeature(function(context is Context, id is Id, 
     precondition
     {
         annotation { "Name" : "Height", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isLength(definition.height, LENGTH_BOUNDS);
+        isLength(definition.height, NONNEGATIVE_LENGTH_BOUNDS);
 
         annotation { "Name" : "Inner radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isLength(definition.innerRadius, BLEND_BOUNDS);

@@ -7,7 +7,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /**
  * Specifies a type of sketch constraint.
- * @see `skConstraint`
+ * @seealso [skConstraint]
  */
 export enum ConstraintType
 {

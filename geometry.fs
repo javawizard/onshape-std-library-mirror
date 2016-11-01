@@ -4,7 +4,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
- * This module makes all Onshape standard library features and functions
+ * This module makes all Onshape Standard Library features and functions
  * available.
  *
  * New Feature Studios begin with an import of this module,

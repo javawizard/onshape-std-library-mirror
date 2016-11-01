@@ -32,10 +32,8 @@ const STARTING_THICKNESS = 0.25 * inch;
 
 const K_FACTOR_BOUNDS =
 {
-            "min" : 0.0,
-            "max" : 0.5,
-            (unitless) : [0.0, 0.45, 0.5]
-        } as RealBoundSpec;
+    (unitless) : [0.0, 0.45, 0.5]
+} as RealBoundSpec;
 
 /**
 * @internal
@@ -69,16 +67,16 @@ export const smBend = defineFeature(function(context is Context, id is Id, defin
         else if (definition.deformationForm == SMDeformationForm.DEDUCTION)
         {
             annotation { "Name" : "Deduction", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-            isLength(definition.deduction, LENGTH_BOUNDS);
+            isLength(definition.deduction, NONNEGATIVE_LENGTH_BOUNDS);
         }
         else
         {
             annotation { "Name" : "Allowance", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-            isLength(definition.allowance, LENGTH_BOUNDS);
+            isLength(definition.allowance, NONNEGATIVE_LENGTH_BOUNDS);
         }
 
         annotation { "Name" : "Radius", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-        isLength(definition.radius, LENGTH_BOUNDS);
+        isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
 
         annotation { "Name" : "Angle", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
         isAngle(definition.angle, ANGLE_360_BOUNDS);

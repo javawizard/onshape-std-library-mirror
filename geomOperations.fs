@@ -379,7 +379,7 @@ export function opPattern(context is Context, id is Id, definition is map)
  *              @autocomplete `6 * inch`
  *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
  *              @autocomplete `6 * inch`
- *      @field defaultType {DefaultPlaneType} : For Onshape internal use. @optional
+ *      @field defaultType @internalType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */
 export function opPlane(context is Context, id is Id, definition is map)
@@ -540,14 +540,14 @@ export function opThicken(context is Context, id is Id, definition is map)
 }
 
 /**
- * Applies a given transform to one or more bodies. To make transformed copies of bodies, use `opPattern`.
+ * Applies a given transform to one or more bodies. To make transformed copies of bodies, use [opPattern].
  *
  * @param id : @autocomplete `id + "transform1"`
  * @param definition {{
  *      @field bodies {Query} : The bodies to transform.
  *      @field transform {Transform} : The transform to apply.
  *              @eg `transform(vector(0, 0, 1) * inch)` will translate the body 1 inch along the world's z-axis.
- *              @eg `rotationAround(myLine, 30 * degree)` will rotate around a `Line` object.
+ *              @eg `rotationAround(myLine, 30 * degree)` will rotate around a [Line] object.
  *              @eg `scaleUniformly(factor)` will scale uniformly about the origin.
  *              @eg `scaleUniformly(factor, point)` will scale uniformly about a given point.
  *              @eg `toWorld(cSys)` will (somewhat counterintuitively) perform a transform such that geometry on
@@ -568,7 +568,7 @@ export function opTransform(context is Context, id is Id, definition is map)
  * Bending requires a different imprint operation implemented in feature script.
  * @param id : @autocomplete `id + "bendFace1"`
  * @param definition {{
- *    @field tolerance {Enum} : Tolerance used to determine if an edge is tangent.
+ *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent.
  *    @field useFaces {boolean} : If true, provide a list of faces to imprint on, if false provide a list of bodies.
  *    @field faces {Query} : @requiredif{`useFaces` is `true`} List of faces to have break edges imprinted.
  *    @field bodies {Query} : @requiredif{`useFaces` is `false`} List of bodies to have break edges imprinted.
@@ -602,7 +602,7 @@ export function opBendAtEdgeInternal(context is Context, id is Id, definition is
  * Flattens faces or edges
  * @param id : @autocomplete `id + "flatten1"`
  * @param definition {{
- *    @field tolerance {Enum} : Tolerance used to determine if an edge is tangent.
+ *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent.
  *    @field pickEdges {boolean} : Whether to unbend individual edges, or use a seed face.
  *    @field bendEdges {Query} : @requiredif{`pickEdges` is `true`} Edges to unbend. Must be an edge joining a planar face with an approximately tangent cylindrical face.
  *    @field seedFace {Query} : @requiredif{`pickEdges` is `false`} Face to remain fixed while adjacent faces are flattened. Must be a planar face.
@@ -648,7 +648,7 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  * @param id : @autocomplete `id + "extractSurface1"`
  * @param definition {{
  *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
- *    @field tolerance {Enum} : @requiredif {`propagateTangents` is `true`} Tolerance used to determine if an edge is tangent.
+ *    @field tolerance @internalType {Enum} : @requiredif {`propagateTangents` is `true`} Tolerance used to determine if an edge is tangent.
  *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
  *    @field offset {ValueWithUnits} : "Offset extracted surface faces by this distance along normal" @optional
  * }}
@@ -656,5 +656,19 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
 export function opExtractSurface(context is Context, id is Id, definition is map)
 {
     @opExtractSurface(context, id, definition);
+}
+
+/**
+ * @internal
+ * Generates surfaces representing the outlines of parts or surfaces projected onto a plane
+ * @param id : @autocomplete `id + "createOutline1"`
+ * @param definition {{
+ *      @field tools {Query} : The tool parts or surfaces
+ *      @field plane {Query} : The plane that the surfaces will be created on
+ * }}
+ */
+export function opCreateOutline(context is Context, id is Id, definition is map)
+{
+    return @opCreateOutline(context, id, definition);
 }
 

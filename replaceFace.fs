@@ -19,7 +19,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 
 /**
- * Feature performing an `opReplaceFace`.
+ * Feature performing an [opReplaceFace].
  */
 annotation { "Feature Type Name" : "Replace face", "Manipulator Change Function" : "replaceFaceManipulatorChange", "Filter Selector" : "allparts", "Editing Logic Function" : "replaceFaceEditLogic" }
 export const replaceFace = defineFeature(function(context is Context, id is Id, definition is map)

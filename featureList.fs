@@ -14,7 +14,7 @@ import(path : "onshape/std/context.fs", version : "✨");
  */
 export type FeatureList typecheck canBeFeatureList;
 
-/** Typecheck for `FeatureList` */
+/** Typecheck for [FeatureList] */
 export predicate canBeFeatureList(value)
 {
     value is map;

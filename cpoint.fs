@@ -32,14 +32,12 @@ export enum PointType
  */
 export const EDGE_PARAMETER_BOUNDS =
 {
-    "min"      : 0.0,
-    "max"      : 1.0,
     (unitless) : [0.0, 0.5, 1]
 } as RealBoundSpec;
 
 /**
  * @internal
- * Creates a construction point, calling `opPoint`. Not exposed through the UI.
+ * Creates a construction point, calling [opPoint]. Not exposed through the UI.
  */
 annotation { "Feature Type Name" : "Point" }
 export const cPoint = defineFeature(function(context is Context, id is Id, definition is map)

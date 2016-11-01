@@ -33,8 +33,8 @@ export enum RevolveType
 }
 
 /**
- * Feature performing an `opRevolve`, followed by an `opBoolean`. For simple revolves, prefer using
- * `opRevolve` directly.
+ * Feature performing an [opRevolve], followed by an [opBoolean]. For simple revolves, prefer using
+ * [opRevolve] directly.
  */
 annotation { "Feature Type Name" : "Revolve",
              "Manipulator Change Function" : "revolveManipulatorChange",

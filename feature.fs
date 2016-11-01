@@ -253,8 +253,8 @@ export function getFullPatternTransform(context is Context) returns Transform
  * applying any transform to the line).  If neither vertex is patterned, the line should be transformed
  * by the pattern transform and the result will be as expected, as if a body pattern of these lines was
  * performed.  Other features may need to apply the transform differently: for example, a sweep can
- * transform the result of `opSweep` prior to the boolean, but an extrude needs to transform the profile
- * prior to `opExtrude` to accommodate up-to-next correctly.
+ * transform the result of [opSweep] prior to the boolean, but an extrude needs to transform the profile
+ * prior to [opExtrude] to accommodate up-to-next correctly.
  *
  * The general case is more complicated because feature patterns may be nested, and this function is
  * designed to handle them.  This function takes `references`, a query for everything the feature
@@ -327,7 +327,7 @@ export function transformResultIfNecessary(context is Context, id is Id, transfo
  * entities matched by earlier queries in the argument to `qUnion` are
  * returned first.
  *
- * @see `qTransient`
+ * @seealso [qTransient]
  */
 export function evaluateQuery(context is Context, query is Query) returns array
 {

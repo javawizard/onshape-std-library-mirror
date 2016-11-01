@@ -14,7 +14,7 @@ import(path : "onshape/std/units.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
- * an `applyPattern`, which in turn performs an `opPattern` or, for a feature
+ * an `applyPattern`, which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allparts" }

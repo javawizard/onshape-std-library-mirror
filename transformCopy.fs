@@ -79,11 +79,11 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
 // Note that transform() is also defined in transform.fs
 // with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
 /**
- * Move and/or rotate a body or bodies with a single `Transform`, constructed with input according to the
- * selected `TransformType`.
+ * Move and/or rotate a body or bodies with a single [Transform], constructed with input according to the
+ * selected [TransformType].
  *
- * Internally, performs an `opTransform` when not copying, and an `opPattern` when copying. For simple
- * transforms, prefer calling `opTransform` or `opPattern` directly.
+ * Internally, performs an [opTransform] when not copying, and an [opPattern] when copying. For simple
+ * transforms, prefer calling [opTransform] or [opPattern] directly.
  *
  * @param definition {{
  *      @field entities {Query} : The bodies to transform. An error is thrown if non-bodies are included.
@@ -468,7 +468,7 @@ export function transformManipulatorChange(context is Context, output is map, in
     return output;
 }
 
-annotation { "Deprecated" : "Use `opPattern`, or the `transform` feature instead.",
+annotation { "Deprecated" : "Use [opPattern], or the [transform] feature instead.",
     "Feature Type Name" : "Copy part", "Filter Selector" : "allparts" }
 export const copyPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition

@@ -62,7 +62,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Sketch profiles", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
         definition.profiles is Query;
 
-        annotation { "Name" : "Parts", "Filter" : EntityType.BODY }
+        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID }
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
@@ -223,26 +223,57 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
                 "arcLengthParameterization" : false
             });
 
+    const extendDirections = [-profileEndTangentLines[0].direction, profileEndTangentLines[1].direction];
+
     // There  are 2 reasons we might need to extend the given profiles:
     // 1.  If the profile touches the part(s), make an extension of the profile past the part to ensure
     //     that there are no gaps when we thicken the profile (this can happen if the profile is not normal
     //     to the part where they intersect).
     // 2.  The extend profiles up to part checkbox has been selected.
-    const partsContainPoint = function(point is Vector) returns boolean
+
+    // return wether we need to force an extension at the given end of the profile.
+    const endNeedsExtension = function(end is number) returns boolean
+    {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V438_RIB_EXTEND_LOGIC))
         {
-            return evaluateQuery(context, qContainsPoint(definition.parts, remainingTransform * point)) != [];
-        };
+            // New test, test if point[end] is on one or more faces and not tangent to at least one of the face normals.
+            var allFaces = qOwnedByBody(definition.parts, EntityType.FACE);
+            var contactFaces = evaluateQuery(context, qContainsPoint(allFaces, remainingTransform * profileEndTangentLines[end].origin));
+            for (var contactFace in contactFaces)
+            {
+                var distanceResult = evDistance(context, {
+                        "side0" : profileEndTangentLines[end].origin,
+                        "side1" : contactFace
+                });
+                var parameter = distanceResult.sides[1].parameter;
+                var tangentPlane = evFaceTangentPlane(context, {
+                        "face" : contactFace,
+                        "parameter" : parameter
+                });
+
+                if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            // old method, test if the point is in or on one of the parts.
+            return evaluateQuery(context, qContainsPoint(definition.parts, remainingTransform * profileEndTangentLines[end].origin)) != [];
+        }
+    };
 
     var extendProfiles = makeArray(2);
     var extendedEndPoints = makeArray(2);
-    const extendDirections = [-profileEndTangentLines[0].direction, profileEndTangentLines[1].direction];
 
     // If the profile is closed, then there is nothing to extend.
     const isProfileClosed = isClosed(context, profile);
 
     for (var end in [0, 1]) // Potentially extend both endpoints of the profile curve
     {
-        extendProfiles[end] = !isProfileClosed && (definition.extendProfilesUpToPart || partsContainPoint(profileEndTangentLines[end].origin));
+        extendProfiles[end] = !isProfileClosed && (definition.extendProfilesUpToPart || endNeedsExtension(end));
         if (extendProfiles[end])
         {
             extendedEndPoints[end] = profileEndTangentLines[end].origin + (extendDirections[end] * extendLength);
@@ -352,7 +383,7 @@ function extrudeRibs(context is Context,
         });
 
     // Since we don't want the profile to actually move
-    // move it back to it's original location after checking for collisions.
+    // move it back to its original location after checking for collisions.
     patternTransform(context, id + "tr2", profile, inverse(remainingTransform));
     var clashBodies = mapArray(clashes, function(clash)
     {

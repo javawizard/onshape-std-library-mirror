@@ -380,7 +380,13 @@ export enum FeatureScriptVersionNumber
     V429_HOLE_SAFE_SKETCH_CLEANUP,
     V430_CONFIGURATIONS_PREP,
     V431_FIX_BODY_FILTERS,
-    V432_RIB_GROUP_BOOLEANS
+    V432_RIB_GROUP_BOOLEANS,
+    V437_CONSISTENT_BOUNDS,
+    V438_RIB_EXTEND_LOGIC,
+    V439_TWEAK_OP_TRACKING,
+    V440_SYNTAX_ERRORS,
+    V441_SHOW_LABEL_UIHINT,
+    V442_PARTING_OUT_TARGET_READONLY
 }
 
 /**
@@ -391,6 +397,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V432_RIB_GROUP_BOOLEANS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V442_PARTING_OUT_TARGET_READONLY;
 
 

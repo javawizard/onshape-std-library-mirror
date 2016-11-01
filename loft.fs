@@ -51,13 +51,11 @@ export enum LoftShapeControlType
 /** @internal */
 export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 {
-    "min"      : -1e9,
-    "max"      : 1e9,
     (unitless) : [-1e5, 1, 1e5]
 } as RealBoundSpec;
 
 /**
- * Feature performing an `opLoft`.
+ * Feature performing an [opLoft].
  */
 annotation { "Feature Type Name" : "Loft",
              "Filter Selector" : "allparts",

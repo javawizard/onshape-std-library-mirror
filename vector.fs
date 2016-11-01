@@ -20,7 +20,7 @@ import(path : "onshape/std/string.fs", version : "✨");
  */
 export type Vector typecheck canBeVector;
 
-/** Typecheck for `Vector` */
+/** Typecheck for [Vector] */
 export predicate canBeVector(value)
 {
     value is array;

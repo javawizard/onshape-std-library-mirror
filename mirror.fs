@@ -21,7 +21,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 /**
  * Feature creating a single copy of some features, bodies, or faces, mirrored
  * about a given entity. Internally, performs an `applyPattern`, which in turn
- * performs an `opPattern` or, for a feature mirror, calls the feature
+ * performs an [opPattern] or, for a feature mirror, calls the feature
  * function.
  */
 annotation { "Feature Type Name" : "Mirror",

@@ -13,7 +13,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
- * Feature performing an `opDraft`.
+ * Feature performing an [opDraft].
  */
 annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
 export const draft = defineFeature(function(context is Context, id is Id, definition is map)

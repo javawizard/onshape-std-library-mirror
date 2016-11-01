@@ -46,6 +46,7 @@ export predicate canBeSMAttribute (value)
     if (value.objectType == SMObjectType.MODEL)
     {
         value.thickness == undefined || isLength(value.thickness.value);
+        value.minimalClearance == undefined || isLength(value.minimalClearance.value);
     }
     else if (value.objectType == SMObjectType.JOINT)
     {
@@ -175,7 +176,7 @@ export function assignSmAssociationAttributes(context is Context, entities is Qu
 export function getSMDefinitionEntities(context is Context, selection is Query) returns array
 {
     var entityAssociations = getAttributes(context, {
-            "entities" : selection,
+            "entities" : qBodyType(selection, BodyType.SOLID),
             "attributePattern" : {} as SMAssociationAttribute
         });
     var out = [];
@@ -209,7 +210,22 @@ export function areEntitiesFromSingleSheetMetalModel(context is Context, entitie
     const sheetMetalEntities = getSMDefinitionEntities(context, qUnion([entities, partFaces]));
     const sheetMetalModels = qOwnerBody(qUnion(sheetMetalEntities));
     const sheetMetalModelArray = evaluateQuery(context, sheetMetalModels);
-    if (size(sheetMetalModelArray) == 1)
+
+    var foundAttribute = undefined;
+    for (var model in sheetMetalModelArray)
+    {
+        const attributes = getSmObjectTypeAttributes(context, model, SMObjectType.MODEL);
+        if (size(attributes) != 1)
+            throw regenError("Found model with more than one SMObjectType.MODEL attribute");
+        if (foundAttribute == undefined)
+            foundAttribute = attributes[0].attributeId;
+        else if (foundAttribute != attributes[0].attributeId)
+        {
+            //found a new attribute, i.e. a different sheet metal model
+            return result;
+        }
+    }
+    if (foundAttribute != undefined)
     {
         result.fromSingleSheetMetalModel = true;
         result.active = isSheetMetalModelActive(context, sheetMetalModelArray[0]);
@@ -224,5 +240,21 @@ export function areEntitiesFromSingleActiveSheetMetalModel(context is Context, e
 {
     const info = areEntitiesFromSingleSheetMetalModel(context, entities);
     return info.fromSingleSheetMetalModel && info.active;
+}
+
+/**
+ * @internal
+ */
+export function getJointAttribute(context is Context, jointEdge is Query) returns map
+{
+    var attributes = getSmObjectTypeAttributes(context, jointEdge, SMObjectType.JOINT);
+    if (size(attributes) != 1)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
+    }
+    else
+    {
+        return attributes[0];
+    }
 }
 

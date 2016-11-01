@@ -60,8 +60,6 @@ const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
 
 const PLANE_OFFSET_BOUNDS =
 {
-    "min"        : -TOLERANCE.zeroLength * meter,
-    "max"        : 500 * meter,
     (meter)      : [0.0, 0.025, 500],
     (centimeter) : 2.5,
     (millimeter) : 25,
@@ -71,7 +69,7 @@ const PLANE_OFFSET_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * Creates a construction plane feature by calling `opPlane`.
+ * Creates a construction plane feature by calling [opPlane].
  */
 annotation { "Feature Type Name" : "Plane", "Manipulator Change Function" : "cplaneManipulatorChange", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
@@ -384,13 +382,15 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
         const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
         if (edgeQueries != undefined && @size(edgeQueries) > 0)
         {
-            const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edgeQueries[0], "parameters" : [0, 1] });
-            if (edgeEndPoints != undefined && @size(edgeEndPoints) > 1)
-            {
-                var normal = edgeEndPoints[0].origin - edgeEndPoints[1].origin;
-                var size = norm(normal) * (1 + PLANE_SIZE_EXTENSION_FACTOR);
-                planeBounds = [size, size];
-            }
+            var curveDefinition = evCurveDefinition(context, { "edge" : edgeQueries[0] });
+            var size;
+            if (curveDefinition is Circle)
+                size = curveDefinition.radius * 2;
+            else
+                size = evLength(context, { "entities" : edgeQueries[0] });
+
+            size *= 1 + PLANE_SIZE_EXTENSION_FACTOR;
+            planeBounds = [size, size];
         }
     }
     else if (planeType == CPlaneType.PLANE_POINT)
@@ -592,6 +592,8 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
             definition.cplaneType = CPlaneType.OFFSET;
         else if ((lines + curves) == 1 && size(evaluateQuery(context, qVertexAdjacent(entities, EntityType.VERTEX))) == 2)
             definition.cplaneType = CPlaneType.MID_PLANE;
+        else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
+            definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
     if (total == 2)
     {

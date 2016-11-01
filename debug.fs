@@ -36,14 +36,14 @@ const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
  * Unitless, normalized 3D `Vector`: Displays an arrow starting at the world
  * origin, pointing in the given direction.
  *
- * `Line`: Displays an arrow starting at the line's origin, pointing in the
+ * [Line]: Displays an arrow starting at the line's origin, pointing in the
  * line's direction.
  *
- * `CoordSystem`: Displays three perpendicular arrows from the coordinate
+ * [CoordSystem]: Displays three perpendicular arrows from the coordinate
  * system's origin, along its three axes. The arrowhead for the x-axis is
  * largest, and the z-axis is smallest.
  *
- * `Plane`: Displays a large square in the positive quadrant of the plane,
+ * [Plane]: Displays a large square in the positive quadrant of the plane,
  * along with three arrows along the plane's x-axis, y-axis, and normal.
  *
  * The overloads in this module define these behaviors.
@@ -187,20 +187,20 @@ export function debug(context is Context, point1 is Vector, point2 is Vector)
 
 // Timers for very basic profiling
 
-/** Starts the timer associated with the string `timer` or resets it.  Use with `printTimer`. */
+/** Starts the timer associated with the string `timer` or resets it.  Use with [printTimer(string)]. */
 export function startTimer(timer is string)
 {
     @startTimer(timer);
 }
 
-/** Starts the global timer associated with the empty string or resets it.  Use with `printTimer`. */
+/** Starts the global timer associated with the empty string or resets it.  Use with [printTimer()]. */
 export function startTimer()
 {
     startTimer("");
 }
 
 /**
- * Prints the elapsed milliseconds for the timer associated with the string `timer`.  Use with `startTimer`.
+ * Prints the elapsed milliseconds for the timer associated with the string `timer`.  Use with [startTimer(string)].
  *
  * Note that if the timer was set in a prior feature, the elapsed time may be very large because features can
  * be regenerated at different times.
@@ -213,7 +213,7 @@ export function printTimer(timer is string)
 }
 
 /**
- * Prints the elapsed milliseconds for the global timer associated with the empty string.  Use with `startTimer`.
+ * Prints the elapsed milliseconds for the global timer associated with the empty string.  Use with [startTimer()].
  *
  * Note that if the timer was set in a prior feature, the elapsed time may be very large because features can
  * be regenerated at different times.

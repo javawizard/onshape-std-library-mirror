@@ -15,8 +15,8 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 
 /**
- * Feature performing an `opSweep`, followed by an `opBoolean`. For simple sweeps, prefer using
- * `opSweep` directly.
+ * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
+ * [opSweep] directly.
  */
 annotation { "Feature Type Name" : "Sweep",
              "Filter Selector" : "allparts",

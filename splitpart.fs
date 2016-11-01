@@ -23,7 +23,7 @@ export enum SplitType
 }
 
 /**
- * Feature performing an `opSplit`.
+ * Feature performing an [opSplitPart].
  */
 annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)

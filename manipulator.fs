@@ -13,7 +13,7 @@ FeatureScript ✨; /* Automatically generated version */
  * whenever that feature is being edited. Changes to a manipulator will be
  * processed by a `"Manipulator Change Function"` associated with the feature.
  *
- * A small example using a manipulator to control the depth and direction of an `opExtrude` is below:
+ * A small example using a manipulator to control the depth and direction of an [opExtrude] is below:
  *
  * ```
  * annotation { "Feature Type Name" : "Fake extrude",
@@ -87,11 +87,12 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
  * the context. Altered copies of these manipulators are passed into a
  * manipulator change function as `newManipulators`.
  *
- * Can be constructed with `triadManipulator`, `linearManipulator`, etc.
+ * Can be constructed with [triadManipulator], [linearManipulator],
+ * and other functions below.
  */
 export type Manipulator typecheck canBeManipulator;
 
-/** Typecheck for `Manipulator` */
+/** Typecheck for [Manipulator] */
 export predicate canBeManipulator(value)
 {
     value is map;
@@ -176,11 +177,11 @@ precondition
     definition.manipulatorType = ManipulatorType.LINEAR_1D;
     if (definition.minValue == undefined)
     {
-        definition.minValue = -PLANE_SIZE_BOUNDS.max;
+        definition.minValue = -500 * meter;
     }
     if (definition.maxValue == undefined)
     {
-        definition.maxValue = PLANE_SIZE_BOUNDS.max;
+        definition.maxValue = 500 * meter;
     }
     return definition as Manipulator;
 }

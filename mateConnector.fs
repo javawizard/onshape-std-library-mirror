@@ -23,14 +23,12 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
  */
 export const NORMAL_PARAMETER_BOUNDS =
 {
-    "min"      : -1.0,
-    "max"      : 1.0,
     (unitless) : [-1.0, 0, 1]
 } as RealBoundSpec;
 
 // IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
- * Feature performing an `opMateConnector`.
+ * Feature performing an [opMateConnector].
  */
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)

@@ -14,7 +14,7 @@ import(path : "onshape/std/math.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
- * an `applyPattern`, which in turn performs an `opPattern` or, for a feature
+ * an `applyPattern`, which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allparts" }

@@ -10,10 +10,10 @@ FeatureScript ✨; /* Automatically generated version */
  *
  * The common use case for attributes is to set attributes on an entity in one
  * feature, and get them in another. For global data, this can be done more
- * simply via `getVariable` and `setVariable`.
+ * simply via [setVariable] and [getVariable].
  *
- * Entities can be queried by attributes with `qAttributeFilter` and
- * `qAttributeQuery`.
+ * Entities can be queried by attributes with [qAttributeFilter] and
+ * [qAttributeQuery].
  */
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
@@ -54,7 +54,7 @@ precondition
  *              @ex `{}` matches all `map` attributes.
  *              @ex `"" as MyStringAttributeType` matches all attributes of
  *                      type `MyStringAttributeType`.
- *              @ex `{"odd" : true}` matches all `map` attributes that have a
+ *              @ex `{ "odd" : true }` matches all `map` attributes that have a
  *                      field `"odd"` whose value is `true`.
  * }}
  *

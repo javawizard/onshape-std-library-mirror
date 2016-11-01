@@ -86,12 +86,12 @@ const REGEX_FULL_FORM = "(?:-?\\d+\\.\\d*)";
 const REGEX_LEADING_DECIMAL = "(?:-?\\.?\\d+)";
 
 /**
- * Matches a number in the string, with our without decimals or exponents.
+ * Matches a number in the string, with or without decimals or exponents.
  */
 export const REGEX_NUMBER = "(?:(?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
 
 /**
- * Matches a number in the string, with our without decimals or exponents and captures it.
+ * Matches a number in the string, with or without decimals or exponents and captures it.
  */
 export const REGEX_NUMBER_CAPTURE = "((?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
 
@@ -99,14 +99,14 @@ export const REGEX_NUMBER_CAPTURE = "((?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADI
  * Extends regular expression syntax by adding \\f to indicate a complete number
  */
 export function addCustomNumberMatching(regExp is string) returns string
-  {
-      regExp = replace(regExp, "\\(\\\\f\\)", REGEX_NUMBER_CAPTURE);
-      regExp = replace(regExp, "\\\\f", REGEX_NUMBER);
-      return regExp;
-  }
+{
+    regExp = replace(regExp, "\\(\\\\f\\)", REGEX_NUMBER_CAPTURE);
+    regExp = replace(regExp, "\\\\f", REGEX_NUMBER);
+    return regExp;
+}
 
 /**
- * Test if `s` matches `regExp` in it's entirety.
+ * Test if `s` matches `regExp` in its entirety.
  *
  * @returns {{
  *      @field hasMatch {boolean} : `true` if `regExp` matches `s`

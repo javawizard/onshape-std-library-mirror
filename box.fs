@@ -4,8 +4,9 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 /**
- * This module refers to 3D bounding boxes. For more info on the `box` standard
- * type used for references, see `Types and values` in the language reference.
+ * This module refers to 3D bounding boxes, e.g. the result of a call to `evBox3d`.
+ *
+ * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
 import(path : "onshape/std/units.fs", version : "✨");
@@ -21,7 +22,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
  */
 export type Box3d typecheck canBeBox3d;
 
-/** Typecheck for `Box3d` */
+/** Typecheck for [Box3d] */
 export predicate canBeBox3d(value)
 {
     value is map;
@@ -49,7 +50,7 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 }
 
 /**
- * Enlarge a bounding box.
+ * Return an enlarged bounding box.
  * @param bBox
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
  *     each face of the box.  The corners move `sqrt(3)` times as far.

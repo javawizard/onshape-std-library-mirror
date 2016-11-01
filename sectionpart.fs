@@ -79,7 +79,7 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
 /**
  * Feature creating a section of a part behind a plane. Internally, performs
- * an `opSplitPart` followed by an `opDeleteBodies`.
+ * an [opSplitPart] followed by an [opDeleteBodies].
  *
  * Not exposed in the Part Studio UI.
  */

@@ -13,7 +13,7 @@ import(path : "onshape/std/units.fs", version: "✨");
  */
 export type ForeignId typecheck canBeForeignId;
 
-/** Typecheck for `ForeignId` */
+/** Typecheck for [ForeignId] */
 export predicate canBeForeignId(value)
 {
     value is string;
@@ -40,7 +40,7 @@ export enum LengthUnitNames
 }
 
 /**
- * Feature performing an `opImportForeign`, transforming the result if necessary.
+ * Feature performing an [opImportForeign], transforming the result if necessary.
  */
 annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
@@ -66,6 +66,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
         isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
+
+        annotation { "Name" : "Modifiable", "UIHint" : "ALWAYS_HIDDEN", "Default" : true  }
+        definition.isModifiable is boolean;
     }
     {
         var remainingTransform = getRemainderPatternTransform(context,
@@ -82,5 +85,5 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isModifiable : true });
 

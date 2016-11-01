@@ -12,7 +12,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 
 /**
- * Feature performing an `opDeleteFace`.
+ * Feature performing an [opDeleteFace].
  */
 annotation { "Feature Type Name" : "Delete face", "Filter Selector" : "allparts" }
 export const deleteFace = defineFeature(function(context is Context, id is Id, definition is map)
