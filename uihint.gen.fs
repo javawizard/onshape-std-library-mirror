@@ -38,7 +38,7 @@ FeatureScript ✨; /* Automatically generated version */
  *      and never the resulting value.
  * @value OPPOSITE_DIRECTION_CIRCULAR : Like `OPPOSITE_DIRECTION`, but with circular arrows.
  * @value SHOW_LABEL : Show a label above an enum parameter.
- */
+ * @value HORIZONTAL_ENUM : Display an enum as a horizontal list of clickable text, rather than the default select control */
 export enum UIHint
 {
     OPPOSITE_DIRECTION,
@@ -53,7 +53,8 @@ export enum UIHint
     PRIMARY_AXIS,
     SHOW_EXPRESSION,
     OPPOSITE_DIRECTION_CIRCULAR,
-    SHOW_LABEL
+    SHOW_LABEL,
+    HORIZONTAL_ENUM
 }
 
 

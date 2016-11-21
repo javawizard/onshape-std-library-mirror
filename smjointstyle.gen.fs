@@ -12,8 +12,10 @@ export enum SMJointStyle
 {
     annotation {"Name" : "Edge Joint"}
     EDGE,
-    annotation {"Name" : "Butt Joint"}
+    annotation {"Name" : "Butt Joint - Primary"}
     BUTT,
+    annotation {"Name" : "Butt Joint - Secondary"}
+    BUTT2,
     annotation {"Name" : "Flat Joint"}
     FLAT
 }

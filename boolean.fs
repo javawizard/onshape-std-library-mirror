@@ -30,14 +30,14 @@ annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Operation type" }
+        annotation { "Name" : "Operation type", "UIHint" : "HORIZONTAL_ENUM" }
         definition.operationType is BooleanOperationType;
         annotation { "Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID }
         definition.tools is Query;
 
         if (definition.operationType == BooleanOperationType.SUBTRACTION)
         {
-            annotation { "Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID }
+            annotation { "Name" : "Targets", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Offset" }
@@ -123,8 +123,8 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             else
             {
                 try(opBoolean(context, id + tempBooleanSuffix, tempBooleanDefinition));
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + tempBooleanSuffix, "propagateErrorDisplay" : true });
             }
+            processSubfeatureStatus(context, id, { "subfeatureId" : id + tempBooleanSuffix, "propagateErrorDisplay" : true });
             if (doSheetMetalBooleans)
             {
                 opDeleteBodies(context, id + "deleteTemp", { "entities" : toolBodies });
@@ -231,7 +231,7 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
  */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
-    annotation { "Name" : "Result body operation type" }
+    annotation { "Name" : "Result body operation type", "UIHint" : "HORIZONTAL_ENUM" }
     booleanDefinition.operationType is NewBodyOperationType;
 }
 
@@ -253,7 +253,7 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
             booleanDefinition.defaultScope is boolean;
             if (booleanDefinition.defaultScope != true)
             {
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID }
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
                 booleanDefinition.booleanScope is Query;
             }
         }
@@ -286,7 +286,7 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 
     var output = {};
     output.tools = defaultTools;
-    output.targets = (definition.defaultScope != false) ? qAllNonMeshSolidBodies() : definition.booleanScope;
+    output.targets = (definition.defaultScope != false) ? qAllModifiableSolidBodies() : definition.booleanScope;
     output.targets = qSubtraction(output.targets, defaultTools);
 
     // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.
@@ -325,10 +325,10 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     if (definition.operationType == NewBodyOperationType.NEW)
         return;
 
-    const solidsQuery = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID);
+    const solidsQuery = qModifiableEntityFilter(qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID));
 
     var booleanDefinition = subfeatureToolsTargets(context, id, definition);
-    if (definition.operationType != NewBodyOperationType.REMOVE && queryContainsSheetMetal(context, booleanDefinition.targets))
+    if (definition.operationType != NewBodyOperationType.REMOVE && queryContainsActiveSheetMetal(context, booleanDefinition.targets))
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_REMOVE, [], booleanDefinition.targets);
     }
@@ -380,7 +380,7 @@ function copyBodies(context is Context, id is Id, bodies is Query) returns Query
 function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 {
     const parts = partitionSheetMetalParts(context, definition.targets);
-    if (size(parts.sheetMetalPartsArray) == 0)
+    if (size(parts.sheetMetalPartsMap) == 0)
     {
         performRegularBoolean(context, id, definition);
     }
@@ -402,18 +402,31 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
         // because subsequent operations are adding more bodies with different IDs
         // so substitute the evaluated original tools
         definition.tools = evaluatedOriginalTools;
-        for (var index = 0; index < size(parts.sheetMetalPartsArray); index += 1)
+
+        var index = 0;
+        for (var idAndParts in parts.sheetMetalPartsMap)
         {
             const subId = id + unstableIdComponent(index);
+            index += 1;
             const booleanId = subId + "tempSMBoolean";
 
-            definition.sheetMetalPart = parts.sheetMetalPartsArray[index];
+            definition.sheetMetalPart = qUnion(idAndParts.value);
 
             defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
                     {
                         try
                         {
-                            const sheetMetalModel = getSheetMetalModelForPart(context, definition.sheetMetalPart);
+                            const sheetMetalModel = try(getSheetMetalModelForPart(context, definition.sheetMetalPart));
+                            if (sheetMetalModel == undefined)
+                            {
+                                // Currently qEverything will return flat sheet metal so when booleaning with everything
+                                // We won't find the sheet metal model
+                                // That's fine, we'll handle it for now by skipping out in this case.
+                                // When we have fixed up qEverything we will want to revert this so that we catch genuine
+                                // unexpected issues
+                                // See BEL-54458
+                                return;
+                            }
                             const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
                             const initialAssociationAttributes = getAttributes(context, {
                                 "entities" : qOwnedByBody(sheetMetalModel),
@@ -428,9 +441,11 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                             updateSheetMetalGeometry(context, id + "smUpdate", {
                                     "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
                                     "deletedAttributes" :  toUpdate.deletedAttributes});
+                            processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
                         }
                         catch
                         {
+                            reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
                         }
                     }, {})(context, booleanId, definition);
             processSubfeatureStatus(context, id, { "subfeatureId" : booleanId, "propagateErrorDisplay" : true });

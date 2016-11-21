@@ -386,7 +386,16 @@ export enum FeatureScriptVersionNumber
     V439_TWEAK_OP_TRACKING,
     V440_SYNTAX_ERRORS,
     V441_SHOW_LABEL_UIHINT,
-    V442_PARTING_OUT_TARGET_READONLY
+    V442_PARTING_OUT_TARGET_READONLY,
+    V447_SPLIT_SHEET_METAL,
+    V448_OWNER_BODY_DISAMBIGUATION,
+    V449_PS_VERSION_29_1_146,
+    V450_SPLIT_TRACKING_MERGED_EDGES,
+    V451_NO_MATECONNECTORS_IN_PATTERN,
+    V452_PARAMETER_GROUP_UIHINT,
+    V453_REMOVED_PARAMETER_GROUP,
+    V454_CORRECT_IMPORT_DEFAULT,
+    V455_HOLE_INIT_IS_TAPPED_THROUGH
 }
 
 /**
@@ -397,6 +406,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V442_PARTING_OUT_TARGET_READONLY;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V455_HOLE_INIT_IS_TAPPED_THROUGH;
 
 

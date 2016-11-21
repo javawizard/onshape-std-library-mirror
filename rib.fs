@@ -62,7 +62,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Sketch profiles", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
         definition.profiles is Query;
 
-        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID }
+        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
@@ -529,7 +529,7 @@ export function ribEditLogic(context is Context, id is Id, oldDefinition is map,
     }
 
     var solidBodiesQuery is Query = qNothing();
-    solidBodiesQuery = qAllNonMeshSolidBodies();
+    solidBodiesQuery = qAllModifiableSolidBodies();
     solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
 
     var scopeSize = calculateLength(context, qUnion([solidBodiesQuery, definition.profiles]));

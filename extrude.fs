@@ -128,7 +128,7 @@ annotation { "Feature Type Name" : "Extrude",
 export const extrude = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type" }
+        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType != ToolBodyType.SURFACE)

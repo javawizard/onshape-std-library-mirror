@@ -30,7 +30,7 @@ export const modifyFillet = defineFeature(function(context is Context, id is Id,
     precondition
     {
         annotation { "Name" : "Fillet faces to modify",
-                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && !GeometryType.PLANE }
+                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && !GeometryType.PLANE && ModifiableEntityOnly.YES }
         definition.faces is Query;
 
         annotation { "Name" : "Modification type" }

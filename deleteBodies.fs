@@ -17,7 +17,7 @@ export const deleteBodies = defineFeature(function(context is Context, id is Id,
     precondition
     {
         annotation { "Name" : "Entities to delete",
-                     "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
+                     "Filter" : EntityType.BODY && AllowMeshGeometry.YES && ModifiableEntityOnly.YES }
         definition.entities is Query;
     }
     {

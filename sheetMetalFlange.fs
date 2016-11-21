@@ -79,7 +79,7 @@ annotation { "Feature Type Name" : "Flange", "Editing Logic Function" : "flangeE
 export const smFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation { "Name" : "Edges to flange", "Filter" : (EntityType.EDGE && GeometryType.LINE && SketchObject.NO) && BodyType.SOLID }
+    annotation { "Name" : "Edges to flange", "Filter" : (EntityType.EDGE && GeometryType.LINE && SketchObject.NO) && BodyType.SOLID && AllowFlattenedGeometry.YES}
     definition.edges is Query;
 
     annotation {"Name" : "Flange alignment"}
@@ -95,7 +95,7 @@ precondition
     }
     else if (definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY || definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
     {
-        annotation {"Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX}
+        annotation {"Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1}
         definition.limitEntity is Query;
         if (definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
         {
@@ -109,6 +109,11 @@ precondition
 
     annotation { "Name" : "Automatic miter", "Default" : true }
     definition.autoMiter is boolean;
+    if (!definition.autoMiter)
+    {
+        annotation { "Name" : "Miter angle" }
+        isAngle(definition.miterAngle, FLANGE_ANGLE_BOUNDS);
+    }
 
     annotation { "Name" : "Use default radius", "Default" : true }
     definition.useDefaultRadius is boolean;
@@ -117,7 +122,6 @@ precondition
         annotation { "Name" : "Bend Radius" }
         isLength(definition.bendRadius, BLEND_BOUNDS);
     }
-
 
     annotation { "Name" : "Bend angle" }
     isAngle(definition.bendAngle, FLANGE_ANGLE_BOUNDS);
@@ -135,8 +139,7 @@ precondition
 
     var modelToEdgeMap = getModelToEdgeMap(context, evaluatedEdgeQuery);
     if (size(modelToEdgeMap)  > 1 && definition.useDefaultRadius)
-        throw regenError ("Default bend radius is not available for selections from multiple sheet metal models.");
-
+        throw regenError(ErrorStringEnum.SHEET_METAL_MULTI_SM_DEFAULT_RADIUS, ["useDefaultRadius"]);
     if (definition.oppositeOffsetDirection)
         definition.offset *= -1;
 
@@ -195,7 +198,10 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     if (size(evaluatedEdgeQuery) == 0)
         return definition;
 
-    var modelParams = getModelParameters(context, evaluatedEdgeQuery[0]);
+    var modelParams = try(getModelParametersFromEdge(context, evaluatedEdgeQuery[0]));
+    if (modelParams == undefined)
+        return definition;
+
     if (isCreating)
     {
         var modelToEdgeMap = getModelToEdgeMap(context, evaluatedEdgeQuery);
@@ -212,9 +218,49 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     if (!specifiedParameters.offset)
         definition.offset = modelParams.minimalClearance;
 
+    //make sure we're pointing in the direction of the limit entity
+    if (isCreating && specifiedParameters.limitEntity && !specifiedParameters.oppositeDirection)
+    {
+        var flangeData = getFlangeData(context, evaluatedEdgeQuery[0], definition);
+        const edgePoint = flangeData.edgeEndPoints[0].origin;
+        var pointOnLimit = undefined;
+        var planeResult = try silent(evPlane(context, {"face" : definition.limitEntity}));
+        if (planeResult == undefined)
+        {
+            pointOnLimit = try silent(evVertexPoint(context, {"vertex" : definition.limitEntity}));
+        }
+        else
+        {
+            pointOnLimit = planeResult.origin;
+        }
+        if (pointOnLimit == undefined)
+            return definition;
+
+        var upToDirection = pointOnLimit - edgePoint;
+        if (dot(upToDirection, flangeData.direction) < TOLERANCE.zeroLength * meter)
+        {
+           definition.oppositeDirection = true;
+        }
+    }
     return definition;
 }
 
+function trackAllFaces(context, allSurfaces, originals)
+{
+    var newSurfaces = qSubtraction(allSurfaces, originals);
+    var trackedFaces = [];
+    var trackedFacesNew = [];
+    for (var face in evaluateQuery(context, qOwnedByBody(newSurfaces, EntityType.FACE)))
+    {
+        trackedFacesNew = append(trackedFacesNew, qUnion([face, startTracking(context, face)]));
+    }
+    trackedFaces = concatenateArrays([trackedFaces, trackedFacesNew]);
+    for (var face in evaluateQuery(context, qOwnedByBody(originals, EntityType.FACE)))
+    {
+        trackedFaces = append(trackedFaces, qUnion([face, startTracking(context, face)]));
+    }
+    return {"allFaces" : trackedFaces, "newFaces" : trackedFacesNew};
+}
 
 function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  objectCounter is number, edges is Query, definition is map) returns number
 {
@@ -222,7 +268,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  o
 
     // add thickness, minimalClearance and defaultBendRadius to definition.
     // Flange uses thickness, minimalClearance and potentially defaultBendRadius derived from underlying sheet metal model
-    definition = mergeMaps(definition, getModelParameters(context, evaluatedEdgeQuery[0]));
+    definition = mergeMaps(definition, getModelParametersFromEdge(context, evaluatedEdgeQuery[0]));
     if (definition.useDefaultRadius)
     {
         definition.bendRadius = definition.defaultBendRadius;
@@ -249,7 +295,12 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  o
         var indexedId = topLevelId + unstableIdComponent(objectCounter);
         var surfaceId = indexedId + SURFACE_SUFFIX;
 
-        var updatedDefinition = updateDefinition(context, edge, definition, edgeToFlangeData, originalCornerVertices);
+        var updatedDefinition = try(updateDefinition(context, edge, definition, edgeToFlangeData, originalCornerVertices));
+        if (updatedDefinition == undefined)
+        {
+            setErrorEntities(context, indexedId, { "entities" : edge });
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, ["edges"]);
+        }
         var bendEdge = createFlangeSurfaceReturnBendEdge(context, indexedId, edge, updatedDefinition);
         addBendAttribute(context, bendEdge, topLevelId, objectCounter, definition);
         objectCounter += 1;
@@ -268,8 +319,8 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  o
     var originalBodies = qOwnerBody(qUnion(originalEntities));
     var indexedId = topLevelId + unstableIdComponent(objectCounter);
 
-    //boolean the original sm surface and the newly created surfaces together
     var allSurfaces = qUnion(surfaceBodies);
+    var trackedFaces = trackAllFaces(context, allSurfaces, originalBodies);
     try
     {
         opBoolean(context, indexedId + ("flange_boolean"), {
@@ -287,11 +338,24 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  o
         processSubfeatureStatus(context, topLevelId, {"subfeatureId" : subfeatureId, "propagateErrorDisplay" : true});
         if (getFeatureWarning(context, subfeatureId) != undefined || getFeatureError(context, subfeatureId) != undefined)
         {
-            const errorId = indexedId + "errorEntities";
             setErrorEntities(context, indexedId, { "entities" : allSurfaces });
             opDeleteBodies(context, indexedId + "delete", { "entities" : qSubtraction(allSurfaces, originalBodies) });
         }
     }
+
+    //check that none got split
+    for (var trackedFace in trackedFaces.allFaces)
+    {
+        var evaluatedFaces = evaluateQuery(context, qEntityFilter(trackedFace, EntityType.FACE));
+        if (size(evaluatedFaces) > 1)
+        {
+            var newFaces = qEntityFilter(qUnion(trackedFaces.newFaces), EntityType.FACE);
+            var newEdges = qEdgeAdjacent(qUnion(trackedFaces.newFaces), EntityType.EDGE);
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([newFaces, newEdges])});
+            throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["edges"]);
+        }
+    }
+
     //add rips to new interior edges
     for (var entity in evaluateQuery(context, qOwnedByBody(allSurfaces, EntityType.EDGE)))
     {
@@ -350,7 +414,7 @@ function changeUnderlyingSheetForAlignment(context is Context, id is Id, definit
         if (size(evaluatedEdges) != 1)
         {
             setErrorEntities(context, id, { "entities" : qEdgeAdjacent(qUnion(evaluatedEdges), EntityType.FACE) });
-            throw regenError("Extend should not split a flanged edge");
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
         var updatedEdge = evaluatedEdges[0];
         var flangeData = getFlangeData(context, updatedEdge, definition);
@@ -410,15 +474,13 @@ function updateDefinition(context is Context, edge is Query, definition is map, 
     var flangeData = edgeToFlangeData[edge];
     if (flangeData == undefined)
     {
-        throw regenError("Could not find flange data for edge");
+        throw "Could not find flange data for edge";
     }
     var flangeSideDirs = [flangeData.direction, flangeData.direction];
     var flangeBasePoints = [edgeVertices.points[0].origin, edgeVertices.points[1].origin];
     for (var i = 0; i < size(edgeVertices.vertices); i += 1 )
     {
-        if (isIn(edgeVertices.vertices[i], cornerVertices))
-            continue;
-        var vertexData = getVertexData(context, edge, edgeVertices.vertices[i], edgeToFlangeData, definition);
+        var vertexData = getVertexData(context, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices);
         if (vertexData != undefined)
         {
             flangeSideDirs[i] = vertexData.flangeSideDir;
@@ -440,13 +502,17 @@ function getOffsetForClearance(context is Context, sidePlane is Plane, definitio
 function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is Query, definition is map,
     flangeData is map, vertexPoint is Vector, isTrimmed is boolean, sidePlane is Plane)
 {
-    var jointAttribute = getJointAttribute(context, sideEdge);
-    var sideEdgeIsBend = (jointAttribute != undefined && jointAttribute.jointType.value == SMJointType.BEND);
+    var jointAttribute = try silent(getJointAttribute(context, sideEdge));
+    if (jointAttribute == undefined)
+        return vertexPoint;
+    var edgeLine = evLine(context, {"edge" : flangeEdge});
+    var sideEdgeIsBend = (jointAttribute.jointType.value == SMJointType.BEND);
+    var offsetFromClearance = getOffsetForClearance(context , sidePlane, definition, flangeData.plane);
     if (!sideEdgeIsBend)
     {
-        return vertexPoint;
+        //use the minimal clearance to shift by
+        return computeBaseFromShiftedPlane(context, sideEdge, offsetFromClearance, sidePlane, edgeLine);
     }
-    var edgeLine = evLine(context, {"edge" : flangeEdge});
 
     var edgeBendRadius = jointAttribute.radius.value;
     var edgeBendAngle = jointAttribute.angle.value;
@@ -484,36 +550,35 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         var lineFromBentEdge = line(vertexPoint + flangeData.direction * offset, flangeEdgeMidPt[0].direction);
         var updatedProjection = project(lineFromBentEdge, intersectionData.intersection);
         var offsetFromBend = evDistance(context, {"side0" : updatedProjection, "side1": project(sidePlane, updatedProjection)}).distance;
-
-        //compute default clearance, and only offset with max between the two.
-        var offsetFromClearance = getOffsetForClearance(context , sidePlane, definition, flangeData.plane);
-
-        //shift plane
+        //offset with max between bend clearance and default offset clearance
         var delta = abs(offsetFromClearance) > abs(offsetFromBend) ? offsetFromClearance : offsetFromBend;
-        var moveWithNormal = evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONCAVE;
-        delta =  (moveWithNormal ? 1 : -1) * delta;
-        sidePlane.origin = sidePlane.origin + delta * sidePlane.normal;
-
-        //use shifted plane for base move
-        var intersectionData = intersection(sidePlane, edgeLine);
-        if (intersectionData.dim != 0)
-            throw regenError("Found a non-point intersection between plane and line");
-        return intersectionData.intersection;
+        return computeBaseFromShiftedPlane(context, sideEdge, delta, sidePlane, edgeLine);
     }
+}
+
+function computeBaseFromShiftedPlane(context is Context, sideEdge is Query, delta is ValueWithUnits, sidePlane is Plane, edgeLine is Line)
+{
+    sidePlane.origin = sidePlane.origin + delta * sidePlane.normal;
+
+    //use shifted plane for base move
+    var intersectionData = intersection(sidePlane, edgeLine);
+    if (intersectionData.dim != 0)
+        throw "Found a non-point intersection between plane and line";
+    return intersectionData.intersection;
 }
 
 function getOrderedEdgeVertices(context is Context, edge is Query) returns map
 {
     var edgeVertices = evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX));
     if (size(edgeVertices) != 2)
-        throw regenError("Edge to flange has wrong number of vertices");
+        throw "Edge to flange has wrong number of vertices";
 
     var p0 = evVertexPoint(context, {"vertex" : edgeVertices[0]});
 
     const adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
-        throw regenError("Edge to flange is not laminar");
+        throw "Edge to flange is not laminar";
     }
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
     if (!tolerantEquals(edgeEndPoints[0].origin, p0))
@@ -528,87 +593,97 @@ function getOrderedEdgeVertices(context is Context, edge is Query) returns map
  */
 function getVectorForEdge(context is Context, edge is Query, position is Vector) returns Vector
 {
-    var result;
     var edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] });
-    if (tolerantEquals(edgeEndPoints[0].origin, position))
-        result = edgeEndPoints[1].origin - position;
+    var d1 = norm(edgeEndPoints[0].origin - position);
+    var d2 = norm(edgeEndPoints[1].origin - position);
+    var vectorForEdge;
+    if (d1 >= d2)
+        vectorForEdge = edgeEndPoints[0].origin - edgeEndPoints[1].origin;
     else
-        result = edgeEndPoints[0].origin - position;
-
-    return stripUnits(result) as Vector;
+        vectorForEdge = edgeEndPoints[1].origin - edgeEndPoints[0].origin;
+    return stripUnits(vectorForEdge) as Vector;
 }
 
-/*
- * Returns an XY coordinate system at the end vertex of edge plus the query for sideFace vertex is adj to.
- * x will be in the direction of the interior edge, and y will be direction of the laminar edge
- */
+function filterSmoothEdges(context is Context, inputEdges is Query) returns array
+{
+    var evaluatedInputEdges = evaluateQuery(context, inputEdges);
+    var resultingEdges = filter(evaluatedInputEdges, function(edge){
+        var convexity = try silent(evEdgeConvexity(context, {"edge" : edge}));
+        return (convexity != EdgeConvexityType.SMOOTH);
+    });
+    return resultingEdges;
+}
+
 function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeToFlangeData is map)
 {
     var vertexToUse = vertex;
-    var vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge));
-    var potentialSideEdge = undefined;
-    if (size(vertexEdges) == 1)
+    var vertexEdges = qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge);
+    var vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+    if (size(vertexEdgesArray) == 1)
     {
-        var flangeDataForNeighbor = edgeToFlangeData[vertexEdges[0]];
+        var flangeDataForNeighbor = edgeToFlangeData[vertexEdgesArray[0]];
         if (flangeDataForNeighbor != undefined && flangeDataForNeighbor.adjFace == edgeToFlangeData[edge].adjFace)
         {
-            return {"edgeX" : vertexEdges[0], "position" : evVertexPoint(context, {"vertex" : vertexToUse}) };
+            return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertexToUse}) };
         }
-        //this might be a result of extend sheet out (for inner alignment)
-        vertexToUse = qSubtraction(qVertexAdjacent(vertexEdges[0], EntityType.VERTEX), vertex);
-        // note that we don't need the collinearity check here as we did below because we already filtered out
-        // existing corner vertices
-        vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertexToUse, EntityType.EDGE), vertexEdges[0]));
-    }
-    else if (size(vertexEdges) == 2)
-    {
-        var line1 = evLine(context, {"edge" : vertexEdges[0]});
-        var line2 = evLine(context, {"edge" : vertexEdges[1]});
-        if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2))
-        {
-            //this might be a result of trimming a sheet in (for outer alignment)
-            //one vertex edge should be laminar. find the vertex on the other side of the laminar edge.
-            if (!edgeIsTwoSided(context, vertexEdges[0]))
-            {
-                vertexToUse = qSubtraction(qVertexAdjacent(vertexEdges[0], EntityType.VERTEX), vertex);
-                potentialSideEdge = vertexEdges[1];
-            }
-            else
-            {
-                vertexToUse = qSubtraction(qVertexAdjacent(vertexEdges[1], EntityType.VERTEX), vertex);
-                potentialSideEdge = vertexEdges[0];
-            }
-            vertexEdges = evaluateQuery(context, qVertexAdjacent(vertexToUse, EntityType.EDGE));
-        }
-    }
-    if (size(vertexEdges) != 2)
-    {
-        return undefined;
     }
 
-    // decide which edge is the interior (edgeX), which edge is the laminar one (edgeY)
-    var edgeY;
-    var edgeX;
-    var sideFace;
-    var sideFaces = evaluateQuery(context, qEdgeAdjacent(vertexEdges[0], EntityType.FACE));
-    if (size(sideFaces) == 1)
+    vertexEdges = qUnion(vertexEdgesArray);
+    var flangeAdjacentFace = edgeToFlangeData[edge].adjacentFace;
+    //sideEdge(edgeX) will be the edge shared by vertexEdgesExcludingEdge and flangeAdjacentFace
+    var edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
+
+    //sideFace is adjacent to flangeAdjacentFace, and edgeX
+    var sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);
+
+    //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
+    // e.g. if the edgeY is a bendEdge of a flange with angled miter.
+    var edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
+
+    if (size(evaluateQuery(context, edgeY)) != 0)
     {
-        edgeY = vertexEdges[0];
-        edgeX = vertexEdges[1];
-        sideFace = sideFaces[0];
+        //if edgeY is collinear with edgeX,look for next edge on sideFace
+        var line1 = evLine(context, {"edge" : edgeX});
+        var line2 = evLine(context, {"edge" : edgeY});
+        if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2))
+        {
+            edgeY = qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), qSubtraction(qVertexAdjacent(edgeY, EntityType.EDGE), edgeX)]);
+        }
     }
     else
     {
-        edgeY = vertexEdges[1];
-        edgeX = vertexEdges[0];
-        var sideFaces = evaluateQuery(context, qEdgeAdjacent(vertexEdges[1], EntityType.FACE));
-        sideFace = sideFaces[0];
+        var lineOrigX = evLine(context, {"edge" : edgeX});
+        if (lineOrigX == undefined)
+            return undefined;
+        vertexToUse = qSubtraction(qVertexAdjacent(edgeX, EntityType.VERTEX), vertex);
+        vertexEdges = qSubtraction(qVertexAdjacent(vertexToUse, EntityType.EDGE), edgeX);
+        vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+        if (size(vertexEdgesArray) == 1)
+        {
+            return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertex}) };
+        }
+        vertexEdges = qUnion(vertexEdgesArray);
+        //find Edge among vertexEdges also adjacent to adjacentFace
+        edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
+        //check for sanity that the newly found edgeX is collinear with the one we found initially
+        var lineNewX = evLine(context, {"edge" : edgeX});
+        if (lineNewX == undefined || !tolerantCoLinear(lineOrigX, lineNewX))
+            return undefined;
+        sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);
+        edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
     }
-    var position = evVertexPoint(context, {"vertex" : vertexToUse});
-    return {"edgeX" : edgeX, "edgeY" : edgeY, "sideFace" : sideFace, "potentialSideEdge" : potentialSideEdge, "position" : position};
+
+    var edgeXEvaluated = evaluateQuery(context, edgeX);
+    var edgeYEvaluated = evaluateQuery(context, edgeY);
+    if (size(edgeYEvaluated) == 0 || size(edgeXEvaluated) == 0)
+        return undefined;
+    return { "edgeX" : edgeXEvaluated[0],
+             "edgeY" : edgeYEvaluated[0],
+             "sideFace" : evaluateQuery(context, sideFace)[0],
+             "position" : evVertexPoint(context, {"vertex" : vertexToUse})};
 }
 
-function createMidPlaneForMiter(context is Context, flangeData is map, plane1 is Plane, plane2 is Plane, sideEdge, sideEdgeIsBend is boolean, position is Vector)
+function createPlaneForMiter(context is Context, flangeData is map, plane1 is Plane, plane2 is Plane, sideEdge, sideEdgeIsBend is boolean, position is Vector, miterAngle)
 {
     // if sideEdge is a bend, don't miter if flaps are on the "outside"
     if (sideEdgeIsBend)
@@ -623,9 +698,19 @@ function createMidPlaneForMiter(context is Context, flangeData is map, plane1 is
             return undefined;
         }
     }
-
     var midPlaneNormal = plane2.normal - plane1.normal;
-    return plane(position, midPlaneNormal);
+    if (miterAngle == undefined)
+    {
+        if (norm(midPlaneNormal) < TOLERANCE.zeroLength)
+            return undefined;
+        return plane(position, midPlaneNormal);
+    }
+    else
+    {
+        var sideEdgeMid = evEdgeTangentLines(context, {"edge" : sideEdge, "parameters" : [0.5], "face": flangeData.adjacentFace});
+        var axisDirection = -1 * sideEdgeMid[0].direction;
+        return plane(position, rotationMatrix3d(axisDirection, miterAngle) * plane2.normal);
+    }
 }
 
 function checkIfNeedsBaseUpdate(definition is map, sideEdgeIsBend is boolean) returns boolean
@@ -637,18 +722,50 @@ function checkIfNeedsBaseUpdate(definition is map, sideEdgeIsBend is boolean) re
     return false;
 }
 
-function getVertexData(context is Context, edge is Query, vertex is Query, edgeToFlangeData is map, definition is map) returns map
+function getAngleForAngledMiter(definition is map) returns ValueWithUnits
 {
+    var miterAngle = definition.oppositeDirection ? -1 * definition.miterAngle : definition.miterAngle;
+    //rotate by minimum amount so that normals of created sidePlanes are always points towards the edge
+    if (abs(90 * degree + miterAngle) < abs(miterAngle - 90 * degree))
+        return 90 * degree + miterAngle;
+    else
+        return miterAngle - 90 * degree;
+}
+
+function isInProblemQuadrant(context is Context, flangeDir is Vector, position is Vector, edgeY, sideEdge is Query) returns boolean
+{
+    if (edgeY == undefined)
+        return false;
+    var projOnY = dot(flangeDir, getVectorForEdge(context, edgeY, position));
+    var projOnX = dot(flangeDir, getVectorForEdge(context, sideEdge, position));
+    return (projOnY > TOLERANCE.zeroLength && projOnX > -TOLERANCE.zeroLength);
+}
+
+function getVertexData(context is Context, edge is Query, vertex is Query, edgeToFlangeData is map, definition is map, i is number, cornerVertices) returns map
+{
+    var position = evVertexPoint(context, {"vertex" : vertex});
     var result = {
-        "flangeBasePoint" : evVertexPoint(context, {"vertex" : vertex}),
+        "flangeBasePoint" : position,
         "flangeSideDir" : undefined
     };
 
     var needsSideDirUpdate = false;
     var flangeData = edgeToFlangeData[edge];
     var vertexAndEdges = getXYAtVertex(context, vertex, edge, edgeToFlangeData);
-    if (vertexAndEdges == undefined)
+    if (vertexAndEdges == undefined || isIn(vertex, cornerVertices) )
     {
+        if (!definition.autoMiter)
+        {
+            var vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge));
+            if (size(vertexEdges) == 1)
+            {
+                var adjacentPlane = evPlane(context, {"face": flangeData.adjacentFace});
+                var sidePlane = plane(position, flangeData.edgeEndPoints[i].direction);
+                sidePlane = createPlaneForMiter(context, flangeData, adjacentPlane, sidePlane, vertexEdges[0], false, position, getAngleForAngledMiter(definition));
+                result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane);
+            }
+            return result;
+        }
         if (definition.isPartialFlange)
         {
             //TODO : make sure this works when partial flange implemented
@@ -656,20 +773,24 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
         }
         return  result;
     }
-    var edgeX = vertexAndEdges.edgeX;
+    var sideEdge = vertexAndEdges.edgeX;
     var edgeY = vertexAndEdges.edgeY;
     var sideFace = vertexAndEdges.sideFace;
 
-    var sideEdge = vertexAndEdges.potentialSideEdge == undefined ? edgeX : vertexAndEdges.potentialSideEdge;
     var jointAttribute = try silent(getJointAttribute(context, sideEdge));
     var sideEdgeIsBend = (jointAttribute != undefined && jointAttribute.jointType.value == SMJointType.BEND);
 
     var needsBaseUpdate = checkIfNeedsBaseUpdate(definition, sideEdgeIsBend);
     var sidePlane = undefined;
     var adjPlane = undefined;
+    var sidePlaneNormal = i == 0 ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
+
     if (sideFace == undefined && edgeY == undefined)
     {
-        sidePlane = edgeToFlangeData[edgeX].plane;
+        if (edgeToFlangeData[sideEdge] != undefined)
+            sidePlane = edgeToFlangeData[sideEdge].plane;
+       else
+            sidePlane = plane(position, sidePlaneNormal);
         adjPlane = edgeToFlangeData[edge].plane;
     }
     else
@@ -677,17 +798,22 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
         sidePlane = evPlane(context, {"face" : sideFace});
         adjPlane = evPlane(context, {"face" : flangeData.adjacentFace});
     }
-
     var isTrimmed = false;
-    if (edgeY == undefined || edgeToFlangeData[edgeY] != undefined) //adjacent laminar edge is also being flanged, it should be handled via miter
+    if (!definition.autoMiter)
     {
-        if (!definition.autoMiter)
+        var sidePlane = plane(position, sidePlaneNormal);
+        sidePlane = createPlaneForMiter(context, flangeData, adjPlane, sidePlane, sideEdge, false, vertexAndEdges.position, getAngleForAngledMiter(definition));
+        result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane);
+        if (isInProblemQuadrant(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge))
         {
             result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, isTrimmed, sidePlane);
-            return result;
         }
+        return result;
+    }
+    if (edgeY == undefined || edgeToFlangeData[edgeY] != undefined) //adjacent laminar edge is also being flanged, it should be handled via miter
+    {
         var originalSidePlane = sidePlane;
-        sidePlane = createMidPlaneForMiter(context, flangeData, adjPlane, sidePlane, sideEdge, sideEdgeIsBend, vertexAndEdges.position);
+        sidePlane = createPlaneForMiter(context, flangeData, adjPlane, sidePlane, sideEdge, sideEdgeIsBend, vertexAndEdges.position, undefined);
         if (sidePlane != undefined)
         {
             needsSideDirUpdate = true;
@@ -705,13 +831,9 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
     }
     else
     {
-        if (angleBetween(adjPlane.normal, sidePlane.normal) >= .5 * PI * radian)
+        if ((angleBetween(adjPlane.normal, sidePlane.normal) - 90 * degree) >= -TOLERANCE.zeroAngle * degree)
         {
-            var flangeDir = flangeData.direction;
-            var position = vertexAndEdges.position;
-            var projOnY = dot(flangeDir, getVectorForEdge(context, edgeY, position));
-            var projOnX = dot(flangeDir, getVectorForEdge(context, edgeX, position));
-            needsSideDirUpdate = (projOnY > TOLERANCE.zeroLength && projOnX > -TOLERANCE.zeroLength);
+            needsSideDirUpdate = isInProblemQuadrant(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge);
             needsBaseUpdate = needsSideDirUpdate || needsBaseUpdate;
             isTrimmed = needsSideDirUpdate;
         }
@@ -719,6 +841,8 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
 
     if (needsBaseUpdate)
     {
+        if (isTrimmed && sideEdge != undefined && evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX)
+            sidePlane.normal *= -1;
         result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, isTrimmed, sidePlane);
     }
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
@@ -766,6 +890,8 @@ function addRipAttribute(context is Context, edge is Query, topLevelId is Id, in
     if (angle != undefined)
     {
         ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
+        if (abs(angle) < TOLERANCE.zeroAngle * degree)
+            ripAttribute.jointStyle = { "value" : SMJointStyle.FLAT, "canBeEdited": false };
     }
 
     setAttribute(context, {"entities" : edge, "attribute" : ripAttribute});
@@ -794,7 +920,7 @@ function getOffsetsForSideEdgesUpToPlane(context is Context, flangeSideDirection
         var line = line(basePoints[i], offsetDir);
         const intersection = intersection(planeResult, line);
         if (intersection.dim != 0)
-            throw regenError("Found a non-point intersection between plane and line");
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO, ["limitEntity"]);
 
         offsets[i] = intersection.intersection - basePoints[i];
     }
@@ -843,7 +969,7 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
 
     var entity = evaluateQuery(context, definition.limitEntity);
     if (size(entity) < 1)
-        throw regenError("Cannot resolve limit entity");
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);
 
     //see if it's a plane:
     var planeResult = try silent(evPlane(context, {"face" : entity[0]}));
@@ -852,7 +978,7 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
         var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity[0]}));
         if (limitVertex == undefined)
         {
-            throw regenError("Unrecognized limit entity", ["limitEntity"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);
         }
         else
         {
@@ -866,7 +992,7 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     var upToDirection = planeResult.origin - pointOnEdge;
     if (dot(upToDirection, flangeDirection) < TOLERANCE.zeroLength * meter)
     {
-        throw regenError("Flange direction is opposite of limit entity");
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_LIMIT_OPP_FLANGE, ["oppositeDirection"]);
     }
 
     //we don't need to add half thickness here because the limit entity cannot be the underlying surface
@@ -931,7 +1057,7 @@ function createAndSolveSketch(context is Context, id is Id, edge is Query, defin
     if (size(regions) != 1)
     {
         //This can happen in up-to-vertex flanges with auto-miter. (creating hour glass shape)
-        throw regenError("Could not create flange.");
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
     }
 }
 
@@ -947,21 +1073,13 @@ function createFlangeSurfaceReturnBendEdge(context is Context, indexedId is Id, 
     return qIntersection([qCreatedBy(indexedId + SURFACE_SUFFIX, EntityType.EDGE), bendLine]);
 }
 
-function getModelParameters(context is Context, edge is Query) returns map
+function getModelParametersFromEdge(context is Context, edge is Query) returns map
 {
     var adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
-        throw regenError("Edge to flange is not laminar");
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
     }
-    var attr = getAttributes(context, {"entities" : qOwnerBody(adjacentFace), "attributePattern" : asSMAttribute({})});
-
-    if (size(attr) != 1 || attr[0].thickness == undefined || attr[0].thickness.value == undefined ||
-        attr[0].minimalClearance == undefined || attr[0].minimalClearance.value == undefined ||
-        attr[0].defaultBendRadius == undefined || attr[0].defaultBendRadius.value == undefined)
-    {
-        throw regenError("Bad sheet metal attribute");
-    }
-    return {"thickness" : attr[0].thickness.value, "minimalClearance" : attr[0].minimalClearance.value, "defaultBendRadius" : attr[0].defaultBendRadius.value};
+    return getModelParameters(context, qOwnerBody(adjacentFace));
 }
 

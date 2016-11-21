@@ -411,42 +411,74 @@ export const SM_MINIMAL_CLEARANCE_BOUNDS =
  * Partitions allParts into non-sheetmetal parts and sheetmetal parts
  * To preserve existing behavior of code the returned non-sm query is exactly the same as what is passed in
  * for non-sm cases and a query is returned for them
- * The sheetmetal results will usually be iterated through and so are returned as an array
+ * The sheetmetal results will usually be iterated through and so are returned as a map with
+ * the keys being the sheet metal ID and the values being the parts associated with that model
  */
 export function partitionSheetMetalParts(context is Context, allParts is Query)
 {
-    if (!queryContainsSheetMetal(context, allParts))
+    if (!queryContainsActiveSheetMetal(context, allParts))
     {
         // Don't mess with the query, for performance and legacy reasons
-        return { "nonSheetMetalPartsQuery" : allParts, "sheetMetalPartsArray" : [] };
+        return { "nonSheetMetalPartsQuery" : allParts, "sheetMetalPartsMap" : {} };
     }
     var parts = evaluateQuery(context, allParts);
     var nonSheetMetal = [];
-    var sheetMetal = [];
+    var sheetMetal = {};
     for (var part in parts)
     {
         if (isActiveSheetMetalPart(context, part))
         {
-            sheetMetal = append(sheetMetal, part);
+            const sheetMetalId = getActiveSheetMetalId(context, part);
+            var parts = try(sheetMetal[sheetMetalId]);
+            if (parts == undefined) {
+                sheetMetal[sheetMetalId] = [part];
+            } else {
+                sheetMetal[sheetMetalId] = append(parts, part);
+            }
         }
         else
         {
             nonSheetMetal = append(nonSheetMetal, part);
         }
     }
-    return { "nonSheetMetalPartsQuery" : qUnion(nonSheetMetal), "sheetMetalPartsArray" : sheetMetal };
+    return { "nonSheetMetalPartsQuery" : qUnion(nonSheetMetal), "sheetMetalPartsMap" : sheetMetal };
 }
 
 /**
  * @internal
  */
-export function queryContainsSheetMetal(context is Context, query is Query) returns boolean
+export function getActiveSheetMetalId(context is Context, query is Query)
 {
-    return size(evaluateQuery(context, query)) > 0 &&
-                                 size(getAttributes(context, {
-                                     "entities" : query,
-                                     "attributePattern" : {} as SMAssociationAttribute
-                                 })) > 0;
+    const partQuery = qOwnerBody(query);
+    if (size(evaluateQuery(context, partQuery)) == 0)
+    {
+        return undefined;
+    }
+    const attributes = getAttributes(context, {
+                                    "entities" : partQuery,
+                                    "attributePattern" : {} as SMAssociationAttribute
+                                    });
+    if (size(attributes) == 0)
+    {
+        return undefined;
+    }
+    for (var attribute in attributes)
+    {
+        const modelAttributes = getSmObjectTypeAttributes(context, qAttributeQuery(attribute), SMObjectType.MODEL);
+        if (size(modelAttributes) == 1 && modelAttributes[0].active == true)
+        {
+            return modelAttributes[0].attributeId;
+        }
+    }
+    return undefined;
+}
+
+/**
+ * @internal
+ */
+export function queryContainsActiveSheetMetal(context is Context, query is Query) returns boolean
+{
+    return getActiveSheetMetalId(context, query) != undefined;
 }
 
 /**
@@ -494,10 +526,10 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
 {
     //Transient queries new to sheet metal body
     var entitiesToAddAssociations = filter(evaluateQuery(context, qOwnedByBody(sheetMetalModels)),
-        function(entry)
-    {
-        return !isIn(entry, originalEntities);
-    });
+                    function(entry)
+                    {
+                        return !isIn(entry, originalEntities);
+                    });
     var entitiesToAddAssociationsQ = qUnion(entitiesToAddAssociations);
 
     const attributes = getAttributes(context, { "entities" : entitiesToAddAssociationsQ,
@@ -542,31 +574,23 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
         {
             // qUnion does not re-order, so master entity will be considered first
             var evaluatedEntitiesToUpdateSmAttribute = evaluateQuery(context, qUnion([masterEntities, entitiesToModify]));
-            //Remove SMAttribute and reassign to appropriate entities with tweaked id.
-            removeAttributes(context, { "entities" : qUnion(evaluatedEntitiesToUpdateSmAttribute), "attributePattern" : {} as SMAttribute });
-            var index = 0; //index assigned attributes
+            var attributeSurvived = false;
             for (var count = 0; count < size(evaluatedEntitiesToUpdateSmAttribute); count += 1)
             {
                 var entity = evaluatedEntitiesToUpdateSmAttribute[count];
-                if (isEntityAppropriateForAttribute(context, entity, definitionAttributes[0]))
+                // Remove definition attribute from entities which are not fit to have it
+                if (!isEntityAppropriateForAttribute(context, entity, definitionAttributes[0]))
                 {
-                    var tweakedAttribute = definitionAttributes[0];
-                    if (index > 0 && tweakedAttribute.objectType != SMObjectType.MODEL)
+                    if (count == 0 && nMaster > 0)
                     {
-                        //TODO: share definition attribute between entities
-                        tweakedAttribute.attributeId = definitionAttributes[0].attributeId ~ "." ~ toString(index);
+                        throw "Existing entity not fit for definition attribute";
                     }
-                    // If masterEntities is a new entity, make sure it is the one inheriting the definition attribute
-                    if (index == 0)
-                    {
-                        masterEntities = entity;
-                    }
-                    setAttribute(context, { "entities" : entity, "attribute" : tweakedAttribute });
-                    index += 1;
+                    removeAttributes(context, { "entities" : entity, "attributePattern" : {} as SMAttribute });
                 }
-                else if (count == 0 && nMaster > 0)
+                else if (!attributeSurvived) // favore one of the entities inheriting the attribute to be a masterEntity
                 {
-                    throw "Existing entity not fit for definition attribute";
+                    masterEntities = entity;
+                    attributeSurvived = true;
                 }
             }
             entitiesToModify = qSubtraction(newEntitiesWithAttribute, masterEntities);
@@ -630,5 +654,42 @@ function isEntityAppropriateForAttribute(context is Context, entity is Query, at
         return false;
     }
     return true;
+}
+
+/**
+ * @internal
+ */
+export function getModelParameters(context is Context, model is Query) returns map
+{
+    var attr = getAttributes(context, {"entities" : model, "attributePattern" : asSMAttribute({})});
+
+    if (size(attr) != 1 || attr[0].thickness == undefined || attr[0].thickness.value == undefined ||
+        attr[0].minimalClearance == undefined || attr[0].minimalClearance.value == undefined ||
+        attr[0].defaultBendRadius == undefined || attr[0].defaultBendRadius.value == undefined)
+    {
+        throw "Could not get sheet metal attribute.";
+    }
+    return {"thickness" : attr[0].thickness.value, "minimalClearance" : attr[0].minimalClearance.value, "defaultBendRadius" : attr[0].defaultBendRadius.value};
+}
+
+/**
+ * @internal
+ */
+export function separateSheetMetalQueries(context is Context, id is Id, targets is Query) returns map
+{
+    var sheetMetalQueries = qNothing();
+    var nonSheetMetalQueries = qNothing();
+    for (var entity in evaluateQuery(context, targets))
+    {
+        if (queryContainsActiveSheetMetal(context, entity))
+        {
+            sheetMetalQueries = qUnion([sheetMetalQueries, entity]);
+        }
+        else
+        {
+            nonSheetMetalQueries = qUnion([nonSheetMetalQueries, entity]);
+        }
+    }
+    return { "sheetMetalQueries" : sheetMetalQueries, "nonSheetMetalQueries" : nonSheetMetalQueries };
 }
 

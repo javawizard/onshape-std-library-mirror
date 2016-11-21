@@ -67,8 +67,8 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
         isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
 
-        annotation { "Name" : "Modifiable", "UIHint" : "ALWAYS_HIDDEN", "Default" : true  }
-        definition.isModifiable is boolean;
+        annotation { "Name" : "IsInContext", "UIHint" : "ALWAYS_HIDDEN", "Default" : false  }
+        definition.isInContext is boolean;
     }
     {
         var remainingTransform = getRemainderPatternTransform(context,
@@ -81,9 +81,10 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         {
             definition.scale = 1.0;
         }
+        definition.isModifiable = !definition.isInContext;
         opImportForeign(context, id, definition);
 
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isModifiable : true });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
 

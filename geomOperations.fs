@@ -243,6 +243,7 @@ export function opHelix(context is Context, id is Id, definition is map)
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
  *      @field yAxisIsUp {boolean} : If true, the y axis in the import maps to the z axis and z maps to -y.
  *              If false (default), the coordinates are unchanged. @optional
+ *      @field isModifiable {boolean} : Whether the imported data is modifiable (default) or not. @optional
  * }}
  */
 export function opImportForeign(context is Context, id is Id, definition is map)
@@ -632,8 +633,15 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
  * Extends the perimeter of a sheet body.
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
- *    @field bodies {Query} : Bodies to extend.
- *    @field growSize {ValueWithUnits} : The distance to extend by. May be negative.
+ *    @field entities {Query} : Bodies or edges to extend.
+ *    @field extendMethod {ExtendSheetBoundingType}
+ *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
+ *    @field limitEntity {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Face to extend up to the surface of.
+ *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
+ *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
+ *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
+ *                                      Takes the form ("edge", "offset", "limitEntity"). Both offset and limitEntity are optional
+ *                                      and will override the other offset and limitEntity parameters for the specified edge. @optional
  * }}
  */
 export function opExtendSheetBody(context is Context, id is Id, definition is map)

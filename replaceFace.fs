@@ -27,7 +27,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
     {
         annotation { "Name" : "Faces to replace",
                      "UIHint" : "SHOW_CREATE_SELECTION",
-                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
+                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.replaceFaces is Query;
 
         annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1 }

@@ -28,6 +28,7 @@ import(path : "onshape/std/attributes.fs", version : "✨");
 export import(path : "onshape/std/holeAttribute.fs", version : "✨");
 export import(path : "onshape/std/holeUtils.fs", version : "✨");
 
+
 /**
  * Defines the end bound for the hole cut.
  * @value THROUGH : Cut holes with a through-all extrude.
@@ -121,8 +122,17 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
         if (definition.showTappedDepth)
         {
-            annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+            if (definition.endStyle == HoleEndStyle.THROUGH)
+            {
+                annotation { "Name" : "Tap through all", "Default" : true, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                definition.isTappedThrough is boolean;
+            }
+
+            if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
+            {
+                annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+            }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
@@ -138,11 +148,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
 
         annotation { "Name" : "Sketch points to place holes",
-            "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO }
+            "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
-            "Filter" : (EntityType.BODY && BodyType.SOLID) }
+            "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
         definition.scope is Query;
 
     }
@@ -292,7 +302,8 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         collisions : {},
         showTappedDepth : false,
         tappedDepth : 0.5 * inch,
-        tapClearance : 3
+        tapClearance : 3,
+        isTappedThrough : false
     });
 
 function hasErrors(context is Context, id is Id) returns boolean
@@ -977,6 +988,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     // Through, Blind or Blind in Last
     resultAttribute.endType = holeDefinition.endStyle;
     resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
+    resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -1377,7 +1389,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
     }
     else
     {
-        solidBodiesQuery = qAllNonMeshSolidBodies();
+        solidBodiesQuery = qAllModifiableSolidBodies();
         solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
     }
 

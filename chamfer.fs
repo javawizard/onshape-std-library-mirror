@@ -27,7 +27,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
     precondition
     {
         annotation { "Name" : "Entities to chamfer",
-                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
+                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
 
         if (definition.chamferType != undefined)

@@ -35,7 +35,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             annotation { "Name" : "Faces to pattern",
                          "UIHint" : "ALLOW_FEATURE_SELECTION",
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == PatternType.FEATURE)

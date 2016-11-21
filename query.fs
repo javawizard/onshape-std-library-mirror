@@ -175,7 +175,8 @@ export enum QueryType
     TRACKING,
     CAP_ENTITY,
     SOURCE_MESH,
-    MESH_GEOMETRY_FILTER
+    MESH_GEOMETRY_FILTER,
+    MODIFIABLE_ENTITY_FILTER
 }
 
 /**
@@ -291,7 +292,7 @@ export enum ConstructionObject
 }
 
 /**
- * Specifies whether we allow meshes. It is default to `NO`.
+ * Specifies whether we allow meshes. Default is `NO`.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
  * ```
@@ -303,6 +304,42 @@ export enum ConstructionObject
  * @value NO  : Disallow meshes
  */
 export enum AllowMeshGeometry
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies whether we allow flat entities. Default is `NO`.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Bodies", "Filter" : EntityType.BODY && AllowFlattenedGeometry.YES }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : Allow flat entities
+ * @value NO  : Disallow flat entities
+ */
+export enum AllowFlattenedGeometry
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies whether we allow modifiable only entities. It is default to `NO`.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Bodies", "Filter" : EntityType.BODY && ModifiableEntityOnly.YES }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : Only allow modifiable entities
+ * @value NO  : Allow both modifiable and unmodifiable entities
+ */
+export enum ModifiableEntityOnly
 {
     YES,
     NO
@@ -409,7 +446,7 @@ export function qNothing() returns Query
 }
 
 /**
- * A query for all entities of a specified [EntityType]
+ * A query for all entities of a specified [EntityType] in the context.
  * @param entityType : @optional
  */
 export function qEverything(entityType is EntityType) returns Query
@@ -417,6 +454,9 @@ export function qEverything(entityType is EntityType) returns Query
     return { queryType : QueryType.EVERYTHING, "entityType" : entityType } as Query;
 }
 
+/**
+ * A query for all entities in the context.
+ */
 export function qEverything() returns Query
 {
     return { queryType : QueryType.EVERYTHING } as Query;
@@ -428,6 +468,14 @@ export function qEverything() returns Query
 export function qAllNonMeshSolidBodies() returns Query
 {
     return qBodyType(qMeshGeometryFilter(qEverything(EntityType.BODY), MeshGeometry.NO), BodyType.SOLID);
+}
+
+/**
+ * A query for all solid bodies that do not have mesh geometry or in context geometry.
+ */
+export function qAllModifiableSolidBodies() returns Query
+{
+    return qModifiableEntityFilter(qAllNonMeshSolidBodies());
 }
 
 /**
@@ -765,6 +813,15 @@ export function qConstructionFilter(subquery is Query, constructionFilter is Con
 export function qMeshGeometryFilter(subquery is Query, meshGeometryFilter is MeshGeometry) returns Query
 {
     return { "queryType" : QueryType.MESH_GEOMETRY_FILTER, "meshGeometryFilter" : meshGeometryFilter, "subquery" : subquery } as Query;
+}
+
+/**
+ * A geometry is considered not "modifiable" if it is a in context entity.
+ * @seealso [ModifiableEntityOnly]
+ */
+export function qModifiableEntityFilter(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.MODIFIABLE_ENTITY_FILTER, "subquery" : subquery } as Query;
 }
 
 // ======================= Geometry matching Queries ==========================

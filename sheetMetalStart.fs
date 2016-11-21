@@ -45,7 +45,9 @@ export enum SMProcessType
     annotation { "Name" : "Convert" }
     CONVERT,
     annotation { "Name" : "Extrude" }
-    EXTRUDE
+    EXTRUDE,
+    annotation { "Name" : "Thicken" }
+    THICKEN
 }
 
 /**
@@ -73,32 +75,30 @@ export enum SMExtrudeBoundingType
 /**
  * @internal
  */
-annotation { "Feature Type Name" : "Start Sheet Metal", "Manipulator Change Function" : "smStartManipulatorChange" }
+annotation { "Feature Type Name" : "Start Sheet Metal",
+             "Manipulator Change Function" : "smStartManipulatorChange" }
 export const smStartSheetMetal = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Process" }
+        annotation { "Name" : "Process", "UIHint" : "HORIZONTAL_ENUM" }
         definition.process is SMProcessType;
 
         // First the entities
         if (definition.process == SMProcessType.CONVERT)
         {
             annotation { "Name" : "Parts and surfaces to convert",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO}
+                        "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
             definition.partToConvert is Query;
 
             annotation { "Name" : "Faces to Exclude", "Filter" : EntityType.FACE }
             definition.facesToExclude is Query;
-
-            annotation { "Name" : "Bends", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO}
-            definition.bends is Query;
         }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
-            annotation { "Name" : "Sketch curves and regions to extrude",
+            annotation { "Name" : "Sketch curves to extrude",
                         "Filter" : SketchObject.YES && ConstructionObject.NO &&
-                         ((EntityType.EDGE && GeometryType.LINE) || EntityType.FACE) }
-            definition.entities is Query;
+                            (EntityType.EDGE && GeometryType.LINE) }
+            definition.sketchCurves is Query;
 
             annotation { "Name" : "End type" }
             definition.endBound is SMExtrudeBoundingType;
@@ -109,6 +109,18 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
                 annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : false }
                 definition.oppositeExtrudeDirection is boolean;
             }
+        }
+        else if (definition.process == SMProcessType.THICKEN)
+        {
+            annotation { "Name" : "Faces to thicken",
+                        "Filter" : EntityType.FACE && GeometryType.PLANE }
+            definition.regions is Query;
+        }
+
+        if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
+        {
+            annotation { "Name" : "Bends", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO }
+            definition.bends is Query;
         }
 
         // Then some common parameters
@@ -130,7 +142,9 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
         {
             annotation { "Name" : "Keep Input Parts" }
             definition.keepInputParts is boolean;
-
+        }
+        if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
+        {
             annotation { "Name" : "Clearance" }
             isLength(definition.clearance, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
@@ -147,7 +161,11 @@ export const smStartSheetMetal = defineSheetMetalFeature(function(context is Con
         {
             extrudeSheetMetal(context, id, definition);
         }
-    }, {"kFactor" : 0.45, "minimalClearance" : 2e-5 * meter, "oppositeDirection" : false});
+        else if (definition.process == SMProcessType.THICKEN)
+        {
+            thickenToSheetMetal(context, id, definition);
+        }
+    }, { "kFactor" : 0.45, "minimalClearance" : 2e-5 * meter, "oppositeDirection" : false });
 
 /**
  * @internal
@@ -225,9 +243,9 @@ function convertExistingPart(context is Context, id is Id, definition is map)
     }
 
     var associationAttributes = getAttributes(context, {
-        "entities" : definition.partToConvert,
-        "attributePattern" : {} as SMAssociationAttribute
-    });
+            "entities" : definition.partToConvert,
+            "attributePattern" : {} as SMAssociationAttribute
+        });
     if (size(associationAttributes) != 0)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INPUT_BODY_SHOULD_NOT_BE_SHEET_METAL, ["partToConvert"]);
@@ -254,6 +272,12 @@ function convertExistingPart(context is Context, id is Id, definition is map)
         throw regenError(ErrorStringEnum.SHEET_METAL_CONVERT_PLANE, ["partToConvert", "facesToExclude"], badFaces);
     }
 
+    var bendEdgesQ = convertFaces(context, id, definition, complimentFacesQ);
+    annotateConvertedFaces(context, id, definition, bendEdgesQ);
+}
+
+function convertFaces(context is Context, id is Id, definition, faces is Query) returns Query
+{
     var surfaceId = id + "extractSurface";
     var bendEdgesQ = startTracking(context, { "subquery" : definition.bends });
     var offset = computeSurfaceOffset(context, definition);
@@ -261,25 +285,30 @@ function convertExistingPart(context is Context, id is Id, definition is map)
     try
     {
         opExtractSurface(context, surfaceId, {
-                    "faces" : complimentFacesQ,
+                    "faces" : faces,
                     "offset" : offset });
     }
     catch
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN, ["partToConvert", "facesToExclude"]);
+        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN, ["partToConvert", "facesToExclude", "regions"]);
     }
 
+    return bendEdgesQ;
+}
+
+function annotateConvertedFaces(context is Context, id is Id, definition, bendEdgesQuery is Query)
+{
     try
     {
         annotateSmSurfaceBodies(context, id, {
-                "surfaceBodies" : qCreatedBy(surfaceId, EntityType.BODY),
-                "bendEdges" : bendEdgesQ,
-                "specialRadiiBends" : [],
-                "defaultRadius" : definition.radius,
-                "controlsThickness" : true,
-                "thickness" : definition.thickness,
-                "minimalClearance" : definition.minimalClearance,
-                "kFactor" : definition.kFactor }, 0);
+                    "surfaceBodies" : qCreatedBy(id, EntityType.BODY),
+                    "bendEdges" : bendEdgesQuery,
+                    "specialRadiiBends" : [],
+                    "defaultRadius" : definition.radius,
+                    "controlsThickness" : true,
+                    "thickness" : definition.thickness,
+                    "minimalClearance" : definition.minimalClearance,
+                    "kFactor" : definition.kFactor }, 0);
         if (getFeatureError(context, id) != undefined)
         {
             return;
@@ -289,6 +318,7 @@ function convertExistingPart(context is Context, id is Id, definition is map)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN);
     }
+
     if (!definition.keepInputParts)
     {
         try
@@ -303,7 +333,7 @@ function convertExistingPart(context is Context, id is Id, definition is map)
         }
     }
 
-    finalizeSheetMetalGeometry(context, id, qUnion([qCreatedBy(surfaceId, EntityType.FACE), qCreatedBy(surfaceId, EntityType.EDGE)]));
+    finalizeSheetMetalGeometry(context, id, qUnion([qCreatedBy(id, EntityType.FACE), qCreatedBy(id, EntityType.EDGE)]));
 }
 
 function computeSurfaceOffset(context is Context, definition is map) returns ValueWithUnits
@@ -362,14 +392,11 @@ const DEPTH_MANIPULATOR = "depthManipulator";
 
 function extrudeSheetMetal(context is Context, id is Id, definition is map)
 {
-    const sheetQuery = qUnion([
-                               convertSketchRegion(context, id + "region", definition),
-                               extrudeSketchCurves(context, id, definition)
-                             ]);
+    const sheetQuery = extrudeSketchCurves(context, id, definition);
     const createdSheetBodies = evaluateQuery(context, sheetQuery);
     if (size(createdSheetBodies) == 0)
     {
-            throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
+        throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
     }
 
     // Regardless of whether the sheets were created by curves or regions
@@ -388,39 +415,81 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
 function offsetSheets(context is Context, id is Id, sheetQuery is Query, thickness is ValueWithUnits, oppositeDirection is boolean)
 {
     opOffsetFace(context, id + "offsetFaces", {
-            "moveFaces" : qOwnedByBody(sheetQuery, EntityType.FACE),
-            "offsetDistance" : thickness * 0.5 * (oppositeDirection ? -1 : 1)
-    });
+                "moveFaces" : qOwnedByBody(sheetQuery, EntityType.FACE),
+                "offsetDistance" : thickness * 0.5 * (oppositeDirection ? -1 : 1)
+            });
 }
 
-
-function convertSketchRegion(context is Context, id is Id, definition is map) returns Query
+function thickenToSheetMetal(context is Context, id is Id, definition is map)
 {
-    const sketchRegions = qBodyType(definition.entities, BodyType.SHEET);
-    const resolvedSurface = evaluateQuery(context, sketchRegions);
-    if (size(resolvedSurface) > 0)
+    const evaluatedFaceQueries = evaluateQuery(context, definition.regions);
+    if (size(evaluatedFaceQueries) == 0)
     {
-        const surfaceId = id + "surface";
-        opExtrude(context, surfaceId, {
-                    "entities" : sketchRegions,
-                    "direction" : evOwnerSketchPlane(context, { "entity" : resolvedSurface[0] }).normal,
-                    "endBound" : BoundingType.BLIND,
-                    "endDepth" : definition.thickness
-                });
-        var createdQuery = qCreatedBy(surfaceId, EntityType.BODY);
-        var isStartCap = true;
-        opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(surfaceId, isStartCap), EntityType.FACE) });
-        opDeleteBodies(context, id + "deleteBodies", {
-                    "entities" : createdQuery
-                });
-        return qCreatedBy(id + "extract", EntityType.BODY);
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["regions"]);
     }
-    return qNothing();
+    var sketchPlaneToFacesMap = {};
+    var facesToConvert = [];
+    var index = 0;
+    for (var evaluatedFace in evaluatedFaceQueries)
+    {
+        var key = try(evOwnerSketchPlane(context, { "entity" : evaluatedFace }));
+        if (key == undefined)
+        {
+            facesToConvert = append(facesToConvert, evaluatedFace);
+        }
+        else
+        {
+            if (sketchPlaneToFacesMap[key] == undefined)
+            {
+                sketchPlaneToFacesMap[key] = [evaluatedFace];
+            }
+            else
+            {
+                sketchPlaneToFacesMap[key] = append(sketchPlaneToFacesMap[key], evaluatedFace);
+            }
+        }
+    }
+
+    index = 0;
+    for (var entry in sketchPlaneToFacesMap)
+    {
+        var faceQueryArray = entry.value;
+
+        definition.regions = qUnion(faceQueryArray);
+        convertRegion(context, id + unstableIdComponent(index), definition);
+        index += 1;
+    }
+    var bendEdgesQ = qNothing();
+
+    if (size(facesToConvert) != 0)
+    {
+        bendEdgesQ = convertFaces(context, id, definition, qUnion(facesToConvert));
+    }
+    definition.keepInputParts = true;
+    annotateConvertedFaces(context, id, definition, bendEdgesQ);
+}
+
+function convertRegion(context is Context, id is Id, definition is map)
+{
+    const extrudeId = id + "extrude";
+    const sign = definition.oppositeDirection ? -1 : 1;
+    opExtrude(context, extrudeId, {
+                "entities" : definition.regions,
+                "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
+                "endBound" : BoundingType.BLIND,
+                "endDepth" : definition.thickness / 2
+            });
+    var createdQuery = qCreatedBy(extrudeId, EntityType.BODY);
+    var isStartCap = false;
+    opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(extrudeId, isStartCap), EntityType.FACE) });
+    opDeleteBodies(context, id + "deleteBodies", {
+                "entities" : createdQuery
+            });
 }
 
 function extrudeSketchCurves(context is Context, id is Id, definition is map) returns Query
 {
-    var sketchCurves = qGeometry(definition.entities, GeometryType.LINE);
+    var sketchCurves = qGeometry(definition.sketchCurves, GeometryType.LINE);
     const resolvedEntities = evaluateQuery(context, sketchCurves);
     if (size(resolvedEntities) > 0)
     {

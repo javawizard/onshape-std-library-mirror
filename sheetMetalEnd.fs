@@ -9,8 +9,10 @@ FeatureScript ✨; /* Automatically generated version */
  ******************************************
  */
 
+import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/error.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -41,6 +43,7 @@ export const smEndSheetMetal = defineSheetMetalFeature(function(context is Conte
         const modelAttribute = attributes[0];
         var newAttribute = modelAttribute;
         newAttribute.active = false;
+        newAttribute.endSheetMetalId = { "value" : toAttributeId(id) };
         replaceSMAttribute(context, smModels, modelAttribute, newAttribute);
     }, {});
 

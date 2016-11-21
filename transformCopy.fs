@@ -77,16 +77,17 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
 }
 
 // Note that transform() is also defined in transform.fs
-// with different signatures.  This is written as a wrapper around defineFeature to keep overloads working.
+// with different signatures. This is written as a wrapper around defineFeature to keep overloads working.
 /**
- * Move and/or rotate a body or bodies with a single [Transform], constructed with input according to the
- * selected [TransformType].
+ * Move and/or rotate bodies or mate connectors with a single [Transform], constructed with
+ * input according to the selected [TransformType].
  *
  * Internally, performs an [opTransform] when not copying, and an [opPattern] when copying. For simple
  * transforms, prefer calling [opTransform] or [opPattern] directly.
  *
  * @param definition {{
- *      @field entities {Query} : The bodies to transform. An error is thrown if non-bodies are included.
+ *      @field entities {Query} : The bodies or mate connectors to transform. An error is thrown if
+ *          anything else is included.
  *          @eg `qCreatedBy(id + "extrude1", EntityType.BODY)`
  *
  *      @field transformType {TransformType} : Defines how the transform type should be specified.
@@ -148,8 +149,8 @@ export function transform(context is Context, id is Id, definition is map)
 const fTransform = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Parts to transform or copy",
-                     "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
+        annotation { "Name" : "Entities to transform or copy",
+                     "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES}
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }
@@ -261,8 +262,15 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
          */
         const validateInputs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V74_TRANSFORM_CHECKING);
 
-        if (validateInputs && size(evaluateQuery(context, definition.entities)) == 0)
+        var entitySize = size(evaluateQuery(context, definition.entities));
+        if (validateInputs && entitySize == 0)
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
+
+        // We only allow non-modifiable entities when TransformType == TransformType.COPY or definition.makeCopy
+        var filteredEntites = (definition.transformType == TransformType.COPY || definition.makeCopy) ? definition.entities : qModifiableEntityFilter(definition.entities);
+        var filteredEntitySize = size(evaluateQuery(context, filteredEntites));
+        if (filteredEntitySize != entitySize)
+            throw regenError(ErrorStringEnum.MODIFIABLE_ENTITY_ONLY, ["entities"]);
 
         if (transformType == TransformType.TRANSLATION_ENTITY ||
             transformType == TransformType.TRANSLATION_DISTANCE)
@@ -416,18 +424,28 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
              definition.oppositeDirection))
             transformMatrix = inverse(transformMatrix);
 
+        // We call qOwnerBody here because Mate Connectors are selected as Vertices, but we need their owning point body
         if (transformType == TransformType.COPY || definition.makeCopy)
         {
-            opPattern(context, id,
-                      { "entities" : definition.entities,
-                        "transforms" : [transformMatrix],
-                        "instanceNames" : ["1"] });
+            try
+            {
+                opPattern(context, id, { "entities" : qOwnerBody(definition.entities),
+                                         "transforms" : [transformMatrix],
+                                         "instanceNames" : ["1"] });
+            }
+            catch (error)
+            {
+                if (error.message == (ErrorStringEnum.CANNOT_USE_MATECONNECTORS_IN_PATTERN as string))
+                    throw regenError(ErrorStringEnum.CANNOT_COPY_MATECONNECTORS);
+
+                throw error;
+            }
         }
         else
         {
             const subId = validateInputs ? id : id + "transform";
             opTransform(context, subId,
-                        { "bodies" : definition.entities,
+                        { "bodies" : qOwnerBody(definition.entities),
                           "transform" : transformMatrix });
         }
     }, { oppositeDirection : false, scale : 1.0 });
