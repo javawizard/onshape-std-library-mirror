@@ -1,16 +1,16 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "455.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "442.0");
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/tool.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/containers.fs", version : "455.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/tool.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
 
 /**
  * Feature performing an [opShell].
@@ -25,13 +25,13 @@ export const shell = defineFeature(function(context is Context, id is Id, defini
         if (!definition.isHollow)
         {
             annotation { "Name" : "Faces to remove",
-                "Filter" : EntityType.FACE && BodyType.SOLID }
+                "Filter" : EntityType.FACE && BodyType.SOLID && ModifiableEntityOnly.YES }
             definition.entities is Query;
         }
         else
         {
             annotation { "Name" : "Parts to hollow",
-                "Filter" : EntityType.BODY && BodyType.SOLID }
+                "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
             definition.parts is Query;
         }
 

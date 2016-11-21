@@ -1,17 +1,17 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "442.0");
-export import(path : "onshape/std/query.fs", version : "442.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "455.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/math.fs", version : "442.0");
-import(path : "onshape/std/matrix.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/math.fs", version : "455.0");
+import(path : "onshape/std/matrix.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -27,7 +27,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
     precondition
     {
         annotation { "Name" : "Entities to chamfer",
-                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO }
+                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
 
         if (definition.chamferType != undefined)

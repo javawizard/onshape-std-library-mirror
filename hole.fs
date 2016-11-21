@@ -1,32 +1,33 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "442.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "442.0");
-import(path : "onshape/std/box.fs", version : "442.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "442.0");
-import(path : "onshape/std/containers.fs", version : "442.0");
-import(path : "onshape/std/coordSystem.fs", version : "442.0");
-import(path : "onshape/std/evaluate.fs", version : "442.0");
-import(path : "onshape/std/extrude.fs", version : "442.0");
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/mathUtils.fs", version : "442.0");
-import(path : "onshape/std/revolve.fs", version : "442.0");
-import(path : "onshape/std/sketch.fs", version : "442.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
-import(path : "onshape/std/tool.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
-import(path : "onshape/std/string.fs", version : "442.0");
-import(path : "onshape/std/holetables.gen.fs", version : "442.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "442.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "442.0");
-import(path : "onshape/std/cylinderCast.fs", version : "442.0");
-import(path : "onshape/std/curveGeometry.fs", version : "442.0");
-import(path : "onshape/std/attributes.fs", version : "442.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "442.0");
-export import(path : "onshape/std/holeUtils.fs", version : "442.0");
+import(path : "onshape/std/boolean.fs", version : "455.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "455.0");
+import(path : "onshape/std/box.fs", version : "455.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "455.0");
+import(path : "onshape/std/coordSystem.fs", version : "455.0");
+import(path : "onshape/std/evaluate.fs", version : "455.0");
+import(path : "onshape/std/extrude.fs", version : "455.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/mathUtils.fs", version : "455.0");
+import(path : "onshape/std/revolve.fs", version : "455.0");
+import(path : "onshape/std/sketch.fs", version : "455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
+import(path : "onshape/std/tool.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/string.fs", version : "455.0");
+import(path : "onshape/std/holetables.gen.fs", version : "455.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "455.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "455.0");
+import(path : "onshape/std/cylinderCast.fs", version : "455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "455.0");
+import(path : "onshape/std/attributes.fs", version : "455.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "455.0");
+export import(path : "onshape/std/holeUtils.fs", version : "455.0");
+
 
 /**
  * Defines the end bound for the hole cut.
@@ -121,8 +122,17 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
         if (definition.showTappedDepth)
         {
-            annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+            if (definition.endStyle == HoleEndStyle.THROUGH)
+            {
+                annotation { "Name" : "Tap through all", "Default" : true, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                definition.isTappedThrough is boolean;
+            }
+
+            if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
+            {
+                annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+            }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
@@ -138,11 +148,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
 
         annotation { "Name" : "Sketch points to place holes",
-            "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO }
+            "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
-            "Filter" : (EntityType.BODY && BodyType.SOLID) }
+            "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
         definition.scope is Query;
 
     }
@@ -292,7 +302,8 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         collisions : {},
         showTappedDepth : false,
         tappedDepth : 0.5 * inch,
-        tapClearance : 3
+        tapClearance : 3,
+        isTappedThrough : false
     });
 
 function hasErrors(context is Context, id is Id) returns boolean
@@ -977,6 +988,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     // Through, Blind or Blind in Last
     resultAttribute.endType = holeDefinition.endStyle;
     resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
+    resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -1377,7 +1389,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
     }
     else
     {
-        solidBodiesQuery = qAllNonMeshSolidBodies();
+        solidBodiesQuery = qAllModifiableSolidBodies();
         solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
     }
 

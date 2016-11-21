@@ -1,11 +1,11 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
-import(path : "onshape/std/units.fs", version: "442.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/units.fs", version: "455.0");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -67,8 +67,8 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
         isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
 
-        annotation { "Name" : "Modifiable", "UIHint" : "ALWAYS_HIDDEN", "Default" : true  }
-        definition.isModifiable is boolean;
+        annotation { "Name" : "IsInContext", "UIHint" : "ALWAYS_HIDDEN", "Default" : false  }
+        definition.isInContext is boolean;
     }
     {
         var remainingTransform = getRemainderPatternTransform(context,
@@ -81,9 +81,10 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         {
             definition.scale = 1.0;
         }
+        definition.isModifiable = !definition.isInContext;
         opImportForeign(context, id, definition);
 
         transformResultIfNecessary(context, id, remainingTransform);
 
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isModifiable : true });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
 

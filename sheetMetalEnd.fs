@@ -1,4 +1,4 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,11 +9,13 @@ FeatureScript 442; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/containers.fs", version : "442.0");
-import(path : "onshape/std/error.fs", version : "442.0");
-import(path : "onshape/std/string.fs", version : "442.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "442.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "442.0");
+import(path : "onshape/std/attributes.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "455.0");
+import(path : "onshape/std/error.fs", version : "455.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/string.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "455.0");
 
 /**
  * @internal
@@ -41,6 +43,7 @@ export const smEndSheetMetal = defineSheetMetalFeature(function(context is Conte
         const modelAttribute = attributes[0];
         var newAttribute = modelAttribute;
         newAttribute.active = false;
+        newAttribute.endSheetMetalId = { "value" : toAttributeId(id) };
         replaceSMAttribute(context, smModels, modelAttribute, newAttribute);
     }, {});
 

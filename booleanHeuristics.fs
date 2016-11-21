@@ -1,22 +1,22 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "442.0");
-export import(path : "onshape/std/query.fs", version : "442.0");
-export import(path : "onshape/std/tool.fs", version : "442.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "455.0");
+export import(path : "onshape/std/tool.fs", version : "455.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "442.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "442.0");
-import(path : "onshape/std/containers.fs", version : "442.0");
-import(path : "onshape/std/evaluate.fs", version : "442.0");
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/primitives.fs", version : "442.0");
-import(path : "onshape/std/transform.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/box.fs", version : "455.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "455.0");
+import(path : "onshape/std/evaluate.fs", version : "455.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/primitives.fs", version : "455.0");
+import(path : "onshape/std/transform.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
 
 
 /** @internal */
@@ -93,7 +93,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         excludeQ = qUnion([toolQ, excludeBodies]);
     else
         excludeQ = toolQ;
-    const targetQ = qSubtraction(qAllNonMeshSolidBodies(), excludeQ);
+    const targetQ = qSubtraction(qAllModifiableSolidBodies(), excludeQ);
     const collisions = try(evCollision(context, { tools : toolQ, targets : targetQ }));
     if (collisions == undefined)
         return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);

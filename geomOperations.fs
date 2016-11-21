@@ -1,4 +1,4 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 442; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "442.0");
+import(path : "onshape/std/context.fs", version : "455.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "442.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "442.0");
-export import(path : "onshape/std/bendoptions.fs", version : "442.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "455.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "455.0");
+export import(path : "onshape/std/bendoptions.fs", version : "455.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "442.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "455.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -243,6 +243,7 @@ export function opHelix(context is Context, id is Id, definition is map)
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
  *      @field yAxisIsUp {boolean} : If true, the y axis in the import maps to the z axis and z maps to -y.
  *              If false (default), the coordinates are unchanged. @optional
+ *      @field isModifiable {boolean} : Whether the imported data is modifiable (default) or not. @optional
  * }}
  */
 export function opImportForeign(context is Context, id is Id, definition is map)
@@ -632,8 +633,15 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
  * Extends the perimeter of a sheet body.
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
- *    @field bodies {Query} : Bodies to extend.
- *    @field growSize {ValueWithUnits} : The distance to extend by. May be negative.
+ *    @field entities {Query} : Bodies or edges to extend.
+ *    @field extendMethod {ExtendSheetBoundingType}
+ *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
+ *    @field limitEntity {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Face to extend up to the surface of.
+ *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
+ *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
+ *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
+ *                                      Takes the form ("edge", "offset", "limitEntity"). Both offset and limitEntity are optional
+ *                                      and will override the other offset and limitEntity parameters for the specified edge. @optional
  * }}
  */
 export function opExtendSheetBody(context is Context, id is Id, definition is map)

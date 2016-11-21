@@ -1,24 +1,27 @@
-FeatureScript 442; /* Automatically generated version */
+FeatureScript 455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "442.0");
-export import(path : "onshape/std/tool.fs", version : "442.0");
+export import(path : "onshape/std/query.fs", version : "455.0");
+export import(path : "onshape/std/tool.fs", version : "455.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "442.0");
+export import(path : "onshape/std/manipulator.fs", version : "455.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "442.0");
-import(path : "onshape/std/containers.fs", version : "442.0");
-import(path : "onshape/std/curveGeometry.fs", version : "442.0");
-import(path : "onshape/std/evaluate.fs", version : "442.0");
-import(path : "onshape/std/feature.fs", version : "442.0");
-import(path : "onshape/std/mathUtils.fs", version : "442.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "442.0");
-import(path : "onshape/std/valueBounds.fs", version : "442.0");
+import(path : "onshape/std/attributes.fs", version : "455.0");
+import(path : "onshape/std/box.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "455.0");
+import(path : "onshape/std/evaluate.fs", version : "455.0");
+import(path : "onshape/std/feature.fs", version : "455.0");
+import(path : "onshape/std/mathUtils.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
+import(path : "onshape/std/valueBounds.fs", version : "455.0");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -38,7 +41,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     {
         annotation { "Name" : "Faces",
                      "UIHint" : "SHOW_CREATE_SELECTION",
-                     "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+                     "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.moveFaces is Query;
 
         annotation { "Name" : "Move Face Type" }
@@ -109,7 +112,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
             addOffsetManipulator(context, id, definition, facePlane);
 
-            opOffsetFace(context, id, definition);
+            sheetMetalAwareMoveFace(context, id, definition);
         }
         else
         {
@@ -157,10 +160,112 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                     definition.transform = rotationAround(axisResult, definition.angle * directionSign);
                 }
             }
-            opMoveFace(context, id, definition);
+            sheetMetalAwareMoveFace(context, id, definition);
         }
     }, { oppositeDirection : false, reFillet : false });
 
+function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map)
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V450_SPLIT_TRACKING_MERGED_EDGES))
+    {
+        var queries = separateSheetMetalQueries(context, id, definition.moveFaces);
+        const nonSheetMetalQueryCount = size(evaluateQuery(context, queries.nonSheetMetalQueries));
+        const sheetMetalQueryCount = size(evaluateQuery(context, queries.sheetMetalQueries));
+        if (sheetMetalQueryCount > 0)
+        {
+            if (definition.moveFaceType != MoveFaceType.OFFSET)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_OFFSET);
+            }
+            offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries }));
+            processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true });
+        }
+        if (nonSheetMetalQueryCount > 0)
+        {
+            if (definition.moveFaceType == MoveFaceType.OFFSET)
+            {
+                opOffsetFace(context, id, mergeMaps(definition, { "moveFaces" : queries.nonSheetMetalQueries }));
+            }
+            else
+            {
+            opMoveFace(context, id, definition);
+        }
+        }
+    }
+    else
+    {
+        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        {
+            opOffsetFace(context, id, definition);
+        }
+        else
+        {
+            opMoveFace(context, id, definition);
+        }
+    }
+}
+
+const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Context, id is Id, definition)
+    {
+        var smEdgePartFacePairs = [];
+        var alignedSMFaces = [];
+        var antiAlignedSMFaces = [];
+        var smEdges = [];
+        var sheetMetalModels = [];
+        for (var evaluatedFace in evaluateQuery(context, definition.moveFaces))
+        {
+            const smEntity = qUnion(getSMDefinitionEntities(context, evaluatedFace));
+            const smFace = qEntityFilter(smEntity, EntityType.FACE);
+            const smEdge = qEntityFilter(smEntity, EntityType.EDGE);
+            if (size(evaluateQuery(context, smFace)) == 1)
+            {
+                const partFaceNormal = evPlane(context, { "face" : evaluatedFace }).normal;
+                const smModelFaceNormal = evPlane(context, { "face" : smFace }).normal;
+                if (dot(partFaceNormal, smModelFaceNormal) > 0)
+                {
+                    alignedSMFaces = append(alignedSMFaces, smFace);
+                }
+                else
+                {
+                    antiAlignedSMFaces = append(antiAlignedSMFaces, smFace);
+                }
+                sheetMetalModels = append(sheetMetalModels, qOwnerBody(smFace));
+            }
+            else if (size(evaluateQuery(context, smEdge)) == 1)
+            {
+                smEdgePartFacePairs = append(smEdgePartFacePairs, { "edge" : smEdge, "limitEntity" : evaluatedFace });
+                sheetMetalModels = append(sheetMetalModels, qOwnerBody(smEdge));
+                smEdges = append(smEdges, smEdge);
+            }
+        }
+        sheetMetalModels = qUnion(evaluateQuery(context, qUnion(sheetMetalModels)));
+        const modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([smEdges, alignedSMFaces, antiAlignedSMFaces])), EntityType.FACE);
+
+        const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModels));
+        const initialAssociationAttributes = getAttributes(context, {
+                    "entities" : qOwnedByBody(sheetMetalModels),
+                    "attributePattern" : {} as SMAssociationAttribute });
+
+        if (size(smEdgePartFacePairs) > 0)
+        {
+            opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "offset" : definition.offsetDistance, "edgeLimitOptions" : smEdgePartFacePairs });
+        }
+        if (size(alignedSMFaces) > 0)
+        {
+            opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(alignedSMFaces), "offsetDistance" : definition.offsetDistance });
+        }
+        if (size(antiAlignedSMFaces) > 0)
+        {
+            opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance });
+        }
+
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalModels,
+                originalEntities, initialAssociationAttributes);
+
+        updateSheetMetalGeometry(context, id + "smUpdate", {
+                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                    "deletedAttributes" : toUpdate.deletedAttributes });
+    }, {});
 
 // Manipulator functions
 
