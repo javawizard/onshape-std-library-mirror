@@ -14,7 +14,7 @@ import(path : "onshape/std/math.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
- * an `applyPattern`, which in turn performs an [opPattern] or, for a feature
+ * an [applyPattern], which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allparts" }
@@ -59,6 +59,9 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation { "Name" : "Equal spacing", "Default" : true }
         definition.equalSpace is boolean;
 
+        annotation { "Name" : "Centered"}
+        definition.isCentered is boolean;
+
         if (definition.patternType == PatternType.PART)
         {
             booleanStepScopePredicate(definition);
@@ -97,11 +100,16 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = angle / instCt; //with error check above, no chance of instCt < 1
         }
 
-        for (var i = 1; i < definition.instanceCount; i += 1)
+        // If centered, create (instanceCount - 1) number of new instances on either side of the seed.
+        var startIndex = definition.isCentered ? 1 - definition.instanceCount : 0;
+        for (var i = startIndex; i < definition.instanceCount; i += 1)
         {
-            var instanceTransform = rotationAround(direction, i * angle);
-            transforms = append(transforms, instanceTransform);
-            instanceNames = append(instanceNames, "" ~ i);
+            if (i != 0)
+            {
+                var instanceTransform = rotationAround(direction, i * angle);
+                transforms = append(transforms, instanceTransform);
+                instanceNames = append(instanceNames, "" ~ i);
+            }
         }
 
         definition.transforms = transforms;
@@ -110,5 +118,5 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         oppositeDirection : false, equalSpace : false });
+         oppositeDirection : false, equalSpace : false, isCentered : false });
 

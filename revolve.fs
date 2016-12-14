@@ -308,6 +308,7 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
 export function revolveEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
+     var retestDirectionFlip = false;
     // If flip has not been specified and there is no second direction we can adjust flip based on boolean operation
     if (definition.revolveType != RevolveType.TWO_DIRECTIONS &&
         definition.revolveType != RevolveType.SYMMETRIC
@@ -317,8 +318,19 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
         {
             definition.oppositeDirection = !definition.oppositeDirection;
         }
+        else
+        {
+            retestDirectionFlip = true;
+        }
     }
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
+    var newDefinition = booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, revolve);
+    // booleanStepEditLogic might change boolean operation type,
+    // if flip was not adjusted above, re-test it
+    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+    {
+        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
+    }
+    return newDefinition;
 }
 

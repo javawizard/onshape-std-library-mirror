@@ -11,6 +11,7 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -65,6 +66,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
             recordParameters(otherContext, id, definition);
+            // remove sheet metal attributes and helper bodies
+            clearSheetMetalData(otherContext, id + "sheetMetal");
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -74,8 +77,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
+            const allBodies = qEverything(EntityType.BODY);
+            const allSMFlatBodies = qCorrespondingInFlat(qBodyType(allBodies, BodyType.SOLID));
+
             const deleteDefinition = {
-                "entities" : qSubtraction(qEverything(EntityType.BODY), bodiesToKeep)
+                "entities" : qSubtraction(qUnion([allBodies, allSMFlatBodies]) , bodiesToKeep)
             };
             opDeleteBodies(otherContext, id + "delete", deleteDefinition);
 

@@ -395,7 +395,13 @@ export enum FeatureScriptVersionNumber
     V452_PARAMETER_GROUP_UIHINT,
     V453_REMOVED_PARAMETER_GROUP,
     V454_CORRECT_IMPORT_DEFAULT,
-    V455_HOLE_INIT_IS_TAPPED_THROUGH
+    V455_HOLE_INIT_IS_TAPPED_THROUGH,
+    V459_TOP_DISAMBIGUATION_IDS,
+    V460_ENABLE_SHEET_METAL,
+    V461_CURVE_PATTERN_FEATURE,
+    V462_BLOCK_INCONTEXT_FACE_CURVE_PATTERN,
+    V463_UPDATE_ISO_SCREW_STANDARDS,
+    V464_CURVE_PATTERN_STABILIZATION
 }
 
 /**
@@ -406,6 +412,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V455_HOLE_INIT_IS_TAPPED_THROUGH;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V464_CURVE_PATTERN_STABILIZATION;
 
 

@@ -21,13 +21,15 @@ import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
  * @internal
  */
 annotation { "Feature Type Name" : "End sheet metal" }
-export const smEndSheetMetal = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID }
         definition.sheetMetalParts is Query;
     }
     {
+        checkNotInFeaturePattern(context, definition.sheetMetalParts);
+
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.sheetMetalParts))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_SINGLE_MODEL_NEEDED, ["sheetMetalParts"]);
@@ -43,7 +45,12 @@ export const smEndSheetMetal = defineSheetMetalFeature(function(context is Conte
         const modelAttribute = attributes[0];
         var newAttribute = modelAttribute;
         newAttribute.active = false;
-        newAttribute.endSheetMetalId = { "value" : toAttributeId(id) };
-        replaceSMAttribute(context, smModels, modelAttribute, newAttribute);
+        newAttribute.endSheetMetalId = {"value" : toAttributeId(id)};
+        replaceSMAttribute(context, modelAttribute, newAttribute);
+        updateSheetMetalGeometry(context, id, {"entities" : smModels});
+        if (!featureHasNonTrivialStatus(context, id))
+        {
+            reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_END_DONE);
+        }
     }, {});
 

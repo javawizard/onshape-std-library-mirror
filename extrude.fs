@@ -896,6 +896,7 @@ function canSetUpToFlip(definition is map, specifiedParameters is map) returns b
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    var retestDirectionFlip = false;
     // If flip has not been specified and there is no second direction we can adjust flip either based on location of
     // bounding surface/body or based on boolean operation
     if (!definition.hasSecondDirection &&
@@ -910,13 +911,28 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
         {
             definition.oppositeDirection = !definition.oppositeDirection;
         }
+        else
+        {
+            retestDirectionFlip = true;
+        }
     }
     if (canSetSecondDirectionFlip(definition, specifiedParameters))
     {
         definition.secondDirectionOppositeDirection = !definition.oppositeDirection;
     }
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
+    var newDefinition =  booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, extrude);
+    // booleanStepEditLogic might change boolean operation type,
+    // if flip was not adjusted above, re-test it
+    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+    {
+        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
+        if (canSetSecondDirectionFlip(newDefinition, specifiedParameters))
+        {
+            newDefinition.secondDirectionOppositeDirection = !newDefinition.oppositeDirection;
+        }
+    }
+    return newDefinition;
 }
 
 function canSetSecondDirectionFlip(definition is map, specifiedParameters is map) returns boolean

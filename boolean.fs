@@ -433,9 +433,10 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 "attributePattern" : {} as SMAssociationAttribute});
 
                             definition.targets = sheetMetalModel;
+                            const trackingSMModel = startTracking(context, sheetMetalModel);
                             const modifiedFaces = performSheetMetalBoolean(context, id, definition);
 
-                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalModel,
+                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
                                     originalEntities, initialAssociationAttributes);
 
                             updateSheetMetalGeometry(context, id + "smUpdate", {

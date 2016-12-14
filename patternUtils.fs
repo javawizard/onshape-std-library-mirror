@@ -178,6 +178,13 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                     func(instanceId);
                     featureSuccessCount += 1;
                 }
+                catch (e)
+                {
+                    if (e.message == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+                    {
+                        throw regenError(e.message, ["instanceFunction"]);
+                    }
+                }
             }
             unsetFeaturePatternInstanceData(context, instanceId);
         }

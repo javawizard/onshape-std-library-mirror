@@ -16,4 +16,12 @@ export function edgeIsTwoSided(context is Context, edge is Query) returns boolea
     return size(evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE))) == 2;
 }
 
+/**
+ * Returns true if edge is closed, false if edge is open
+ */
+export function isClosed(context is Context, edge is Query) returns boolean
+{
+    return size(evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX))) < 2;
+}
+
 

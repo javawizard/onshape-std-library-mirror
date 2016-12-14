@@ -117,6 +117,7 @@ export predicate canBeQuery(value)
  * @value TRACKING                   : Used in [startTracking]
  * @value CAP_ENTITY                 : Used in [qCapEntity]
  * @value SOURCE_MESH                : Used in [qSourceMesh]
+ * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
  ******************************************************************************/
 export enum QueryType
 {
@@ -130,6 +131,7 @@ export enum QueryType
     SKETCH_REGION,
     TRANSIENT,
     ATTRIBUTE_FILTER,
+    CORRESPONDING_IN_FLAT,
     //Boolean
     UNION,
     INTERSECTION,
@@ -517,6 +519,15 @@ export function qAttributeFilter(subquery is Query, attributePattern) returns Qu
 export function qAttributeQuery(attributePattern) returns Query
 {
     return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern} as Query;
+}
+/**
+* A query for entities in sheet metal flattened body
+* corresponding to those in folded body defined by subquery
+* @param subquery {Query} : A query which resolves to entities in folded sheet metal body
+*/
+export function qCorrespondingInFlat(subquery is Query) returns Query
+{
+    return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : subquery} as Query;
 }
 /**
  * A query for all the entities created by a feature or operation. The feature

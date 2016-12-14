@@ -150,6 +150,24 @@ precondition
     return point + plane.normal * dot(plane.normal, plane.origin - point);
 }
 
+/**
+ * Projects a [Line] onto a [Plane], returning a [Line] whose origin is
+ * on the [Plane] and whose direction is a normalized [Vector] on the [Plane]
+ *
+ * Throws an error if the [Line] is in the same direction as the normal of the [Plane]
+ */
+export function project(plane is Plane, line is Line) returns Line
+precondition
+{
+    !parallelVectors(plane.normal, line.direction);
+}
+{
+    var origin = project(plane, line.origin);
+    var direction = normalize(line.direction - project(plane.normal, line.direction));
+
+    return { "origin" : origin, "direction" : direction } as Line;
+}
+
 export operator*(transform is Transform, planeRhs is Plane) returns Plane
 {
     return plane(transform * planeRhs.origin,

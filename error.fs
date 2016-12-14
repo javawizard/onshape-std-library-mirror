@@ -216,6 +216,17 @@ export function reportFeatureInfo(context is Context, id is Id, message is Error
 }
 
 /**
+ * Attaches an info-level status to the given feature id. Will display a notification to the user containing the specified message.
+ */
+export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum, associatedParameters is array) returns boolean
+{
+    reportFeatureStatus(context, id, {"statusType" : StatusType.INFO,
+                                        "statusEnum" : message,
+                                        "faultyParameters" : associatedParameters} as FeatureStatus);
+    return true;
+}
+
+/**
  * Attaches a custom info-level status to the given feature id.
  */
 export function reportFeatureInfo(context is Context, id is Id, customMessage is string) returns boolean
@@ -357,6 +368,16 @@ export function featureHasError(context is Context, id is Id) returns boolean
     return getFeatureError(context, id) != undefined;
 }
 
+/**
+ * @param id
+ * @returns {boolean} : `true` if the feature with the given id has an associated status different from OK.
+ */
+export function featureHasNonTrivialStatus(context is Context, id is Id) returns boolean
+{
+    var status is FeatureStatus = getFeatureStatus(context, id);
+    return status != undefined && status.statusType != StatusType.OK;
+}
+
 /** @internal */
 enum StatusType {OK, ERROR, WARNING, INFO}
 
@@ -406,3 +427,4 @@ function featureStatus(status is map)
 {
     return status as FeatureStatus;
 }
+

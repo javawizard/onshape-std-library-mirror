@@ -164,6 +164,12 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         }
     }, { oppositeDirection : false, reFillet : false });
 
+/**
+ * sheetMetalAwareMoveFace effectively has two different modes. For faces that associate to a sheet metal model face,
+ * it does a normal move face on the sheet metal model face. For faces that associate to a sheet metal model edge, it
+ * uses opExtendSheetBody to move that edge. If that edge is a rip, it does an opExtendSheetBody for both adjacent faces
+ * because removing the rip would otherwise change some geometry that was not selected for the operation.
+ */
 function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map)
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V450_SPLIT_TRACKING_MERGED_EDGES))
@@ -173,12 +179,14 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
         const sheetMetalQueryCount = size(evaluateQuery(context, queries.sheetMetalQueries));
         if (sheetMetalQueryCount > 0)
         {
-            if (definition.moveFaceType != MoveFaceType.OFFSET)
+            try
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_OFFSET);
+                offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries }));
             }
-            offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries }));
-            processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true });
+            catch
+            {
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true });
+            }
         }
         if (nonSheetMetalQueryCount > 0)
         {
@@ -188,8 +196,8 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
             }
             else
             {
-            opMoveFace(context, id, definition);
-        }
+                opMoveFace(context, id, mergeMaps(definition, { "moveFaces" : queries.nonSheetMetalQueries }));
+            }
         }
     }
     else
@@ -205,66 +213,176 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
     }
 }
 
+/**
+ * @param smEntity : A query for a sheet metal edge to move.
+ * @param faceToMove : A query for the sheet metal part face that the operation is moving.
+ * @param operationInfo : A map of arrays that this function appends information to and then returns.
+ */
+function createEdgeLimitOption(context is Context, definition is map, smEntity is Query, faceToMove is Query, operationInfo is map) returns map
+{
+    const smEdge = qEntityFilter(smEntity, EntityType.EDGE);
+    if (size(evaluateQuery(context, smEdge)) == 1)
+    {
+        var faceToExtend;
+        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(smEdge, EntityType.FACE));
+        if (size(adjacentFaces) == 2)
+        {
+            // If there are two faces adjacent to the edge, then there is a rip that needs to be removed.
+            // In this case, the face that will be modified when the sheet metal edge is moved needs to be specified
+            // In edgeLimitOption since opExtendSheetBody cannot infer it.
+            const adjacentFaceQuery = qEdgeAdjacent(faceToMove, EntityType.FACE);
+            // Find that sheet metal face that needs to be modified in order to move faceToMove.
+            const adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
+            if (size(adjacentFaceSMFace) == 1)
+            {
+                faceToExtend = adjacentFaceSMFace[0];
+                clearSmAttributes(context, smEdge);
+            }
+            else
+            {
+                return operationInfo;
+            }
+            // In the case of a rip, keep track of the sheet metal part faces for later user. If the other one is not
+            // Already being moved, the underlying edge will need to be adjusted to keep it in place.
+            const attributes = getAttributes(context, { "entities" : smEdge, "attributePattern" : {} as SMAssociationAttribute });
+            if (size(attributes) != 1)
+            {
+                throw regenError(ErrorStringEnum.REGEN_ERROR);
+            }
+            operationInfo.derippedFaces = append(operationInfo.derippedFaces, qAttributeFilter(qEverything(EntityType.FACE), attributes[0]));
+        }
+
+        // Create a plane to use as a limit for opExtendSheetBody for extending faceToMove.
+        var limitPlane = try silent(evPlane(context, { "face" : faceToMove }));
+        if (limitPlane == undefined)
+        {
+            throw regenError(ErrorStringEnum.REGEN_ERROR);
+        }
+        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        {
+            limitPlane.origin += limitPlane.normal * definition.offsetDistance;
+        }
+        else
+        {
+            limitPlane = definition.transform * limitPlane;
+        }
+        const edgeLimitOption = { "edge" : smEdge, "limitEntity" : limitPlane, "faceToExtend" : faceToExtend };
+        const sheetMetalModel = qOwnerBody(smEdge);
+        operationInfo.edgeLimitOptions = append(operationInfo.edgeLimitOptions, edgeLimitOption);
+        operationInfo.edgesToExtend = append(operationInfo.edgesToExtend, smEdge);
+        operationInfo.sheetMetalModels = append(operationInfo.sheetMetalModels, sheetMetalModel);
+    }
+    return operationInfo;
+}
+
+function createToolBodies(context is Context, entities is Query, definition is map) returns map
+{
+    // A map to gather queries across multiple calls to createEdgeLimitOptions.
+    // edgeLimitOptions is an array of overrides for specific edges for opExtendSheetBody.
+    // alignedSMFaces is all sheet metal model faces being moved that have a normal aligned with the selected sheet metal part normal.
+    // modifiedFaces are a superset of the faces that will be modified by the operation.
+    // sheetMetalModels is all sheet metal models that will be altered by this operation.
+    // derippedFaces are side faces corresponding to rips that will be removed.
+    // edgesToExtend is the set of edges to be replaced by the opExtendSheetBody operation.
+    var operationInfo = { "edgeLimitOptions" : [],
+        "alignedSMFaces" : [],
+        "antiAlignedSMFaces" : [],
+        "modifiedFaces" : [],
+        "sheetMetalModels" : [],
+        "derippedFaces" : [],
+        "edgesToExtend" : [] };
+    for (var evaluatedFace in evaluateQuery(context, entities))
+    {
+        // Separate selections into two categories: sheet metal model faces that the normal moveFace process will work on (aligned and antiAlignedFaces),
+        // and edges that need to be moved with opExtendSheetBody.
+        const smEntity = qUnion(getSMDefinitionEntities(context, evaluatedFace));
+        const smFace = qEntityFilter(smEntity, EntityType.FACE);
+        if (size(evaluateQuery(context, smFace)) == 1)
+        {
+            const partFaceNormal = evPlane(context, { "face" : evaluatedFace }).normal;
+            const smModelFaceNormal = evPlane(context, { "face" : smFace }).normal;
+            if (dot(partFaceNormal, smModelFaceNormal) > 0)
+            {
+                operationInfo.alignedSMFaces = append(operationInfo.alignedSMFaces, smFace);
+            }
+            else
+            {
+                operationInfo.antiAlignedSMFaces = append(operationInfo.antiAlignedSMFaces, smFace);
+            }
+            operationInfo.sheetMetalModels = append(operationInfo.sheetMetalModels, qOwnerBody(smFace));
+        }
+        operationInfo = createEdgeLimitOption(context, definition, smEntity, evaluatedFace, operationInfo);
+    }
+    operationInfo.sheetMetalModels = qUnion(evaluateQuery(context, qUnion(operationInfo.sheetMetalModels)));
+    operationInfo.modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces, operationInfo.edgesToExtend])), EntityType.FACE);
+
+    return operationInfo;
+}
+
 const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Context, id is Id, definition)
     {
-        var smEdgePartFacePairs = [];
-        var alignedSMFaces = [];
-        var antiAlignedSMFaces = [];
-        var smEdges = [];
-        var sheetMetalModels = [];
-        for (var evaluatedFace in evaluateQuery(context, definition.moveFaces))
-        {
-            const smEntity = qUnion(getSMDefinitionEntities(context, evaluatedFace));
-            const smFace = qEntityFilter(smEntity, EntityType.FACE);
-            const smEdge = qEntityFilter(smEntity, EntityType.EDGE);
-            if (size(evaluateQuery(context, smFace)) == 1)
-            {
-                const partFaceNormal = evPlane(context, { "face" : evaluatedFace }).normal;
-                const smModelFaceNormal = evPlane(context, { "face" : smFace }).normal;
-                if (dot(partFaceNormal, smModelFaceNormal) > 0)
-                {
-                    alignedSMFaces = append(alignedSMFaces, smFace);
-                }
-                else
-                {
-                    antiAlignedSMFaces = append(antiAlignedSMFaces, smFace);
-                }
-                sheetMetalModels = append(sheetMetalModels, qOwnerBody(smFace));
-            }
-            else if (size(evaluateQuery(context, smEdge)) == 1)
-            {
-                smEdgePartFacePairs = append(smEdgePartFacePairs, { "edge" : smEdge, "limitEntity" : evaluatedFace });
-                sheetMetalModels = append(sheetMetalModels, qOwnerBody(smEdge));
-                smEdges = append(smEdges, smEdge);
-            }
-        }
-        sheetMetalModels = qUnion(evaluateQuery(context, qUnion(sheetMetalModels)));
-        const modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([smEdges, alignedSMFaces, antiAlignedSMFaces])), EntityType.FACE);
+        const operationInfo = createToolBodies(context, definition.moveFaces, definition);
 
-        const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModels));
+        // Find the faces that will be modified by deripping that haven't otherwise been moved and make sure they stay in place.
+        var amendedFaces = qSubtraction(qUnion(operationInfo.derippedFaces), definition.moveFaces);
+        var copiedDefinition = definition;
+        copiedDefinition.moveFaceType = MoveFaceType.OFFSET;
+        copiedDefinition.offsetDistance = 0 * meter;
+        const derippingOperationInfo = createToolBodies(context, amendedFaces, copiedDefinition);
+
+        const originalEntities = evaluateQuery(context, qOwnedByBody(operationInfo.sheetMetalModels));
         const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qOwnedByBody(sheetMetalModels),
+                    "entities" : qOwnedByBody(operationInfo.sheetMetalModels),
                     "attributePattern" : {} as SMAssociationAttribute });
 
-        if (size(smEdgePartFacePairs) > 0)
+        const edgeLimitOptions = concatenateArrays([derippingOperationInfo.edgeLimitOptions, operationInfo.edgeLimitOptions]);
+        const modifiedFaces = operationInfo.modifiedFaces;
+        const smEdges = operationInfo.edgesToExtend;
+        const trackingSMModel = startTracking(context, operationInfo.sheetMetalModels);
+        if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
-            opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "offset" : definition.offsetDistance, "edgeLimitOptions" : smEdgePartFacePairs });
+            const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
+            if (size(evaluateQuery(context, allFaces)) > 0)
+            {
+                opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : false }));
+            }
+            if (definition.moveFaceType == MoveFaceType.ROTATE)
+            {
+                updateJointAngle(context, qEdgeAdjacent(allFaces, EntityType.EDGE));
+            }
         }
-        if (size(alignedSMFaces) > 0)
+        else
         {
-            opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(alignedSMFaces), "offsetDistance" : definition.offsetDistance });
+            if (size(operationInfo.alignedSMFaces) > 0)
+            {
+                opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(operationInfo.alignedSMFaces), "offsetDistance" : definition.offsetDistance, "mergeFaces" : false });
+            }
+            if (size(operationInfo.antiAlignedSMFaces) > 0)
+            {
+                opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(operationInfo.antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : false });
+            }
         }
-        if (size(antiAlignedSMFaces) > 0)
+        if (size(edgeLimitOptions) > 0)
         {
-            opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance });
+            var modifiedEdges = startTracking(context, qUnion(smEdges));
+            opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "edgeLimitOptions" : edgeLimitOptions });
+            for (var edge in evaluateQuery(context, modifiedEdges))
+            {
+               const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+               if (size(adjacentFaces) != 1)
+               {
+                   throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
+               }
+            }
         }
-
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalModels,
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]),
                 originalEntities, initialAssociationAttributes);
+
 
         updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
                     "deletedAttributes" : toUpdate.deletedAttributes });
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
     }, {});
 
 // Manipulator functions

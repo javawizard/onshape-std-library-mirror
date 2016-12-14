@@ -51,7 +51,7 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 
 /**
  * Return an enlarged bounding box.
- * @param bBox
+ * @param bBox {Box3d}
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
  *     each face of the box.  The corners move `sqrt(3)` times as far.
  * @param factor {number} : The relative amount to expand the box, with
@@ -70,5 +70,30 @@ precondition
     return box3d(midPoint - absoluteIncrement - halfDiagonal * (1 + factor),
                  midPoint + absoluteIncrement + halfDiagonal * (1 + factor));
 
+}
+
+/**
+ * Return the center of the bounding box.
+ * @param bBox {Box3d}
+ */
+ export function box3dCenter(bBox is Box3d) returns Vector
+ {
+    return ((bBox.maxCorner + bBox.minCorner) / 2);
+ }
+
+/**
+ * Whether the specified point is within the bounding box.
+ * @param point {Vector}
+ * @param bBox {Box3d}
+ */
+export predicate insideBox3d(point is Vector, bBox is Box3d)
+{
+    is3dLengthVector(point);
+
+    for (var dim in [0, 1, 2])
+    {
+        point[dim] > bBox.minCorner[dim] || tolerantEquals(point[dim], bBox.minCorner[dim]);
+        point[dim] < bBox.maxCorner[dim] || tolerantEquals(point[dim], bBox.maxCorner[dim]);
+    }
 }
 

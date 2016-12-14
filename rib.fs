@@ -10,6 +10,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
@@ -27,11 +28,6 @@ export enum RibExtrusionDirection
     PARALLEL_TO_SKETCH_PLANE,
     annotation { "Name" : "Normal to sketch plane" }
     NORMAL_TO_SKETCH_PLANE
-}
-
-function isClosed(context is Context, edge is Query) returns boolean
-{
-    return size(evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX))) < 2;
 }
 
 /**

@@ -66,7 +66,7 @@ precondition
 function findCenter(context is Context, id is Id, entities is Query) returns Vector
 {
     const boxResult = evBox3d(context, { topology : entities, 'tight' : false });
-    return (boxResult.minCorner + boxResult.maxCorner) / 2;
+    return box3dCenter(boxResult);
 }
 
 function reportCoincident(context is Context, id is Id, distance is Vector)

@@ -24,7 +24,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
                      "MaxNumberOfPicks" : 1 }
         definition.neutralPlane is Query;
 
-        annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+        annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.draftFaces is Query;
 
         annotation { "Name" : "Draft angle" }

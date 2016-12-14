@@ -2637,24 +2637,15 @@ const ISO_TappedHoleTable = {
         "M3" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.60 mm",
+            "default" : "0.50 mm",
             "entries" : {
                 "0.50 mm" : {
                     "name" : "engagement",
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "2.7 * millimeter", "tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "2.7 * millimeter", "tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "2.5 * millimeter", "tapDrillDiameter" : "2.5 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"}
-                    }
-                },
-                "0.60 mm" : {
-                    "name" : "engagement",
-                    "displayName" : "% diametric engagement",
-                    "default" : "75%",
-                    "entries" : {
-                        "25%" : {"holeDiameter" : "2.6 * millimeter", "tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"},
-                        "75%" : {"holeDiameter" : "2.4 * millimeter", "tapDrillDiameter" : "2.4 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
             }
@@ -2662,24 +2653,15 @@ const ISO_TappedHoleTable = {
         "M4" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.75 mm",
+            "default" : "0.70 mm",
             "entries" : {
                 "0.70 mm" : {
                     "name" : "engagement",
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "3.5 * millimeter", "tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "3.5 * millimeter", "tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "3.3 * millimeter", "tapDrillDiameter" : "3.3 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"}
-                    }
-                },
-                "0.75 mm" : {
-                    "name" : "engagement",
-                    "displayName" : "% diametric engagement",
-                    "default" : "75%",
-                    "entries" : {
-                        "25%" : {"holeDiameter" : "3.5 * millimeter", "tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"},
-                        "75%" : {"holeDiameter" : "3.2 * millimeter", "tapDrillDiameter" : "3.2 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
             }
@@ -2689,31 +2671,22 @@ const ISO_TappedHoleTable = {
             "displayName" : "Pitch",
             "default" : "0.80 mm",
             "entries" : {
+                "0.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "50%" : {"holeDiameter" : "4.7 * millimeter", "tapDrillDiameter" : "4.7 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "75%" : {"holeDiameter" : "4.5 * millimeter", "tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"}
+                    }
+                },
                 "0.80 mm" : {
                     "name" : "engagement",
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "4.5 * millimeter", "tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "4.5 * millimeter", "tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "4.2 * millimeter", "tapDrillDiameter" : "4.2 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"}
-                    }
-                },
-                "0.90 mm" : {
-                    "name" : "engagement",
-                    "displayName" : "% diametric engagement",
-                    "default" : "75%",
-                    "entries" : {
-                        "25%" : {"holeDiameter" : "4.4 * millimeter", "tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
-                        "75%" : {"holeDiameter" : "4.1 * millimeter", "tapDrillDiameter" : "4.1 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"}
-                    }
-                },
-                "1.00 mm" : {
-                    "name" : "engagement",
-                    "displayName" : "% diametric engagement",
-                    "default" : "75%",
-                    "entries" : {
-                        "25%" : {"holeDiameter" : "4.4 * millimeter", "tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"},
-                        "75%" : {"holeDiameter" : "4 * millimeter", "tapDrillDiameter" : "4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
             }
@@ -2728,7 +2701,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "5.5 * millimeter", "tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "5.5 * millimeter", "tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "5.25 * millimeter", "tapDrillDiameter" : "5.25 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2737,7 +2710,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "5.4 * millimeter", "tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "5.4 * millimeter", "tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "5 * millimeter", "tapDrillDiameter" : "5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2753,7 +2726,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "7.4 * millimeter", "tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "7.4 * millimeter", "tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "7 * millimeter", "tapDrillDiameter" : "7 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2762,7 +2735,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "7.2 * millimeter", "tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "7.2 * millimeter", "tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "6.8 * millimeter", "tapDrillDiameter" : "6.8 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2778,7 +2751,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "9.4 * millimeter", "tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "9.4 * millimeter", "tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "9 * millimeter", "tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2787,7 +2760,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "9.2 * millimeter", "tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "9.2 * millimeter", "tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "8.8 * millimeter", "tapDrillDiameter" : "8.8 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2796,7 +2769,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "9 * millimeter", "tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "9 * millimeter", "tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "8.5 * millimeter", "tapDrillDiameter" : "8.5 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2812,7 +2785,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "10.8 * millimeter", "tapDrillDiameter" : "10.8 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2821,7 +2794,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "11 * millimeter", "tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "11 * millimeter", "tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "10.5 * millimeter", "tapDrillDiameter" : "10.5 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2830,7 +2803,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "11.2 * millimeter", "tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "10.3 * millimeter", "tapDrillDiameter" : "10.3 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2846,7 +2819,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "13.2 * millimeter", "tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "13.2 * millimeter", "tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "12.8 * millimeter", "tapDrillDiameter" : "12.8 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2855,7 +2828,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "13 * millimeter", "tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "13 * millimeter", "tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "12.5 * millimeter", "tapDrillDiameter" : "12.5 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2864,7 +2837,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "12.7 * millimeter", "tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "12.7 * millimeter", "tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "12.1 * millimeter", "tapDrillDiameter" : "12.1 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2880,7 +2853,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "15 * millimeter", "tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "15 * millimeter", "tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "14.5 * millimeter", "tapDrillDiameter" : "14.5 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2889,7 +2862,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "14.75 * millimeter", "tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "14.75 * millimeter", "tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "14 * millimeter", "tapDrillDiameter" : "14 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2905,7 +2878,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "19 * millimeter", "tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "19 * millimeter", "tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2914,7 +2887,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "18 * millimeter", "tapDrillDiameter" : "18 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 },
@@ -2923,7 +2896,7 @@ const ISO_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "25%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
+                        "50%" : {"holeDiameter" : "18.5 * millimeter", "tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"},
                         "75%" : {"holeDiameter" : "17.5 * millimeter", "tapDrillDiameter" : "17.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "cSinkAngle" : "90 * degree"}
                     }
                 }
@@ -2940,7 +2913,7 @@ const ISO_ThroughTappedScrewTable = {
         "M3" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.60 mm",
+            "default" : "0.50 mm",
             "entries" : {
                 "0.50 mm" : {
                     "name" : "fit",
@@ -2952,7 +2925,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "2.5 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -2961,33 +2934,8 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "2.7 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "2.5 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        }
-                    }
-                },
-                "0.60 mm" : {
-                    "name" : "fit",
-                    "displayName" : "Fit",
-                    "default" : "Standard",
-                    "entries" : {
-                        "Close" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "2.4 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.15 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        },
-                        "Standard" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "2.6 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "2.4 * millimeter", "cBoreDiameter" : "6.5 * millimeter", "cBoreDepth" : "3 * millimeter", "cSinkDiameter" : "6.72 * millimeter", "holeDiameter" : "3.3 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
                     }
@@ -2997,7 +2945,7 @@ const ISO_ThroughTappedScrewTable = {
         "M4" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.75 mm",
+            "default" : "0.70 mm",
             "entries" : {
                 "0.70 mm" : {
                     "name" : "fit",
@@ -3009,7 +2957,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "3.3 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3018,33 +2966,8 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "3.3 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        }
-                    }
-                },
-                "0.75 mm" : {
-                    "name" : "fit",
-                    "displayName" : "Fit",
-                    "default" : "Standard",
-                    "entries" : {
-                        "Close" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "3.2 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.2 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        },
-                        "Standard" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "3.5 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "3.2 * millimeter", "cBoreDiameter" : "8.25 * millimeter", "cBoreDepth" : "4 * millimeter", "cSinkDiameter" : "8.96 * millimeter", "holeDiameter" : "4.4 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
                     }
@@ -3056,6 +2979,31 @@ const ISO_ThroughTappedScrewTable = {
             "displayName" : "Pitch",
             "default" : "0.80 mm",
             "entries" : {
+                "0.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Standard",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.7 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "75%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"}
+                            }
+                        },
+                        "Standard" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.7 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "75%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"}
+                            }
+                        }
+                    }
+                },
                 "0.80 mm" : {
                     "name" : "fit",
                     "displayName" : "Fit",
@@ -3066,7 +3014,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "4.2 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3075,58 +3023,8 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "4.5 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "4.2 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        }
-                    }
-                },
-                "0.90 mm" : {
-                    "name" : "fit",
-                    "displayName" : "Fit",
-                    "default" : "Standard",
-                    "entries" : {
-                        "Close" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "4.1 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        },
-                        "Standard" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "4.1 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        }
-                    }
-                },
-                "1.00 mm" : {
-                    "name" : "fit",
-                    "displayName" : "Fit",
-                    "default" : "Standard",
-                    "entries" : {
-                        "Close" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.25 * millimeter", "cSinkAngle" : "90 * degree"}
-                            }
-                        },
-                        "Standard" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "25%" : {"tapDrillDiameter" : "4.4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"},
-                                "75%" : {"tapDrillDiameter" : "4 * millimeter", "cBoreDiameter" : "9.75 * millimeter", "cBoreDepth" : "5 * millimeter", "cSinkDiameter" : "11.2 * millimeter", "holeDiameter" : "5.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
                     }
@@ -3148,7 +3046,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "5.25 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3157,7 +3055,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "5.5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "5.25 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3173,7 +3071,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.3 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3182,7 +3080,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "5.4 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "5 * millimeter", "cBoreDiameter" : "11.25 * millimeter", "cBoreDepth" : "6 * millimeter", "cSinkDiameter" : "13.44 * millimeter", "holeDiameter" : "6.6 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3205,7 +3103,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "7 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3214,7 +3112,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "7.4 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "7 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3230,7 +3128,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "6.8 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.4 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3239,7 +3137,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "7.2 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "6.8 * millimeter", "cBoreDiameter" : "14.25 * millimeter", "cBoreDepth" : "8 * millimeter", "cSinkDiameter" : "17.92 * millimeter", "holeDiameter" : "8.8 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3262,7 +3160,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3271,7 +3169,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9.4 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3287,7 +3185,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "8.8 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3296,7 +3194,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9.2 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "8.8 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3312,7 +3210,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "8.5 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "10.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3321,7 +3219,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "9 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "8.5 * millimeter", "cBoreDiameter" : "17.25 * millimeter", "cBoreDepth" : "10 * millimeter", "cSinkDiameter" : "22.4 * millimeter", "holeDiameter" : "11 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3344,7 +3242,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.8 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3353,7 +3251,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.8 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3369,7 +3267,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.5 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3378,7 +3276,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.5 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3394,7 +3292,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.3 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "12.6 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3403,7 +3301,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "11.2 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "10.3 * millimeter", "cBoreDiameter" : "19.25 * millimeter", "cBoreDepth" : "12 * millimeter", "cSinkDiameter" : "26.88 * millimeter", "holeDiameter" : "13.2 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3426,7 +3324,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.8 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3435,7 +3333,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "13.2 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.8 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3451,7 +3349,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.5 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3460,7 +3358,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "13 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.5 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3476,7 +3374,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.1 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "14.75 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3485,7 +3383,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "12.7 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "12.1 * millimeter", "cBoreDiameter" : "22.25 * millimeter", "cBoreDepth" : "14 * millimeter", "cSinkDiameter" : "30.8 * millimeter", "holeDiameter" : "15.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3508,7 +3406,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "14.5 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3517,7 +3415,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "15 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "14.5 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3533,7 +3431,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "14 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "16.75 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3542,7 +3440,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "14.75 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "14 * millimeter", "cBoreDiameter" : "25.5 * millimeter", "cBoreDepth" : "16 * millimeter", "cSinkDiameter" : "33.6 * millimeter", "holeDiameter" : "17.5 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3565,7 +3463,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3574,7 +3472,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "19 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3590,7 +3488,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "18 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3599,7 +3497,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "18 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }
@@ -3615,7 +3513,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "17.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "21 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         },
@@ -3624,7 +3522,7 @@ const ISO_ThroughTappedScrewTable = {
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "25%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
+                                "50%" : {"tapDrillDiameter" : "18.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"},
                                 "75%" : {"tapDrillDiameter" : "17.5 * millimeter", "cBoreDiameter" : "31.5 * millimeter", "cBoreDepth" : "20 * millimeter", "cSinkDiameter" : "42 * millimeter", "holeDiameter" : "22 * millimeter", "cSinkAngle" : "90 * degree"}
                             }
                         }

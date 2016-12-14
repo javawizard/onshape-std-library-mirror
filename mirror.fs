@@ -20,7 +20,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 
 /**
  * Feature creating a single copy of some features, bodies, or faces, mirrored
- * about a given entity. Internally, performs an `applyPattern`, which in turn
+ * about a given entity. Internally, performs an [applyPattern], which in turn
  * performs an [opPattern] or, for a feature mirror, calls the feature
  * function.
  */
@@ -42,7 +42,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
         else if (definition.patternType == MirrorType.FACE)
         {
-            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == MirrorType.FEATURE)

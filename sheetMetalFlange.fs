@@ -75,17 +75,19 @@ const SURFACE_SUFFIX = "surface";
 * @internal
 *  This feature produces a sheet metal flange
 */
-annotation { "Feature Type Name" : "Flange", "Editing Logic Function" : "flangeEditLogic" }
-export const smFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+annotation { "Feature Type Name" : "Flange",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "flangeEditLogic" }
+export const sheetMetalFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
     annotation { "Name" : "Edges to flange", "Filter" : (EntityType.EDGE && GeometryType.LINE && SketchObject.NO) && BodyType.SOLID && AllowFlattenedGeometry.YES}
     definition.edges is Query;
 
-    annotation {"Name" : "Flange alignment"}
+    annotation {"Name" : "Flange alignment", "UIHint" : "SHOW_LABEL"}
     definition.flangeAlignment is SMFlangeAlignment;
 
-    annotation { "Name" : "End type" }
+    annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
     definition.limitType is SMFlangeBoundingType;
 
     if (definition.limitType == SMFlangeBoundingType.BLIND)
@@ -130,6 +132,9 @@ precondition
     definition.oppositeDirection is boolean;
 }
 {
+    //this is not necessary but helps with corrrect error reporting in feature pattern
+    checkNotInFeaturePattern(context, definition.edges);
+
     var edges = qUnion(getSMDefinitionEntities(context, definition.edges));
     var evaluatedEdgeQuery = evaluateQuery(context, edges);
     if (size(evaluatedEdgeQuery) == 0)
@@ -138,7 +143,7 @@ precondition
     }
 
     var modelToEdgeMap = getModelToEdgeMap(context, evaluatedEdgeQuery);
-    if (size(modelToEdgeMap)  > 1 && definition.useDefaultRadius)
+    if (size(modelToEdgeMap) > 1 && definition.useDefaultRadius)
         throw regenError(ErrorStringEnum.SHEET_METAL_MULTI_SM_DEFAULT_RADIUS, ["useDefaultRadius"]);
     if (definition.oppositeOffsetDirection)
         definition.offset *= -1;
@@ -362,7 +367,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id,  o
         var attributes = getAttributes(context, {"entities" : entity, "attributePattern" : asSMAttribute({})});
         if (size(attributes) == 0 && edgeIsTwoSided(context, entity))
         {
-            addRipAttribute(context, entity, topLevelId, objectCounter);
+            addRipAttribute(context, entity, toAttributeId(topLevelId + objectCounter), SMJointStyle.EDGE, undefined);
             objectCounter += 1;
         }
     }
@@ -426,7 +431,6 @@ function changeUnderlyingSheetForAlignment(context is Context, id is Id, definit
         var extendIndexedId = id + "extend" + unstableIdComponent(index);
         opExtendSheetBody(context, extendIndexedId, {
                     "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
-                    "offset" : 0 * inch,
                     "entities" : updatedEdge,
                     "limitEntity" : plane(origin, planeNormal)
         });
@@ -866,35 +870,13 @@ function addBendAttribute(context is Context, edge is Query, topLevelId is Id, i
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
     bendAttribute.radius = {
         "value" : definition.bendRadius,
-        "controllingFeatureId" : toAttributeId(topLevelId),
-        "parameterIdInFeature" : "bendRadius",
         "canBeEdited" : true
     };
     bendAttribute.angle = {
         "value" : definition.bendAngle,
-        "controllingFeatureId" : toAttributeId(topLevelId),
-        "parameterIdInFeature" : "bendAngle",
         "canBeEdited" : true
     };
     setAttribute(context, {"entities" : edge, "attribute" : bendAttribute});
-}
-
-function addRipAttribute(context is Context, edge is Query, topLevelId is Id, index is number)
-{
-    var ripAttribute = makeSMJointAttribute(toAttributeId(topLevelId + index));
-    ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
-    ripAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited": true };
-
-    //TODO :  re-examine once rip styling is in, and check whether we need to change anything for flange rips.
-    var angle = try(edgeAngle(context, edge));
-    if (angle != undefined)
-    {
-        ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
-        if (abs(angle) < TOLERANCE.zeroAngle * degree)
-            ripAttribute.jointStyle = { "value" : SMJointStyle.FLAT, "canBeEdited": false };
-    }
-
-    setAttribute(context, {"entities" : edge, "attribute" : ripAttribute});
 }
 
 function createSketchPlane(context is Context, edgeLine is Line, sidePlaneNormal is Vector, definition is map) returns Plane

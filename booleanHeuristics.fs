@@ -17,6 +17,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/primitives.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 
 /** @internal */
@@ -84,8 +85,7 @@ export function canSetBooleanFlip (oldDefinition is map, definition is map, spec
     return existingTypeIsNegative != newTypeIsNegative;
 }
 
-//TODO - make excludeBodies Query in rel-1.42
-function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, featureDefinition is map, excludeBodies)
+function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, featureDefinition is map, excludeBodies is Query)
 {
     const toolQ = qBodyType(qCreatedBy(toolFeatureId, EntityType.BODY), BodyType.SOLID);
     var excludeQ;
@@ -127,7 +127,14 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         // classifyCollisions filters out abutting along edge, so we might come empty here
         if (target != undefined)
         {
-            return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            if (queryContainsActiveSheetMetal(context, target))
+            {
+                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
+            }
+            else
+            {
+                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            }
         }
     }
     // No collisions, use NEW
