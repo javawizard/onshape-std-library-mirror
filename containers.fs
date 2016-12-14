@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,7 @@ FeatureScript 455; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "455.0");
+import(path : "onshape/std/math.fs", version : "464.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -294,5 +294,38 @@ export function filter(entities is array, filterFunction is function)
         }
     }
     return result;
+}
+
+/**
+ * Returns the keys in the supplied map in map iteration order.
+ *
+ *
+ * @example `keys({ "a" : 1, "c" : 2, "b" : 3 })`
+ *          returns `["a", "b", "c"]`
+ */
+export function keys(container is map) returns array
+{
+    var arr = [];
+    for (var entry in container)
+    {
+        arr = append(arr, entry.key);
+    }
+    return arr;
+}
+
+/**
+ * Returns the values in the supplied map ordered by the map iteration ordering of their associated keys.
+ *
+ * @example `keys({ "a" : 1, "c" : 2, "b" : 3 })`
+ *          returns `[1, 3, 2]`
+ */
+export function values(container is map) returns array
+{
+    var arr = [];
+    for (var entry in container)
+    {
+        arr = append(arr, entry.value);
+    }
+    return arr;
 }
 

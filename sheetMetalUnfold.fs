@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,22 +9,22 @@ FeatureScript 455; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "455.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "464.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "455.0");
-import(path : "onshape/std/attributes.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
 
 /**
  * @internal
  */
 
 annotation { "Feature Type Name" : "Unfold" }
-export const smUnfold = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+export const sheetMetalUnfold = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Parts or bends",
@@ -41,7 +41,7 @@ export const smUnfold = defineSheetMetalFeature(function(context is Context, id 
  */
 
 annotation { "Feature Type Name" : "Refold" }
-export const smRefold = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+export const sheetMetalRefold = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Parts or bends",
@@ -53,7 +53,7 @@ export const smRefold = defineSheetMetalFeature(function(context is Context, id 
         annotateBendsForUnfold(context, id, definition.toRefold, false);
     }, {});
 
-function  annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is Query, setUnfolded is boolean)
+function annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is Query, setUnfolded is boolean)
 {
     if (!areEntitiesFromSingleActiveSheetMetalModel(context, bodiesOrBends))
     {
@@ -79,7 +79,7 @@ function  annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is 
         jointEntities = append(jointEntities, smEntity);
         var newAttribute = attributes[0];
         newAttribute.unfolded = setUnfolded;
-        replaceSMAttribute(context, smEntity, attributes[0], newAttribute);
+        replaceSMAttribute(context, attributes[0], newAttribute);
     }
     if (countNonBendSelections > 0)
     {
@@ -100,7 +100,7 @@ function  annotateBendsForUnfold(context is Context, id is Id, bodiesOrBends is 
         jointEntities = append(jointEntities, smEntity);
         var newAttribute = attributes[0];
         newAttribute.unfolded = setUnfolded;
-        replaceSMAttribute(context, smEntity, attributes[0], newAttribute);
+        replaceSMAttribute(context, attributes[0], newAttribute);
     }
     updateSheetMetalGeometry(context, id, { "entities" : qUnion(jointEntities) });
 }

@@ -6,14 +6,22 @@ FeatureScript 464; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies how a mate connector origin is defined, and how many entities define it.
+ * @internal.
  */
-export enum OriginCreationType
+export enum SMCornerStyle
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    annotation {"Name" : "Square"}
+    SQUARE,
+    annotation {"Name" : "Round"}
+    ROUND,
+    annotation {"Name" : "Tear"}
+    TEAR,
+    annotation {"Name" : "Arc"}
+    ARC,
+    annotation {"Name" : "Obround"}
+    OBROUND,
+    annotation {"Name" : "Simple"}
+    SIMPLE
 }
 
 

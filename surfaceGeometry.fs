@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 455; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "455.0");
-import(path : "onshape/std/coordSystem.fs", version : "455.0");
-import(path : "onshape/std/curveGeometry.fs", version : "455.0");
-import(path : "onshape/std/mathUtils.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
-import(path : "onshape/std/units.fs", version : "455.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "455.0");
+import(path : "onshape/std/context.fs", version : "464.0");
+import(path : "onshape/std/coordSystem.fs", version : "464.0");
+import(path : "onshape/std/curveGeometry.fs", version : "464.0");
+import(path : "onshape/std/mathUtils.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
+import(path : "onshape/std/units.fs", version : "464.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "464.0");
 
 //===================================== Plane ======================================
 
@@ -148,6 +148,24 @@ precondition
 }
 {
     return point + plane.normal * dot(plane.normal, plane.origin - point);
+}
+
+/**
+ * Projects a [Line] onto a [Plane], returning a [Line] whose origin is
+ * on the [Plane] and whose direction is a normalized [Vector] on the [Plane]
+ *
+ * Throws an error if the [Line] is in the same direction as the normal of the [Plane]
+ */
+export function project(plane is Plane, line is Line) returns Line
+precondition
+{
+    !parallelVectors(plane.normal, line.direction);
+}
+{
+    var origin = project(plane, line.origin);
+    var direction = normalize(line.direction - project(plane.normal, line.direction));
+
+    return { "origin" : origin, "direction" : direction } as Line;
 }
 
 export operator*(transform is Transform, planeRhs is Plane) returns Plane

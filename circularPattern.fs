@@ -1,20 +1,20 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
-export import(path : "onshape/std/patternUtils.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
+export import(path : "onshape/std/patternUtils.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "455.0");
-import(path : "onshape/std/math.fs", version : "455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "464.0");
+import(path : "onshape/std/math.fs", version : "464.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
- * an `applyPattern`, which in turn performs an [opPattern] or, for a feature
+ * an [applyPattern], which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allparts" }
@@ -59,6 +59,9 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         annotation { "Name" : "Equal spacing", "Default" : true }
         definition.equalSpace is boolean;
 
+        annotation { "Name" : "Centered"}
+        definition.isCentered is boolean;
+
         if (definition.patternType == PatternType.PART)
         {
             booleanStepScopePredicate(definition);
@@ -97,11 +100,16 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = angle / instCt; //with error check above, no chance of instCt < 1
         }
 
-        for (var i = 1; i < definition.instanceCount; i += 1)
+        // If centered, create (instanceCount - 1) number of new instances on either side of the seed.
+        var startIndex = definition.isCentered ? 1 - definition.instanceCount : 0;
+        for (var i = startIndex; i < definition.instanceCount; i += 1)
         {
-            var instanceTransform = rotationAround(direction, i * angle);
-            transforms = append(transforms, instanceTransform);
-            instanceNames = append(instanceNames, "" ~ i);
+            if (i != 0)
+            {
+                var instanceTransform = rotationAround(direction, i * angle);
+                transforms = append(transforms, instanceTransform);
+                instanceNames = append(instanceNames, "" ~ i);
+            }
         }
 
         definition.transforms = transforms;
@@ -110,5 +118,5 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         oppositeDirection : false, equalSpace : false });
+         oppositeDirection : false, equalSpace : false, isCentered : false });
 

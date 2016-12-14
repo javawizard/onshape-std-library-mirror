@@ -1,16 +1,17 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/tool.fs", version : "455.0");
-import(path : "onshape/std/transform.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/tool.fs", version : "464.0");
+import(path : "onshape/std/transform.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -65,6 +66,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
             recordParameters(otherContext, id, definition);
+            // remove sheet metal attributes and helper bodies
+            clearSheetMetalData(otherContext, id + "sheetMetal");
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -74,8 +77,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
+            const allBodies = qEverything(EntityType.BODY);
+            const allSMFlatBodies = qCorrespondingInFlat(qBodyType(allBodies, BodyType.SOLID));
+
             const deleteDefinition = {
-                "entities" : qSubtraction(qEverything(EntityType.BODY), bodiesToKeep)
+                "entities" : qSubtraction(qUnion([allBodies, allSMFlatBodies]) , bodiesToKeep)
             };
             opDeleteBodies(otherContext, id + "delete", deleteDefinition);
 

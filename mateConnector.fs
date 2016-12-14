@@ -1,21 +1,21 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "455.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "455.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "464.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "464.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/tool.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/tool.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
 
 /**
  * @internal
@@ -138,7 +138,8 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.ownerPart != undefined)
         {
-            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH) && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
+            // The mate connector owner part should be the one in the part list, thus it should be modifiable
+            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
             definition.ownerPart is Query;
         }
 

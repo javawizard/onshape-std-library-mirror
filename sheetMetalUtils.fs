@@ -1,158 +1,36 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "455.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "455.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/coordSystem.fs", version : "455.0");
-import(path : "onshape/std/curveGeometry.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/math.fs", version : "455.0");
-import(path : "onshape/std/manipulator.fs", version : "455.0");
-import(path : "onshape/std/query.fs", version : "455.0");
-import(path : "onshape/std/sketch.fs", version : "455.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
-import(path : "onshape/std/tool.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
-import(path : "onshape/std/vector.fs", version : "455.0");
-import(path : "onshape/std/topologyUtils.fs", version : "455.0");
+import(path : "onshape/std/attributes.fs", version : "464.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "464.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/coordSystem.fs", version : "464.0");
+import(path : "onshape/std/curveGeometry.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/math.fs", version : "464.0");
+import(path : "onshape/std/manipulator.fs", version : "464.0");
+import(path : "onshape/std/query.fs", version : "464.0");
+import(path : "onshape/std/sketch.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
+import(path : "onshape/std/tool.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
+import(path : "onshape/std/vector.fs", version : "464.0");
+import(path : "onshape/std/topologyUtils.fs", version : "464.0");
+import(path : "onshape/std/transform.fs", version : "464.0");
+
 
 /*
  ******************************************
  * Under development, not for general use!!
  ******************************************
  */
-
-
-/**
- * @internal
- */
-export enum ToleranceLevel
-{
-    annotation { "Name" : "Very tight" }
-    VERY_TIGHT,
-    annotation { "Name" : "Tight" }
-    TIGHT,
-    annotation { "Name" : "Medium" }
-    MEDIUM,
-    annotation { "Name" : "Loose" }
-    LOOSE
-}
-
-/**
- * @internal
- */
-export function getEdgeCSys(context is Context, edge is Query) returns CoordSystem
-{
-    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-    if (size(faces) != 2)
-        throw regenError("Bad edge");
-    var offsetData = findOffsetEdgeData(context, edge);
-
-    var topPlane = evPlane(context, {
-            "face" : offsetData.topFace
-    });
-
-    var sidePlane = evPlane(context, {
-            "face" : offsetData.sideFace
-    });
-
-    var edgeLine = evEdgeTangentLine(context, {
-            "edge" : edge,
-            "parameter" : 0.5
-    });
-
-    var normal = cross(sidePlane.normal, edgeLine.direction);
-    if (dot(normal, topPlane.normal) < 0)
-    {
-        edgeLine.direction = -edgeLine.direction;
-    }
-    return coordSystem(edgeLine.origin, edgeLine.direction, topPlane.normal);
-}
-
-/**
- * @internal
- */
-// TODO BRT - Change this to use sheet metal attributes instead of geometry.
-export function findOffsetEdgeData(context is Context, edge is Query) returns map
-{
-    const BIG_NUMBER = 1.0e20 * meter;
-    var attr = getAttributes(context, {
-            "entities" : qOwnerBody(edge)
-    });
-    if (size(attr) != 1 || attr[0].thickness == undefined || attr[0].thickness.value == undefined)
-        throw regenError("Bad sheet metal attribute");
-    var offsetDistance = attr[0].thickness.value;
-    if (offsetDistance is number)
-        offsetDistance *= meter;
-    var edgeLine = evEdgeTangentLine(context, {
-            "edge" : edge,
-            "parameter" : 0.0
-    });
-    var edgeLength = evLength(context, {
-            "entities" : edge
-    });
-    var minDistance = BIG_NUMBER;
-    var offsetEdge;
-    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-    if (size(faces) != 2)
-        throw regenError("Could not find offset data");
-
-    var topFace;
-    var sideFace;
-    if (hasSheetMetalAttribute(context, faces[0], SMObjectType.WALL))
-    {
-        topFace = faces[0];
-        sideFace = faces[1];
-    }
-    else
-    {
-        topFace = faces[1];
-        sideFace = faces[0];
-    }
-    var edges = evaluateQuery(context, qEdgeAdjacent(sideFace, EntityType.EDGE));
-    for (var testEdge in edges)
-    {
-        if (testEdge == edge)
-            continue;
-        var testEdgeLine = evEdgeTangentLine(context, {
-                "edge" : testEdge,
-                "parameter" : 0.0
-        });
-        if (!tolerantParallel(edgeLine, testEdgeLine) || tolerantCoLinear(edgeLine, testEdgeLine))
-            continue;
-        var testEdgeLength = evLength(context, {
-                "entities" : testEdge
-        });
-        if (abs(testEdgeLength - edgeLength) > TOLERANCE.zeroLength * meter)
-            continue;
-        var v = testEdgeLine.origin - edgeLine.origin;
-        v = v - edgeLine.direction * dot(edgeLine.direction, v);
-        var distance = norm(v);
-        if (distance < minDistance)
-        {
-            minDistance = distance;
-            offsetEdge = testEdge;
-        }
-    }
-
-    if (minDistance == BIG_NUMBER)
-        throw regenError("Could not find offset edge");
-
-    return {
-        "offsetEdge" : offsetEdge,
-        "offsetDistance" : minDistance,
-        "sideFace" : sideFace,
-        "topFace" : topFace
-    };
-}
 
 /**
  * @internal
@@ -212,6 +90,8 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
 *       @field defaultRadius{ValueWithUnits} : bend radius to be applied to bendEdges
 *       @field controlsThickness{boolean}
 *       @field thickness{ValueWithUnits}
+*       @field defaultCornerReliefScale{number}
+*       @field defaultBendReliefScale{number}
 * }}
 */
 export function annotateSmSurfaceBodies(context is Context, id is Id, args is map, objectCount is number) returns number
@@ -238,13 +118,38 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         "controllingFeatureId" : featureIdString,
         "parameterIdInFeature" : "minimalClearance"
         };
+    var defaultCornerReliefScale = { "value" : args.defaultCornerReliefScale,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "defaultCornerReliefScale"
+        };
+    var defaultBendReliefScale = { "value" : args.defaultBendReliefScale,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "defaultBendReliefScale"
+        };
+
     var modelAttribute = asSMAttribute({"attributeId" : featureIdString,
                     "objectType" : SMObjectType.MODEL,
                     "active" : true,
                     "thickness" : thicknessData,
                     "k-factor" : kFactorData,
                     "minimalClearance" : minimalClearanceData,
-                    "defaultBendRadius" : {"value" : args.defaultRadius}});
+                    "defaultBendRadius" : {"value" : args.defaultRadius},
+                    "defaultCornerReliefScale" : defaultCornerReliefScale,
+                    "defaultBendReliefScale" : defaultBendReliefScale});
+    if (args.defaultTwoCornerStyle != undefined)
+    {
+        modelAttribute.defaultTwoCornerStyle = args.defaultTwoCornerStyle;
+    }
+    if (args.defaultThreeCornerStyle != undefined)
+    {
+        modelAttribute.defaultThreeCornerStyle = args.defaultThreeCornerStyle;
+    }
+    if (args.defaultBendReliefStyle != undefined)
+    {
+        modelAttribute.defaultBendReliefStyle = args.defaultBendReliefStyle;
+    }
 
     var facesQ =  qOwnedByBody(args.surfaceBodies, EntityType.FACE);
     var count = objectCount;
@@ -381,6 +286,39 @@ export function edgeAngle(context is Context, edge is Query) returns ValueWithUn
     return angleBetween(plane0.normal, plane1.normal);
 }
 
+/**
+ * @internal
+ */
+export function updateJointAngle(context is Context, edges is Query)
+{
+    for (var edge in evaluateQuery(context, edges))
+    {
+        const jointAttribute = try silent(getJointAttribute(context, edge));
+        if (jointAttribute == undefined || jointAttribute.angle == undefined)
+        {
+            continue;
+        }
+
+        var angleVal = try(edgeAngle(context, edge));
+        if (angleVal == jointAttribute.angle.value)
+        {
+            continue;
+        }
+
+        var replacementAttribute = jointAttribute;
+
+        if (tolerantEquals(angleVal, PI * radian))
+        {
+            replacementAttribute.jointStyle = { value : SMJointStyle.FLAT, canBeEdited : false };
+        }
+        else
+        {
+            replacementAttribute.jointStyle = { value : SMJointStyle.EDGE, canBeEdited : false };
+        }
+        replacementAttribute.angle = { "value" : angleVal, "canBeEdited" : jointAttribute.angle.canBeEdited };
+        replaceSMAttribute(context, jointAttribute, replacementAttribute);
+    }
+}
 
 /**
  * @internal
@@ -405,6 +343,37 @@ export const SM_MINIMAL_CLEARANCE_BOUNDS =
     (foot)       : 1e-4,
     (yard)       : 2e-5
 } as LengthBoundSpec;
+
+
+/**
+ * @internal
+ * A `LengthBoundSpec` for bend radius in sheet metal features
+ */
+export const SM_BEND_RADIUS_BOUNDS =
+{
+    (meter)      : [1e-5, 0.0023 , 500],
+    (centimeter) : 0.23,
+    (millimeter) : 2.3,
+    (inch)       : 0.09,
+    (foot)       : 0.0075,
+    (yard)       : 0.0025
+} as LengthBoundSpec;
+
+/**
+ * @internal
+ * A `LengthBoundSpec` for thickness in sheet metal features. default to `(1/16)"` (i.e. steel)
+ */
+export const SM_THICKNESS_BOUNDS =
+{
+    (meter)      : [1e-5, 0.0016, 500],
+    (centimeter) : 0.16,
+    (millimeter) : 1.6,
+    (inch)       : 0.0625,
+    (foot)       : 0.005,
+    (yard)       : 0.002
+} as LengthBoundSpec;
+
+
 
 /**
  * @internal
@@ -691,5 +660,92 @@ export function separateSheetMetalQueries(context is Context, id is Id, targets 
         }
     }
     return { "sheetMetalQueries" : sheetMetalQueries, "nonSheetMetalQueries" : nonSheetMetalQueries };
+}
+
+/**
+ * @internal
+ */
+export function checkNotInFeaturePattern(context is Context, references is Query)
+{
+    var remainingTransform = getRemainderPatternTransform(context, {"references" : references});
+    if (remainingTransform != identityTransform())
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
+    }
+}
+
+/**
+ * @internal
+ * Used in importDerived to strip sheet metal related data off the imported context
+ */
+export function clearSheetMetalData(context, id)
+{
+    var smModelsQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL}));
+    var smModelsEvaluated = evaluateQuery(context, smModelsQ);
+
+    if (size(smModelsEvaluated) == 0)
+        return;
+
+    var smModelsActiveQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL,
+                                                  active : true}));
+    var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+
+    // remove all SMAttributes
+    removeAttributes(context, {
+        "attributePattern" : asSMAttribute({})
+    });
+
+    // Deactivating active sheet metal models
+    if (size(smModelsActiveEvaluated) > 0)
+    {
+        updateSheetMetalGeometry(context, id, { "entities" : qUnion(smModelsActiveEvaluated) });
+    }
+
+    // remove all SMAssociationAttribute
+    removeAttributes(context, {
+        "attributePattern" : {} as SMAssociationAttribute
+    });
+
+    // Deleting all sheet bodies
+    opDeleteBodies(context, id + "deleteSheetBodies", {
+            "entities" : qUnion(smModelsEvaluated)
+    });
+}
+
+/**
+ * @internal
+ */
+ export function addRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
+{
+    var ripAttribute = makeSMJointAttribute(ripId);
+    ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
+    ripAttribute.jointStyle = { "value" : ripStyle, "canBeEdited": true };
+    var angle = try silent(edgeAngle(context, entity));
+    if (angle != undefined)
+    {
+        ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
+    }
+    if (angle == undefined || abs(angle) < TOLERANCE.zeroAngle * degree)
+        ripAttribute.jointStyle = { "value" : SMJointStyle.FLAT, "canBeEdited": false };
+
+    if (jointAttributes != undefined && jointAttributes.minimalClearance != undefined)
+    {
+        ripAttribute.minimalClearance = jointAttributes.minimalClearance;
+    }
+    setAttribute(context, {"entities" : entity, "attribute" : ripAttribute});
+}
+
+/**
+ * @internal
+ */
+export function findCornerDefinitionVertex(context is Context, entity is Query) returns Query
+{
+    var definitionEntities = qUnion(getSMDefinitionEntities(context, entity));
+    var sheetVertices = qEntityFilter(definitionEntities, EntityType.VERTEX);
+    if (size(evaluateQuery(context, sheetVertices)) != 1)
+    {
+        throw regenError("No corner found", entity);
+    }
+    return sheetVertices;
 }
 

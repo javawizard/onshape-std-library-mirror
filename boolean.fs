@@ -1,27 +1,27 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "455.0");
-import(path : "onshape/std/box.fs", version : "455.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "455.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/primitives.fs", version : "455.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
-import(path : "onshape/std/transform.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/attributes.fs", version : "464.0");
+import(path : "onshape/std/box.fs", version : "464.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/primitives.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
+import(path : "onshape/std/transform.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -433,9 +433,10 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 "attributePattern" : {} as SMAssociationAttribute});
 
                             definition.targets = sheetMetalModel;
+                            const trackingSMModel = startTracking(context, sheetMetalModel);
                             const modifiedFaces = performSheetMetalBoolean(context, id, definition);
 
-                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalModel,
+                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
                                     originalEntities, initialAssociationAttributes);
 
                             updateSheetMetalGeometry(context, id + "smUpdate", {

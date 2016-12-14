@@ -1,20 +1,20 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
-export import(path : "onshape/std/patternUtils.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
+export import(path : "onshape/std/patternUtils.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "455.0");
-import(path : "onshape/std/units.fs", version : "455.0");
+import(path : "onshape/std/mathUtils.fs", version : "464.0");
+import(path : "onshape/std/units.fs", version : "464.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
- * an `applyPattern`, which in turn performs an [opPattern] or, for a feature
+ * an [applyPattern], which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
  */
 annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allparts" }
@@ -58,6 +58,9 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
 
+        annotation { "Name" : "Centered"}
+        definition.isCentered is boolean;
+
         annotation { "Name" : "Second direction" }
         definition.hasSecondDir is boolean;
 
@@ -76,6 +79,9 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
             annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             definition.oppositeDirectionTwo is boolean;
+
+            annotation { "Name" : "Centered"}
+            definition.isCenteredTwo is boolean;
         }
         if (definition.patternType == PatternType.PART)
         {
@@ -137,15 +143,23 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         var instanceNames = [];
         const identity = identityMatrix(3);
         var instanceTransform = transform(identity, zeroVector(3) * meter);
-        for (var j = 0; j < count2; j += 1)
+
+        // If centered, create (count - 1) number of new instances on either side of the seed.
+        var startIndex1 = definition.isCentered ? 1 - count1 : 0;
+        var startIndex2 = definition.isCenteredTwo ? 1 - count2 : 0;
+
+        for (var j = startIndex2; j < count2; j += 1)
         {
             const instName = j == 0 ? "" : ("_" ~ j);
-            instanceTransform.translation = offset2 * j + offset1 * (j == 0 ? 1 : 0);
-            // skip recreating original
-            for (var i = (j == 0 ? 1 : 0); i < count1; i += 1)
+            instanceTransform.translation = offset2 * j + offset1 * startIndex1;
+            for (var i = startIndex1; i < count1; i += 1)
             {
-                transforms = append(transforms, instanceTransform);
-                instanceNames = append(instanceNames, i ~ instName);
+                // skip recreating original
+                if (j != 0 || i != 0)
+                {
+                    transforms = append(transforms, instanceTransform);
+                    instanceNames = append(instanceNames, i ~ instName);
+                }
                 instanceTransform.translation[0].value += offset1[0].value;
                 instanceTransform.translation[1].value += offset1[1].value;
                 instanceTransform.translation[2].value += offset1[2].value;
@@ -158,4 +172,5 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false });
+         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false });
+

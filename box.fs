@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,8 +9,8 @@ FeatureScript 455; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "455.0");
-import(path : "onshape/std/vector.fs", version : "455.0");
+import(path : "onshape/std/units.fs", version : "464.0");
+import(path : "onshape/std/vector.fs", version : "464.0");
 
 /**
  * A three-dimensional bounding box.
@@ -51,7 +51,7 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
 
 /**
  * Return an enlarged bounding box.
- * @param bBox
+ * @param bBox {Box3d}
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
  *     each face of the box.  The corners move `sqrt(3)` times as far.
  * @param factor {number} : The relative amount to expand the box, with
@@ -70,5 +70,30 @@ precondition
     return box3d(midPoint - absoluteIncrement - halfDiagonal * (1 + factor),
                  midPoint + absoluteIncrement + halfDiagonal * (1 + factor));
 
+}
+
+/**
+ * Return the center of the bounding box.
+ * @param bBox {Box3d}
+ */
+ export function box3dCenter(bBox is Box3d) returns Vector
+ {
+    return ((bBox.maxCorner + bBox.minCorner) / 2);
+ }
+
+/**
+ * Whether the specified point is within the bounding box.
+ * @param point {Vector}
+ * @param bBox {Box3d}
+ */
+export predicate insideBox3d(point is Vector, bBox is Box3d)
+{
+    is3dLengthVector(point);
+
+    for (var dim in [0, 1, 2])
+    {
+        point[dim] > bBox.minCorner[dim] || tolerantEquals(point[dim], bBox.minCorner[dim]);
+        point[dim] < bBox.maxCorner[dim] || tolerantEquals(point[dim], bBox.maxCorner[dim]);
+    }
 }
 

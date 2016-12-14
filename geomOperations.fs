@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 455; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "455.0");
+import(path : "onshape/std/context.fs", version : "464.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "455.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/bendoptions.fs", version : "455.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "464.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/bendoptions.fs", version : "464.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "455.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "464.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -330,6 +330,8 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
  *      @field reFillet {boolean} : @optional
  *              `true` to attempt to defillet `moveFaces` prior to the move and reapply the fillet
  *              after. Default is `false`.
+ *      @field mergeFaces {boolean} : @optional
+ *              `true` to remove redundant edges from moveFaces. Default is `true`.
  * }}
  */
 export function opMoveFace(context is Context, id is Id, definition is map)
@@ -347,6 +349,8 @@ export function opMoveFace(context is Context, id is Id, definition is map)
  *      @field reFillet {boolean} : @optional
  *              `true` to attempt to defillet `moveFaces` prior to the offset and reapply the fillet
  *              after. Default is `false`.
+ *      @field mergeFaces {boolean} : @optional
+ *              `true` to remove redundant edges from moveFaces. Default is `true`.
  * }}
  */
 export function opOffsetFace(context is Context, id is Id, definition is map)
@@ -630,18 +634,20 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
 
 /**
  * @internal
- * Extends the perimeter of a sheet body.
+ * Extends the perimeter of a sheet body, moves sheet edges by distance or up to surface
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
- *    @field entities {Query} : Bodies or edges to extend.
- *    @field extendMethod {ExtendSheetBoundingType}
+ *    @field extendMethod {ExtendSheetBoundingType} : @autocomplete `ExtendSheetBoundingType.EXTEND_BY_DISTANCE`
+ *    @field entities {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} Bodies or edges to extend.
  *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
- *    @field limitEntity {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Face to extend up to the surface of.
+ *                                       @autocomplete `0.1 * inch`
+ *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Face query or surface to extend up to.
  *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
  *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
  *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
- *                                      Takes the form ("edge", "offset", "limitEntity"). Both offset and limitEntity are optional
- *                                      and will override the other offset and limitEntity parameters for the specified edge. @optional
+ *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend"). Both offset and limitEntity are optional
+ *                                      and will override the other offset and limitEntity parameters for the specified edge.
+ *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
  * }}
  */
 export function opExtendSheetBody(context is Context, id is Id, definition is map)
@@ -655,10 +661,10 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`
  * @param definition {{
- *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
- *    @field tolerance @internalType {Enum} : @requiredif {`propagateTangents` is `true`} Tolerance used to determine if an edge is tangent.
  *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
+ *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
  *    @field offset {ValueWithUnits} : "Offset extracted surface faces by this distance along normal" @optional
+ *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent. @optional
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

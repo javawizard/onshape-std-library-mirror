@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 455; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/context.fs", version : "455.0");
-import(path : "onshape/std/mathUtils.fs", version : "455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
-import(path : "onshape/std/units.fs", version : "455.0");
-import(path : "onshape/std/curveGeometry.fs", version : "455.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/context.fs", version : "464.0");
+import(path : "onshape/std/mathUtils.fs", version : "464.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
+import(path : "onshape/std/units.fs", version : "464.0");
+import(path : "onshape/std/curveGeometry.fs", version : "464.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -117,6 +117,7 @@ export predicate canBeQuery(value)
  * @value TRACKING                   : Used in [startTracking]
  * @value CAP_ENTITY                 : Used in [qCapEntity]
  * @value SOURCE_MESH                : Used in [qSourceMesh]
+ * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
  ******************************************************************************/
 export enum QueryType
 {
@@ -130,6 +131,7 @@ export enum QueryType
     SKETCH_REGION,
     TRANSIENT,
     ATTRIBUTE_FILTER,
+    CORRESPONDING_IN_FLAT,
     //Boolean
     UNION,
     INTERSECTION,
@@ -517,6 +519,15 @@ export function qAttributeFilter(subquery is Query, attributePattern) returns Qu
 export function qAttributeQuery(attributePattern) returns Query
 {
     return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern} as Query;
+}
+/**
+* A query for entities in sheet metal flattened body
+* corresponding to those in folded body defined by subquery
+* @param subquery {Query} : A query which resolves to entities in folded sheet metal body
+*/
+export function qCorrespondingInFlat(subquery is Query) returns Query
+{
+    return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : subquery} as Query;
 }
 /**
  * A query for all the entities created by a feature or operation. The feature

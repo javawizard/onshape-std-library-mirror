@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,19 +9,21 @@ FeatureScript 455; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "455.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "455.0");
-export import(path : "onshape/std/context.fs", version : "455.0");
-export import(path : "onshape/std/query.fs", version : "455.0");
-import(path : "onshape/std/attributes.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/units.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
+export import(path : "onshape/std/smcornerstyle.gen.fs", version : "464.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "464.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "464.0");
+export import(path : "onshape/std/context.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/units.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
 
 /**
  * @internal
+ * Sheet metal object definition attribute type
  */
 
 export type SMAttribute typecheck canBeSMAttribute ;
@@ -52,23 +54,35 @@ export predicate canBeSMAttribute (value)
     {
         value.jointType == undefined || value.jointType.value is SMJointType;
     }
-    if (value.jointType != undefined && value.jointType.value == SMJointType.BEND)
+    else if (value.objectType == SMObjectType.CORNER)
     {
-        value.radius == undefined || isLength(value.radius.value);
-        value.unfolded == undefined || value.unfolded is boolean;
+        value.cornerStyle == undefined || value.cornerStyle.value is SMCornerStyle;
+        value.cornerReliefScale == undefined || value.cornerReliefScale.value is number;
+        value.bendReliefScale == undefined || value.bendReliefScale.value is number;
     }
-
+    if (value.jointType != undefined)
+    {
+        if (value.jointType.value == SMJointType.BEND)
+        {
+            value.radius == undefined || isLength(value.radius.value);
+            value.unfolded == undefined || value.unfolded is boolean;
+        }
+        else if (value.jointType.value == SMJointType.RIP)
+        {
+            value.minimalClearance == undefined || isLength(value.minimalClearance.value);
+        }
+    }
 }
-
-
 
 /**
  * @internal
+ * Empty map as SMAttribute convenient for attribute lookup
  */
 export const smAttributeDefault = {} as SMAttribute;
 
 /**
  * @internal
+ * Attach SMAttribute type to a map. convenient for attribute lookup and queries
  */
 export function asSMAttribute(value is map) returns SMAttribute
 {
@@ -77,6 +91,7 @@ export function asSMAttribute(value is map) returns SMAttribute
 
 /**
 * @internal
+* Start SMAttribute for joint
 */
 export function makeSMJointAttribute(attributeId is string) returns SMAttribute
 {
@@ -86,6 +101,7 @@ export function makeSMJointAttribute(attributeId is string) returns SMAttribute
 
 /**
 * @internal
+* Start SMAttribute for wall
 */
 export function makeSMWallAttribute(attributeId is string) returns SMAttribute
 {
@@ -95,11 +111,23 @@ export function makeSMWallAttribute(attributeId is string) returns SMAttribute
 
 /**
 * @internal
+* Start SMAttribute for model
 */
 export function makeSMModelAttribute(attributeId is string) returns SMAttribute
 {
     return asSMAttribute({'objectType' : SMObjectType.MODEL,
             'attributeId' : attributeId });
+}
+
+
+/**
+* @internal
+* Start SMAttribute for corner
+*/
+export function makeSMCornerAttribute(attributeId is string) returns SMAttribute
+{
+    return asSMAttribute({ 'objectType' : SMObjectType.CORNER,
+                'attributeId' : attributeId });
 }
 
 /**
@@ -126,11 +154,16 @@ export function clearSmAttributes(context is Context, entities is Query)
 
 /**
  * @internal
+ * For all entities annotated with attribute matching existingAttribute pattern, replace it with newAttribute
+ * return query for entities whose attributes have been modified
  */
-export function replaceSMAttribute(context is Context, entity is Query, existingAttribute is SMAttribute, newAttribute is SMAttribute)
+export function replaceSMAttribute(context is Context, existingAttribute is SMAttribute, newAttribute is SMAttribute) returns Query
 {
-    removeAttributes(context, { "entities" : entity, "attributePattern" : existingAttribute });
-    setAttribute(context, { "entities" : entity, "attribute" : newAttribute });
+    // Have to evaluate attribute query before removing the attribute
+    var entities = qUnion(evaluateQuery(context, qAttributeQuery(existingAttribute)));
+    removeAttributes(context, { "entities" : entities, "attributePattern" : existingAttribute });
+    setAttribute(context, { "entities" : entities, "attribute" : newAttribute });
+    return entities;
 }
 
 
@@ -251,6 +284,22 @@ export function getJointAttribute(context is Context, jointEdge is Query) return
     if (size(attributes) != 1)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
+    }
+    else
+    {
+        return attributes[0];
+    }
+}
+
+/**
+ * @internal
+ */
+export function getCornerAttribute(context is Context, cornerVertex is Query)
+{
+    var attributes = getSmObjectTypeAttributes(context, cornerVertex, SMObjectType.CORNER);
+    if (size(attributes) != 1)
+    {
+        return undefined;
     }
     else
     {

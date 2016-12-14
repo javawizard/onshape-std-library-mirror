@@ -1,29 +1,29 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "455.0");
+export import(path : "onshape/std/manipulator.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "455.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "455.0");
-import(path : "onshape/std/box.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/coordSystem.fs", version : "455.0");
-import(path : "onshape/std/curveGeometry.fs", version : "455.0");
-import(path : "onshape/std/draft.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/mathUtils.fs", version : "455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/boolean.fs", version : "464.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "464.0");
+import(path : "onshape/std/box.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/coordSystem.fs", version : "464.0");
+import(path : "onshape/std/curveGeometry.fs", version : "464.0");
+import(path : "onshape/std/draft.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/mathUtils.fs", version : "464.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -896,6 +896,7 @@ function canSetUpToFlip(definition is map, specifiedParameters is map) returns b
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    var retestDirectionFlip = false;
     // If flip has not been specified and there is no second direction we can adjust flip either based on location of
     // bounding surface/body or based on boolean operation
     if (!definition.hasSecondDirection &&
@@ -910,13 +911,28 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
         {
             definition.oppositeDirection = !definition.oppositeDirection;
         }
+        else
+        {
+            retestDirectionFlip = true;
+        }
     }
     if (canSetSecondDirectionFlip(definition, specifiedParameters))
     {
         definition.secondDirectionOppositeDirection = !definition.oppositeDirection;
     }
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
+    var newDefinition =  booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, extrude);
+    // booleanStepEditLogic might change boolean operation type,
+    // if flip was not adjusted above, re-test it
+    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+    {
+        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
+        if (canSetSecondDirectionFlip(newDefinition, specifiedParameters))
+        {
+            newDefinition.secondDirectionOppositeDirection = !newDefinition.oppositeDirection;
+        }
+    }
+    return newDefinition;
 }
 
 function canSetSecondDirectionFlip(definition is map, specifiedParameters is map) returns boolean

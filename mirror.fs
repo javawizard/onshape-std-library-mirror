@@ -1,26 +1,26 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
-export import(path : "onshape/std/patternUtils.fs", version : "455.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
+export import(path : "onshape/std/patternUtils.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "455.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
-import(path : "onshape/std/transform.fs", version : "455.0");
+import(path : "onshape/std/boolean.fs", version : "464.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
+import(path : "onshape/std/transform.fs", version : "464.0");
 
 
 /**
  * Feature creating a single copy of some features, bodies, or faces, mirrored
- * about a given entity. Internally, performs an `applyPattern`, which in turn
+ * about a given entity. Internally, performs an [applyPattern], which in turn
  * performs an [opPattern] or, for a feature mirror, calls the feature
  * function.
  */
@@ -42,7 +42,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
         else if (definition.patternType == MirrorType.FACE)
         {
-            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == MirrorType.FEATURE)

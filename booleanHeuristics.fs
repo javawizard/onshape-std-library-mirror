@@ -1,22 +1,23 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/query.fs", version : "455.0");
-export import(path : "onshape/std/tool.fs", version : "455.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/tool.fs", version : "464.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "455.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/primitives.fs", version : "455.0");
-import(path : "onshape/std/transform.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
+import(path : "onshape/std/box.fs", version : "464.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/primitives.fs", version : "464.0");
+import(path : "onshape/std/transform.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
 
 
 /** @internal */
@@ -84,8 +85,7 @@ export function canSetBooleanFlip (oldDefinition is map, definition is map, spec
     return existingTypeIsNegative != newTypeIsNegative;
 }
 
-//TODO - make excludeBodies Query in rel-1.42
-function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, featureDefinition is map, excludeBodies)
+function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, featureDefinition is map, excludeBodies is Query)
 {
     const toolQ = qBodyType(qCreatedBy(toolFeatureId, EntityType.BODY), BodyType.SOLID);
     var excludeQ;
@@ -127,7 +127,14 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         // classifyCollisions filters out abutting along edge, so we might come empty here
         if (target != undefined)
         {
-            return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            if (queryContainsActiveSheetMetal(context, target))
+            {
+                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
+            }
+            else
+            {
+                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            }
         }
     }
     // No collisions, use NEW

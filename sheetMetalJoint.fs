@@ -1,4 +1,4 @@
-FeatureScript 455; /* Automatically generated version */
+FeatureScript 464; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,29 +10,29 @@ FeatureScript 455; /* Automatically generated version */
  */
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "455.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "455.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "464.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "455.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "455.0");
-import(path : "onshape/std/feature.fs", version : "455.0");
-import(path : "onshape/std/valueBounds.fs", version : "455.0");
-import(path : "onshape/std/containers.fs", version : "455.0");
-import(path : "onshape/std/attributes.fs", version : "455.0");
-import(path : "onshape/std/evaluate.fs", version : "455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "455.0");
-import(path : "onshape/std/math.fs", version : "455.0");
-import(path : "onshape/std/modifyFillet.fs", version : "455.0");
-import(path : "onshape/std/string.fs", version : "455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
+import(path : "onshape/std/feature.fs", version : "464.0");
+import(path : "onshape/std/valueBounds.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "464.0");
+import(path : "onshape/std/evaluate.fs", version : "464.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
+import(path : "onshape/std/math.fs", version : "464.0");
+import(path : "onshape/std/modifyFillet.fs", version : "464.0");
+import(path : "onshape/std/string.fs", version : "464.0");
 
 /**
  * @internal
  */
-annotation { "Feature Type Name" : "smJoint" }
-export const smJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+annotation { "Feature Type Name" : "Modify joint", "Filter Selector" : "allparts" }
+export const sheetMetalJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "entity",
+        annotation { "Name" : "Entity",
                      "Filter" : (EntityType.FACE || EntityType.EDGE) && SketchObject.NO && BodyType.SOLID,
                      "MaxNumberOfPicks" : 1 }
         definition.entity is Query;
@@ -58,6 +58,9 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         }
     }
     {
+        //this is not necessary but helps with corrrect error reporting in feature pattern
+        checkNotInFeaturePattern(context, definition.entity);
+
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.entity))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
@@ -92,8 +95,9 @@ export const smJoint = defineSheetMetalFeature(function(context is Context, id i
         {
             throw "This joint type is not supported";
         }
-        replaceSMAttribute(context, jointEdge, existingAttribute, newAttribute);
-        updateSheetMetalGeometry(context, id, { "entities" : jointEdge });
+
+        var jointEdgesQ = replaceSMAttribute(context, existingAttribute, newAttribute);
+        updateSheetMetalGeometry(context, id, { "entities" : jointEdgesQ });
     }, { jointStyle : SMJointStyle.EDGE, useDefaultRadius : true });
 
 function getDefaultSheetMetalRadius(context is Context, entity is Query)
@@ -171,12 +175,6 @@ function createNewRipAttribute(id is Id, existingAttribute is SMAttribute, joint
         "canBeEdited": true
     };
     return ripAttribute;
-}
-
-function replaceJointAttribute(context is Context, entity is Query, existingAttribute is SMAttribute, newAttribute is SMAttribute)
-{
-    removeAttributes(context, { "entities" : entity, "attributePattern" : existingAttribute });
-    setAttribute(context, { "entities" : entity, "attribute" : newAttribute });
 }
 
 
