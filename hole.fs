@@ -14,6 +14,7 @@ import(path : "onshape/std/extrude.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/revolve.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
@@ -157,6 +158,11 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
     }
     {
+        if (queryContainsActiveSheetMetal(context, definition.scope))
+        {
+            const smQueries = separateSheetMetalQueries(context, definition.scope).sheetMetalQueries;
+            throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, ["scope"], smQueries);
+        }
         var trackedBodies = [];
         for (var body in evaluateQuery(context, definition.scope))
         {

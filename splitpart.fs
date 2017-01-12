@@ -9,6 +9,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
+import(path : "onshape/std/boolean.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
@@ -35,7 +36,7 @@ export enum SplitType
 /**
  * Feature performing an [opSplitPart].
  */
-annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts", "Editing Logic Function" : "splitPartEditLogic" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -61,7 +62,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
-                        "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO) ||
+                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) ||
                             (EntityType.BODY && BodyType.SHEET) ||
                             (EntityType.FACE && GeometryType.PLANE && ConstructionObject.YES) }
             definition.faceTools is Query;
@@ -71,6 +72,16 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         performSplit(context, id, definition);
     }, { keepTools : false, splitType : SplitType.PART });
 
+/** @internal */
+export function splitPartEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+                                 isCreating is boolean, specifiedParameters is map) returns map
+{
+    if (!definition.keepTools && !specifiedParameters.keepTools)
+    {
+        definition.keepTools = hasNewNonModifiableEntities(context, definition.tool);
+    }
+    return definition;
+}
 
 function performSplit(context is Context, id is Id, definition is map)
 {

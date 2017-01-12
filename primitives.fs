@@ -113,6 +113,8 @@ export const fCuboid = defineFeature(function(context is Context, id is Id, defi
     {
         is3dLengthVector(definition.corner1);
         is3dLengthVector(definition.corner2);
+        for (var dim in [0, 1, 2])
+            !tolerantEquals(definition.corner1[dim], definition.corner2[dim]);
     }
     {
         const sketchId = id + "sketch";

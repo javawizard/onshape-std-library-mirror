@@ -34,20 +34,20 @@ export const sheetMetalRip = defineSheetMetalFeature(function(context is Context
     precondition
     {
         annotation { "Name" : "Vertex pairs to split with",
-                     "Filter" : EntityType.VERTEX && BodyType.SOLID} //vertex pairs
+                     "Filter" : EntityType.VERTEX && BodyType.SOLID && AllowFlattenedGeometry.YES } //vertex pairs
         definition.vertices is Query;
 
         annotation { "Name" : "Use default minimal gap", "Default" : true }
         definition.useDefaultGap is boolean;
         if (!definition.useDefaultGap)
         {
-            annotation { "Name" : "Minimal clearance" }
+            annotation { "Name" : "Minimal gap" }
             isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
         }
     }
     {
         //this is not necessary but helps with correct error reporting in feature pattern
-        checkNotInFeaturePattern(context, definition.vertices);
+        checkNotInFeaturePattern(context, definition.vertices, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         //entities should be from the same sm model, but can be from different parts
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.vertices))
@@ -151,7 +151,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
     var ripAttributes = {"minimalClearance" : definition.useDefaultGap ? undefined : definition.minimalClearance};
     for (var e in newEdges)
     {
-        addRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.FLAT, ripAttributes );
+        addRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.EDGE, ripAttributes );
         count += 1;
     }
     const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),

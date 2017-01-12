@@ -7,15 +7,18 @@ FeatureScript ✨; /* Automatically generated version */
 
 /**
  * @internal.
+ * Types of corner relief in sheet metal parts.
  */
-export enum SMJointStyle
+export enum SMCornerReliefStyle
 {
-    annotation {"Name" : "Edge Joint"}
-    EDGE,
-    annotation {"Name" : "Butt Joint - Primary"}
-    BUTT,
-    annotation {"Name" : "Butt Joint - Secondary"}
-    BUTT2
+    annotation {"Name" : "Rectangle"}
+    RECTANGLE,
+    annotation {"Name" : "Round"}
+    ROUND,
+    annotation {"Name" : "Closed"}
+    CLOSED,
+    annotation {"Name" : "Simple"}
+    SIMPLE
 }
 
 

@@ -92,8 +92,8 @@ export predicate insideBox3d(point is Vector, bBox is Box3d)
 
     for (var dim in [0, 1, 2])
     {
-        point[dim] > bBox.minCorner[dim] || tolerantEquals(point[dim], bBox.minCorner[dim]);
-        point[dim] < bBox.maxCorner[dim] || tolerantEquals(point[dim], bBox.maxCorner[dim]);
+        tolerantEquals(point[dim], bBox.minCorner[dim]) || point[dim] > bBox.minCorner[dim];
+        tolerantEquals(point[dim], bBox.maxCorner[dim]) || point[dim] < bBox.maxCorner[dim];
     }
 }
 

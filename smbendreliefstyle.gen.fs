@@ -7,21 +7,16 @@ FeatureScript ✨; /* Automatically generated version */
 
 /**
  * @internal.
+ * Types of bend relief in sheet metal parts.
  */
-export enum SMCornerStyle
+export enum SMBendReliefStyle
 {
-    annotation {"Name" : "Square"}
-    SQUARE,
-    annotation {"Name" : "Round"}
-    ROUND,
-    annotation {"Name" : "Tear"}
-    TEAR,
-    annotation {"Name" : "Arc"}
-    ARC,
+    annotation {"Name" : "Rectangle"}
+    RECTANGLE,
     annotation {"Name" : "Obround"}
     OBROUND,
-    annotation {"Name" : "Simple"}
-    SIMPLE
+    annotation {"Name" : "Tear"}
+    TEAR
 }
 
 

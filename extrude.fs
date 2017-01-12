@@ -146,7 +146,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         else
         {
             annotation { "Name" : "Sketch curves to extrude",
-                         "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO ) }
+                         "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO ) }
             definition.surfaceEntities is Query;
         }
 

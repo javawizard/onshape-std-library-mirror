@@ -67,7 +67,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             recordParameters(otherContext, id, definition);
             // remove sheet metal attributes and helper bodies
-            clearSheetMetalData(otherContext, id + "sheetMetal");
+            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal");
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -78,16 +78,19 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
             const allBodies = qEverything(EntityType.BODY);
-            const allSMFlatBodies = qCorrespondingInFlat(qBodyType(allBodies, BodyType.SOLID));
 
             const deleteDefinition = {
-                "entities" : qSubtraction(qUnion([allBodies, allSMFlatBodies]) , bodiesToKeep)
+                "entities" : qSubtraction(qUnion([allBodies, smPartsQ]) , bodiesToKeep)
             };
             opDeleteBodies(otherContext, id + "delete", deleteDefinition);
 
             var mergeDefinition = definition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;
             opMergeContexts(context, id + "merge", mergeDefinition);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V468_PROPAGATE_MERGE_ERROR))
+            {
+                processSubfeatureStatus(context, id, {"subfeatureId" : id + "merge"});
+            }
         }
     });
 

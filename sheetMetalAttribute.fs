@@ -9,7 +9,7 @@ FeatureScript ✨; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/smcornerstyle.gen.fs", version : "✨");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
 export import(path : "onshape/std/smobjecttype.gen.fs", version : "✨");
@@ -56,7 +56,7 @@ export predicate canBeSMAttribute (value)
     }
     else if (value.objectType == SMObjectType.CORNER)
     {
-        value.cornerStyle == undefined || value.cornerStyle.value is SMCornerStyle;
+        value.cornerStyle == undefined || value.cornerStyle.value is SMReliefStyle;
         value.cornerReliefScale == undefined || value.cornerReliefScale.value is number;
         value.bendReliefScale == undefined || value.bendReliefScale.value is number;
     }

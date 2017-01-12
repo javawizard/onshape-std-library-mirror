@@ -731,6 +731,7 @@ export function qSourceMesh(query is Query) returns Query
  * any entities that match the input query.
  * @ex `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
  * @ex `qVertexAdjacent(face, EntityType.VERTEX)` matches all vertices adjacent to the given face.
+ * @param entityType : The type of the resulting entities. @eg `EntityType.VERTEX`
  */
 export function qVertexAdjacent(query is Query, entityType is EntityType) returns Query
 precondition
@@ -753,6 +754,7 @@ precondition
  * const boundary = qIntersection([qEdgeAdjacent(faces, EntityType.EDGE),
  *                                 qEdgeAdjacent(adjacentFaces, EntityType.EDGE)]);
  * ```
+ * @param entityType : The type of the resulting entities. @eg `EntityType.EDGE`
  */
 export function qEdgeAdjacent(query is Query, entityType is EntityType) returns Query
 precondition

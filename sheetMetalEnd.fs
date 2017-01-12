@@ -19,16 +19,18 @@ import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 /**
  * @internal
+ * Deactivate the sheet metal model of selected parts.
+ * Continued modeling on deactivated sheet metal parts will not be represented in the flat pattern or the table.
  */
-annotation { "Feature Type Name" : "End sheet metal" }
+annotation { "Feature Type Name" : "Finish sheet metal" }
 export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID }
+        annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
         definition.sheetMetalParts is Query;
     }
     {
-        checkNotInFeaturePattern(context, definition.sheetMetalParts);
+        checkNotInFeaturePattern(context, definition.sheetMetalParts, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.sheetMetalParts))
         {

@@ -26,7 +26,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
  */
-annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts", "Editing Logic Function" : "booleanEditLogic" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -163,6 +163,28 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             }
         }
     }, { keepTools : false, offset : false, oppositeDirection : false, offsetAll : false, reFillet : false });
+
+/** @internal */
+export function booleanEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+   isCreating is boolean, specifiedParameters is map) returns map
+{
+    if (!definition.keepTools && !specifiedParameters.keepTools)
+    {
+        definition.keepTools = hasNewNonModifiableEntities(context, definition.tools);
+    }
+    return definition;
+}
+
+/**
+ * Check whether the give query has new non modifiable entities
+ * @param context {Context}
+ * @param toolQuery {Query} : the query in the definition to be checked
+ * @returns {boolean} : 'true' if found non modifiable entities.
+ */
+export function hasNewNonModifiableEntities(context is Context, toolQuery is Query) returns boolean
+{
+    return evaluateQuery(context, qSubtraction(toolQuery, qModifiableEntityFilter(toolQuery))) != [];
+}
 
 function shouldPerformSheetMetalAwareBooleans(context is Context, definition is map) returns boolean
 {
@@ -403,6 +425,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
         // so substitute the evaluated original tools
         definition.tools = evaluatedOriginalTools;
 
+        checkNotInFeaturePattern(context, definition.targets, ErrorStringEnum.SHEET_METAL_BLOCKED_PATTERN);
         var index = 0;
         for (var idAndParts in parts.sheetMetalPartsMap)
         {
@@ -412,7 +435,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 
             definition.sheetMetalPart = qUnion(idAndParts.value);
 
-            defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+            try (defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
                     {
                         try
                         {
@@ -439,16 +462,16 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                             const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
                                     originalEntities, initialAssociationAttributes);
 
-                            updateSheetMetalGeometry(context, id + "smUpdate", {
+                            try(updateSheetMetalGeometry(context, id + "smUpdate", {
                                     "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                                    "deletedAttributes" :  toUpdate.deletedAttributes});
+                                    "deletedAttributes" :  toUpdate.deletedAttributes}));
                             processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
                         }
                         catch
                         {
                             reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
                         }
-                    }, {})(context, booleanId, definition);
+                    }, {})(context, booleanId, definition));
             processSubfeatureStatus(context, id, { "subfeatureId" : booleanId, "propagateErrorDisplay" : true });
         }
         if (deleteToolsAtEnd)

@@ -128,7 +128,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         if (!withinBoundingBox)
         {
-            reportFeatureInfo(context, id, ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH);
+            var message = path.closed ? ErrorStringEnum.CURVE_PATTERN_START_OFF_CLOSED_PATH : ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH;
+            reportFeatureInfo(context, id, message);
         }
 
         // Transform(..., ...) works with planes or lines
