@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,43 +9,28 @@ FeatureScript 464; /* Automatically generated version */
  ******************************************
  */
 
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "477.0");
 
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/boolean.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/error.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "464.0");
-import(path : "onshape/std/geomOperations.fs", version : "464.0");
-import(path : "onshape/std/query.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/topologyUtils.fs", version : "464.0");
-import(path : "onshape/std/units.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/boolean.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/error.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "477.0");
+import(path : "onshape/std/geomOperations.fs", version : "477.0");
+import(path : "onshape/std/query.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/topologyUtils.fs", version : "477.0");
+import(path : "onshape/std/units.fs", version : "477.0");
 
-/**
-* @internal
-* same as SMJointStyle but missing Flat joint
-*/
-export enum SMJointRipStyle
-{
-    annotation {"Name" : "Edge Joint"}
-    EDGE,
-    annotation {"Name" : "Butt Joint - Primary"}
-    BUTT,
-    annotation {"Name" : "Butt Joint - Secondary"}
-    BUTT2
-}
-
-const ripStyleMap = { SMJointRipStyle.EDGE  : SMJointStyle.EDGE,
-                      SMJointRipStyle.BUTT  : SMJointStyle.BUTT,
-                      SMJointRipStyle.BUTT2 : SMJointStyle.BUTT2 };
 
 /**
-* @internal
-*  TODO : This feature produces a sheet metal rip
+*  @internal
+*  Produces a sheet metal joint, currently as a rip only, by extending or trimming
+*  walls of selected edges. Rip is created as an edge joint by default.
 */
 annotation { "Feature Type Name" : "Make joint", "Filter Selector" : "allparts"  }
 export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
@@ -57,25 +42,25 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
         definition.entities is Query;
 
         annotation {"Name" : "Joint style"}
-        definition.jointType is SMJointRipStyle;
+        definition.jointType is SMJointStyle;
     }
     {
         //this is not necessary but helps with correct error reporting in feature pattern
-        checkNotInFeaturePattern(context, definition.entities);
+        checkNotInFeaturePattern(context, definition.entities, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         //entities should be from the same sm model, but can be from different parts
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.entities))
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entities"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_SINGLE_MODEL_NEEDED_EDGES, ["entities"]);
         }
 
         var smEntities = qUnion(getSMDefinitionEntities(context, definition.entities));
         createEdgeJoint(context, id, smEntities, definition.jointType);
-    }, {jointType : SMJointRipStyle.EDGE}
+    }, {jointType : SMJointStyle.EDGE}
     );
 
 
-function createEdgeJoint(context is Context, id is Id, smEntities is Query, jointType is SMJointRipStyle)
+function createEdgeJoint(context is Context, id is Id, smEntities is Query, jointType is SMJointStyle)
 {
     var edges = evaluateQuery(context, smEntities);
     var faces = [];
@@ -95,15 +80,24 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
         throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
     }
 
-    var originalEdges = startTracking(context, smEntities);
     var plane1 = try(evPlane(context, {"face" : faces[0]}));
     var plane2 = try(evPlane(context, {"face" : faces[1]}));
-
     if (plane1 == undefined || plane2 == undefined)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_RIP_FAIL_NON_PLANAR, ["entities"]);
     }
 
+    if (tolerantEquals(plane1, plane2))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
+    }
+
+    //make sure the two faces are not currently sharing edges
+    var commonEdges = evaluateQuery(context, qIntersection([qEdgeAdjacent(faces[0], EntityType.FACE), faces[1]]));
+    if (size(commonEdges) != 0)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_JOINT_FAIL_ADJACENT_FACES, ["entities"]);
+    }
 
     //get originals before any changes
     var smBodies = evaluateQuery(context, qOwnerBody(smEntities));
@@ -118,7 +112,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
         "attributePattern" : {} as SMAssociationAttribute
     });
     var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
-
+    var originalEdges = startTracking(context, smEntities);
 
     var intersectionData = intersection(plane1, plane2);
     if (intersectionData == undefined)
@@ -145,27 +139,26 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
         throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
     }
 
-
-
     var count = 0;
     for (var resultingEdge in evaluateQuery(context, originalEdges))
     {
         if (edgeIsTwoSided(context, resultingEdge))
         {
             count += 1;
-            addRipAttribute(context, originalEdges, toAttributeId(id), ripStyleMap[jointType], undefined);
+            addRipAttribute(context, resultingEdge, toAttributeId(id), jointType, undefined);
         }
     }
-    if (count > 1)
+    if (count != 1)
     {
-        //we should have only one new rip edge
+        //we should have exactly one new rip edge
         throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
     }
 
     // Add association attributes where needed and compute deleted attributes
     var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, allOriginalEntities, initialAssociationAttributes);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
-                                           "deletedAttributes" : toUpdate.deletedAttributes});
+                                           "deletedAttributes" : toUpdate.deletedAttributes,
+                                           "associatedChanges" : originalEdges});
 }
 
 

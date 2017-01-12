@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 464; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/context.fs", version : "464.0");
-import(path : "onshape/std/mathUtils.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/units.fs", version : "464.0");
-import(path : "onshape/std/curveGeometry.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/context.fs", version : "477.0");
+import(path : "onshape/std/mathUtils.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/curveGeometry.fs", version : "477.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -731,6 +731,7 @@ export function qSourceMesh(query is Query) returns Query
  * any entities that match the input query.
  * @ex `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
  * @ex `qVertexAdjacent(face, EntityType.VERTEX)` matches all vertices adjacent to the given face.
+ * @param entityType : The type of the resulting entities. @eg `EntityType.VERTEX`
  */
 export function qVertexAdjacent(query is Query, entityType is EntityType) returns Query
 precondition
@@ -753,6 +754,7 @@ precondition
  * const boundary = qIntersection([qEdgeAdjacent(faces, EntityType.EDGE),
  *                                 qEdgeAdjacent(adjacentFaces, EntityType.EDGE)]);
  * ```
+ * @param entityType : The type of the resulting entities. @eg `EntityType.EDGE`
  */
 export function qEdgeAdjacent(query is Query, entityType is EntityType) returns Query
 precondition

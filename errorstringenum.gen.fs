@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -616,7 +616,21 @@ export enum ErrorStringEnum
     SHEET_METAL_RIP_NEED_MORE_VERTICES,
     SHEET_METAL_MAKE_JOINT_FAIL,
     CURVE_PATTERN_START_OFF_PATH,
-    PART_LOAD_FAILED
+    PART_LOAD_FAILED,
+    SHEET_METAL_MOVE_NOT_PLANAR,
+    SHEET_METAL_JOINT_FAIL_ADJACENT_FACES,
+    WRONG_PARASOLID_VERSION,
+    SHEET_METAL_SINGLE_MODEL_NEEDED_EDGES,
+    REST_ASSEMBLY_MISSING_INSTANCE_DOCUMENT_ID,
+    REST_ASSEMBLY_MISSING_INSTANCE_ELEMENT_ID,
+    FACE_CLASH,
+    CURVE_PATTERN_START_OFF_CLOSED_PATH,
+    SHEET_METAL_CUT_JOINT,
+    EXPORT_STL_NO_PARTS,
+    INPUT_NAME_TOO_LONG,
+    IMPORT_BODY_FAILED_CHECK,
+    DERIVED_BODIES_HAVE_FAULTS,
+    SHEET_METAL_BLOCKED_PATTERN
 }
 
 

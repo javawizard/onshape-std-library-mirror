@@ -5,11 +5,18 @@ FeatureScript 477; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum ExtendSheetBoundingType
+/**
+ * @internal.
+ * Types of bend relief in sheet metal parts.
+ */
+export enum SMBendReliefStyle
 {
-    EXTEND_BY_DISTANCE,
-    EXTEND_TO_SURFACE
+    annotation {"Name" : "Rectangle"}
+    RECTANGLE,
+    annotation {"Name" : "Obround"}
+    OBROUND,
+    annotation {"Name" : "Tear"}
+    TEAR
 }
 
 

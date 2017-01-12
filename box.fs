@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,8 +9,8 @@ FeatureScript 464; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "464.0");
-import(path : "onshape/std/vector.fs", version : "464.0");
+import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/vector.fs", version : "477.0");
 
 /**
  * A three-dimensional bounding box.
@@ -92,8 +92,8 @@ export predicate insideBox3d(point is Vector, bBox is Box3d)
 
     for (var dim in [0, 1, 2])
     {
-        point[dim] > bBox.minCorner[dim] || tolerantEquals(point[dim], bBox.minCorner[dim]);
-        point[dim] < bBox.maxCorner[dim] || tolerantEquals(point[dim], bBox.maxCorner[dim]);
+        tolerantEquals(point[dim], bBox.minCorner[dim]) || point[dim] > bBox.minCorner[dim];
+        tolerantEquals(point[dim], bBox.maxCorner[dim]) || point[dim] < bBox.maxCorner[dim];
     }
 }
 

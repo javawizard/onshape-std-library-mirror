@@ -1,29 +1,29 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "464.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/coordSystem.fs", version : "464.0");
-import(path : "onshape/std/curveGeometry.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/math.fs", version : "464.0");
-import(path : "onshape/std/manipulator.fs", version : "464.0");
-import(path : "onshape/std/query.fs", version : "464.0");
-import(path : "onshape/std/sketch.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "464.0");
-import(path : "onshape/std/string.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/tool.fs", version : "464.0");
-import(path : "onshape/std/valueBounds.fs", version : "464.0");
-import(path : "onshape/std/vector.fs", version : "464.0");
-import(path : "onshape/std/topologyUtils.fs", version : "464.0");
-import(path : "onshape/std/transform.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "477.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/coordSystem.fs", version : "477.0");
+import(path : "onshape/std/curveGeometry.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/math.fs", version : "477.0");
+import(path : "onshape/std/manipulator.fs", version : "477.0");
+import(path : "onshape/std/query.fs", version : "477.0");
+import(path : "onshape/std/sketch.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "477.0");
+import(path : "onshape/std/string.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/tool.fs", version : "477.0");
+import(path : "onshape/std/valueBounds.fs", version : "477.0");
+import(path : "onshape/std/vector.fs", version : "477.0");
+import(path : "onshape/std/topologyUtils.fs", version : "477.0");
+import(path : "onshape/std/transform.fs", version : "477.0");
 
 
 /*
@@ -74,6 +74,11 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
 
 /**
  * @internal
+ * @param args {{
+ *      @field entities{Query} : sheet metal definition entities changed (or attributes changed) in this feature
+ *      @field deletedAttributes{array} : associated attributes of deleted sheet metal definition entities
+ *      @field associatedChanges{Query} : sheet metal definition entities representing the change of this feature
+ * }}
  */
  export function updateSheetMetalGeometry(context is Context, id is Id, args is map)
  {
@@ -128,6 +133,11 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         "controllingFeatureId" : featureIdString,
         "parameterIdInFeature" : "defaultBendReliefScale"
         };
+    var defaultBendReliefDepthScale = { "value" : args.defaultBendReliefDepthScale,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "defaultBendReliefDepthScale"
+        };
 
     var modelAttribute = asSMAttribute({"attributeId" : featureIdString,
                     "objectType" : SMObjectType.MODEL,
@@ -137,6 +147,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "minimalClearance" : minimalClearanceData,
                     "defaultBendRadius" : {"value" : args.defaultRadius},
                     "defaultCornerReliefScale" : defaultCornerReliefScale,
+                    "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : defaultBendReliefScale});
     if (args.defaultTwoCornerStyle != undefined)
     {
@@ -238,12 +249,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             {
                 ripAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
             }
-            if (zeroAngle)
-            {
-                ripAttribute.jointStyle = { "value" : SMJointStyle.FLAT, "canBeEdited": false };
-                ripAttribute.jointType.canBeEdited = false;
-            }
-            else
+            if (!zeroAngle)
             {
                 ripAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited": true };
             }
@@ -299,22 +305,25 @@ export function updateJointAngle(context is Context, edges is Query)
             continue;
         }
 
-        var angleVal = try(edgeAngle(context, edge));
-        if (angleVal == jointAttribute.angle.value)
+        var angleVal = try silent(edgeAngle(context, edge));
+        if (angleVal == undefined || tolerantEquals(angleVal, jointAttribute.angle.value))
         {
             continue;
         }
 
         var replacementAttribute = jointAttribute;
 
-        if (tolerantEquals(angleVal, PI * radian))
+        if (abs(angleVal) < TOLERANCE.zeroAngle * radian)
         {
-            replacementAttribute.jointStyle = { value : SMJointStyle.FLAT, canBeEdited : false };
+            replacementAttribute.jointStyle = undefined;
+            replacementAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited" : false };
         }
-        else
+        else if (replacementAttribute.jointType != undefined && replacementAttribute.jointType.value == SMJointType.RIP)
         {
-            replacementAttribute.jointStyle = { value : SMJointStyle.EDGE, canBeEdited : false };
+            replacementAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited" : true };
+            replacementAttribute.jointType.canBeEdited = true;
         }
+
         replacementAttribute.angle = { "value" : angleVal, "canBeEdited" : jointAttribute.angle.canBeEdited };
         replaceSMAttribute(context, jointAttribute, replacementAttribute);
     }
@@ -644,7 +653,7 @@ export function getModelParameters(context is Context, model is Query) returns m
 /**
  * @internal
  */
-export function separateSheetMetalQueries(context is Context, id is Id, targets is Query) returns map
+export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
     var sheetMetalQueries = qNothing();
     var nonSheetMetalQueries = qNothing();
@@ -665,30 +674,41 @@ export function separateSheetMetalQueries(context is Context, id is Id, targets 
 /**
  * @internal
  */
-export function checkNotInFeaturePattern(context is Context, references is Query)
+export function checkNotInFeaturePattern(context is Context, references is Query, error is ErrorStringEnum)
 {
     var remainingTransform = getRemainderPatternTransform(context, {"references" : references});
     if (remainingTransform != identityTransform())
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
+        throw regenError(error);
     }
 }
 
 /**
  * @internal
  * Used in importDerived to strip sheet metal related data off the imported context
+ * returns query of all sheet metal parts (3d and flattened)
  */
-export function clearSheetMetalData(context, id)
+export function clearSheetMetalData(context, id) returns Query
 {
+    // All the attribute queries are evaluated immediately because this function
+    // removes all SMAttributes and SMAssociationAttribute
     var smModelsQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL}));
     var smModelsEvaluated = evaluateQuery(context, smModelsQ);
 
     if (size(smModelsEvaluated) == 0)
-        return;
+        return qNothing();
 
     var smModelsActiveQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL,
                                                   active : true}));
     var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+
+    var associationAttributes = getAttributes(context, {"entities" : smModelsQ, "attributePattern" : {} as SMAssociationAttribute});
+    var smPartQArr = [];
+    for (var attribute in associationAttributes)
+    {
+        smPartQArr = append(smPartQArr, qAttributeQuery(attribute));
+    }
+    var smPartQEvaluated = evaluateQuery(context, qUnion(smPartQArr));
 
     // remove all SMAttributes
     removeAttributes(context, {
@@ -710,23 +730,27 @@ export function clearSheetMetalData(context, id)
     opDeleteBodies(context, id + "deleteSheetBodies", {
             "entities" : qUnion(smModelsEvaluated)
     });
+
+   return qUnion(smPartQEvaluated);
 }
 
 /**
  * @internal
  */
- export function addRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
+export function addRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
 {
     var ripAttribute = makeSMJointAttribute(ripId);
     ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
-    ripAttribute.jointStyle = { "value" : ripStyle, "canBeEdited": true };
+
     var angle = try silent(edgeAngle(context, entity));
     if (angle != undefined)
     {
         ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
     }
-    if (angle == undefined || abs(angle) < TOLERANCE.zeroAngle * degree)
-        ripAttribute.jointStyle = { "value" : SMJointStyle.FLAT, "canBeEdited": false };
+    // If the angle is zero then this rip should not have a style
+    if (abs(angle) >= TOLERANCE.zeroAngle * radian) {
+        ripAttribute.jointStyle = { "value" : ripStyle, "canBeEdited": true };
+    }
 
     if (jointAttributes != undefined && jointAttributes.minimalClearance != undefined)
     {
@@ -742,9 +766,16 @@ export function findCornerDefinitionVertex(context is Context, entity is Query) 
 {
     var definitionEntities = qUnion(getSMDefinitionEntities(context, entity));
     var sheetVertices = qEntityFilter(definitionEntities, EntityType.VERTEX);
-    if (size(evaluateQuery(context, sheetVertices)) != 1)
+    var found = size(evaluateQuery(context, sheetVertices));
+    if (found == 0)
     {
-        throw regenError("No corner found", entity);
+        // Look for the vertices adjacent to any edge to get to it from them
+        sheetVertices = qUnion(getSMDefinitionEntities(context, qVertexAdjacent(qEntityFilter(entity, EntityType.EDGE), EntityType.VERTEX)));
+        found = size(evaluateQuery(context, sheetVertices));
+    }
+    if (found != 1)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NO_CORNER);
     }
     return sheetVertices;
 }

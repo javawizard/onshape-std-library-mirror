@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 464; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/error.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/geomOperations.fs", version : "464.0");
-import(path : "onshape/std/mathUtils.fs", version : "464.0");
-import(path : "onshape/std/query.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
-import(path : "onshape/std/splitpart.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/units.fs", version : "464.0");
-import(path : "onshape/std/valueBounds.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/error.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/geomOperations.fs", version : "477.0");
+import(path : "onshape/std/mathUtils.fs", version : "477.0");
+import(path : "onshape/std/query.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
+import(path : "onshape/std/splitpart.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/valueBounds.fs", version : "477.0");
 
 
 /**
@@ -34,20 +34,20 @@ export const sheetMetalRip = defineSheetMetalFeature(function(context is Context
     precondition
     {
         annotation { "Name" : "Vertex pairs to split with",
-                     "Filter" : EntityType.VERTEX && BodyType.SOLID} //vertex pairs
+                     "Filter" : EntityType.VERTEX && BodyType.SOLID && AllowFlattenedGeometry.YES } //vertex pairs
         definition.vertices is Query;
 
         annotation { "Name" : "Use default minimal gap", "Default" : true }
         definition.useDefaultGap is boolean;
         if (!definition.useDefaultGap)
         {
-            annotation { "Name" : "Minimal clearance" }
+            annotation { "Name" : "Minimal gap" }
             isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
         }
     }
     {
         //this is not necessary but helps with correct error reporting in feature pattern
-        checkNotInFeaturePattern(context, definition.vertices);
+        checkNotInFeaturePattern(context, definition.vertices, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         //entities should be from the same sm model, but can be from different parts
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.vertices))
@@ -151,7 +151,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
     var ripAttributes = {"minimalClearance" : definition.useDefaultGap ? undefined : definition.minimalClearance};
     for (var e in newEdges)
     {
-        addRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.FLAT, ripAttributes );
+        addRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.EDGE, ripAttributes );
         count += 1;
     }
     const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),

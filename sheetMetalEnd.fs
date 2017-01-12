@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,26 +9,28 @@ FeatureScript 464; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/error.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/string.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/error.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/string.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
 
 /**
  * @internal
+ * Deactivate the sheet metal model of selected parts.
+ * Continued modeling on deactivated sheet metal parts will not be represented in the flat pattern or the table.
  */
-annotation { "Feature Type Name" : "End sheet metal" }
+annotation { "Feature Type Name" : "Finish sheet metal" }
 export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID }
+        annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
         definition.sheetMetalParts is Query;
     }
     {
-        checkNotInFeaturePattern(context, definition.sheetMetalParts);
+        checkNotInFeaturePattern(context, definition.sheetMetalParts, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.sheetMetalParts))
         {

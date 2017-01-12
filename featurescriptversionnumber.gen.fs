@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -401,7 +401,18 @@ export enum FeatureScriptVersionNumber
     V461_CURVE_PATTERN_FEATURE,
     V462_BLOCK_INCONTEXT_FACE_CURVE_PATTERN,
     V463_UPDATE_ISO_SCREW_STANDARDS,
-    V464_CURVE_PATTERN_STABILIZATION
+    V464_CURVE_PATTERN_STABILIZATION,
+    V467_STRICTER_DISAMBIGUATION,
+    V468_PROPAGATE_MERGE_ERROR,
+    V469_CHANGE_FACE_SWEPT_EDGES,
+    V470_PS_VERSION_29_1_189,
+    V471_FEATURE_LIST_KEY,
+    V472_INCONTEXT_UPGRADE,
+    V473_SHEET_METAL_COMMENTS,
+    V474_MOVE_FACE_FIX,
+    V475_KEEP_TOOLS_AUTO_SELECTION,
+    V476_SM_BOOLEAN_PATTERN_ERROR,
+    V477_END_SM_UPDATE
 }
 
 /**
@@ -412,6 +423,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V464_CURVE_PATTERN_STABILIZATION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V477_END_SM_UPDATE;
 
 

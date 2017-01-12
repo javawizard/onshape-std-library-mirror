@@ -1,27 +1,27 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "464.0");
-export import(path : "onshape/std/tool.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "477.0");
+export import(path : "onshape/std/tool.fs", version : "477.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "464.0");
+export import(path : "onshape/std/manipulator.fs", version : "477.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/box.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/curveGeometry.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/mathUtils.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/valueBounds.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/box.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/curveGeometry.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/mathUtils.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/valueBounds.fs", version : "477.0");
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -44,7 +44,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                      "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.moveFaces is Query;
 
-        annotation { "Name" : "Move Face Type" }
+        annotation { "Name" : "Move face type" }
         definition.moveFaceType is MoveFaceType;
 
         if (definition.moveFaceType == MoveFaceType.TRANSLATE)
@@ -143,7 +143,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                const axisResult = evAxis(context, { "axis" : definition.axis });
+                const axisResult = evAxis(context, { "axis" : getAssociatedAxis(context, definition) });
 
                 addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
 
@@ -174,18 +174,18 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V450_SPLIT_TRACKING_MERGED_EDGES))
     {
-        var queries = separateSheetMetalQueries(context, id, definition.moveFaces);
+        var queries = separateSheetMetalQueries(context, definition.moveFaces);
         const nonSheetMetalQueryCount = size(evaluateQuery(context, queries.nonSheetMetalQueries));
         const sheetMetalQueryCount = size(evaluateQuery(context, queries.sheetMetalQueries));
         if (sheetMetalQueryCount > 0)
         {
             try
             {
-                offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries }));
+                offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
             }
             catch
             {
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true });
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
             }
         }
         if (nonSheetMetalQueryCount > 0)
@@ -256,7 +256,7 @@ function createEdgeLimitOption(context is Context, definition is map, smEntity i
         var limitPlane = try silent(evPlane(context, { "face" : faceToMove }));
         if (limitPlane == undefined)
         {
-            throw regenError(ErrorStringEnum.REGEN_ERROR);
+            throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_NOT_PLANAR, ["moveFaces"], faceToMove);
         }
         if (definition.moveFaceType == MoveFaceType.OFFSET)
         {
@@ -319,6 +319,22 @@ function createToolBodies(context is Context, entities is Query, definition is m
     return operationInfo;
 }
 
+// Use association entity for axis if it is adjacent to a sheet metal face being moved.
+function getAssociatedAxis(context is Context, definition) returns Query
+{
+    const axisSMEntities = qUnion(getSMDefinitionEntities(context, definition.axis, EntityType.EDGE));
+    const moveFaceSMEntities = qEdgeAdjacent(qUnion(getSMDefinitionEntities(context, definition.moveFaces, EntityType.FACE)), EntityType.EDGE);
+    const axisCandidates = evaluateQuery(context, qIntersection([axisSMEntities, moveFaceSMEntities]));
+    if (size(axisCandidates) != 1)
+    {
+        return definition.axis;
+    }
+    else
+    {
+        return axisCandidates[0];
+    }
+}
+
 const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Context, id is Id, definition)
     {
         const operationInfo = createToolBodies(context, definition.moveFaces, definition);
@@ -339,9 +355,11 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const modifiedFaces = operationInfo.modifiedFaces;
         const smEdges = operationInfo.edgesToExtend;
         const trackingSMModel = startTracking(context, operationInfo.sheetMetalModels);
+        const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
+        const modifiedEdges = startTracking(context, qUnion(smEdges));
+        const associateChanges = qUnion([startTracking(context, allFaces), modifiedEdges]);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
-            const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
             if (size(evaluateQuery(context, allFaces)) > 0)
             {
                 opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : false }));
@@ -364,24 +382,24 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         }
         if (size(edgeLimitOptions) > 0)
         {
-            var modifiedEdges = startTracking(context, qUnion(smEdges));
             opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "edgeLimitOptions" : edgeLimitOptions });
             for (var edge in evaluateQuery(context, modifiedEdges))
             {
-               const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-               if (size(adjacentFaces) != 1)
-               {
-                   throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
-               }
+                const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+                if (size(adjacentFaces) != 1)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
+                }
             }
         }
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]),
                 originalEntities, initialAssociationAttributes);
 
 
-        updateSheetMetalGeometry(context, id + "smUpdate", {
+        try(updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                    "deletedAttributes" : toUpdate.deletedAttributes });
+                    "deletedAttributes" : toUpdate.deletedAttributes,
+                    "associatedChanges" : associateChanges }));
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
     }, {});
 
@@ -433,11 +451,33 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
     var maxValue = 2 * PI * radian;
 
     addManipulators(context, id, { (ROTATE_MANIPULATOR) : angularManipulator({ "axisOrigin" : rotateOrigin,
-                                   "axisDirection" : axis.direction,
-                                   "rotationOrigin" : refPoint,
-                                   "angle" : angle,
-                                   "minValue" : minValue,
-                                   "maxValue" : maxValue }) });
+                            "axisDirection" : axis.direction,
+                            "rotationOrigin" : refPoint,
+                            "angle" : angle,
+                            "minValue" : minValue,
+                            "maxValue" : maxValue }) });
+}
+
+/**
+ * A function for getting associated sheet metal entities outside of a sheet metal feature.
+ */
+function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
+{
+    var entityAssociations = try silent(getAttributes(context, {
+            "entities" : qBodyType(selection, BodyType.SOLID),
+            "attributePattern" : {} as SMAssociationAttribute
+        }));
+    var out = [];
+    if (entityAssociations != undefined)
+    {
+        for (var attribute in entityAssociations)
+        {
+            const inModelQuery = qOwnedByBody(qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL })), entityType);
+            var associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), inModelQuery]));
+            out = concatenateArrays([out, associatedEntities]);
+        }
+    }
+    return out;
 }
 
 /**

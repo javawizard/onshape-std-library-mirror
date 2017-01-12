@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,34 +9,35 @@ FeatureScript 464; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/query.fs", version : "464.0");
-export import(path : "onshape/std/smcornerstyle.gen.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "477.0");
 
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
-import(path : "onshape/std/box.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/coordSystem.fs", version : "464.0");
-import(path : "onshape/std/curveGeometry.fs", version : "464.0");
-import(path : "onshape/std/error.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/geomOperations.fs", version : "464.0");
-import(path : "onshape/std/manipulator.fs", version : "464.0");
-import(path : "onshape/std/math.fs", version : "464.0");
-import(path : "onshape/std/modifyFillet.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
-import(path : "onshape/std/sketch.fs", version : "464.0");
-import(path : "onshape/std/string.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/tool.fs", version : "464.0");
-import(path : "onshape/std/topologyUtils.fs", version : "464.0");
-import(path : "onshape/std/valueBounds.fs", version : "464.0");
-import(path : "onshape/std/vector.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "477.0");
+import(path : "onshape/std/box.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/coordSystem.fs", version : "477.0");
+import(path : "onshape/std/curveGeometry.fs", version : "477.0");
+import(path : "onshape/std/error.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/geomOperations.fs", version : "477.0");
+import(path : "onshape/std/manipulator.fs", version : "477.0");
+import(path : "onshape/std/math.fs", version : "477.0");
+import(path : "onshape/std/modifyFillet.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
+import(path : "onshape/std/sketch.fs", version : "477.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "477.0");
+import(path : "onshape/std/string.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/tool.fs", version : "477.0");
+import(path : "onshape/std/topologyUtils.fs", version : "477.0");
+import(path : "onshape/std/valueBounds.fs", version : "477.0");
+import(path : "onshape/std/vector.fs", version : "477.0");
 
 /**
  * @internal
+ * Method of initializing sheet metal model
  */
 export enum SMProcessType
 {
@@ -50,6 +51,7 @@ export enum SMProcessType
 
 /**
  * @internal
+ * Bounding type used with SMProcessType.EXTRUDE
  */
 export enum SMExtrudeBoundingType
 {
@@ -105,8 +107,11 @@ export const BEND_RELIEF_SCALE_BOUNDS =
 
 /**
  * @internal
+ * Create and activate a sheet metal model by converting existing parts, extruding sketch curves or thickening.
+ * All operations on an active sheet metal model will automatically be represented in the flat pattern and the table.
+ * Sheet metal models may consist of multiple parts. Multiple sheet metal models can be active.
  */
-annotation { "Feature Type Name" : "Start Sheet Metal",
+annotation { "Feature Type Name" : "Sheet metal model",
              "Manipulator Change Function" : "sheetMetalStartManipulatorChange",
              "Filter Selector" : "allparts",
              "Editing Logic Function" : "sheetMetalStartEditLogic" }
@@ -126,7 +131,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
             definition.partToConvert is Query;
 
-            annotation { "Name" : "Faces to Exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+            annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
             definition.facesToExclude is Query;
         }
         else if (definition.process == SMProcessType.EXTRUDE)
@@ -155,7 +160,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
         if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
         {
-            annotation { "Name" : "Bends", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO }
+            annotation { "Name" : "Edges to bend", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO }
             definition.bends is Query;
 
             annotation { "Name" : "Clearance from input" }
@@ -167,7 +172,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
         if (definition.process == SMProcessType.CONVERT)
         {
-            annotation { "Name" : "Keep Input Parts" }
+            annotation { "Name" : "Keep input parts" }
             definition.keepInputParts is boolean;
         }
 
@@ -178,55 +183,71 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
 
-        annotation { "Name" : "Bend Radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Bend radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
 
         annotation { "Name" : "K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isReal(definition.kFactor, K_FACTOR_BOUNDS);
 
-        annotation { "Name" : "Minimal clearance", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Minimal gap", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
 
         annotation { "Name" : "Corner relief type",
-                     "Default" : SMCornerStrategyType.RECTANGLE,
+                     "Default" : SMCornerStrategyType.SIMPLE,
                      "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
         definition.defaultCornerStyle is SMCornerStrategyType;
 
-        annotation { "Name" : "Corner relief scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
+        if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
+            definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
+        {
+            annotation { "Name" : "Corner relief scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
+        }
 
         annotation { "Name" : "Bend relief type",
                      "Default" : SMBendStrategyType.OBROUND,
                      "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
         definition.defaultBendReliefStyle is SMBendStrategyType;
 
-        annotation { "Name" : "Bend relief scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isReal(definition.defaultBendReliefScale, BEND_RELIEF_SCALE_BOUNDS);
+
+        if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
+            definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
+        {
+            annotation { "Name" : "Bend relief depth scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isReal(definition.defaultBendReliefDepthScale, CORNER_RELIEF_SCALE_BOUNDS);
+            annotation { "Name" : "Bend relief width scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isReal(definition.defaultBendReliefScale, BEND_RELIEF_SCALE_BOUNDS);
+        }
     }
     {
         if (definition.process == SMProcessType.CONVERT)
         {
-            checkNotInFeaturePattern(context, definition.partToConvert);
+            checkNotInFeaturePattern(context, definition.partToConvert, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
             convertExistingPart(context, id, definition);
         }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
-            checkNotInFeaturePattern(context, definition.sketchCurves);
+            definition.sketchCurves = qConstructionFilter(definition.sketchCurves, ConstructionObject.NO);
+            checkNotInFeaturePattern(context, definition.sketchCurves, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
             extrudeSheetMetal(context, id, definition);
         }
         else if (definition.process == SMProcessType.THICKEN)
         {
-            checkNotInFeaturePattern(context, definition.regions);
+            checkNotInFeaturePattern(context, definition.regions, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
             thickenToSheetMetal(context, id, definition);
         }
     }, { "kFactor" : 0.45,
      "minimalClearance" : 2e-5 * meter,
       "oppositeDirection" : false,
       "initEntities" : qNothing(),
-      "defaultCornerStyle" :  SMCornerStrategyType.RECTANGLE,
+      "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
       "defaultCornerReliefScale" : 1.5,
       "defaultBendReliefStyle" :  SMBendStrategyType.OBROUND,
-      "defaultBendReliefScale" : 1.0625
+      "defaultBendReliefDepthScale" : 1.5,
+      "defaultBendReliefScale" : 1.0625,
+      "bendsIncluded" : false,
+      "clearance" : 0 * meter,
+      "keepInputParts" : false
     });
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
@@ -341,6 +362,7 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
                     "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
                     "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
                     "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+                    "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : definition.defaultBendReliefScale}, 0);
         if (getFeatureError(context, id) != undefined)
         {
@@ -374,7 +396,6 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
             reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_START_SELECT_BENDS, ["bends"]);
         }
     }
-
 }
 
 function computeSurfaceOffset(context is Context, definition is map) returns ValueWithUnits
@@ -473,7 +494,7 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     var index = 0;
     for (var evaluatedFace in evaluatedFaceQueries)
     {
-        var key = try(evOwnerSketchPlane(context, { "entity" : evaluatedFace }));
+        var key = try silent(evOwnerSketchPlane(context, { "entity" : evaluatedFace }));
         if (key == undefined)
         {
             facesToConvert = append(facesToConvert, evaluatedFace);
@@ -516,17 +537,17 @@ function convertRegion(context is Context, id is Id, definition is map)
 {
     const extrudeId = id + "extrude";
     const sign = definition.oppositeDirection ? -1 : 1;
+    const startDepth = definition.thickness / 2 + definition.clearance;
     opExtrude(context, extrudeId, {
                 "entities" : definition.regions,
                 "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
                 "endBound" : BoundingType.BLIND,
-                "endDepth" : definition.thickness / 2 + definition.clearance,
-                "hasSecondDirection" : true,
-                "secondDirectionOppositeDirection" : false,
-                "secondDirectionDepth" : definition.clearance
+                "endDepth" : startDepth + definition.thickness,
+                "startBound" : BoundingType.BLIND,
+                "startDepth" : -startDepth
             });
     var createdQuery = qCreatedBy(extrudeId, EntityType.BODY);
-    var isStartCap = false;
+    var isStartCap = true;
     opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(extrudeId, isStartCap), EntityType.FACE) });
     opDeleteBodies(context, id + "deleteBodies", {
                 "entities" : createdQuery
@@ -624,6 +645,7 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
         "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
         "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+        "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
         "defaultBendReliefScale" : definition.defaultBendReliefScale
     };
 
@@ -643,67 +665,67 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
     return qUnion([qOwnedByBody(surfaceData.surfaceBodies, EntityType.FACE), qUnion(sharpEdges)]);
 }
 
-function getDefaultTwoCornerStyle(definition is map) returns SMCornerStyle
+function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
 {
     if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE)
     {
-        return SMCornerStyle.SQUARE;
+        return SMReliefStyle.RECTANGLE;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
     {
-        return SMCornerStyle.ROUND;
+        return SMReliefStyle.ROUND;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.CLOSED)
     {
-        return SMCornerStyle.ARC;
+        return SMReliefStyle.CLOSED;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.SIMPLE)
     {
-        return SMCornerStyle.SIMPLE;
+        return SMReliefStyle.SIMPLE;
     }
     else
     {
-        return SMCornerStyle.SQUARE;
+        return SMReliefStyle.RECTANGLE;
     }
 }
 
-function getDefaultThreeCornerStyle(definition is map) returns SMCornerStyle
+function getDefaultThreeCornerStyle(definition is map) returns SMReliefStyle
 {
     if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE)
     {
-        return SMCornerStyle.SQUARE;
+        return SMReliefStyle.RECTANGLE;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
     {
-        return SMCornerStyle.ROUND;
+        return SMReliefStyle.ROUND;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.SIMPLE)
     {
-        return SMCornerStyle.SIMPLE;
+        return SMReliefStyle.SIMPLE;
     }
     else
     {
-        return SMCornerStyle.SQUARE;
+        return SMReliefStyle.RECTANGLE;
     }
 }
 
-function getDefaultBendReliefStyle(definition is map) returns SMCornerStyle
+function getDefaultBendReliefStyle(definition is map) returns SMReliefStyle
 {
     if (definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
     {
-        return SMCornerStyle.SQUARE;
+        return SMReliefStyle.RECTANGLE;
     }
     else if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND)
     {
-        return SMCornerStyle.OBROUND;
+        return SMReliefStyle.OBROUND;
     }
     else if (definition.defaultBendReliefStyle == SMBendStrategyType.TEAR)
     {
-        return SMCornerStyle.TEAR;
+        return SMReliefStyle.TEAR;
     }
     else
     {
-        return SMCornerStyle.OBROUND;
+        return SMReliefStyle.OBROUND;
     }
 }
 

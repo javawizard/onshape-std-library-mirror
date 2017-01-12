@@ -1,24 +1,25 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "477.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "464.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "464.0");
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/evaluate.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/math.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
-import(path : "onshape/std/sketch.fs", version : "464.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "464.0");
-import(path : "onshape/std/tool.fs", version : "464.0");
-import(path : "onshape/std/vector.fs", version : "464.0");
+import(path : "onshape/std/attributes.fs", version : "477.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "477.0");
+import(path : "onshape/std/boolean.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/evaluate.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/math.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
+import(path : "onshape/std/sketch.fs", version : "477.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/tool.fs", version : "477.0");
+import(path : "onshape/std/vector.fs", version : "477.0");
 
 /**
  * Defines whether a `split` should split whole parts, or just faces.
@@ -35,7 +36,7 @@ export enum SplitType
 /**
  * Feature performing an [opSplitPart].
  */
-annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts", "Editing Logic Function" : "splitPartEditLogic" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -61,7 +62,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
-                        "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO) ||
+                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) ||
                             (EntityType.BODY && BodyType.SHEET) ||
                             (EntityType.FACE && GeometryType.PLANE && ConstructionObject.YES) }
             definition.faceTools is Query;
@@ -71,6 +72,16 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         performSplit(context, id, definition);
     }, { keepTools : false, splitType : SplitType.PART });
 
+/** @internal */
+export function splitPartEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+                                 isCreating is boolean, specifiedParameters is map) returns map
+{
+    if (!definition.keepTools && !specifiedParameters.keepTools)
+    {
+        definition.keepTools = hasNewNonModifiableEntities(context, definition.tool);
+    }
+    return definition;
+}
 
 function performSplit(context is Context, id is Id, definition is map)
 {

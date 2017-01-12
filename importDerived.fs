@@ -1,17 +1,17 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "464.0");
+export import(path : "onshape/std/query.fs", version : "477.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "464.0");
-import(path : "onshape/std/feature.fs", version : "464.0");
-import(path : "onshape/std/tool.fs", version : "464.0");
-import(path : "onshape/std/transform.fs", version : "464.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "464.0");
+import(path : "onshape/std/containers.fs", version : "477.0");
+import(path : "onshape/std/feature.fs", version : "477.0");
+import(path : "onshape/std/tool.fs", version : "477.0");
+import(path : "onshape/std/transform.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -67,7 +67,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             recordParameters(otherContext, id, definition);
             // remove sheet metal attributes and helper bodies
-            clearSheetMetalData(otherContext, id + "sheetMetal");
+            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal");
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -78,16 +78,19 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
 
             const allBodies = qEverything(EntityType.BODY);
-            const allSMFlatBodies = qCorrespondingInFlat(qBodyType(allBodies, BodyType.SOLID));
 
             const deleteDefinition = {
-                "entities" : qSubtraction(qUnion([allBodies, allSMFlatBodies]) , bodiesToKeep)
+                "entities" : qSubtraction(qUnion([allBodies, smPartsQ]) , bodiesToKeep)
             };
             opDeleteBodies(otherContext, id + "delete", deleteDefinition);
 
             var mergeDefinition = definition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;
             opMergeContexts(context, id + "merge", mergeDefinition);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V468_PROPAGATE_MERGE_ERROR))
+            {
+                processSubfeatureStatus(context, id, {"subfeatureId" : id + "merge"});
+            }
         }
     });
 

@@ -1,4 +1,4 @@
-FeatureScript 464; /* Automatically generated version */
+FeatureScript 477; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 464; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "464.0");
+import(path : "onshape/std/context.fs", version : "477.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "464.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "464.0");
-export import(path : "onshape/std/bendoptions.fs", version : "464.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "477.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "477.0");
+export import(path : "onshape/std/bendoptions.fs", version : "477.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "464.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "477.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -569,71 +569,6 @@ export function opTransform(context is Context, id is Id, definition is map)
 
 /**
  * @internal
- * Call prior to a flatten or fold operation to imprint any needed break edges on the part.
- * Bending requires a different imprint operation implemented in feature script.
- * @param id : @autocomplete `id + "bendFace1"`
- * @param definition {{
- *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent.
- *    @field useFaces {boolean} : If true, provide a list of faces to imprint on, if false provide a list of bodies.
- *    @field faces {Query} : @requiredif{`useFaces` is `true`} List of faces to have break edges imprinted.
- *    @field bodies {Query} : @requiredif{`useFaces` is `false`} List of bodies to have break edges imprinted.
- * }}
- */
-export function opPrepareForBendingInternal(context is Context, id is Id, definition is map)
-{
-    return @opPrepareForBendingInternal(context, id, definition);
-}
-
-/**
- * @internal
- * Bends a face of a body at a given edge, the body must be split in order to allow the bend.
- * @param id : @autocomplete `id + "bendFace1"`
- * @param definition {{
- *    @field bendEdge {Query} : Edge to indicate start of bend, can be either model edge or sketch edge.
- *    @field seedEntity {Query} : Vertex, edge or face to indicate which side of the edge will be bent. Be sure this is not
- *        the face containing a sketch edge as this will be not indicate the desired side.
- *    @field radius {ValueWithUnits} : Inside radius of the bend.
- *    @field angle {ValueWithUnits} : Angle of the bend.
- *    @field bendOptions {BendOptions} : Options for bend.
- * }}
- */
-export function opBendAtEdgeInternal(context is Context, id is Id, definition is map)
-{
-    return @opBendAtEdgeInternal(context, id, definition);
-}
-
-/**
- * @internal
- * Flattens faces or edges
- * @param id : @autocomplete `id + "flatten1"`
- * @param definition {{
- *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent.
- *    @field pickEdges {boolean} : Whether to unbend individual edges, or use a seed face.
- *    @field bendEdges {Query} : @requiredif{`pickEdges` is `true`} Edges to unbend. Must be an edge joining a planar face with an approximately tangent cylindrical face.
- *    @field seedFace {Query} : @requiredif{`pickEdges` is `false`} Face to remain fixed while adjacent faces are flattened. Must be a planar face.
- *    @field bendOptions {BendOptions} : Options for bend.
- * }}
- */
-export function opFlattenInternal(context is Context, id is Id, definition is map)
-{
-    return @opFlattenInternal(context, id, definition);
-}
-
-/**
- * @internal
- * Folds a previously flattened body.
- * @param id : @autocomplete `id + "fold1"`
- * @param definition {{
- *    @field body {Query} : Body to rebend.
- * }}
- */
-export function opFoldInternal(context is Context, id is Id, definition is map)
-{
-    return @opFoldInternal(context, id, definition);
-}
-
-/**
- * @internal
  * Extends the perimeter of a sheet body, moves sheet edges by distance or up to surface
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
@@ -641,7 +576,7 @@ export function opFoldInternal(context is Context, id is Id, definition is map)
  *    @field entities {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} Bodies or edges to extend.
  *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
  *                                       @autocomplete `0.1 * inch`
- *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Face query or surface to extend up to.
+ *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Entity to extend up to. Can be a face [Query], a [Plane] or a [Cylinder].
  *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
  *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
  *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
@@ -664,7 +599,6 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
  *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
  *    @field offset {ValueWithUnits} : "Offset extracted surface faces by this distance along normal" @optional
- *    @field tolerance @internalType {Enum} : Tolerance used to determine if an edge is tangent. @optional
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)
