@@ -1,4 +1,4 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -412,7 +412,32 @@ export enum FeatureScriptVersionNumber
     V474_MOVE_FACE_FIX,
     V475_KEEP_TOOLS_AUTO_SELECTION,
     V476_SM_BOOLEAN_PATTERN_ERROR,
-    V477_END_SM_UPDATE
+    V477_END_SM_UPDATE,
+    V481_CLEAR_SHEET_METAL_DATA_IN_SECTION,
+    V482_PS_VERSION_29_1_199,
+    V483_FLAT_QUERY_EVAL_FIX,
+    V484_MOVE_FACE_0_DISTANCE,
+    V485_EXTEND_SHEET_BODY_SPLIT,
+    V486_MOVE_FACE_PROPAGATE_INFO,
+    V487_IMPORT_FILTER_POINT_BODIES,
+    V488_CLASSIFY_CORNER_RETURNS_MAP,
+    V489_FLANGE_BUGS,
+    V490_BEND_RELIEF_LOCATION,
+    V491_CURVE_PATTERN_WIRES_ONLY,
+    V492_MULTIPLE_OUTLINE_PIECES,
+    V493_FLANGE_BASE_SHIFT_FIX,
+    V494_RECORD_SWAP_MULTIPLICITY,
+    V495_MOVE_FACE_ROTATION_AXIS,
+    V496_COMPLEX_BEND_ENDS,
+    V497_BLOCK_ILLEGAL_MODIFICATION,
+    V498_SM_SPATIAL_VERTEX_MATCHING,
+    V499_PS_VERSION_29_1_214,
+    V500_EXTERNAL_DISAMBIGUATION,
+    V501_BEND_END_ADAPTIVE_SMOOTHING,
+    V502_CORNER_CLASSIFICATION_FIX,
+    V503_EXTRUDE_WITH_OFFSET,
+    V504_MODIFY_TO_SPLIT,
+    V505_EXTRUDE_WITH_OFFSET_DIALOG
 }
 
 /**
@@ -423,6 +448,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V477_END_SM_UPDATE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V505_EXTRUDE_WITH_OFFSET_DIALOG;
 
 

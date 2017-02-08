@@ -1,4 +1,4 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,12 @@ FeatureScript 477; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "477.0");
+import(path : "onshape/std/context.fs", version : "505.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "477.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "477.0");
-export import(path : "onshape/std/bendoptions.fs", version : "477.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "505.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "505.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "477.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "505.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -55,9 +54,9 @@ export function opBoolean(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field entities {Query} : Edges and faces to chamfer.
  *      @field chamferType {ChamferType} : Determines where the new edges of the chamfer are positioned.
- *              @eg `EQUAL_OFFSETS` places both new edges `width` away from each original edge.
- *              @eg `TWO_OFFSETS` places edges `width1` and `width2` away.
- *              @eg `OFFSET_ANGLE` places one edge `width` away, and chamfers at an angle from that edge.
+ *              @eg `ChamferType.EQUAL_OFFSETS` places both new edges `width` away from each original edge.
+ *              @eg `ChamferType.TWO_OFFSETS` places edges `width1` and `width2` away.
+ *              @eg `ChamferType.OFFSET_ANGLE` places one edge `width` away, and chamfers at an angle from that edge.
  *      @field width {ValueWithUnits} : @requiredif {`chamferType` is `EQUAL_OFFSETS` or `OFFSET_ANGLE`.}
  *              @eg `0.2 * inch`
  *      @field width1 {ValueWithUnits} : @requiredIf {`chamferType` is `TWO_OFFSETS`.}
@@ -143,6 +142,11 @@ export function opDraft(context is Context, id is Id, definition is map)
  *              @eg `1 * inch`
  *      @field endBoundEntity {Query} : @requiredif {`endBound` is `UP_TO_SURFACE` or `UP_TO_BODY`.}
  *              The face or body that provides the bound.
+ *      @field endTranslationalOffset {ValueWithUnits} : @optional
+ *              The translational offset between the extrude end cap and the end bound entity. The direction vector for
+ *              this is the same as `direction`: negative values pull the end cap away from the bound entity when
+ *              `endDepth` is positive. `endOffset` will only have an effect if `endBound` is `UP_TO_SURFACE`,
+ *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  *      @field startBound {BoundingType} : @optional
  *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
  *      @field startDepth {ValueWithUnits} : @requiredif {`startBound` is `BLIND`.}
@@ -150,6 +154,11 @@ export function opDraft(context is Context, id is Id, definition is map)
  *              positive values make the extrusion longer when `endDepth` is positive.
  *      @field startBoundEntity {Query} : @requiredif {`startBound` is `UP_TO_SURFACE` or `UP_TO_BODY`.}
  *              The face or body that provides the bound.
+ *      @field startTranslationalOffset {ValueWithUnits} : @optional
+ *              The translational offset between the extrude start cap and the start bound entity. The direction vector for
+ *              this is the negative of `direction`: negative values pull the end cap away from the bound entity when
+ *              `startDepth` is positive. `startOffset` will only have an effect if `startBound` is `UP_TO_SURFACE`,
+ *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  * }}
  */
 export function opExtrude(context is Context, id is Id, definition is map)

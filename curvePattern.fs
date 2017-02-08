@@ -1,24 +1,55 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "477.0");
+export import(path : "onshape/std/patternUtils.fs", version : "505.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "477.0");
+export import(path : "onshape/std/path.fs", version : "505.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "477.0");
-import(path : "onshape/std/mathUtils.fs", version : "477.0");
-import(path : "onshape/std/sketch.fs", version : "477.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
+import(path : "onshape/std/curveGeometry.fs", version : "505.0");
+import(path : "onshape/std/mathUtils.fs", version : "505.0");
+import(path : "onshape/std/sketch.fs", version : "505.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
  * an [applyPattern], which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
+ *
+ * @param id : @autocomplete `id + "curvePattern1"`
+ * @param definition {{
+ *      @field patternType {PatternType}: @optional
+ *              Specifies a `PART`, `FEATURE`, or `FACE` pattern. Default is `PART`.
+ *              @autocomplete `PatternType.PART`
+ *      @field entities {Query}: @requiredif{`patternType` is `PART`}
+ *              The parts to pattern.
+ *              @eg `qCreatedBy(id + "extrude1", EntityType.BODY)`
+ *      @field faces {Query}: @requiredif{`patternType` is `FACE`}
+ *              The faces to pattern.
+ *      @field instanceFunction {FeatureList}: @requiredif{`patternType` is `FEATURE`}
+ *              The [FeatureList] of the features to pattern.
+ *
+ *      @field edges {Query}:
+ *              A [Query] for a set of edges to pattern along. The edges must form a continuous path.
+ *      @field instanceCount {number}:
+ *              The resulting number of pattern entities.
+ *              @eg `2` to have 2 resulting pattern entities (including the seed).
+ *      @field keepOrientation {boolean}: @optional
+ *              @ex `true` for the pattern entities to keep the orientation of the seed
+ *              @ex `false` for the pattern entities to reorient along the path (default)
+ *
+ *      @field operationType {NewBodyOperationType} : @optional
+ *              Specifies how the newly created body will be merged with existing bodies.
+ *      @field defaultScope {boolean} : @optional
+ *              @ex `true` to merge with all other bodies
+ *              @ex `false` to merge with `booleanScope`
+ *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
+ *              The specified bodies to merge with.
+ * }}
  */
 annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }
 export const curvePattern = defineFeature(function(context is Context, id is Id, definition is map)
@@ -71,7 +102,14 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             var referenceEntityQueries = [];
             for (var idToFunction in definition.instanceFunction)
             {
-                referenceEntityQueries = append(referenceEntityQueries, qCreatedBy(idToFunction.key));
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V491_CURVE_PATTERN_WIRES_ONLY) && isIdForSketch(context, idToFunction.key))
+                {
+                    referenceEntityQueries = append(referenceEntityQueries, qBodyType(qCreatedBy(idToFunction.key, EntityType.BODY), BodyType.WIRE));
+                }
+                else
+                {
+                    referenceEntityQueries = append(referenceEntityQueries, qCreatedBy(idToFunction.key));
+                }
             }
             referenceEntities = qUnion(referenceEntityQueries);
 

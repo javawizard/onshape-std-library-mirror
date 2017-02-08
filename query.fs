@@ -1,4 +1,4 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 477; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/context.fs", version : "477.0");
-import(path : "onshape/std/mathUtils.fs", version : "477.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version : "477.0");
-import(path : "onshape/std/curveGeometry.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/context.fs", version : "505.0");
+import(path : "onshape/std/mathUtils.fs", version : "505.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version : "505.0");
+import(path : "onshape/std/curveGeometry.fs", version : "505.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -342,6 +342,24 @@ export enum AllowFlattenedGeometry
  * @value NO  : Allow both modifiable and unmodifiable entities
  */
 export enum ModifiableEntityOnly
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies whether we allow edge points. Default is `YES`.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Corners", "Filter" : EntityType.VERTEX && AllowEdgePoint.NO }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : Allow edge points
+ * @value NO  : Disallow edge points
+ */
+export enum AllowEdgePoint
 {
     YES,
     NO
@@ -1242,6 +1260,12 @@ export function originalSetDisambiguation(queries is array)
 export function trueDependencyDisambiguation(queries is array)
 {
     return { disambiguationType : "TRUE_DEPENDENCY", derivedFrom : queries };
+}
+
+/** @internal */
+export function externalDependencyDisambiguation(queries is array)
+{
+    return { disambiguationType : "EXTERNAL_DEPENDENCY", derivedFrom : queries };
 }
 
 /** @internal */

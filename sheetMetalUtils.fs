@@ -1,69 +1,34 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "477.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "477.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "477.0");
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/coordSystem.fs", version : "477.0");
-import(path : "onshape/std/curveGeometry.fs", version : "477.0");
-import(path : "onshape/std/evaluate.fs", version : "477.0");
-import(path : "onshape/std/feature.fs", version : "477.0");
-import(path : "onshape/std/math.fs", version : "477.0");
-import(path : "onshape/std/manipulator.fs", version : "477.0");
-import(path : "onshape/std/query.fs", version : "477.0");
-import(path : "onshape/std/sketch.fs", version : "477.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "477.0");
-import(path : "onshape/std/string.fs", version : "477.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
-import(path : "onshape/std/tool.fs", version : "477.0");
-import(path : "onshape/std/valueBounds.fs", version : "477.0");
-import(path : "onshape/std/vector.fs", version : "477.0");
-import(path : "onshape/std/topologyUtils.fs", version : "477.0");
-import(path : "onshape/std/transform.fs", version : "477.0");
+import(path : "onshape/std/attributes.fs", version : "505.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "505.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/coordSystem.fs", version : "505.0");
+import(path : "onshape/std/curveGeometry.fs", version : "505.0");
+import(path : "onshape/std/evaluate.fs", version : "505.0");
+import(path : "onshape/std/feature.fs", version : "505.0");
+import(path : "onshape/std/math.fs", version : "505.0");
+import(path : "onshape/std/manipulator.fs", version : "505.0");
+import(path : "onshape/std/query.fs", version : "505.0");
+import(path : "onshape/std/sketch.fs", version : "505.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "505.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "505.0");
+import(path : "onshape/std/string.fs", version : "505.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
+import(path : "onshape/std/tool.fs", version : "505.0");
+import(path : "onshape/std/valueBounds.fs", version : "505.0");
+import(path : "onshape/std/vector.fs", version : "505.0");
+import(path : "onshape/std/topologyUtils.fs", version : "505.0");
+import(path : "onshape/std/transform.fs", version : "505.0");
 
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
 /**
- * @internal
- */
-export function tolerantParallel(line0 is Line, line1 is Line) returns boolean
-{
-    return squaredNorm(cross(line0.direction, line1.direction)) < TOLERANCE.zeroAngle * TOLERANCE.zeroAngle;
-}
-
-/**
- * @internal
- */
-export function tolerantCoLinear(line0 is Line, line1 is Line) returns boolean
-{
-    if (tolerantParallel(line0, line1)) {
-        var v = line1.origin - line0.origin;
-        v = v - line0.direction * dot(v, line0.direction);
-        var lengthTolerance = TOLERANCE.zeroLength * meter;
-        return squaredNorm(v) < lengthTolerance * lengthTolerance;
-    }
-    return false;
-}
-
-/**
- * @internal
- */
-export function hasSheetMetalAttribute(context is Context, entities is Query, objectType is SMObjectType) returns boolean
-{
-    return size(getSmObjectTypeAttributes(context, entities, objectType)) != 0;
-}
-
-/**
- * @internal
+ * Exposes sheet metal definition sheet body to the queries within feature.
  */
 export function defineSheetMetalFeature(feature is function, defaults is map) returns function
 {
@@ -73,7 +38,7 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
 
 
 /**
- * @internal
+ * Based on current state of sheet metal definition sheet body update solid bodies
  * @param args {{
  *      @field entities{Query} : sheet metal definition entities changed (or attributes changed) in this feature
  *      @field deletedAttributes{array} : associated attributes of deleted sheet metal definition entities
@@ -87,7 +52,7 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
 
 
 /**
-* @internal
+* Assign SMAttributes to topology of sheet metal definition sheet body
 * @param args {{
 *       @field surfaceBodies{Query}
 *       @field bendEdges{Query}
@@ -148,7 +113,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "defaultBendRadius" : {"value" : args.defaultRadius},
                     "defaultCornerReliefScale" : defaultCornerReliefScale,
                     "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
-                    "defaultBendReliefScale" : defaultBendReliefScale});
+                    "defaultBendReliefScale" : defaultBendReliefScale,
+                    "fsVersion" : getCurrentVersion(context)});
     if (args.defaultTwoCornerStyle != undefined)
     {
         modelAttribute.defaultTwoCornerStyle = args.defaultTwoCornerStyle;
@@ -273,8 +239,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
 }
 
 /**
- * @internal
- * For an edge between two planes computes angle between plane normals
+ * For an edge between two planes computes angle between plane normals.
  */
 export function edgeAngle(context is Context, edge is Query) returns ValueWithUnits
 {
@@ -330,7 +295,6 @@ export function updateJointAngle(context is Context, edges is Query)
 }
 
 /**
- * @internal
  * A `RealBoundSpec` for sheet metal K-factor between 0. and 1., defaulting to `.45`.
  */
 export const K_FACTOR_BOUNDS =
@@ -340,7 +304,6 @@ export const K_FACTOR_BOUNDS =
 
 
 /**
- * @internal
  * A `LengthBoundSpec` for minimal clearance of sheet  metal rips
  */
 export const SM_MINIMAL_CLEARANCE_BOUNDS =
@@ -350,12 +313,11 @@ export const SM_MINIMAL_CLEARANCE_BOUNDS =
     (millimeter) : 0.02,
     (inch)       : 1e-3,
     (foot)       : 1e-4,
-    (yard)       : 2e-5
+    (yard)       : 2.2e-5
 } as LengthBoundSpec;
 
 
 /**
- * @internal
  * A `LengthBoundSpec` for bend radius in sheet metal features
  */
 export const SM_BEND_RADIUS_BOUNDS =
@@ -369,7 +331,6 @@ export const SM_BEND_RADIUS_BOUNDS =
 } as LengthBoundSpec;
 
 /**
- * @internal
  * A `LengthBoundSpec` for thickness in sheet metal features. default to `(1/16)"` (i.e. steel)
  */
 export const SM_THICKNESS_BOUNDS =
@@ -385,12 +346,11 @@ export const SM_THICKNESS_BOUNDS =
 
 
 /**
- * @internal
- * Partitions allParts into non-sheetmetal parts and sheetmetal parts
+ * Partitions allParts into non-sheet metal parts and sheet metal parts.
  * To preserve existing behavior of code the returned non-sm query is exactly the same as what is passed in
- * for non-sm cases and a query is returned for them
- * The sheetmetal results will usually be iterated through and so are returned as a map with
- * the keys being the sheet metal ID and the values being the parts associated with that model
+ * for non-sm cases and a query is returned for them.
+ * The sheet metal results will usually be iterated through and so are returned as a map with
+ * the keys being the sheet metal ID and the values being the parts associated with that model.
  */
 export function partitionSheetMetalParts(context is Context, allParts is Query)
 {
@@ -423,7 +383,7 @@ export function partitionSheetMetalParts(context is Context, allParts is Query)
 }
 
 /**
- * @internal
+ * Get the first id of active sheet metal model the entities of query belong to.
  */
 export function getActiveSheetMetalId(context is Context, query is Query)
 {
@@ -635,7 +595,7 @@ function isEntityAppropriateForAttribute(context is Context, entity is Query, at
 }
 
 /**
- * @internal
+ * Extract sheet metal model parameters in a convenient form
  */
 export function getModelParameters(context is Context, model is Query) returns map
 {
@@ -737,7 +697,7 @@ export function clearSheetMetalData(context, id) returns Query
 /**
  * @internal
  */
-export function addRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
+export function createRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
 {
     var ripAttribute = makeSMJointAttribute(ripId);
     ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
@@ -756,7 +716,29 @@ export function addRipAttribute(context is Context, entity is Query, ripId is st
     {
         ripAttribute.minimalClearance = jointAttributes.minimalClearance;
     }
-    setAttribute(context, {"entities" : entity, "attribute" : ripAttribute});
+    return ripAttribute;
+}
+
+/**
+ * @internal
+ */
+export function createBendAttribute(context is Context, entity is Query, bendId is string, jointAttributes)
+{
+    var bendAttribute = makeSMJointAttribute(bendId);
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+    if (jointAttributes != undefined && jointAttributes.bendRadius != undefined)
+    {
+        bendAttribute.radius = {
+            "value" : jointAttributes.bendRadius,
+            "canBeEdited" : true
+        };
+    }
+    var angle = try silent(edgeAngle(context, entity));
+    if (angle != undefined)
+    {
+        bendAttribute.angle = {"value" : angle, "canBeEdited" : false};
+    }
+    return bendAttribute;
 }
 
 /**

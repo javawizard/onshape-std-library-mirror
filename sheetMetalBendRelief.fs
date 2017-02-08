@@ -1,34 +1,31 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
-export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "477.0");
+export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "505.0");
 
-import(path : "onshape/std/attributes.fs", version : "477.0");
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/feature.fs", version : "477.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "477.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "477.0");
-import(path : "onshape/std/valueBounds.fs", version : "477.0");
+import(path : "onshape/std/attributes.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/evaluate.fs", version : "505.0");
+import(path : "onshape/std/feature.fs", version : "505.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "505.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "505.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "505.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "505.0");
+import(path : "onshape/std/valueBounds.fs", version : "505.0");
 
 /**
- * @internal
+ * Bend relief feature is used to override default bend relief of sheet metal model
+ * at individual bend end.
  */
 annotation { "Feature Type Name" : "Bend relief", "Filter Selector" : "allparts"}
 export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Bend relief", "Filter" : (EntityType.EDGE || EntityType.VERTEX || EntityType.FACE)
-            && AllowFlattenedGeometry.YES, "MaxNumberOfPicks" : 1 }
+            && AllowFlattenedGeometry.YES && AllowEdgePoint.NO, "MaxNumberOfPicks" : 1 }
         definition.bendRelief is Query;
 
         annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.OBROUND, "UIHint" : "SHOW_LABEL" }
@@ -44,6 +41,19 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
     }
     {
         var corner = findCornerDefinitionVertex(context, definition.bendRelief);
+        var cornerInfo = evCornerType(context, {
+                "vertex" : corner
+        });
+
+        if (cornerInfo.cornerType == SMCornerType.NOT_A_CORNER) {
+            throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NO_CORNER, ['corner']);
+        }
+        else if (cornerInfo.cornerType != SMCornerType.BEND_END) {
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_NOT_A_BEND_END, ['corner']);
+        }
+
+        corner = cornerInfo.primaryVertex;
+
         var existingAttribute = getCornerAttribute(context, corner);
         var newAttribute = createNewCornerAttribute(id, existingAttribute, definition.bendReliefStyle, definition.bendReliefDepthScale, definition.bendReliefWidthScale);
         var cornerVerticesQ = corner;

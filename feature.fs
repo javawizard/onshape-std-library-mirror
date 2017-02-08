@@ -1,19 +1,19 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "477.0");
-export import(path : "onshape/std/error.fs", version : "477.0");
-export import(path : "onshape/std/geomOperations.fs", version : "477.0");
-export import(path : "onshape/std/query.fs", version : "477.0");
+export import(path : "onshape/std/context.fs", version : "505.0");
+export import(path : "onshape/std/error.fs", version : "505.0");
+export import(path : "onshape/std/geomOperations.fs", version : "505.0");
+export import(path : "onshape/std/query.fs", version : "505.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/string.fs", version : "477.0");
-import(path : "onshape/std/transform.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/string.fs", version : "505.0");
+import(path : "onshape/std/transform.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version : "505.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -178,7 +178,7 @@ export function recordParameters(context is Context, id is Id, definition is map
         {
             @recordQuery(context, id, { paramEntry.key : paramEntry.value });
         }
-        else if (paramEntry.value is number || paramEntry.value is ValueWithUnits || paramEntry.value is string || paramEntry.value is boolean)
+        else
         {
             setFeatureComputedParameter(context, id, { "name" : paramEntry.key, "value" : paramEntry.value });
         }
@@ -415,10 +415,21 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
 }
 /**
 * @internal
- * Used in `startTracking`
+* Used in `startTracking`
 */
 function lastOperationId(context is Context) returns Id
 {
     return @lastOperationId(context) as Id;
+}
+
+/**
+* Used to set external disambiguation for operations with unstable component in id
+* The disambiguation will be applied to results of sub-operations which otherwise don't
+* track dependency e.g. [Sketch] , [opPlane], [opPoint]
+* @param id {Id} : ends in unstable component
+*/
+export function setExternalDisambiguation(context is Context, id is Id, query is Query)
+{
+    @setExternalDisambiguation(context, id, {"entity" : query});
 }
 

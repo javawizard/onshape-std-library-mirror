@@ -1,4 +1,4 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,19 +9,20 @@ FeatureScript 477; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "477.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "477.0");
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/context.fs", version : "477.0");
-import(path : "onshape/std/coordSystem.fs", version : "477.0");
-import(path : "onshape/std/curveGeometry.fs", version : "477.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "477.0");
-import(path : "onshape/std/mathUtils.fs", version : "477.0");
-import(path : "onshape/std/query.fs", version : "477.0");
-import(path : "onshape/std/feature.fs", version : "477.0");
-import(path : "onshape/std/string.fs", version : "477.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/box.fs", version : "505.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/context.fs", version : "505.0");
+import(path : "onshape/std/coordSystem.fs", version : "505.0");
+import(path : "onshape/std/curveGeometry.fs", version : "505.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "505.0");
+import(path : "onshape/std/mathUtils.fs", version : "505.0");
+import(path : "onshape/std/query.fs", version : "505.0");
+import(path : "onshape/std/feature.fs", version : "505.0");
+import(path : "onshape/std/string.fs", version : "505.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "505.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version : "505.0");
 
 /**
  * Return the total area of all the entities.
@@ -688,5 +689,41 @@ precondition
             "parameter" : parameter
     });
     return faceTangent.normal;
+}
+
+/**
+ * Return the type of corner found at a vertex of a sheet metal model
+ * @param context
+ * @param arg {{
+ *      @field vertex{Query}
+ * }}
+ * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single vertex
+ * @returns {{
+  *      @field cornerType {SMCornerType} : the type of the corner
+  *      @field primaryVertex {Query} : the vertex that defines the corner
+  * }}
+ */
+export function evCornerType(context is Context, arg is map) returns map
+precondition
+{
+    arg.vertex is Query;
+}
+{
+    var data = @evCornerType(context, arg);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V488_CLASSIFY_CORNER_RETURNS_MAP))
+    {
+        return {
+            "cornerType" : data.cornerType as SMCornerType,
+            "primaryVertex" : qTransient(data.primaryVertex as TransientId)
+        };
+    }
+    else
+    {
+        return {
+            "cornerType" : data as SMCornerType,
+            "primaryVertex" : arg.vertex
+        };
+    }
 }
 

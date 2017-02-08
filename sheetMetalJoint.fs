@@ -1,32 +1,25 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
+export import(path : "onshape/std/smjointtype.gen.fs", version : "505.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "505.0");
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "477.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "477.0");
-
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "477.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "477.0");
-import(path : "onshape/std/feature.fs", version : "477.0");
-import(path : "onshape/std/valueBounds.fs", version : "477.0");
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/attributes.fs", version : "477.0");
-import(path : "onshape/std/evaluate.fs", version : "477.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "477.0");
-import(path : "onshape/std/math.fs", version : "477.0");
-import(path : "onshape/std/modifyFillet.fs", version : "477.0");
-import(path : "onshape/std/string.fs", version : "477.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "505.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "505.0");
+import(path : "onshape/std/feature.fs", version : "505.0");
+import(path : "onshape/std/valueBounds.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/attributes.fs", version : "505.0");
+import(path : "onshape/std/evaluate.fs", version : "505.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
+import(path : "onshape/std/math.fs", version : "505.0");
+import(path : "onshape/std/modifyFillet.fs", version : "505.0");
+import(path : "onshape/std/string.fs", version : "505.0");
 
 /**
- * @internal
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
  */
 annotation { "Feature Type Name" : "Modify joint", "Filter Selector" : "allparts" }
@@ -59,7 +52,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
         }
     }
     {
-        //this is not necessary but helps with corrrect error reporting in feature pattern
+        //this is not necessary but helps with correct error reporting in feature pattern
         checkNotInFeaturePattern(context, definition.entity, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.entity))
@@ -69,6 +62,10 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
 
         var jointEdge = findJointDefinitionEdge(context, definition.entity);
         var existingAttribute = getJointAttribute(context, jointEdge);
+        if (existingAttribute == undefined)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
+        }
         var newAttribute;
         if (definition.jointType == SMJointType.BEND)
         {
@@ -97,13 +94,8 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
 function getDefaultSheetMetalRadius(context is Context, entity is Query)
 {
     var sheetmetalEntity = qUnion(getSMDefinitionEntities(context, entity));
-    var sheetmetalBody = qOwnerBody(sheetmetalEntity);
-    var attr = getAttributes(context, {"entities" : sheetmetalBody, "attributePattern" : asSMAttribute({})});
-    if (size(attr) != 1 || attr[0].defaultBendRadius == undefined || attr[0].defaultBendRadius.value == undefined)
-    {
-        throw regenError("Bad sheet metal attribute");
-    }
-    return attr[0].defaultBendRadius.value;
+    var modelParameters = getModelParameters(context, qOwnerBody(sheetmetalEntity));
+    return modelParameters.defaultBendRadius;
 }
 
 function findJointDefinitionEdge(context is Context, entity is Query) returns Query

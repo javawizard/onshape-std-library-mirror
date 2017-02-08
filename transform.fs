@@ -1,13 +1,13 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/math.fs", version : "477.0");
-import(path : "onshape/std/matrix.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version : "477.0");
-import(path : "onshape/std/vector.fs", version : "477.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/math.fs", version : "505.0");
+import(path : "onshape/std/matrix.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version : "505.0");
+import(path : "onshape/std/vector.fs", version : "505.0");
 
 /**
  * Type typically representing a change of position, orientation in 3D space

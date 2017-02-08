@@ -1,11 +1,11 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "477.0");
-import(path : "onshape/std/valueBounds.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version: "477.0");
+import(path : "onshape/std/feature.fs", version : "505.0");
+import(path : "onshape/std/valueBounds.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version: "505.0");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -84,7 +84,12 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         definition.isModifiable = !definition.isInContext;
         opImportForeign(context, id, definition);
 
-        transformResultIfNecessary(context, id, remainingTransform);
+        if (!definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V487_IMPORT_FILTER_POINT_BODIES))
+        {
+            try silent(opDeleteBodies(context, id + "filterPoints", {
+                "entities": qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.POINT)}));
+        }
 
+        transformResultIfNecessary(context, id, remainingTransform);
     }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
 

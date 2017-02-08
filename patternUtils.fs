@@ -1,17 +1,17 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "477.0");
-export import(path : "onshape/std/containers.fs", version : "477.0");
-export import(path : "onshape/std/evaluate.fs", version : "477.0");
-export import(path : "onshape/std/feature.fs", version : "477.0");
-export import(path : "onshape/std/featureList.fs", version : "477.0");
-export import(path : "onshape/std/valueBounds.fs", version : "477.0");
+export import(path : "onshape/std/boolean.fs", version : "505.0");
+export import(path : "onshape/std/containers.fs", version : "505.0");
+export import(path : "onshape/std/evaluate.fs", version : "505.0");
+export import(path : "onshape/std/feature.fs", version : "505.0");
+export import(path : "onshape/std/featureList.fs", version : "505.0");
+export import(path : "onshape/std/valueBounds.fs", version : "505.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "477.0");
+import(path : "onshape/std/mathUtils.fs", version : "505.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -148,6 +148,8 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
  * Applies the body, face, or feature pattern, given just transforms and instance names
  * @param definition {{
  *      @field patternType {PatternType}
+ *      @field entities {Query} : @requiredif{`patternType` is not `FEATURE`} The faces or parts to pattern.
+ *      @field instanceFunction {FeatureList} : @requiredif{`patternType` is `FEATURE`} The features to pattern.
  *      @field transforms {array} : An `array` of [Transform]s in which to place
  *              new instances.
  *      @field instanceNames {array} : An `array` of the same size as

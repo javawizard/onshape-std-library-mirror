@@ -1,11 +1,11 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "477.0");
-import(path : "onshape/std/containers.fs", version : "477.0");
-import(path : "onshape/std/string.fs", version : "477.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "505.0");
+import(path : "onshape/std/string.fs", version : "505.0");
 
 //====================== Context ========================
 
@@ -49,6 +49,15 @@ export function newContext() returns Context
 export function isAtVersionOrLater(context is Context, introduced is FeatureScriptVersionNumber) returns boolean
 {
     return @isAtVersionOrLater(context, introduced);
+}
+
+/**
+ * @internal
+ * Returns version at which the active feature of `context` is running
+ */
+export function getCurrentVersion(context is Context) returns FeatureScriptVersionNumber
+{
+    return @getCurrentVersion(context) as FeatureScriptVersionNumber;
 }
 
 //====================== Id ========================

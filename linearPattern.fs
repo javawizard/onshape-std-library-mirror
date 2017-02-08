@@ -1,21 +1,72 @@
-FeatureScript 477; /* Automatically generated version */
+FeatureScript 505; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "477.0");
-export import(path : "onshape/std/tool.fs", version : "477.0");
-export import(path : "onshape/std/patternUtils.fs", version : "477.0");
+export import(path : "onshape/std/query.fs", version : "505.0");
+export import(path : "onshape/std/tool.fs", version : "505.0");
+export import(path : "onshape/std/patternUtils.fs", version : "505.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "477.0");
-import(path : "onshape/std/units.fs", version : "477.0");
+import(path : "onshape/std/mathUtils.fs", version : "505.0");
+import(path : "onshape/std/units.fs", version : "505.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
  * an [applyPattern], which in turn performs an [opPattern] or, for a feature
  * pattern, calls the feature function.
+ *
+ * @param id : @autocomplete `id + "linearPattern1"`
+ * @param definition {{
+ *      @field patternType {PatternType}: @optional
+ *              Specifies a `PART`, `FEATURE`, or `FACE` pattern. Default is `PART`.
+ *              @autocomplete `PatternType.PART`
+ *      @field entities {Query}: @requiredif{`patternType` is `PART`}
+ *              The parts to pattern.
+ *              @eg `qCreatedBy(id + "extrude1", EntityType.BODY)`
+ *      @field faces {Query}: @requiredif{`patternType` is `FACE`}
+ *              The faces to pattern.
+ *      @field instanceFunction {FeatureList}: @requiredif{`patternType` is `FEATURE`}
+ *              The [FeatureList] of the features to pattern.
+ *
+ *      @field directionOne {Query}:
+ *              The direction of the pattern.
+ *              @eg `qCreatedBy(newId() + "Right", EntityType.FACE)`
+ *      @field distance {ValueWithUnits}:
+ *              The distance between each pattern entity.
+ *              @eg `1.0 * inch` to space the pattern entities 1 inch apart.
+ *      @field instanceCount {number}:
+ *              The resulting number of pattern entities, unless `isCentered` is `true`.
+ *              @eg `2` to have 2 resulting pattern entities (including the seed).
+ *      @field oppositeDirection {boolean}: @optional
+ *              @ex `true` to switch the direction of the pattern along `directionOne`.
+ *      @field isCentered {boolean}: @optional
+ *              Whether to center the pattern on the seed. When set to `true`, `instanceCount - 1` pattern entities are
+ *              created along each direction of `directionOne`. Default is `false`.
+ *
+ *      @field hasSecondDir {boolean}: @optional
+ *              @ex `true` if the pattern should extend in two directions rather than one, creating a grid of pattern entities.
+ *      @field directionTwo {Query}: @requiredif{`hasSecondDir` is `true`}
+ *              The second direction of the pattern.
+ *      @field distanceTwo {ValueWithUnits}: @requiredif{`hasSecondDir` is `true`}
+ *              The distance between each pattern entity in the second direction.
+ *      @field instanceCountTwo {number}: @requiredif{`hasSecondDir` is `true`}
+ *              The resulting number of pattern entities in the second direction, unless `isCentered` is `true`.
+ *      @field oppositeDirectionTwo {boolean}: @optional
+ *              @ex `true` to switch the direction of the pattern along `directionTwo`.
+ *      @field isCenteredTwo {boolean}: @optional
+ *              Whether to center the second direction of the pattern on the seed. When set to `true`, `instanceCount - 1`
+ *              pattern entities are created along each direction of `directionTwo`. Default is `false`.
+ *
+ *      @field operationType {NewBodyOperationType} : @optional
+ *              Specifies how the newly created body will be merged with existing bodies.
+ *      @field defaultScope {boolean} : @optional
+ *              @ex `true` to merge with all other bodies
+ *              @ex `false` to merge with `booleanScope`
+ *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
+ *              The specified bodies to merge with.
+ * }}
  */
 annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allparts" }
 export const linearPattern = defineFeature(function(context is Context, id is Id, definition is map)
