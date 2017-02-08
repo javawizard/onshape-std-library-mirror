@@ -19,6 +19,7 @@ import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -165,6 +166,25 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
              is3dLengthVector(point);
     }
     {
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.jogPoints);
+    });
+
+/**
+ * @internal
+ * Calling this method will clear all intermediate sheet metal data, limited to internal use only
+ */
+export const jogSectionPartInternal = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.target is Query;
+        definition.sketchPlane is Plane;
+        definition.jogPoints is array;
+        for (var point in definition.jogPoints)
+             is3dLengthVector(point);
+    }
+    {
+        // remove sheet metal attributes and helper bodies
+        clearSheetMetalData(context, id + "sheetMetal");
         jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.jogPoints);
     });
 

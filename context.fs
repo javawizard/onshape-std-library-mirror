@@ -51,6 +51,15 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
     return @isAtVersionOrLater(context, introduced);
 }
 
+/**
+ * @internal
+ * Returns version at which the active feature of `context` is running
+ */
+export function getCurrentVersion(context is Context) returns FeatureScriptVersionNumber
+{
+    return @getCurrentVersion(context) as FeatureScriptVersionNumber;
+}
+
 //====================== Id ========================
 
 /**

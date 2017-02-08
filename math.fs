@@ -35,7 +35,8 @@ export const PI = 3.1415926535897932384626433832795;
 export const TOLERANCE =
 {
     "zeroAngle" : 1e-11,
-    "zeroLength" : 1e-8
+    "zeroLength" : 1e-8,
+    "g1Angle" : (PI / 180) * .1
 };
 
 /**

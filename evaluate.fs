@@ -20,6 +20,7 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 
@@ -688,5 +689,41 @@ precondition
             "parameter" : parameter
     });
     return faceTangent.normal;
+}
+
+/**
+ * Return the type of corner found at a vertex of a sheet metal model
+ * @param context
+ * @param arg {{
+ *      @field vertex{Query}
+ * }}
+ * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single vertex
+ * @returns {{
+  *      @field cornerType {SMCornerType} : the type of the corner
+  *      @field primaryVertex {Query} : the vertex that defines the corner
+  * }}
+ */
+export function evCornerType(context is Context, arg is map) returns map
+precondition
+{
+    arg.vertex is Query;
+}
+{
+    var data = @evCornerType(context, arg);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V488_CLASSIFY_CORNER_RETURNS_MAP))
+    {
+        return {
+            "cornerType" : data.cornerType as SMCornerType,
+            "primaryVertex" : qTransient(data.primaryVertex as TransientId)
+        };
+    }
+    else
+    {
+        return {
+            "cornerType" : data as SMCornerType,
+            "primaryVertex" : arg.vertex
+        };
+    }
 }
 

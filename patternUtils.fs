@@ -148,6 +148,8 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
  * Applies the body, face, or feature pattern, given just transforms and instance names
  * @param definition {{
  *      @field patternType {PatternType}
+ *      @field entities {Query} : @requiredif{`patternType` is not `FEATURE`} The faces or parts to pattern.
+ *      @field instanceFunction {FeatureList} : @requiredif{`patternType` is `FEATURE`} The features to pattern.
  *      @field transforms {array} : An `array` of [Transform]s in which to place
  *              new instances.
  *      @field instanceNames {array} : An `array` of the same size as

@@ -178,7 +178,7 @@ export function recordParameters(context is Context, id is Id, definition is map
         {
             @recordQuery(context, id, { paramEntry.key : paramEntry.value });
         }
-        else if (paramEntry.value is number || paramEntry.value is ValueWithUnits || paramEntry.value is string || paramEntry.value is boolean)
+        else
         {
             setFeatureComputedParameter(context, id, { "name" : paramEntry.key, "value" : paramEntry.value });
         }
@@ -415,10 +415,21 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
 }
 /**
 * @internal
- * Used in `startTracking`
+* Used in `startTracking`
 */
 function lastOperationId(context is Context) returns Id
 {
     return @lastOperationId(context) as Id;
+}
+
+/**
+* Used to set external disambiguation for operations with unstable component in id
+* The disambiguation will be applied to results of sub-operations which otherwise don't
+* track dependency e.g. [Sketch] , [opPlane], [opPoint]
+* @param id {Id} : ends in unstable component
+*/
+export function setExternalDisambiguation(context is Context, id is Id, query is Query)
+{
+    @setExternalDisambiguation(context, id, {"entity" : query});
 }
 

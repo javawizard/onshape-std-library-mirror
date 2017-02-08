@@ -3,11 +3,6 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
 export import(path : "onshape/std/query.fs", version : "✨");
 
@@ -36,7 +31,6 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
- * @internal
  * Method of initializing sheet metal model
  */
 export enum SMProcessType
@@ -50,7 +44,6 @@ export enum SMProcessType
 }
 
 /**
- * @internal
  * Bounding type used with SMProcessType.EXTRUDE
  */
 export enum SMExtrudeBoundingType
@@ -62,7 +55,7 @@ export enum SMExtrudeBoundingType
 }
 
 /**
- * @internal
+ * Default corner relief style setting
  */
 export enum SMCornerStrategyType
 {
@@ -77,7 +70,7 @@ export enum SMCornerStrategyType
 }
 
 /**
- * @internal
+ * Default bend relief style setting
  */
 export enum SMBendStrategyType
 {
@@ -90,7 +83,7 @@ export enum SMBendStrategyType
 }
 
 /**
- * @internal
+ * Corner relief scale bounds
  */
 export const CORNER_RELIEF_SCALE_BOUNDS =
 {
@@ -98,7 +91,7 @@ export const CORNER_RELIEF_SCALE_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * @internal
+ * Bend relief scale bounds
  */
 export const BEND_RELIEF_SCALE_BOUNDS =
 {
@@ -106,7 +99,6 @@ export const BEND_RELIEF_SCALE_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * @internal
  * Create and activate a sheet metal model by converting existing parts, extruding sketch curves or thickening.
  * All operations on an active sheet metal model will automatically be represented in the flat pattern and the table.
  * Sheet metal models may consist of multiple parts. Multiple sheet metal models can be active.
@@ -476,10 +468,17 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
 
 function offsetSheets(context is Context, id is Id, sheetQuery is Query, thickness is ValueWithUnits, oppositeDirection is boolean)
 {
-    opOffsetFace(context, id + "offsetFaces", {
-                "moveFaces" : qOwnedByBody(sheetQuery, EntityType.FACE),
-                "offsetDistance" : thickness * 0.5 * (oppositeDirection ? -1 : 1)
-            });
+    try
+    {
+        opOffsetFace(context, id + "offsetFaces", {
+                    "moveFaces" : qOwnedByBody(sheetQuery, EntityType.FACE),
+                    "offsetDistance" : thickness * 0.5 * (oppositeDirection ? -1 : 1)
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_TOO_THICK, ["thickness"]);
+    }
 }
 
 function thickenToSheetMetal(context is Context, id is Id, definition is map)

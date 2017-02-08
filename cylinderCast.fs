@@ -22,6 +22,7 @@ import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
 
 /**
  * @internal

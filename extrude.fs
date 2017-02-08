@@ -66,6 +66,10 @@ export enum SecondDirectionBoundingType
  *      @field endBound {BoundingType}: @optional
  *              The end bounding condition for the extrude. Default is `BLIND`.
  *              @autocomplete `BoundingType.BLIND`
+ *      @field oppositeDirection {boolean}: @optional
+ *              @ex `true` to flip the direction of the extrude to point opposite the face/sketch
+ *              normal.
+ *
  *      @field depth {ValueWithUnits}: @requiredif {`endBound` is `BLIND` or `SYMMETRIC`}
  *              A length specifying the extrude depth. For a symmetric extrude, specifies the full
  *              extrude depth. For a blind extrude, specifies the depth of the first extrude
@@ -78,9 +82,14 @@ export enum SecondDirectionBoundingType
  *      @field endBoundEntityVertex {Query}: @requiredif {`endBound` is `UP_TO_VERTEX`}
  *              Specifies the vertex to bound the extrude.
  *
- *      @field oppositeDirection {boolean}: @optional
- *              @ex `true` to flip the direction of the extrude to point opposite the face/sketch
- *              normal.
+ *      @field hasOffset {boolean}: @optional
+ *              @ex `true` to add a translational offset from the selected face, surface, solid body or vertex.
+ *      @field offsetDistance {ValueWithUnits}: @requiredif {`offset` is `true`}
+ *              The translational distance between the selected face, surface, solid body or vertex and the cap of the
+ *              extrude. @ex `0.5 * inch`
+ *      @field offsetOppositeDirection {boolean}: @optional
+ *              @ex `false` to offset away from the selected end bound (default)
+ *              @ex `true` to offset into the selected end bound
  *
  *      @field hasDraft {boolean} : @optional
  *              @ex `true` to add a draft to the extrude.
@@ -91,10 +100,15 @@ export enum SecondDirectionBoundingType
  *              @ex `false` to draft outwards (default)
  *              @ex `true` to draft inwards
  *
+ *
  *      @field hasSecondDirection {boolean} : @optional
  *              @example `true` to specify a second direction.
+ *
  *      @field secondDirectionBound {SecondDirectionBoundingType}: @optional
  *              The bounding type of the second direction. Can be different from the bounding type of the first direction.
+ *      @field secondDirectionOppositeDirection {boolean} : @optional
+ *              @ex `true` will flip the second end direction to align with the plane/face's normal.
+ *
  *      @field secondDirectionDepth {ValueWithUnits}: @requiredif {`secondDirectionBound` is `BLIND`}
  *              A length specifying the second direction's extrude depth.
  *      @field secondDirectionBoundEntityFace {Query}: @requiredif {`secondDirectionBound` is `UP_TO_SURFACE`}
@@ -103,8 +117,15 @@ export enum SecondDirectionBoundingType
  *              specifies the surface or solid body to bound the extrude.
  *      @field secondDirectionBoundEntityVertex {Query}: @requiredif {`secondDirectionBound` is `UP_TO_VERTEX`}
  *              specifies the vertex to bound the extrude.
- *      @field secondDirectionOppositeDirection {boolean} : @optional
- *              @ex `true` will flip the second end direction to align with the plane/face's normal.
+ *
+ *      @field hasSecondDirectionOffset {boolean}: @optional
+ *              @ex `true` to add a translational offset from the selected face, surface, solid body or vertex.
+ *      @field secondDirectionOffsetDistance {ValueWithUnits}: @requiredif {`offset` is `true`}
+ *              The translational distance between the selected face, surface, solid body or vertex and the cap of the
+ *              extrude. @ex `0.5 * inch`
+ *      @field secondDirectionOffsetOppositeDirection {boolean}: @optional
+ *              @ex `false` to offset away from the selected second direction end bound (default)
+ *              @ex `true` to offset into the selected second direction end bound
  *
  *      @field hasSecondDirectionDraft {boolean} : @optional
  *              @ex `true` to add a draft to the second direction extrude.
@@ -159,7 +180,13 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.oppositeDirection is boolean;
         }
 
-        if (definition.endBound == BoundingType.UP_TO_SURFACE)
+        if (definition.endBound == BoundingType.BLIND ||
+            definition.endBound == BoundingType.SYMMETRIC)
+        {
+            annotation { "Name" : "Depth" }
+            isLength(definition.depth, LENGTH_BOUNDS);
+        }
+        else if (definition.endBound == BoundingType.UP_TO_SURFACE)
         {
             annotation { "Name" : "Up to face",
                 "Filter" : EntityType.FACE && SketchObject.NO,
@@ -181,11 +208,22 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.endBoundEntityVertex is Query;
         }
 
-        if (definition.endBound == BoundingType.BLIND ||
-            definition.endBound == BoundingType.SYMMETRIC)
+        if (definition.endBound == BoundingType.UP_TO_NEXT ||
+            definition.endBound == BoundingType.UP_TO_SURFACE ||
+            definition.endBound == BoundingType.UP_TO_BODY ||
+            definition.endBound == BoundingType.UP_TO_VERTEX)
         {
-            annotation { "Name" : "Depth" }
-            isLength(definition.depth, LENGTH_BOUNDS);
+            annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+            definition.hasOffset is boolean;
+
+            if (definition.hasOffset)
+            {
+                annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                isLength(definition.offsetDistance, LENGTH_BOUNDS);
+
+                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+                definition.offsetOppositeDirection is boolean;
+            }
         }
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -216,7 +254,12 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                 annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
                 definition.secondDirectionOppositeDirection is boolean;
 
-                if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE)
+                if (definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
+                {
+                    annotation { "Name" : "Depth" }
+                    isLength(definition.secondDirectionDepth, LENGTH_BOUNDS);
+                }
+                else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE)
                 {
                     annotation { "Name" : "Up to face",
                         "Filter" : EntityType.FACE && SketchObject.NO,
@@ -239,10 +282,22 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                     definition.secondDirectionBoundEntityVertex is Query;
                 }
 
-                if (definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
+                if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_NEXT ||
+                    definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE ||
+                    definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY ||
+                    definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
                 {
-                    annotation { "Name" : "Depth" }
-                    isLength(definition.secondDirectionDepth, LENGTH_BOUNDS);
+                    annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                    definition.hasSecondDirectionOffset is boolean;
+
+                    if (definition.hasSecondDirectionOffset)
+                    {
+                        annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                        isLength(definition.secondDirectionOffsetDistance, LENGTH_BOUNDS);
+
+                        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+                        definition.secondDirectionOffsetOppositeDirection is boolean;
+                    }
                 }
 
                 if (definition.bodyType == ToolBodyType.SOLID &&
@@ -336,8 +391,25 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.endBound = BoundingType.UP_TO_SURFACE;
         }
 
+        definition.endTranslationalOffset = 0;
+
+        if (definition.hasOffset &&
+           (definition.endBound == BoundingType.UP_TO_NEXT ||
+            definition.endBound == BoundingType.UP_TO_SURFACE ||
+            definition.endBound == BoundingType.UP_TO_BODY))
+        {
+            // @opExtrude takes endTranslationalOffset in terms of extrude direction, but positive, non-flipped offset
+            // in extrude feature should pull away from the body.
+            if (!definition.offsetOppositeDirection)
+            {
+                definition.offsetDistance *= -1;
+            }
+            definition.endTranslationalOffset = definition.offsetDistance;
+        }
+
         definition.startBound = BoundingType.BLIND;
         definition.startDepth = 0;
+        definition.startTranslationalOffset = 0;
         definition.endDepth = definition.depth;
 
         if (definition.endBound == BoundingType.SYMMETRIC)
@@ -371,6 +443,19 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.startDepth = definition.secondDirectionDepth;
             if (definition.secondDirectionOppositeDirection != definition.oppositeDirection)
                 definition.isStartBoundOpposite = true;
+
+            if (definition.hasSecondDirectionOffset &&
+               (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_NEXT ||
+                definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE ||
+                definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY))
+            {
+                if ((definition.secondDirectionOffsetOppositeDirection && !definition.isStartBoundOpposite) ||
+                    (!definition.secondDirectionOffsetOppositeDirection && definition.isStartBoundOpposite))
+                {
+                    definition.secondDirectionOffsetDistance *= -1;
+                }
+                definition.startTranslationalOffset = definition.secondDirectionOffsetDistance;
+            }
         }
 
         // ------------- Perform the operation ---------------
@@ -399,6 +484,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
             secondDirectionBound : SecondDirectionBoundingType.BLIND,
             secondDirectionOppositeDirection : true, hasSecondDirection : false,
+            hasOffset: false, hasSecondDirectionOffset: false,
+            offsetOppositeDirection: false, secondDirectionOffsetOppositeDirection: false,
             hasDraft: false, hasSecondDirectionDraft: false,
             draftPullDirection : false, secondDirectionDraftPullDirection : false });
 
@@ -714,15 +801,15 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
     }
     else
     {
-        var offset = definition.depth;
+        var depthOffset = definition.depth;
         if (definition.endBound == BoundingType.SYMMETRIC)
-            offset *= 0.5;
+            depthOffset *= 0.5;
         if (definition.oppositeDirection)
-            offset *= -1;
+            depthOffset *= -1;
         addManipulators(context, id, { (DEPTH_MANIPULATOR) :
                         linearManipulator(extrudeAxis.origin,
                             extrudeAxis.direction,
-                            offset,
+                            depthOffset,
                             usedEntities) });
     }
 
@@ -739,13 +826,13 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
         }
         else
         {
-            var secondDirectionOffset = definition.secondDirectionDepth;
+            var secondDirectionDepthOffset = definition.secondDirectionDepth;
             if (definition.secondDirectionOppositeDirection == true)
-                secondDirectionOffset *= -1;
+                secondDirectionDepthOffset *= -1;
             addManipulators(context, id, { (SECOND_DEPTH_MANIPULATOR) :
                             linearManipulator(extrudeAxis.origin,
                                               extrudeAxis.direction,
-                                              secondDirectionOffset,
+                                              secondDirectionDepthOffset,
                                               usedEntities,
                                               ManipulatorStyleEnum.SECONDARY) });
         }
@@ -762,11 +849,11 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
         (definition.endBound == BoundingType.BLIND ||
          definition.endBound == BoundingType.SYMMETRIC))
     {
-        var newOffset = newManipulators[DEPTH_MANIPULATOR].offset;
+        var newDepthOffset = newManipulators[DEPTH_MANIPULATOR].offset;
         if (definition.endBound == BoundingType.SYMMETRIC)
-            newOffset *= 2;
-        definition.oppositeDirection = newOffset < 0;
-        definition.depth = abs(newOffset);
+            newDepthOffset *= 2;
+        definition.oppositeDirection = newDepthOffset < 0;
+        definition.depth = abs(newDepthOffset);
     }
     else if (newManipulators[FLIP_MANIPULATOR] is map &&
              definition.endBound != BoundingType.BLIND &&
@@ -780,9 +867,9 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
         if (newManipulators[SECOND_DEPTH_MANIPULATOR] is map &&
             definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
         {
-            const newSecondDirectionOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
-            definition.secondDirectionOppositeDirection = newSecondDirectionOffset < 0;
-            definition.secondDirectionDepth = abs(newSecondDirectionOffset);
+            const newSecondDirectionDepthOffset = newManipulators[SECOND_DEPTH_MANIPULATOR].offset;
+            definition.secondDirectionOppositeDirection = newSecondDirectionDepthOffset < 0;
+            definition.secondDirectionDepth = abs(newSecondDirectionDepthOffset);
         }
         else if (newManipulators[SECOND_FLIP_MANIPULATOR] is map &&
             definition.secondDirectionBound != SecondDirectionBoundingType.BLIND)

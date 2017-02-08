@@ -348,6 +348,24 @@ export enum ModifiableEntityOnly
 }
 
 /**
+ * Specifies whether we allow edge points. Default is `YES`.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Corners", "Filter" : EntityType.VERTEX && AllowEdgePoint.NO }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : Allow edge points
+ * @value NO  : Disallow edge points
+ */
+export enum AllowEdgePoint
+{
+    YES,
+    NO
+}
+
+/**
  * Specifies whether the entities are mesh geometries.
  *
  * @seealso [qMeshGeometryFilter]
@@ -1242,6 +1260,12 @@ export function originalSetDisambiguation(queries is array)
 export function trueDependencyDisambiguation(queries is array)
 {
     return { disambiguationType : "TRUE_DEPENDENCY", derivedFrom : queries };
+}
+
+/** @internal */
+export function externalDependencyDisambiguation(queries is array)
+{
+    return { disambiguationType : "EXTERNAL_DEPENDENCY", derivedFrom : queries };
 }
 
 /** @internal */

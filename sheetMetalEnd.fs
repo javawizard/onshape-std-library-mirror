@@ -3,11 +3,6 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
@@ -18,7 +13,6 @@ import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 /**
- * @internal
  * Deactivate the sheet metal model of selected parts.
  * Continued modeling on deactivated sheet metal parts will not be represented in the flat pattern or the table.
  */

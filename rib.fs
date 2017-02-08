@@ -81,7 +81,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         const numberOfRibs = size(profiles);
         if (profiles == [])
         {
-            throw regenError(ErrorStringEnum.RIB_NO_PROFILES);
+            throw regenError(ErrorStringEnum.RIB_NO_PROFILES, ["profiles"]);
         }
 
         if (evaluateQuery(context, definition.parts) == [])
@@ -104,6 +104,12 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             const profile = profiles[i];
             const instanceId = id + unstableIdComponent(i);
             var thickenId;
+
+            // Cannot determine the direction of extrusion when profile is closed.
+            if (definition.ribExtrusionDirection == RibExtrusionDirection.PARALLEL_TO_SKETCH_PLANE && isClosed(context, profile))
+            {
+                throw regenError(ErrorStringEnum.RIB_ONLY_OPEN_PROFILES);
+            }
 
             try
             {
@@ -227,7 +233,7 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
     //     to the part where they intersect).
     // 2.  The extend profiles up to part checkbox has been selected.
 
-    // return wether we need to force an extension at the given end of the profile.
+    // return whether we need to force an extension at the given end of the profile.
     const endNeedsExtension = function(end is number) returns boolean
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V438_RIB_EXTEND_LOGIC))
@@ -363,7 +369,7 @@ function extrudeRibs(context is Context,
                     "keepTools" : true
                 });
         var boolQuery = qCreatedBy(id + "splitOffRibExcess", EntityType.FACE);
-        if (size(evaluateQuery(context, boolQuery)) == 0)
+        if (size(evaluateQuery(context, boolQuery)) == 0 || size(evaluateQuery(context, ribPartsQuery)) == 1)
         {
             badSubtractions = append(badSubtractions, ribPartsQuery);
             didBoolean = false;

@@ -100,6 +100,19 @@ export predicate canBeSketch(value)
 }
 
 /**
+ * Check whether an [Id] represents a Sketch operation.
+ */
+export function isIdForSketch(context is Context, id is Id)
+{
+    try silent
+    {
+        evOwnerSketchPlane(context, { "entity" : qCreatedBy(id, EntityType.BODY) });
+        return true;
+    }
+    return false;
+}
+
+/**
  * Create a new sketch on an existing planar entity.  The sketch coordinate system follows the canonical plane
  * orientation and the sketch origin is the projection of the world origin onto the plane.
  *

@@ -436,42 +436,47 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
             definition.sheetMetalPart = qUnion(idAndParts.value);
 
             try (defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+            {
+                var reportAnError = false;
+                try
+                {
+                    const sheetMetalModel = try(getSheetMetalModelForPart(context, definition.sheetMetalPart));
+                    if (sheetMetalModel == undefined)
                     {
-                        try
-                        {
-                            const sheetMetalModel = try(getSheetMetalModelForPart(context, definition.sheetMetalPart));
-                            if (sheetMetalModel == undefined)
-                            {
-                                // Currently qEverything will return flat sheet metal so when booleaning with everything
-                                // We won't find the sheet metal model
-                                // That's fine, we'll handle it for now by skipping out in this case.
-                                // When we have fixed up qEverything we will want to revert this so that we catch genuine
-                                // unexpected issues
-                                // See BEL-54458
-                                return;
-                            }
-                            const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
-                            const initialAssociationAttributes = getAttributes(context, {
-                                "entities" : qOwnedByBody(sheetMetalModel),
-                                "attributePattern" : {} as SMAssociationAttribute});
+                        // Currently qEverything will return flat sheet metal so when booleaning with everything
+                        // We won't find the sheet metal model
+                        // That's fine, we'll handle it for now by skipping out in this case.
+                        // When we have fixed up qEverything we will want to revert this so that we catch genuine
+                        // unexpected issues
+                        // See BEL-54458
+                        return;
+                    }
+                    const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
+                    const initialAssociationAttributes = getAttributes(context, {
+                        "entities" : qOwnedByBody(sheetMetalModel),
+                        "attributePattern" : {} as SMAssociationAttribute});
 
-                            definition.targets = sheetMetalModel;
-                            const trackingSMModel = startTracking(context, sheetMetalModel);
-                            const modifiedFaces = performSheetMetalBoolean(context, id, definition);
+                    definition.targets = sheetMetalModel;
+                    const trackingSMModel = startTracking(context, sheetMetalModel);
+                    const modifiedFaces = performSheetMetalBoolean(context, id, definition);
 
-                            const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
-                                    originalEntities, initialAssociationAttributes);
+                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
+                            originalEntities, initialAssociationAttributes);
 
-                            try(updateSheetMetalGeometry(context, id + "smUpdate", {
-                                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                                    "deletedAttributes" :  toUpdate.deletedAttributes}));
-                            processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
-                        }
-                        catch
-                        {
-                            reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
-                        }
-                    }, {})(context, booleanId, definition));
+                   updateSheetMetalGeometry(context, id + "smUpdate", {
+                        "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                        "deletedAttributes" :  toUpdate.deletedAttributes});
+                }
+                catch
+                {
+                    reportAnError = true;
+                }
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
+                if (reportAnError && (getFeatureError(context, id) == undefined))
+                {
+                    reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
+                }
+            }, {})(context, booleanId, definition));
             processSubfeatureStatus(context, id, { "subfeatureId" : booleanId, "propagateErrorDisplay" : true });
         }
         if (deleteToolsAtEnd)
@@ -523,7 +528,20 @@ function createBooleanToolsForFace(context is Context, id is Id, planarFace is Q
     {
         const subId = id + unstableIdComponent(index);
         const trimmed = trimTool(context, subId, thickened, qNthElement(tool, index));
-        if (trimmed != undefined && size(evaluateQuery(context, trimmed)) == 1)
+        var trimResultIsValid = false;
+        if (trimmed != undefined)
+        {
+            const pieceCount = size(evaluateQuery(context, trimmed));
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V492_MULTIPLE_OUTLINE_PIECES))
+            {
+                trimResultIsValid = pieceCount > 0;
+            }
+            else
+            {
+                trimResultIsValid = pieceCount == 1;
+            }
+        }
+        if (trimResultIsValid)
         {
             allTrimmed = append(allTrimmed, trimmed);
             const outline = createOutline(context, subId, trimmed, planarFace);

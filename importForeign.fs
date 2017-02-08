@@ -84,7 +84,12 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         definition.isModifiable = !definition.isInContext;
         opImportForeign(context, id, definition);
 
-        transformResultIfNecessary(context, id, remainingTransform);
+        if (!definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V487_IMPORT_FILTER_POINT_BODIES))
+        {
+            try silent(opDeleteBodies(context, id + "filterPoints", {
+                "entities": qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.POINT)}));
+        }
 
+        transformResultIfNecessary(context, id, remainingTransform);
     }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
 

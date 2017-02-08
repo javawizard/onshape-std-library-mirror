@@ -3,13 +3,8 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
-
 export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "✨");
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/boolean.fs", version : "✨");
@@ -25,14 +20,15 @@ import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
+
 
 
 /**
-*  @internal
 *  Produces a sheet metal joint, currently as a rip only, by extending or trimming
 *  walls of selected edges. Rip is created as an edge joint by default.
 */
-annotation { "Feature Type Name" : "Make joint", "Filter Selector" : "allparts"  }
+annotation { "Feature Type Name" : "Make joint", "Filter Selector" : "allparts", "Editing Logic Function" : "makeJointEditLogic"  }
 export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -41,8 +37,26 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
                     "MaxNumberOfPicks" : 2}
         definition.entities is Query;
 
-        annotation {"Name" : "Joint style"}
-        definition.jointType is SMJointStyle;
+        annotation {"Name" : "Joint type", "Default" : SMJointType.RIP }
+        definition.joint is SMJointType;
+
+        if (definition.joint == SMJointType.BEND)
+        {
+            annotation { "Name" : "Use model bend radius", "Default" : true }
+            definition.useDefaultRadius is boolean;
+            if (!definition.useDefaultRadius)
+            {
+                annotation { "Name" : "Bend radius" }
+                isLength(definition.radius, BLEND_BOUNDS);
+            }
+        }
+
+        if (definition.joint == SMJointType.RIP)
+        {
+            annotation { "Name" : "Joint style" }
+            definition.jointType is SMJointStyle;
+        }
+
     }
     {
         //this is not necessary but helps with correct error reporting in feature pattern
@@ -55,16 +69,56 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
         }
 
         var smEntities = qUnion(getSMDefinitionEntities(context, definition.entities));
-        createEdgeJoint(context, id, smEntities, definition.jointType);
-    }, {jointType : SMJointStyle.EDGE}
+        createEdgeJoint(context, id, smEntities, definition);
+    }, {joint: SMJointType.RIP, jointType : SMJointStyle.EDGE}
     );
 
 
-function createEdgeJoint(context is Context, id is Id, smEntities is Query, jointType is SMJointStyle)
+/**
+* @internal
+*  Editing logic makes sure that when the user deselects default radius option, we default to the default radius
+*  in the input field (if the user didn't already change it)
+*/
+export function makeJointEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    var singleModelEntities = try silent(areEntitiesFromSingleActiveSheetMetalModel(context, definition.entities));
+    if (singleModelEntities == undefined || !singleModelEntities)
+        return definition;
+
+    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.entities)));
+    if (edges == undefined)
+        return definition;
+
+    var evaluatedEdgeQuery = evaluateQuery(context, edges);
+    if (size(evaluatedEdgeQuery) == 0)
+        return definition;
+
+    var adjacentFace = qEdgeAdjacent(evaluatedEdgeQuery[0], EntityType.FACE);
+    if (size(evaluateQuery(context, adjacentFace)) == 0)
+    {
+        return definition;
+    }
+
+    var modelParams = getModelParameters(context, qOwnerBody(adjacentFace));
+    if (modelParams == undefined)
+        return definition;
+
+    if (!definition.useDefaultRadius && !specifiedParameters.radius &&
+        definition.useDefaultRadius != oldDefinition.useDefaultRadius) // do this only once
+    {
+        definition.radius =  modelParams.defaultBendRadius;
+    }
+    return definition;
+}
+
+function createEdgeJoint(context is Context, id is Id, smEntities is Query, definition is map)
 {
     var edges = evaluateQuery(context, smEntities);
     var faces = [];
 
+    var jointType = definition.joint;
+    var jointStyle = definition.jointType;
     //For selected edges, we need to get to the wall they're on.
     for (var edge in edges)
     {
@@ -80,6 +134,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
         throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
     }
 
+    var modelParameters = getModelParameters(context, qOwnerBody(faces[0]));
     var plane1 = try(evPlane(context, {"face" : faces[0]}));
     var plane2 = try(evPlane(context, {"face" : faces[1]}));
     if (plane1 == undefined || plane2 == undefined)
@@ -145,12 +200,20 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
         if (edgeIsTwoSided(context, resultingEdge))
         {
             count += 1;
-            addRipAttribute(context, resultingEdge, toAttributeId(id), jointType, undefined);
+            if (jointType == SMJointType.RIP)
+            {
+                setRipAttribute(context, resultingEdge, toAttributeId(id), jointStyle);
+            }
+            else if (jointType == SMJointType.BEND)
+            {
+                var bendRadius = definition.useDefaultRadius? modelParameters.defaultBendRadius : definition.radius;
+                setBendAttribute(context, resultingEdge, toAttributeId(id), bendRadius,  definition.useDefaultRadius);
+            }
         }
     }
     if (count != 1)
     {
-        //we should have exactly one new rip edge
+        //we should have exactly one new joint edge
         throw regenError(ErrorStringEnum.SHEET_METAL_MAKE_JOINT_FAIL, ["entities"]);
     }
 
@@ -161,4 +224,22 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, join
                                            "associatedChanges" : originalEdges});
 }
 
+function setRipAttribute(context is Context, entity is Query, id is string, jointStyle)
+{
+    var ripAttribute = createRipAttribute(context, entity, id, jointStyle, undefined);
+    ripAttribute.jointType = mergeMaps(ripAttribute.jointType, {"controllingFeatureId" : id, "parameterIdInFeature" : "joint"});
+    ripAttribute.jointStyle = mergeMaps(ripAttribute.jointStyle, {"controllingFeatureId" : id, "parameterIdInFeature" : "jointType"});
+    setAttribute(context, {"entities" : entity, "attribute" : ripAttribute});
+}
+
+function setBendAttribute(context is Context, entity is Query, id is string, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
+{
+    var bendAttribute = createBendAttribute(context, entity, id, {"bendRadius" : bendRadius});
+    bendAttribute.jointType = mergeMaps(bendAttribute.jointType, {"controllingFeatureId" : id, "parameterIdInFeature" : "joint"});
+    if (!isDefaultRadius)
+    {
+        bendAttribute.radius = mergeMaps(bendAttribute.radius, {"controllingFeatureId" : id, "parameterIdInFeature" : "radius"});
+    }
+    setAttribute(context, {"entities" : entity, "attribute" : bendAttribute});
+}
 

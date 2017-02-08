@@ -3,11 +3,6 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-/*
- ******************************************
- * Under development, not for general use!!
- ******************************************
- */
 
 export import(path : "onshape/std/smreliefstyle.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
@@ -22,23 +17,19 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 
 /**
- * @internal
- * Sheet metal object definition attribute type
+ * Sheet metal object definition attribute type.
  */
 
 export type SMAttribute typecheck canBeSMAttribute ;
 
-/**
- * @internal
- */
-
- /* parameters in SMAttribute (e.g. radius in BEND, angle in JOINT, thickness in MODEL)
- *  are specified as maps {
+ /**
+ *  parameters in SMAttribute (e.g. radius in BEND, angle in JOINT, thickness in MODEL)
+ *  are specified as maps @eg ```{
  *  value : {ValueWithUnits},
  *  canBeEdited : {boolean},
  *  controllingFeatureId : {string}, : feature to be edited when editing this parameter
  *  parameterIdInFeature : {string}
- *  }
+ *  }```
  */
 export predicate canBeSMAttribute (value)
 {
@@ -75,14 +66,12 @@ export predicate canBeSMAttribute (value)
 }
 
 /**
- * @internal
  * Empty map as SMAttribute convenient for attribute lookup
  */
 export const smAttributeDefault = {} as SMAttribute;
 
 /**
- * @internal
- * Attach SMAttribute type to a map. convenient for attribute lookup and queries
+ * Attach SMAttribute type to a map. convenient for attribute lookup and queries.
  */
 export function asSMAttribute(value is map) returns SMAttribute
 {
@@ -90,8 +79,7 @@ export function asSMAttribute(value is map) returns SMAttribute
 }
 
 /**
-* @internal
-* Start SMAttribute for joint
+* Start SMAttribute for joint.
 */
 export function makeSMJointAttribute(attributeId is string) returns SMAttribute
 {
@@ -100,8 +88,7 @@ export function makeSMJointAttribute(attributeId is string) returns SMAttribute
 }
 
 /**
-* @internal
-* Start SMAttribute for wall
+* Start SMAttribute for wall.
 */
 export function makeSMWallAttribute(attributeId is string) returns SMAttribute
 {
@@ -110,19 +97,7 @@ export function makeSMWallAttribute(attributeId is string) returns SMAttribute
 }
 
 /**
-* @internal
-* Start SMAttribute for model
-*/
-export function makeSMModelAttribute(attributeId is string) returns SMAttribute
-{
-    return asSMAttribute({'objectType' : SMObjectType.MODEL,
-            'attributeId' : attributeId });
-}
-
-
-/**
-* @internal
-* Start SMAttribute for corner
+* Start SMAttribute for corner.
 */
 export function makeSMCornerAttribute(attributeId is string) returns SMAttribute
 {
@@ -131,7 +106,7 @@ export function makeSMCornerAttribute(attributeId is string) returns SMAttribute
 }
 
 /**
-* @internal
+* Get attributes with matching objectType.
 */
 export function getSmObjectTypeAttributes(context is Context, topology is Query, objectType is SMObjectType) returns array
 {
@@ -142,7 +117,7 @@ export function getSmObjectTypeAttributes(context is Context, topology is Query,
 }
 
 /**
-* @internal
+* Clear SM attributes from entities.
 */
 export function clearSmAttributes(context is Context, entities is Query)
 {
@@ -153,9 +128,16 @@ export function clearSmAttributes(context is Context, entities is Query)
 }
 
 /**
- * @internal
- * For all entities annotated with attribute matching existingAttribute pattern, replace it with newAttribute
- * return query for entities whose attributes have been modified
+ * Check for presence of SMAttribute types.
+ */
+export function hasSheetMetalAttribute(context is Context, entities is Query, objectType is SMObjectType) returns boolean
+{
+    return size(getSmObjectTypeAttributes(context, entities, objectType)) != 0;
+}
+
+/**
+ * For all entities annotated with attribute matching existingAttribute pattern, replace it with newAttribute.
+ * Return query for entities whose attributes have been modified.
  */
 export function replaceSMAttribute(context is Context, existingAttribute is SMAttribute, newAttribute is SMAttribute) returns Query
 {
@@ -166,45 +148,8 @@ export function replaceSMAttribute(context is Context, existingAttribute is SMAt
     return entities;
 }
 
-
 /**
- * @internal
- */
-export type SMAssociationAttribute typecheck canBeSMAssociationAttribute;
-
-/**
- * @internal
- */
-export predicate canBeSMAssociationAttribute (value)
-{
-    value is map;
-    value.attributeId == undefined || value.attributeId is string;
-}
-
-/**
- * @internal
- */
-export function makeSMAssociationAttribute(attributeId is string) returns SMAssociationAttribute
-{
-    return {"attributeId" : attributeId} as SMAssociationAttribute;
-}
-
-/**
- * @internal
- */
-export function assignSmAssociationAttributes(context is Context, entities is Query)
-{
-    for (var ent in evaluateQuery(context, entities))
-    {
-        setAttribute(context, {
-                "entities" : ent,
-                "attribute" : makeSMAssociationAttribute(toString(ent))
-        });
-    }
-}
-
-/**
- * @internal
+ * Find sheet metal master body entities corresponding to feature input.
  */
 export function getSMDefinitionEntities(context is Context, selection is Query) returns array
 {
@@ -222,7 +167,7 @@ export function getSMDefinitionEntities(context is Context, selection is Query) 
 }
 
 /**
- * @internal
+ * Check if sheet metal model is active.
  */
 export function isSheetMetalModelActive(context is Context, sheetMetalModel is Query) returns boolean
 {
@@ -231,7 +176,7 @@ export function isSheetMetalModelActive(context is Context, sheetMetalModel is Q
 }
 
 /**
- * @internal
+ * Check if all entities belong to the same sheet metal model
  */
 export function areEntitiesFromSingleSheetMetalModel(context is Context, entities is Query) returns map
 {
@@ -267,7 +212,7 @@ export function areEntitiesFromSingleSheetMetalModel(context is Context, entitie
 }
 
 /**
- * @internal
+ * Check if all entities belong to the same active sheet metal model
  */
 export function areEntitiesFromSingleActiveSheetMetalModel(context is Context, entities is Query) returns boolean
 {
@@ -276,14 +221,14 @@ export function areEntitiesFromSingleActiveSheetMetalModel(context is Context, e
 }
 
 /**
- * @internal
+ * Get joint attribute on a single entity
  */
-export function getJointAttribute(context is Context, jointEdge is Query) returns map
+export function getJointAttribute(context is Context, jointEdge is Query)
 {
     var attributes = getSmObjectTypeAttributes(context, jointEdge, SMObjectType.JOINT);
     if (size(attributes) != 1)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_JOIN_NEEDED, ["entity"]);
+        return undefined;
     }
     else
     {
@@ -292,7 +237,7 @@ export function getJointAttribute(context is Context, jointEdge is Query) return
 }
 
 /**
- * @internal
+ * Get corner attribute on a single entity
  */
 export function getCornerAttribute(context is Context, cornerVertex is Query)
 {
@@ -306,4 +251,45 @@ export function getCornerAttribute(context is Context, cornerVertex is Query)
         return attributes[0];
     }
 }
+
+
+
+/**
+ * Used by sheet metal features to maintain correspondence between master sheet body entities and
+ * solid body entities.
+ */
+export type SMAssociationAttribute typecheck canBeSMAssociationAttribute;
+
+/**
+ * Association attribute stores attributeId. The association is established by assigning same attribute to
+ * associated entities. Every entity in sheet metal master sheet body has a distinct association attribute.
+ */
+export predicate canBeSMAssociationAttribute (value)
+{
+    value is map;
+    value.attributeId == undefined || value.attributeId is string;
+}
+
+/**
+ * create an association attribute
+ */
+export function makeSMAssociationAttribute(attributeId is string) returns SMAssociationAttribute
+{
+    return {"attributeId" : attributeId} as SMAssociationAttribute;
+}
+
+/**
+ * Assign new association attributes to entities using their transient queries to generate attribute ids.
+ */
+export function assignSmAssociationAttributes(context is Context, entities is Query)
+{
+    for (var ent in evaluateQuery(context, entities))
+    {
+        setAttribute(context, {
+                "entities" : ent,
+                "attribute" : makeSMAssociationAttribute(toString(ent))
+        });
+    }
+}
+
 
