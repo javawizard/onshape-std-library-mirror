@@ -352,6 +352,8 @@ export function helixLogic(context is Context, id is Id, oldDefinition is map, d
             definition.helixType = HelixType.HEIGHT_TURNS;
             definition.edge = edges;
         }
+        // Clear out the pre-selection data: this is especially important if the query is to imported data
+        definition.initEntities = qNothing();
     }
     return definition;
 }

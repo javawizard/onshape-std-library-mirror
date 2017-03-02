@@ -13,12 +13,12 @@ FeatureScript ✨; /* Automatically generated version */
  */
 export enum MoveFaceType
 {
+    annotation { "Name" : "Offset" }
+    OFFSET,
     annotation { "Name" : "Translate" }
     TRANSLATE,
     annotation { "Name" : "Rotate" }
-    ROTATE,
-    annotation { "Name" : "Offset" }
-    OFFSET
+    ROTATE
 }
 
 /**

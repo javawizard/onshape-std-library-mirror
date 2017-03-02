@@ -53,7 +53,7 @@ export enum MirrorType
  * TODO: Is this worth exposing?
  */
 export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits,
-    isFeaturePattern is boolean, remainingTransform is Transform) returns map
+    withTransform is boolean, remainingTransform is Transform) returns map
 {
     if (oppositeDir)
         distance = -distance;
@@ -65,7 +65,7 @@ export function computePatternOffset(context is Context, entity is Query, opposi
     else
         direction = rawDirectionResult.direction * distance;
 
-    if (isFeaturePattern)
+    if (withTransform)
     {
         var remainingTransformForAxis = getRemainderPatternTransform(context, { "references" : entity });
         return { "offset" : (inverse(remainingTransform) * remainingTransformForAxis).linear * direction };
@@ -77,10 +77,10 @@ export function computePatternOffset(context is Context, entity is Query, opposi
  * @internal
  * TODO: Is this worth exposing?
  */
-export function computePatternAxis(context is Context, axisQuery is Query, isFeaturePattern is boolean, remainingTransform is Transform)
+export function computePatternAxis(context is Context, axisQuery is Query, withTransform is boolean, remainingTransform is Transform)
 {
     const rawDirectionResult = try(evAxis(context, { "axis" : axisQuery }));
-    if (rawDirectionResult != undefined && isFeaturePattern)
+    if (rawDirectionResult != undefined && withTransform)
     {
         var remainingTransformForAxis = getRemainderPatternTransform(context, { "references" : axisQuery });
         return inverse(remainingTransform) * remainingTransformForAxis * rawDirectionResult;

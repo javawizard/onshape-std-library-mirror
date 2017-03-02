@@ -129,7 +129,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         else if (definition.process == SMProcessType.EXTRUDE)
         {
             annotation { "Name" : "Sketch curves to extrude",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO &&
+                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES &&
                             (EntityType.EDGE && GeometryType.LINE) }
             definition.sketchCurves is Query;
 
@@ -312,12 +312,12 @@ function convertExistingPart(context is Context, id is Id, definition is map)
         throw regenError(ErrorStringEnum.SHEET_METAL_CONVERT_PLANE, ["partToConvert", "facesToExclude"], badFaces);
     }
 
-    var bendEdgesQ = convertFaces(context, id, definition, complimentFacesQ);
+    var bendEdgesQ = convertFaces(context, id, definition, complimentFacesQ, true);
     definition.remindToSelectBends = (nBends == 0 && nFacesToExclude > 0 && nComplimentFaces > 1);
     annotateConvertedFaces(context, id, definition, bendEdgesQ);
 }
 
-function convertFaces(context is Context, id is Id, definition, faces is Query) returns Query
+function convertFaces(context is Context, id is Id, definition, faces is Query, trimWithFacesAround is boolean) returns Query
 {
     var surfaceId = id + "extractSurface";
     var bendEdgesQ = startTracking(context, { "subquery" : definition.bends });
@@ -327,7 +327,8 @@ function convertFaces(context is Context, id is Id, definition, faces is Query) 
     {
         opExtractSurface(context, surfaceId, {
                     "faces" : faces,
-                    "offset" : offset });
+                    "offset" : offset,
+                    "useFacesAroundToTrimOffset" : trimWithFacesAround });
     }
     catch
     {
@@ -525,7 +526,8 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     var nBends = size(evaluateQuery(context, definition.bends));
     if (nFaces != 0)
     {
-        bendEdgesQ = convertFaces(context, id, definition, qUnion(facesToConvert));
+        var useFacesAround = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V525_SM_THICKEN_NO_NEIGHBORS);
+        bendEdgesQ = convertFaces(context, id, definition, qUnion(facesToConvert), useFacesAround);
     }
     definition.keepInputParts = true;
     definition.remindToSelectBends = (nFaces > 1 && nBends == 0);
@@ -809,7 +811,8 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
     {
         opExtractSurface(context, id, {
                     "faces" : qUnion(group.side0),
-                    "offset" : -0.5 * out.thickness
+                    "offset" : -0.5 * out.thickness,
+                    "useFacesAroundToTrimOffset" : true
                 });
         var srfBodies = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
         if (size(srfBodies) != 1)
@@ -919,6 +922,8 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
             definition.sketchCurves = edges;
             definition.process = SMProcessType.EXTRUDE;
         }
+        // Clear out the pre-selection data: this is especially important if the query is to imported data
+        definition.initEntities = qNothing();
     }
     return definition;
 }

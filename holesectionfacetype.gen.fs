@@ -26,7 +26,9 @@ export enum HoleSectionFaceType
     annotation {"Name" : "CSink Angular Face"}
     CSINK_FACE,
     annotation {"Name" : "CBore Diameter Face on CSink Hole"}
-    CSINK_CBORE_FACE
+    CSINK_CBORE_FACE,
+    annotation {"Name" : "Blind Tip Angular Face"}
+    BLIND_TIP_FACE
 }
 
 

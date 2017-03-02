@@ -21,6 +21,13 @@ export function newContextWithDefaults() returns Context
 export function newContextWithDefaults(defaultLengthUnit is ValueWithUnits)
 {
     var context = newContext();
+    addDefaultFeatures(context, defaultLengthUnit);
+    return context;
+}
+
+/** @internal */
+export function addDefaultFeatures(context is Context, defaultLengthUnit is ValueWithUnits)
+{
     origin(context);
 
     const range = PLANE_SIZE_BOUNDS[defaultLengthUnit];
@@ -29,7 +36,6 @@ export function newContextWithDefaults(defaultLengthUnit is ValueWithUnits)
     defaultPlane(context, makeId("Front"), DefaultPlaneType.XZ, size);
     defaultPlane(context, makeId("Top"), DefaultPlaneType.XY, size);
     defaultPlane(context, makeId("Right"), DefaultPlaneType.YZ, size);
-    return context;
 }
 
 enum DefaultPlaneType

@@ -36,7 +36,7 @@ export enum SplitType
 /**
  * Feature performing an [opSplitPart].
  */
-annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts", "Editing Logic Function" : "splitPartEditLogic" }
+annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -71,17 +71,6 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
     {
         performSplit(context, id, definition);
     }, { keepTools : false, splitType : SplitType.PART });
-
-/** @internal */
-export function splitPartEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-                                 isCreating is boolean, specifiedParameters is map) returns map
-{
-    if (!definition.keepTools && !specifiedParameters.keepTools)
-    {
-        definition.keepTools = hasNewNonModifiableEntities(context, definition.tool);
-    }
-    return definition;
-}
 
 function performSplit(context is Context, id is Id, definition is map)
 {

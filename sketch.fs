@@ -84,6 +84,18 @@ export enum SketchProjectionType
     USE_END
 }
 
+/**
+ * A `LengthBoundSpec` for the radius of sketch circles and ellipses
+ */
+const SKETCH_RADIUS_BOUNDS =
+{
+    (meter)      : [5e-6, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
 
 /**
  * A `Sketch` object represents a Onshape sketch, to which sketch entities
@@ -355,7 +367,7 @@ export function skCircle(sketch is Sketch, circleId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.radius is undefined || isLength(value.radius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.radius is undefined || isLength(value.radius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
 }
 {
@@ -382,8 +394,8 @@ precondition
 {
     value.center is undefined || is2dPoint(value.center);
     value.majorAxis is undefined || is2dPoint(value.majorAxis);
-    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
 }
 {
@@ -451,8 +463,8 @@ precondition
 {
     value.center is undefined || is2dPoint(value.center);
     value.majorAxis is undefined || is2dPoint(value.majorAxis);
-    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.startParameter is undefined || value.startParameter is number;
     value.endParameter is undefined || value.endParameter is number;
     value.construction is undefined || value.construction is boolean;

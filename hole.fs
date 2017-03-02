@@ -108,6 +108,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
+        if (definition.majorDiameter != undefined)
+        {
+            annotation { "Name" : "Tap major diameter", "UIHint" : [ "ALWAYS_HIDDEN"] }
+            isLength(definition.majorDiameter, HOLE_MAJOR_DIAMETER_BOUNDS);
+        }
+
         /*
          * showTappedDepth, tappedDepth and tapClearance are for hole annotations;
          * they currently have no effect on regeneration. If we modeled the hole's
@@ -460,6 +466,16 @@ const HOLE_CLEARANCE_BOUNDS =
 } as IntegerBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
+{
+    (meter)      : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.02,
+    (yard)       : 0.007
+} as LengthBoundSpec;
+
+const HOLE_MAJOR_DIAMETER_BOUNDS =
 {
     (meter)      : [1e-5, 0.005, 500],
     (centimeter) : 0.5,
@@ -916,6 +932,8 @@ precondition
     result.lastBody = lastBody;
 
     var lineTracking =  [
+                            // line that starts from the second point in the core sketch represents the line that sweeps the bottom of the hole
+                            { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.BLIND_TIP_FACE  },
                             // line that starts from the third point in the core sketch represents the line that creates the through hole face
                             { "lineIndex"  : 2,  "holeTrackType" : HoleSectionFaceType.THROUGH_FACE  }
                         ];
@@ -995,6 +1013,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     resultAttribute.endType = holeDefinition.endStyle;
     resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
     resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
+    resultAttribute.majorDiameter = holeDefinition.majorDiameter;
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -1044,6 +1063,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     {
         // format tap pitch based upon units
         var pitch = tapPitch;
+        var pitchWithUnits;
         var delimiter = "x";
         var result = match(tapPitch, "([0123456789.]*)\\s*(tpi|mm)");
         if (result.hasMatch)
@@ -1051,6 +1071,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             if (result.captures[2] == "tpi")
             {
                 pitch = result.captures[1];
+                pitchWithUnits = (1.0 / stringToNumber(pitch)) * inch;
 
                 // use '-' instead of 'x'
                 delimiter = "-";
@@ -1058,6 +1079,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             else if (result.captures[2] == "mm")
             {
                 pitch = result.captures[1];
+                pitchWithUnits = stringToNumber(pitch) * millimeter;
             }
         }
 
@@ -1068,6 +1090,8 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH && holeDefinition.tapClearance != undefined)
             resultAttribute.tapClearance = holeDefinition.tapClearance;
+
+        resultAttribute.threadPitch = pitchWithUnits;
     }
 
     // add properties specific to the hole type
@@ -1144,6 +1168,10 @@ function addSectionSpecsToAttribute(attribute is HoleAttribute, holeFaceType is 
     {
         resultAttribute.sectionFace = getCSinkCBoreSectionAttributeSpecs(holeDefinition);
     }
+    else if (holeFaceType == HoleSectionFaceType.BLIND_TIP_FACE)
+    {
+        resultAttribute.sectionFace = getBlindTipSectionAttributeSpecs(holeDefinition);
+    }
 
     return resultAttribute;
 }
@@ -1188,6 +1216,14 @@ function getCSinkCBoreSectionAttributeSpecs(holeDefinition is map) returns map
     return cSinkCboreFaceSpec;
 }
 
+function getBlindTipSectionAttributeSpecs(holeDefinition is map) returns map
+{
+    var blindTipFaceSpec = { "type" : HoleSectionFaceType.BLIND_TIP_FACE };
+
+    // add anything else?
+    return blindTipFaceSpec;
+}
+
 /**
  * @internal
  * Editing logic for hole feature.
@@ -1217,6 +1253,35 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
         }
     }
     return definition;
+}
+
+/**
+ * @internal
+ * Update the feature definition to have the correct majorDiameter parameter.
+ */
+export function holeDefinitionSetMajorDiameter(context is Context, definition is map, changes is map) returns map
+{
+    if (definition.majorDiameter == undefined)
+    {
+        definition.majorDiameter = computeMajorDiameter(definition);
+    }
+    return definition;
+}
+
+function computeMajorDiameter(definition is map)
+{
+    const result = getStandardAndTable(definition);
+    const standard = result.standard;
+    const table = result.table;
+    if (standard != undefined && table != undefined)
+    {
+        const entry = getLookupTable(table, standard);
+        if (entry.majorDiameter != undefined)
+        {
+            return lookupTableEvaluate(entry.majorDiameter);
+        }
+    }
+    return undefined;
 }
 
 /*

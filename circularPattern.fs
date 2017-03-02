@@ -125,7 +125,9 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = -angle;
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
-        var direction = computePatternAxis(context, definition.axis, isFeaturePattern(definition.patternType), remainingTransform);
+
+        var withAxisTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
+        var direction = computePatternAxis(context, definition.axis, withAxisTransform, remainingTransform);
         if (direction == undefined)
             throw regenError(ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS, ["axis"]);
 

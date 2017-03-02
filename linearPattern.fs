@@ -151,9 +151,10 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         var remainingTransform = getRemainderPatternTransform(context,
             { "references" : definition.entities});
 
+        var withDirectionTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
         //Dir 1
         const result = try(computePatternOffset(context, definition.directionOne,
-                    definition.oppositeDirection, definition.distance, isFeaturePattern(definition.patternType), remainingTransform));
+                    definition.oppositeDirection, definition.distance, withDirectionTransform, remainingTransform));
 
         if (result == undefined)
             throw regenError(ErrorStringEnum.PATTERN_LINEAR_NO_DIR, ["directionOne"]);
@@ -168,7 +169,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             count2 = definition.instanceCountTwo;
 
             const result = try(computePatternOffset(context, definition.directionTwo,
-                        definition.oppositeDirectionTwo, definition.distanceTwo, isFeaturePattern(definition.patternType), remainingTransform));
+                        definition.oppositeDirectionTwo, definition.distanceTwo, withDirectionTransform, remainingTransform));
             if (result != undefined)
             {
                 offset2 = result.offset;
