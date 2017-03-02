@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -437,7 +437,27 @@ export enum FeatureScriptVersionNumber
     V502_CORNER_CLASSIFICATION_FIX,
     V503_EXTRUDE_WITH_OFFSET,
     V504_MODIFY_TO_SPLIT,
-    V505_EXTRUDE_WITH_OFFSET_DIALOG
+    V505_EXTRUDE_WITH_OFFSET_DIALOG,
+    V512_MOVE_FACE_OVERLAP,
+    V513_CONFIGURATION_DATA_UPGRADE,
+    V514_OFFSET_FACE,
+    V515_EXTRUDE_CHECK_LOCAL_STATUS,
+    V516_SURFACE_BOOLEAN_EDGE_EVENTS,
+    V517_MOVE_FACE_CHECK_BEND_EDGE,
+    V518_MIRRORING_LIN_PATTERNS,
+    V519_EXPANDED_CORNER_VERTEX_SET,
+    V520_BLOCK_ILLEGAL_MODIFICATION,
+    V521_SM_CLEARANCE,
+    V522_MOVE_FACE_NONPLANAR,
+    V523_SWEEP_PATH_START_VERTEX,
+    V524_HOLE_TAP_MAJOR_DIAMETER,
+    V525_SM_THICKEN_NO_NEIGHBORS,
+    V526_FLANGE_SIDE_PLANE_DIR,
+    V527_MOVE_FACE_MOVE_CREATE_TAB,
+    V528_MOVE_FACE_MERGE,
+    V529_MOVE_FACE_UI_UPDATES,
+    V530_MOVE_FACE_SCOPE,
+    V531_HOLE_MAJOR_DIAMETER_UPGRADE
 }
 
 /**
@@ -448,6 +468,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V505_EXTRUDE_WITH_OFFSET_DIALOG;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V531_HOLE_MAJOR_DIAMETER_UPGRADE;
 
 

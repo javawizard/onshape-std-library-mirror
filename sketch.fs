@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,25 +43,25 @@ FeatureScript 505; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "505.0");
+export import(path : "onshape/std/query.fs", version : "531.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/evaluate.fs", version : "505.0");
-import(path : "onshape/std/feature.fs", version : "505.0");
-import(path : "onshape/std/mathUtils.fs", version : "505.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
-import(path : "onshape/std/tool.fs", version : "505.0");
-import(path : "onshape/std/valueBounds.fs", version : "505.0");
-import(path : "onshape/std/matrix.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/evaluate.fs", version : "531.0");
+import(path : "onshape/std/feature.fs", version : "531.0");
+import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
+import(path : "onshape/std/tool.fs", version : "531.0");
+import(path : "onshape/std/valueBounds.fs", version : "531.0");
+import(path : "onshape/std/matrix.fs", version : "531.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "505.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "505.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "505.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "505.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "505.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "505.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "531.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "531.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "531.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "531.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "531.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "531.0");
 
 /**
  * @internal
@@ -84,6 +84,18 @@ export enum SketchProjectionType
     USE_END
 }
 
+/**
+ * A `LengthBoundSpec` for the radius of sketch circles and ellipses
+ */
+const SKETCH_RADIUS_BOUNDS =
+{
+    (meter)      : [5e-6, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
 
 /**
  * A `Sketch` object represents a Onshape sketch, to which sketch entities
@@ -355,7 +367,7 @@ export function skCircle(sketch is Sketch, circleId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.radius is undefined || isLength(value.radius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.radius is undefined || isLength(value.radius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
 }
 {
@@ -382,8 +394,8 @@ precondition
 {
     value.center is undefined || is2dPoint(value.center);
     value.majorAxis is undefined || is2dPoint(value.majorAxis);
-    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
 }
 {
@@ -451,8 +463,8 @@ precondition
 {
     value.center is undefined || is2dPoint(value.center);
     value.majorAxis is undefined || is2dPoint(value.majorAxis);
-    value.minorRadius is undefined || isLength(value.minorRadius, NONNEGATIVE_LENGTH_BOUNDS);
-    value.majorRadius is undefined || isLength(value.majorRadius, NONNEGATIVE_LENGTH_BOUNDS);
+    value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
+    value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.startParameter is undefined || value.startParameter is number;
     value.endParameter is undefined || value.endParameter is number;
     value.construction is undefined || value.construction is boolean;

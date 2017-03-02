@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -641,7 +641,13 @@ export enum ErrorStringEnum
     CLINE_FAILED,
     ILLEGAL_MODIFICATION,
     ASSEMBLY_MATE_VALUE_SET_FAILED,
-    EXTRUDE_OFFSET_TOO_DEEP
+    EXTRUDE_OFFSET_TOO_DEEP,
+    SHEET_METAL_CANNOT_MOVE_BEND_EDGE,
+    UP_TO_FACE_NOT_PARALLEL,
+    TRANSLATION_FACE_NOT_PLANAR,
+    MOVE_FACE_NO_INTERSECTION,
+    SWEEP_PATH_PROFILE_NO_INTERSECTION,
+    DIRECT_EDIT_MOVE_FACE_CREATE_SELECT
 }
 
 

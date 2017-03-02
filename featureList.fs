@@ -1,11 +1,11 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /** Support functions for feature lists (as used for featurePattern) */
 
-import(path : "onshape/std/context.fs", version : "505.0");
+import(path : "onshape/std/context.fs", version : "531.0");
 
 /**
  * Parameter type for inputting a list of features, stored as a map from

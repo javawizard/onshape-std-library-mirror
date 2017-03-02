@@ -1,16 +1,16 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "505.0");
-export import(path : "onshape/std/tool.fs", version : "505.0");
-export import(path : "onshape/std/patternUtils.fs", version : "505.0");
+export import(path : "onshape/std/query.fs", version : "531.0");
+export import(path : "onshape/std/tool.fs", version : "531.0");
+export import(path : "onshape/std/patternUtils.fs", version : "531.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "505.0");
-import(path : "onshape/std/units.fs", version : "505.0");
+import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/units.fs", version : "531.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -151,9 +151,10 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         var remainingTransform = getRemainderPatternTransform(context,
             { "references" : definition.entities});
 
+        var withDirectionTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
         //Dir 1
         const result = try(computePatternOffset(context, definition.directionOne,
-                    definition.oppositeDirection, definition.distance, isFeaturePattern(definition.patternType), remainingTransform));
+                    definition.oppositeDirection, definition.distance, withDirectionTransform, remainingTransform));
 
         if (result == undefined)
             throw regenError(ErrorStringEnum.PATTERN_LINEAR_NO_DIR, ["directionOne"]);
@@ -168,7 +169,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             count2 = definition.instanceCountTwo;
 
             const result = try(computePatternOffset(context, definition.directionTwo,
-                        definition.oppositeDirectionTwo, definition.distanceTwo, isFeaturePattern(definition.patternType), remainingTransform));
+                        definition.oppositeDirectionTwo, definition.distanceTwo, withDirectionTransform, remainingTransform));
             if (result != undefined)
             {
                 offset2 = result.offset;

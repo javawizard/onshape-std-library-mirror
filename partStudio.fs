@@ -1,9 +1,9 @@
-FeatureScript 505; /* Automatically generated version */
-import(path : "onshape/std/context.fs", version : "505.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "505.0");
+FeatureScript 531; /* Automatically generated version */
+import(path : "onshape/std/context.fs", version : "531.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "531.0");
 
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/units.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/units.fs", version : "531.0");
 
 /** @internal */
 export function definePartStudio(partStudio is function, defaultLengthUnit is ValueWithUnits, defaults is map) returns function
@@ -17,13 +17,14 @@ export function definePartStudio(partStudio is function, defaultLengthUnit is Va
                 if (specified != undefined)
                     mergedConfiguration[configurationParameter.key] = specified;
             }
-            var context is Context = newContextWithDefaults(defaultLengthUnit);
+            var context is Context = newContext();
             const lookup is function = function(name is string) { return getVariable(context, name); };
             for (var configurationParameter in mergedConfiguration)
             {
                 if (configurationParameter.key is string)
                     setVariable(context, configurationParameter.key, configurationParameter.value);
             }
+            addDefaultFeatures(context, defaultLengthUnit);
             try(partStudio(context, mergedConfiguration, lookup));
             return context;
         };

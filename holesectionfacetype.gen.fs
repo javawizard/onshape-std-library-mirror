@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -26,7 +26,9 @@ export enum HoleSectionFaceType
     annotation {"Name" : "CSink Angular Face"}
     CSINK_FACE,
     annotation {"Name" : "CBore Diameter Face on CSink Hole"}
-    CSINK_CBORE_FACE
+    CSINK_CBORE_FACE,
+    annotation {"Name" : "Blind Tip Angular Face"}
+    BLIND_TIP_FACE
 }
 
 

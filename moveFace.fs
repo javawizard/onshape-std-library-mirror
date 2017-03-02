@@ -1,27 +1,52 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "505.0");
-export import(path : "onshape/std/tool.fs", version : "505.0");
+export import(path : "onshape/std/query.fs", version : "531.0");
+export import(path : "onshape/std/tool.fs", version : "531.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "505.0");
+export import(path : "onshape/std/manipulator.fs", version : "531.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "505.0");
-import(path : "onshape/std/box.fs", version : "505.0");
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/curveGeometry.fs", version : "505.0");
-import(path : "onshape/std/evaluate.fs", version : "505.0");
-import(path : "onshape/std/feature.fs", version : "505.0");
-import(path : "onshape/std/mathUtils.fs", version : "505.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "505.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "505.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
-import(path : "onshape/std/valueBounds.fs", version : "505.0");
+import(path : "onshape/std/attributes.fs", version : "531.0");
+import(path : "onshape/std/box.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/curveGeometry.fs", version : "531.0");
+import(path : "onshape/std/evaluate.fs", version : "531.0");
+import(path : "onshape/std/feature.fs", version : "531.0");
+import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "531.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "531.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
+import(path : "onshape/std/valueBounds.fs", version : "531.0");
+
+
+/**
+ * @internal
+ * Output types of move face
+ */
+export enum MoveFaceOutputType
+{
+    annotation { "Name" : "Move" }
+    MOVE,
+    annotation { "Name" : "Create" }
+    CREATE
+}
+
+/**
+ * @internal
+ * Bounding types of move face
+ */
+export enum MoveFaceBoundingType
+{
+    annotation { "Name" : "Blind" }
+    BLIND,
+    annotation { "Name" : "Up to entity" }
+    UP_TO_ENTITY
+}
 
 /** @internal */
 export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
@@ -35,14 +60,28 @@ export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
  */
 annotation { "Feature Type Name" : "Move face",
              "Manipulator Change Function" : "moveFaceManipulatorChange",
-             "Filter Selector" : "allparts" }
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "moveFaceEditingLogic"}
 export const moveFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Faces",
-                     "UIHint" : "SHOW_CREATE_SELECTION",
-                     "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-        definition.moveFaces is Query;
+        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        definition.outputType is MoveFaceOutputType;
+        if (definition.outputType == MoveFaceOutputType.MOVE)
+        {
+            annotation { "Name" : "Faces",
+                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+            definition.moveFaces is Query;
+        }
+        else
+        {
+            annotation { "Name" : "Faces, surfaces, and sketch regions",
+                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY))
+                            && ConstructionObject.NO }
+            definition.surfacesAndFaces is Query;
+        }
 
         annotation { "Name" : "Move face type" }
         definition.moveFaceType is MoveFaceType;
@@ -50,41 +89,100 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         if (definition.moveFaceType == MoveFaceType.TRANSLATE)
         {
             annotation { "Name" : "Direction",
-                         "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
-                         "MaxNumberOfPicks" : 1 }
+                        "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                        "MaxNumberOfPicks" : 1 }
             definition.direction is Query;
-
-            annotation { "Name" : "Distance" }
-            isLength(definition.translationDistance, MOVE_FACE_TRANSLATE_BOUNDS);
         }
-
-        if (definition.moveFaceType == MoveFaceType.ROTATE)
+        else if (definition.moveFaceType == MoveFaceType.ROTATE)
         {
             annotation { "Name" : "Axis",
-                         "Filter" : QueryFilterCompound.ALLOWS_AXIS,
-                         "MaxNumberOfPicks" : 1 }
+                        "Filter" : QueryFilterCompound.ALLOWS_AXIS,
+                        "MaxNumberOfPicks" : 1 }
             definition.axis is Query;
-            annotation { "Name" : "Rotation angle" }
-            isAngle(definition.angle, MOVE_FACE_ROTATION_BOUNDS);
         }
 
-        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        if (definition.moveFaceType != MoveFaceType.ROTATE)
         {
-            annotation { "Name" : "Distance" }
-            isLength(definition.offsetDistance, MOVE_FACE_OFFSET_BOUNDS);
+            annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
+            definition.limitType is MoveFaceBoundingType;
         }
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        definition.oppositeDirection is boolean;
+        if (definition.limitType == MoveFaceBoundingType.BLIND || definition.moveFaceType == MoveFaceType.ROTATE)
+        {
+            if (definition.moveFaceType == MoveFaceType.TRANSLATE)
+            {
+                annotation { "Name" : "Distance" }
+                isLength(definition.translationDistance, MOVE_FACE_TRANSLATE_BOUNDS);
+            }
+            else if (definition.moveFaceType == MoveFaceType.ROTATE)
+            {
+                annotation { "Name" : "Rotation angle" }
+                isAngle(definition.angle, MOVE_FACE_ROTATION_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "Distance" }
+                isLength(definition.offsetDistance, MOVE_FACE_OFFSET_BOUNDS);
+            }
 
-        annotation { "Name" : "Reapply fillet", "Default" : true }
-        definition.reFillet is boolean;
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirection is boolean;
+        }
+        else
+        {
+            if (definition.moveFaceType == MoveFaceType.TRANSLATE)
+            {
+                annotation { "Name" : "Up to entity", "Filter" : (EntityType.FACE && GeometryType.PLANE) || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+                definition.limitEntity is Query;
+            }
+            else
+            {
+                // Can accept anything that evDistance will take.
+                annotation { "Name" : "Up to entity", "Filter" : EntityType.VERTEX || EntityType.EDGE || EntityType.FACE || EntityType.BODY, "MaxNumberOfPicks" : 1 }
+                definition.limitQuery is Query;
+            }
+
+            if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY)
+            {
+                annotation { "Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                definition.hasOffset is boolean;
+
+                if (definition.hasOffset)
+                {
+                    annotation { "Name" : "Offset", "UIHint" : "DISPLAY_SHORT" }
+                    isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+
+                    annotation { "Name" : "Opposite offset direction", "Default" : true, "UIHint" : "OPPOSITE_DIRECTION" }
+                    definition.oppositeOffsetDirection is boolean;
+                }
+            }
+        }
+
+        if (definition.outputType == MoveFaceOutputType.MOVE)
+        {
+            annotation { "Name" : "Reapply fillet", "Default" : true }
+            definition.reFillet is boolean;
+        }
     }
     //============================ Body =============================
     {
-        const resolvedEntities = evaluateQuery(context, definition.moveFaces);
+        var qSurfacesAndFaces;
+        if (definition.outputType == MoveFaceOutputType.MOVE)
+        {
+            definition.queryParameter = "moveFaces";
+            definition.selectionErrorStringEnum = ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT;
+            qSurfacesAndFaces = definition.moveFaces;
+        }
+        else
+        {
+            definition.queryParameter = "surfacesAndFaces";
+            definition.selectionErrorStringEnum = ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_CREATE_SELECT;
+            qSurfacesAndFaces = qUnion([qEntityFilter(definition.surfacesAndFaces, EntityType.FACE), qOwnedByBody(qEntityFilter(definition.surfacesAndFaces, EntityType.BODY), EntityType.FACE)]);
+        }
+
+        const resolvedEntities = evaluateQuery(context, qSurfacesAndFaces);
         if (size(resolvedEntities) == 0)
-            throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_SELECT, ["moveFaces"]);
+            throw regenError(definition.selectionErrorStringEnum, [definition.queryParameter]);
 
         var directionSign = 1;
         if (definition.oppositeDirection)
@@ -101,35 +199,63 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             }
         }
 
+
+        if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
+        {
+            definition.offset = definition.offset * (definition.oppositeOffsetDirection ? -1 : 1);
+        }
+        else
+        {
+            definition.offset = 0 * meter;
+        }
+
         // Extract an axis defined by the moved face for use in the manipulators.
         var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)
-            throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, ["moveFaces"]);
-        // Extract an axis defined by the moved face for use in the manipulators.
-        const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
-        if (size(associatedSMEntities) == 1)
+            throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
+        if (definition.outputType == MoveFaceOutputType.MOVE)
         {
-            const sheetMetalModelPlane = try silent(evFaceTangentPlane(context, { "face" : associatedSMEntities[0], "parameter" : vector(0.5, 0.5) }));
-            if (sheetMetalModelPlane != undefined)
+            const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
+            if (size(associatedSMEntities) == 1)
             {
-                facePlane.origin = sheetMetalModelPlane.origin;
+                const sheetMetalModelPlane = try silent(evFaceTangentPlane(context, { "face" : associatedSMEntities[0], "parameter" : vector(0.5, 0.5) }));
+                if (sheetMetalModelPlane != undefined)
+                {
+                    facePlane.origin = sheetMetalModelPlane.origin;
+                }
             }
         }
 
         if (definition.moveFaceType == MoveFaceType.OFFSET)
         {
-            definition.offsetDistance = definition.offsetDistance * directionSign;
-
-            addOffsetManipulator(context, id, definition, facePlane);
-
-            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+            if (definition.limitType != MoveFaceBoundingType.BLIND)
             {
-                if (tolerantEquals(definition.offsetDistance, 0 * meter))
-                {
-                    return;
-                }
+                definition.offsetDistance = getOffsetToEntity(context, resolvedEntities[0], definition, id, facePlane);
             }
-            sheetMetalAwareMoveFace(context, id, definition);
+            else
+            {
+                definition.offsetDistance = definition.offsetDistance * directionSign;
+                addOffsetManipulator(context, id, definition.offsetDistance, facePlane);
+            }
+
+            if (definition.outputType == MoveFaceOutputType.MOVE)
+            {
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+                {
+                    if (tolerantEquals(definition.offsetDistance, 0 * meter))
+                    {
+                      return;
+                    }
+                }
+                sheetMetalAwareMoveFace(context, id, definition);
+            }
+            else
+            {
+                opExtractSurface(context, id, {"faces" : qSurfacesAndFaces,
+                    "offset" : definition.offsetDistance,
+                    "useFacesAroundToTrimOffset" : false
+                });
+            }
         }
         else
         {
@@ -138,40 +264,45 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 // If the user specified an axis for the direction, we will use that for the translation.  If they,
                 // specified a face, we will use the face's normal, if it is planar.
                 var translation;
-                const directionResult = try(evAxis(context, { "axis" : definition.direction }));
+                const directionResult = try silent(evAxis(context, { "axis" : definition.direction }));
                 var translationDirection;
                 if (directionResult == undefined)
                 {
-                    const planeResult = try(evPlane(context, { "face" : definition.direction }));
+                    const planeResult = try silent(evPlane(context, { "face" : definition.direction }));
                     if (planeResult == undefined)
                         throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
-                    translation = planeResult.normal * definition.translationDistance * directionSign;
                     translationDirection = planeResult.normal;
                 }
                 else
                 {
-                    translation = directionResult.direction * definition.translationDistance * directionSign;
                     translationDirection = directionResult.direction;
                 }
 
-                addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
-
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+                if (definition.limitType != MoveFaceBoundingType.BLIND)
                 {
-                    if (tolerantEquals(definition.translationDistance, 0 * meter))
+                    definition.transform = getTranslationTransformToEntity(context, resolvedEntities[0], definition, id, translationDirection, facePlane);
+                }
+                else
+                {
+                    translation = translationDirection * definition.translationDistance * directionSign;
+                    definition.transform = transform(translation);
+                    addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
+
+                    if (definition.outputType == MoveFaceOutputType.MOVE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                     {
-                        return;
+                        if (tolerantEquals(definition.translationDistance, 0 * meter))
+                        {
+                            return;
+                        }
                     }
                 }
-                definition.transform = transform(translation);
+                definition.direction = translationDirection;
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
                 const axisResult = evAxis(context, { "axis" : getAssociatedAxis(context, definition) });
-
                 addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
-
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+                if (definition.outputType == MoveFaceOutputType.MOVE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                 {
                     if (tolerantEquals(definition.angle, 0 * radian))
                     {
@@ -181,7 +312,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 // Since parasolid works off the transform only, it will try construct faces along the shortest path
                 // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
                 // Therefore we split the rotation into two steps.
-                if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                if (definition.outputType == MoveFaceOutputType.MOVE && definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
                 {
                     const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
                     definition.transformList = [transform, transform];
@@ -191,9 +322,135 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                     definition.transform = rotationAround(axisResult, definition.angle * directionSign);
                 }
             }
-            sheetMetalAwareMoveFace(context, id, definition);
+            if (definition.outputType == MoveFaceOutputType.MOVE)
+            {
+                sheetMetalAwareMoveFace(context, id, definition);
+            }
+            else
+            {
+                opExtractSurface(context, id + "extractSurface", {
+                    "faces" : qSurfacesAndFaces,
+                    "offset" : 0 * meter
+                });
+
+                opTransform(context, id + "transform", {
+                    "bodies" : qCreatedBy(id + "extractSurface", EntityType.BODY),
+                    "transform" : definition.transform
+                });
+            }
         }
-    }, { oppositeDirection : false, reFillet : false });
+    }, {outputType : MoveFaceOutputType.MOVE, oppositeDirection : false, reFillet : false, limitType : MoveFaceBoundingType.BLIND, hasOffset : false});
+
+function getOffsetToEntity(context is Context, face is Query, definition is map, id is Id, faceTangentPlane is Plane) returns ValueWithUnits
+{
+    // If moving up to a construction plane, treat it as an infinite plane rather than a ~6 in square.
+    const limitPlaneEntity = evaluateQuery(context, qGeometry(qConstructionFilter(definition.limitQuery, ConstructionObject.YES), GeometryType.PLANE));
+
+    const distanceResult = try silent(evDistance(context, {
+                    "side0" : face,
+                    "side1" : definition.limitQuery,
+                    "extendSide0" : true,
+                    "extendSide1" : size(limitPlaneEntity) == 1
+                }));
+
+    if (distanceResult == undefined)
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["limitEntity"]);
+    }
+
+    // faceTangentPlane is at the parametric center of the face and is used for placing the manipulator.
+    // tangentPlane could be anywhere on the surface and is used to very that the offset is correct.
+    const tangentPlane = evFaceTangentPlane(context, {
+                "face" : face,
+                "parameter" : distanceResult.sides[0].parameter
+            });
+
+    const facePoint = distanceResult.sides[0].point;
+    const limitPoint = distanceResult.sides[1].point;
+
+    // If the face normal is not parallel to the line from the evDistance call, then a boundary condition was found rather
+    // than a minimum/maximum, and offsetting the face will not reach the entity. If the distance is 0, the operation
+    // can succeed as a no-op anyway.
+    if (!parallelVectors(tangentPlane.normal, facePoint - limitPoint) && !tolerantEquals(distanceResult.distance, 0 * meter))
+    {
+        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, ["limitEntity"], definition.limitQuery);
+    }
+
+    const offsetDistance = dot(tangentPlane.normal, limitPoint - facePoint);
+    if ((definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY) && definition.hasOffset)
+    {
+        // Move the manipulator plane by the offset distance so it will line up with the preview.
+        faceTangentPlane.origin = faceTangentPlane.origin + offsetDistance * faceTangentPlane.normal;
+        addOffsetManipulator(context, id, definition.offset, faceTangentPlane);
+    }
+
+    return offsetDistance + definition.offset;
+}
+
+function getTranslationTransformToEntity(context is Context, face is Query, definition is map, id is Id, translationDirection is Vector, faceTangentPlane is Plane) returns Transform
+{
+    var limitPoint = try silent(evVertexPoint(context, { "vertex" : definition.limitEntity }));
+    if (limitPoint == undefined)
+    {
+        const limitPlane = try silent(evPlane(context, { "face" : definition.limitEntity }));
+        if (limitPlane == undefined)
+        {
+            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["limitEntity"]);
+        }
+        const facePlane = try silent(evPlane(context, {
+                        "face" : face
+                    }));
+        if (facePlane == undefined)
+        {
+            throw regenError(ErrorStringEnum.TRANSLATION_FACE_NOT_PLANAR, definition.queryParameter, face);
+        }
+        if (!parallelVectors(limitPlane.normal, facePlane.normal))
+        {
+            throw regenError(ErrorStringEnum.UP_TO_FACE_NOT_PARALLEL);
+        }
+        limitPoint = limitPlane.origin;
+    }
+    const boxSys = coordSystem(plane(limitPoint, translationDirection));
+    const boxResult = evBox3d(context, {
+                "topology" : face,
+                "tight" : true,
+                "cSys" : boxSys
+            });
+
+    // This is more used to establish the direction of the line because it doesn't have an end.
+    // Projecting the z value of this corner of the bounding box will cause the solution found by evDistance
+    // to be the closest one in the direction of translationDirection if the limitEntity is between two or more possible solutions.
+    const lineEnd = limitPoint + (translationDirection * boxResult.minCorner[2]);
+    var lineDirection = lineEnd - limitPoint;
+    if (tolerantEquals(lineDirection, vector(0, 0, 0) * meter))
+    {
+        lineDirection = translationDirection;
+    }
+    else
+    {
+        lineDirection = normalize(lineDirection);
+    }
+
+    const intersectionLine = line(limitPoint, lineDirection);
+    const distanceResult = evDistance(context, {
+                "side0" : face,
+                "side1" : intersectionLine,
+                "extendSide0" : true
+            });
+    if (!tolerantEquals(distanceResult.distance, 0 * meter))
+    {
+        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, definition.queryParameter, face);
+    }
+
+
+    const intersectionPoint = distanceResult.sides[0].point;
+    const translation = translationDirection * definition.offset + (limitPoint - intersectionPoint);
+    if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
+    {
+        addTranslateManipulator(context, id, faceTangentPlane.origin + (limitPoint - intersectionPoint), translationDirection, definition.offset);
+    }
+    return transform(translation);
+}
 
 /**
  * sheetMetalAwareMoveFace effectively has two different modes. For faces that associate to a sheet metal model face,
@@ -260,7 +517,7 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
  * @param faceToMove : A query for the sheet metal part face that the operation is moving.
  * @param operationInfo : A map of arrays that this function appends information to and then returns.
  */
-function createEdgeLimitOption(context is Context, definition is map, smEntity is Query, faceToMove is Query, operationInfo is map) returns map
+function createEdgeLimitOption(context is Context, id is Id, definition is map, smEntity is Query, faceToMove is Query, operationInfo is map) returns map
 {
     const smEdge = qEntityFilter(smEntity, EntityType.EDGE);
     if (size(evaluateQuery(context, smEdge)) == 1)
@@ -298,9 +555,19 @@ function createEdgeLimitOption(context is Context, definition is map, smEntity i
         var limitPlane = try silent(evPlane(context, { "face" : faceToMove }));
         if (limitPlane == undefined)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_NOT_PLANAR, ["moveFaces"], faceToMove);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR))
+            {
+                // If moving a nonplanar face or up to an entity, create a tool body and use opMoveFace for positioning.
+                opExtractSurface(context, id, {"faces" : faceToMove});
+                limitPlane = qCreatedBy(id, EntityType.FACE);
+                opMoveFace(context, id + "moveFace", mergeMaps(definition, {"moveFaces" : limitPlane}));
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_NOT_PLANAR, ["moveFaces"], faceToMove);
+            }
         }
-        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        else if (definition.moveFaceType == MoveFaceType.OFFSET)
         {
             limitPlane.origin += limitPlane.normal * definition.offsetDistance;
         }
@@ -317,7 +584,7 @@ function createEdgeLimitOption(context is Context, definition is map, smEntity i
     return operationInfo;
 }
 
-function createToolBodies(context is Context, entities is Query, definition is map) returns map
+function createToolBodies(context is Context, id is Id, entities is Query, definition is map) returns map
 {
     // A map to gather queries across multiple calls to createEdgeLimitOptions.
     // edgeLimitOptions is an array of overrides for specific edges for opExtendSheetBody.
@@ -332,7 +599,8 @@ function createToolBodies(context is Context, entities is Query, definition is m
         "modifiedFaces" : [],
         "sheetMetalModels" : [],
         "derippedFaces" : [],
-        "edgesToExtend" : [] };
+        "edgesToExtend" : []};
+    var index = 0;
     for (var evaluatedFace in evaluateQuery(context, entities))
     {
         // Separate selections into two categories: sheet metal model faces that the normal moveFace process will work on (aligned and antiAlignedFaces),
@@ -353,7 +621,19 @@ function createToolBodies(context is Context, entities is Query, definition is m
             }
             operationInfo.sheetMetalModels = append(operationInfo.sheetMetalModels, qOwnerBody(smFace));
         }
-        operationInfo = createEdgeLimitOption(context, definition, smEntity, evaluatedFace, operationInfo);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V517_MOVE_FACE_CHECK_BEND_EDGE))
+        {
+            // Check that the entity is not a bend edge. Checking here so that the picked face can be highlighted.
+            const jointAttribute = try silent(getJointAttribute(context, smEntity));
+            if (jointAttribute != undefined && jointAttribute.jointType != undefined && jointAttribute.jointType.value == SMJointType.BEND)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_MOVE_BEND_EDGE, ["moveFaces"], evaluatedFace);
+            }
+        }
+
+        operationInfo = createEdgeLimitOption(context, id + unstableIdComponent(index), definition, smEntity, evaluatedFace, operationInfo);
+        index += 1;
     }
     operationInfo.sheetMetalModels = qUnion(evaluateQuery(context, qUnion(operationInfo.sheetMetalModels)));
     operationInfo.modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces, operationInfo.edgesToExtend])), EntityType.FACE);
@@ -364,29 +644,37 @@ function createToolBodies(context is Context, entities is Query, definition is m
 // Use association entity for axis if it is adjacent to a sheet metal face being moved.
 function getAssociatedAxis(context is Context, definition) returns Query
 {
-    const axisSMEntities = qUnion(getSMDefinitionEntities(context, definition.axis, EntityType.EDGE));
-    const moveFaceSMEntities = qEdgeAdjacent(qUnion(getSMDefinitionEntities(context, definition.moveFaces, EntityType.FACE)), EntityType.EDGE);
-    const axisCandidates = evaluateQuery(context, qIntersection([axisSMEntities, moveFaceSMEntities]));
-    if (size(axisCandidates) != 1)
+    if (definition.outputType == MoveFaceOutputType.MOVE)
     {
-        return definition.axis;
+        const axisSMEntities = qUnion(getSMDefinitionEntities(context, definition.axis, EntityType.EDGE));
+        const moveFaceSMEntities = qEdgeAdjacent(qUnion(getSMDefinitionEntities(context, definition.moveFaces, EntityType.FACE)), EntityType.EDGE);
+        const axisCandidates = evaluateQuery(context, qIntersection([axisSMEntities, moveFaceSMEntities]));
+        if (size(axisCandidates) != 1)
+        {
+            return definition.axis;
+        }
+        else
+        {
+            return axisCandidates[0];
+        }
     }
     else
     {
-        return axisCandidates[0];
+        return definition.axis;
     }
 }
 
 const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Context, id is Id, definition)
     {
-        const operationInfo = createToolBodies(context, definition.moveFaces, definition);
+        const toolId = id + "tool";
+        const operationInfo = createToolBodies(context, toolId + unstableIdComponent("open"), definition.moveFaces, definition);
 
         // Find the faces that will be modified by deripping that haven't otherwise been moved and make sure they stay in place.
         var amendedFaces = qSubtraction(qUnion(operationInfo.derippedFaces), definition.moveFaces);
         var copiedDefinition = definition;
         copiedDefinition.moveFaceType = MoveFaceType.OFFSET;
         copiedDefinition.offsetDistance = 0 * meter;
-        const derippingOperationInfo = createToolBodies(context, amendedFaces, copiedDefinition);
+        const derippingOperationInfo = createToolBodies(context, toolId + unstableIdComponent("derip"), amendedFaces, copiedDefinition);
 
         const originalEntities = evaluateQuery(context, qOwnedByBody(operationInfo.sheetMetalModels));
         const initialAssociationAttributes = getAttributes(context, {
@@ -398,13 +686,14 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const smEdges = operationInfo.edgesToExtend;
         const trackingSMModel = startTracking(context, operationInfo.sheetMetalModels);
         const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
-        const modifiedEdges = startTracking(context, qUnion(smEdges));
+        var modifiedEdges = startTracking(context, qUnion(smEdges));
         const associateChanges = qUnion([startTracking(context, allFaces), modifiedEdges]);
+        const mergeFaces = (definition.moveFaceType != MoveFaceType.ROTATE) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
             if (size(evaluateQuery(context, allFaces)) > 0)
             {
-                opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : false }));
+                opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : mergeFaces }));
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
@@ -415,16 +704,24 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         {
             if (size(operationInfo.alignedSMFaces) > 0)
             {
-                opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(operationInfo.alignedSMFaces), "offsetDistance" : definition.offsetDistance, "mergeFaces" : false });
+                opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(operationInfo.alignedSMFaces), "offsetDistance" : definition.offsetDistance, "mergeFaces" : mergeFaces });
             }
             if (size(operationInfo.antiAlignedSMFaces) > 0)
             {
-                opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(operationInfo.antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : false });
+                opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(operationInfo.antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : mergeFaces });
             }
         }
         if (size(edgeLimitOptions) > 0)
         {
             opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "edgeLimitOptions" : edgeLimitOptions });
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V512_MOVE_FACE_OVERLAP))
+            {
+                if (size(evaluateQuery(context, qCreatedBy(id + "extend", EntityType.FACE))) != 0)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL);
+                }
+                modifiedEdges = qUnion([modifiedEdges, qCreatedBy(id + "extend", EntityType.EDGE)]);
+            }
             for (var edge in evaluateQuery(context, modifiedEdges))
             {
                 const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
@@ -443,10 +740,13 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
 
 
         try(updateSheetMetalGeometry(context, id + "smUpdate", {
-                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                    "deletedAttributes" : toUpdate.deletedAttributes,
-                    "associatedChanges" : associateChanges }));
+                        "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                        "deletedAttributes" : toUpdate.deletedAttributes,
+                        "associatedChanges" : associateChanges }));
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
+        try silent(opDeleteBodies(context, id + "delete", {
+                "entities" : qCreatedBy(toolId, EntityType.BODY)
+        }));
     }, {});
 
 // Manipulator functions
@@ -455,10 +755,10 @@ const OFFSET_MANIPULATOR = "offsetManipulator";
 const TRANSLATE_MANIPULATOR = "translateManipulator";
 const ROTATE_MANIPULATOR = "rotateManipulator";
 
-function addOffsetManipulator(context is Context, id is Id, moveFaceDefinition is map, facePlane is Plane)
+function addOffsetManipulator(context is Context, id is Id, offsetDistance is ValueWithUnits, facePlane is Plane)
 {
     addManipulators(context, id, { (OFFSET_MANIPULATOR) :
-                    linearManipulator(facePlane.origin, facePlane.normal, moveFaceDefinition.offsetDistance) });
+                    linearManipulator(facePlane.origin, facePlane.normal, offsetDistance) });
 }
 
 function addTranslateManipulator(context is Context, id is Id, origin is Vector, direction is Vector, magnitude is ValueWithUnits)
@@ -519,13 +819,42 @@ function getSMDefinitionEntities(context is Context, selection is Query, entityT
         for (var attribute in entityAssociations)
         {
             const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const inModelQuery = qOwnedByBody(modelQuery, entityType);
-            const isActive = isSheetMetalModelActive(context, modelQuery);
+            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery, entityType)]));
+            const ownerBody = qOwnerBody(qUnion(associatedEntities));
+            const isActive = try silent(isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR) ?
+                    isSheetMetalModelActive(context, ownerBody) : isSheetMetalModelActive(context, modelQuery));
             const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
-            if (isActive || returnInactive)
+            if ((isActive != undefined && isActive) || returnInactive)
             {
-                var associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), inModelQuery]));
+
                 out = concatenateArrays([out, associatedEntities]);
+            }
+        }
+    }
+    return out;
+}
+
+/**
+ * Returns an array of sm models associated with selection in a way that works outside of sheet metal features.
+ */
+function getOwnerSMModel(context is Context, selection is Query) returns array
+{
+    var entityAssociations = try silent(getAttributes(context, {
+                "entities" : qBodyType(selection, BodyType.SOLID),
+                "attributePattern" : {} as SMAssociationAttribute
+            }));
+    var out = [];
+    if (entityAssociations != undefined)
+    {
+        for (var attribute in entityAssociations)
+        {
+            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
+            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery)]));
+            const ownerBody = qOwnerBody(qUnion(associatedEntities));
+            const isActive = isSheetMetalModelActive(context, ownerBody);
+            if (isActive != undefined && isActive)
+            {
+                out = append(out, ownerBody);
             }
         }
     }
@@ -545,12 +874,26 @@ precondition
     if (moveFaceDefinition.moveFaceType == MoveFaceType.OFFSET)
     {
         newValue = newManipulators[OFFSET_MANIPULATOR].offset;
-        moveFaceDefinition.offsetDistance = abs(newValue);
+        if (moveFaceDefinition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && moveFaceDefinition.hasOffset)
+        {
+            moveFaceDefinition.offset = abs(newValue);
+        }
+        else
+        {
+            moveFaceDefinition.offsetDistance = abs(newValue);
+        }
     }
     else if (moveFaceDefinition.moveFaceType == MoveFaceType.TRANSLATE)
     {
         newValue = newManipulators[TRANSLATE_MANIPULATOR].offset;
-        moveFaceDefinition.translationDistance = abs(newValue);
+        if (moveFaceDefinition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && moveFaceDefinition.hasOffset)
+        {
+            moveFaceDefinition.offset = abs(newValue);
+        }
+        else
+        {
+            moveFaceDefinition.translationDistance = abs(newValue);
+        }
     }
     else if (moveFaceDefinition.moveFaceType == MoveFaceType.ROTATE)
     {
@@ -558,9 +901,57 @@ precondition
         moveFaceDefinition.angle = abs(newValue);
     }
 
-    moveFaceDefinition.oppositeDirection = newValue.value < 0;
+    if (moveFaceDefinition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && moveFaceDefinition.hasOffset)
+    {
+        moveFaceDefinition.oppositeOffsetDirection = newValue.value < 0;
+    }
+    else
+    {
+        moveFaceDefinition.oppositeDirection = newValue.value < 0;
+    }
 
     return moveFaceDefinition;
+}
+
+/**
+ * Editing logic. Fills in translation direction. Fills in offset distance as minimal clearance.
+ */
+export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map) returns map
+{
+    if (definition.moveFaceType == MoveFaceType.TRANSLATE && !specifiedParameters.direction)
+    {
+        const moveFaces = evaluateQuery(context, qGeometry(definition.moveFaces, GeometryType.PLANE));
+        if (size(moveFaces) != 0)
+        {
+            definition.direction = moveFaces[0];
+        }
+    }
+
+    if (specifiedParameters.offset || specifiedParameters.oppositeOffsetDirection)
+        return definition;
+
+    const limitEntity = definition.moveFaceType == MoveFaceType.TRANSLATE ? definition.limitEntity : definition.limitQuery;
+    const smLimitEntityBodies = try silent(getOwnerSMModel(context, limitEntity));
+
+    if (smLimitEntityBodies is undefined || size(smLimitEntityBodies) != 1)
+        return definition;
+
+    var smMoveFacesBodies = try silent(getOwnerSMModel(context, definition.moveFaces));
+    if (smMoveFacesBodies is undefined || size(smMoveFacesBodies) != 1)
+        return definition;
+
+    const evaluatedBodies = evaluateQuery(context, qOwnerBody(qUnion(concatenateArrays([smLimitEntityBodies, smMoveFacesBodies]))));
+    if (size(evaluatedBodies) != 1)
+        return definition;
+
+    const modelParameters = try silent(getModelParameters(context, evaluatedBodies[0]));
+    if (modelParameters is undefined)
+        return definition;
+
+    definition.offset = modelParameters.minimalClearance;
+
+    return definition;
 }
 
 function addRipsForNewEdges(context is Context, id is Id)

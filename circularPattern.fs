@@ -1,16 +1,16 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "505.0");
-export import(path : "onshape/std/tool.fs", version : "505.0");
-export import(path : "onshape/std/patternUtils.fs", version : "505.0");
+export import(path : "onshape/std/query.fs", version : "531.0");
+export import(path : "onshape/std/tool.fs", version : "531.0");
+export import(path : "onshape/std/patternUtils.fs", version : "531.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "505.0");
-import(path : "onshape/std/math.fs", version : "505.0");
+import(path : "onshape/std/curveGeometry.fs", version : "531.0");
+import(path : "onshape/std/math.fs", version : "531.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -125,7 +125,9 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = -angle;
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
-        var direction = computePatternAxis(context, definition.axis, isFeaturePattern(definition.patternType), remainingTransform);
+
+        var withAxisTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
+        var direction = computePatternAxis(context, definition.axis, withAxisTransform, remainingTransform);
         if (direction == undefined)
             throw regenError(ErrorStringEnum.PATTERN_CIRCULAR_NO_AXIS, ["axis"]);
 

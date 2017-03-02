@@ -1,33 +1,33 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "505.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "505.0");
-import(path : "onshape/std/box.fs", version : "505.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "505.0");
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/coordSystem.fs", version : "505.0");
-import(path : "onshape/std/evaluate.fs", version : "505.0");
-import(path : "onshape/std/extrude.fs", version : "505.0");
-import(path : "onshape/std/feature.fs", version : "505.0");
-import(path : "onshape/std/mathUtils.fs", version : "505.0");
-import(path : "onshape/std/revolve.fs", version : "505.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "505.0");
-import(path : "onshape/std/sketch.fs", version : "505.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
-import(path : "onshape/std/tool.fs", version : "505.0");
-import(path : "onshape/std/valueBounds.fs", version : "505.0");
-import(path : "onshape/std/string.fs", version : "505.0");
-import(path : "onshape/std/holetables.gen.fs", version : "505.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "505.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "505.0");
-import(path : "onshape/std/cylinderCast.fs", version : "505.0");
-import(path : "onshape/std/curveGeometry.fs", version : "505.0");
-import(path : "onshape/std/attributes.fs", version : "505.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "505.0");
-export import(path : "onshape/std/holeUtils.fs", version : "505.0");
+import(path : "onshape/std/boolean.fs", version : "531.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "531.0");
+import(path : "onshape/std/box.fs", version : "531.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/coordSystem.fs", version : "531.0");
+import(path : "onshape/std/evaluate.fs", version : "531.0");
+import(path : "onshape/std/extrude.fs", version : "531.0");
+import(path : "onshape/std/feature.fs", version : "531.0");
+import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/revolve.fs", version : "531.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "531.0");
+import(path : "onshape/std/sketch.fs", version : "531.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
+import(path : "onshape/std/tool.fs", version : "531.0");
+import(path : "onshape/std/valueBounds.fs", version : "531.0");
+import(path : "onshape/std/string.fs", version : "531.0");
+import(path : "onshape/std/holetables.gen.fs", version : "531.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "531.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "531.0");
+import(path : "onshape/std/cylinderCast.fs", version : "531.0");
+import(path : "onshape/std/curveGeometry.fs", version : "531.0");
+import(path : "onshape/std/attributes.fs", version : "531.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "531.0");
+export import(path : "onshape/std/holeUtils.fs", version : "531.0");
 
 
 /**
@@ -106,6 +106,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                 annotation { "Name" : "Tap drill diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
                 isLength(definition.tapDrillDiameter, HOLE_DIAMETER_BOUNDS);
             }
+        }
+
+        if (definition.majorDiameter != undefined)
+        {
+            annotation { "Name" : "Tap major diameter", "UIHint" : [ "ALWAYS_HIDDEN"] }
+            isLength(definition.majorDiameter, HOLE_MAJOR_DIAMETER_BOUNDS);
         }
 
         /*
@@ -460,6 +466,16 @@ const HOLE_CLEARANCE_BOUNDS =
 } as IntegerBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
+{
+    (meter)      : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.02,
+    (yard)       : 0.007
+} as LengthBoundSpec;
+
+const HOLE_MAJOR_DIAMETER_BOUNDS =
 {
     (meter)      : [1e-5, 0.005, 500],
     (centimeter) : 0.5,
@@ -916,6 +932,8 @@ precondition
     result.lastBody = lastBody;
 
     var lineTracking =  [
+                            // line that starts from the second point in the core sketch represents the line that sweeps the bottom of the hole
+                            { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.BLIND_TIP_FACE  },
                             // line that starts from the third point in the core sketch represents the line that creates the through hole face
                             { "lineIndex"  : 2,  "holeTrackType" : HoleSectionFaceType.THROUGH_FACE  }
                         ];
@@ -995,6 +1013,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     resultAttribute.endType = holeDefinition.endStyle;
     resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
     resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
+    resultAttribute.majorDiameter = holeDefinition.majorDiameter;
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -1044,6 +1063,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     {
         // format tap pitch based upon units
         var pitch = tapPitch;
+        var pitchWithUnits;
         var delimiter = "x";
         var result = match(tapPitch, "([0123456789.]*)\\s*(tpi|mm)");
         if (result.hasMatch)
@@ -1051,6 +1071,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             if (result.captures[2] == "tpi")
             {
                 pitch = result.captures[1];
+                pitchWithUnits = (1.0 / stringToNumber(pitch)) * inch;
 
                 // use '-' instead of 'x'
                 delimiter = "-";
@@ -1058,6 +1079,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             else if (result.captures[2] == "mm")
             {
                 pitch = result.captures[1];
+                pitchWithUnits = stringToNumber(pitch) * millimeter;
             }
         }
 
@@ -1068,6 +1090,8 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH && holeDefinition.tapClearance != undefined)
             resultAttribute.tapClearance = holeDefinition.tapClearance;
+
+        resultAttribute.threadPitch = pitchWithUnits;
     }
 
     // add properties specific to the hole type
@@ -1144,6 +1168,10 @@ function addSectionSpecsToAttribute(attribute is HoleAttribute, holeFaceType is 
     {
         resultAttribute.sectionFace = getCSinkCBoreSectionAttributeSpecs(holeDefinition);
     }
+    else if (holeFaceType == HoleSectionFaceType.BLIND_TIP_FACE)
+    {
+        resultAttribute.sectionFace = getBlindTipSectionAttributeSpecs(holeDefinition);
+    }
 
     return resultAttribute;
 }
@@ -1188,6 +1216,14 @@ function getCSinkCBoreSectionAttributeSpecs(holeDefinition is map) returns map
     return cSinkCboreFaceSpec;
 }
 
+function getBlindTipSectionAttributeSpecs(holeDefinition is map) returns map
+{
+    var blindTipFaceSpec = { "type" : HoleSectionFaceType.BLIND_TIP_FACE };
+
+    // add anything else?
+    return blindTipFaceSpec;
+}
+
 /**
  * @internal
  * Editing logic for hole feature.
@@ -1217,6 +1253,35 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
         }
     }
     return definition;
+}
+
+/**
+ * @internal
+ * Update the feature definition to have the correct majorDiameter parameter.
+ */
+export function holeDefinitionSetMajorDiameter(context is Context, definition is map, changes is map) returns map
+{
+    if (definition.majorDiameter == undefined)
+    {
+        definition.majorDiameter = computeMajorDiameter(definition);
+    }
+    return definition;
+}
+
+function computeMajorDiameter(definition is map)
+{
+    const result = getStandardAndTable(definition);
+    const standard = result.standard;
+    const table = result.table;
+    if (standard != undefined && table != undefined)
+    {
+        const entry = getLookupTable(table, standard);
+        if (entry.majorDiameter != undefined)
+        {
+            return lookupTableEvaluate(entry.majorDiameter);
+        }
+    }
+    return undefined;
 }
 
 /*

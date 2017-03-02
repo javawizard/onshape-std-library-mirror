@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,12 +15,12 @@ FeatureScript 505; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "505.0");
+import(path : "onshape/std/context.fs", version : "531.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "505.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "505.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "531.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "531.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "505.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "531.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -149,6 +149,9 @@ export function opDraft(context is Context, id is Id, definition is map)
  *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  *      @field startBound {BoundingType} : @optional
  *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
+ *      @field isStartBoundOpposite : @requiredif {is `UP_TO_SURFACE`, `UP_TO_BODY`, or `UP_TO_NEXT`.}
+ *              Whether the `startBound` extends in the opposite direction from the profile as the `endBound`. Defaults
+ *              to `true` if not supplied.
  *      @field startDepth {ValueWithUnits} : @requiredif {`startBound` is `BLIND`.}
  *              How far from the `entities` to start the extrude.  The direction vector for this is the negative of `direction`:
  *              positive values make the extrusion longer when `endDepth` is positive.
@@ -389,6 +392,7 @@ export function opPattern(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "plane1"`
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
+ *              @eg `plane(vector(0, 0, 6) * inch, vector(0, 0, 1))`
  *      @field width {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
  *              @autocomplete `6 * inch`
  *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
@@ -605,9 +609,10 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`
  * @param definition {{
- *    @field faces {Query} : List of faces to be converted. If `propagateTangents` is `true`, these are the seed faces.
+ *    @field faces {Query} : List of faces to be converted. If `tangentPropagation` is `true`, these are the seed faces.
  *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
- *    @field offset {ValueWithUnits} : "Offset extracted surface faces by this distance along normal" @optional
+ *    @field offset {ValueWithUnits} : Offset extracted surface faces by this distance along normal @optional
+ *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset.Default `true`. @optional
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

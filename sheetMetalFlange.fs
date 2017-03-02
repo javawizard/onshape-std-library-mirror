@@ -1,33 +1,33 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "505.0");
-import(path : "onshape/std/boolean.fs", version : "505.0");
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/curveGeometry.fs", version : "505.0");
-import(path : "onshape/std/extrude.fs", version : "505.0");
-import(path : "onshape/std/evaluate.fs", version : "505.0");
-import(path : "onshape/std/feature.fs", version : "505.0");
-import(path : "onshape/std/math.fs", version : "505.0");
-import(path : "onshape/std/matrix.fs", version : "505.0");
-import(path : "onshape/std/query.fs", version : "505.0");
-import(path : "onshape/std/sketch.fs", version : "505.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "505.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "505.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "505.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
-import(path : "onshape/std/topologyUtils.fs", version : "505.0");
-import(path : "onshape/std/units.fs", version : "505.0");
-import(path : "onshape/std/valueBounds.fs", version : "505.0");
-import(path : "onshape/std/vector.fs", version : "505.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "505.0");
+import(path : "onshape/std/attributes.fs", version : "531.0");
+import(path : "onshape/std/boolean.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/curveGeometry.fs", version : "531.0");
+import(path : "onshape/std/extrude.fs", version : "531.0");
+import(path : "onshape/std/evaluate.fs", version : "531.0");
+import(path : "onshape/std/feature.fs", version : "531.0");
+import(path : "onshape/std/math.fs", version : "531.0");
+import(path : "onshape/std/matrix.fs", version : "531.0");
+import(path : "onshape/std/query.fs", version : "531.0");
+import(path : "onshape/std/sketch.fs", version : "531.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "531.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "531.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "531.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
+import(path : "onshape/std/topologyUtils.fs", version : "531.0");
+import(path : "onshape/std/units.fs", version : "531.0");
+import(path : "onshape/std/valueBounds.fs", version : "531.0");
+import(path : "onshape/std/vector.fs", version : "531.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "531.0");
 
 
 const FLANGE_ANGLE_BOUNDS =
 {
-    (degree) : [0, 90, 179],
+    (degree) : [1, 90, 179],
     (radian) : 1
 } as AngleBoundSpec;
 
@@ -545,9 +545,9 @@ function updateDefinition(context is Context, edge is Query, definition is map, 
     return mergeMaps(definition, {"flangeSideDirections" : flangeSideDirs, "flangeBasePoints" : flangeBasePoints});
 }
 
-function getOffsetForClearance(context is Context, sidePlane is Plane, definition is map, flangePlane is Plane)
+function getOffsetForClearance(context is Context, sidePlane is Plane, clearance is ValueWithUnits, definition is map, flangePlane is Plane)
 {
-    var minDelta = .5 * definition.thickness + definition.minimalClearance;
+    var minDelta = clearance;
 
     var angleClearance = .5 * definition.thickness * abs(dot(flangePlane.normal, sidePlane.normal));
     var offsetForClearance = minDelta + angleClearance;
@@ -555,18 +555,25 @@ function getOffsetForClearance(context is Context, sidePlane is Plane, definitio
 }
 
 function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is Query, definition is map,
-    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane)
+    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits)
 {
-    var jointAttribute = try silent(getJointAttribute(context, sideEdge));
-    if (jointAttribute == undefined)
-        return vertexPoint;
+    var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
+                        size(evaluateQuery(context, sideEdge)) == 0;
+    var sideEdgeIsBend = false;
+    var jointAttribute;
+    if (!ignoreSideEdge)
+    {
+        jointAttribute = try silent(getJointAttribute(context, sideEdge));
+        if (jointAttribute == undefined)
+            return vertexPoint;
+        sideEdgeIsBend = (jointAttribute.jointType.value == SMJointType.BEND);
+    }
     var edgeLine = evLine(context, {"edge" : flangeEdge});
-    var sideEdgeIsBend = (jointAttribute.jointType.value == SMJointType.BEND);
-    var offsetFromClearance = getOffsetForClearance(context , sidePlane, definition, flangeData.plane);
+    var offsetFromClearance = getOffsetForClearance(context , sidePlane, clearance, definition, flangeData.plane);
     if (!sideEdgeIsBend)
     {
         //use the minimal clearance to shift by
-        return computeBaseFromShiftedPlane(context, sideEdge, offsetFromClearance, sidePlane, edgeLine);
+        return computeBaseFromShiftedPlane(context, offsetFromClearance, sidePlane, edgeLine);
     }
 
     var edgeBendRadius = jointAttribute.radius.value;
@@ -607,7 +614,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX) && edgeBendAngle < 90 * degree)
         {
             //just use the original planeFromSideEdge for base shift
-            return computeBaseFromShiftedPlane(context, sideEdge, 0.0 * meter, planeFromSideEdge, edgeLine);
+            return computeBaseFromShiftedPlane(context, 0.0 * meter, planeFromSideEdge, edgeLine);
         }
         offset = (definition.thickness * 0.5 + definition.bendRadius) * tan(.5 * definition.bendAngle);
         var lineFromBentEdge = line(vertexPoint + flangeData.direction * offset, flangeEdgeMidPt[0].direction);
@@ -615,11 +622,11 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         var offsetFromBend = evDistance(context, {"side0" : updatedProjection, "side1": project(sidePlane, updatedProjection)}).distance;
         //offset with max between bend clearance and default offset clearance
         var delta = abs(offsetFromClearance) > abs(offsetFromBend) ? offsetFromClearance : offsetFromBend;
-        return computeBaseFromShiftedPlane(context, sideEdge, delta, sidePlane, edgeLine);
+        return computeBaseFromShiftedPlane(context, delta, sidePlane, edgeLine);
     }
 }
 
-function computeBaseFromShiftedPlane(context is Context, sideEdge is Query, delta is ValueWithUnits, sidePlane is Plane, edgeLine is Line)
+function computeBaseFromShiftedPlane(context is Context, delta is ValueWithUnits, sidePlane is Plane, edgeLine is Line)
 {
     sidePlane.origin = sidePlane.origin + delta * sidePlane.normal;
 
@@ -876,14 +883,15 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
     var needsBaseUpdate = checkIfNeedsBaseUpdate(definition, sideEdgeIsBend);
     var sidePlane = undefined;
     var adjPlane = undefined;
-    var sidePlaneNormal = i == 0 ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
+    // Edge direction at vertex, pointing from vertex
+    var edgeEndDirection = i == 0 ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
 
     if (sideFace == undefined && edgeY == undefined)
     {
         if (edgeToFlangeData[sideEdge] != undefined)
             sidePlane = edgeToFlangeData[sideEdge].plane;
        else
-            sidePlane = plane(position, sidePlaneNormal);
+            sidePlane = plane(position, edgeEndDirection);
         adjPlane = edgeToFlangeData[edge].plane;
     }
     else
@@ -893,15 +901,20 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
     }
     var needsTrimChanges = false;
     var autoMitered = false; // vertex is a corner where an actual miter happened when auto-miter is on
+    var tighterClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V521_SM_CLEARANCE);
+    var clearanceFromSide = definition.minimalClearance + definition.thickness * 0.5;
     if (!definition.autoMiter)
     {
-        var sidePlane = plane(position, sidePlaneNormal);
+        var sidePlane = plane(position, edgeEndDirection);
         sidePlane = createPlaneForMiter(context, flangeData, adjPlane, sidePlane, sideEdge, false, vertexAndEdges.position, i, getAngleForAngledMiter(definition));
         result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, false, definition);
         var noAdjacentFlange = isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX) ? (edgeToFlangeData[edgeY] == undefined) : true;
-        if (noAdjacentFlange &&  isInProblemHalfSpace(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge))
+        var reducingMiter = tighterClearance && dot(sidePlane.normal, flangeData.direction) < 0 && !perpendicularVectors(sidePlane.normal, flangeData.direction);
+        if (noAdjacentFlange &&
+            isInProblemHalfSpace(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge) &&
+            !reducingMiter)
         {
-            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane);
+            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide);
         }
         return result;
     }
@@ -913,6 +926,11 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
         {
             needsSideDirUpdate = true;
             needsBaseUpdate = (edgeY == undefined) ? false : determineBaseUpdateForAutoMiter(flangeData.plane, edgeToFlangeData[edgeY].plane, sidePlane);
+            if (tighterClearance)
+            {
+                // clearance from another mitered flange does not need to include half-thickness
+                clearanceFromSide = definition.minimalClearance;
+            }
         }
         else
         {
@@ -937,15 +955,32 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
             }
         }
     }
+
     if (needsBaseUpdate)
     {
-        if ((autoMitered || needsTrimChanges) && sideEdge != undefined && evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX)
+        var useAsSideEdge = sideEdge;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR))
+        {
+            // We never want to grow the edge, flip the plane normal, if it is pointing in wrong direction
+            var dotPr = dot(sidePlane.normal, edgeEndDirection);
+            if (dotPr < 0)
+            {
+                sidePlane.normal *= -1;
+            }
+            // If the bend is on the other side of sideFace from the flangeEdge ignore it in getFlangeBasePoint
+            if (sideEdge != undefined && (evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX) != (dotPr < 0))
+            {
+                useAsSideEdge = qNothing();
+            }
+        }
+        else if ((autoMitered || needsTrimChanges) && sideEdge != undefined && evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX)
             sidePlane.normal *= -1;
 
         // If we're not trimming and the projection for position falls outside of existing edges we return vertexPositionToUse.
         // So we need to make sure it points to the original vertex location, and not the adjusted location. (BEL-57722)
         var vertexPositionToUse = needsTrimChanges ?  vertexAndEdges.position : position;
-        result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexPositionToUse, needsTrimChanges, sidePlane);
+        result.flangeBasePoint = getFlangeBasePoint(context, edge, useAsSideEdge, definition, flangeData, vertexPositionToUse, needsTrimChanges,
+                                sidePlane, clearanceFromSide);
     }
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
     {

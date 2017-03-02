@@ -1,4 +1,4 @@
-FeatureScript 505; /* Automatically generated version */
+FeatureScript 531; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 505; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "505.0");
-import(path : "onshape/std/context.fs", version : "505.0");
-import(path : "onshape/std/mathUtils.fs", version : "505.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "505.0");
-import(path : "onshape/std/units.fs", version : "505.0");
-import(path : "onshape/std/curveGeometry.fs", version : "505.0");
+import(path : "onshape/std/containers.fs", version : "531.0");
+import(path : "onshape/std/context.fs", version : "531.0");
+import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
+import(path : "onshape/std/units.fs", version : "531.0");
+import(path : "onshape/std/curveGeometry.fs", version : "531.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
