@@ -1,4 +1,4 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -647,7 +647,13 @@ export enum ErrorStringEnum
     TRANSLATION_FACE_NOT_PLANAR,
     MOVE_FACE_NO_INTERSECTION,
     SWEEP_PATH_PROFILE_NO_INTERSECTION,
-    DIRECT_EDIT_MOVE_FACE_CREATE_SELECT
+    DIRECT_EDIT_MOVE_FACE_CREATE_SELECT,
+    SHEET_METAL_THICKEN_IN_CONTEXT_INFO,
+    CANNOT_DELETE_RHO_DIMENSION,
+    INVALID_RHO,
+    SKETCH_RHO_DIM_NOT_FOUND,
+    SKETCH_CONIC_FAILED,
+    TAB_NAME_TOO_LONG
 }
 
 

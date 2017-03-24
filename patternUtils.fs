@@ -1,17 +1,17 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "531.0");
-export import(path : "onshape/std/containers.fs", version : "531.0");
-export import(path : "onshape/std/evaluate.fs", version : "531.0");
-export import(path : "onshape/std/feature.fs", version : "531.0");
-export import(path : "onshape/std/featureList.fs", version : "531.0");
-export import(path : "onshape/std/valueBounds.fs", version : "531.0");
+export import(path : "onshape/std/boolean.fs", version : "543.0");
+export import(path : "onshape/std/containers.fs", version : "543.0");
+export import(path : "onshape/std/evaluate.fs", version : "543.0");
+export import(path : "onshape/std/feature.fs", version : "543.0");
+export import(path : "onshape/std/featureList.fs", version : "543.0");
+export import(path : "onshape/std/valueBounds.fs", version : "543.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "531.0");
+import(path : "onshape/std/mathUtils.fs", version : "543.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;

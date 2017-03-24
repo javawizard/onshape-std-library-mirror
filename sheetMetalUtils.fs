@@ -1,29 +1,29 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "531.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "531.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "531.0");
-import(path : "onshape/std/containers.fs", version : "531.0");
-import(path : "onshape/std/coordSystem.fs", version : "531.0");
-import(path : "onshape/std/curveGeometry.fs", version : "531.0");
-import(path : "onshape/std/evaluate.fs", version : "531.0");
-import(path : "onshape/std/feature.fs", version : "531.0");
-import(path : "onshape/std/math.fs", version : "531.0");
-import(path : "onshape/std/manipulator.fs", version : "531.0");
-import(path : "onshape/std/query.fs", version : "531.0");
-import(path : "onshape/std/sketch.fs", version : "531.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "531.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "531.0");
-import(path : "onshape/std/string.fs", version : "531.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
-import(path : "onshape/std/tool.fs", version : "531.0");
-import(path : "onshape/std/valueBounds.fs", version : "531.0");
-import(path : "onshape/std/vector.fs", version : "531.0");
-import(path : "onshape/std/topologyUtils.fs", version : "531.0");
-import(path : "onshape/std/transform.fs", version : "531.0");
+import(path : "onshape/std/attributes.fs", version : "543.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "543.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "543.0");
+import(path : "onshape/std/coordSystem.fs", version : "543.0");
+import(path : "onshape/std/curveGeometry.fs", version : "543.0");
+import(path : "onshape/std/evaluate.fs", version : "543.0");
+import(path : "onshape/std/feature.fs", version : "543.0");
+import(path : "onshape/std/math.fs", version : "543.0");
+import(path : "onshape/std/manipulator.fs", version : "543.0");
+import(path : "onshape/std/query.fs", version : "543.0");
+import(path : "onshape/std/sketch.fs", version : "543.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "543.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "543.0");
+import(path : "onshape/std/string.fs", version : "543.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
+import(path : "onshape/std/tool.fs", version : "543.0");
+import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/vector.fs", version : "543.0");
+import(path : "onshape/std/topologyUtils.fs", version : "543.0");
+import(path : "onshape/std/transform.fs", version : "543.0");
 
 
 
@@ -615,20 +615,20 @@ export function getModelParameters(context is Context, model is Query) returns m
  */
 export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
-    var sheetMetalQueries = qNothing();
-    var nonSheetMetalQueries = qNothing();
+    var sheetMetalEntities = [];
+    var nonSheetMetalEntities = [];
     for (var entity in evaluateQuery(context, targets))
     {
         if (queryContainsActiveSheetMetal(context, entity))
         {
-            sheetMetalQueries = qUnion([sheetMetalQueries, entity]);
+            sheetMetalEntities = append(sheetMetalEntities, entity);
         }
         else
         {
-            nonSheetMetalQueries = qUnion([nonSheetMetalQueries, entity]);
+            nonSheetMetalEntities = append(nonSheetMetalEntities, entity);
         }
     }
-    return { "sheetMetalQueries" : sheetMetalQueries, "nonSheetMetalQueries" : nonSheetMetalQueries };
+    return { "sheetMetalQueries" : qUnion(sheetMetalEntities), "nonSheetMetalQueries" : qUnion(nonSheetMetalEntities) };
 }
 
 /**

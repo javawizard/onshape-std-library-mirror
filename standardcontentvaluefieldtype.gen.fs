@@ -7,13 +7,18 @@ FeatureScript 543; /* Automatically generated version */
 
 /**
  * @internal.
+ * Defines the value field control types used for standard content.
  */
-export enum SMObjectType
+export enum StandardContentValueFieldType
 {
-    MODEL,
-    WALL,
-    JOINT,
-    CORNER
+    annotation {"Name" : "Dropdown menu"}
+    DROPLIST,
+    annotation {"Name" : "Edit box"}
+    EDIT,
+    annotation {"Name" : "Static text"}
+    STATIC,
+    annotation {"Name" : "Check box"}
+    CHECKBOX
 }
 
 

@@ -1,19 +1,19 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "531.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "531.0");
-import(path : "onshape/std/containers.fs", version : "531.0");
-import(path : "onshape/std/evaluate.fs", version : "531.0");
-import(path : "onshape/std/feature.fs", version : "531.0");
-import(path : "onshape/std/math.fs", version : "531.0");
-import(path : "onshape/std/string.fs", version : "531.0");
-import(path : "onshape/std/topologyUtils.fs", version : "531.0");
-import(path : "onshape/std/transform.fs", version : "531.0");
-import(path : "onshape/std/valueBounds.fs", version : "531.0");
-import(path : "onshape/std/vector.fs", version : "531.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "543.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "543.0");
+import(path : "onshape/std/evaluate.fs", version : "543.0");
+import(path : "onshape/std/feature.fs", version : "543.0");
+import(path : "onshape/std/math.fs", version : "543.0");
+import(path : "onshape/std/string.fs", version : "543.0");
+import(path : "onshape/std/topologyUtils.fs", version : "543.0");
+import(path : "onshape/std/transform.fs", version : "543.0");
+import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/vector.fs", version : "543.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -253,7 +253,15 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
                         "parameter" : parameter
                 });
 
-                if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V536_RIB_PROFILE_EXTN_CHECK_ANGLE))
+                {
+                    // Extend profile when the angle between extendDirection and face normal is within (90, 270) degrees.
+                    if (dot(extendDirections[end], tangentPlane.normal) < -TOLERANCE.zeroAngle)
+                    {
+                        return true;
+                    }
+                }
+                else if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
                 {
                     return true;
                 }

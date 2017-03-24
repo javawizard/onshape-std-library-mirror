@@ -1,11 +1,11 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "531.0");
-import(path : "onshape/std/valueBounds.fs", version : "531.0");
-import(path : "onshape/std/units.fs", version: "531.0");
+import(path : "onshape/std/feature.fs", version : "543.0");
+import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/units.fs", version: "543.0");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -46,7 +46,7 @@ annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Foreign Id" }
+        annotation { "Name" : "Foreign Id", "UIHint" : "ALWAYS_HIDDEN" }
         definition.foreignId is ForeignId;
 
         annotation { "Name" : "Source is 'Y Axis Up'" }

@@ -1,19 +1,19 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "531.0");
-export import(path : "onshape/std/error.fs", version : "531.0");
-export import(path : "onshape/std/geomOperations.fs", version : "531.0");
-export import(path : "onshape/std/query.fs", version : "531.0");
+export import(path : "onshape/std/context.fs", version : "543.0");
+export import(path : "onshape/std/error.fs", version : "543.0");
+export import(path : "onshape/std/geomOperations.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "543.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "531.0");
-import(path : "onshape/std/string.fs", version : "531.0");
-import(path : "onshape/std/transform.fs", version : "531.0");
-import(path : "onshape/std/units.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "543.0");
+import(path : "onshape/std/string.fs", version : "543.0");
+import(path : "onshape/std/transform.fs", version : "543.0");
+import(path : "onshape/std/units.fs", version : "543.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like

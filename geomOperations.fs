@@ -1,4 +1,4 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,12 +15,12 @@ FeatureScript 531; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "531.0");
+import(path : "onshape/std/context.fs", version : "543.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "531.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "531.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "543.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "543.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "531.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "543.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -129,6 +129,7 @@ export function opDraft(context is Context, id is Id, definition is map)
 
 /**
  * Extrudes one or more edges or faces in a given direction with one or two end conditions.
+ * Faces get extruded into solid bodies and edges get extruded into sheet bodies.
  * @param id : @autocomplete `id + "extrude1"`
  * @param definition {{
  *      @field entities {Query} : Edges and faces to extrude.
@@ -268,7 +269,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "loft1"`
  * @param definition {{
  *      @field profileSubqueries {array} : An ordered array of queries for the profiles. For a solid loft, these must be
- *              surface bodies, faces, or vertices. For a surface loft, these could be wire bodies, surface bodies, faces, edges, or vertices.
+ *              sheet bodies, faces, or vertices. For a surface loft, these could be wire bodies, sheet bodies, faces, edges, or vertices.
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional

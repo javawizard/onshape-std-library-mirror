@@ -1,4 +1,4 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 531; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "531.0");
-import(path : "onshape/std/context.fs", version : "531.0");
-import(path : "onshape/std/mathUtils.fs", version : "531.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
-import(path : "onshape/std/units.fs", version : "531.0");
-import(path : "onshape/std/curveGeometry.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "543.0");
+import(path : "onshape/std/context.fs", version : "543.0");
+import(path : "onshape/std/mathUtils.fs", version : "543.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
+import(path : "onshape/std/units.fs", version : "543.0");
+import(path : "onshape/std/curveGeometry.fs", version : "543.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -988,11 +988,13 @@ export function qHoleFaces(subquery is Query) returns Query
 }
 
 /**
- * A query for all fully enclosed, 2D regions created by a sketch with the
- * specified feature id.
+ * A query for all fully enclosed, 2D regions created by a sketch.
  *
+ * @param featureId : The feature id of the [Sketch] being queried.
  * @param filterInnerLoops : Specifies whether to exclude sketch regions fully
- *      contained in other sketch regions. Default is false.
+ *      contained in other sketch regions.  A region whose border has a vertex
+ *      or edge on the outside boundary is not considered "contained."
+ *      Default is false.
  *      @optional
  */
 export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) returns Query

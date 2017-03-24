@@ -1,4 +1,4 @@
-FeatureScript 531; /* Automatically generated version */
+FeatureScript 543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,25 +43,25 @@ FeatureScript 531; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "531.0");
+export import(path : "onshape/std/query.fs", version : "543.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "531.0");
-import(path : "onshape/std/evaluate.fs", version : "531.0");
-import(path : "onshape/std/feature.fs", version : "531.0");
-import(path : "onshape/std/mathUtils.fs", version : "531.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "531.0");
-import(path : "onshape/std/tool.fs", version : "531.0");
-import(path : "onshape/std/valueBounds.fs", version : "531.0");
-import(path : "onshape/std/matrix.fs", version : "531.0");
+import(path : "onshape/std/containers.fs", version : "543.0");
+import(path : "onshape/std/evaluate.fs", version : "543.0");
+import(path : "onshape/std/feature.fs", version : "543.0");
+import(path : "onshape/std/mathUtils.fs", version : "543.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
+import(path : "onshape/std/tool.fs", version : "543.0");
+import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/matrix.fs", version : "543.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "531.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "531.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "531.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "531.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "531.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "531.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "543.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "543.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "543.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "543.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "543.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "543.0");
 
 /**
  * @internal
@@ -827,5 +827,43 @@ precondition
         value.angle = undefined;
 
     return @skConstraint(sketch, constraintId, value);
+}
+
+/**
+ * @internal
+ * Creates a conic section with the given rho value through the start and end points using the control point.
+ * If x is the distance between controlPoint and the line between start and end, and y is the maximum distance between
+ * the conic section and the same line, then rho is x/y.
+ * @param sketch : @autocomplete `sketch1`
+ * @param conicId : @autocomplete `"conic1"`
+ * @param value {{
+ *      @field start {Vector} :
+ *              @eg `vector(0, 0) * inch`
+ *      @field controlPoint {Vector} :
+ *              @eg `vector(0.5, 0.5) * inch`
+ *      @field end {Vector} :
+ *              @eg `vector(1, 0) * inch`
+ *      @field rho {number} : 0 < rho < 0.5 => elliptical arc, rho = 0.5 => parabola, 0.5 < rho < 1 => hyperbola
+ *              @eg `0.5`
+ *      @field lowParameter {number} : starting parameter of the segment @optional
+ *      @field highParameter {number} : ending parameter of the segment @optional
+ *      @field construction {boolean} : `true` for a construction conic @optional
+ *      @field fixedRho {boolean} : `true` to fix rho during sketch solve @optional
+ * }}
+ */
+export function skConicSegment(sketch is Sketch, conicId is string, value is map)
+precondition
+{
+    value.start is undefined || is2dPoint(value.start);
+    value.end is undefined || is2dPoint(value.end);
+    value.controlPoint is undefined || is2dPoint(value.controlPoint);
+    value.rho is undefined || value.rho is number;
+    value.lowParameter is undefined || value.lowParameter is number;
+    value.highParameter is undefined || value.highParameter is number;
+    value.construction is undefined || value.construction is boolean;
+    value.fixedRho is undefined || value.fixedRho is boolean;
+}
+{
+    return @skConicSegment(sketch, conicId, value);
 }
 
