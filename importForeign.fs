@@ -46,7 +46,7 @@ annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Foreign Id" }
+        annotation { "Name" : "Foreign Id", "UIHint" : "ALWAYS_HIDDEN" }
         definition.foreignId is ForeignId;
 
         annotation { "Name" : "Source is 'Y Axis Up'" }

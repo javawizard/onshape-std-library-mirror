@@ -988,11 +988,13 @@ export function qHoleFaces(subquery is Query) returns Query
 }
 
 /**
- * A query for all fully enclosed, 2D regions created by a sketch with the
- * specified feature id.
+ * A query for all fully enclosed, 2D regions created by a sketch.
  *
+ * @param featureId : The feature id of the [Sketch] being queried.
  * @param filterInnerLoops : Specifies whether to exclude sketch regions fully
- *      contained in other sketch regions. Default is false.
+ *      contained in other sketch regions.  A region whose border has a vertex
+ *      or edge on the outside boundary is not considered "contained."
+ *      Default is false.
  *      @optional
  */
 export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) returns Query

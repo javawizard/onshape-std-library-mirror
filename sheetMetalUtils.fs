@@ -615,20 +615,20 @@ export function getModelParameters(context is Context, model is Query) returns m
  */
 export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
-    var sheetMetalQueries = qNothing();
-    var nonSheetMetalQueries = qNothing();
+    var sheetMetalEntities = [];
+    var nonSheetMetalEntities = [];
     for (var entity in evaluateQuery(context, targets))
     {
         if (queryContainsActiveSheetMetal(context, entity))
         {
-            sheetMetalQueries = qUnion([sheetMetalQueries, entity]);
+            sheetMetalEntities = append(sheetMetalEntities, entity);
         }
         else
         {
-            nonSheetMetalQueries = qUnion([nonSheetMetalQueries, entity]);
+            nonSheetMetalEntities = append(nonSheetMetalEntities, entity);
         }
     }
-    return { "sheetMetalQueries" : sheetMetalQueries, "nonSheetMetalQueries" : nonSheetMetalQueries };
+    return { "sheetMetalQueries" : qUnion(sheetMetalEntities), "nonSheetMetalQueries" : qUnion(nonSheetMetalEntities) };
 }
 
 /**

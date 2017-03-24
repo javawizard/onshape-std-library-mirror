@@ -63,6 +63,7 @@ export import(path : "onshape/std/modifyFillet.fs", version : "✨");
 export import(path : "onshape/std/moveFace.fs", version : "✨");
 export import(path : "onshape/std/pattern.fs", version : "✨");
 export import(path : "onshape/std/primitives.fs", version : "✨");
+export import(path : "onshape/std/projectCurves.fs", version : "✨");
 export import(path : "onshape/std/replaceFace.fs", version : "✨");
 export import(path : "onshape/std/revolve.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalBendRelief.fs", version : "✨");

@@ -457,7 +457,18 @@ export enum FeatureScriptVersionNumber
     V528_MOVE_FACE_MERGE,
     V529_MOVE_FACE_UI_UPDATES,
     V530_MOVE_FACE_SCOPE,
-    V531_HOLE_MAJOR_DIAMETER_UPGRADE
+    V531_HOLE_MAJOR_DIAMETER_UPGRADE,
+    V533_OFFSET_CIRCLE_HELP_POINTS,
+    V534_INFORM_IN_CONTEXT_SM_THICKEN,
+    V535_DETERMINISTIC_DISAMBIGUATION,
+    V536_RIB_PROFILE_EXTN_CHECK_ANGLE,
+    V537_IN_FLAT_QUERY,
+    V538_GENERAL_SHEET_INTERSECTION,
+    V539_SKETCH_CONICS,
+    V540_SHEET_METAL_REMOVE_REDUNDANT,
+    V541_REVERT_540,
+    V542_REMAP_ATTACHED,
+    V543_RECURSIVE_UNION
 }
 
 /**
@@ -468,6 +479,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V531_HOLE_MAJOR_DIAMETER_UPGRADE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V543_RECURSIVE_UNION;
 
 

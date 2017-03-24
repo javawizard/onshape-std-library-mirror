@@ -829,3 +829,41 @@ precondition
     return @skConstraint(sketch, constraintId, value);
 }
 
+/**
+ * @internal
+ * Creates a conic section with the given rho value through the start and end points using the control point.
+ * If x is the distance between controlPoint and the line between start and end, and y is the maximum distance between
+ * the conic section and the same line, then rho is x/y.
+ * @param sketch : @autocomplete `sketch1`
+ * @param conicId : @autocomplete `"conic1"`
+ * @param value {{
+ *      @field start {Vector} :
+ *              @eg `vector(0, 0) * inch`
+ *      @field controlPoint {Vector} :
+ *              @eg `vector(0.5, 0.5) * inch`
+ *      @field end {Vector} :
+ *              @eg `vector(1, 0) * inch`
+ *      @field rho {number} : 0 < rho < 0.5 => elliptical arc, rho = 0.5 => parabola, 0.5 < rho < 1 => hyperbola
+ *              @eg `0.5`
+ *      @field lowParameter {number} : starting parameter of the segment @optional
+ *      @field highParameter {number} : ending parameter of the segment @optional
+ *      @field construction {boolean} : `true` for a construction conic @optional
+ *      @field fixedRho {boolean} : `true` to fix rho during sketch solve @optional
+ * }}
+ */
+export function skConicSegment(sketch is Sketch, conicId is string, value is map)
+precondition
+{
+    value.start is undefined || is2dPoint(value.start);
+    value.end is undefined || is2dPoint(value.end);
+    value.controlPoint is undefined || is2dPoint(value.controlPoint);
+    value.rho is undefined || value.rho is number;
+    value.lowParameter is undefined || value.lowParameter is number;
+    value.highParameter is undefined || value.highParameter is number;
+    value.construction is undefined || value.construction is boolean;
+    value.fixedRho is undefined || value.fixedRho is boolean;
+}
+{
+    return @skConicSegment(sketch, conicId, value);
+}
+

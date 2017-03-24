@@ -485,10 +485,24 @@ function offsetSheets(context is Context, id is Id, sheetQuery is Query, thickne
 function thickenToSheetMetal(context is Context, id is Id, definition is map)
 {
     const evaluatedFaceQueries = evaluateQuery(context, definition.regions);
-    if (size(evaluatedFaceQueries) == 0)
+    const faceQueryCount = size(evaluatedFaceQueries);
+    if (faceQueryCount == 0)
     {
         throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["regions"]);
     }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V534_INFORM_IN_CONTEXT_SM_THICKEN))
+    {
+        if (faceQueryCount > 1)
+        {
+          const modifiable = size(evaluateQuery(context, qModifiableEntityFilter(definition.regions)));
+          if (modifiable != faceQueryCount)
+          {
+            reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_THICKEN_IN_CONTEXT_INFO, ["regions"]);
+          }
+        }
+    }
+
     var sketchPlaneToFacesMap = {};
     var facesToConvert = [];
     var index = 0;
@@ -539,20 +553,34 @@ function convertRegion(context is Context, id is Id, definition is map)
     const extrudeId = id + "extrude";
     const sign = definition.oppositeDirection ? -1 : 1;
     const startDepth = definition.thickness / 2 + definition.clearance;
-    opExtrude(context, extrudeId, {
-                "entities" : definition.regions,
-                "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
-                "endBound" : BoundingType.BLIND,
-                "endDepth" : startDepth + definition.thickness,
-                "startBound" : BoundingType.BLIND,
-                "startDepth" : -startDepth
-            });
-    var createdQuery = qCreatedBy(extrudeId, EntityType.BODY);
-    var isStartCap = true;
-    opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(extrudeId, isStartCap), EntityType.FACE) });
-    opDeleteBodies(context, id + "deleteBodies", {
-                "entities" : createdQuery
-            });
+    try
+    {
+        opExtrude(context, extrudeId, {
+                    "entities" : definition.regions,
+                    "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
+                    "endBound" : BoundingType.BLIND,
+                    "endDepth" : startDepth + definition.thickness,
+                    "startBound" : BoundingType.BLIND,
+                    "startDepth" : -startDepth
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN, ["regions"]);
+    }
+    try
+    {
+        var createdQuery = qCreatedBy(extrudeId, EntityType.BODY);
+        var isStartCap = true;
+        opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(extrudeId, isStartCap), EntityType.FACE) });
+        opDeleteBodies(context, id + "deleteBodies", {
+                    "entities" : createdQuery
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
+    }
 }
 
 function extrudeSketchCurves(context is Context, id is Id, definition is map) returns Query
@@ -906,7 +934,7 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
     {
         const bodies = qEntityFilter(definition.initEntities, EntityType.BODY);
         const planarFaces = qGeometry(qEntityFilter(definition.initEntities, EntityType.FACE), GeometryType.PLANE);
-        const edges = qEntityFilter(definition.initEntities, EntityType.EDGE);
+        const edges = qModifiableEntityFilter(qEntityFilter(definition.initEntities, EntityType.EDGE));
         definition.process = SMProcessType.CONVERT;
         if (size(evaluateQuery(context, bodies)) > 0)
         {

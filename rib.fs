@@ -253,7 +253,15 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
                         "parameter" : parameter
                 });
 
-                if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V536_RIB_PROFILE_EXTN_CHECK_ANGLE))
+                {
+                    // Extend profile when the angle between extendDirection and face normal is within (90, 270) degrees.
+                    if (dot(extendDirections[end], tangentPlane.normal) < -TOLERANCE.zeroAngle)
+                    {
+                        return true;
+                    }
+                }
+                else if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
                 {
                     return true;
                 }
