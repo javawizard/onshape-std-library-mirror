@@ -23,6 +23,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
@@ -155,6 +156,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         if (definition.bodyType != ToolBodyType.SURFACE)
         {
             booleanStepTypePredicate(definition);
+        }
+        else
+        {
+            surfaceOperationTypePredicate(definition);
         }
 
         if (definition.bodyType != ToolBodyType.SURFACE)
@@ -462,10 +467,16 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         extrudeWithDraft(context, id, definition, draftCondition);
 
+        const reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
+
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
+        }
+        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD && !definition.hasSecondDirection)
+        {
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            joinSurfaceBodies(context, id, matches, reconstructOp);
         }
 
         if (vertexPlaneId != undefined)
@@ -487,7 +498,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             hasOffset: false, hasSecondDirectionOffset: false,
             offsetOppositeDirection: false, secondDirectionOffsetOppositeDirection: false,
             hasDraft: false, hasSecondDirectionDraft: false,
-            draftPullDirection : false, secondDirectionDraftPullDirection : false });
+            draftPullDirection : false, secondDirectionDraftPullDirection : false,
+            surfaceOperationType : NewSurfaceOperationType.NEW });
 
 predicate supportsDraft(definition is map)
 {
@@ -1017,6 +1029,21 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
         if (canSetSecondDirectionFlip(newDefinition, specifiedParameters))
         {
             newDefinition.secondDirectionOppositeDirection = !newDefinition.oppositeDirection;
+        }
+    }
+
+    if (definition.bodyType == ToolBodyType.SURFACE)
+    {
+        if (!specifiedParameters.surfaceOperationType)
+        {
+            if (definition.hasSecondDirection)
+            {
+                newDefinition.surfaceOperationType = NewSurfaceOperationType.NEW;
+            }
+            else
+            {
+                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+            }
         }
     }
     return newDefinition;

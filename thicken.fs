@@ -18,15 +18,6 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
-const THICKEN_BOUNDS =
-{
-    (meter)      : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.025,
-    (yard)       : 0.01
-} as LengthBoundSpec;
 
 /**
  * Feature performing an [opThicken], followed by an [opBoolean]. For simple thickens, prefer using
@@ -46,7 +37,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         definition.entities is Query;
 
         annotation { "Name" : "Direction 1" }
-        isLength(definition.thickness1, THICKEN_BOUNDS);
+        isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;

@@ -12,9 +12,11 @@ export import(path : "onshape/std/manipulator.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/boolean.fs", version : "✨");
 import(path : "onshape/std/booleanHeuristics.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
@@ -49,6 +51,10 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.bodyType != ToolBodyType.SURFACE)
         {
             booleanStepTypePredicate(definition);
+        }
+        else
+        {
+            surfaceOperationTypePredicate(definition);
         }
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -149,16 +155,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         opRevolve(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
+        const reconstructOp = function(id)
+        {
+            opRevolve(context, id, definition);
+            transformResultIfNecessary(context, id, remainingTransform);
+        };
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id)
-            {
-                opRevolve(context, id, definition);
-                transformResultIfNecessary(context, id, remainingTransform);
-            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
-    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW });
+        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+        {
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, remainingTransform);
+            joinSurfaceBodies(context, id, matches, reconstructOp);
+        }
+    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW });
 
 //Manipulator functions
 
@@ -331,6 +342,14 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
     {
         newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
     }
+
+    if (definition.bodyType == ToolBodyType.SURFACE)
+    {
+        return surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+    }
+
     return newDefinition;
 }
+
+
 

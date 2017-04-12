@@ -218,6 +218,20 @@ export const SHELL_OFFSET_BOUNDS =
 } as LengthBoundSpec;
 
 /**
+ * A `LengthBoundSpec` for an offset thickness, for a length greater than or equal to 0, with defaults
+ * greater than NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS
+ */
+export const ZERO_INCLUSIVE_OFFSET_BOUNDS =
+{
+    (meter)      : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.025,
+    (yard)       : 0.01
+} as LengthBoundSpec;
+
+/**
  * @internal
  * A `LengthBoundSpec` for the size of a construction plane.
  */

@@ -31,7 +31,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities to fillet",
-                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                     "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 
         annotation { "Name" : "Radius" }

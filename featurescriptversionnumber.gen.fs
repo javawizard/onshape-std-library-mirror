@@ -468,7 +468,21 @@ export enum FeatureScriptVersionNumber
     V540_SHEET_METAL_REMOVE_REDUNDANT,
     V541_REVERT_540,
     V542_REMAP_ATTACHED,
-    V543_RECURSIVE_UNION
+    V543_RECURSIVE_UNION,
+    V546_GEOMETRY_QUERY_FIX,
+    V547_SM_CORNERS_MERGE_SHORT_RIP_EDGES,
+    V548_PS_VERSION_29_1_233,
+    V549_SM_ALIGNMENT_APPROXIMATE_ANGLE,
+    V550_EXTRUDE_OFFSET_VERIFICATION,
+    V551_DELETE_FACE_NO_HEAL,
+    V552_FILLET_EARLY_VERIFICATION,
+    V553_MULTI_LOOP_ALIGNMENT,
+    V554_SURFACE_JOIN,
+    V555_CURVE_FEATURE_TEXT_CHANGES,
+    V556_SURFACE_JOIN_FS_FIXES,
+    V557_NO_BEND_CENTERLINE_IN_DERIVED,
+    V558_PROJECT_EDGES_SAME_SKETCH,
+    V559_REMOVE_LOGGING
 }
 
 /**
@@ -479,6 +493,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V543_RECURSIVE_UNION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V559_REMOVE_LOGGING;
 
 

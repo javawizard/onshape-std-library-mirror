@@ -361,6 +361,185 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
 }
 
 
+/**
+ * Predicate which specifies a field `surfaceOperationType` of type [NewSurfaceOperationType].
+ * Used by surface-creating feature preconditions such as revolve, sweep or loft.
+ *
+ * When used in a precondition, [NewSurfaceOperationType] creates UI like the sweep
+ * feature, with a horizontal list of the words "New" and "Add". When using this
+ * predicate in features, make sure to export an import of `tool.fs` so that [NewSurfaceOperationType]
+ * is visible to the Part Studios:
+ * ```
+ * export import(path : "onshape/std/tool.fs", version : "");
+ * ```
+ *
+ * @param surfaceDefinition : @autocomplete `definition`
+ */
+export predicate surfaceOperationTypePredicate(surfaceDefinition is map)
+{
+    annotation { "Name" : "Result body operation type", "UIHint" : "HORIZONTAL_ENUM" }
+    surfaceDefinition.surfaceOperationType is NewSurfaceOperationType;
+}
+
+
+/**
+ * @internal
+ * Used by features using surface boolean heuristics
+ */
+export function filterJoinableSurfaceEdges(edges is Query) returns Query
+{
+    return qEdgeTopologyFilter(qSketchFilter(edges, SketchObject.NO), EdgeTopology.LAMINAR);
+}
+
+/**
+ * @internal
+ */
+function getJoinableSurfaceEdgeFromSketchEdge(context is Context, id is Id, sketchEdge is Query, transform is Transform) returns Query
+{
+    var midPoint = evEdgeTangentLine(context, {
+        "edge" : sketchEdge,
+        "parameter" : 0.5
+    }).origin;
+
+    var track = qContainsPoint(filterJoinableSurfaceEdges(startTracking(context,
+                {"subquery" : sketchEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, sketchEdge) })), transform * midPoint);
+    var trackedEdges = evaluateQuery(context, qSubtraction(track, qCreatedBy(id)));
+
+    if (size(trackedEdges) == 1)
+    {
+        return trackedEdges[0];
+    }
+
+    return qNothing();
+}
+
+/**
+ * @internal
+ */
+function createJoinMatch(topology1 is Query, topology2 is Query) returns map
+{
+    return { "topology1" : topology1, "topology2" : topology2, "matchType" : TopologyMatchType.COINCIDENT };
+}
+
+/**
+ * @internal
+ * Used by features using surface boolean heuristics
+ */
+export function surfaceOperationTypeEditLogic (context is Context, id is Id, definition is map,
+                                           specifiedParameters is map, inputEdges is Query)
+{
+    if (!specifiedParameters.surfaceOperationType)
+    {
+        var joinableEdges = evaluateQuery(context, filterJoinableSurfaceEdges(inputEdges));
+        var anyJoinable = size(joinableEdges) > 0;
+        if (!anyJoinable)
+        {
+            var sketchEdges = evaluateQuery(context, qSketchFilter(inputEdges, SketchObject.YES));
+            for (var i = 0; i < size(sketchEdges); i += 1)
+            {
+                if (size(evaluateQuery(context, getJoinableSurfaceEdgeFromSketchEdge(context, id, sketchEdges[i], identityTransform()))) > 0)
+                {
+                    anyJoinable = true;
+                    break;
+                }
+            }
+        }
+        definition.surfaceOperationType = anyJoinable ? NewSurfaceOperationType.ADD : NewSurfaceOperationType.NEW;
+    }
+    return definition;
+}
+
+/**
+ * @internal
+ * Used by features using surface boolean
+ */
+export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id, created is Query, originating is Query, transform is Transform) returns array
+{
+    var createdEdges = evaluateQuery(context, qEdgeTopologyFilter(created, EdgeTopology.LAMINAR));
+    var originatingEdges = filterJoinableSurfaceEdges(originating);
+    var originatingSketchEdges = qSketchFilter(originating, SketchObject.YES);
+    var nCreatedEdges = size(createdEdges);
+
+    var matches = makeArray(nCreatedEdges);
+    var nMatches = 0;
+    for (var i = 0; i < nCreatedEdges; i += 1)
+    {
+        var midPoint = evEdgeTangentLine(context, {
+            "edge" : createdEdges[i],
+            "parameter" : 0.5
+        }).origin;
+
+        var originals = evaluateQuery(context, qContainsPoint(qIntersection([originatingEdges, qDependency(createdEdges[i])]), midPoint));
+        var nOriginalMatches = size(originals);
+        if (nOriginalMatches == 1)
+        {
+            matches[nMatches] = createJoinMatch(originals[0], createdEdges[i]);
+            nMatches += 1;
+        }
+        else if (nOriginalMatches == 0)
+        {
+            var originalSketch = evaluateQuery(context, qContainsPoint(qIntersection([originatingSketchEdges, qDependency(createdEdges[i])]), inverse(transform) * midPoint));
+            if (size(originalSketch) == 1)
+            {
+                var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromSketchEdge(context, id, originalSketch[0], transform));
+                if (size(edges) == 1)
+                {
+                    matches[nMatches] =  createJoinMatch(edges[0], createdEdges[i]);
+                    nMatches += 1;
+                }
+            }
+        }
+    }
+
+    return resize(matches, nMatches);
+}
+/**
+ * Joins surface bodies at the matching edges.
+ * @param context {Context}
+ * @param id {Id}: identifier of the feature
+ * @param matches {array}: Matching edges of the sheet bodies. Each matching element is a map with fields `topology1`, `topology2`
+ *      and `matchType`; where `topology1` and `topology2` are a pair of matching edges of two sheet bodies and
+ *      `matchType` is the type of match [TopologyMatchType] between them. Owner body of `matches[0].topology1` survives in the join operation.
+ * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
+ *      in case the input is problematic or the join itself fails.
+ */
+export function joinSurfaceBodies(context is Context, id is Id, matches is array, reconstructOp is function)
+{
+    var nMatches = size(matches);
+    if (nMatches == 0)
+        throw regenError(ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
+
+    var tools = makeArray(nMatches * 2);
+    for (var i = 0; i < nMatches; i += 1)
+    {
+        tools[i] = qOwnerBody(matches[i].topology1);
+        tools[nMatches + i] = qOwnerBody(matches[i].topology2);
+    }
+    const joinId = id + "join";
+    try
+    (
+     opBoolean(context, joinId, {
+        "allowSheets" : true,
+        "tools" : qUnion(tools),
+        "operationType" : BooleanOperationType.UNION,
+        "makeSolid" : false,
+        "eraseImprintedEdges" : true,
+        "matches" : matches
+    }));
+
+    processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
+    if (getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
+    {
+        const errorId = id + "errorEntities";
+        reconstructOp(errorId);
+        setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+    }
+}
+
+
+
+
 function performRegularBoolean(context is Context, id is Id, definition is map)
 {
     try(opBoolean(context, id, definition));

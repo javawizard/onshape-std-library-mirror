@@ -662,13 +662,27 @@ export function clearSheetMetalData(context, id) returns Query
                                                   active : true}));
     var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
 
+    // Solid bodies 3d and Flat and only they are associated with sheet bodies
     var associationAttributes = getAttributes(context, {"entities" : smModelsQ, "attributePattern" : {} as SMAssociationAttribute});
-    var smPartQArr = [];
+    var smPartNBendLineQArr = [];
     for (var attribute in associationAttributes)
     {
-        smPartQArr = append(smPartQArr, qAttributeQuery(attribute));
+        smPartNBendLineQArr = append(smPartNBendLineQArr, qAttributeQuery(attribute));
     }
-    var smPartQEvaluated = evaluateQuery(context, qUnion(smPartQArr));
+
+    // Bend centerlines are wire bodies associated with edges of sheet bodies
+    // there is more topology associated with edges that  why we have to apply filters to qAttributeQuery
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V557_NO_BEND_CENTERLINE_IN_DERIVED))
+    {
+        associationAttributes = getAttributes(context, {"entities" : qOwnedByBody(smModelsQ, EntityType.EDGE), "attributePattern" : {} as SMAssociationAttribute});
+        for (var attribute in associationAttributes)
+        {
+            smPartNBendLineQArr = append(smPartNBendLineQArr, qEntityFilter(qBodyType(qAttributeQuery(attribute), BodyType.WIRE), EntityType.BODY));
+        }
+    }
+
+
+    var smPartNBendLineQEvaluated = evaluateQuery(context, qUnion(smPartNBendLineQArr));
 
     // remove all SMAttributes
     removeAttributes(context, {
@@ -691,7 +705,7 @@ export function clearSheetMetalData(context, id) returns Query
             "entities" : qUnion(smModelsEvaluated)
     });
 
-   return qUnion(smPartQEvaluated);
+   return qUnion(smPartNBendLineQEvaluated);
 }
 
 /**

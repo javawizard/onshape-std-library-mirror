@@ -118,6 +118,9 @@ export predicate canBeQuery(value)
  * @value CAP_ENTITY                 : Used in [qCapEntity]
  * @value SOURCE_MESH                : Used in [qSourceMesh]
  * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
+ * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
+ * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
+ * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
  ******************************************************************************/
 export enum QueryType
 {
@@ -143,6 +146,7 @@ export enum QueryType
     EDGE_ADJACENT,
     LOOP_AROUND_FACE,
     SHELL_CONTAINING_FACE,
+    EDGE_TOPOLOGY_FILTER,
     //Geometry types
     GEOMETRY,
     BODY_TYPE,
@@ -178,7 +182,9 @@ export enum QueryType
     CAP_ENTITY,
     SOURCE_MESH,
     MESH_GEOMETRY_FILTER,
-    MODIFIABLE_ENTITY_FILTER
+    MODIFIABLE_ENTITY_FILTER,
+    SKETCH_OBJECT_FILTER,
+    COINCIDES_WITH_PLANE
 }
 
 /**
@@ -784,6 +790,16 @@ precondition
     return { "queryType" : QueryType.EDGE_ADJACENT, "query" : query, "entityType" : entityType } as Query;
 }
 
+/**
+ * A query for edges of a subquery which match a given [EdgeTopology].
+ */
+export function qEdgeTopologyFilter(subquery is Query, edgeTopologyType is EdgeTopology) returns Query
+{
+    return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : subquery } as Query;
+}
+
+
+
 //LOOP_AROUND_FACE,
 //SHELL_CONTAINING_FACE,
 //======================== Geometry Type Queries ==============================
@@ -854,6 +870,16 @@ export function qModifiableEntityFilter(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.MODIFIABLE_ENTITY_FILTER, "subquery" : subquery } as Query;
 }
+
+/**
+ * A query for all sketch entities, or all non-sketch entities,
+ * matching a subquery.
+ */
+export function qSketchFilter(subquery is Query, sketchObjectFilter is SketchObject) returns Query
+{
+    return { "queryType" : QueryType.SKETCH_OBJECT_FILTER, "sketchObjectFilter" : sketchObjectFilter, "subquery" : subquery } as Query;
+}
+
 
 // ======================= Geometry matching Queries ==========================
 /**
@@ -1094,6 +1120,16 @@ export function qIntersectsLine(subquery is Query, line is Line) returns Query
 export function qIntersectsPlane(subquery is Query, plane is Plane) returns Query
 {
     return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
+}
+
+/**
+ * A query for all entities (bodies, faces, edges, or points) coinciding with a specified infinite plane.
+ * @param plane :
+ *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ */
+export function qCoincidesWithPlane(subquery is Query, plane is Plane) returns Query
+{
+    return { "queryType" : QueryType.COINCIDES_WITH_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
 }
 
 /**

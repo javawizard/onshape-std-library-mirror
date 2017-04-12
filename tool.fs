@@ -61,3 +61,23 @@ export enum NewBodyOperationType
     INTERSECT
 }
 
+/**
+ * Defines how a new surface from a surface-creating feature (sweep, loft, revolve, etc.)
+ * should be merged with other surfaces in the context.
+ *
+ * To include this enum with the same styling as the extrude dialog (and others),
+ * use `booleanStepTypePredicate(definition)`.
+ *
+ * @value NEW : Creates a new surface in the context with the geometry resulting
+ *          from the operation.
+ * @value ADD : Performs a surface union between the new surface and all surfaces
+ *          used as input.
+ */
+export enum NewSurfaceOperationType
+{
+    annotation { "Name" : "New" }
+    NEW,
+    annotation { "Name" : "Add" }
+    ADD
+}
+

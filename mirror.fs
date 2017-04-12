@@ -89,7 +89,11 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition[notFoundErrorKey("entities")] = ErrorStringEnum.MIRROR_SELECT_PARTS;
         // We only include original body in the tools if the operation is UNION
         if (definition.patternType == MirrorType.PART && definition.operationType == NewBodyOperationType.ADD)
+        {
             definition.seed = definition.entities;
+            definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
+        }
+
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW });
 
@@ -101,5 +105,23 @@ export function mirrorEditLogic(context is Context, id is Id, oldDefinition is m
 {
     return booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, mirror);
+}
+
+/** @internal */
+function createMatchesForSurfaceJoin(context is Context, id is Id, definition is map, mirrorPlane is Plane) returns array
+{
+    var matches = [];
+
+    if (definition.patternType == MirrorType.PART)
+    {
+        var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.LAMINAR), mirrorPlane));
+        matches = makeArray(size(edgesOnPlane));
+        for (var i = 0; i < size(edgesOnPlane); i += 1)
+        {
+            var mirrorEdge = startTracking(context, edgesOnPlane[i]);
+            matches[i] = { "topology1" : edgesOnPlane[i], "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
+        }
+        return matches;
+    }
 }
 

@@ -43,6 +43,7 @@ export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 
 /* Onshape standard library features */
 export import(path : "onshape/std/boolean.fs", version : "✨");
+export import(path : "onshape/std/bridgingCurve.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
 export import(path : "onshape/std/cplane.fs", version : "✨");
 export import(path : "onshape/std/cpoint.fs", version : "✨");
@@ -61,6 +62,7 @@ export import(path : "onshape/std/mateConnector.fs", version : "✨");
 export import(path : "onshape/std/mirror.fs", version : "✨");
 export import(path : "onshape/std/modifyFillet.fs", version : "✨");
 export import(path : "onshape/std/moveFace.fs", version : "✨");
+export import(path : "onshape/std/offsetSurface.fs", version : "✨");
 export import(path : "onshape/std/pattern.fs", version : "✨");
 export import(path : "onshape/std/primitives.fs", version : "✨");
 export import(path : "onshape/std/projectCurves.fs", version : "✨");
@@ -68,6 +70,7 @@ export import(path : "onshape/std/replaceFace.fs", version : "✨");
 export import(path : "onshape/std/revolve.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalBendRelief.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalCorner.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalEnd.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");

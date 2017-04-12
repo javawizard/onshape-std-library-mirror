@@ -140,6 +140,14 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
     if (isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
+        if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
+        {
+            joinSurfaceBodies(context, id, definition.surfaceJoinMatches, reconstructOp);
+            if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+            {
+                return;
+            }
+        }
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }
 }
