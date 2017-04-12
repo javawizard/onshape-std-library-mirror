@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 543; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/math.fs", version : "543.0");
-import(path : "onshape/std/error.fs", version : "543.0");
-export import(path : "onshape/std/units.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/math.fs", version : "559.0");
+import(path : "onshape/std/error.fs", version : "559.0");
+export import(path : "onshape/std/units.fs", version : "559.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -215,6 +215,20 @@ export const SHELL_OFFSET_BOUNDS =
     (inch)       : 0.1,
     (foot)       : 0.01,
     (yard)       : 0.0025
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for an offset thickness, for a length greater than or equal to 0, with defaults
+ * greater than NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS
+ */
+export const ZERO_INCLUSIVE_OFFSET_BOUNDS =
+{
+    (meter)      : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.25,
+    (foot)       : 0.025,
+    (yard)       : 0.01
 } as LengthBoundSpec;
 
 /**

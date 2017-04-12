@@ -1,29 +1,29 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "543.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "543.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/coordSystem.fs", version : "543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/math.fs", version : "543.0");
-import(path : "onshape/std/manipulator.fs", version : "543.0");
-import(path : "onshape/std/query.fs", version : "543.0");
-import(path : "onshape/std/sketch.fs", version : "543.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "543.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "543.0");
-import(path : "onshape/std/string.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/tool.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
-import(path : "onshape/std/vector.fs", version : "543.0");
-import(path : "onshape/std/topologyUtils.fs", version : "543.0");
-import(path : "onshape/std/transform.fs", version : "543.0");
+import(path : "onshape/std/attributes.fs", version : "559.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "559.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/coordSystem.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/math.fs", version : "559.0");
+import(path : "onshape/std/manipulator.fs", version : "559.0");
+import(path : "onshape/std/query.fs", version : "559.0");
+import(path : "onshape/std/sketch.fs", version : "559.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "559.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "559.0");
+import(path : "onshape/std/string.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/tool.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/vector.fs", version : "559.0");
+import(path : "onshape/std/topologyUtils.fs", version : "559.0");
+import(path : "onshape/std/transform.fs", version : "559.0");
 
 
 
@@ -662,13 +662,27 @@ export function clearSheetMetalData(context, id) returns Query
                                                   active : true}));
     var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
 
+    // Solid bodies 3d and Flat and only they are associated with sheet bodies
     var associationAttributes = getAttributes(context, {"entities" : smModelsQ, "attributePattern" : {} as SMAssociationAttribute});
-    var smPartQArr = [];
+    var smPartNBendLineQArr = [];
     for (var attribute in associationAttributes)
     {
-        smPartQArr = append(smPartQArr, qAttributeQuery(attribute));
+        smPartNBendLineQArr = append(smPartNBendLineQArr, qAttributeQuery(attribute));
     }
-    var smPartQEvaluated = evaluateQuery(context, qUnion(smPartQArr));
+
+    // Bend centerlines are wire bodies associated with edges of sheet bodies
+    // there is more topology associated with edges that  why we have to apply filters to qAttributeQuery
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V557_NO_BEND_CENTERLINE_IN_DERIVED))
+    {
+        associationAttributes = getAttributes(context, {"entities" : qOwnedByBody(smModelsQ, EntityType.EDGE), "attributePattern" : {} as SMAssociationAttribute});
+        for (var attribute in associationAttributes)
+        {
+            smPartNBendLineQArr = append(smPartNBendLineQArr, qEntityFilter(qBodyType(qAttributeQuery(attribute), BodyType.WIRE), EntityType.BODY));
+        }
+    }
+
+
+    var smPartNBendLineQEvaluated = evaluateQuery(context, qUnion(smPartNBendLineQArr));
 
     // remove all SMAttributes
     removeAttributes(context, {
@@ -691,7 +705,7 @@ export function clearSheetMetalData(context, id) returns Query
             "entities" : qUnion(smModelsEvaluated)
     });
 
-   return qUnion(smPartQEvaluated);
+   return qUnion(smPartNBendLineQEvaluated);
 }
 
 /**

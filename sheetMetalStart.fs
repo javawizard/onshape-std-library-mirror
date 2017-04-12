@@ -1,34 +1,34 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
 
-import(path : "onshape/std/attributes.fs", version : "543.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "543.0");
-import(path : "onshape/std/box.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/coordSystem.fs", version : "543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "543.0");
-import(path : "onshape/std/error.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/geomOperations.fs", version : "543.0");
-import(path : "onshape/std/manipulator.fs", version : "543.0");
-import(path : "onshape/std/math.fs", version : "543.0");
-import(path : "onshape/std/modifyFillet.fs", version : "543.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "543.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "543.0");
-import(path : "onshape/std/sketch.fs", version : "543.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "543.0");
-import(path : "onshape/std/string.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/tool.fs", version : "543.0");
-import(path : "onshape/std/topologyUtils.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
-import(path : "onshape/std/vector.fs", version : "543.0");
+import(path : "onshape/std/attributes.fs", version : "559.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "559.0");
+import(path : "onshape/std/box.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/coordSystem.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
+import(path : "onshape/std/error.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/geomOperations.fs", version : "559.0");
+import(path : "onshape/std/manipulator.fs", version : "559.0");
+import(path : "onshape/std/math.fs", version : "559.0");
+import(path : "onshape/std/modifyFillet.fs", version : "559.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "559.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "559.0");
+import(path : "onshape/std/sketch.fs", version : "559.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "559.0");
+import(path : "onshape/std/string.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/tool.fs", version : "559.0");
+import(path : "onshape/std/topologyUtils.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/vector.fs", version : "559.0");
 
 /**
  * Method of initializing sheet metal model
@@ -110,7 +110,8 @@ annotation { "Feature Type Name" : "Sheet metal model",
 export const sheetMetalStart = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : EntityType.BODY || ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
+        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
+            ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
         definition.initEntities is Query;
 
         annotation { "Name" : "Process", "UIHint" : "HORIZONTAL_ENUM" }

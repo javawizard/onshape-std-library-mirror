@@ -1,21 +1,21 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
-export import(path : "onshape/std/patternUtils.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
+export import(path : "onshape/std/patternUtils.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "543.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/transform.fs", version : "543.0");
+import(path : "onshape/std/boolean.fs", version : "559.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/transform.fs", version : "559.0");
 
 
 /**
@@ -89,7 +89,11 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition[notFoundErrorKey("entities")] = ErrorStringEnum.MIRROR_SELECT_PARTS;
         // We only include original body in the tools if the operation is UNION
         if (definition.patternType == MirrorType.PART && definition.operationType == NewBodyOperationType.ADD)
+        {
             definition.seed = definition.entities;
+            definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
+        }
+
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW });
 
@@ -101,5 +105,23 @@ export function mirrorEditLogic(context is Context, id is Id, oldDefinition is m
 {
     return booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, mirror);
+}
+
+/** @internal */
+function createMatchesForSurfaceJoin(context is Context, id is Id, definition is map, mirrorPlane is Plane) returns array
+{
+    var matches = [];
+
+    if (definition.patternType == MirrorType.PART)
+    {
+        var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.LAMINAR), mirrorPlane));
+        matches = makeArray(size(edgesOnPlane));
+        for (var i = 0; i < size(edgesOnPlane); i += 1)
+        {
+            var mirrorEdge = startTracking(context, edgesOnPlane[i]);
+            matches[i] = { "topology1" : edgesOnPlane[i], "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
+        }
+        return matches;
+    }
 }
 

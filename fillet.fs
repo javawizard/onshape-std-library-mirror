@@ -1,22 +1,22 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "543.0");
+export import(path : "onshape/std/manipulator.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/tool.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
-import(path : "onshape/std/vector.fs", version : "543.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/tool.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/vector.fs", version : "559.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -31,7 +31,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities to fillet",
-                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                     "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 
         annotation { "Name" : "Radius" }

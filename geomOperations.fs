@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,12 +15,13 @@ FeatureScript 543; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "543.0");
+import(path : "onshape/std/context.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "543.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "543.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "559.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "559.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "543.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "559.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -96,6 +97,9 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
  *      @field capVoid {boolean} : If `capVoid` is `true` and the deleted face
  *              cannot be filled by extending the surrounding faces, will
  *              attempt to replace the face with a planar face.
+ *              @autocomplete `false`
+ *      @field leaveOpen {boolean} : If `leaveOpen` is `true` the void from deleting faces is left open, potentially
+ *              creating a surface out of a solid body.
  *              @autocomplete `false`
  * }}
  */
@@ -633,5 +637,19 @@ export function opExtractSurface(context is Context, id is Id, definition is map
 export function opCreateOutline(context is Context, id is Id, definition is map)
 {
     return @opCreateOutline(context, id, definition);
+}
+
+
+/**
+ * Generates a wire body given a [BSplineCurve] definition.
+ * The spline must have dimension of 3 and be G1-continuous.
+ * @param id : @autocomplete `id + "bSplineCurve1"`
+ * @param definition {{
+ *      @field bSplineCurve {BSplineCurve} : The definition of the spline.
+ * }}
+ */
+export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
+{
+    return @opCreateBSplineCurve(context, id, definition.bSplineCurve);
 }
 

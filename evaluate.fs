@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 543; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "543.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/context.fs", version : "543.0");
-import(path : "onshape/std/coordSystem.fs", version : "543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "543.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "543.0");
-import(path : "onshape/std/mathUtils.fs", version : "543.0");
-import(path : "onshape/std/query.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/string.fs", version : "543.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/units.fs", version : "543.0");
+import(path : "onshape/std/box.fs", version : "559.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/context.fs", version : "559.0");
+import(path : "onshape/std/coordSystem.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "559.0");
+import(path : "onshape/std/mathUtils.fs", version : "559.0");
+import(path : "onshape/std/query.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/string.fs", version : "559.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/units.fs", version : "559.0");
 
 /**
  * Return the total area of all the entities.
@@ -295,6 +295,99 @@ precondition
 }
 {
     return @evEdgeConvexity(context, arg) as EdgeConvexityType;
+}
+
+/**
+ * The result of an [evEdgeCurvature] call -- a coordinate system for the Frenet frame and the curvature defined at a point
+ *
+ * @type {{
+ *      @field frame {CoordSystem} : The frame. The Z vector is the tangent, the X vector is the normal and the Y vector is the binormal
+ *      @field curvature {ValueWithUnits} : The curvature.
+ * }}
+ */
+export type EdgeCurvatureResult typecheck canBeEdgeCurvatureResult;
+
+predicate canBeEdgeCurvatureResult(value)
+{
+    value is map;
+    value.curvature is ValueWithUnits;
+    value.curvature.unit == ({ "meter" : -1 } as UnitSpec);
+}
+
+/**
+ * Return Frenet frames along an edge, with curvature.
+ * If the curve has zero curvature at an evaluated point then the returned normal and binormal are arbitrary
+ * and only the tangent is significant.
+ *
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameters {array}:
+ *             An array of numbers in the range 0..1 indicating points along
+ *             the curve to evaluate frames at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
+ *             The parameterization is identical to that used by [evEdgeTangentLines].
+ *             Results obtained with arcLengthParameterization will have lower accuracy due to approximation.
+ *          @optional
+ *      @field face {Query} :
+ *             If present, the edge orientation used is such that walking along the edge
+ *             with "up" being the `face` normal will keep `face` to the left.
+ *             Must be adjacent to `edge`.
+ *          @optional
+ * }}
+ * @returns {array} : An array of [EdgeCurvatureResult]s.
+ * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A frame could not be calculated for the specified input.
+ */
+export function evEdgeCurvature(context is Context, arg is map) returns array
+precondition
+{
+    arg.edge is Query;
+    arg.parameters is array;
+    for (var i in arg.parameters)
+        i is number;
+}
+{
+    var results = @evEdgeCurvature(context, arg);
+    var resultsWithUnits = [];
+    for (var result in results)
+    {
+        resultsWithUnits = append(resultsWithUnits, {
+                        'curvature' : result.curvature / meter,
+                        'frame' : coordSystemFromBuiltin(result.frame)
+                    } as EdgeCurvatureResult);
+    }
+    return resultsWithUnits;
+}
+
+/**
+ * Returns the tangent vector of a curvature frame
+ * @returns {Vector} : A unit 3D vector in world space.
+ */
+export function curvatureFrameTangent(curvatureResult is EdgeCurvatureResult) returns Vector
+{
+    return curvatureResult.frame.zAxis;
+}
+
+/**
+ * Returns the normal vector of a curvature frame
+ * @returns {Vector} : A unit 3D vector in world space.
+ */
+export function curvatureFrameNormal(curvatureResult is EdgeCurvatureResult) returns Vector
+{
+    return curvatureResult.frame.xAxis;
+}
+
+/**
+ * Returns the binormal vector of a curvature frame
+ * @returns {Vector} : A unit 3D vector in world space.
+ */
+export function curvatureFrameBinormal(curvatureResult is EdgeCurvatureResult) returns Vector
+{
+    return yAxis(curvatureResult.frame);
 }
 
 /**

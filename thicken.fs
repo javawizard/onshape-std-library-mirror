@@ -1,32 +1,23 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
+export import(path : "onshape/std/manipulator.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "543.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/boolean.fs", version : "559.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
 
-const THICKEN_BOUNDS =
-{
-    (meter)      : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.025,
-    (yard)       : 0.01
-} as LengthBoundSpec;
 
 /**
  * Feature performing an [opThicken], followed by an [opBoolean]. For simple thickens, prefer using
@@ -46,7 +37,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         definition.entities is Query;
 
         annotation { "Name" : "Direction 1" }
-        isLength(definition.thickness1, THICKEN_BOUNDS);
+        isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;

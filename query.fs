@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 543; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/context.fs", version : "543.0");
-import(path : "onshape/std/mathUtils.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/units.fs", version : "543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/context.fs", version : "559.0");
+import(path : "onshape/std/mathUtils.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/units.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -118,6 +118,9 @@ export predicate canBeQuery(value)
  * @value CAP_ENTITY                 : Used in [qCapEntity]
  * @value SOURCE_MESH                : Used in [qSourceMesh]
  * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
+ * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
+ * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
+ * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
  ******************************************************************************/
 export enum QueryType
 {
@@ -143,6 +146,7 @@ export enum QueryType
     EDGE_ADJACENT,
     LOOP_AROUND_FACE,
     SHELL_CONTAINING_FACE,
+    EDGE_TOPOLOGY_FILTER,
     //Geometry types
     GEOMETRY,
     BODY_TYPE,
@@ -178,7 +182,9 @@ export enum QueryType
     CAP_ENTITY,
     SOURCE_MESH,
     MESH_GEOMETRY_FILTER,
-    MODIFIABLE_ENTITY_FILTER
+    MODIFIABLE_ENTITY_FILTER,
+    SKETCH_OBJECT_FILTER,
+    COINCIDES_WITH_PLANE
 }
 
 /**
@@ -784,6 +790,16 @@ precondition
     return { "queryType" : QueryType.EDGE_ADJACENT, "query" : query, "entityType" : entityType } as Query;
 }
 
+/**
+ * A query for edges of a subquery which match a given [EdgeTopology].
+ */
+export function qEdgeTopologyFilter(subquery is Query, edgeTopologyType is EdgeTopology) returns Query
+{
+    return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : subquery } as Query;
+}
+
+
+
 //LOOP_AROUND_FACE,
 //SHELL_CONTAINING_FACE,
 //======================== Geometry Type Queries ==============================
@@ -854,6 +870,16 @@ export function qModifiableEntityFilter(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.MODIFIABLE_ENTITY_FILTER, "subquery" : subquery } as Query;
 }
+
+/**
+ * A query for all sketch entities, or all non-sketch entities,
+ * matching a subquery.
+ */
+export function qSketchFilter(subquery is Query, sketchObjectFilter is SketchObject) returns Query
+{
+    return { "queryType" : QueryType.SKETCH_OBJECT_FILTER, "sketchObjectFilter" : sketchObjectFilter, "subquery" : subquery } as Query;
+}
+
 
 // ======================= Geometry matching Queries ==========================
 /**
@@ -1094,6 +1120,16 @@ export function qIntersectsLine(subquery is Query, line is Line) returns Query
 export function qIntersectsPlane(subquery is Query, plane is Plane) returns Query
 {
     return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
+}
+
+/**
+ * A query for all entities (bodies, faces, edges, or points) coinciding with a specified infinite plane.
+ * @param plane :
+ *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ */
+export function qCoincidesWithPlane(subquery is Query, plane is Plane) returns Query
+{
+    return { "queryType" : QueryType.COINCIDES_WITH_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
 }
 
 /**

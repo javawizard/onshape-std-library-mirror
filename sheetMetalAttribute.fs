@@ -1,20 +1,21 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "543.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "543.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "543.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "543.0");
-export import(path : "onshape/std/context.fs", version : "543.0");
-export import(path : "onshape/std/query.fs", version : "543.0");
-import(path : "onshape/std/attributes.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/units.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/string.fs", version : "543.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "559.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "559.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "559.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "559.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "559.0");
+export import(path : "onshape/std/context.fs", version : "559.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+import(path : "onshape/std/attributes.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/units.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/string.fs", version : "559.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -50,6 +51,15 @@ export predicate canBeSMAttribute (value)
         value.cornerStyle == undefined || value.cornerStyle.value is SMReliefStyle;
         value.cornerReliefScale == undefined || value.cornerReliefScale.value is number;
         value.bendReliefScale == undefined || value.bendReliefScale.value is number;
+
+        value.cornerBreaks == undefined || value.cornerBreaks is array;
+        if (value.cornerBreaks != undefined)
+        {
+            for (var cornerBreakEntry in value.cornerBreaks)
+            {
+                cornerBreakEntry.value is SMCornerBreak;
+            }
+        }
     }
     if (value.jointType != undefined)
     {
@@ -221,6 +231,22 @@ export function areEntitiesFromSingleActiveSheetMetalModel(context is Context, e
 }
 
 /**
+ * Get wall attribute on a single entity
+ */
+export function getWallAttribute(context is Context, wallFace is Query)
+{
+    var attributes = getSmObjectTypeAttributes(context, wallFace, SMObjectType.WALL);
+    if (size(attributes) != 1)
+    {
+        return undefined;
+    }
+    else
+    {
+        return attributes[0];
+    }
+}
+
+/**
  * Get joint attribute on a single entity
  */
 export function getJointAttribute(context is Context, jointEdge is Query)
@@ -292,4 +318,45 @@ export function assignSmAssociationAttributes(context is Context, entities is Qu
     }
 }
 
+/**
+ * Information corresponding to a single sheet metal corner break (fillet or chamfer)
+ */
+export type SMCornerBreak typecheck canBeSMCornerBreak;
+
+/**
+ * Corner break must hold the break style, the range (radius and distance of fillet and chamfer respectively), and the
+ * wallId of the wall that owns the corner.
+ */
+export predicate canBeSMCornerBreak(value)
+{
+    value is map;
+    value.cornerBreakStyle is SMCornerBreakStyle;
+    value.range is ValueWithUnits;
+    value.wallId is string;
+}
+
+/**
+ * Create a corner break
+ */
+export function makeSMCornerBreak(cornerBreakStyle is SMCornerBreakStyle, range is ValueWithUnits, wallId is string) returns SMCornerBreak
+{
+    return { "cornerBreakStyle" : cornerBreakStyle, "range" : range, "wallId" : wallId } as SMCornerBreak;
+}
+
+/**
+ * Adds an SMCornerBreak and any additional information to an SMAttribute, initializing the cornerBreaks array if necessary.
+ */
+export function addCornerBreakToSMAttribute(attribute is SMAttribute, cornerBreakMap is map) returns SMAttribute
+precondition
+{
+    cornerBreakMap.value is SMCornerBreak;
+}
+{
+    if (attribute.cornerBreaks is undefined)
+    {
+        attribute.cornerBreaks = [];
+    }
+    attribute.cornerBreaks = append(attribute.cornerBreaks, cornerBreakMap);
+    return asSMAttribute(attribute);
+}
 

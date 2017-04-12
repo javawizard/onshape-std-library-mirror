@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -59,5 +59,25 @@ export enum NewBodyOperationType
     REMOVE,
     annotation { "Name" : "Intersect" }
     INTERSECT
+}
+
+/**
+ * Defines how a new surface from a surface-creating feature (sweep, loft, revolve, etc.)
+ * should be merged with other surfaces in the context.
+ *
+ * To include this enum with the same styling as the extrude dialog (and others),
+ * use `booleanStepTypePredicate(definition)`.
+ *
+ * @value NEW : Creates a new surface in the context with the geometry resulting
+ *          from the operation.
+ * @value ADD : Performs a surface union between the new surface and all surfaces
+ *          used as input.
+ */
+export enum NewSurfaceOperationType
+{
+    annotation { "Name" : "New" }
+    NEW,
+    annotation { "Name" : "Add" }
+    ADD
 }
 

@@ -1,18 +1,19 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "543.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
+import(path : "onshape/std/boolean.fs", version : "559.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/transform.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -37,6 +38,8 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         }
         else
         {
+            surfaceOperationTypePredicate(definition);
+
             annotation { "Name" : "Edges and sketch curves to sweep",
                          "Filter" : (EntityType.EDGE && ConstructionObject.NO) }
             definition.surfaceProfiles is Query;
@@ -83,16 +86,21 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         opSweep(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
+        const reconstructOp = function(id)
+        {
+            opSweep(context, id, definition);
+            transformResultIfNecessary(context, id, remainingTransform);
+        };
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id)
-            {
-                opSweep(context, id, definition);
-                transformResultIfNecessary(context, id, remainingTransform);
-            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
-    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false });
+        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+        {
+            var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
+            joinSurfaceBodies(context, id, matches, reconstructOp);
+        }
+    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW });
 
 
 /**
@@ -102,7 +110,26 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
 export function sweepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
-                                specifiedParameters, hiddenBodies, sweep);
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        return booleanStepEditLogic(context, id, oldDefinition, definition,
+                                    specifiedParameters, hiddenBodies, sweep);
+    }
+    else
+    {
+        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceProfiles);
+    }
+}
+
+function createMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
+{
+    var matches = [];
+    if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+    {
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.surfaceProfiles, transform);
+        var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
+        matches = concatenateArrays([capMatches, sweptMatches]);
+    }
+    return matches;
 }
 

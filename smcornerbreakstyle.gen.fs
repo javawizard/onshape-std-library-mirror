@@ -5,12 +5,16 @@ FeatureScript 559; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** See [opBoolean]. */
-export enum TopologyMatchType
+/**
+ * @internal.
+ * Types of corner breaks in sheet metal parts.
+ */
+export enum SMCornerBreakStyle
 {
-    COINCIDENT,
-    OVERLAPING,
-    CONTAINED_2_IN_1
+    annotation {"Name" : "Chamfer"}
+    CHAMFER,
+    annotation {"Name" : "Fillet"}
+    FILLET
 }
 
 

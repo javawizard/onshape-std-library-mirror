@@ -1,27 +1,27 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "543.0");
+export import(path : "onshape/std/manipulator.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "543.0");
-import(path : "onshape/std/box.fs", version : "543.0");
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/mathUtils.fs", version : "543.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "543.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
+import(path : "onshape/std/attributes.fs", version : "559.0");
+import(path : "onshape/std/box.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/mathUtils.fs", version : "559.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "559.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
 
 
 /**
@@ -49,9 +49,9 @@ export enum MoveFaceBoundingType
 }
 
 /** @internal */
-export const MOVE_FACE_OFFSET_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
+export const MOVE_FACE_OFFSET_BOUNDS = ZERO_INCLUSIVE_OFFSET_BOUNDS;
 /** @internal */
-export const MOVE_FACE_TRANSLATE_BOUNDS = NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS;
+export const MOVE_FACE_TRANSLATE_BOUNDS = ZERO_INCLUSIVE_OFFSET_BOUNDS;
 /** @internal */
 export const MOVE_FACE_ROTATION_BOUNDS = ANGLE_360_ZERO_DEFAULT_BOUNDS;
 
@@ -65,11 +65,11 @@ annotation { "Feature Type Name" : "Move face",
 export const moveFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Creation type", "UIHint" : ["HORIZONTAL_ENUM", "ALWAYS_HIDDEN"] } //Legacy
         definition.outputType is MoveFaceOutputType;
         if (definition.outputType == MoveFaceOutputType.MOVE)
         {
-            annotation { "Name" : "Faces",
+            annotation { "Name" : "Faces to move",
                          "UIHint" : "SHOW_CREATE_SELECTION",
                          "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.moveFaces is Query;
@@ -178,6 +178,8 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             definition.queryParameter = "surfacesAndFaces";
             definition.selectionErrorStringEnum = ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_CREATE_SELECT;
             qSurfacesAndFaces = qUnion([qEntityFilter(definition.surfacesAndFaces, EntityType.FACE), qOwnedByBody(qEntityFilter(definition.surfacesAndFaces, EntityType.BODY), EntityType.FACE)]);
+
+            return moveFaceCreateLegacy(context, id, definition, qSurfacesAndFaces);
         }
 
         const resolvedEntities = evaluateQuery(context, qSurfacesAndFaces);
@@ -213,16 +215,13 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)
             throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
-        if (definition.outputType == MoveFaceOutputType.MOVE)
+        const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
+        if (size(associatedSMEntities) == 1)
         {
-            const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
-            if (size(associatedSMEntities) == 1)
+            const sheetMetalModelPlane = try silent(evFaceTangentPlane(context, { "face" : associatedSMEntities[0], "parameter" : vector(0.5, 0.5) }));
+            if (sheetMetalModelPlane != undefined)
             {
-                const sheetMetalModelPlane = try silent(evFaceTangentPlane(context, { "face" : associatedSMEntities[0], "parameter" : vector(0.5, 0.5) }));
-                if (sheetMetalModelPlane != undefined)
-                {
-                    facePlane.origin = sheetMetalModelPlane.origin;
-                }
+                facePlane.origin = sheetMetalModelPlane.origin;
             }
         }
 
@@ -238,24 +237,14 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 addOffsetManipulator(context, id, definition.offsetDistance, facePlane);
             }
 
-            if (definition.outputType == MoveFaceOutputType.MOVE)
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
             {
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+                if (tolerantEquals(definition.offsetDistance, 0 * meter))
                 {
-                    if (tolerantEquals(definition.offsetDistance, 0 * meter))
-                    {
-                      return;
-                    }
+                  return;
                 }
-                sheetMetalAwareMoveFace(context, id, definition);
             }
-            else
-            {
-                opExtractSurface(context, id, {"faces" : qSurfacesAndFaces,
-                    "offset" : definition.offsetDistance,
-                    "useFacesAroundToTrimOffset" : false
-                });
-            }
+            sheetMetalAwareMoveFace(context, id, definition);
         }
         else
         {
@@ -288,7 +277,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                     definition.transform = transform(translation);
                     addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
 
-                    if (definition.outputType == MoveFaceOutputType.MOVE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                     {
                         if (tolerantEquals(definition.translationDistance, 0 * meter))
                         {
@@ -312,7 +301,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 // Since parasolid works off the transform only, it will try construct faces along the shortest path
                 // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
                 // Therefore we split the rotation into two steps.
-                if (definition.outputType == MoveFaceOutputType.MOVE && definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
                 {
                     const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
                     definition.transformList = [transform, transform];
@@ -322,22 +311,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                     definition.transform = rotationAround(axisResult, definition.angle * directionSign);
                 }
             }
-            if (definition.outputType == MoveFaceOutputType.MOVE)
-            {
-                sheetMetalAwareMoveFace(context, id, definition);
-            }
-            else
-            {
-                opExtractSurface(context, id + "extractSurface", {
-                    "faces" : qSurfacesAndFaces,
-                    "offset" : 0 * meter
-                });
-
-                opTransform(context, id + "transform", {
-                    "bodies" : qCreatedBy(id + "extractSurface", EntityType.BODY),
-                    "transform" : definition.transform
-                });
-            }
+            sheetMetalAwareMoveFace(context, id, definition);
         }
     }, {outputType : MoveFaceOutputType.MOVE, oppositeDirection : false, reFillet : false, limitType : MoveFaceBoundingType.BLIND, hasOffset : false});
 
@@ -972,6 +946,116 @@ function addRipsForNewEdges(context is Context, id is Id)
             createRipAttribute(context, edge, jointAttributeId, SMJointStyle.EDGE, {});
         }
         index += 1;
+    }
+}
+
+/*
+ * @internal
+ * Code that creates surfaces, which is now reverted. Only kept around for legacy features/upgrades purposes.
+ */
+function moveFaceCreateLegacy(context is Context, id is Id, definition is map, qSurfacesAndFaces is Query)
+{
+    const resolvedEntities = evaluateQuery(context, qSurfacesAndFaces);
+    if (size(resolvedEntities) == 0)
+        throw regenError(definition.selectionErrorStringEnum, [definition.queryParameter]);
+
+    var directionSign = 1;
+    if (definition.oppositeDirection)
+        directionSign = -1;
+
+    if (definition.moveFaceType != MoveFaceType.OFFSET &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V426_MOVE_FACE_IN_MIRROR))
+    {
+        var fullTransform = getFullPatternTransform(context);
+        if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+        {
+            //we have a reflection on the input body, flip direction
+            directionSign = -directionSign;
+        }
+    }
+
+
+    if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
+    {
+        definition.offset = definition.offset * (definition.oppositeOffsetDirection ? -1 : 1);
+    }
+    else
+    {
+        definition.offset = 0 * meter;
+    }
+
+    // Extract an axis defined by the moved face for use in the manipulators.
+    var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
+    if (facePlane == undefined)
+        throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
+
+    if (definition.moveFaceType == MoveFaceType.OFFSET)
+    {
+        if (definition.limitType != MoveFaceBoundingType.BLIND)
+        {
+            definition.offsetDistance = getOffsetToEntity(context, resolvedEntities[0], definition, id, facePlane);
+        }
+        else
+        {
+            definition.offsetDistance = definition.offsetDistance * directionSign;
+            addOffsetManipulator(context, id, definition.offsetDistance, facePlane);
+        }
+
+        opExtractSurface(context, id, {"faces" : qSurfacesAndFaces,
+                "offset" : definition.offsetDistance,
+                "useFacesAroundToTrimOffset" : false
+            });
+    }
+    else
+    {
+        if (definition.moveFaceType == MoveFaceType.TRANSLATE)
+        {
+            // If the user specified an axis for the direction, we will use that for the translation.  If they,
+            // specified a face, we will use the face's normal, if it is planar.
+            var translation;
+            const directionResult = try silent(evAxis(context, { "axis" : definition.direction }));
+            var translationDirection;
+            if (directionResult == undefined)
+            {
+                const planeResult = try silent(evPlane(context, { "face" : definition.direction }));
+                if (planeResult == undefined)
+                    throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
+                translationDirection = planeResult.normal;
+            }
+            else
+            {
+                translationDirection = directionResult.direction;
+            }
+
+            if (definition.limitType != MoveFaceBoundingType.BLIND)
+            {
+                definition.transform = getTranslationTransformToEntity(context, resolvedEntities[0], definition, id, translationDirection, facePlane);
+            }
+            else
+            {
+                translation = translationDirection * definition.translationDistance * directionSign;
+                definition.transform = transform(translation);
+                addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
+            }
+            definition.direction = translationDirection;
+        }
+        if (definition.moveFaceType == MoveFaceType.ROTATE)
+        {
+            const axisResult = evAxis(context, { "axis" : getAssociatedAxis(context, definition) });
+            addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
+
+            definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+        }
+
+        opExtractSurface(context, id + "extractSurface", {
+            "faces" : qSurfacesAndFaces,
+            "offset" : 0 * meter
+        });
+
+        opTransform(context, id + "transform", {
+            "bodies" : qCreatedBy(id + "extractSurface", EntityType.BODY),
+            "transform" : definition.transform
+        });
     }
 }
 

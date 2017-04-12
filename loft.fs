@@ -1,22 +1,23 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "543.0");
-export import(path : "onshape/std/tool.fs", version : "543.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/evaluate.fs", version : "543.0");
-import(path : "onshape/std/boolean.fs", version : "543.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "543.0");
-import(path : "onshape/std/feature.fs", version : "543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "543.0");
-import(path : "onshape/std/units.fs", version : "543.0");
-import(path : "onshape/std/valueBounds.fs", version : "543.0");
-import(path : "onshape/std/vector.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/evaluate.fs", version : "559.0");
+import(path : "onshape/std/boolean.fs", version : "559.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
+import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/transform.fs", version : "559.0");
+import(path : "onshape/std/units.fs", version : "559.0");
+import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/vector.fs", version : "559.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -70,6 +71,10 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             booleanStepTypePredicate(definition);
+        }
+        else
+        {
+            surfaceOperationTypePredicate(definition);
         }
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -189,18 +194,24 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         opLoft(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
+        const reconstructOp = function(id) {
+            opLoft(context, id, definition);
+            transformResultIfNecessary(context, id, remainingTransform);
+        };
+
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const reconstructOp = function(id) {
-                opLoft(context, id, definition);
-                transformResultIfNecessary(context, id, remainingTransform);
-            };
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
+        }
+        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+        {
+            var matches = createLoftTopologyMatchesForSurfaceJoin(context, id, definition, remainingTransform);
+            joinSurfaceBodies(context, id, matches, reconstructOp);
         }
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
         shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
-        startMagnitude : 1, endMagnitude : 1 });
+        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
@@ -268,7 +279,48 @@ export function wrapSubqueriesInConstructionFilter(context is Context, subquerie
 export function loftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        return booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, loft);
+    }
+    else
+    {
+        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, wireProfilesAndGuides(definition));
+    }
+}
+
+function wireProfilesAndGuides(definition is map) returns Query
+{
+    var subqueries = [];
+    if (undefined != definition.wireProfiles)
+    {
+        subqueries = append(subqueries, definition.wireProfiles);
+    }
+    if (undefined != definition.guides)
+    {
+        subqueries = append(subqueries, definition.guides);
+    }
+    return qUnion(subqueries);
+}
+
+function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
+{
+    var matches = [];
+    if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+    {
+        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfiles, transform);
+
+        if (undefined != definition.guides)
+        {
+            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guides, transform);
+            matches = concatenateArrays([profileMatches, guideMatches]);
+        }
+        else
+        {
+            matches = profileMatches;
+        }
+    }
+    return matches;
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,8 +9,8 @@ FeatureScript 543; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "543.0");
-import(path : "onshape/std/vector.fs", version : "543.0");
+import(path : "onshape/std/units.fs", version : "559.0");
+import(path : "onshape/std/vector.fs", version : "559.0");
 
 /**
  * A three-dimensional bounding box.

@@ -1,19 +1,19 @@
-FeatureScript 543; /* Automatically generated version */
+FeatureScript 559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "543.0");
-export import(path : "onshape/std/error.fs", version : "543.0");
-export import(path : "onshape/std/geomOperations.fs", version : "543.0");
-export import(path : "onshape/std/query.fs", version : "543.0");
+export import(path : "onshape/std/context.fs", version : "559.0");
+export import(path : "onshape/std/error.fs", version : "559.0");
+export import(path : "onshape/std/geomOperations.fs", version : "559.0");
+export import(path : "onshape/std/query.fs", version : "559.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "543.0");
-import(path : "onshape/std/string.fs", version : "543.0");
-import(path : "onshape/std/transform.fs", version : "543.0");
-import(path : "onshape/std/units.fs", version : "543.0");
+import(path : "onshape/std/containers.fs", version : "559.0");
+import(path : "onshape/std/string.fs", version : "559.0");
+import(path : "onshape/std/transform.fs", version : "559.0");
+import(path : "onshape/std/units.fs", version : "559.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -369,7 +369,9 @@ export function lastModifyingOperationId(context is Context, query is Query) ret
 /**
 * Generates a tracking query, which will evaluate to entities derived from subquery in features between
 * startTracking and when query is evaluated. If secondarySubquery is specified, the query would evaluate to
-* entities derived from both objects. Use example:
+* entities derived from both objects. If trackPartialDependency is set to true, query would also include entities
+* that are not exclusively derived from subquery1. Optional field lastOperationId can be used to specifiy the
+* starting operation of tracking. Use example:
  * ```
  * // "sketch1" constructs a polygon of "line0", "line1", etc.
 * var extrudedFromLine0 = startTracking(context, id + "sketch1", "line0");
@@ -397,7 +399,18 @@ precondition
     {
         out.subquery2 = evaluateQuery(context, arg.secondarySubquery);
     }
-    out.lastOperationId = lastOperationId(context);
+    if (arg.trackPartialDependency != undefined)
+    {
+        out.trackPartialDependency = arg.trackPartialDependency;
+    }
+    if (arg.lastOperationId != undefined)
+    {
+        out.lastOperationId = arg.lastOperationId;
+    }
+    else
+    {
+        out.lastOperationId = lastOperationId(context);
+    }
     return out as Query;
 }
 
