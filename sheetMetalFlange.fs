@@ -152,6 +152,7 @@ precondition
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_EDGE_NEEDED, ["edges"]);
     }
+    removeCornerBreaksAtEdgeVertices(context, edges);
     var edgeMaps = groupEdgesByBodyOrModel(context, evaluatedEdgeQuery);
     var modelToEdgeMap = edgeMaps.modelToEdgeMap;
     if (size(modelToEdgeMap) > 1 && definition.useDefaultRadius)
@@ -473,7 +474,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
         var extendIndexedId = id + "extend" + unstableIdComponent(index);
         try
         {
-            opExtendSheetBody(context, extendIndexedId, {
+            sheetMetalExtendSheetBodyCall(context, extendIndexedId, {
                     "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
                     "entities" : updatedEdge,
                     "limitEntity" : plane(origin, planeNormal)
@@ -710,11 +711,13 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     // e.g. if the edgeY is a bendEdge of a flange with angled miter.
     var edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
 
+    var lineX;
     if (size(evaluateQuery(context, edgeY)) != 0)
     {
         //if edgeY is collinear with edgeX,look for next edge on sideFace
         var line1 = evLine(context, {"edge" : edgeX});
         var line2 = evLine(context, {"edge" : edgeY});
+        lineX = line1;
         if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2))
         {
             edgeY = qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), qSubtraction(qVertexAdjacent(edgeY, EntityType.EDGE), edgeX)]);
@@ -748,12 +751,24 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
             return undefined;
         sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);
         edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
+        lineX = lineNewX;
     }
 
     var edgeXEvaluated = evaluateQuery(context, edgeX);
     var edgeYEvaluated = evaluateQuery(context, edgeY);
     if (size(edgeYEvaluated) == 0 || size(edgeXEvaluated) == 0)
         return undefined;
+    if (lineX != undefined &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V569_FLANGE_NEXT_TO_RIP))
+    {
+        var edgeLine = evLine(context, {
+                "edge" : edge
+        });
+        if (parallelVectors(lineX.direction, edgeLine.direction))
+        {
+            return undefined;
+        }
+    }
     return { "edgeX" : edgeXEvaluated[0],
              "edgeY" : edgeYEvaluated[0],
              "sideFace" : evaluateQuery(context, sideFace)[0],
@@ -820,7 +835,7 @@ function representInVectors(vector1 is Vector, vector2 is Vector, inVector is Ve
 
 function isInProblemHalfSpace(context is Context, flangeDir is Vector, position is Vector, edgeY, sideEdge is Query) returns boolean
 {
-    if (edgeY == undefined)
+    if (edgeY == undefined || sideEdge == undefined)
         return false;
     var components = representInVectors(getVectorForEdge(context, edgeY, position), getVectorForEdge(context, sideEdge, position), flangeDir);
     return (components[0] > TOLERANCE.zeroLength);
@@ -862,13 +877,19 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
     {
         if (!definition.autoMiter)
         {
-            var vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge));
-            if (size(vertexEdges) == 1)
+            var computeMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V569_FLANGE_NEXT_TO_RIP);
+            if (!computeMiter)
+            {
+               var vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge));
+               computeMiter = (size(vertexEdges) == 1);
+            }
+            if (computeMiter)
             {
                 var adjacentPlane = evPlane(context, {"face": flangeData.adjacentFace});
                 var sidePlane = plane(position, flangeData.edgeEndPoints[i].direction);
-                sidePlane = createPlaneForMiter(context, flangeData, adjacentPlane, sidePlane, vertexEdges[0], false, position, i, getAngleForAngledMiter(definition));
-                result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, false, definition);
+                sidePlane = createPlaneForMiter(context, flangeData, adjacentPlane, sidePlane, undefined, false, position, i,
+                                    getAngleForAngledMiter(definition));
+                 result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, false, definition);
             }
         }
         return  result;

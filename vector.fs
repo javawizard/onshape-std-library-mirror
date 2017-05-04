@@ -358,13 +358,12 @@ precondition
     return rotationMatrix3d(axis, atan2(norm(axis), dot(from, to)));
 }
 
-// This lives here because we can see definitions of both ValueWithUnits and Matrix.
 /**
  * Construct a 3D matrix representing a counterclockwise (looking against the axis) rotation
  * around the given axis by the given rotation angle.
  */
-export function rotationMatrix3d(axis is array, angle is ValueWithUnits) returns Matrix
-precondition size(axis) == 3;
+export function rotationMatrix3d(axis is Vector, angle is ValueWithUnits) returns Matrix
+precondition @size(axis) == 3;
 {
     return @matrixRotation3d(axis, angle.value) as Matrix;
 }

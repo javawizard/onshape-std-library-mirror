@@ -394,15 +394,15 @@ export function filterJoinableSurfaceEdges(edges is Query) returns Query
 /**
  * @internal
  */
-function getJoinableSurfaceEdgeFromSketchEdge(context is Context, id is Id, sketchEdge is Query, transform is Transform) returns Query
+function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, parentEdge is Query, transform is Transform) returns Query
 {
     var midPoint = evEdgeTangentLine(context, {
-        "edge" : sketchEdge,
+        "edge" : parentEdge,
         "parameter" : 0.5
     }).origin;
 
     var track = qContainsPoint(filterJoinableSurfaceEdges(startTracking(context,
-                {"subquery" : sketchEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, sketchEdge) })), transform * midPoint);
+                {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform * midPoint);
     var trackedEdges = evaluateQuery(context, qSubtraction(track, qCreatedBy(id)));
 
     if (size(trackedEdges) == 1)
@@ -434,10 +434,19 @@ export function surfaceOperationTypeEditLogic (context is Context, id is Id, def
         var anyJoinable = size(joinableEdges) > 0;
         if (!anyJoinable)
         {
-            var sketchEdges = evaluateQuery(context, qSketchFilter(inputEdges, SketchObject.YES));
-            for (var i = 0; i < size(sketchEdges); i += 1)
+            var otherEdges;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
             {
-                if (size(evaluateQuery(context, getJoinableSurfaceEdgeFromSketchEdge(context, id, sketchEdges[i], identityTransform()))) > 0)
+                otherEdges = evaluateQuery(context, qEntityFilter(inputEdges, EntityType.EDGE));
+            }
+            else
+            {
+                otherEdges = evaluateQuery(context, qSketchFilter(inputEdges, SketchObject.YES));
+            }
+
+            for (var i = 0; i < size(otherEdges); i += 1)
+            {
+                if (size(evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, otherEdges[i], identityTransform()))) > 0)
                 {
                     anyJoinable = true;
                     break;
@@ -457,7 +466,16 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
 {
     var createdEdges = evaluateQuery(context, qEdgeTopologyFilter(created, EdgeTopology.LAMINAR));
     var originatingEdges = filterJoinableSurfaceEdges(originating);
-    var originatingSketchEdges = qSketchFilter(originating, SketchObject.YES);
+    var nonMatchedOriginatingEdges;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+    {
+        // Any edge that we didn't already match is a candidate
+        nonMatchedOriginatingEdges = qSubtraction(qEntityFilter(originating, EntityType.EDGE), originatingEdges);
+    }
+    else
+    {
+        nonMatchedOriginatingEdges = qSketchFilter(originating, SketchObject.YES);
+    }
     var nCreatedEdges = size(createdEdges);
 
     var matches = makeArray(nCreatedEdges);
@@ -478,10 +496,10 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
         }
         else if (nOriginalMatches == 0)
         {
-            var originalSketch = evaluateQuery(context, qContainsPoint(qIntersection([originatingSketchEdges, qDependency(createdEdges[i])]), inverse(transform) * midPoint));
-            if (size(originalSketch) == 1)
+            var originalEdge = evaluateQuery(context, qContainsPoint(qIntersection([nonMatchedOriginatingEdges, qDependency(createdEdges[i])]), inverse(transform) * midPoint));
+            if (size(originalEdge) == 1)
             {
-                var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromSketchEdge(context, id, originalSketch[0], transform));
+                var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, originalEdge[0], transform));
                 if (size(edges) == 1)
                 {
                     matches[nMatches] =  createJoinMatch(edges[0], createdEdges[i]);

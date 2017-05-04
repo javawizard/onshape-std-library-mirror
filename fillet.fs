@@ -14,6 +14,9 @@ import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
@@ -52,8 +55,52 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
     }
     {
         try(addFilletManipulator(context, id, definition));
-        opFillet(context, id, definition);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
+        {
+            sheetMetalAwareFillet(context, id, definition);
+        }
+        else
+        {
+            opFillet(context, id, definition);
+        }
+
     }, { tangentPropagation : false, conicFillet : false });
+
+/*
+ * Call sheetMetalCornerBreak on active sheet metal entities and opFillet on the remaining entities
+ */
+function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
+{
+    var separatedQueries = separateSheetMetalQueries(context, definition.entities);
+    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
+    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+
+    if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
+    {
+        throw regenError(ErrorStringEnum.FILLET_SELECT_EDGES, ["entities"]);
+    }
+
+    if (hasSheetMetalQueries)
+    {
+        if (definition.conicFillet)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["conicFillet"]);
+        }
+
+        var cornerBreakDefinition = {
+                    "entities" : separatedQueries.sheetMetalQueries,
+                    "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
+                    "range" : definition.radius
+                };
+        sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition);
+    }
+
+    if (hasNonSheetMetalQueries)
+    {
+        definition.entities = separatedQueries.nonSheetMetalQueries;
+        opFillet(context, id, definition);
+    }
+}
 
 /*
  * Create a linear manipulator for the fillet

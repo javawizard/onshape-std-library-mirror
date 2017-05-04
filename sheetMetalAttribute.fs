@@ -360,3 +360,48 @@ precondition
     return asSMAttribute(attribute);
 }
 
+/**
+ * Finds an SMCornerBreak in attribute corresponding to wallId, returns undefined if nothing found
+ */
+export function findCornerBreak(attribute is SMAttribute, wallId is string)
+{
+    if (attribute.cornerBreaks == undefined)
+    {
+        return undefined;
+    }
+    for (var cBreak in attribute.cornerBreaks)
+    {
+        if (cBreak.value.wallId == wallId)
+        {
+            return cBreak;
+        }
+    }
+    return undefined;
+}
+
+/**
+* Clears existing SMAttribute, sets new one only if non-trivial
+*/
+export function updateCornerAttribute(context is Context, vertex is Query, attribute is SMAttribute)
+precondition
+{
+    attribute.objectType == SMObjectType.CORNER;
+}
+{
+    removeAttributes(context, {"entities" : vertex,
+                               "attributePattern" : asSMAttribute({})
+                });
+    if (size(attribute.cornerBreaks) == 0)
+    {
+       attribute.cornerBreaks = undefined;
+    }
+    if (attribute.cornerStyle != undefined ||
+        attribute.cornerBreaks != undefined)
+    {
+        setAttribute(context, {
+                "entities" : vertex,
+                "attribute" : attribute
+        });
+    }
+}
+

@@ -30,7 +30,7 @@ annotation {"Feature Type Name" : "Variable", "Feature Name Template": "Variable
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Name" }
+        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE" }
         definition.name is string;
 
         annotation { "Name" : "Value" }

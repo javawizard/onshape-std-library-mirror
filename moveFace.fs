@@ -687,7 +687,10 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         }
         if (size(edgeLimitOptions) > 0)
         {
-            opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "edgeLimitOptions" : edgeLimitOptions });
+            sheetMetalExtendSheetBodyCall(context, id + "extend", {
+                        "entities" : qUnion(smEdges),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : edgeLimitOptions });
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V512_MOVE_FACE_OVERLAP))
             {
                 if (size(evaluateQuery(context, qCreatedBy(id + "extend", EntityType.FACE))) != 0)

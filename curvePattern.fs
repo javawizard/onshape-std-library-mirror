@@ -14,6 +14,7 @@ import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -78,7 +79,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             definition.instanceFunction is FeatureList;
         }
 
-        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE }
+        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
         definition.edges is Query;
 
         annotation { "Name" : "Instance count" }
@@ -134,6 +135,11 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         if (size(evaluateQuery(context, definition.edges)) == 0)
             throw regenError(ErrorStringEnum.PATTERN_CURVE_NO_EDGES, ["edges"]);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+        {
+            definition.edges = dissolveWires(definition.edges);
+        }
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([definition.entities, definition.edges]) });
 

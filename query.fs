@@ -121,6 +121,7 @@ export predicate canBeQuery(value)
  * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
+ * @value LAMINAR_DEPENDENCY         : Used in [qLaminarDependency]
  ******************************************************************************/
 export enum QueryType
 {
@@ -184,7 +185,8 @@ export enum QueryType
     MESH_GEOMETRY_FILTER,
     MODIFIABLE_ENTITY_FILTER,
     SKETCH_OBJECT_FILTER,
-    COINCIDES_WITH_PLANE
+    COINCIDES_WITH_PLANE,
+    LAMINAR_DEPENDENCY
 }
 
 /**
@@ -607,6 +609,17 @@ export function qDependency(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
 }
+
+/**
+ * A query for the true dependency of the query, specifically for use with wire edges that
+ * have been created from laminar edges. If the immediate dependency is not laminar then it will
+ * track back until it reaches a laminar dependency (if there is one).
+ */
+export function qLaminarDependency(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.LAMINAR_DEPENDENCY, "subquery" : subquery } as Query;
+}
+
 
 /**
 * A query for start/end cap entities created by featureId.

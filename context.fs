@@ -234,6 +234,7 @@ export function setVariable(context is Context, name is string, value)
 
 /**
  * Retrieve a variable attached to the context by name.
+ * Throws an exception if variable by the given name is not found.
  *
  * @example `getVariable(context, "foo")` returns the value assigned to a
  *      previously-set variable named `"foo"`.

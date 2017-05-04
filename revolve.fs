@@ -16,6 +16,7 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
@@ -66,7 +67,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         else
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
-                         "Filter" : EntityType.EDGE && ConstructionObject.NO }
+                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)}
             definition.surfaceEntities is Query;
         }
 
@@ -166,7 +167,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, remainingTransform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.entities, remainingTransform);
             joinSurfaceBodies(context, id, matches, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW });
@@ -190,14 +191,21 @@ function getEntitiesToUse(context is Context, revolveDefinition is map)
     }
     else
     {
+        var surfaceEntities;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
         {
-            return qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
+            surfaceEntities = qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
         }
         else
         {
-            return revolveDefinition.surfaceEntities;
+            surfaceEntities = revolveDefinition.surfaceEntities;
         }
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+        {
+            surfaceEntities = followWireEdgesToLaminarSource(context, surfaceEntities);
+        }
+        return surfaceEntities;
     }
 }
 

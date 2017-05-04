@@ -305,7 +305,9 @@ function cylinderCast_rev_1(context is Context, idIn is Id, arg is map) returns 
 function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns array
 {
     const targets = evaluateQuery(context, arg.scope);
-    if (size(targets) == 0)
+    const numberOfTargets = size(targets);
+
+    if (numberOfTargets == 0)
     {
         return [];
     }
@@ -326,16 +328,74 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
     const smallOffset = 0.01 * millimeter;
     const sketchPlane = plane(cSys.origin - smallOffset * direction, direction); // plane is rotated
 
-    //------------- Create profile ----------------
     startFeature(context, id, {});
     const sketchName = "raySketch";
     const sketch = newSketchOnPlane(context, id + sketchName, { "sketchPlane" : sketchPlane });
 
-    skCircle(sketch, "circle", { "center" : vector(0, 0) * meter, "radius" : arg.diameter / 2 });
+    var doRecalculateFirstBodyDistance is boolean = false;
+
+    if (numberOfTargets == 1 && arg.firstBodyCastDiameter != undefined)
+    {
+        // only 1 body, use the specified first body cast diameter for the one and only cast entity needed
+        skCircle(sketch, "circle1", { "center" : vector(0, 0) * meter, "radius" : arg.firstBodyCastDiameter / 2 });
+    }
+    else
+    {
+        // the first and maybe only cast entity
+        skCircle(sketch, "circle1", { "center" : vector(0, 0) * meter, "radius" : arg.diameter / 2 });
+    }
+
+    if (numberOfTargets > 1 && arg.firstBodyCastDiameter != undefined)
+    {
+        // will need a second cast to recalculate the first body starting distance, sketch the circle that will be used for that
+        skCircle(sketch, "circle2", { "center" : vector(0, 0) * meter, "radius" : arg.firstBodyCastDiameter / 2 });
+        doRecalculateFirstBodyDistance = true;
+    }
+
     skSolve(sketch);
 
-    const sketchEntityQuery = qCreatedBy(id + (sketchName ~ ".wireOp"), EntityType.EDGE);
+    var query = sketchEntityQuery(id + (sketchName ~ ".wireOp"), EntityType.EDGE, "circle1");
 
+    var result = getBodyHitDistances(context, id, cSys, query, direction, targets);
+
+    // did we need a second cast to recalculate the first body starting distance?
+    if (doRecalculateFirstBodyDistance && size(result) > 0)
+    {
+        query = sketchEntityQuery(id + (sketchName ~ ".wireOp"), EntityType.EDGE, "circle2");
+
+        var result2 = getBodyHitDistances(context, id + "2", cSys, query, direction, [result[0].target]);
+
+        // got it?
+        if (size(result2) > 0 && result[0].target == result2[0].target)
+        {
+            // update the new hit point distance on the first body
+            result[0].distance = result2[0].distance;
+        }
+    }
+
+    abortFeature(context, id);
+
+    return result;
+}
+
+/**
+ * @internal
+ * Extrudes the specified entities query up to all the specified body targets and returns the distance from the
+ * specified coordinate system to the farthest hit point of each body. It is assumed a start feature operation
+ * has already been started.
+
+ * @param context {Context} : The target context.
+ * @param id {Id}: identifier of the feature
+ * @param cSys {Coord} : the coordinate system used to define the bounding box of the extrude to determine the hit
+ *  point distances
+ * @param entitiesToExtrude {Query} : the entities query used for the extrude
+ * @param extrudeDirection {Vector} : the direction of the extrude
+ * @param targets {array} : array of bodies to determine the hit point distances for
+ * @returns {array} : array of maps containing the body target ("target") and the farthest hit point distance to that
+ *  target ("distance"). The array will be returned sorted from closest target body to farthest target body.
+*/
+function getBodyHitDistances(context is Context, id is Id, cSys is CoordSystem, entitiesToExtrude is Query, extrudeDirection is Vector, targets is array) returns array
+{
     var shotNum = 0;
     var result = [];
     for (var targetQuery in targets)
@@ -351,8 +411,8 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
             {
                 // New version using opextrude so as to use correct normal vector
                 extrudeDefinition = {
-                    "entities" : sketchEntityQuery,
-                    "direction" : direction,
+                    "entities" : entitiesToExtrude,
+                    "direction" : extrudeDirection,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntity" : targetQuery
                 };
@@ -367,7 +427,7 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
                 extrudeDefinition = {
                     "bodyType" : ToolBodyType.SURFACE,
                     "operationType" : NewBodyOperationType.NEW,
-                    "surfaceEntities" : sketchEntityQuery,
+                    "surfaceEntities" : entitiesToExtrude,
                     "endBound" : BoundingType.UP_TO_BODY,
                     "endBoundEntityBody" : targetQuery
                 };
@@ -396,8 +456,6 @@ function cylinderCast_rev_2(context is Context, idIn is Id, arg is map) returns 
             result = append(result, { "distance" : d, "target" : targetQuery });
         }
     }
-
-    abortFeature(context, id);
 
     if (size(result) > 1) {
         result = sort(result, function(a, b) {
@@ -434,6 +492,7 @@ precondition
                 "isFront" : true,
                 "findClosest" : true,
                 "diameter" : arg.diameter,
+                "firstBodyCastDiameter" : arg.firstBodyCastDiameter,
                 "scope" : arg.scope });
         }
     }

@@ -32,6 +32,10 @@ export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is
     }
     {
         var entityArray = evaluateQuery(context, definition.entities);
+        if (size(entityArray) == 0)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES, ["entities"]);
+        }
 
         var definitionVertices = getDefinitionVertices(context, entityArray);
         var wallIds = getWallIds(context, entityArray);
@@ -67,7 +71,7 @@ function getDefinitionVertices(context is Context, entityArray is array) returns
     if (size(errorEntities) != 0)
     {
         errorEntities = qUnion(errorEntities);
-        throw regenError("Corner Break entities must be from an active sheet metal model", errorEntities);
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_ENTITY_NEEDED, errorEntities);
     }
 
     // Make sure every definitionEntity is a vertex.
@@ -85,7 +89,7 @@ function getDefinitionVertices(context is Context, entityArray is array) returns
         }
         errorEntities = qUnion(errorEntities);
 
-        throw regenError("Selected sheet metal entities do not specify a corner", errorEntities);
+        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_NOT_A_CORNER, errorEntities);
     }
 
     return definitionEntities;
@@ -136,38 +140,87 @@ function getWallIds(context is Context, entityArray is array) returns array
         var wallAttribute = getWallAttribute(context, associatedWall[0]);
         if (wallAttribute == undefined || wallAttribute.attributeId == undefined)
         {
-            throw regenError("SHEET_METAL_ACTIVE_WALL_NEEDED");
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_NOT_A_CORNER);
         }
         wallIds = append(wallIds, wallAttribute.attributeId);
     }
 
     if (size(errorEntities) != 0)
     {
-        throw regenError("Cannot apply a corner break to a bend or corner.", qUnion(errorEntities));
+        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_VERTEX_NOT_FREE, qUnion(errorEntities));
     }
     return wallIds;
 }
 
 /**
- *
+ * Apply corner break attributes to the specified vertex/wall pairs, skipping duplicates in input.
+ * entityArray, definitionVertices, and wallIds should be aligned arrays of the same size such that
+ * definitionVertices[i] and wallIds[i] are the associated underlying sheet metal vertex and id of the owner wall
+ * of entityArray[i] respectively.
  */
 function applyCornerBreaks(context is Context, id is Id, entityArray is array, definitionVertices is array,
         wallIds is array, cornerBreakStyle is SMCornerBreakStyle, range is ValueWithUnits)
 {
     var numEntities = size(entityArray);
     var errorEntities = [];
+    var existingVertexToWall = {};
+    var processedVertexToWall = {};
+
+    var currEntity;
+    var currVertex;
+    var currWallId;
     for (var i = 0; i < numEntities; i += 1)
     {
-        var existingAttribute = getCornerAttribute(context, definitionVertices[i]);
+        currEntity = entityArray[i];
+        currVertex = definitionVertices[i];
+        currWallId = wallIds[i];
+
+        var existingAttribute = getCornerAttribute(context, currVertex);
         var hasExistingAttribute = (existingAttribute != undefined);
         if (hasExistingAttribute && (existingAttribute.cornerStyle != undefined))
         {
-            errorEntities = append(errorEntities, entityArray[i]);
+            errorEntities = append(errorEntities, currEntity);
             continue;
         }
 
+        // Error for input that duplicates existing corner breaks
+        if (existingVertexToWall[currVertex] == undefined)
+        {
+            // Fill existingVertexToWall if it is the first time encountering this vertex
+            existingVertexToWall[currVertex] = {};
+            if (hasExistingAttribute && existingAttribute.cornerBreaks != undefined)
+            {
+                for (var cornerBreak in existingAttribute.cornerBreaks)
+                {
+                    existingVertexToWall[currVertex][cornerBreak.value.wallId] = "";
+                }
+            }
+        }
+
+        if (existingVertexToWall[currVertex][currWallId] != undefined)
+        {
+            errorEntities = append(errorEntities, currEntity);
+            continue;
+        }
+
+        // Skip duplicates in input
+        if (processedVertexToWall[currVertex] == undefined)
+        {
+            processedVertexToWall[currVertex] = {};
+        }
+
+        if (processedVertexToWall[currVertex][currWallId] == undefined)
+        {
+            processedVertexToWall[currVertex][currWallId] = "";
+        }
+        else
+        {
+            continue;
+        }
+
+        // Attach the attribute
         var newAttribute = hasExistingAttribute ? existingAttribute : makeSMCornerAttribute(toAttributeId(id + ("" ~ i)));
-        var cornerBreak = makeSMCornerBreak(cornerBreakStyle, range, wallIds[i]);
+        var cornerBreak = makeSMCornerBreak(cornerBreakStyle, range, currWallId);
         var cornerBreakMap = { "value" : cornerBreak, "canBeEdited" : false, "controllingFeatureId" : id };
         newAttribute = addCornerBreakToSMAttribute(newAttribute, cornerBreakMap);
 
@@ -177,13 +230,13 @@ function applyCornerBreaks(context is Context, id is Id, entityArray is array, d
         }
         else
         {
-            setAttribute(context, { "entities" : definitionVertices[i], "attribute" : newAttribute });
+            setAttribute(context, { "entities" : currVertex, "attribute" : newAttribute });
         }
     }
 
     if (size(errorEntities) != 0)
     {
-        throw regenError("Cannot apply a corner break to a existing corner.", qUnion(errorEntities));
+        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_ATTRIBUTE_EXISTS, qUnion(errorEntities));
     }
 }
 

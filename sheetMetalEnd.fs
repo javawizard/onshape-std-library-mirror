@@ -26,6 +26,13 @@ export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context
     {
         checkNotInFeaturePattern(context, definition.sheetMetalParts, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
+        const resolvedEntities = evaluateQuery(context, definition.sheetMetalParts);
+        if (size(resolvedEntities) == 0)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_SELECT_PART, ["sheetMetalParts"]);
+        }
+
+
         if (!areEntitiesFromSingleActiveSheetMetalModel(context, definition.sheetMetalParts))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_SINGLE_MODEL_NEEDED, ["sheetMetalParts"]);

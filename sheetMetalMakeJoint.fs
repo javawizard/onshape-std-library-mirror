@@ -180,7 +180,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
 
     try
     {
-        opExtendSheetBody(context, id + "extend", {
+        sheetMetalExtendSheetBodyCall(context, id + "extend", {
             "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
             "offset" : 0 * inch,
             "entities" : qUnion([edges[0], edges[1]]),

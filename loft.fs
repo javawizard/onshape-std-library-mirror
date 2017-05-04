@@ -18,6 +18,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -48,12 +49,6 @@ export enum LoftShapeControlType
     annotation { "Name" : "End conditions" }
     ADD_END_CONDITIONS
 }
-
-/** @internal */
-export const CLAMP_MAGNITUDE_REAL_BOUNDS =
-{
-    (unitless) : [-1e5, 1, 1e5]
-} as RealBoundSpec;
 
 /**
  * Feature performing an [opLoft].
@@ -99,7 +94,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
         {
-            annotation { "Name" : "Guides", "Filter" : EntityType.EDGE && ConstructionObject.NO }
+            annotation { "Name" : "Guides", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
             definition.guides is Query;
         }
         else if (definition.shapeControl == LoftShapeControlType.ADD_END_CONDITIONS)
@@ -138,7 +133,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
     }
     {
-        const profileQuery = (definition.bodyType == ToolBodyType.SOLID) ? definition.sheetProfiles : definition.wireProfiles;
+        var profileQuery = definition.sheetProfiles;
+        if (definition.bodyType != ToolBodyType.SOLID)
+        {
+            definition.wireProfileDependencies = replaceWireSubQueriesWithDependencies(context, definition.wireProfiles, true);
+            profileQuery = definition.wireProfileDependencies;
+        }
         if (profileQuery.queryType == QueryType.UNION)
         {
             const subQ = wrapSubqueriesInConstructionFilter(context, profileQuery.subqueries);
@@ -155,11 +155,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides || definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
         {
             definition.shapeControl = LoftShapeControlType.ADD_GUIDES;
-            const guideQuery = definition.guides;
-            queriesForTransform = append(queriesForTransform, guideQuery);
-            if (guideQuery.queryType == QueryType.UNION)
+            definition.guideDependencies = replaceWireSubQueriesWithDependencies(context, definition.guides, false);
+            queriesForTransform = append(queriesForTransform, definition.guideDependencies);
+            if (definition.guideDependencies.queryType == QueryType.UNION)
             {
-                const subQ = guideQuery.subqueries;
+                const subQ = definition.guideDependencies.subqueries;
                 definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
             }
         }
@@ -304,16 +304,49 @@ function wireProfilesAndGuides(definition is map) returns Query
     return qUnion(subqueries);
 }
 
+function replaceWireSubQueriesWithDependencies(context is Context, query is Query, firstAndLastOnly is boolean) returns Query
+precondition
+{
+    query.subqueries is array;
+}
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+    {
+        return query;
+    }
+
+    const count = size(query.subqueries);
+    if (firstAndLastOnly)
+    {
+        if (count > 0)
+        {
+            query.subqueries[0] = followWireEdgesToLaminarSource(context, query.subqueries[0]);
+        }
+        if (count > 1)
+        {
+            query.subqueries[count - 1] = followWireEdgesToLaminarSource(context, query.subqueries[count - 1]);
+        }
+    }
+    else
+    {
+        for (var index = 0; index < count; index += 1)
+        {
+            query.subqueries[index] = followWireEdgesToLaminarSource(context, query.subqueries[index]);
+        }
+    }
+    return query;
+}
+
 function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
 {
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfiles, transform);
+        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfileDependencies, transform);
 
-        if (undefined != definition.guides)
+        if (undefined != definition.guideDependencies)
         {
-            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guides, transform);
+            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guideDependencies, transform);
             matches = concatenateArrays([profileMatches, guideMatches]);
         }
         else

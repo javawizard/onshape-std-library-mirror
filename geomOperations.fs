@@ -231,7 +231,7 @@ export function opFitSpline(context is Context, id is Id, definition is map)
  *      @field direction {Vector} : The direction of the helix axis.
  *              @eg `vector(0, 0, 1)`
  *      @field axisStart {Vector} : A point on the helix axis.
- *              @eg `vector(0, 0, 0)`
+ *              @eg `vector(0, 0, 0) * inch`
  *      @field startPoint {Vector} : The start point of the infinite helix.  Must be off the axis.  This is the point at
  *          which the created curve would actually start if the first number of `interval` is 0.
  *              @eg `vector(1, 0, 0) * inch`
@@ -651,5 +651,19 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
 {
     return @opCreateBSplineCurve(context, id, definition.bSplineCurve);
+}
+
+/**
+ * Generates wire bodies from the supplied edges.
+ * If the edges are disjoint multiple wires will be returned.
+ * If the edges overlap or cross, or more than two meet at a point, the function will fail.
+ * @param id : @autocomplete `id + "opExtractWires1"`
+ * @param definition {{
+ *      @field edges {Query} : The edges to be extracted.
+ * }}
+ */
+export function opExtractWires(context is Context, id is Id, definition is map)
+{
+    return @opExtractWires(context, id, definition);
 }
 

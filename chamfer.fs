@@ -8,9 +8,13 @@ export import(path : "onshape/std/chamfertype.gen.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/matrix.fs", version : "✨");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 const CHAMFER_ANGLE_BOUNDS =
@@ -75,16 +79,79 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
         definition.tangentPropagation is boolean;
     }
     {
-        if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V414_ASYMMETRIC_CHAMFER_MIRROR_BUG) &&
-             (definition.chamferType == ChamferType.OFFSET_ANGLE || definition.chamferType == ChamferType.TWO_OFFSETS))
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
         {
-            var fullTransform = getFullPatternTransform(context);
-            if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+            sheetMetalAwareChamfer(context, id, definition);
+        }
+        else
+        {
+            standardChamfer(context, id, definition);
+        }
+
+    }, { oppositeDirection : false, tangentPropagation : false });
+
+/*
+ * Call sheetMetalCornerBreak on active sheet metal entities and opChamfer on the remaining entities
+ */
+function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
+{
+    var separatedQueries = separateSheetMetalQueries(context, definition.entities);
+    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
+    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+
+    if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
+    {
+        throw regenError(ErrorStringEnum.CHAMFER_SELECT_EDGES, ["entities"]);
+    }
+
+    if (hasSheetMetalQueries)
+    {
+        if (definition.chamferType != ChamferType.EQUAL_OFFSETS)
+        {
+            if (definition.chamferType == ChamferType.TWO_OFFSETS)
             {
-                //we have a reflection on the input body, flip direction
-                definition.oppositeDirection = !definition.oppositeDirection;
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_TWO_OFFSETS, ["chamferType"]);
+            }
+            else if (definition.chamferType == ChamferType.OFFSET_ANGLE)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_OFFSET_ANGLE, ["chamferType"]);
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_MUST_BE_EQUAL_OFFSETS, ["chamferType"]);
             }
         }
-        opChamfer(context, id, definition);
-    }, { oppositeDirection : false, tangentPropagation : false });
+
+        var cornerBreakDefinition = {
+                    "entities" : separatedQueries.sheetMetalQueries,
+                    "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
+                    "range" : definition.width
+                };
+        sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition);
+    }
+
+    if (hasNonSheetMetalQueries)
+    {
+        definition.entities = separatedQueries.nonSheetMetalQueries;
+        standardChamfer(context, id, definition);
+    }
+}
+
+/*
+ * Call opChamfer on non-sheet metal edges
+ */
+function standardChamfer(context is Context, id is Id, definition is map)
+{
+    if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V414_ASYMMETRIC_CHAMFER_MIRROR_BUG) &&
+         (definition.chamferType == ChamferType.OFFSET_ANGLE || definition.chamferType == ChamferType.TWO_OFFSETS))
+    {
+        var fullTransform = getFullPatternTransform(context);
+        if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
+        {
+            //we have a reflection on the input body, flip direction
+            definition.oppositeDirection = !definition.oppositeDirection;
+        }
+    }
+    opChamfer(context, id, definition);
+}
 

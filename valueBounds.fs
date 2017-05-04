@@ -350,6 +350,12 @@ export const CIRCULAR_PATTERN_BOUNDS =
     (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
+/** @internal */
+export const CLAMP_MAGNITUDE_REAL_BOUNDS =
+{
+    (unitless) : [-1e5, 1, 1e5]
+} as RealBoundSpec;
+
 /**
  * @internal
  * Return the bounds in a BoundSpec as an array with the first element being

@@ -70,12 +70,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardThrough != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardTappedOrClearance is LookupTablePath;
         }
         else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST && definition.standardBlindInLast != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardBlindInLast is LookupTablePath;
         }
 
@@ -144,7 +144,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
                 annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-                isInteger(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
+                isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
         }
 
@@ -392,10 +392,23 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }], "resultBack" : [{ "distance" : 0 * meter }] };
     if (calculateStartPoint(context, definition))
     {
+        var cylinderCastDiameter = maxDiameter(definition);
+        var firstBodyCastDiameter = undefined;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V571_HOLE_BLIND_IN_LAST_PROJECTION) && definition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
+            definition.style != HoleStyle.SIMPLE && definition.tapDrillDiameter != undefined)
+        {
+          // if we are doing a 'blind in last' non-simple hole, use the tap drill diameter to determine last body hit point
+          cylinderCastDiameter = definition.tapDrillDiameter;
+
+          // and use the cbore/csink diameter to determine first body hit point
+          firstBodyCastDiameter = maxDiameter(definition);
+        }
+
         startDistances = cylinderCastBiDirectional(context, holeId, {
             "scopeSize" : definition.scopeSize,
             "cSys" : startPointCSys,
-            "diameter": maxDiameter(definition),
+            "diameter": cylinderCastDiameter,
+            "firstBodyCastDiameter" : firstBodyCastDiameter,
             "scope" : definition.scope,
             "needBack": false });
     }
@@ -463,7 +476,7 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 const HOLE_CLEARANCE_BOUNDS =
 {
     (unitless) : [0, 3, 100]
-} as IntegerBoundSpec;
+} as RealBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {

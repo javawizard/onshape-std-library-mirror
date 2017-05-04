@@ -71,7 +71,7 @@ const HELIX_TURN_BOUNDS =
 /**
  * Feature performing an [opHelix].
  */
-annotation { "Feature Type Name" : "Helix", "UIHint" : "CONTROL_VISIBILITY",
+annotation { "Feature Type Name" : "Helix",
              "Manipulator Change Function" : "helixManipulatorChange",
              "Editing Logic Function" : "helixLogic" }
 export const helix = defineFeature(function(context is Context, id is Id, definition is map)

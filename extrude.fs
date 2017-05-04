@@ -750,12 +750,20 @@ precondition
             const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
             const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
             var direction = entityPlane.normal;
-            // We don't transform sketch *planes* during pattern transformation, just entities. So this direction
-            // does not represent the transforms, if any, on the stack.
-            var fullTransform = getFullPatternTransform(context);
-            if (fullTransform != identityTransform())
-                direction = fullTransform.linear * entityPlane.normal;
-
+            if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V565_COMPUTED_DATA_SKETCH_TRANSFORM))
+            {
+                // We don't transform sketch *planes* during pattern transformation, just entities. So this direction
+                // does not represent the transforms, if any, on the stack.
+                var fullTransform = getFullPatternTransform(context);
+                if (fullTransform != identityTransform())
+                    direction = fullTransform.linear * entityPlane.normal;
+            }
+            else if (transform != undefined && transform != identityTransform())
+            {
+                // More recently the sketch plane IS transformed so we don't need the full transform
+                // but we still need to transform the sketch normal by the provided transform
+                direction = transform.linear * entityPlane.normal;
+            }
             //make sure to handle the origin and transform with remainder transform passed in
             if (transform == undefined || transform == identityTransform())
                 return line(tangentAtEdge.origin, direction);
