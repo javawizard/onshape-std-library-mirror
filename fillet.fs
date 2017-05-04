@@ -1,22 +1,25 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "559.0");
+export import(path : "onshape/std/query.fs", version : "581.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "559.0");
+export import(path : "onshape/std/manipulator.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/tool.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
-import(path : "onshape/std/vector.fs", version : "559.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
+import(path : "onshape/std/tool.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/vector.fs", version : "581.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -52,8 +55,52 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
     }
     {
         try(addFilletManipulator(context, id, definition));
-        opFillet(context, id, definition);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
+        {
+            sheetMetalAwareFillet(context, id, definition);
+        }
+        else
+        {
+            opFillet(context, id, definition);
+        }
+
     }, { tangentPropagation : false, conicFillet : false });
+
+/*
+ * Call sheetMetalCornerBreak on active sheet metal entities and opFillet on the remaining entities
+ */
+function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
+{
+    var separatedQueries = separateSheetMetalQueries(context, definition.entities);
+    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
+    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+
+    if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
+    {
+        throw regenError(ErrorStringEnum.FILLET_SELECT_EDGES, ["entities"]);
+    }
+
+    if (hasSheetMetalQueries)
+    {
+        if (definition.conicFillet)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["conicFillet"]);
+        }
+
+        var cornerBreakDefinition = {
+                    "entities" : separatedQueries.sheetMetalQueries,
+                    "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
+                    "range" : definition.radius
+                };
+        sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition);
+    }
+
+    if (hasNonSheetMetalQueries)
+    {
+        definition.entities = separatedQueries.nonSheetMetalQueries;
+        opFillet(context, id, definition);
+    }
+}
 
 /*
  * Create a linear manipulator for the fillet

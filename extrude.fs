@@ -1,30 +1,30 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "559.0");
-export import(path : "onshape/std/query.fs", version : "559.0");
-export import(path : "onshape/std/tool.fs", version : "559.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
+export import(path : "onshape/std/query.fs", version : "581.0");
+export import(path : "onshape/std/tool.fs", version : "581.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "559.0");
+export import(path : "onshape/std/manipulator.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "559.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
-import(path : "onshape/std/box.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/coordSystem.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-import(path : "onshape/std/draft.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/transform.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/boolean.fs", version : "581.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "581.0");
+import(path : "onshape/std/box.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/coordSystem.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+import(path : "onshape/std/draft.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/transform.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -750,12 +750,20 @@ precondition
             const tangentAtEdge = evEdgeTangentLine(context, { "edge" : entity, "parameter" : 0.5 });
             const entityPlane = evOwnerSketchPlane(context, { "entity" : entity });
             var direction = entityPlane.normal;
-            // We don't transform sketch *planes* during pattern transformation, just entities. So this direction
-            // does not represent the transforms, if any, on the stack.
-            var fullTransform = getFullPatternTransform(context);
-            if (fullTransform != identityTransform())
-                direction = fullTransform.linear * entityPlane.normal;
-
+            if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V565_COMPUTED_DATA_SKETCH_TRANSFORM))
+            {
+                // We don't transform sketch *planes* during pattern transformation, just entities. So this direction
+                // does not represent the transforms, if any, on the stack.
+                var fullTransform = getFullPatternTransform(context);
+                if (fullTransform != identityTransform())
+                    direction = fullTransform.linear * entityPlane.normal;
+            }
+            else if (transform != undefined && transform != identityTransform())
+            {
+                // More recently the sketch plane IS transformed so we don't need the full transform
+                // but we still need to transform the sketch normal by the provided transform
+                direction = transform.linear * entityPlane.normal;
+            }
             //make sure to handle the origin and transform with remainder transform passed in
             if (transform == undefined || transform == identityTransform())
                 return line(tangentAtEdge.origin, direction);

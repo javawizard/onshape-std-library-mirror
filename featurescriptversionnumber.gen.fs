@@ -1,4 +1,4 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -482,7 +482,27 @@ export enum FeatureScriptVersionNumber
     V556_SURFACE_JOIN_FS_FIXES,
     V557_NO_BEND_CENTERLINE_IN_DERIVED,
     V558_PROJECT_EDGES_SAME_SKETCH,
-    V559_REMOVE_LOGGING
+    V559_REMOVE_LOGGING,
+    V562_REMOVE_SCAR_EDGES,
+    V563_EDGE_BLEND_FILTER_ORDER,
+    V564_Q_FARTHEST_ALONG_SIGN,
+    V565_COMPUTED_DATA_SKETCH_TRANSFORM,
+    V566_MODIFIABLE_ONLY_IN_DERIVED,
+    V567_GET_VARIABLE_THROWS,
+    V568_RHO_DIMENSION_NOT_CONSISTENT,
+    V569_FLANGE_NEXT_TO_RIP,
+    V570_DISAMBIGUATION_PRESENCE,
+    V571_HOLE_BLIND_IN_LAST_PROJECTION,
+    V572_TAP_CLEARANCE_TO_REAL,
+    V573_FS_ATTRIBUTES_MERGED_TO_WIRES,
+    V574_SKETCH_PROJECT_VERTEX_TOLERANCE,
+    V575_SHEET_METAL_FILLET_CHAMFER,
+    V576_GET_WIRE_LAMINAR_DEPENDENCIES,
+    V577_CORNER_BREAK_ADJUST,
+    V578_FIX_DELETE_FACE_MODIFICATION,
+    V579_FIT_SPLINE_ZERO_MAGNITUDE,
+    V580_CORNER_BREAK_STABILIZATION,
+    V581_REMOVE_HELIX_CONTROL_VISIBILITY
 }
 
 /**
@@ -493,6 +513,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V559_REMOVE_LOGGING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V581_REMOVE_HELIX_CONTROL_VISIBILITY;
 
 

@@ -1,19 +1,20 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "559.0");
-export import(path : "onshape/std/tool.fs", version : "559.0");
+export import(path : "onshape/std/query.fs", version : "581.0");
+export import(path : "onshape/std/tool.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "559.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/transform.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
+import(path : "onshape/std/boolean.fs", version : "581.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "581.0");
+import(path : "onshape/std/transform.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -41,11 +42,11 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             surfaceOperationTypePredicate(definition);
 
             annotation { "Name" : "Edges and sketch curves to sweep",
-                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) }
+                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)}
             definition.surfaceProfiles is Query;
         }
 
-        annotation { "Name" : "Sweep path", "Filter" : EntityType.EDGE && ConstructionObject.NO }
+        annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
         definition.path is Query;
 
         annotation { "Name" : "Keep profile orientation" }
@@ -67,6 +68,10 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
                 if (size(queryResults) == 0)
                     throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["path"]);
             }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+            {
+                definition.path = followWireEdgesToLaminarSource(context, definition.path);
+            }
         }
         if (definition.bodyType == ToolBodyType.SURFACE)
         {
@@ -77,6 +82,10 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             else
             {
                 definition.profiles = definition.surfaceProfiles;
+            }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+            {
+                definition.profiles = followWireEdgesToLaminarSource(context, definition.profiles);
             }
         }
 
@@ -126,7 +135,7 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.surfaceProfiles, transform);
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
         var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
         matches = concatenateArrays([capMatches, sweptMatches]);
     }

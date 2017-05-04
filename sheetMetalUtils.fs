@@ -1,29 +1,29 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "559.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "559.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/coordSystem.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/math.fs", version : "559.0");
-import(path : "onshape/std/manipulator.fs", version : "559.0");
-import(path : "onshape/std/query.fs", version : "559.0");
-import(path : "onshape/std/sketch.fs", version : "559.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "559.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/tool.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
-import(path : "onshape/std/vector.fs", version : "559.0");
-import(path : "onshape/std/topologyUtils.fs", version : "559.0");
-import(path : "onshape/std/transform.fs", version : "559.0");
+import(path : "onshape/std/attributes.fs", version : "581.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "581.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/coordSystem.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/math.fs", version : "581.0");
+import(path : "onshape/std/manipulator.fs", version : "581.0");
+import(path : "onshape/std/query.fs", version : "581.0");
+import(path : "onshape/std/sketch.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/tool.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/vector.fs", version : "581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "581.0");
+import(path : "onshape/std/transform.fs", version : "581.0");
 
 
 
@@ -47,6 +47,7 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
  */
  export function updateSheetMetalGeometry(context is Context, id is Id, args is map)
  {
+    adjustCornerBreakAttributes(context, args.entities);
     @updateSheetMetalGeometry(context, id, args);
  }
 
@@ -775,4 +776,129 @@ export function findCornerDefinitionVertex(context is Context, entity is Query) 
     }
     return sheetVertices;
 }
+
+/**
+* @internal
+* Remove corner breaks at the bend ends
+*/
+function adjustCornerBreakAttributes(context is Context, modifiedEntities is Query)
+{
+    for (var edgeQ in evaluateQuery(context, qEntityFilter(modifiedEntities, EntityType.EDGE)))
+    {
+        var attributes = getSmObjectTypeAttributes(context, edgeQ, SMObjectType.JOINT);
+        if (size(attributes) != 1 ||
+            attributes[0].jointType == undefined ||
+            attributes[0].jointType.value != SMJointType.BEND)
+        {
+            continue;
+        }
+        removeCornerBreaksAtEnds(context, edgeQ);
+    }
+}
+
+/**
+* @internal
+*/
+export function removeCornerBreaksAtEdgeVertices(context is Context, edges is Query)
+{
+    for (var edge in evaluateQuery(context, edges))
+    {
+        removeCornerBreaksAtEnds(context, edge);
+    }
+}
+
+function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
+{
+    var wallIds = [];
+    for (var wallAttribute in getSmObjectTypeAttributes(context, qEdgeAdjacent(edgeQ, EntityType.FACE), SMObjectType.WALL))
+    {
+        wallIds = append(wallIds, wallAttribute.attributeId);
+    }
+    for (var vertexQ in evaluateQuery(context, qVertexAdjacent(edgeQ, EntityType.VERTEX)))
+    {
+        var cornerAttributes = getSmObjectTypeAttributes(context, vertexQ, SMObjectType.CORNER);
+        if (size(cornerAttributes) != 1 ||
+            cornerAttributes[0].cornerBreaks == undefined ||
+            size(cornerAttributes[0].cornerBreaks) == 0)
+        {
+            continue;
+        }
+        var updatedAttribute = cornerAttributes[0];
+        var nCornerBreaksBefore = size(updatedAttribute.cornerBreaks);
+        updatedAttribute.cornerBreaks = filter(updatedAttribute.cornerBreaks,
+                      function(cornerBreak) returns boolean
+                      {
+                          return (cornerBreak.value != undefined &&
+                            !isIn(cornerBreak.value.wallId, wallIds));
+                      } );
+        var nCornerBreaksAfter = size(updatedAttribute.cornerBreaks);
+        if (nCornerBreaksAfter !=  nCornerBreaksBefore)
+        {
+            updateCornerAttribute(context, vertexQ, updatedAttribute);
+        }
+    }
+}
+
+/**
+*  Wrapper around opExtendSheetBody used in sheet metal operations to handle remapping of cornerBreak data
+*/
+export function sheetMetalExtendSheetBodyCall(context is Context, id is Id, definition is map)
+{
+    var vertexToTrackAndAttribute = {};
+    for (var vertexQ in evaluateQuery(context, qVertexAdjacent(definition.entities, EntityType.VERTEX)))
+    {
+        var attribute = getCornerAttribute(context, vertexQ);
+        if (attribute != undefined &&
+            attribute.cornerBreaks != undefined &&
+            size(attribute.cornerBreaks) > 0)
+        {
+            vertexToTrackAndAttribute[vertexQ] = { "tracking" : startTracking(context, vertexQ), "attribute" : attribute};
+        }
+    }
+    opExtendSheetBody(context, id, definition);
+    var counter = 0;
+    for (var vertexData in vertexToTrackAndAttribute)
+    {
+        var afterVertices = evaluateQuery(context, qUnion([vertexData.key, vertexData.value.tracking]));
+        if (size(afterVertices) == 0)
+           continue;
+        for (var vert in afterVertices)
+        {
+            var survivingAttribute = getCornerAttribute(context, vert);
+            var wallsAroundVertex = getSmObjectTypeAttributes(context, qVertexAdjacent(vert, EntityType.FACE), SMObjectType.WALL);
+            var cornerBreaks = [];
+            for (var wall in wallsAroundVertex)
+            {
+                var cBreak = findCornerBreak(vertexData.value.attribute, wall.attributeId);
+                if (cBreak == undefined && survivingAttribute != undefined)
+                {
+                   //When vertices merge (e.g. makeJoint) surviving attribute is an attribute that belonged
+                   // to one of the original vertices. Here we are merging data from all originals.
+                    cBreak = findCornerBreak(survivingAttribute, wall.attributeId);
+                }
+                if (cBreak != undefined)
+                {
+                    cornerBreaks = append(cornerBreaks, cBreak);
+                }
+            }
+            if (survivingAttribute != undefined)
+            {
+                var newAttribute = survivingAttribute;
+                newAttribute.cornerBreaks = cornerBreaks;
+                updateCornerAttribute(context, vert, newAttribute);
+            }
+            else if (size(cornerBreaks) > 0)
+            {
+                var newAttribute = makeSMCornerAttribute(toAttributeId(id + ("breakReshuffle" ~ counter)));
+                counter += 1;
+                newAttribute.cornerBreaks = cornerBreaks;
+                setAttribute(context, {
+                        "entities" : vert,
+                        "attribute" : newAttribute
+                });
+            }
+        }
+    }
+}
+
 

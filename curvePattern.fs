@@ -1,19 +1,20 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "559.0");
+export import(path : "onshape/std/patternUtils.fs", version : "581.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "559.0");
+export import(path : "onshape/std/path.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/sketch.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/sketch.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "581.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -78,7 +79,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             definition.instanceFunction is FeatureList;
         }
 
-        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE }
+        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
         definition.edges is Query;
 
         annotation { "Name" : "Instance count" }
@@ -134,6 +135,11 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         if (size(evaluateQuery(context, definition.edges)) == 0)
             throw regenError(ErrorStringEnum.PATTERN_CURVE_NO_EDGES, ["edges"]);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+        {
+            definition.edges = dissolveWires(definition.edges);
+        }
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([definition.entities, definition.edges]) });
 

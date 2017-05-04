@@ -1,21 +1,21 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "559.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "559.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "559.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "559.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "559.0");
-export import(path : "onshape/std/context.fs", version : "559.0");
-export import(path : "onshape/std/query.fs", version : "559.0");
-import(path : "onshape/std/attributes.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/units.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "581.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "581.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "581.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "581.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "581.0");
+export import(path : "onshape/std/context.fs", version : "581.0");
+export import(path : "onshape/std/query.fs", version : "581.0");
+import(path : "onshape/std/attributes.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -358,5 +358,50 @@ precondition
     }
     attribute.cornerBreaks = append(attribute.cornerBreaks, cornerBreakMap);
     return asSMAttribute(attribute);
+}
+
+/**
+ * Finds an SMCornerBreak in attribute corresponding to wallId, returns undefined if nothing found
+ */
+export function findCornerBreak(attribute is SMAttribute, wallId is string)
+{
+    if (attribute.cornerBreaks == undefined)
+    {
+        return undefined;
+    }
+    for (var cBreak in attribute.cornerBreaks)
+    {
+        if (cBreak.value.wallId == wallId)
+        {
+            return cBreak;
+        }
+    }
+    return undefined;
+}
+
+/**
+* Clears existing SMAttribute, sets new one only if non-trivial
+*/
+export function updateCornerAttribute(context is Context, vertex is Query, attribute is SMAttribute)
+precondition
+{
+    attribute.objectType == SMObjectType.CORNER;
+}
+{
+    removeAttributes(context, {"entities" : vertex,
+                               "attributePattern" : asSMAttribute({})
+                });
+    if (size(attribute.cornerBreaks) == 0)
+    {
+       attribute.cornerBreaks = undefined;
+    }
+    if (attribute.cornerStyle != undefined ||
+        attribute.cornerBreaks != undefined)
+    {
+        setAttribute(context, {
+                "entities" : vertex,
+                "attribute" : attribute
+        });
+    }
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 559; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/context.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/units.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/context.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -121,6 +121,7 @@ export predicate canBeQuery(value)
  * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
+ * @value LAMINAR_DEPENDENCY         : Used in [qLaminarDependency]
  ******************************************************************************/
 export enum QueryType
 {
@@ -184,7 +185,8 @@ export enum QueryType
     MESH_GEOMETRY_FILTER,
     MODIFIABLE_ENTITY_FILTER,
     SKETCH_OBJECT_FILTER,
-    COINCIDES_WITH_PLANE
+    COINCIDES_WITH_PLANE,
+    LAMINAR_DEPENDENCY
 }
 
 /**
@@ -607,6 +609,17 @@ export function qDependency(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
 }
+
+/**
+ * A query for the true dependency of the query, specifically for use with wire edges that
+ * have been created from laminar edges. If the immediate dependency is not laminar then it will
+ * track back until it reaches a laminar dependency (if there is one).
+ */
+export function qLaminarDependency(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.LAMINAR_DEPENDENCY, "subquery" : subquery } as Query;
+}
+
 
 /**
 * A query for start/end cap entities created by featureId.

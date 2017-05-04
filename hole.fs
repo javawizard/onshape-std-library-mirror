@@ -1,33 +1,33 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "559.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "559.0");
-import(path : "onshape/std/box.fs", version : "559.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/coordSystem.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/extrude.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/revolve.fs", version : "559.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "559.0");
-import(path : "onshape/std/sketch.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/tool.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
-import(path : "onshape/std/holetables.gen.fs", version : "559.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "559.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "559.0");
-import(path : "onshape/std/cylinderCast.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-import(path : "onshape/std/attributes.fs", version : "559.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "559.0");
-export import(path : "onshape/std/holeUtils.fs", version : "559.0");
+import(path : "onshape/std/boolean.fs", version : "581.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
+import(path : "onshape/std/box.fs", version : "581.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/coordSystem.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/extrude.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/revolve.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
+import(path : "onshape/std/sketch.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/tool.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
+import(path : "onshape/std/holetables.gen.fs", version : "581.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "581.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "581.0");
+import(path : "onshape/std/cylinderCast.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+import(path : "onshape/std/attributes.fs", version : "581.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "581.0");
+export import(path : "onshape/std/holeUtils.fs", version : "581.0");
 
 
 /**
@@ -70,12 +70,12 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardThrough != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardTappedOrClearance is LookupTablePath;
         }
         else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST && definition.standardBlindInLast != undefined)
         {
-            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardBlindInLast is LookupTablePath;
         }
 
@@ -144,7 +144,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
                 annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-                isInteger(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
+                isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
         }
 
@@ -392,10 +392,23 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }], "resultBack" : [{ "distance" : 0 * meter }] };
     if (calculateStartPoint(context, definition))
     {
+        var cylinderCastDiameter = maxDiameter(definition);
+        var firstBodyCastDiameter = undefined;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V571_HOLE_BLIND_IN_LAST_PROJECTION) && definition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
+            definition.style != HoleStyle.SIMPLE && definition.tapDrillDiameter != undefined)
+        {
+          // if we are doing a 'blind in last' non-simple hole, use the tap drill diameter to determine last body hit point
+          cylinderCastDiameter = definition.tapDrillDiameter;
+
+          // and use the cbore/csink diameter to determine first body hit point
+          firstBodyCastDiameter = maxDiameter(definition);
+        }
+
         startDistances = cylinderCastBiDirectional(context, holeId, {
             "scopeSize" : definition.scopeSize,
             "cSys" : startPointCSys,
-            "diameter": maxDiameter(definition),
+            "diameter": cylinderCastDiameter,
+            "firstBodyCastDiameter" : firstBodyCastDiameter,
             "scope" : definition.scope,
             "needBack": false });
     }
@@ -463,7 +476,7 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 const HOLE_CLEARANCE_BOUNDS =
 {
     (unitless) : [0, 3, 100]
-} as IntegerBoundSpec;
+} as RealBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {

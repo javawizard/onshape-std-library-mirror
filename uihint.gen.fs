@@ -1,4 +1,4 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -38,7 +38,8 @@ FeatureScript 559; /* Automatically generated version */
  *      and never the resulting value.
  * @value OPPOSITE_DIRECTION_CIRCULAR : Like `OPPOSITE_DIRECTION`, but with circular arrows.
  * @value SHOW_LABEL : Show a label above an enum parameter.
- * @value HORIZONTAL_ENUM : Display an enum as a horizontal list of clickable text, rather than the default select control */
+ * @value HORIZONTAL_ENUM : Display an enum as a horizontal list of clickable text, rather than the default select control
+ * @value UNCONFIGURABLE : For Onshape internal use. */
 export enum UIHint
 {
     OPPOSITE_DIRECTION,
@@ -54,7 +55,8 @@ export enum UIHint
     SHOW_EXPRESSION,
     OPPOSITE_DIRECTION_CIRCULAR,
     SHOW_LABEL,
-    HORIZONTAL_ENUM
+    HORIZONTAL_ENUM,
+    UNCONFIGURABLE
 }
 
 

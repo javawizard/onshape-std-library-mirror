@@ -1,27 +1,27 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "559.0");
-export import(path : "onshape/std/tool.fs", version : "559.0");
+export import(path : "onshape/std/query.fs", version : "581.0");
+export import(path : "onshape/std/tool.fs", version : "581.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "559.0");
+export import(path : "onshape/std/manipulator.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "559.0");
-import(path : "onshape/std/box.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "559.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/attributes.fs", version : "581.0");
+import(path : "onshape/std/box.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
 
 
 /**
@@ -687,7 +687,10 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         }
         if (size(edgeLimitOptions) > 0)
         {
-            opExtendSheetBody(context, id + "extend", { "entities" : qUnion(smEdges), "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE, "edgeLimitOptions" : edgeLimitOptions });
+            sheetMetalExtendSheetBodyCall(context, id + "extend", {
+                        "entities" : qUnion(smEdges),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : edgeLimitOptions });
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V512_MOVE_FACE_OVERLAP))
             {
                 if (size(evaluateQuery(context, qCreatedBy(id + "extend", EntityType.FACE))) != 0)

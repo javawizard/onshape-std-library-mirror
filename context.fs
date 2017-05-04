@@ -1,11 +1,11 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
 
 //====================== Context ========================
 
@@ -234,6 +234,7 @@ export function setVariable(context is Context, name is string, value)
 
 /**
  * Retrieve a variable attached to the context by name.
+ * Throws an exception if variable by the given name is not found.
  *
  * @example `getVariable(context, "foo")` returns the value assigned to a
  *      previously-set variable named `"foo"`.

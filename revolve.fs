@@ -1,23 +1,24 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "559.0");
+export import(path : "onshape/std/tool.fs", version : "581.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "559.0");
+export import(path : "onshape/std/manipulator.fs", version : "581.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "559.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/evaluate.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/transform.fs", version : "559.0");
-import(path : "onshape/std/valueBounds.fs", version : "559.0");
+import(path : "onshape/std/boolean.fs", version : "581.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/evaluate.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "581.0");
+import(path : "onshape/std/transform.fs", version : "581.0");
+import(path : "onshape/std/valueBounds.fs", version : "581.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -66,7 +67,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         else
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
-                         "Filter" : EntityType.EDGE && ConstructionObject.NO }
+                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)}
             definition.surfaceEntities is Query;
         }
 
@@ -166,7 +167,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, remainingTransform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.entities, remainingTransform);
             joinSurfaceBodies(context, id, matches, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW });
@@ -190,14 +191,21 @@ function getEntitiesToUse(context is Context, revolveDefinition is map)
     }
     else
     {
+        var surfaceEntities;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
         {
-            return qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
+            surfaceEntities = qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
         }
         else
         {
-            return revolveDefinition.surfaceEntities;
+            surfaceEntities = revolveDefinition.surfaceEntities;
         }
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+        {
+            surfaceEntities = followWireEdgesToLaminarSource(context, surfaceEntities);
+        }
+        return surfaceEntities;
     }
 }
 

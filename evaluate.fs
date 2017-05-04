@@ -1,4 +1,4 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,42 @@ FeatureScript 559; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "559.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "559.0");
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/context.fs", version : "559.0");
-import(path : "onshape/std/coordSystem.fs", version : "559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "559.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "559.0");
-import(path : "onshape/std/mathUtils.fs", version : "559.0");
-import(path : "onshape/std/query.fs", version : "559.0");
-import(path : "onshape/std/feature.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "559.0");
-import(path : "onshape/std/units.fs", version : "559.0");
+import(path : "onshape/std/box.fs", version : "581.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/context.fs", version : "581.0");
+import(path : "onshape/std/coordSystem.fs", version : "581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "581.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "581.0");
+import(path : "onshape/std/query.fs", version : "581.0");
+import(path : "onshape/std/feature.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
+import(path : "onshape/std/units.fs", version : "581.0");
+
+/**
+ * Find the centroid of an entity or group of entities. This is
+ * equivalent to the center of mass for a constant density object.
+ * Warning: This is an approximate value and it is not recommended to use this
+ * for modelling purposes that will be negatively affected in case the
+ * approximation changes. Consider using the center of a bounding box
+ * instead.
+ * @param arg {{
+ *      @field entities : The entities to take the center of mass of.
+ * }}
+ */
+export function evApproximateCentroid(context is Context, arg is map) returns Vector
+precondition
+{
+    arg.entities is Query;
+}
+{
+    var centroid = @evApproximateCentroid(context, { "entities" : arg.entities });
+
+    return vector(centroid) * meter;
+}
 
 /**
  * Return the total area of all the entities.
@@ -86,28 +108,6 @@ precondition
 }
 
 /**
- * Find the centroid of an entity or group of entities. This is
- * equivalent to the center of mass for a constant density object.
- * Warning: This is an approximate value and it is not recommended to use this
- * for modelling purposes that will be negatively affected in case the
- * approximation changes. Consider using the center of a bounding box
- * instead.
- * @param arg {{
- *      @field entities : The entities to take the center of mass of.
- * }}
- */
-export function evApproximateCentroid(context is Context, arg is map) returns Vector
-precondition
-{
-    arg.entities is Query;
-}
-{
-    var centroid = @evApproximateCentroid(context, { "entities" : arg.entities });
-
-    return vector(centroid) * meter;
-}
-
-/**
  * Find collisions between tools and targets.  Each collision is a
  * map with field `type` of type [ClashType] and fields `target`,
  * `targetBody`, `tool`, and `toolBody` of type [Query].
@@ -146,7 +146,43 @@ precondition
 }
 
 /**
- * Given a query for a curve, return a `Circle`, `Ellipse`, or `Line`
+ * Return the type of corner found at a vertex of a sheet metal model
+ * @param context
+ * @param arg {{
+ *      @field vertex{Query}
+ * }}
+ * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single vertex
+ * @returns {{
+  *      @field cornerType {SMCornerType} : the type of the corner
+  *      @field primaryVertex {Query} : the vertex that defines the corner
+  * }}
+ */
+export function evCornerType(context is Context, arg is map) returns map
+precondition
+{
+    arg.vertex is Query;
+}
+{
+    var data = @evCornerType(context, arg);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V488_CLASSIFY_CORNER_RETURNS_MAP))
+    {
+        return {
+            "cornerType" : data.cornerType as SMCornerType,
+            "primaryVertex" : qTransient(data.primaryVertex as TransientId)
+        };
+    }
+    else
+    {
+        return {
+            "cornerType" : data as SMCornerType,
+            "primaryVertex" : arg.vertex
+        };
+    }
+}
+
+/**
+ * Given a query for a curve, return a [Circle], [Ellipse], or [Line]
  * value for the curve.  If the curve is none of these types, return
  * a map with unspecified contents.
  * @param arg {{
@@ -391,7 +427,7 @@ export function curvatureFrameBinormal(curvatureResult is EdgeCurvatureResult) r
 }
 
 /**
- * Return one tangent line to an edge.
+ * Return one tangent [Line] to an edge.
  * @param arg {{
  *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
  *      @field parameter {number}:
@@ -463,7 +499,42 @@ precondition
 }
 
 /**
- * Given a face, calculate and return a Plane tangent to that face,
+ * Return the surface normal of a face at a position on one of its edges.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameter{number}
+ * }}
+ */
+export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
+precondition
+{
+    arg is map;
+    arg.edge is Query;
+    arg.face is Query;
+    arg.parameter is number;
+}
+{
+    var edgeTangent = evEdgeTangentLine(context, {
+            "edge" : arg.edge,
+            "parameter" : arg.parameter
+    });
+    var distData = evDistance(context, {
+            "side0" : arg.face,
+            "side1" : edgeTangent.origin
+    });
+    var parameter = distData.sides[0].parameter;
+    var faceTangent = evFaceTangentPlane(context, {
+            "face" : arg.face,
+            "parameter" : parameter
+    });
+    return faceTangent.normal;
+}
+
+/**
+ * Given a face, calculate and return a [Plane] tangent to that face,
  * where the plane's origin is at the point specified by its parameter-space coordinates.
  * @param context {Context}
  * @param arg {{
@@ -481,7 +552,7 @@ export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 }
 
 /**
- * Given a face, calculate and return an array of Planes tangent to that face,
+ * Given a face, calculate and return an array of [Plane]s tangent to that face,
  * where each plane's origin is located at the point specified by its parameter-space coordinates.
  * @param context {Context}
  * @param arg {{
@@ -546,7 +617,7 @@ precondition
 }
 
 /**
- * If the edge is a line, return a Line value for the given edge.
+ * If the edge is a line, return a [Line] value for the given edge.
  * @param arg {{
  *      @field edge{Query}
  * }}
@@ -618,8 +689,8 @@ precondition
 
 /**
  * Return a descriptive value for a face, or the first face if the query
- * finds more than one.  Return a `Cone`, `Cylinder`, `Plane`, `Sphere`,
- * or `Torus` as appropriate for the face, or an unspecified map value
+ * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
+ * or [Torus] as appropriate for the face, or an unspecified map value
  * if the face is none of these.
  * @param arg {{
  *      @field face{Query}
@@ -747,76 +818,5 @@ function offsetGroup(group is map) returns OffsetGroup
     }
     return {'side0' : side0, 'side1' : side1,
         'offsetLow' : group.offsetLow * meter, 'offsetHigh' : group.offsetHigh * meter} as OffsetGroup;
-}
-
-/**
- * Return the surface normal of a face at a position on one of its edges.
- *
- * If the first result is not a face, throw an exception.
- * @param arg {{
- *      @field edge{Query}
- *      @field face{Query}
- *      @field parameter{number}
- * }}
- */
-export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
-precondition
-{
-    arg is map;
-    arg.edge is Query;
-    arg.face is Query;
-    arg.parameter is number;
-}
-{
-    var edgeTangent = evEdgeTangentLine(context, {
-            "edge" : arg.edge,
-            "parameter" : arg.parameter
-    });
-    var distData = evDistance(context, {
-            "side0" : arg.face,
-            "side1" : edgeTangent.origin
-    });
-    var parameter = distData.sides[0].parameter;
-    var faceTangent = evFaceTangentPlane(context, {
-            "face" : arg.face,
-            "parameter" : parameter
-    });
-    return faceTangent.normal;
-}
-
-/**
- * Return the type of corner found at a vertex of a sheet metal model
- * @param context
- * @param arg {{
- *      @field vertex{Query}
- * }}
- * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single vertex
- * @returns {{
-  *      @field cornerType {SMCornerType} : the type of the corner
-  *      @field primaryVertex {Query} : the vertex that defines the corner
-  * }}
- */
-export function evCornerType(context is Context, arg is map) returns map
-precondition
-{
-    arg.vertex is Query;
-}
-{
-    var data = @evCornerType(context, arg);
-
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V488_CLASSIFY_CORNER_RETURNS_MAP))
-    {
-        return {
-            "cornerType" : data.cornerType as SMCornerType,
-            "primaryVertex" : qTransient(data.primaryVertex as TransientId)
-        };
-    }
-    else
-    {
-        return {
-            "cornerType" : data as SMCornerType,
-            "primaryVertex" : arg.vertex
-        };
-    }
 }
 

@@ -1,14 +1,14 @@
-FeatureScript 559; /* Automatically generated version */
+FeatureScript 581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "559.0");
-import(path : "onshape/std/math.fs", version : "559.0");
-import(path : "onshape/std/units.fs", version : "559.0");
-import(path : "onshape/std/matrix.fs", version : "559.0");
-import(path : "onshape/std/string.fs", version : "559.0");
+import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/math.fs", version : "581.0");
+import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/matrix.fs", version : "581.0");
+import(path : "onshape/std/string.fs", version : "581.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -358,13 +358,12 @@ precondition
     return rotationMatrix3d(axis, atan2(norm(axis), dot(from, to)));
 }
 
-// This lives here because we can see definitions of both ValueWithUnits and Matrix.
 /**
  * Construct a 3D matrix representing a counterclockwise (looking against the axis) rotation
  * around the given axis by the given rotation angle.
  */
-export function rotationMatrix3d(axis is array, angle is ValueWithUnits) returns Matrix
-precondition size(axis) == 3;
+export function rotationMatrix3d(axis is Vector, angle is ValueWithUnits) returns Matrix
+precondition @size(axis) == 3;
 {
     return @matrixRotation3d(axis, angle.value) as Matrix;
 }
