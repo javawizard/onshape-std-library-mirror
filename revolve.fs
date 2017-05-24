@@ -351,9 +351,16 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
         newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
     }
 
-    if (definition.bodyType == ToolBodyType.SURFACE)
+    if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
     {
-        return surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+        if (definition.revolveType != RevolveType.ONE_DIRECTION)
+        {
+            newDefinition.surfaceOperationType = NewSurfaceOperationType.NEW;
+        }
+        else
+        {
+            newDefinition = surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+        }
     }
 
     return newDefinition;

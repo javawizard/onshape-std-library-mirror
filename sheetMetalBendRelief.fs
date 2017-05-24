@@ -24,8 +24,9 @@ annotation { "Feature Type Name" : "Bend relief", "Filter Selector" : "allparts"
 export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Bend relief", "Filter" : (EntityType.EDGE || EntityType.VERTEX || EntityType.FACE)
-            && AllowFlattenedGeometry.YES && AllowEdgePoint.NO, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Bend relief", "MaxNumberOfPicks" : 1,
+                     "Filter" : (SheetMetalDefinitionEntityType.VERTEX || (SheetMetalDefinitionEntityType.EDGE && EntityType.EDGE))
+                                && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.bendRelief is Query;
 
         annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.OBROUND, "UIHint" : "SHOW_LABEL" }

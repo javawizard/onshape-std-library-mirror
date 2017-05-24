@@ -51,6 +51,15 @@ export enum LoftShapeControlType
 }
 
 /**
+ * Internal
+ */
+const LOFT_INTERNAL_SECTIONS_COUNT =
+{
+    (unitless) : [1, 5, 50]
+}   as IntegerBoundSpec;
+
+
+/**
  * Feature performing an [opLoft].
  */
 annotation { "Feature Type Name" : "Loft",
@@ -87,6 +96,18 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                                     (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET)))
                                     && ConstructionObject.NO }
             definition.wireProfiles is Query;
+        }
+
+        annotation { "Name" : "Path" }
+        definition.addSections is boolean;
+
+        if (definition.addSections)
+        {
+            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+            definition.spine is Query;
+
+            annotation { "Name" : "Section count"}
+            isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
         annotation { "Name" : "Control type" }
@@ -180,6 +201,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.derivativeInfo = derivatives;
         }
 
+        if (definition.addSections)
+        {
+            definition.spine = dissolveWires(qConstructionFilter(definition.spine, ConstructionObject.NO));
+        }
+
         if (!definition.matchVertices)
         {
             definition.vertices = qUnion([]);
@@ -211,7 +237,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
         shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
-        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW });
+        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW, addSections : false, sectionCount : 0 });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map

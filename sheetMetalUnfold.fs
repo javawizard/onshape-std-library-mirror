@@ -28,7 +28,7 @@ export const sheetMetalUnfold = defineSheetMetalFeature(function(context is Cont
     precondition
     {
         annotation { "Name" : "Parts or bends",
-                    "Filter" : (EntityType.BODY || EntityType.EDGE) && BodyType.SOLID  && SketchObject.NO}
+                    "Filter" : ActiveSheetMetal.YES && (EntityType.BODY || SheetMetalDefinitionEntityType.EDGE) && ModifiableEntityOnly.YES }
         definition.toUnfold is Query;
 
     }
@@ -45,7 +45,7 @@ export const sheetMetalRefold = defineSheetMetalFeature(function(context is Cont
     precondition
     {
         annotation { "Name" : "Parts or bends",
-                    "Filter" : (EntityType.BODY || EntityType.EDGE) && BodyType.SOLID  && SketchObject.NO}
+                    "Filter" : ActiveSheetMetal.YES && (EntityType.BODY || SheetMetalDefinitionEntityType.EDGE) && ModifiableEntityOnly.YES }
         definition.toRefold is Query;
 
     }

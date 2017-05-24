@@ -502,7 +502,19 @@ export enum FeatureScriptVersionNumber
     V578_FIX_DELETE_FACE_MODIFICATION,
     V579_FIT_SPLINE_ZERO_MAGNITUDE,
     V580_CORNER_BREAK_STABILIZATION,
-    V581_REMOVE_HELIX_CONTROL_VISIBILITY
+    V581_REMOVE_HELIX_CONTROL_VISIBILITY,
+    V582_MERGE_MAPS_BUG,
+    V583_AVOID_SKETCH_TEXT_TOUCHING,
+    V584_FILTER_FACES_IN_THICKEN,
+    V585_SHOW_TAPPED_DEPTH_UPDATE,
+    V586_DUPLICATE_EXTRUDE_TRANSFORM,
+    V587_SPINE_IN_LOFT,
+    V588_MERGE_IN_FILLET_FIX,
+    V589_STABLE_BREAK_REMOVAL,
+    V590_DEFER_SM_BODY_DELETE,
+    V591_BREAK_TOUCHING_WALL,
+    V592_LOFT_FS_CHANGES_IN_REL,
+    V593_MASTER_MODEL_DOC
 }
 
 /**
@@ -513,6 +525,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V581_REMOVE_HELIX_CONTROL_VISIBILITY;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V593_MASTER_MODEL_DOC;
 
 

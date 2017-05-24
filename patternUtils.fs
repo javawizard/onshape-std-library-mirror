@@ -190,7 +190,7 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                 }
                 catch (e)
                 {
-                    if (e.message == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+                    if (e is map && e.message == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
                     {
                         throw regenError(e.message, ["instanceFunction"]);
                     }

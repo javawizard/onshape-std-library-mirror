@@ -23,8 +23,9 @@ annotation { "Feature Type Name" : "Corner", "Filter Selector" : "allparts"}
 export const sheetMetalCorner = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Corner", "Filter" : (EntityType.EDGE || EntityType.VERTEX || EntityType.FACE)
-            && AllowFlattenedGeometry.YES && AllowEdgePoint.NO, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Corner", "MaxNumberOfPicks" : 1,
+                     "Filter" : (SheetMetalDefinitionEntityType.VERTEX || (SheetMetalDefinitionEntityType.EDGE && EntityType.EDGE))
+                                && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.corner is Query;
 
         annotation { "Name" : "Corner relief type", "Default" : SMCornerReliefStyle.RECTANGLE, "UIHint" : "SHOW_LABEL" }

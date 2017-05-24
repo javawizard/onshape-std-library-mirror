@@ -71,7 +71,8 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         {
             annotation { "Name" : "Faces to move",
                          "UIHint" : "SHOW_CREATE_SELECTION",
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                         "Filter" : (EntityType.FACE && (ActiveSheetMetal.NO || SheetMetalDefinitionEntityType.EDGE || SheetMetalDefinitionEntityType.FACE))
+                                    && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.moveFaces is Query;
         }
         else

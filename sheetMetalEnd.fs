@@ -20,7 +20,8 @@ annotation { "Feature Type Name" : "Finish sheet metal" }
 export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Sheet metal parts", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Sheet metal parts", "MaxNumberOfPicks" : 1,
+                     "Filter" : EntityType.BODY && ActiveSheetMetal.YES && ModifiableEntityOnly.YES }
         definition.sheetMetalParts is Query;
     }
     {

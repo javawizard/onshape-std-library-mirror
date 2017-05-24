@@ -523,30 +523,34 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
  */
 export function joinSurfaceBodies(context is Context, id is Id, matches is array, reconstructOp is function)
 {
+    const joinId = id + "join";
+
     var nMatches = size(matches);
     if (nMatches == 0)
-        throw regenError(ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
-
-    var tools = makeArray(nMatches * 2);
-    for (var i = 0; i < nMatches; i += 1)
     {
-        tools[i] = qOwnerBody(matches[i].topology1);
-        tools[nMatches + i] = qOwnerBody(matches[i].topology2);
+        reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
     }
-    const joinId = id + "join";
-    try
-    (
-     opBoolean(context, joinId, {
-        "allowSheets" : true,
-        "tools" : qUnion(tools),
-        "operationType" : BooleanOperationType.UNION,
-        "makeSolid" : false,
-        "eraseImprintedEdges" : true,
-        "matches" : matches
-    }));
-
-    processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
-    if (getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
+    else
+    {
+        var tools = makeArray(nMatches * 2);
+        for (var i = 0; i < nMatches; i += 1)
+        {
+            tools[i] = qOwnerBody(matches[i].topology1);
+            tools[nMatches + i] = qOwnerBody(matches[i].topology2);
+        }
+        try
+        (
+         opBoolean(context, joinId, {
+            "allowSheets" : true,
+            "tools" : qUnion(tools),
+            "operationType" : BooleanOperationType.UNION,
+            "makeSolid" : false,
+            "eraseImprintedEdges" : true,
+            "matches" : matches
+        }));
+        processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
+    }
+    if (nMatches == 0 || getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
     {
         const errorId = id + "errorEntities";
         reconstructOp(errorId);

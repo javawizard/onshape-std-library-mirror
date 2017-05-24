@@ -612,7 +612,13 @@ export function getModelParameters(context is Context, model is Query) returns m
 }
 
 /**
- * @internal
+ * Separates queries which are part of an active sheet metal model (either in the folded model or
+ * the flat pattern).
+ *
+ * @return {{
+ *      @field sheetMetalQueries {Query} : `targets` which are part of an active sheet metal model
+ *      @field nonSheetMetalQueries {Query} : `targets` which are not part of an active sheet metal model
+ * }}
  */
 export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
@@ -801,6 +807,11 @@ function adjustCornerBreakAttributes(context is Context, modifiedEntities is Que
 */
 export function removeCornerBreaksAtEdgeVertices(context is Context, edges is Query)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V589_STABLE_BREAK_REMOVAL))
+    {
+        edges = qEntityFilter(edges, EntityType.EDGE);
+    }
+
     for (var edge in evaluateQuery(context, edges))
     {
         removeCornerBreaksAtEnds(context, edge);
@@ -809,8 +820,17 @@ export function removeCornerBreaksAtEdgeVertices(context is Context, edges is Qu
 
 function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
 {
+    var adjacentFaces = qEdgeAdjacent(edgeQ, EntityType.FACE);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V589_STABLE_BREAK_REMOVAL))
+    {
+        if (size(evaluateQuery(context, adjacentFaces)) == 0)
+        {
+            return;
+        }
+    }
+
     var wallIds = [];
-    for (var wallAttribute in getSmObjectTypeAttributes(context, qEdgeAdjacent(edgeQ, EntityType.FACE), SMObjectType.WALL))
+    for (var wallAttribute in getSmObjectTypeAttributes(context, adjacentFaces, SMObjectType.WALL))
     {
         wallIds = append(wallIds, wallAttribute.attributeId);
     }

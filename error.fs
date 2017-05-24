@@ -378,6 +378,23 @@ export function featureHasNonTrivialStatus(context is Context, id is Id) returns
     return status != undefined && status.statusType != StatusType.OK;
 }
 
+/**
+ * @return: A string identifier for marking an error on an array parameter when using the `faultyParameters`
+ * argument in any of the functions in this module.
+ */
+export function faultyArrayParameterId(arrayParameter is string, itemIndex is number, innerParameter is string) returns string
+{
+    return arrayParameterId(arrayParameter, itemIndex, innerParameter);
+}
+
+/**
+ * @internal
+ */
+export function arrayParameterId(arrayParameter is string, itemIndex is number, innerParameter is string) returns string
+{
+    return arrayParameter ~ "[" ~ itemIndex ~ "]." ~ innerParameter;
+}
+
 /** @internal */
 enum StatusType {OK, ERROR, WARNING, INFO}
 

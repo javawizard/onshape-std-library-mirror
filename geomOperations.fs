@@ -667,3 +667,21 @@ export function opExtractWires(context is Context, id is Id, definition is map)
     return @opExtractWires(context, id, definition);
 }
 
+/**
+ * @internal
+ * Under development, not for general use.
+ *
+ * Assigns name to the entity. This will allow using qNamed() to query the entity.
+ * When historical queries are generated, qNamed() will be used as a shortcut.
+ * If definition.entity resolves to multiple entities, the operation completes with a warning status.
+ * @param id : @autocomplete `id + "nameEntity1"`
+ * @param definition {{
+ *      @field entity {Query} : The entity to be named.
+ *      @field entityName {string} : The name, should be unique in the part studio
+ * }}
+*/
+export function opNameEntity(context is Context, id is Id, definition is map)
+{
+    return @opNameEntity(context, id, definition);
+}
+

@@ -32,8 +32,8 @@ annotation { "Feature Type Name" : "Make joint", "Filter Selector" : "allparts",
 export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation {"Name" : "Edges to join as rip",
-                    "Filter" : EntityType.EDGE && BodyType.SOLID && ModifiableEntityOnly.YES,
+        annotation {"Name" : "Edges or side faces to join",
+                    "Filter" : SheetMetalDefinitionEntityType.EDGE && ModifiableEntityOnly.YES,
                     "MaxNumberOfPicks" : 2}
         definition.entities is Query;
 

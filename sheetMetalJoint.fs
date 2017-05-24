@@ -26,8 +26,8 @@ annotation { "Feature Type Name" : "Modify joint", "Filter Selector" : "allparts
 export const sheetMetalJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entity",
-                     "Filter" : (EntityType.FACE || EntityType.EDGE) && SketchObject.NO && BodyType.SOLID,
+        annotation { "Name" : "Joint",
+                     "Filter" : SheetMetalDefinitionEntityType.EDGE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES,
                      "MaxNumberOfPicks" : 1 }
         definition.entity is Query;
 

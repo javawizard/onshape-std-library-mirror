@@ -3,7 +3,32 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-
+/**
+ * Modules prefixed with "sheetMetal" here and below control functionality related to working with
+ * sheet metal models in Onshape.
+ *
+ * Sheet metal models are created with the [sheetMetalStart] feature. The geometry of these models
+ * is not modifiable with ordinary geometry operations, and an operation which attempts to modify a
+ * sheet metal model will always throw the error `ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED`
+ *
+ * Onshape's sheet metal operations are instead encapsulated in features defined with
+ * [defineSheetMetalFeature]. These features directly modify the underlying sheet metal master
+ * body, a hidden surface body not accessible from other features. The master body (along with
+ * [SMAttribute]s set on its entities) provides the information necessary for
+ * [updateSheetMetalGeometry] to build both sheet metal bodies: the 3D folded body and the
+ * flat pattern. The result is simultaneous sheet metal editing, where geometry and errors are
+ * always available to the end user on both the folded and the flat sheet metal models.
+ *
+ * Most custom features will function only on bodies which are not active sheet metal, because the
+ * feature's effects are not readily translatable from the folded model back to the flattened
+ * master model. A custom feature's user will typically discover this when an operation within the
+ * custom feature throws a `SHEET_METAL_PARTS_PROHIBITED` error, giving the user-facing message
+ * "Active sheet metal models are not allowed."
+ *
+ * Additionally, a custom feature's query parameter can disallow selection of entities from
+ * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
+ * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
+ */
 export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "✨");
 export import(path : "onshape/std/smreliefstyle.gen.fs", version : "✨");
 export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
@@ -20,10 +45,9 @@ import(path : "onshape/std/string.fs", version : "✨");
 /**
  * Sheet metal object definition attribute type.
  */
+export type SMAttribute typecheck canBeSMAttribute;
 
-export type SMAttribute typecheck canBeSMAttribute ;
-
- /**
+/**
  *  parameters in SMAttribute (e.g. radius in BEND, angle in JOINT, thickness in MODEL)
  *  are specified as maps @eg ```{
  *  value : {ValueWithUnits},

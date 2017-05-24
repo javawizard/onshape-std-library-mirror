@@ -338,6 +338,47 @@ export enum AllowFlattenedGeometry
 }
 
 /**
+ * Specifies whether the entities should belong to an active sheet metal model.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Sheet metal bodies", "Filter" : EntityType.BODY && ActiveSheetMetal.YES }
+ * definition.body is Query;
+ * ```
+ *
+ * @value YES : matches only entities which belong to an active sheet metal model
+ * @value NO  : matches only entities which do not belong to an active sheet metal model
+ */
+export enum ActiveSheetMetal
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies geometry corresponding to a certain type of topological entity in the sheet metal
+ * [master body](/FsDoc/library.html#module-sheetMetalAttribute.fs).
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Sheet metal definition edges", "Filter" : SheetMetalDefinitionEntityType.EDGE }
+ * definition.entities is Query;
+ * ```
+ *
+ * @value VERTEX : matches entities defined by a sheet metal master body vertex. This includes vertices, edges, and
+ * faces at the corners, bend ends, fillets, and chamfers of sheet metal models.
+ * @value EDGE : matches entities defined by a sheet metal master body edge. This includes edges and faces along the
+ * sides of sheet metal walls.
+ * @value FACE : matches entities defined by a sheet metal master body face. This includes faces of sheet metal walls.
+ */
+export enum SheetMetalDefinitionEntityType
+{
+    VERTEX,
+    EDGE,
+    FACE
+}
+
+/**
  * Specifies whether we allow modifiable only entities. It is default to `NO`.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
@@ -630,6 +671,19 @@ export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
     return { "queryType" : QueryType.CAP_ENTITY,
              "featureId" : featureId,
             "startCap" : isStartCap} as Query;
+}
+
+/**
+* @internal
+* Under development, not for general use.
+*
+* A query for looking up entities named by opNameTopology
+*/
+export function qNamed(name is string) returns Query
+{
+    return makeQuery({"queryType" : "NAMED",
+                      "name" : name,
+                      "historyType" : "CREATION"});
 }
 
 /** @internal */

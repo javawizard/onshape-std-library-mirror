@@ -92,7 +92,9 @@ annotation { "Feature Type Name" : "Flange",
 export const sheetMetalFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation { "Name" : "Edges to flange", "Filter" : (EntityType.EDGE && GeometryType.LINE && SketchObject.NO) && BodyType.SOLID && AllowFlattenedGeometry.YES}
+    annotation { "Name" : "Edges or side faces to flange",
+                 "Filter" : (SheetMetalDefinitionEntityType.EDGE && (GeometryType.LINE || GeometryType.PLANE))
+                            && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
     definition.edges is Query;
 
     annotation {"Name" : "Flange alignment", "UIHint" : "SHOW_LABEL"}

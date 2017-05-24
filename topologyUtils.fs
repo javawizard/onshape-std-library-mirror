@@ -49,10 +49,22 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
     const bodiesQ = qOwnerBody(query);
     const wireBodiesQ = qBodyType(bodiesQ, BodyType.WIRE);
     const nonWireBodies = qSubtraction(bodiesQ, wireBodiesQ);
-    if (size(evaluateQuery(context, nonWireBodies)) != 0)
+    var hasNonWireBodies = @size(evaluateQuery(context, nonWireBodies)) > 0;
+    var handleNonWireEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V588_MERGE_IN_FILLET_FIX);
+    if (!handleNonWireEdges)
+    {
+        // before the fix, return query unchanged if there are any laminar edges in query
+        // (even if it contained some edges from wire bodies, e.g. for fill surface)
+        if (hasNonWireBodies)
+        {
+            return query;
+        }
+    }
+    else if (@size(evaluateQuery(context, wireBodiesQ)) == 0) //there are no wire bodies, return query unchanged
     {
         return query;
     }
+
     var edges = evaluateQuery(context, dissolveWires(query));
     const edgeCount = size(edges);
     if (edgeCount == 0)
@@ -62,6 +74,14 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
 
     for (var index = 0; index < edgeCount; index += 1)
     {
+        if (handleNonWireEdges && hasNonWireBodies)
+        {
+            //if edge is not from a wire body, dont modify it
+            var ownerBody = qBodyType(qOwnerBody(edges[index]), BodyType.WIRE);
+            var isOwnerBodyWire = @size(evaluateQuery(context, ownerBody)) > 0;
+            if (!isOwnerBodyWire)
+                continue;
+        }
         var edgePoint = evEdgeTangentLine(context, {
                     "edge" : edges[index],
                     "parameter" : ON_EDGE_TEST_PARAMETER,

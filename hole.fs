@@ -1043,6 +1043,9 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     resultAttribute.tapSize = "";
     var tapSize;
     var tapPitch;
+    var isStandardComponentBasedHole = false;
+    var isStandardDrillBasedHole = false;
+    var standardSizeDesignation = undefined;
 
     var standardSpec = holeDefinition.standardTappedOrClearance;
     if (holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -1059,15 +1062,40 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             {
                 var matchResult = match(entry.value, ".*[Tt]apped.*");
                 resultAttribute.isTappedHole = matchResult.hasMatch;
+                isStandardComponentBasedHole = true;
+                if (!resultAttribute.isTappedHole)
+                {
+                    matchResult = match(entry.value, ".*[Dd]rilled.*");
+
+                    // drilled holes are based upon a drill size, not a component size
+                    if (matchResult.hasMatch)
+                    {
+                        isStandardComponentBasedHole = false;
+                        isStandardDrillBasedHole = true;
+                    }
+                }
             }
             else if (entry.key == "size")
             {
                 tapSize = entry.value;
+                standardSizeDesignation = tapSize;
             }
             else  if (entry.key == "pitch")
             {
                 tapPitch = entry.value;
             }
+        }
+    }
+
+    if (standardSizeDesignation != undefined)
+    {
+        if (isStandardComponentBasedHole)
+        {
+            resultAttribute.standardComponentSizeDesignation = standardSizeDesignation;
+        }
+        else if (isStandardDrillBasedHole)
+        {
+            resultAttribute.standardDrillSizeDesignation = standardSizeDesignation;
         }
     }
 
