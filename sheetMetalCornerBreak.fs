@@ -1,17 +1,17 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "581.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "593.0");
 
-import(path : "onshape/std/attributes.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
-import(path : "onshape/std/units.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/attributes.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "593.0");
+import(path : "onshape/std/units.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
 
 /**
  *  @internal
@@ -21,7 +21,7 @@ export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is
     precondition
     {
         annotation { "Name" : "Corners to break",
-                     "Filter" : (EntityType.EDGE || EntityType.VERTEX) && AllowEdgePoint.NO }
+                     "Filter" : SheetMetalDefinitionEntityType.VERTEX && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.entities is Query;
 
         annotation { "Name" : "Corner break style", "Default" : SMCornerBreakStyle.FILLET }
@@ -38,7 +38,7 @@ export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is
         }
 
         var definitionVertices = getDefinitionVertices(context, entityArray);
-        var wallIds = getWallIds(context, entityArray);
+        var wallIds = getWallIds(context, entityArray, definitionVertices);
 
         applyCornerBreaks(context, id, entityArray, definitionVertices, wallIds, definition.cornerBreakStyle, definition.range);
 
@@ -97,18 +97,32 @@ function getDefinitionVertices(context is Context, entityArray is array) returns
 
 /**
  * Get the underlying sheet metals walls associated with the supplied entities.  Throw an informative error if the supplied
- * entities have more than one associated wall.
+ * entities have more than one associated wall. entityArray and definitionVertices should be aligned arrays of the same size such that
+ * definitionVertices[i] is the associated underlying sheet metal vertex of entityArray[i].
  */
-function getWallIds(context is Context, entityArray is array) returns array
+function getWallIds(context is Context, entityArray is array, definitionVertices is array) returns array
 {
     var wallIds = [];
     var errorEntities = [];
-    for (var entity in entityArray)
+    for (var i = 0; i < size(entityArray); i += 1)
     {
+        var entity = entityArray[i];
+        var definitionVertex = definitionVertices[i];
+
         var adjacentFaceAssociations = getSMDefinitionEntities(context, qVertexAdjacent(entity, EntityType.FACE));
 
-        var associatedWall = evaluateQuery(context, qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.FACE));
-        var associatedEdges = evaluateQuery(context, qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.EDGE));
+        var associatedWallQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.FACE);
+        var associatedEdgesQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.EDGE);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V591_BREAK_TOUCHING_WALL))
+        {
+            // If the selected entity is vertex adjacent to a completely unrelated piece of sheet metal, such as the
+            // topology created by a move face up-to with no offset, make sure to filter out the topology unrelated to
+            // the corner in question
+            associatedWallQ = qIntersection([associatedWallQ, qVertexAdjacent(definitionVertex, EntityType.FACE)]);
+            associatedEdgesQ = qIntersection([associatedEdgesQ, qVertexAdjacent(definitionVertex, EntityType.EDGE)]);
+        }
+        var associatedWall = evaluateQuery(context, associatedWallQ);
+        var associatedEdges = evaluateQuery(context, associatedEdgesQ);
 
         var oneAssociatedWall = size(associatedWall) == 1;
         var twoAssociatedEdges = size(associatedEdges) == 2;

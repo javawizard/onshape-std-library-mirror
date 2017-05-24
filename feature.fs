@@ -1,19 +1,19 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "581.0");
-export import(path : "onshape/std/error.fs", version : "581.0");
-export import(path : "onshape/std/geomOperations.fs", version : "581.0");
-export import(path : "onshape/std/query.fs", version : "581.0");
+export import(path : "onshape/std/context.fs", version : "593.0");
+export import(path : "onshape/std/error.fs", version : "593.0");
+export import(path : "onshape/std/geomOperations.fs", version : "593.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/string.fs", version : "581.0");
-import(path : "onshape/std/transform.fs", version : "581.0");
-import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/string.fs", version : "593.0");
+import(path : "onshape/std/transform.fs", version : "593.0");
+import(path : "onshape/std/units.fs", version : "593.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -172,24 +172,48 @@ export function getCurrentSubfeatureId(context is Context) returns Id
  */
 export function recordParameters(context is Context, id is Id, definition is map)
 {
+    recordParameters(context, id, definition, undefined, undefined);
+}
+
+/**
+ * @param arrayParameter: A `string` of the enclosing array, or undefined if not an array parameter.
+ * @param itemIndex: A `number` index of the array item that definition represents, or undefined if not an array parameter.
+ */
+function recordParameters(context is Context, id is Id, definition is map, arrayParameter, itemIndex)
+{
     for (var paramEntry in definition)
     {
-        if (paramEntry.value is Query)
+        if (paramEntry.value is array)
         {
-            @recordQuery(context, id, { paramEntry.key : paramEntry.value });
+            // Doesn't handle nested arrays, which are not allowed in feature specs
+            for (var i = 0; i < @size(paramEntry.value); i += 1)
+            {
+                if (paramEntry.value[i] is map) {
+                    recordParameters(context, id, paramEntry.value[i], paramEntry.key, i);
+                }
+            }
         }
         else
         {
-            setFeatureComputedParameter(context, id, { "name" : paramEntry.key, "value" : paramEntry.value });
+            var parameterId = (arrayParameter == undefined) ? paramEntry.key : arrayParameterId(arrayParameter, itemIndex, paramEntry.key);
+            if (paramEntry.value is Query)
+            {
+                @recordQuery(context, id, { (parameterId) : paramEntry.value });
+            }
+            else
+            {
+                setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
+            }
         }
     }
 }
 
 /**
  * Associates a FeatureScript value with a given string. This value can then be referenced in a feature name using
- * the string. See the `variable` module for an example of this usage.
+ * the string. The provided value can be used in a feature name by including e.g. "#myValue" in the Feature
+ * Name Template.
  * @param definition {{
- *      @field name {string}
+ *      @field name {string} : @eg `myValue`
  *      @field value
  * }}
  */
@@ -444,5 +468,20 @@ function lastOperationId(context is Context) returns Id
 export function setExternalDisambiguation(context is Context, id is Id, query is Query)
 {
     @setExternalDisambiguation(context, id, {"entity" : query});
+}
+
+/**
+ * @internal
+ * Throws a regeneration error if the parameter specified is not a query for at least one
+ * entity, marking the given parameter as faulty.
+ */
+export function verifyNonemptyQuery(context is Context, definition is map,
+    parameterName is string, errorToReport is ErrorStringEnum)
+{
+    if (!(definition[parameterName] is Query)
+        || evaluateQuery(context, definition[parameterName]) == [])
+    {
+        throw regenError(errorToReport, [parameterName]);
+    }
 }
 

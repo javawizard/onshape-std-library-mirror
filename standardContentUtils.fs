@@ -1,12 +1,12 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/string.fs", version : "581.0");
-import(path : "onshape/std/units.fs", version : "581.0");
-export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/string.fs", version : "593.0");
+import(path : "onshape/std/units.fs", version : "593.0");
+export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "593.0");
 
 /*
  ******************************************
@@ -167,6 +167,29 @@ export predicate canBeParameterFilter(value)
 
 /**
  * @internal
+ * Option map definition used for standard content
+ * @type  {{
+ *        @field key {string} : the name of the option
+ *        @field value : the value of the option
+ *        }}
+ */
+export type OptionMap typecheck canBeOptionMap;
+
+/**
+ * @internal
+ * Typecheck for [OptionMap]
+ */
+export predicate canBeOptionMap(values)
+{
+    values is map;
+    for (var value in values)
+    {
+        value.key is string;
+    }
+}
+
+/**
+ * @internal
  * Total filter results for all parameters
  * @type {{
  *      @field parameters {array} : Array of ParameterFilter
@@ -174,6 +197,7 @@ export predicate canBeParameterFilter(value)
  *        @field key {string} : the name of the configuration parameter
  *        @field value {number} : the index into the parameters array containing this parameters' specification
  *      }}
+ *      @field options {map} : A mapping of OptionMap option types
  * }}
  */
 export type ContentFilter typecheck canBeContentFilter;
@@ -195,6 +219,11 @@ export predicate canBeContentFilter(value)
     {
         parameterIndex.key is string;
         parameterIndex.value is number;
+    }
+    value.options is map;
+    for (var option in value.options)
+    {
+      option is OptionMap;
     }
 }
 
@@ -234,7 +263,7 @@ export function scMakeFilterArray(parameters is ParameterSpecs) returns ContentF
         }
     }
 
-    return { "parameters" : parameterFilterArray, "parameterIndexes" : parameterIndexes } as ContentFilter;
+    return { "parameters" : parameterFilterArray, "parameterIndexes" : parameterIndexes, "options" : {} } as ContentFilter;
 }
 
 /**

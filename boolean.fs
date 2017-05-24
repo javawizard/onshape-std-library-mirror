@@ -1,27 +1,27 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "581.0");
-export import(path : "onshape/std/query.fs", version : "581.0");
-export import(path : "onshape/std/tool.fs", version : "581.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "593.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
+export import(path : "onshape/std/tool.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "581.0");
-import(path : "onshape/std/box.fs", version : "581.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/primitives.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
-import(path : "onshape/std/string.fs", version : "581.0");
-import(path : "onshape/std/transform.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/attributes.fs", version : "593.0");
+import(path : "onshape/std/box.fs", version : "593.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "593.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/primitives.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "593.0");
+import(path : "onshape/std/string.fs", version : "593.0");
+import(path : "onshape/std/transform.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -523,30 +523,34 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
  */
 export function joinSurfaceBodies(context is Context, id is Id, matches is array, reconstructOp is function)
 {
+    const joinId = id + "join";
+
     var nMatches = size(matches);
     if (nMatches == 0)
-        throw regenError(ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
-
-    var tools = makeArray(nMatches * 2);
-    for (var i = 0; i < nMatches; i += 1)
     {
-        tools[i] = qOwnerBody(matches[i].topology1);
-        tools[nMatches + i] = qOwnerBody(matches[i].topology2);
+        reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
     }
-    const joinId = id + "join";
-    try
-    (
-     opBoolean(context, joinId, {
-        "allowSheets" : true,
-        "tools" : qUnion(tools),
-        "operationType" : BooleanOperationType.UNION,
-        "makeSolid" : false,
-        "eraseImprintedEdges" : true,
-        "matches" : matches
-    }));
-
-    processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
-    if (getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
+    else
+    {
+        var tools = makeArray(nMatches * 2);
+        for (var i = 0; i < nMatches; i += 1)
+        {
+            tools[i] = qOwnerBody(matches[i].topology1);
+            tools[nMatches + i] = qOwnerBody(matches[i].topology2);
+        }
+        try
+        (
+         opBoolean(context, joinId, {
+            "allowSheets" : true,
+            "tools" : qUnion(tools),
+            "operationType" : BooleanOperationType.UNION,
+            "makeSolid" : false,
+            "eraseImprintedEdges" : true,
+            "matches" : matches
+        }));
+        processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
+    }
+    if (nMatches == 0 || getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
     {
         const errorId = id + "errorEntities";
         reconstructOp(errorId);

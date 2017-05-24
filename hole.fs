@@ -1,33 +1,33 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "581.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
-import(path : "onshape/std/box.fs", version : "581.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/coordSystem.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/extrude.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/mathUtils.fs", version : "581.0");
-import(path : "onshape/std/revolve.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
-import(path : "onshape/std/sketch.fs", version : "581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
-import(path : "onshape/std/tool.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
-import(path : "onshape/std/string.fs", version : "581.0");
-import(path : "onshape/std/holetables.gen.fs", version : "581.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "581.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "581.0");
-import(path : "onshape/std/cylinderCast.fs", version : "581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "581.0");
-import(path : "onshape/std/attributes.fs", version : "581.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "581.0");
-export import(path : "onshape/std/holeUtils.fs", version : "581.0");
+import(path : "onshape/std/boolean.fs", version : "593.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "593.0");
+import(path : "onshape/std/box.fs", version : "593.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/coordSystem.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/extrude.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/mathUtils.fs", version : "593.0");
+import(path : "onshape/std/revolve.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "593.0");
+import(path : "onshape/std/sketch.fs", version : "593.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
+import(path : "onshape/std/tool.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
+import(path : "onshape/std/string.fs", version : "593.0");
+import(path : "onshape/std/holetables.gen.fs", version : "593.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "593.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "593.0");
+import(path : "onshape/std/cylinderCast.fs", version : "593.0");
+import(path : "onshape/std/curveGeometry.fs", version : "593.0");
+import(path : "onshape/std/attributes.fs", version : "593.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "593.0");
+export import(path : "onshape/std/holeUtils.fs", version : "593.0");
 
 
 /**
@@ -1043,6 +1043,9 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     resultAttribute.tapSize = "";
     var tapSize;
     var tapPitch;
+    var isStandardComponentBasedHole = false;
+    var isStandardDrillBasedHole = false;
+    var standardSizeDesignation = undefined;
 
     var standardSpec = holeDefinition.standardTappedOrClearance;
     if (holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -1059,15 +1062,40 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
             {
                 var matchResult = match(entry.value, ".*[Tt]apped.*");
                 resultAttribute.isTappedHole = matchResult.hasMatch;
+                isStandardComponentBasedHole = true;
+                if (!resultAttribute.isTappedHole)
+                {
+                    matchResult = match(entry.value, ".*[Dd]rilled.*");
+
+                    // drilled holes are based upon a drill size, not a component size
+                    if (matchResult.hasMatch)
+                    {
+                        isStandardComponentBasedHole = false;
+                        isStandardDrillBasedHole = true;
+                    }
+                }
             }
             else if (entry.key == "size")
             {
                 tapSize = entry.value;
+                standardSizeDesignation = tapSize;
             }
             else  if (entry.key == "pitch")
             {
                 tapPitch = entry.value;
             }
+        }
+    }
+
+    if (standardSizeDesignation != undefined)
+    {
+        if (isStandardComponentBasedHole)
+        {
+            resultAttribute.standardComponentSizeDesignation = standardSizeDesignation;
+        }
+        else if (isStandardDrillBasedHole)
+        {
+            resultAttribute.standardDrillSizeDesignation = standardSizeDesignation;
         }
     }
 

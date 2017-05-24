@@ -1,21 +1,21 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "581.0");
-export import(path : "onshape/std/query.fs", version : "581.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "593.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/math.fs", version : "581.0");
-import(path : "onshape/std/matrix.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/math.fs", version : "593.0");
+import(path : "onshape/std/matrix.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -31,7 +31,9 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
     precondition
     {
         annotation { "Name" : "Entities to chamfer",
-                     "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                     "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
+                                || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
+                                && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
                      "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 

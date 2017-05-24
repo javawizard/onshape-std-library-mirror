@@ -1,30 +1,30 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
-export import(path : "onshape/std/query.fs", version : "581.0");
-export import(path : "onshape/std/tool.fs", version : "581.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "593.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
+export import(path : "onshape/std/tool.fs", version : "593.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "581.0");
+export import(path : "onshape/std/manipulator.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "581.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "581.0");
-import(path : "onshape/std/box.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/coordSystem.fs", version : "581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "581.0");
-import(path : "onshape/std/draft.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/mathUtils.fs", version : "581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
-import(path : "onshape/std/transform.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
+import(path : "onshape/std/boolean.fs", version : "593.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "593.0");
+import(path : "onshape/std/box.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/coordSystem.fs", version : "593.0");
+import(path : "onshape/std/curveGeometry.fs", version : "593.0");
+import(path : "onshape/std/draft.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/mathUtils.fs", version : "593.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
+import(path : "onshape/std/transform.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -201,7 +201,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         else if (definition.endBound == BoundingType.UP_TO_BODY)
         {
             annotation { "Name" : "Up to surface or part",
-                         "Filter" : EntityType.BODY && SketchObject.NO,
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
                          "MaxNumberOfPicks" : 1 }
             definition.endBoundEntityBody is Query;
         }
@@ -383,14 +383,17 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         if (definition.endBound == BoundingType.UP_TO_SURFACE)
         {
+            verifyNonemptyQuery(context, definition, "endBoundEntityFace", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_SURFACE);
             definition.endBoundEntity = definition.endBoundEntityFace;
         }
         else if (definition.endBound == BoundingType.UP_TO_BODY)
         {
+            verifyNonemptyQuery(context, definition, "endBoundEntityBody", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_BODY);
             definition.endBoundEntity = definition.endBoundEntityBody;
         }
         else if (definition.endBound == BoundingType.UP_TO_VERTEX)
         {
+            verifyNonemptyQuery(context, definition, "endBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
             vertexPlaneId = id + "vertexPlane";
             definition.endBoundEntity = createVertexBoundaryPlane(context, definition, vertexPlaneId);
             definition.endBound = BoundingType.UP_TO_SURFACE;
@@ -429,14 +432,17 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
             if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE)
             {
+                verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityFace", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_SURFACE);
                 definition.secondDirectionBoundEntity = definition.secondDirectionBoundEntityFace;
             }
             else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY)
             {
+                verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityBody", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_BODY);
                 definition.secondDirectionBoundEntity = definition.secondDirectionBoundEntityBody;
             }
             else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
             {
+                verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
                 secondVertexPlaneId = id + "secondVertexPlane";
                 definition.secondDirectionBoundEntity = createVertexBoundaryPlane(context, definition, secondVertexPlaneId);
                 definition.secondDirectionBound = SecondDirectionBoundingType.UP_TO_SURFACE;
@@ -473,7 +479,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         {
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
-        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD && !definition.hasSecondDirection)
+        else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
             var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
             joinSurfaceBodies(context, id, matches, reconstructOp);

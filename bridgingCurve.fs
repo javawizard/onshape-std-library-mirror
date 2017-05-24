@@ -1,14 +1,14 @@
-FeatureScript 581; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/coordSystem.fs", version : "581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/manipulator.fs", version : "581.0");
-import(path : "onshape/std/math.fs", version : "581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
-import(path : "onshape/std/vector.fs", version : "581.0");
+FeatureScript 593; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/coordSystem.fs", version : "593.0");
+import(path : "onshape/std/curveGeometry.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/manipulator.fs", version : "593.0");
+import(path : "onshape/std/math.fs", version : "593.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
+import(path : "onshape/std/vector.fs", version : "593.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side

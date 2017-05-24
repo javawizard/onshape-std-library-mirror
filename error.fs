@@ -1,15 +1,15 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "581.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "581.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
+import(path : "onshape/std/context.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -376,6 +376,23 @@ export function featureHasNonTrivialStatus(context is Context, id is Id) returns
 {
     var status is FeatureStatus = getFeatureStatus(context, id);
     return status != undefined && status.statusType != StatusType.OK;
+}
+
+/**
+ * @return: A string identifier for marking an error on an array parameter when using the `faultyParameters`
+ * argument in any of the functions in this module.
+ */
+export function faultyArrayParameterId(arrayParameter is string, itemIndex is number, innerParameter is string) returns string
+{
+    return arrayParameterId(arrayParameter, itemIndex, innerParameter);
+}
+
+/**
+ * @internal
+ */
+export function arrayParameterId(arrayParameter is string, itemIndex is number, innerParameter is string) returns string
+{
+    return arrayParameter ~ "[" ~ itemIndex ~ "]." ~ innerParameter;
 }
 
 /** @internal */

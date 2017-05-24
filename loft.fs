@@ -1,24 +1,24 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "581.0");
-export import(path : "onshape/std/tool.fs", version : "581.0");
+export import(path : "onshape/std/query.fs", version : "593.0");
+export import(path : "onshape/std/tool.fs", version : "593.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/boolean.fs", version : "581.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
-import(path : "onshape/std/transform.fs", version : "581.0");
-import(path : "onshape/std/units.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
-import(path : "onshape/std/vector.fs", version : "581.0");
-import(path : "onshape/std/topologyUtils.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/boolean.fs", version : "593.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
+import(path : "onshape/std/transform.fs", version : "593.0");
+import(path : "onshape/std/units.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
+import(path : "onshape/std/vector.fs", version : "593.0");
+import(path : "onshape/std/topologyUtils.fs", version : "593.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -49,6 +49,15 @@ export enum LoftShapeControlType
     annotation { "Name" : "End conditions" }
     ADD_END_CONDITIONS
 }
+
+/**
+ * Internal
+ */
+const LOFT_INTERNAL_SECTIONS_COUNT =
+{
+    (unitless) : [1, 5, 50]
+}   as IntegerBoundSpec;
+
 
 /**
  * Feature performing an [opLoft].
@@ -87,6 +96,18 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                                     (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET)))
                                     && ConstructionObject.NO }
             definition.wireProfiles is Query;
+        }
+
+        annotation { "Name" : "Path" }
+        definition.addSections is boolean;
+
+        if (definition.addSections)
+        {
+            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+            definition.spine is Query;
+
+            annotation { "Name" : "Section count"}
+            isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
         annotation { "Name" : "Control type" }
@@ -180,6 +201,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.derivativeInfo = derivatives;
         }
 
+        if (definition.addSections)
+        {
+            definition.spine = dissolveWires(qConstructionFilter(definition.spine, ConstructionObject.NO));
+        }
+
         if (!definition.matchVertices)
         {
             definition.vertices = qUnion([]);
@@ -211,7 +237,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
         shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
-        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW });
+        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW, addSections : false, sectionCount : 0 });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map

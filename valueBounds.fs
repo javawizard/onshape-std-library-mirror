@@ -1,4 +1,4 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 581; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/math.fs", version : "581.0");
-import(path : "onshape/std/error.fs", version : "581.0");
-export import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/math.fs", version : "593.0");
+import(path : "onshape/std/error.fs", version : "593.0");
+export import(path : "onshape/std/units.fs", version : "593.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean

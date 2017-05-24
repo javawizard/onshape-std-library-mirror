@@ -1,29 +1,29 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "581.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "581.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "581.0");
-import(path : "onshape/std/containers.fs", version : "581.0");
-import(path : "onshape/std/coordSystem.fs", version : "581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "581.0");
-import(path : "onshape/std/evaluate.fs", version : "581.0");
-import(path : "onshape/std/feature.fs", version : "581.0");
-import(path : "onshape/std/math.fs", version : "581.0");
-import(path : "onshape/std/manipulator.fs", version : "581.0");
-import(path : "onshape/std/query.fs", version : "581.0");
-import(path : "onshape/std/sketch.fs", version : "581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "581.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "581.0");
-import(path : "onshape/std/string.fs", version : "581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "581.0");
-import(path : "onshape/std/tool.fs", version : "581.0");
-import(path : "onshape/std/valueBounds.fs", version : "581.0");
-import(path : "onshape/std/vector.fs", version : "581.0");
-import(path : "onshape/std/topologyUtils.fs", version : "581.0");
-import(path : "onshape/std/transform.fs", version : "581.0");
+import(path : "onshape/std/attributes.fs", version : "593.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "593.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "593.0");
+import(path : "onshape/std/containers.fs", version : "593.0");
+import(path : "onshape/std/coordSystem.fs", version : "593.0");
+import(path : "onshape/std/curveGeometry.fs", version : "593.0");
+import(path : "onshape/std/evaluate.fs", version : "593.0");
+import(path : "onshape/std/feature.fs", version : "593.0");
+import(path : "onshape/std/math.fs", version : "593.0");
+import(path : "onshape/std/manipulator.fs", version : "593.0");
+import(path : "onshape/std/query.fs", version : "593.0");
+import(path : "onshape/std/sketch.fs", version : "593.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "593.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "593.0");
+import(path : "onshape/std/string.fs", version : "593.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
+import(path : "onshape/std/tool.fs", version : "593.0");
+import(path : "onshape/std/valueBounds.fs", version : "593.0");
+import(path : "onshape/std/vector.fs", version : "593.0");
+import(path : "onshape/std/topologyUtils.fs", version : "593.0");
+import(path : "onshape/std/transform.fs", version : "593.0");
 
 
 
@@ -612,7 +612,13 @@ export function getModelParameters(context is Context, model is Query) returns m
 }
 
 /**
- * @internal
+ * Separates queries which are part of an active sheet metal model (either in the folded model or
+ * the flat pattern).
+ *
+ * @return {{
+ *      @field sheetMetalQueries {Query} : `targets` which are part of an active sheet metal model
+ *      @field nonSheetMetalQueries {Query} : `targets` which are not part of an active sheet metal model
+ * }}
  */
 export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
@@ -801,6 +807,11 @@ function adjustCornerBreakAttributes(context is Context, modifiedEntities is Que
 */
 export function removeCornerBreaksAtEdgeVertices(context is Context, edges is Query)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V589_STABLE_BREAK_REMOVAL))
+    {
+        edges = qEntityFilter(edges, EntityType.EDGE);
+    }
+
     for (var edge in evaluateQuery(context, edges))
     {
         removeCornerBreaksAtEnds(context, edge);
@@ -809,8 +820,17 @@ export function removeCornerBreaksAtEdgeVertices(context is Context, edges is Qu
 
 function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
 {
+    var adjacentFaces = qEdgeAdjacent(edgeQ, EntityType.FACE);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V589_STABLE_BREAK_REMOVAL))
+    {
+        if (size(evaluateQuery(context, adjacentFaces)) == 0)
+        {
+            return;
+        }
+    }
+
     var wallIds = [];
-    for (var wallAttribute in getSmObjectTypeAttributes(context, qEdgeAdjacent(edgeQ, EntityType.FACE), SMObjectType.WALL))
+    for (var wallAttribute in getSmObjectTypeAttributes(context, adjacentFaces, SMObjectType.WALL))
     {
         wallIds = append(wallIds, wallAttribute.attributeId);
     }

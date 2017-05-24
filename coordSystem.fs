@@ -1,10 +1,10 @@
-FeatureScript 581; /* Automatically generated version */
+FeatureScript 593; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "581.0");
-import(path : "onshape/std/units.fs", version : "581.0");
+import(path : "onshape/std/mathUtils.fs", version : "593.0");
+import(path : "onshape/std/units.fs", version : "593.0");
 
 /**
  * A right-handed Cartesian coordinate system. Used for converting points and
