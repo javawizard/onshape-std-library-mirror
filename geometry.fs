@@ -51,6 +51,7 @@ export import(path : "onshape/std/cpoint.fs", version : "✨");
 export import(path : "onshape/std/deleteBodies.fs", version : "✨");
 export import(path : "onshape/std/deleteFace.fs", version : "✨");
 export import(path : "onshape/std/draft.fs", version : "✨");
+export import(path : "onshape/std/enclose.fs", version : "✨");
 export import(path : "onshape/std/extrude.fs", version : "✨");
 export import(path : "onshape/std/fillet.fs", version : "✨");
 export import(path : "onshape/std/fitSpline.fs", version : "✨");

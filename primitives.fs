@@ -212,8 +212,8 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
     {
         is3dLengthVector(definition.bottomCenter);
         is3dLengthVector(definition.topCenter);
-        isLength(definition.bottomRadius, NONNEGATIVE_LENGTH_BOUNDS);
-        isLength(definition.topRadius, NONNEGATIVE_LENGTH_BOUNDS);
+        isLength(definition.bottomRadius, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+        isLength(definition.topRadius, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
     }
     {
         const sketchId = id + "sketch";

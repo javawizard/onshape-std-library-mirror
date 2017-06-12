@@ -864,20 +864,87 @@ function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
 */
 export function sheetMetalExtendSheetBodyCall(context is Context, id is Id, definition is map)
 {
-    var vertexToTrackAndAttribute = {};
-    for (var vertexQ in evaluateQuery(context, qVertexAdjacent(definition.entities, EntityType.VERTEX)))
+    var vertexToTrackingAndAttribute = collectAttributesOfAdjacentVertices(context, definition.entities);
+    var edgeToTrackingAndAssociation = removeAssociationsFromFreeEdges(context, definition.entities);
+    opExtendSheetBody(context, id, definition);
+    restoreAssociations(context, edgeToTrackingAndAssociation);
+    adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
+}
+
+function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) returns map
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V599_SM_ASSOCIATION_FIX))
+    {
+        return {};
+    }
+    var edgeToTrackingAndAssociation = {};
+    var adjacentEdgesQ = qVertexAdjacent(edgesIn, EntityType.EDGE);
+    for (var edge in evaluateQuery(context, adjacentEdgesQ))
+    {
+        if (edgeIsTwoSided(context, edge) || size(getAttributes(context, {
+                "entities" : edge,
+                "attributePattern" : asSMAttribute({})})) > 0)
+        {
+            continue;
+        }
+        var associations = getAttributes(context, {
+                "entities" : edge,
+                "attributePattern" : {} as SMAssociationAttribute});
+        if (size(associations) == 1)
+        {
+            edgeToTrackingAndAssociation[edge] = {
+                "tracking" : startTracking(context, { 'subquery' : edge,
+                                                      'trackPartialDependency' : true}),
+                "association" : associations[0]};
+            removeAttributes(context, {
+                "entities" : edge,
+                "attributePattern" : {} as SMAssociationAttribute});
+        }
+    }
+    return edgeToTrackingAndAssociation;
+}
+
+function restoreAssociations(context is Context, edgeToTrackingAndAssociation is map)
+{
+    for (var edgeData in edgeToTrackingAndAssociation)
+    {
+        var edgesAfter = evaluateQuery(context, qUnion([edgeData.key, edgeData.value.tracking]));
+        for (var edge in edgesAfter)
+        {
+            var associations = getAttributes(context, {
+                "entities" : edge,
+                "attributePattern" : {} as SMAssociationAttribute});
+            if (size(associations) == 0)
+            {
+                setAttribute(context, {
+                        "entities" : edge,
+                        "attribute" : edgeData.value.association
+                });
+            }
+        }
+    }
+}
+
+function collectAttributesOfAdjacentVertices(context is Context, edgesIn is Query) returns map
+{
+    var vertexToTrackingAndAttribute = {};
+    for (var vertexQ in evaluateQuery(context, qVertexAdjacent(edgesIn, EntityType.VERTEX)))
     {
         var attribute = getCornerAttribute(context, vertexQ);
         if (attribute != undefined &&
             attribute.cornerBreaks != undefined &&
             size(attribute.cornerBreaks) > 0)
         {
-            vertexToTrackAndAttribute[vertexQ] = { "tracking" : startTracking(context, vertexQ), "attribute" : attribute};
+            vertexToTrackingAndAttribute[vertexQ] = { "tracking" : startTracking(context, vertexQ), "attribute" : attribute};
         }
     }
-    opExtendSheetBody(context, id, definition);
+    return vertexToTrackingAndAttribute;
+}
+
+function adjustCornerBreakAttributes(context is Context, id is Id, vertexToTrackingAndAttribute is map)
+{
     var counter = 0;
-    for (var vertexData in vertexToTrackAndAttribute)
+    for (var vertexData in vertexToTrackingAndAttribute)
     {
         var afterVertices = evaluateQuery(context, qUnion([vertexData.key, vertexData.value.tracking]));
         if (size(afterVertices) == 0)

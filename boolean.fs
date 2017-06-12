@@ -16,6 +16,7 @@ import(path : "onshape/std/clashtype.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/primitives.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -394,15 +395,33 @@ export function filterJoinableSurfaceEdges(edges is Query) returns Query
 /**
  * @internal
  */
-function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, parentEdge is Query, transform is Transform) returns Query
+function filterOverlappingEdges(context is Context, targetEdge is Query, edges is Query, transform is Transform) returns Query
 {
-    var midPoint = evEdgeTangentLine(context, {
-        "edge" : parentEdge,
-        "parameter" : 0.5
+    var useTolerantCheck = isAtVersionOrLater(context, FeatureScriptVersionNumber.V607_HOLE_FEATURE_FIT_UPDATE);
+
+    var midPoint = transform * evEdgeTangentLine(context, {
+        "edge" : targetEdge,
+        "parameter" : 0.5,
+        "arcLengthParameterization" : !useTolerantCheck
     }).origin;
 
-    var track = qContainsPoint(filterJoinableSurfaceEdges(startTracking(context,
-                {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform * midPoint);
+    if (useTolerantCheck)
+    {
+        return qWithinRadius(edges, midPoint, TOLERANCE.booleanDefaultTolerance * meter);
+    }
+    else
+    {
+        return qContainsPoint(edges, midPoint);
+    }
+}
+
+/**
+ * @internal
+ */
+function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, parentEdge is Query, transform is Transform) returns Query
+{
+    var track = filterOverlappingEdges(context, parentEdge, filterJoinableSurfaceEdges(startTracking(context,
+                {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform);
     var trackedEdges = evaluateQuery(context, qSubtraction(track, qCreatedBy(id)));
 
     if (size(trackedEdges) == 1)
@@ -482,12 +501,7 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
     var nMatches = 0;
     for (var i = 0; i < nCreatedEdges; i += 1)
     {
-        var midPoint = evEdgeTangentLine(context, {
-            "edge" : createdEdges[i],
-            "parameter" : 0.5
-        }).origin;
-
-        var originals = evaluateQuery(context, qContainsPoint(qIntersection([originatingEdges, qDependency(createdEdges[i])]), midPoint));
+        var originals = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([originatingEdges, qDependency(createdEdges[i])]), identityTransform()));
         var nOriginalMatches = size(originals);
         if (nOriginalMatches == 1)
         {
@@ -496,7 +510,7 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
         }
         else if (nOriginalMatches == 0)
         {
-            var originalEdge = evaluateQuery(context, qContainsPoint(qIntersection([nonMatchedOriginatingEdges, qDependency(createdEdges[i])]), inverse(transform) * midPoint));
+            var originalEdge = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([nonMatchedOriginatingEdges, qDependency(createdEdges[i])]), inverse(transform)));
             if (size(originalEdge) == 1)
             {
                 var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, originalEdge[0], transform));

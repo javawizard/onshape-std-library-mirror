@@ -203,7 +203,16 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.addSections)
         {
-            definition.spine = dissolveWires(qConstructionFilter(definition.spine, ConstructionObject.NO));
+            var spineNoConstructionQuery = qConstructionFilter(definition.spine, ConstructionObject.NO);
+            if (size(evaluateQuery(context, spineNoConstructionQuery)) == 0 && size(evaluateQuery(context, definition.spine)) != 0)
+            {
+                throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["spine"]);
+            }
+            if (definition.shapeControl == LoftShapeControlType.ADD_GUIDES && size(evaluateQuery(context, definition.spine)) > 0 && size(definition.guideSubqueries) > 3 )
+            {
+                throw regenError(ErrorStringEnum.LOFT_SPINE_TOO_MANY_GUIDES, ["spine", "guides"]);
+            }
+            definition.spine = dissolveWires(spineNoConstructionQuery);
         }
 
         if (!definition.matchVertices)

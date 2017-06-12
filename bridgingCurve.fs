@@ -391,6 +391,51 @@ function inferVertex(context is Context, edge is Query, otherSide is Query) retu
     return inferred;
 }
 
+/**
+ * This will find the frame that exactly matches the point passed in. It's not useful in general cases and is deprecated.
+ * It will reverse the direction of the start frame to point out of the edge
+ */
+function findMatchingEndFrame(point is Vector, startFrame is EdgeCurvatureResult, endFrame is EdgeCurvatureResult)
+{
+    if (tolerantEquals(startFrame.frame.origin, point))
+    {
+        // This is the frame at the start of the edge and we want a frame that points out of the edge
+        // so we invert the zAxis (which is the tangent, see curvatureFrameTangent)
+        var frame = startFrame;
+        frame.frame.zAxis *= -1;
+        return frame;
+    }
+    else if (tolerantEquals(endFrame.frame.origin, point))
+    {
+        return endFrame;
+    }
+    else
+    {
+        return undefined;
+    }
+}
+
+/**
+ * This will find the frame that is closest to the point passed in..
+ * It will reverse the direction of the start frame to point out of the edge
+ */
+function findClosestEndFrame(point is Vector, startFrame is EdgeCurvatureResult, endFrame is EdgeCurvatureResult) returns EdgeCurvatureResult
+{
+    const startDistance = squaredNorm(startFrame.frame.origin - point);
+    const endDistance = squaredNorm(endFrame.frame.origin - point);
+    if (startDistance < endDistance)
+    {
+        var frame = startFrame;
+        frame.frame.zAxis *= -1;
+        return frame;
+    }
+    else
+    {
+        return endFrame;
+    }
+}
+
+
 function getDataForSide(context is Context, side is Query, match is BridgingCurveMatchType, sideName is string, otherSide is Query) returns map
 {
     var points = qEntityFilter(side, EntityType.VERTEX);
@@ -428,18 +473,15 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
                     "edge" : edges,
                     "parameters" : [0, 1],
                     "curveLengthParameterization" : false });
-        if (tolerantEquals(frames[0].frame.origin, point))
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
         {
-            // This is the frame at the start of the edge and we want a frame that points out of the edge
-            // so we invert the zAxis (which is the tangent, see curvatureFrameTangent)
-            frame = frames[0];
-            frame.frame.zAxis *= -1;
-        }
-        else if (tolerantEquals(frames[1].frame.origin, point))
-        {
-            frame = frames[1];
+            frame = findClosestEndFrame(point, frames[0], frames[1]);
         }
         else
+        {
+            frame = findMatchingEndFrame(point, frames[0], frames[1]);
+        }
+        if (frame == undefined)
         {
             throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_AT_END_OF_EDGE, [sideName]);
         }

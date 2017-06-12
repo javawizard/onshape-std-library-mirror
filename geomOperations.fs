@@ -109,6 +109,20 @@ export function opDeleteFace(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
+ * Takes in a set of bodies and faces and creates solid bodies for the enclosed regions.
+ * @param id : @autocomplete `id + "enclose"`
+ * @param definition {{
+ *      @field entities {Query} : Bodies and faces for enclosure.
+ *      @field mergeResults {boolean} : If true, all regions will be joined if possible.
+ * }}
+ */
+export function opEnclose(context is Context, id is Id, definition is map)
+{
+    return @opEnclose(context, id, definition);
+}
+
+/**
  * Applies a given draft angle to faces.
  * @param id : @autocomplete `id + "draft1"`
  * @param definition {{
