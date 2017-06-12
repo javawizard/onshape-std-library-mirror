@@ -1,4 +1,4 @@
-FeatureScript 593; /* Automatically generated version */
+FeatureScript 608; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -712,7 +712,14 @@ export enum ErrorStringEnum
     LOFT_SPINE_PROFILES_NOT_IN_ORDER,
     LOFT_SELECT_SPINE,
     DOCUMENT_NOT_FOUND,
-    ELEMENT_NOT_FOUND
+    ELEMENT_NOT_FOUND,
+    ENCLOSE_NO_REGION,
+    ENCLOSE_CANNOT_MERGE_REGIONS,
+    ENCLOSE_CANNOT_CREATE_SOLID,
+    ENCLOSE_NOTHING_SELECTED,
+    ENCLOSE_UNKNOWN_ERROR,
+    ACCESS_NOT_ALLOWED,
+    LOFT_SPINE_TOO_MANY_GUIDES
 }
 
 

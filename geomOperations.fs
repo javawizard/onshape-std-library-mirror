@@ -1,4 +1,4 @@
-FeatureScript 593; /* Automatically generated version */
+FeatureScript 608; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 593; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "593.0");
-import(path : "onshape/std/curveGeometry.fs", version : "593.0");
+import(path : "onshape/std/context.fs", version : "608.0");
+import(path : "onshape/std/curveGeometry.fs", version : "608.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "593.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "593.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "608.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "608.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "593.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "608.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -106,6 +106,20 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
 export function opDeleteFace(context is Context, id is Id, definition is map)
 {
     return @opDeleteFace(context, id, definition);
+}
+
+/**
+ * @internal
+ * Takes in a set of bodies and faces and creates solid bodies for the enclosed regions.
+ * @param id : @autocomplete `id + "enclose"`
+ * @param definition {{
+ *      @field entities {Query} : Bodies and faces for enclosure.
+ *      @field mergeResults {boolean} : If true, all regions will be joined if possible.
+ * }}
+ */
+export function opEnclose(context is Context, id is Id, definition is map)
+{
+    return @opEnclose(context, id, definition);
 }
 
 /**

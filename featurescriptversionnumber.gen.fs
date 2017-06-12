@@ -1,4 +1,4 @@
-FeatureScript 593; /* Automatically generated version */
+FeatureScript 608; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -514,7 +514,20 @@ export enum FeatureScriptVersionNumber
     V590_DEFER_SM_BODY_DELETE,
     V591_BREAK_TOUCHING_WALL,
     V592_LOFT_FS_CHANGES_IN_REL,
-    V593_MASTER_MODEL_DOC
+    V593_MASTER_MODEL_DOC,
+    V596_ENCLOSE_FEATURE,
+    V597_VERTEX_TOL_LIMITS,
+    V598_EXTRUDE_NO_FLAT,
+    V599_SM_ASSOCIATION_FIX,
+    V600_PIERCE_COEDGE,
+    V601_CHECK_IMPORT_NAMES,
+    V602_TRACE_THROUGH_COPY,
+    V603_SUBQUERY_EVALUATION,
+    V604_DCM_VERSION_67_5_1,
+    V605_EXTRUDE_CAP_ENTITIES,
+    V606_TOLERANT_BRIDGING_CURVE,
+    V607_HOLE_FEATURE_FIT_UPDATE,
+    V608_MERGE_FROM_TOOLS
 }
 
 /**
@@ -525,6 +538,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V593_MASTER_MODEL_DOC;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V608_MERGE_FROM_TOOLS;
 
 

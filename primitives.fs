@@ -1,22 +1,22 @@
-FeatureScript 593; /* Automatically generated version */
+FeatureScript 608; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "593.0");
+export import(path : "onshape/std/query.fs", version : "608.0");
 
 // Imports used internally
-import(path : "onshape/std/boundingtype.gen.fs", version : "593.0");
-import(path : "onshape/std/containers.fs", version : "593.0");
-import(path : "onshape/std/curveGeometry.fs", version : "593.0");
-import(path : "onshape/std/evaluate.fs", version : "593.0");
-import(path : "onshape/std/feature.fs", version : "593.0");
-import(path : "onshape/std/mathUtils.fs", version : "593.0");
-import(path : "onshape/std/sketch.fs", version : "593.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "593.0");
-import(path : "onshape/std/tool.fs", version : "593.0");
-import(path : "onshape/std/valueBounds.fs", version : "593.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "608.0");
+import(path : "onshape/std/containers.fs", version : "608.0");
+import(path : "onshape/std/curveGeometry.fs", version : "608.0");
+import(path : "onshape/std/evaluate.fs", version : "608.0");
+import(path : "onshape/std/feature.fs", version : "608.0");
+import(path : "onshape/std/mathUtils.fs", version : "608.0");
+import(path : "onshape/std/sketch.fs", version : "608.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "608.0");
+import(path : "onshape/std/tool.fs", version : "608.0");
+import(path : "onshape/std/valueBounds.fs", version : "608.0");
 
 /**
  * Create a cube of a specified size, with one corner on the origin.
@@ -212,8 +212,8 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
     {
         is3dLengthVector(definition.bottomCenter);
         is3dLengthVector(definition.topCenter);
-        isLength(definition.bottomRadius, NONNEGATIVE_LENGTH_BOUNDS);
-        isLength(definition.topRadius, NONNEGATIVE_LENGTH_BOUNDS);
+        isLength(definition.bottomRadius, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+        isLength(definition.topRadius, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
     }
     {
         const sketchId = id + "sketch";

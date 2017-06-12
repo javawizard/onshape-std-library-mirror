@@ -1,16 +1,16 @@
-FeatureScript 593; /* Automatically generated version */
+FeatureScript 608; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-import(path : "onshape/std/attributes.fs", version : "593.0");
-import(path : "onshape/std/containers.fs", version : "593.0");
-import(path : "onshape/std/error.fs", version : "593.0");
-import(path : "onshape/std/feature.fs", version : "593.0");
-import(path : "onshape/std/string.fs", version : "593.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "593.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "593.0");
+import(path : "onshape/std/attributes.fs", version : "608.0");
+import(path : "onshape/std/containers.fs", version : "608.0");
+import(path : "onshape/std/error.fs", version : "608.0");
+import(path : "onshape/std/feature.fs", version : "608.0");
+import(path : "onshape/std/string.fs", version : "608.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "608.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "608.0");
 
 /**
  * Deactivate the sheet metal model of selected parts.
