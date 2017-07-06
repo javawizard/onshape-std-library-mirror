@@ -96,4 +96,20 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
     return qUnion(edges);
 }
 
+/**
+ * Extract a direction from an axis or a plane
+ * @return: a 3D unit [Vector] if a direction can be extracted, otherwise `undefined`.
+ */
+export function extractDirection(context is Context, entity is Query)
+{
+    try silent
+    {
+        return evAxis(context, { "axis" : entity }).direction;
+    }
+    try silent
+    {
+        return evPlane(context, {"face" : entity}).normal;
+    }
+    return undefined;
+}
 

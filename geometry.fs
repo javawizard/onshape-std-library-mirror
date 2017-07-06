@@ -54,6 +54,7 @@ export import(path : "onshape/std/draft.fs", version : "✨");
 export import(path : "onshape/std/enclose.fs", version : "✨");
 export import(path : "onshape/std/extrude.fs", version : "✨");
 export import(path : "onshape/std/fillet.fs", version : "✨");
+export import(path : "onshape/std/fillSurface.fs", version : "✨");
 export import(path : "onshape/std/fitSpline.fs", version : "✨");
 export import(path : "onshape/std/helix.fs", version : "✨");
 export import(path : "onshape/std/hole.fs", version : "✨");

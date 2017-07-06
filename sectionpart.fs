@@ -225,13 +225,17 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
 
 function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
 {
-    extrude(context, id, {"bodyType" : ToolBodyType.SOLID,
+    var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
+    const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
                           "operationType" : NewBodyOperationType.REMOVE,
                           "entities" : sketchRegionQuery,
                           "endBound" : BoundingType.BLIND,
                           "depth" : depth,
                           "defaultScope" : false,
-                          "booleanScope" : target});
+                          "eraseImprintedEdges" : noMerge ? false : true,
+                          "booleanScope" : target};
+
+    extrude(context, id, extrudeDefinition);
 }
 
 function checkJogDirection(pointsInPlane is array)

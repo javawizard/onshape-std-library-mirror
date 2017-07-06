@@ -96,7 +96,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         }
 
         annotation { "Name" : "Direction",
-                     "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                     "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,
                      "MaxNumberOfPicks" : 1 }
         definition.directionOne is Query;
 

@@ -357,7 +357,7 @@ export enum ActiveSheetMetal
 
 /**
  * Specifies geometry corresponding to a certain type of topological entity in the sheet metal
- * [master body](/FsDoc/library.html#module-sheetMetalAttribute.fs).
+ * [master body](/FsDoc/library.html#module-sheetMetalAttribute.fs) for active sheet metal models.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
  * ```
@@ -475,10 +475,15 @@ export enum EdgeTopology
  * ```
  * @value ALLOWS_AXIS : Equivalent to
  *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER`
+ *      and can be processed with [evAxis]
+ * @value ALLOWS_DIRECTION : Equivalent to
+ *      `QueryFilterCompound.ALLOWS_AXIS || GeomtryType.PLANE`
+ *      and can be processed with [extractDirection]
  */
 export enum QueryFilterCompound
 {
-    ALLOWS_AXIS
+    ALLOWS_AXIS,
+    ALLOWS_DIRECTION
 }
 
 /**

@@ -315,7 +315,14 @@ export function processDefinitionDifference(context is Context, oldDefinition is
     for (var entry in result)
     {
         if (entry.value is Query)
-            result[entry.key] = qUnion(evaluateQuery(context, entry.value));
+        {
+            const newEvaluation = evaluateQuery(context, entry.value);
+            const oldQuery = oldDefinition[entry.key];
+            if (oldQuery is Query && evaluateQuery(context, oldQuery) == newEvaluation)
+                result[entry.key] = undefined; // No change
+            else
+                result[entry.key] = qUnion(newEvaluation);
+        }
     }
 
     return result;

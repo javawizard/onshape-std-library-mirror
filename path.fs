@@ -150,7 +150,7 @@ precondition
     // To find the path:
     // Maintain a current group (a group represents many geometric vertices meeting at one graph vertex) and a stack of
     // geometric vertices. Until we have completed the path, do the following:
-    // a) If the current group has no more available outgoing edges, pop the stack to find which edge lead to this group,
+    // a) If the current group has no more available outgoing edges, pop the stack to find which edges lead to this group,
     //    and add that edge to the end of the path. Set the current group to the group at the starting vertex of the edge.
     // b) If the current group has available outgoing edges, pick one of them (in Query evaluation order) and push the
     //    vertex at the end of that edge onto the stack. Set the group to the group of the same vertex.

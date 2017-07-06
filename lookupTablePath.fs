@@ -149,8 +149,26 @@ precondition
  */
 export function isLookupTableViolated(definition is map, table is map) returns boolean
 {
+  return isLookupTableViolated(definition, table, {});
+}
+
+/**
+ * @internal
+ * Determines if the specified table entry map has any value violations based upon the specified master definition map
+ *
+ * @param definition : the master definition map to check against
+ * @param table : the table map to check for any violations against the definition map
+ * @param ignoreProperties : map of property names to ignore, if value is true, will not check for any violation against that property's value
+ * @returns : true if there is a violation, false if no violations
+ */
+export function isLookupTableViolated(definition is map, table is map, ignoreProperties is map) returns boolean
+{
     for (var entry in table)
     {
+        if (ignoreProperties[entry.key] == true)
+        {
+            continue;
+        }
         var v1 = lookupTableGetValue(definition[entry.key]);
         var v2 = lookupTableGetValue(entry.value);
         var diff = abs(v1 - v2);

@@ -21,6 +21,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
@@ -176,7 +177,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         else if (definition.transformType == TransformType.TRANSLATION_DISTANCE)
         {
             annotation { "Name" : "Direction",
-                         "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE || EntityType.VERTEX,
+                         "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || EntityType.VERTEX,
                          "MaxNumberOfPicks" : 2 }
             definition.transformDirection is Query;
             annotation { "Name" : "Distance" }
@@ -307,11 +308,10 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             }
             else if (distanceSpecified && @size(faces) >= 1) // A plane only provides direction
             {
-                const planeResult = try(evPlane(context, { "face" : faces[0] }));
-                if (planeResult is Plane)
-                    translation = planeResult.normal * meter;
-                else
-                    translation = evAxis(context, { "axis" : faces[0] }).direction * meter;
+                translation = extractDirection(context, faces[0]);
+                if (translation == undefined)
+                    throw regenError(ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT, ["transformDirection"]);
+                translation *= meter;
             }
             else
             {

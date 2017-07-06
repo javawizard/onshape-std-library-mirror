@@ -183,28 +183,44 @@ function recordParameters(context is Context, id is Id, definition is map, array
 {
     for (var paramEntry in definition)
     {
-        if (paramEntry.value is array)
+        // Doesn't handle nested arrays, which are not allowed in feature specs
+        if (arrayParameter == undefined && isArrayParameter(paramEntry.value))
         {
-            // Doesn't handle nested arrays, which are not allowed in feature specs
-            for (var i = 0; i < @size(paramEntry.value); i += 1)
+            var i = 0;
+            for (var element in paramEntry.value)
             {
-                if (paramEntry.value[i] is map) {
-                    recordParameters(context, id, paramEntry.value[i], paramEntry.key, i);
-                }
+                recordParameters(context, id, element, paramEntry.key, i);
+                i += 1;
             }
         }
         else
         {
             var parameterId = (arrayParameter == undefined) ? paramEntry.key : arrayParameterId(arrayParameter, itemIndex, paramEntry.key);
-            if (paramEntry.value is Query)
+            if (parameterId is string)
             {
-                @recordQuery(context, id, { (parameterId) : paramEntry.value });
-            }
-            else
-            {
-                setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
+                if (paramEntry.value is Query)
+                {
+                    @recordQuery(context, id, { (parameterId) : paramEntry.value });
+                }
+                else
+                {
+                    setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
+                }
             }
         }
+    }
+}
+
+/** Returns true if the value is an array of maps where every map key is a string. */
+predicate isArrayParameter(value)
+{
+    value is array;
+    for (var element in value)
+    {
+        element is map;
+        element as map == element; // no type tag
+        for (var entry in element)
+            entry.key is string;
     }
 }
 

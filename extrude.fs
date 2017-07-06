@@ -482,7 +482,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
             var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
-            joinSurfaceBodies(context, id, matches, reconstructOp);
+            joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
 
         if (vertexPlaneId != undefined)
