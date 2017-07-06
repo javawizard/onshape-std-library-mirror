@@ -1,20 +1,20 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "608.0");
-export import(path : "onshape/std/query.fs", version : "608.0");
-export import(path : "onshape/std/units.fs", version : "608.0");
+export import(path : "onshape/std/context.fs", version : "626.0");
+export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/units.fs", version : "626.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/mathUtils.fs", version : "608.0");
-import(path : "onshape/std/topologyUtils.fs", version : "608.0");
+import(path : "onshape/std/box.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/mathUtils.fs", version : "626.0");
+import(path : "onshape/std/topologyUtils.fs", version : "626.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -150,7 +150,7 @@ precondition
     // To find the path:
     // Maintain a current group (a group represents many geometric vertices meeting at one graph vertex) and a stack of
     // geometric vertices. Until we have completed the path, do the following:
-    // a) If the current group has no more available outgoing edges, pop the stack to find which edge lead to this group,
+    // a) If the current group has no more available outgoing edges, pop the stack to find which edges lead to this group,
     //    and add that edge to the end of the path. Set the current group to the group at the starting vertex of the edge.
     // b) If the current group has available outgoing edges, pick one of them (in Query evaluation order) and push the
     //    vertex at the end of that edge onto the stack. Set the group to the group of the same vertex.

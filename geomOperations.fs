@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 608; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "608.0");
-import(path : "onshape/std/curveGeometry.fs", version : "608.0");
+import(path : "onshape/std/context.fs", version : "626.0");
+import(path : "onshape/std/curveGeometry.fs", version : "626.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "608.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "608.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "626.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "626.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "608.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "626.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -114,7 +114,6 @@ export function opDeleteFace(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "enclose"`
  * @param definition {{
  *      @field entities {Query} : Bodies and faces for enclosure.
- *      @field mergeResults {boolean} : If true, all regions will be joined if possible.
  * }}
  */
 export function opEnclose(context is Context, id is Id, definition is map)
@@ -691,11 +690,30 @@ export function opExtractWires(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "nameEntity1"`
  * @param definition {{
  *      @field entity {Query} : The entity to be named.
- *      @field entityName {string} : The name, should be unique in the part studio
+ *      @field entityName {string} : The name, should be unique in the part studio.
  * }}
 */
 export function opNameEntity(context is Context, id is Id, definition is map)
 {
     return @opNameEntity(context, id, definition);
+}
+
+
+/**
+ * @internal
+ * Generates a surface body from supplied boundary and internal constraints. The boundaries are defined as
+ * edge queries for each continuity constraint. The internal constraints may be defined as a set of support vertices.
+ * @param id : @autocomplete `id + "opFillSurface1"`
+ * @param definition {{
+ *      @field edgesG0 {Query} : The edges with position constraints.
+ *      @field edgesG1 {Query} : The edges with tangency constraints.
+ *      @field edgesG2 {Query} : The edges with curvature constraints.
+ *      @field guideVertices {Query} : The vertices the resulting surface is expected to interpolate.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
+ * }}
+ */
+export function opFillSurface(context is Context, id is Id, definition is map)
+{
+    return @opFillSurface(context, id, definition);
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -39,7 +39,12 @@ FeatureScript 608; /* Automatically generated version */
  * @value OPPOSITE_DIRECTION_CIRCULAR : Like `OPPOSITE_DIRECTION`, but with circular arrows.
  * @value SHOW_LABEL : Show a label above an enum parameter.
  * @value HORIZONTAL_ENUM : Display an enum as a horizontal list of clickable text, rather than the default select control
- * @value UNCONFIGURABLE : For Onshape internal use. */
+ * @value UNCONFIGURABLE : For Onshape internal use.
+ * @value MATCH_LAST_ARRAY_ITEM : Inside an array parameter, set the default value on a new item to match
+ *      what is set on the last item.
+ * @value COLLAPSE_ARRAY_ITEMS : For an array parameter, create new items (and items in a newly opened
+ *      dialog) as collapsed by default.
+ */
 export enum UIHint
 {
     OPPOSITE_DIRECTION,
@@ -56,7 +61,9 @@ export enum UIHint
     OPPOSITE_DIRECTION_CIRCULAR,
     SHOW_LABEL,
     HORIZONTAL_ENUM,
-    UNCONFIGURABLE
+    UNCONFIGURABLE,
+    MATCH_LAST_ARRAY_ITEM,
+    COLLAPSE_ARRAY_ITEMS
 }
 
 

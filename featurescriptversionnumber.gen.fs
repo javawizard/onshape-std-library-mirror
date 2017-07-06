@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -527,7 +527,20 @@ export enum FeatureScriptVersionNumber
     V605_EXTRUDE_CAP_ENTITIES,
     V606_TOLERANT_BRIDGING_CURVE,
     V607_HOLE_FEATURE_FIT_UPDATE,
-    V608_MERGE_FROM_TOOLS
+    V608_MERGE_FROM_TOOLS,
+    V614_CHANGE_FACE_GROW,
+    V615_DCM_VERSION_67_5_2,
+    V616_DRILL_SIZES_UPDATE,
+    V617_GEOM_BUGS,
+    V618_SKETCH_LIMIT_DIMENSIONS,
+    V619_PS_VERSION_30_0_185,
+    V620_DONT_MERGE_SECTION_FACE,
+    V621_SHEET_METAL_HOLES,
+    V622_LOFT_GUIDE_WITH_END_CONDITION,
+    V623_SHEETMETAL_HOLE_ATTRIBUTE_FIX,
+    V624_FILL_SURFACE_UI_UPDATES,
+    V625_FILL_FS_FIXES,
+    V626_COLLAPSE_ARRAY_ITEMS_UIHINT
 }
 
 /**
@@ -538,6 +551,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V608_MERGE_FROM_TOOLS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V626_COLLAPSE_ARRAY_ITEMS_UIHINT;
 
 

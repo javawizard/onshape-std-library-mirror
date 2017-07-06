@@ -1,20 +1,20 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "608.0");
-export import(path : "onshape/std/tool.fs", version : "608.0");
+export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/tool.fs", version : "626.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "608.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/topologyUtils.fs", version : "608.0");
-import(path : "onshape/std/transform.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
+import(path : "onshape/std/boolean.fs", version : "626.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/topologyUtils.fs", version : "626.0");
+import(path : "onshape/std/transform.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -107,7 +107,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
             var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
-            joinSurfaceBodies(context, id, matches, reconstructOp);
+            joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
     }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW });
 

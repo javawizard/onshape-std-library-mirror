@@ -1,24 +1,24 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "608.0");
-export import(path : "onshape/std/tool.fs", version : "608.0");
+export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/tool.fs", version : "626.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/boolean.fs", version : "608.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "608.0");
-import(path : "onshape/std/transform.fs", version : "608.0");
-import(path : "onshape/std/units.fs", version : "608.0");
-import(path : "onshape/std/valueBounds.fs", version : "608.0");
-import(path : "onshape/std/vector.fs", version : "608.0");
-import(path : "onshape/std/topologyUtils.fs", version : "608.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/boolean.fs", version : "626.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
+import(path : "onshape/std/transform.fs", version : "626.0");
+import(path : "onshape/std/units.fs", version : "626.0");
+import(path : "onshape/std/valueBounds.fs", version : "626.0");
+import(path : "onshape/std/vector.fs", version : "626.0");
+import(path : "onshape/std/topologyUtils.fs", version : "626.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -35,19 +35,6 @@ export enum LoftEndDerivativeType
     MATCH_TANGENT,
     annotation { "Name" : "Match curvature" }
     MATCH_CURVATURE
-}
-
-/**
- * Specifies how the shape of the sides of a loft should be controlled.
- */
-export enum LoftShapeControlType
-{
-    annotation { "Name" : "None" }
-    DEFAULT,
-    annotation { "Name" : "Guides" }
-    ADD_GUIDES,
-    annotation { "Name" : "End conditions" }
-    ADD_END_CONDITIONS
 }
 
 /**
@@ -110,31 +97,29 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
-        annotation { "Name" : "Control type" }
-        definition.shapeControl is LoftShapeControlType;
+        annotation { "Name" : "Guides" }
+        definition.addGuides is boolean;
 
-        if (definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
+        if (definition.addGuides)
         {
             annotation { "Name" : "Guides", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
             definition.guides is Query;
         }
-        else if (definition.shapeControl == LoftShapeControlType.ADD_END_CONDITIONS)
-        {
-            annotation { "Name" : "Start profile condition" }
-            definition.startCondition is LoftEndDerivativeType;
-            if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
-            {
-                annotation { "Name" : "Start magnitude" }
-                isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
-            }
+        annotation { "Name" : "Start profile condition", "UIHint" : "SHOW_LABEL" }
+        definition.startCondition is LoftEndDerivativeType;
 
-            annotation { "Name" : "End profile condition" }
-            definition.endCondition is LoftEndDerivativeType;
-            if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
-            {
-                annotation { "Name" : "End magnitude" }
-                isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
-            }
+        if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
+        {
+            annotation { "Name" : "Start magnitude" }
+            isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+        }
+
+        annotation { "Name" : "End profile condition", "UIHint" : "SHOW_LABEL" }
+        definition.endCondition is LoftEndDerivativeType;
+        if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
+        {
+            annotation { "Name" : "End magnitude" }
+            isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
         }
 
         annotation { "Name" : "Match vertices" }
@@ -173,9 +158,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
         var queriesForTransform = [profileQuery];
 
-        if (definition.addGuides || definition.shapeControl == LoftShapeControlType.ADD_GUIDES)
+        if (definition.addGuides)
         {
-            definition.shapeControl = LoftShapeControlType.ADD_GUIDES;
             definition.guideDependencies = replaceWireSubQueriesWithDependencies(context, definition.guides, false);
             queriesForTransform = append(queriesForTransform, definition.guideDependencies);
             if (definition.guideDependencies.queryType == QueryType.UNION)
@@ -184,22 +168,20 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
             }
         }
-        else if (definition.shapeControl == LoftShapeControlType.ADD_END_CONDITIONS)
+
+        var derivatives = [];
+        if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
         {
-            var derivatives = [];
-            if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
-            {
-                derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
-                                                            definition.profileSubqueries[0], 0, definition.startMagnitude));
-            }
-            if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
-            {
-                const lastProfileIndex = @size(definition.profileSubqueries) - 1;
-                derivatives = append(derivatives, createProfileConditions(context, definition.endCondition,
-                                                            definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude));
-            }
-            definition.derivativeInfo = derivatives;
+            derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
+                                                        definition.profileSubqueries[0], 0, definition.startMagnitude));
         }
+        if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
+        {
+            const lastProfileIndex = @size(definition.profileSubqueries) - 1;
+            derivatives = append(derivatives, createProfileConditions(context, definition.endCondition,
+                                                        definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude));
+        }
+        definition.derivativeInfo = derivatives;
 
         if (definition.addSections)
         {
@@ -208,7 +190,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             {
                 throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["spine"]);
             }
-            if (definition.shapeControl == LoftShapeControlType.ADD_GUIDES && size(evaluateQuery(context, definition.spine)) > 0 && size(definition.guideSubqueries) > 3 )
+            if (definition.addGuides && size(evaluateQuery(context, definition.spine)) > 0 && size(definition.guideSubqueries) > 3 )
             {
                 throw regenError(ErrorStringEnum.LOFT_SPINE_TOO_MANY_GUIDES, ["spine", "guides"]);
             }
@@ -241,11 +223,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
             var matches = createLoftTopologyMatchesForSurfaceJoin(context, id, definition, remainingTransform);
-            joinSurfaceBodies(context, id, matches, reconstructOp);
+            joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
-        shapeControl : LoftShapeControlType.DEFAULT, startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
+        startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW, addSections : false, sectionCount : 0 });
 
 /** @internal */

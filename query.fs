@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 608; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/context.fs", version : "608.0");
-import(path : "onshape/std/mathUtils.fs", version : "608.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "608.0");
-import(path : "onshape/std/units.fs", version : "608.0");
-import(path : "onshape/std/curveGeometry.fs", version : "608.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/context.fs", version : "626.0");
+import(path : "onshape/std/mathUtils.fs", version : "626.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
+import(path : "onshape/std/units.fs", version : "626.0");
+import(path : "onshape/std/curveGeometry.fs", version : "626.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -357,7 +357,7 @@ export enum ActiveSheetMetal
 
 /**
  * Specifies geometry corresponding to a certain type of topological entity in the sheet metal
- * [master body](/FsDoc/library.html#module-sheetMetalAttribute.fs).
+ * [master body](/FsDoc/library.html#module-sheetMetalAttribute.fs) for active sheet metal models.
  *
  * Can be used in a filter on a query parameter to only allow certain selections:
  * ```
@@ -475,10 +475,15 @@ export enum EdgeTopology
  * ```
  * @value ALLOWS_AXIS : Equivalent to
  *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER`
+ *      and can be processed with [evAxis]
+ * @value ALLOWS_DIRECTION : Equivalent to
+ *      `QueryFilterCompound.ALLOWS_AXIS || GeomtryType.PLANE`
+ *      and can be processed with [extractDirection]
  */
 export enum QueryFilterCompound
 {
-    ALLOWS_AXIS
+    ALLOWS_AXIS,
+    ALLOWS_DIRECTION
 }
 
 /**

@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -719,7 +719,16 @@ export enum ErrorStringEnum
     ENCLOSE_NOTHING_SELECTED,
     ENCLOSE_UNKNOWN_ERROR,
     ACCESS_NOT_ALLOWED,
-    LOFT_SPINE_TOO_MANY_GUIDES
+    LOFT_SPINE_TOO_MANY_GUIDES,
+    FEATURE_INVALID_NAMESPACE,
+    FEATURE_NULL_NOT_ALLOWED,
+    SKETCH_DIMENSION_LIMIT_ERROR,
+    FILL_SURFACE_WIRE_CONTINUITY_MISMATCH,
+    FILL_SURFACE_INTERNAL_CONTINUITY_MISMATCH,
+    LOFT_START_OR_END_CONDITIONS_FAILED,
+    LOFT_START_OR_END_CONDITIONS_MAGNITUDE_NO_EFFECT,
+    FOLLOW_LEADER_IS_IN_UNFOLLOWABLE_TAB,
+    LOFT_START_OR_END_CONDITIONS_WITH_GUIDES_FAILED
 }
 
 

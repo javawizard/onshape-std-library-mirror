@@ -1,4 +1,4 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -11,16 +11,16 @@ FeatureScript 608; /* Automatically generated version */
  * Note: When unioning sheets, the sheets must all be in proper orientation.
  */
 
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "608.0");
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/curveGeometry.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/geomOperations.fs", version : "608.0");
-import(path : "onshape/std/math.fs", version : "608.0");
-import(path : "onshape/std/string.fs", version : "608.0");
-import(path : "onshape/std/vector.fs", version : "608.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "626.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/curveGeometry.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/geomOperations.fs", version : "626.0");
+import(path : "onshape/std/math.fs", version : "626.0");
+import(path : "onshape/std/string.fs", version : "626.0");
+import(path : "onshape/std/vector.fs", version : "626.0");
 
 /**
  *@internal

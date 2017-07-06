@@ -1,27 +1,28 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "608.0");
-export import(path : "onshape/std/tool.fs", version : "608.0");
+export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/tool.fs", version : "626.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "608.0");
+export import(path : "onshape/std/manipulator.fs", version : "626.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "608.0");
-import(path : "onshape/std/box.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/curveGeometry.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/mathUtils.fs", version : "608.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "608.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "608.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "608.0");
-import(path : "onshape/std/valueBounds.fs", version : "608.0");
+import(path : "onshape/std/attributes.fs", version : "626.0");
+import(path : "onshape/std/box.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/curveGeometry.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/mathUtils.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "626.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
+import(path : "onshape/std/topologyUtils.fs", version : "626.0");
+import(path : "onshape/std/valueBounds.fs", version : "626.0");
 
 
 /**
@@ -90,7 +91,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         if (definition.moveFaceType == MoveFaceType.TRANSLATE)
         {
             annotation { "Name" : "Direction",
-                        "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                        "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,
                         "MaxNumberOfPicks" : 1 }
             definition.direction is Query;
         }
@@ -253,19 +254,10 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             {
                 // If the user specified an axis for the direction, we will use that for the translation.  If they,
                 // specified a face, we will use the face's normal, if it is planar.
-                var translation;
-                const directionResult = try silent(evAxis(context, { "axis" : definition.direction }));
-                var translationDirection;
-                if (directionResult == undefined)
+                var translationDirection = extractDirection(context, definition.direction);
+                if (translationDirection == undefined)
                 {
-                    const planeResult = try silent(evPlane(context, { "face" : definition.direction }));
-                    if (planeResult == undefined)
-                        throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
-                    translationDirection = planeResult.normal;
-                }
-                else
-                {
-                    translationDirection = directionResult.direction;
+                    throw regenError(ErrorStringEnum.NO_TRANSLATION_DIRECTION, ["direction"]);
                 }
 
                 if (definition.limitType != MoveFaceBoundingType.BLIND)
@@ -274,7 +266,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 }
                 else
                 {
-                    translation = translationDirection * definition.translationDistance * directionSign;
+                    var translation = translationDirection * definition.translationDistance * directionSign;
                     definition.transform = transform(translation);
                     addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
 
@@ -894,8 +886,7 @@ precondition
 /**
  * Editing logic. Fills in translation direction. Fills in offset distance as minimal clearance.
  */
-export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreating is boolean, specifiedParameters is map) returns map
+export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
     if (definition.moveFaceType == MoveFaceType.TRANSLATE && !specifiedParameters.direction)
     {

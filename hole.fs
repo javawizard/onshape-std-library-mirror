@@ -1,33 +1,34 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "608.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "608.0");
-import(path : "onshape/std/box.fs", version : "608.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/coordSystem.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/extrude.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/mathUtils.fs", version : "608.0");
-import(path : "onshape/std/revolve.fs", version : "608.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "608.0");
-import(path : "onshape/std/sketch.fs", version : "608.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "608.0");
-import(path : "onshape/std/tool.fs", version : "608.0");
-import(path : "onshape/std/valueBounds.fs", version : "608.0");
-import(path : "onshape/std/string.fs", version : "608.0");
-import(path : "onshape/std/holetables.gen.fs", version : "608.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "608.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "608.0");
-import(path : "onshape/std/cylinderCast.fs", version : "608.0");
-import(path : "onshape/std/curveGeometry.fs", version : "608.0");
-import(path : "onshape/std/attributes.fs", version : "608.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "608.0");
-export import(path : "onshape/std/holeUtils.fs", version : "608.0");
+import(path : "onshape/std/boolean.fs", version : "626.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "626.0");
+import(path : "onshape/std/box.fs", version : "626.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/coordSystem.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/extrude.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/mathUtils.fs", version : "626.0");
+import(path : "onshape/std/revolve.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "626.0");
+import(path : "onshape/std/sketch.fs", version : "626.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
+import(path : "onshape/std/tool.fs", version : "626.0");
+import(path : "onshape/std/valueBounds.fs", version : "626.0");
+import(path : "onshape/std/string.fs", version : "626.0");
+import(path : "onshape/std/holetables.gen.fs", version : "626.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "626.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "626.0");
+import(path : "onshape/std/cylinderCast.fs", version : "626.0");
+import(path : "onshape/std/curveGeometry.fs", version : "626.0");
+import(path : "onshape/std/attributes.fs", version : "626.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "626.0");
+export import(path : "onshape/std/holeUtils.fs", version : "626.0");
 
 
 /**
@@ -55,8 +56,8 @@ const MAX_LOCATIONS = 100;
  * hole size, or by user-defined values. Each hole's position and orientation
  * are specified using sketch points.
  */
-annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic"}
-export const hole = defineFeature(function(context is Context, id is Id, definition is map)
+annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic" }
+export const hole = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Style", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
@@ -110,7 +111,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.majorDiameter != undefined)
         {
-            annotation { "Name" : "Tap major diameter", "UIHint" : [ "ALWAYS_HIDDEN"] }
+            annotation { "Name" : "Tap major diameter", "UIHint" : ["ALWAYS_HIDDEN"] }
             isLength(definition.majorDiameter, HOLE_MAJOR_DIAMETER_BOUNDS);
         }
 
@@ -155,16 +156,17 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
 
         annotation { "Name" : "Sketch points to place holes",
-            "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
-            "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
+                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
         definition.scope is Query;
 
     }
     {
-        if (queryContainsActiveSheetMetal(context, definition.scope))
+        // Holes are now supported in sheet metal so the queryContainsActiveSheetMetal check is not wanted in newer parts
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES) && queryContainsActiveSheetMetal(context, definition.scope))
         {
             const smQueries = separateSheetMetalQueries(context, definition.scope).sheetMetalQueries;
             throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, ["scope"], smQueries);
@@ -214,7 +216,7 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
                 throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE, ["holeDiameter", "tapDrillDiameter"]);
             }
         }
-        definition.transform = getRemainderPatternTransform(context, {"references" : definition.locations});
+        definition.transform = getRemainderPatternTransform(context, { "references" : definition.locations });
 
         const locations = reduceLocations(context, definition.locations);
         if (size(locations) == 0)
@@ -265,9 +267,10 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
             }
             else
             {
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V371_HOLE_IMPROVED_DISJOINT_CHECK))
+                // The V371_HOLE_IMPROVED_DISJOINT_CHECK check and contained code fixes obscure behaviors and prevents valid cases from working, so we'll ignore it going forward
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V371_HOLE_IMPROVED_DISJOINT_CHECK) &&
+                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES))
                 {
-                    // BEL-32383
                     for (var trackedBody in trackedBodies)
                     {
                         var trackedCount = size(evaluateQuery(context, trackedBody));
@@ -301,22 +304,22 @@ export const hole = defineFeature(function(context is Context, id is Id, definit
         }
 
     }, {
-        endStyle : HoleEndStyle.BLIND,
-        style : HoleStyle.SIMPLE,
-        oppositeDirection : false,
-        tipAngle : 118 * degree,
-        useTipDepth : false,
-        cSinkUseDepth : false,
-        cSinkDepth : 0 * meter,
-        cSinkAngle : 90 * degree,
-        generateErrorBodies : false,
-        startFromSketch : false,
-        collisions : {},
-        showTappedDepth : false,
-        tappedDepth : 0.5 * inch,
-        tapClearance : 3,
-        isTappedThrough : false
-    });
+            endStyle : HoleEndStyle.BLIND,
+            style : HoleStyle.SIMPLE,
+            oppositeDirection : false,
+            tipAngle : 118 * degree,
+            useTipDepth : false,
+            cSinkUseDepth : false,
+            cSinkDepth : 0 * meter,
+            cSinkAngle : 90 * degree,
+            generateErrorBodies : false,
+            startFromSketch : false,
+            collisions : {},
+            showTappedDepth : false,
+            tappedDepth : 0.5 * inch,
+            tapClearance : 3,
+            isTappedThrough : false
+        });
 
 function hasErrors(context is Context, id is Id) returns boolean
 {
@@ -325,7 +328,7 @@ function hasErrors(context is Context, id is Id) returns boolean
 
 function holeOp(context is Context, id is Id, locations is array, definition is map) returns map
 {
-    var result = { "numSuccess" : 0};
+    var result = { "numSuccess" : 0 };
     // for each hole
     var holeNumber = -1;
     for (var location in locations)
@@ -379,7 +382,7 @@ function computeCSys(context is Context, location is Query, definition is map) r
     const sign = definition.oppositeDirection ? 1 : -1;
     startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
 
-    return {"point" : point, "startPointCSys" : startPointCSys};
+    return { "point" : point, "startPointCSys" : startPointCSys };
 }
 
 function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
@@ -397,20 +400,20 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V571_HOLE_BLIND_IN_LAST_PROJECTION) && definition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
             definition.style != HoleStyle.SIMPLE && definition.tapDrillDiameter != undefined)
         {
-          // if we are doing a 'blind in last' non-simple hole, use the tap drill diameter to determine last body hit point
-          cylinderCastDiameter = definition.tapDrillDiameter;
+            // if we are doing a 'blind in last' non-simple hole, use the tap drill diameter to determine last body hit point
+            cylinderCastDiameter = definition.tapDrillDiameter;
 
-          // and use the cbore/csink diameter to determine first body hit point
-          firstBodyCastDiameter = maxDiameter(definition);
+            // and use the cbore/csink diameter to determine first body hit point
+            firstBodyCastDiameter = maxDiameter(definition);
         }
 
         startDistances = cylinderCastBiDirectional(context, holeId, {
-            "scopeSize" : definition.scopeSize,
-            "cSys" : startPointCSys,
-            "diameter": cylinderCastDiameter,
-            "firstBodyCastDiameter" : firstBodyCastDiameter,
-            "scope" : definition.scope,
-            "needBack": false });
+                    "scopeSize" : definition.scopeSize,
+                    "cSys" : startPointCSys,
+                    "diameter" : cylinderCastDiameter,
+                    "firstBodyCastDiameter" : firstBodyCastDiameter,
+                    "scope" : definition.scope,
+                    "needBack" : false });
     }
     var cutHoleResult = cutHole(context, holeId, definition, startDistances, startPointCSys);
     if (cutHoleResult.success)
@@ -432,9 +435,9 @@ function calculateStartPoint(context is Context, definition is map) returns bool
         startFromSketch = false;
     }
     return !startFromSketch &&
-           !definition.generateErrorBodies &&
-           definition.heuristics != true &&
-           !(definition.endStyle == HoleEndStyle.THROUGH && definition.style == HoleStyle.SIMPLE);
+        !definition.generateErrorBodies &&
+        definition.heuristics != true &&
+        !(definition.endStyle == HoleEndStyle.THROUGH && definition.style == HoleStyle.SIMPLE);
 }
 
 function maxDiameter(definition is map) returns ValueWithUnits
@@ -475,67 +478,67 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 
 const HOLE_CLEARANCE_BOUNDS =
 {
-    (unitless) : [0, 3, 100]
-} as RealBoundSpec;
+            (unitless) : [0, 3, 100]
+        } as RealBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {
-    (meter)      : [1e-5, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.02,
-    (yard)       : 0.007
-} as LengthBoundSpec;
+            (meter) : [1e-5, 0.005, 500],
+            (centimeter) : 0.5,
+            (millimeter) : 5.0,
+            (inch) : 0.25,
+            (foot) : 0.02,
+            (yard) : 0.007
+        } as LengthBoundSpec;
 
 const HOLE_MAJOR_DIAMETER_BOUNDS =
 {
-    (meter)      : [1e-5, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.02,
-    (yard)       : 0.007
-} as LengthBoundSpec;
+            (meter) : [1e-5, 0.005, 500],
+            (centimeter) : 0.5,
+            (millimeter) : 5.0,
+            (inch) : 0.25,
+            (foot) : 0.02,
+            (yard) : 0.007
+        } as LengthBoundSpec;
 
 const HOLE_BORE_DIAMETER_BOUNDS =
 {
-    (meter)      : [1e-5, 0.01, 500],
-    (centimeter) : 1.0,
-    (millimeter) : 10.0,
-    (inch)       : 0.5,
-    (foot)       : 0.04,
-    (yard)       : 0.014
-} as LengthBoundSpec;
+            (meter) : [1e-5, 0.01, 500],
+            (centimeter) : 1.0,
+            (millimeter) : 10.0,
+            (inch) : 0.5,
+            (foot) : 0.04,
+            (yard) : 0.014
+        } as LengthBoundSpec;
 
 const HOLE_DEPTH_BOUNDS =
 {
-    (meter)      : [1e-5, 0.012, 500],
-    (centimeter) : 1.2,
-    (millimeter) : 12.0,
-    (inch)       : 0.5,
-    (foot)       : 0.04,
-    (yard)       : 0.014
-} as LengthBoundSpec;
+            (meter) : [1e-5, 0.012, 500],
+            (centimeter) : 1.2,
+            (millimeter) : 12.0,
+            (inch) : 0.5,
+            (foot) : 0.04,
+            (yard) : 0.014
+        } as LengthBoundSpec;
 
 const HOLE_BORE_DEPTH_BOUNDS =
 {
-    (meter)      : [0.0, 0.005, 500],
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.25,
-    (foot)       : 0.02,
-    (yard)       : 0.007
-} as LengthBoundSpec;
+            (meter) : [0.0, 0.005, 500],
+            (centimeter) : 0.5,
+            (millimeter) : 5.0,
+            (inch) : 0.25,
+            (foot) : 0.02,
+            (yard) : 0.007
+        } as LengthBoundSpec;
 
 /**
  * Angle bounds for a hole countersink.
  */
 export const CSINK_ANGLE_BOUNDS =
 {
-    (degree) : [44.9, 90, 135.1],
-    (radian) : 0.5 * PI
-} as AngleBoundSpec;
+            (degree) : [44.9, 90, 135.1],
+            (radian) : 0.5 * PI
+        } as AngleBoundSpec;
 
 function depthOfRadius(context is Context, radius is ValueWithUnits, halfAngle is ValueWithUnits)
 precondition
@@ -571,8 +574,31 @@ precondition
     }
 }
 
+function getSheetMetalModels(context is Context, holeDefinition is map)
+{
+    var sheetMetalModels;
+    const smPartition = partitionSheetMetalParts(context, holeDefinition.scope);
+    if (size(smPartition.sheetMetalPartsMap) > 0)
+    {
+        var sheetMetalParts = [];
+        for (var entry in smPartition.sheetMetalPartsMap)
+        {
+            sheetMetalParts = concatenateArrays([sheetMetalParts, entry.value]);
+        }
+        sheetMetalModels = getSheetMetalModelForPart(context, qUnion(sheetMetalParts));
+    }
+    return sheetMetalModels;
+}
+
 function cutHole(context is Context, id is Id, holeDefinition is map, startDistances is map, cSys is CoordSystem) returns map
 {
+    // Need to get the sheet metal models from the merge scope so that we can look for changes to the model following the cuts.
+    var sheetmetalModels;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES))
+    {
+        sheetmetalModels = getSheetMetalModels(context, holeDefinition);
+    }
+
     var result = {};
     var frontDist = 0 * meter;
     const isCBore = holeDefinition.style == HoleStyle.C_BORE;
@@ -606,11 +632,11 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     {
         holeStyle = HoleStyle.C_BORE;
         cboreTrackingSpecs = sketchCBore(context, {
-            "prefix" : "cbore_start",
-            "sketch" : sketch,
-            "startDepth" : startDepth,
-            "endDepth" : frontDist + holeDefinition.cBoreDepth,
-            "cBoreDiameter" : holeDefinition.cBoreDiameter });
+                    "prefix" : "cbore_start",
+                    "sketch" : sketch,
+                    "startDepth" : startDepth,
+                    "endDepth" : frontDist + holeDefinition.cBoreDepth,
+                    "cBoreDiameter" : holeDefinition.cBoreDiameter });
 
         startDepth = frontDist;
         frontDist = 0 * meter;
@@ -624,15 +650,15 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             cSinkStartDepth += holeDefinition.cBoreDepth;
 
         csinkTrackingSpecs = sketchCSink(context, {
-            "prefix" : "csink_start",
-            "sketch" : sketch,
-            "isPositive" : true,
-            "startDepth"     : cSinkStartDepth,
-            "clearanceDepth" : frontDist,
-            "cSinkUseDepth"  : holeDefinition.cSinkUseDepth,
-            "cSinkDepth"     : holeDefinition.cSinkDepth,
-            "cSinkDiameter"  : holeDefinition.cSinkDiameter,
-            "cSinkAngle"     : holeDefinition.cSinkAngle });
+                    "prefix" : "csink_start",
+                    "sketch" : sketch,
+                    "isPositive" : true,
+                    "startDepth" : cSinkStartDepth,
+                    "clearanceDepth" : frontDist,
+                    "cSinkUseDepth" : holeDefinition.cSinkUseDepth,
+                    "cSinkDepth" : holeDefinition.cSinkDepth,
+                    "cSinkDiameter" : holeDefinition.cSinkDiameter,
+                    "cSinkAngle" : holeDefinition.cSinkAngle });
 
         if (frontDist != 0 * meter)
             startDepth = frontDist;
@@ -641,13 +667,13 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
 
     // Handle hole core
     var coreResult = sketchToolCore(context, id, {
-        "prefix" : "core",
-        "sketch" : sketch,
-        "cSys" : cSys,
-        "startDepth" : startDepth,
-        "clearanceDepth" : frontDist,
-        "startDistances" : startDistances,
-        "holeDefinition" : holeDefinition });
+            "prefix" : "core",
+            "sketch" : sketch,
+            "cSys" : cSys,
+            "startDepth" : startDepth,
+            "clearanceDepth" : frontDist,
+            "startDistances" : startDistances,
+            "holeDefinition" : holeDefinition });
     if (coreResult.error != undefined)
     {
         result.success = false;
@@ -670,7 +696,20 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     var doCut = holeDefinition.generateErrorBodies != true && holeDefinition.heuristics != true;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
     {
-        try(spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut));
+        try
+        {
+            spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+        }
+        catch (error)
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES))
+            {
+                if (error is map && (error.message == ErrorStringEnum.SHEET_METAL_REBUILD_ERROR || error.message == ErrorStringEnum.SHEET_METAL_CUT_JOINT))
+                {
+                    result.error = error.message;
+                }
+            }
+        }
     }
     else
     {
@@ -691,6 +730,11 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             createAttributesFromTracking(context, id, holeDefinition, coreTrackingSpecs, holeStyle);
             createAttributesFromTracking(context, id, holeDefinition, cboreTrackingSpecs, holeStyle);
             createAttributesFromTracking(context, id, holeDefinition, csinkTrackingSpecs, holeStyle);
+
+            if (sheetmetalModels != undefined)
+            {
+                createSheetMetalHoleAttributes(context, id, sheetmetalModels, holeDefinition, holeStyle);
+            }
         }
 
         if (offsetTappedHole && blindBody != undefined)
@@ -698,9 +742,9 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             // Find the cylindrical face drilled by this feature in the body with the blind hole.
             var targetFace = qGeometry(qOwnedByBody(qCreatedBy(id, EntityType.FACE), blindBody), GeometryType.CYLINDER);
             opOffsetFace(context, id + "offset", {
-              "moveFaces" : targetFace,
-              "offsetDistance" : (holeDefinition.holeDiameter - holeDefinition.tapDrillDiameter) / 2
-            });
+                        "moveFaces" : targetFace,
+                        "offsetDistance" : (holeDefinition.holeDiameter - holeDefinition.tapDrillDiameter) / 2
+                    });
         }
     }
     result.success = success;
@@ -710,13 +754,59 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
 function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery is Query, scopeQuery is Query, makeNew is boolean)
 {
     revolve(context, id, {
-        "bodyType" : ToolBodyType.SOLID,
-        "operationType" : makeNew ? NewBodyOperationType.NEW : NewBodyOperationType.REMOVE,
-        "entities" : qUnion([sketchQuery]),
-        "axis" : qUnion([axisQuery]),
-        "revolveType" : RevolveType.FULL,
-        "booleanScope" : scopeQuery,
-        "defaultScope" : false });
+                "bodyType" : ToolBodyType.SOLID,
+                "operationType" : makeNew ? NewBodyOperationType.NEW : NewBodyOperationType.REMOVE,
+                "entities" : qUnion([sketchQuery]),
+                "axis" : qUnion([axisQuery]),
+                "revolveType" : RevolveType.FULL,
+                "booleanScope" : scopeQuery,
+                "defaultScope" : false });
+}
+
+function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle)
+{
+    // Now we look for edges affected by the sheet metal model
+    const createdEdges = qBodyType(qCreatedBy(id, EntityType.EDGE), BodyType.SHEET);
+    const smEdges = qOwnedByBody(createdEdges, sheetMetalModels);
+    const holeEdgesQ = qGeometry(smEdges, GeometryType.CIRCLE);
+    const holeEdges = evaluateQuery(context, holeEdgesQ);
+    for (var holeEdge in holeEdges)
+    {
+        var associations = getAttributes(context, { "entities" : holeEdge, "attributePattern" : {} as SMAssociationAttribute });
+        for (var association in associations)
+        {
+            const holeFaces = qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
+            if (size(evaluateQuery(context, holeFaces)) > 0)
+            {
+                createAttributesForSheetMetalHole(context, id, holeEdge, holeFaces, holeDefinition, holeStyle);
+            }
+        }
+    }
+}
+
+function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeStyle is HoleStyle)
+{
+    clearHoleAttributes(context, holeFaces);
+    var holeAttribute;
+    var cylinder = evSurfaceDefinition(context, {
+            "face" : holeFaces
+        });
+    if (cylinder is Cylinder)
+    {
+        const diameter = cylinder.radius * 2;
+        if (tolerantEquals(holeDefinition.holeDiameter, diameter))
+        {
+            holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, HoleSectionFaceType.THROUGH_FACE);
+        }
+        else if (holeStyle == HoleStyle.C_BORE && tolerantEquals(holeDefinition.cBoreDiameter, diameter))
+        {
+            holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, HoleSectionFaceType.CBORE_DIAMETER_FACE);
+        }
+    }
+    if (holeAttribute != undefined)
+    {
+        setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
+    }
 }
 
 function setupTrackingLineIds(context is Context, sketchLinePrefix is string, lineIndexIdAndType is array) returns array
@@ -756,22 +846,22 @@ precondition
 {
     const cBoreRadius = arg.cBoreDiameter / 2;
     const points = [vector(arg.startDepth, 0 * meter),
-                    vector(arg.startDepth + arg.endDepth, 0 * meter),
-                    vector(arg.startDepth + arg.endDepth, cBoreRadius),
-                    vector(arg.startDepth, cBoreRadius)];
+            vector(arg.startDepth + arg.endDepth, 0 * meter),
+            vector(arg.startDepth + arg.endDepth, cBoreRadius),
+            vector(arg.startDepth, cBoreRadius)];
     sketchPoly(context, arg.prefix, arg.sketch, points);
 
-    var lineTracking =  [
-                          // line that starts from the second point in the cbore sketch represents the line that creates the cbore depth face
-                          { "lineIndex"  : 1,  "holeTrackType" : HoleSectionFaceType.CBORE_DEPTH_FACE  },
-                          // line that starts from the third point in the cbore sketch represents the line that creates the cbore diameter face
-                          { "lineIndex"  : 2,  "holeTrackType" : HoleSectionFaceType.CBORE_DIAMETER_FACE  }
-                        ];
+    var lineTracking = [
+        // line that starts from the second point in the cbore sketch represents the line that creates the cbore depth face
+        { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.CBORE_DEPTH_FACE },
+        // line that starts from the third point in the cbore sketch represents the line that creates the cbore diameter face
+        { "lineIndex" : 2, "holeTrackType" : HoleSectionFaceType.CBORE_DIAMETER_FACE }
+    ];
 
     return setupTrackingLineIds(context, arg.prefix, lineTracking);
 }
 
-function sketchCSink(context is Context, arg is map)  returns array
+function sketchCSink(context is Context, arg is map) returns array
 precondition
 {
     arg.prefix is string;
@@ -803,25 +893,25 @@ precondition
     if (arg.clearanceDepth > 0 * meter)
     {
         points = [vector(startDepth, 0 * meter),
-                  vector(startDepth + sign * (arg.clearanceDepth + cSinkDepth), 0 * meter),
-                  vector(startDepth + sign * (arg.clearanceDepth), cSinkRadius),
-                  vector(startDepth, cSinkRadius)];
+                vector(startDepth + sign * (arg.clearanceDepth + cSinkDepth), 0 * meter),
+                vector(startDepth + sign * (arg.clearanceDepth), cSinkRadius),
+                vector(startDepth, cSinkRadius)];
     }
     else
     {
         points = [vector(startDepth, 0 * meter),
-                  vector(startDepth + sign * cSinkDepth, 0 * meter),
-                  vector(startDepth, cSinkRadius)];
+                vector(startDepth + sign * cSinkDepth, 0 * meter),
+                vector(startDepth, cSinkRadius)];
 
     }
     sketchPoly(context, arg.prefix, arg.sketch, points);
 
-    var lineTracking =  [
-                            // line that starts from the second point in the csink sketch represents the line that creates the csink angular face
-                            { "lineIndex"  : 1,  "holeTrackType" : HoleSectionFaceType.CSINK_FACE  },
-                            // line that starts from the third point in the csink sketch represents the line that creates the csink cbore diameterface
-                            { "lineIndex"  : 2,  "holeTrackType" : HoleSectionFaceType.CSINK_CBORE_FACE  }
-                        ];
+    var lineTracking = [
+        // line that starts from the second point in the csink sketch represents the line that creates the csink angular face
+        { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.CSINK_FACE },
+        // line that starts from the third point in the csink sketch represents the line that creates the csink cbore diameterface
+        { "lineIndex" : 2, "holeTrackType" : HoleSectionFaceType.CSINK_CBORE_FACE }
+    ];
 
     return setupTrackingLineIds(context, arg.prefix, lineTracking);
 }
@@ -893,14 +983,15 @@ precondition
         else
         {
             // Find shoulder depth
-            try {
+            try
+            {
                 const result = cylinderCast(context, id + "limit_surf_cast", {
-                    "distance" : distance,
-                    "cSys" : arg.cSys,
-                    "isFront" : true,
-                    "findClosest" : false,
-                    "diameter" : 2 * radius,
-                    "scope" : arg.holeDefinition.scope });
+                            "distance" : distance,
+                            "cSys" : arg.cSys,
+                            "isFront" : true,
+                            "findClosest" : false,
+                            "diameter" : 2 * radius,
+                            "scope" : arg.holeDefinition.scope });
                 if (result.distance != undefined)
                 {
                     var startDist = result.distance;
@@ -928,28 +1019,28 @@ precondition
     if (useTipDepth)
     {
         points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth - tipDepth, radius),
-                  vector(arg.startDepth, radius)];
+                vector(arg.startDepth + arg.clearanceDepth + depth, 0 * meter),
+                vector(arg.startDepth + arg.clearanceDepth + depth - tipDepth, radius),
+                vector(arg.startDepth, radius)];
     }
     else
     {
         points = [vector(arg.startDepth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth + tipDepth, 0 * meter),
-                  vector(arg.startDepth + arg.clearanceDepth + depth, radius),
-                  vector(arg.startDepth, radius)];
+                vector(arg.startDepth + arg.clearanceDepth + depth + tipDepth, 0 * meter),
+                vector(arg.startDepth + arg.clearanceDepth + depth, radius),
+                vector(arg.startDepth, radius)];
 
     }
 
     sketchPoly(context, arg.prefix, arg.sketch, points);
     result.lastBody = lastBody;
 
-    var lineTracking =  [
-                            // line that starts from the second point in the core sketch represents the line that sweeps the bottom of the hole
-                            { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.BLIND_TIP_FACE  },
-                            // line that starts from the third point in the core sketch represents the line that creates the through hole face
-                            { "lineIndex"  : 2,  "holeTrackType" : HoleSectionFaceType.THROUGH_FACE  }
-                        ];
+    var lineTracking = [
+        // line that starts from the second point in the core sketch represents the line that sweeps the bottom of the hole
+        { "lineIndex" : 1, "holeTrackType" : HoleSectionFaceType.BLIND_TIP_FACE },
+        // line that starts from the third point in the core sketch represents the line that creates the through hole face
+        { "lineIndex" : 2, "holeTrackType" : HoleSectionFaceType.THROUGH_FACE }
+    ];
 
     result.trackingSpecs = setupTrackingLineIds(context, arg.prefix, lineTracking);
     return result;
@@ -957,7 +1048,7 @@ precondition
 
 function scopeSize(context is Context, definition is map) returns map
 {
-    const scopeBox = evBox3d(context, { "topology" : qUnion([definition.scope, definition.locations])});
+    const scopeBox = evBox3d(context, { "topology" : qUnion([definition.scope, definition.locations]) });
     return norm(scopeBox.maxCorner - scopeBox.minCorner);
 }
 
@@ -990,14 +1081,20 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
         if (track.trackingQuery != undefined)
         {
             var sketchTrackingQuery = qEntityFilter(track.trackingQuery, EntityType.FACE);
-            var trackingQueryEntitites = evaluateQuery(context, sketchTrackingQuery);
-            for (var entity in trackingQueryEntitites)
+            var trackingQueryEntities = evaluateQuery(context, sketchTrackingQuery);
+            for (var entity in trackingQueryEntities)
             {
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V623_SHEETMETAL_HOLE_ATTRIBUTE_FIX) &&
+                    queryContainsActiveSheetMetal(context, entity))
+                {
+                    // Do not want active sheet metal in the regular attribute processing
+                    continue;
+                }
                 clearHoleAttributes(context, entity);
                 var holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, track.sectionType);
                 if (holeAttribute != undefined)
                 {
-                    setAttribute(context, {"entities" : entity, "attribute" : holeAttribute});
+                    setAttribute(context, { "entities" : entity, "attribute" : holeAttribute });
                 }
             }
         }
@@ -1080,7 +1177,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
                 tapSize = entry.value;
                 standardSizeDesignation = tapSize;
             }
-            else  if (entry.key == "pitch")
+            else if (entry.key == "pitch")
             {
                 tapPitch = entry.value;
             }
@@ -1125,7 +1222,7 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
         }
 
         // set tap size
-        resultAttribute.tapSize = tapSize ~ delimiter ~  pitch;
+        resultAttribute.tapSize = tapSize ~ delimiter ~ pitch;
         if (holeDefinition.tappedDepth != undefined)
             resultAttribute.tappedDepth = holeDefinition.tappedDepth;
 
@@ -1270,11 +1367,11 @@ function getBlindTipSectionAttributeSpecs(holeDefinition is map) returns map
  * Editing logic for hole feature.
  */
 export function holeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-                              isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     if (oldDefinition.locations != definition.locations)
     {
-        definition.locations =  clusterVertexQueries(context, definition.locations);
+        definition.locations = clusterVertexQueries(context, definition.locations);
     }
     if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
         oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
@@ -1395,7 +1492,7 @@ function getStandardAndTable(definition is map) returns map
         standard = definition.standardTappedOrClearance;
         table = tappedOrClearanceHoleTable;
     }
-    return {"standard" : standard, "table" : table };
+    return { "standard" : standard, "table" : table };
 }
 
 function getStandardTable(definition is map) returns map
@@ -1463,13 +1560,57 @@ function syncStandards(oldDefinition is map, definition is map) returns map
 function setToCustomIfStandardViolated(definition is map) returns map
 {
     var table = getStandardTable(definition);
-    if (isLookupTableViolated(definition, table))
+    if (isLookupTableViolated(definition, table, ignoreInvalidateStandardProperties(table)))
     {
-        definition.standardTappedOrClearance = lookupTablePath({"standard": "Custom"});
-        definition.standardBlindInLast = lookupTablePath({"standard": "Custom"});
+        definition.standardTappedOrClearance = lookupTablePath({ "standard" : "Custom" });
+        definition.standardBlindInLast = lookupTablePath({ "standard" : "Custom" });
     }
 
     return definition;
+}
+
+/**
+ * Some standard based sizes do not have standard based cbore and/or csink specifications for that size. If that is
+ * the case (indicated by a value of -1 in the cbore or csink diameter of the standard data definition), then don't
+ * invalidate the standard, but allow the user to put in his own desired cbore/csink values for that standard size
+ *
+ * @param table : the current table map for the active size
+ * @returns : map of property names, if value is true, then that property's value should not be used to invalidate the standard setting
+ */
+function ignoreInvalidateStandardProperties(table is map) returns map
+{
+    var ignoreProperties = {};
+
+    // if there's no standard cbore or csink diameter defined for the current size (indicated by a negative value in the data definition),
+    // don't invalidate the standard, keep the standard active and allow user to put in what they want
+    if (!shouldPropertyValueInvalidateStandard(table, "cBoreDiameter"))
+    {
+        ignoreProperties["cBoreDiameter"] = true;
+        // if the cbore diameter doesn't invalidate the standard, the depth shouldn't either
+        ignoreProperties["cBoreDepth"] = true;
+    }
+    if (!shouldPropertyValueInvalidateStandard(table, "cSinkDiameter"))
+    {
+        ignoreProperties["cSinkDiameter"] = true;
+        // if the csink diameter doesn't invalidate the standard, the angle shouldn't either
+        ignoreProperties["cSinkAngle"] = true;
+    }
+
+    return ignoreProperties;
+}
+
+/**
+ * Determines if the specified property name should be used to invalid the standard based upon the specified data table map
+ *
+ * @param table : the current table map for the active size
+ * @param propertyName : the property name to check
+ * @returns : true if the property name should be used to check for standard invalidity, else false
+ */
+function shouldPropertyValueInvalidateStandard(table is map, propertyName is string) returns boolean
+{
+    var fieldValue = table[propertyName];
+    // default data values less than 0 mean this property value should not be used to check for standard invalidity
+    return fieldValue == undefined || lookupTableGetValue(fieldValue) >= 0;
 }
 
 /**
@@ -1506,8 +1647,8 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
     }
 
     var bbox = evBox3d(context, {
-        "topology" : qUnion([solidBodiesQuery, holeDefinition.locations])
-    });
+            "topology" : qUnion([solidBodiesQuery, holeDefinition.locations])
+        });
     var scopeSize = 1.1 * norm(bbox.maxCorner - bbox.minCorner);
 
     var minSize = holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST ? 2 : 1;
@@ -1552,11 +1693,11 @@ export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDe
             resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, evaluatedDefinition);
         }
         newCollisions[location] = {
-            "resultSame" : resultSame,
-            "resultOpposite" : resultOpposite
-        };
+                "resultSame" : resultSame,
+                "resultOpposite" : resultOpposite
+            };
     }
-//    TODO store newCollisions in local storage
+    //    TODO store newCollisions in local storage
     for (var location in locations)
     {
         var collisionResults = newCollisions[location];
@@ -1632,16 +1773,16 @@ function processCollisions(context is Context, solidBodiesQuery is Query, collis
 function findCollisions(context is Context, id is Id, holeNumber is number, solidBodiesQuery is Query, location is Query, scopeSize is ValueWithUnits, oppositeDirection is boolean, definition is map)
 {
     var tempDefinition = mergeMaps(definition, {
-        "heuristics" : true,
-        "startFromSketch" : true,
-        "style" : HoleStyle.SIMPLE,
-        "tipAngle" : 118 * degree,
-        "useTipDepth" : false,
-        "cSinkUseDepth" : false,
-        "cSinkDepth" : 0 * meter,
-        "generateErrorBodies" : false,
-        "oppositeDirection" : oppositeDirection
-    });
+            "heuristics" : true,
+            "startFromSketch" : true,
+            "style" : HoleStyle.SIMPLE,
+            "tipAngle" : 118 * degree,
+            "useTipDepth" : false,
+            "cSinkUseDepth" : false,
+            "cSinkDepth" : 0 * meter,
+            "generateErrorBodies" : false,
+            "oppositeDirection" : oppositeDirection
+        });
 
     if (tempDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
     {
@@ -1652,14 +1793,15 @@ function findCollisions(context is Context, id is Id, holeNumber is number, soli
         tempDefinition.scopeSize = scopeSize;
     }
 
-    var heuristicsId = id  + (oppositeDirection ? "heuristics_opposite" : "heuristics_same");
+    var heuristicsId = id + (oppositeDirection ? "heuristics_opposite" : "heuristics_same");
     var collisions = [];
     startFeature(context, heuristicsId, tempDefinition);
-    try {
+    try
+    {
         var result = { "numSuccess" : 0 };
         result = holeAtLocation(context, heuristicsId, holeNumber, location, tempDefinition, result);
         var toolQuery = qCreatedBy(heuristicsId, EntityType.BODY);
-        collisions = evCollision(context, { "tools" : toolQuery, "targets" : qSubtraction(solidBodiesQuery, toolQuery)});
+        collisions = evCollision(context, { "tools" : toolQuery, "targets" : qSubtraction(solidBodiesQuery, toolQuery) });
     }
     abortFeature(context, heuristicsId);
 
@@ -1685,7 +1827,7 @@ function clusterVertexQueries(context is Context, selected is Query) returns Que
     }
     var clusterQueries = [];
     var didCluster = false;
-    for ( var entry in perFeature)
+    for (var entry in perFeature)
     {
         var nPoints = size(entry.value);
         if (nPoints == 1)
@@ -1697,7 +1839,7 @@ function clusterVertexQueries(context is Context, selected is Query) returns Que
             var points = makeArray(nPoints);
             for (var i = 0; i < nPoints; i = i + 1)
             {
-                points[i] = evVertexPoint(context, {'vertex' : entry.value[i]});
+                points[i] = evVertexPoint(context, { 'vertex' : entry.value[i] });
             }
             var clusters = clusterPoints(points, TOLERANCE.zeroLength);
             if (size(clusters) != size(points))

@@ -1,28 +1,28 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "608.0");
-export import(path : "onshape/std/query.fs", version : "608.0");
-export import(path : "onshape/std/tool.fs", version : "608.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "626.0");
+export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/tool.fs", version : "626.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "608.0");
-import(path : "onshape/std/box.fs", version : "608.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "608.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "608.0");
-import(path : "onshape/std/containers.fs", version : "608.0");
-import(path : "onshape/std/evaluate.fs", version : "608.0");
-import(path : "onshape/std/feature.fs", version : "608.0");
-import(path : "onshape/std/math.fs", version : "608.0");
-import(path : "onshape/std/primitives.fs", version : "608.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "608.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "608.0");
-import(path : "onshape/std/string.fs", version : "608.0");
-import(path : "onshape/std/transform.fs", version : "608.0");
-import(path : "onshape/std/valueBounds.fs", version : "608.0");
+import(path : "onshape/std/attributes.fs", version : "626.0");
+import(path : "onshape/std/box.fs", version : "626.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "626.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "626.0");
+import(path : "onshape/std/evaluate.fs", version : "626.0");
+import(path : "onshape/std/feature.fs", version : "626.0");
+import(path : "onshape/std/math.fs", version : "626.0");
+import(path : "onshape/std/primitives.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "626.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "626.0");
+import(path : "onshape/std/string.fs", version : "626.0");
+import(path : "onshape/std/transform.fs", version : "626.0");
+import(path : "onshape/std/valueBounds.fs", version : "626.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -334,6 +334,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         throw regenError(ErrorStringEnum.SHEET_METAL_CAN_ONLY_REMOVE, [], booleanDefinition.targets);
     }
 
+    booleanDefinition.eraseImprintedEdges = definition.eraseImprintedEdges;
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
 
     if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
@@ -352,7 +353,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     const boolId = id + "boolean";
     try(booleanBodies(context, boolId, booleanDefinition));
     processSubfeatureStatus(context, id, { "subfeatureId" : boolId, "propagateErrorDisplay" : true });
-    if (getFeatureWarning(context, boolId) != undefined || getFeatureInfo(context, boolId) != undefined)
+    if (featureHasNonTrivialStatus(context, boolId))
     {
         const errorId = id + "errorEntities";
         reconstructOp(errorId);
@@ -479,7 +480,12 @@ export function surfaceOperationTypeEditLogic (context is Context, id is Id, def
 
 /**
  * @internal
- * Used by features using surface boolean
+ * Used by features using surface boolean.
+ * @param context {Context}
+ * @param id {Id}: Identifier of the feature
+ * @param created {Query}: All newly created edges to be considered in matching.
+ * @param originating {Query} : All original input edges that were used to create the edges.
+ * @param transform {Transform} : Remaining feature pattern transform
  */
 export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id, created is Query, originating is Query, transform is Transform) returns array
 {
@@ -501,7 +507,8 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
     var nMatches = 0;
     for (var i = 0; i < nCreatedEdges; i += 1)
     {
-        var originals = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([originatingEdges, qDependency(createdEdges[i])]), identityTransform()));
+        var dependencies = qDependency(createdEdges[i]);
+        var originals = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([originatingEdges, dependencies]), identityTransform()));
         var nOriginalMatches = size(originals);
         if (nOriginalMatches == 1)
         {
@@ -510,13 +517,13 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
         }
         else if (nOriginalMatches == 0)
         {
-            var originalEdge = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([nonMatchedOriginatingEdges, qDependency(createdEdges[i])]), inverse(transform)));
+            var originalEdge = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([nonMatchedOriginatingEdges, dependencies]), inverse(transform)));
             if (size(originalEdge) == 1)
             {
                 var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, originalEdge[0], transform));
                 if (size(edges) == 1)
                 {
-                    matches[nMatches] =  createJoinMatch(edges[0], createdEdges[i]);
+                    matches[nMatches] = createJoinMatch(edges[0], createdEdges[i]);
                     nMatches += 1;
                 }
             }
@@ -534,8 +541,9 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
  *      `matchType` is the type of match [TopologyMatchType] between them. Owner body of `matches[0].topology1` survives in the join operation.
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
  *      in case the input is problematic or the join itself fails.
+ * @param makeSolid {boolean}: Tries to join the surfaces into a solid
  */
-export function joinSurfaceBodies(context is Context, id is Id, matches is array, reconstructOp is function)
+export function joinSurfaceBodies(context is Context, id is Id, matches is array, makeSolid is boolean, reconstructOp is function)
 {
     const joinId = id + "join";
 
@@ -558,13 +566,13 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
             "allowSheets" : true,
             "tools" : qUnion(tools),
             "operationType" : BooleanOperationType.UNION,
-            "makeSolid" : false,
+            "makeSolid" : makeSolid,
             "eraseImprintedEdges" : true,
             "matches" : matches
         }));
         processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
     }
-    if (nMatches == 0 || getFeatureWarning(context, joinId) != undefined || getFeatureInfo(context, joinId) != undefined)
+    if (nMatches == 0 || featureHasNonTrivialStatus(context, joinId))
     {
         const errorId = id + "errorEntities";
         reconstructOp(errorId);
@@ -572,9 +580,6 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
         opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
     }
 }
-
-
-
 
 function performRegularBoolean(context is Context, id is Id, definition is map)
 {

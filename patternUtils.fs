@@ -1,17 +1,18 @@
-FeatureScript 608; /* Automatically generated version */
+FeatureScript 626; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "608.0");
-export import(path : "onshape/std/containers.fs", version : "608.0");
-export import(path : "onshape/std/evaluate.fs", version : "608.0");
-export import(path : "onshape/std/feature.fs", version : "608.0");
-export import(path : "onshape/std/featureList.fs", version : "608.0");
-export import(path : "onshape/std/valueBounds.fs", version : "608.0");
+export import(path : "onshape/std/boolean.fs", version : "626.0");
+export import(path : "onshape/std/containers.fs", version : "626.0");
+export import(path : "onshape/std/evaluate.fs", version : "626.0");
+export import(path : "onshape/std/feature.fs", version : "626.0");
+export import(path : "onshape/std/featureList.fs", version : "626.0");
+export import(path : "onshape/std/valueBounds.fs", version : "626.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "608.0");
+import(path : "onshape/std/mathUtils.fs", version : "626.0");
+import(path : "onshape/std/topologyUtils.fs", version : "626.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -58,19 +59,17 @@ export function computePatternOffset(context is Context, entity is Query, opposi
     if (oppositeDir)
         distance = -distance;
 
-    var direction;
-    const rawDirectionResult = try silent(evAxis(context, { "axis" : entity }));
-    if (rawDirectionResult == undefined)
-        direction = evPlane(context, { "face" : entity }).normal * distance;
-    else
-        direction = rawDirectionResult.direction * distance;
+    var direction = extractDirection(context, entity);
+    if (direction == undefined)
+        throw "Offset direction could not be computed";
+    var offset = direction * distance;
 
     if (withTransform)
     {
         var remainingTransformForAxis = getRemainderPatternTransform(context, { "references" : entity });
-        return { "offset" : (inverse(remainingTransform) * remainingTransformForAxis).linear * direction };
+        return { "offset" : (inverse(remainingTransform) * remainingTransformForAxis).linear * offset };
     }
-    return { "offset" : direction };
+    return { "offset" : offset };
 }
 
 /**
@@ -142,7 +141,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
         const reconstructOp = function(id) { opPattern(context, id, definition); };
         if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
         {
-            joinSurfaceBodies(context, id, definition.surfaceJoinMatches, reconstructOp);
+            joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
             if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
             {
                 return;

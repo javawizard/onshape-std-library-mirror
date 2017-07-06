@@ -6,16 +6,16 @@ FeatureScript 626; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * The subset of `GeometryType` which applies to 2-dimensional entities
+ * Specifies the level of geometric continuity.
  */
-export enum SurfaceType
+export enum GeometricContinuity
 {
-    PLANE,
-    CYLINDER,
-    CONE,
-    SPHERE,
-    TORUS,
-    OTHER
+    annotation {"Name" : "Position"}
+    G0,
+    annotation {"Name" : "Tangency"}
+    G1,
+    annotation {"Name" : "Curvature"}
+    G2
 }
 
 
