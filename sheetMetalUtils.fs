@@ -51,6 +51,16 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
     @updateSheetMetalGeometry(context, id, args);
  }
 
+/**
+* Direction of material from definition body. For old models (before V629_SM_MODEL_FRONT_N_BACK)
+* It is BOTH, for new models FRONT/BACK depends on oppositeDirection in sheetMetalStart
+*/
+export enum SMThicknessDirection
+{
+    BOTH,
+    FRONT,
+    BACK
+}
 
 /**
 * Assign SMAttributes to topology of sheet metal definition sheet body
@@ -73,7 +83,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         return 0;
     }
     var featureIdString = toAttributeId(id);
-    var thicknessData = {"value" : args.thickness, "canBeEdited" : args.controlsThickness};
+    var thicknessData = {"value" : (args.thicknessDirection == SMThicknessDirection.BOTH) ? 0.5 * args.thickness : args.thickness,
+                            "canBeEdited" : args.controlsThickness};
     if (args.controlsThickness)
     {
         thicknessData.controllingFeatureId = featureIdString;
@@ -108,7 +119,6 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
     var modelAttribute = asSMAttribute({"attributeId" : featureIdString,
                     "objectType" : SMObjectType.MODEL,
                     "active" : true,
-                    "thickness" : thicknessData,
                     "k-factor" : kFactorData,
                     "minimalClearance" : minimalClearanceData,
                     "defaultBendRadius" : {"value" : args.defaultRadius},
@@ -116,6 +126,17 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : defaultBendReliefScale,
                     "fsVersion" : getCurrentVersion(context)});
+    if (args.thicknessDirection == SMThicknessDirection.FRONT ||
+        args.thicknessDirection == SMThicknessDirection.BOTH)
+    {
+        modelAttribute.frontThickness = thicknessData;
+    }
+    if (args.thicknessDirection == SMThicknessDirection.BACK ||
+        args.thicknessDirection == SMThicknessDirection.BOTH)
+    {
+        modelAttribute.backThickness = thicknessData;
+    }
+
     if (args.defaultTwoCornerStyle != undefined)
     {
         modelAttribute.defaultTwoCornerStyle = args.defaultTwoCornerStyle;
@@ -149,7 +170,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
             bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
 
-            var bendRadius = surface.radius - 0.5 * args.thickness;
+            var bendRadius = surface.radius - args.thickness;
             bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
             setAttribute(context, {
                     "entities" : face,
@@ -602,13 +623,20 @@ export function getModelParameters(context is Context, model is Query) returns m
 {
     var attr = getAttributes(context, {"entities" : model, "attributePattern" : asSMAttribute({})});
 
-    if (size(attr) != 1 || attr[0].thickness == undefined || attr[0].thickness.value == undefined ||
+    if (size(attr) != 1 || (
+        (attr[0].frontThickness == undefined || attr[0].frontThickness.value == undefined)  &&
+        (attr[0].backThickness == undefined || attr[0].backThickness.value == undefined)) ||
         attr[0].minimalClearance == undefined || attr[0].minimalClearance.value == undefined ||
         attr[0].defaultBendRadius == undefined || attr[0].defaultBendRadius.value == undefined)
     {
         throw "Could not get sheet metal attribute.";
     }
-    return {"thickness" : attr[0].thickness.value, "minimalClearance" : attr[0].minimalClearance.value, "defaultBendRadius" : attr[0].defaultBendRadius.value};
+    var frontThickness = (attr[0].frontThickness == undefined) ? 0 * meter : attr[0].frontThickness.value;
+    var backThickness = (attr[0].backThickness == undefined) ? 0 * meter : attr[0].backThickness.value;
+    return {"frontThickness" : frontThickness,
+            "backThickness" : backThickness,
+            "minimalClearance" : attr[0].minimalClearance.value,
+            "defaultBendRadius" : attr[0].defaultBendRadius.value};
 }
 
 /**
@@ -986,6 +1014,65 @@ function adjustCornerBreakAttributes(context is Context, id is Id, vertexToTrack
             }
         }
     }
+}
+
+
+
+/**
+ * A function for getting associated sheet metal entities outside of a sheet metal feature.
+ */
+export function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
+{
+    var entityAssociations = try silent(getAttributes(context, {
+                "entities" : qBodyType(selection, BodyType.SOLID),
+                "attributePattern" : {} as SMAssociationAttribute
+            }));
+    var out = [];
+    if (entityAssociations != undefined)
+    {
+        for (var attribute in entityAssociations)
+        {
+            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
+            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery, entityType)]));
+            const ownerBody = qOwnerBody(qUnion(associatedEntities));
+            const isActive = try silent(isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR) ?
+                    isSheetMetalModelActive(context, ownerBody) : isSheetMetalModelActive(context, modelQuery));
+            const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
+            if ((isActive != undefined && isActive) || returnInactive)
+            {
+
+                out = concatenateArrays([out, associatedEntities]);
+            }
+        }
+    }
+    return out;
+}
+
+/**
+ * Returns an array of sm models associated with selection in a way that works outside of sheet metal features.
+ */
+export function getOwnerSMModel(context is Context, selection is Query) returns array
+{
+    var entityAssociations = try silent(getAttributes(context, {
+                "entities" : qBodyType(selection, BodyType.SOLID),
+                "attributePattern" : {} as SMAssociationAttribute
+            }));
+    var out = [];
+    if (entityAssociations != undefined)
+    {
+        for (var attribute in entityAssociations)
+        {
+            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
+            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery)]));
+            const ownerBody = qOwnerBody(qUnion(associatedEntities));
+            const isActive = isSheetMetalModelActive(context, ownerBody);
+            if (isActive != undefined && isActive)
+            {
+                out = append(out, ownerBody);
+            }
+        }
+    }
+    return out;
 }
 
 

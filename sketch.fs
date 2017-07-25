@@ -299,6 +299,8 @@ precondition
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
  *      @field construction {boolean} : `true` for a construction line @optional
+ *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally
+ *      @field mirrorVertical {boolean} : `true` for flipping text vertically
  * }}
  * @return {{
  *      @field textId
@@ -311,6 +313,8 @@ precondition
     value.fontName is string;
     value.text is string;
     value.construction is undefined || value.construction is boolean;
+    value.mirrorHorizontal is undefined || value.mirrorHorizontal is boolean;
+    value.mirrorVertical is undefined || value.mirrorVertical is boolean;
 }
 {
     return @skText(sketch, textId, value);

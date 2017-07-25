@@ -81,6 +81,7 @@ export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalMakeJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalRip.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalStart.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalTab.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalUnfold.fs", version : "✨");
 export import(path : "onshape/std/shell.fs", version : "✨");
 export import(path : "onshape/std/sketch.fs", version : "✨");

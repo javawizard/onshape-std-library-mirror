@@ -700,7 +700,6 @@ export function opNameEntity(context is Context, id is Id, definition is map)
 
 
 /**
- * @internal
  * Generates a surface body from supplied boundary and internal constraints. The boundaries are defined as
  * edge queries for each continuity constraint. The internal constraints may be defined as a set of support vertices.
  * @param id : @autocomplete `id + "opFillSurface1"`

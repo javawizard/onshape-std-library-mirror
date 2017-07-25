@@ -540,7 +540,18 @@ export enum FeatureScriptVersionNumber
     V623_SHEETMETAL_HOLE_ATTRIBUTE_FIX,
     V624_FILL_SURFACE_UI_UPDATES,
     V625_FILL_FS_FIXES,
-    V626_COLLAPSE_ARRAY_ITEMS_UIHINT
+    V626_COLLAPSE_ARRAY_ITEMS_UIHINT,
+    V628_LOFT_BUG_FIXES,
+    V629_SM_MODEL_FRONT_N_BACK,
+    V630_SM_BOOLEAN_NOOP_HANDLING,
+    V631_THROW_ID_TREE_ERROR,
+    V632_PROFILE_THROUGH_ALL,
+    V633_EXTRUDE_CONNECTED_PROFILE,
+    V634_MERGE_FROM_TOOLS_EVAL,
+    V635_PREVENT_MOVE_FACE_DISASSOCIATION,
+    V636_CONIC_FILLET_API_UPDATE,
+    V637_PS_VERSION_30_0_185,
+    V638_LONGER_BEND_RELIEF_AT_START
 }
 
 /**
@@ -551,6 +562,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V626_COLLAPSE_ARRAY_ITEMS_UIHINT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V638_LONGER_BEND_RELIEF_AT_START;
 
 

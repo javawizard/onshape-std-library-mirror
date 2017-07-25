@@ -63,7 +63,8 @@ export predicate canBeSMAttribute (value)
     value.objectType == undefined || value.objectType is SMObjectType;
     if (value.objectType == SMObjectType.MODEL)
     {
-        value.thickness == undefined || isLength(value.thickness.value);
+        value.frontThickness == undefined || isLength(value.frontThickness.value);
+        value.backThickness == undefined || isLength(value.backThickness.value);
         value.minimalClearance == undefined || isLength(value.minimalClearance.value);
     }
     else if (value.objectType == SMObjectType.JOINT)

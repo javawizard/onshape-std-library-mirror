@@ -775,63 +775,6 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
 }
 
 /**
- * A function for getting associated sheet metal entities outside of a sheet metal feature.
- */
-function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
-{
-    var entityAssociations = try silent(getAttributes(context, {
-                "entities" : qBodyType(selection, BodyType.SOLID),
-                "attributePattern" : {} as SMAssociationAttribute
-            }));
-    var out = [];
-    if (entityAssociations != undefined)
-    {
-        for (var attribute in entityAssociations)
-        {
-            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery, entityType)]));
-            const ownerBody = qOwnerBody(qUnion(associatedEntities));
-            const isActive = try silent(isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR) ?
-                    isSheetMetalModelActive(context, ownerBody) : isSheetMetalModelActive(context, modelQuery));
-            const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
-            if ((isActive != undefined && isActive) || returnInactive)
-            {
-
-                out = concatenateArrays([out, associatedEntities]);
-            }
-        }
-    }
-    return out;
-}
-
-/**
- * Returns an array of sm models associated with selection in a way that works outside of sheet metal features.
- */
-function getOwnerSMModel(context is Context, selection is Query) returns array
-{
-    var entityAssociations = try silent(getAttributes(context, {
-                "entities" : qBodyType(selection, BodyType.SOLID),
-                "attributePattern" : {} as SMAssociationAttribute
-            }));
-    var out = [];
-    if (entityAssociations != undefined)
-    {
-        for (var attribute in entityAssociations)
-        {
-            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery)]));
-            const ownerBody = qOwnerBody(qUnion(associatedEntities));
-            const isActive = isSheetMetalModelActive(context, ownerBody);
-            if (isActive != undefined && isActive)
-            {
-                out = append(out, ownerBody);
-            }
-        }
-    }
-    return out;
-}
-
-/**
  * @internal
  * Manipulator change function for `moveFace`.
  */

@@ -274,7 +274,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                 else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY)
                 {
                     annotation { "Name" : "Up to surface or part",
-                                 "Filter" : EntityType.BODY && SketchObject.NO,
+                                 "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
                                  "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityBody is Query;
                 }

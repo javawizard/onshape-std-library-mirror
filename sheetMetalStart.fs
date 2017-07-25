@@ -230,7 +230,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             thickenToSheetMetal(context, id, definition);
         }
     }, { "kFactor" : 0.45,
-     "minimalClearance" : 2e-5 * meter,
+      "minimalClearance" : 2e-5 * meter,
       "oppositeDirection" : false,
       "initEntities" : qNothing(),
       "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
@@ -343,6 +343,7 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
 {
     try
     {
+        var thicknessDirection = getThicknessDirection(context, definition);
         annotateSmSurfaceBodies(context, id, {
                     "surfaceBodies" : qCreatedBy(id, EntityType.BODY),
                     "bendEdges" : bendEdgesQuery,
@@ -350,6 +351,7 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
                     "defaultRadius" : definition.radius,
                     "controlsThickness" : true,
                     "thickness" : definition.thickness,
+                    "thicknessDirection" : thicknessDirection,
                     "minimalClearance" : definition.minimalClearance,
                     "kFactor" : definition.kFactor,
                     "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
@@ -432,7 +434,11 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
             }
         }
     }
-    var offset = 0.5 * definition.thickness + wallClearance;
+    var offset = wallClearance;
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK))
+    {
+       offset += 0.5 * definition.thickness;
+    }
     if (definition.oppositeDirection)
     {
         offset = -offset;
@@ -455,15 +461,17 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
         throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
     }
 
-    // Regardless of whether the sheets were created by curves or regions
-    // we want to offset the sheet by half the thickness
-    var oppositeOffset = definition.oppositeDirection;
-    if (definition.oppositeExtrudeDirection == true)
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK))
     {
-        oppositeOffset = !oppositeOffset;
+        // Regardless of whether the sheets were created by curves or regions
+        // we want to offset the sheet by half the thickness
+        var oppositeOffset = definition.oppositeDirection;
+        if (definition.oppositeExtrudeDirection == true)
+        {
+            oppositeOffset = !oppositeOffset;
+        }
+       offsetSheets(context, id, sheetQuery, definition.thickness, oppositeOffset);
     }
-    offsetSheets(context, id, sheetQuery, definition.thickness, oppositeOffset);
-
     const facesAndEdges = addSheetMetalDataToSheet(context, id, sheetQuery, definition);
     finalizeSheetMetalGeometry(context, id, facesAndEdges);
 }
@@ -553,7 +561,17 @@ function convertRegion(context is Context, id is Id, definition is map)
 {
     const extrudeId = id + "extrude";
     const sign = definition.oppositeDirection ? -1 : 1;
-    const startDepth = definition.thickness / 2 + definition.clearance;
+    var startDepth = definition.clearance;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK))
+    {
+        if (!definition.oppositeDirection)
+            startDepth += definition.thickness;
+    }
+    else
+    {
+        startDepth += 0.5 * definition.thickness;
+    }
+
     try
     {
         opExtrude(context, extrudeId, {
@@ -661,6 +679,8 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
             sharpEdges = append(sharpEdges, edge);
         }
     }
+
+    var thicknessDirection = getThicknessDirection(context, definition);
     var surfaceData =
     {
         "defaultRadius" : definition.radius,
@@ -668,6 +688,7 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "bendEdges" : qUnion(sharpEdges),
         "specialRadiiBends" : [],
         "thickness" : definition.thickness,
+        "thicknessDirection" : thicknessDirection,
         "controlsThickness" : true,
         "minimalClearance" : definition.minimalClearance,
         "kFactor" : definition.kFactor,
@@ -835,12 +856,13 @@ precondition
 
 function makeSurfaceBody(context is Context, id is Id, group is map)
 {
-    var out = { "thickness" : 0.5 * (group.offsetLow + group.offsetHigh) };
+    var out = { "thickness" : 0.5 * (group.offsetLow + group.offsetHigh),
+                "thicknessDirection" : SMThicknessDirection.BACK };
     try
     {
         opExtractSurface(context, id, {
                     "faces" : qUnion(group.side0),
-                    "offset" : -0.5 * out.thickness,
+                    "offset" : 0.0,
                     "useFacesAroundToTrimOffset" : true
                 });
         var srfBodies = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
@@ -898,7 +920,9 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
                         qEdgeAdjacent(boundingFaces[1], EntityType.EDGE)]));
             for (var edge in edges)
             {
-                out.specialRadiiBends = append(out.specialRadiiBends, [edge, cylSurface.radius - 0.5 * out.thickness]);
+                var convexity = evEdgeConvexity(context, { "edge" : edge });
+                var bendRadius = (convexity == EdgeConvexityType.CONVEX) ? cylSurface.radius - out.thickness : cylSurface.radius;
+                out.specialRadiiBends = append(out.specialRadiiBends, [edge, bendRadius]);
             }
         }
         catch
@@ -906,6 +930,24 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
         }
     }
     return out;
+}
+
+function getThicknessDirection(context is Context, startModelDefinition is map) returns SMThicknessDirection
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK))
+    {
+        return SMThicknessDirection.BOTH;
+    }
+    var oppositeDirection = startModelDefinition.oppositeDirection;
+    if (startModelDefinition.process == SMProcessType.EXTRUDE &&
+        startModelDefinition.oppositeExtrudeDirection == true)
+    {
+        //Flipping direction of extrude flips surface orientation
+        // Flip material side here so that result is symmetric
+        // with respect to the sketch plane.
+        oppositeDirection = !oppositeDirection;
+    }
+    return (oppositeDirection) ? SMThicknessDirection.BACK : SMThicknessDirection.FRONT;
 }
 
 /**

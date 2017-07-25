@@ -83,7 +83,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.edges is Query;
 
         annotation { "Name" : "Instance count" }
-        isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
+        isInteger(definition.instanceCount, CURVE_PATTERN_BOUNDS);
 
         annotation { "Name" : "Keep orientation"}
         definition.keepOrientation is boolean;
