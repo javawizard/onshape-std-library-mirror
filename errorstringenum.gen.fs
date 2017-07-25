@@ -1,4 +1,4 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -728,7 +728,11 @@ export enum ErrorStringEnum
     LOFT_START_OR_END_CONDITIONS_FAILED,
     LOFT_START_OR_END_CONDITIONS_MAGNITUDE_NO_EFFECT,
     FOLLOW_LEADER_IS_IN_UNFOLLOWABLE_TAB,
-    LOFT_START_OR_END_CONDITIONS_WITH_GUIDES_FAILED
+    LOFT_START_OR_END_CONDITIONS_WITH_GUIDES_FAILED,
+    REST_ASSEMBLY_MISSING_TRANSFORM_GROUPS,
+    REST_ASSEMBLY_NULL_TRANSFORM_GROUP,
+    REST_ASSEMBLY_NULL_TRANSFORM_GROUP_INSTANCES,
+    REST_ASSEMBLY_NULL_TRANSFORM_GROUP_INSTANCE
 }
 
 

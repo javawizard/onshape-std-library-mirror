@@ -1,28 +1,28 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "626.0");
-export import(path : "onshape/std/tool.fs", version : "626.0");
+export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/tool.fs", version : "638.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "626.0");
+export import(path : "onshape/std/manipulator.fs", version : "638.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "626.0");
-import(path : "onshape/std/box.fs", version : "626.0");
-import(path : "onshape/std/containers.fs", version : "626.0");
-import(path : "onshape/std/curveGeometry.fs", version : "626.0");
-import(path : "onshape/std/evaluate.fs", version : "626.0");
-import(path : "onshape/std/feature.fs", version : "626.0");
-import(path : "onshape/std/mathUtils.fs", version : "626.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "626.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "626.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
-import(path : "onshape/std/topologyUtils.fs", version : "626.0");
-import(path : "onshape/std/valueBounds.fs", version : "626.0");
+import(path : "onshape/std/attributes.fs", version : "638.0");
+import(path : "onshape/std/box.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "638.0");
+import(path : "onshape/std/curveGeometry.fs", version : "638.0");
+import(path : "onshape/std/evaluate.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/mathUtils.fs", version : "638.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
+import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/valueBounds.fs", version : "638.0");
 
 
 /**
@@ -772,63 +772,6 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
                             "angle" : angle,
                             "minValue" : minValue,
                             "maxValue" : maxValue }) });
-}
-
-/**
- * A function for getting associated sheet metal entities outside of a sheet metal feature.
- */
-function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
-{
-    var entityAssociations = try silent(getAttributes(context, {
-                "entities" : qBodyType(selection, BodyType.SOLID),
-                "attributePattern" : {} as SMAssociationAttribute
-            }));
-    var out = [];
-    if (entityAssociations != undefined)
-    {
-        for (var attribute in entityAssociations)
-        {
-            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery, entityType)]));
-            const ownerBody = qOwnerBody(qUnion(associatedEntities));
-            const isActive = try silent(isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR) ?
-                    isSheetMetalModelActive(context, ownerBody) : isSheetMetalModelActive(context, modelQuery));
-            const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
-            if ((isActive != undefined && isActive) || returnInactive)
-            {
-
-                out = concatenateArrays([out, associatedEntities]);
-            }
-        }
-    }
-    return out;
-}
-
-/**
- * Returns an array of sm models associated with selection in a way that works outside of sheet metal features.
- */
-function getOwnerSMModel(context is Context, selection is Query) returns array
-{
-    var entityAssociations = try silent(getAttributes(context, {
-                "entities" : qBodyType(selection, BodyType.SOLID),
-                "attributePattern" : {} as SMAssociationAttribute
-            }));
-    var out = [];
-    if (entityAssociations != undefined)
-    {
-        for (var attribute in entityAssociations)
-        {
-            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery)]));
-            const ownerBody = qOwnerBody(qUnion(associatedEntities));
-            const isActive = isSheetMetalModelActive(context, ownerBody);
-            if (isActive != undefined && isActive)
-            {
-                out = append(out, ownerBody);
-            }
-        }
-    }
-    return out;
 }
 
 /**

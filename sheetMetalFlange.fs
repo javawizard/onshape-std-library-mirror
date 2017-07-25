@@ -1,28 +1,28 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "626.0");
-import(path : "onshape/std/boolean.fs", version : "626.0");
-import(path : "onshape/std/containers.fs", version : "626.0");
-import(path : "onshape/std/curveGeometry.fs", version : "626.0");
-import(path : "onshape/std/extrude.fs", version : "626.0");
-import(path : "onshape/std/evaluate.fs", version : "626.0");
-import(path : "onshape/std/feature.fs", version : "626.0");
-import(path : "onshape/std/math.fs", version : "626.0");
-import(path : "onshape/std/matrix.fs", version : "626.0");
-import(path : "onshape/std/query.fs", version : "626.0");
-import(path : "onshape/std/sketch.fs", version : "626.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "626.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "626.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "626.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
-import(path : "onshape/std/topologyUtils.fs", version : "626.0");
-import(path : "onshape/std/units.fs", version : "626.0");
-import(path : "onshape/std/valueBounds.fs", version : "626.0");
-import(path : "onshape/std/vector.fs", version : "626.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "626.0");
+import(path : "onshape/std/attributes.fs", version : "638.0");
+import(path : "onshape/std/boolean.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "638.0");
+import(path : "onshape/std/curveGeometry.fs", version : "638.0");
+import(path : "onshape/std/extrude.fs", version : "638.0");
+import(path : "onshape/std/evaluate.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/math.fs", version : "638.0");
+import(path : "onshape/std/matrix.fs", version : "638.0");
+import(path : "onshape/std/query.fs", version : "638.0");
+import(path : "onshape/std/sketch.fs", version : "638.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "638.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
+import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/units.fs", version : "638.0");
+import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/vector.fs", version : "638.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "638.0");
 
 
 const FLANGE_ANGLE_BOUNDS =
@@ -437,14 +437,13 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
                    "modifiedEntities" : modifiedEntities,
                    "cornerVertices" : evaluateQuery(context, qUnion(originalCornerVertices))};
 
-    if (definition.flangeAlignment == SMFlangeAlignment.MIDDLE)
-        return result;
+    var thickness = inFlangeThickness(definition);
 
-
-    var extendDistance = .5 * definition.thickness * (1 - cos(definition.bendAngle));
-    var flipForAlignment = definition.flangeAlignment == SMFlangeAlignment.OUTER ? -1 : 1;
-    var flipForDirection = definition.oppositeDirection ? -1 : 1;
-    extendDistance = flipForAlignment * flipForDirection * extendDistance;
+    if (abs(thickness / meter) < TOLERANCE.zeroLength)
+    {
+       return result;
+    }
+    var extendDistance = thickness * (1 - cos(definition.bendAngle));
 
     var changedEntities = [];
     var index = 0;
@@ -550,10 +549,14 @@ function updateDefinition(context is Context, edge is Query, definition is map, 
 
 function getOffsetForClearance(context is Context, sidePlane is Plane, clearance is ValueWithUnits, definition is map, flangePlane is Plane)
 {
-    var minDelta = clearance;
-
-    var angleClearance = .5 * definition.thickness * abs(dot(flangePlane.normal, sidePlane.normal));
-    var offsetForClearance = minDelta + angleClearance;
+    var offsetForClearance = clearance;
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK) ||
+        !perpendicularVectors(flangePlane.normal, sidePlane.normal))
+    {
+        var normalDot = dot(flangePlane.normal, sidePlane.normal);
+        var thickness = (normalDot > 0) ? definition.backThickness : definition.frontThickness;
+        offsetForClearance += thickness * abs(normalDot);
+    }
     return offsetForClearance;
 }
 
@@ -585,14 +588,21 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     //find direction of side edge on the adjacent plane
     const sideEdgeMidPt = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0.5] , "face": flangeData.adjacentFace});
     var adjacentPlane = evPlane(context, {"face" : flangeData.adjacentFace});
-    var offset = (definition.thickness * 0.5 + edgeBendRadius) * tan(.5 * edgeBendAngle);
+    var thickness = 0;
+    var convexity = evEdgeConvexity(context, {"edge" : sideEdge});
+    if (convexity == EdgeConvexityType.CONVEX)
+       thickness = definition.backThickness;
+    else if (convexity == EdgeConvexityType.CONCAVE)
+       thickness = definition.frontThickness;
+
+    var offset = (thickness + edgeBendRadius) * tan(.5 * edgeBendAngle);
     // "move" side edge towards the inside of adjacent plane by offset (based on side edge bend info)
     var directionToMoveEdgeBy = cross(adjacentPlane.normal, sideEdgeMidPt[0].direction);
     var planeFromSideEdge = plane(vertexPoint + directionToMoveEdgeBy * offset, directionToMoveEdgeBy);
 
     //find flange edge direction on adjacent plane
     const flangeEdgeMidPt = evEdgeTangentLines(context, {"edge": flangeEdge, "parameters" : [0.5], "face": flangeData.adjacentFace});
-    offset = (definition.thickness * 0.5 + definition.bendRadius) * tan(.5 * definition.bendAngle);
+    offset = (thickness + definition.bendRadius) * tan(.5 * definition.bendAngle);
     // "move" flange edge towards the inside of adjacent plane by offset (based on flange bend info)
     directionToMoveEdgeBy = cross(adjacentPlane.normal, flangeEdgeMidPt[0].direction);
     var lineFromFlangeEdge = line(vertexPoint + directionToMoveEdgeBy * offset, flangeEdgeMidPt[0].direction);
@@ -619,7 +629,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
             //just use the original planeFromSideEdge for base shift
             return computeBaseFromShiftedPlane(context, 0.0 * meter, planeFromSideEdge, edgeLine);
         }
-        offset = (definition.thickness * 0.5 + definition.bendRadius) * tan(.5 * definition.bendAngle);
+        offset = (thickness + definition.bendRadius) * tan(.5 * definition.bendAngle);
         var lineFromBentEdge = line(vertexPoint + flangeData.direction * offset, flangeEdgeMidPt[0].direction);
         var updatedProjection = project(lineFromBentEdge, intersectionData.intersection);
         var offsetFromBend = evDistance(context, {"side0" : updatedProjection, "side1": project(sidePlane, updatedProjection)}).distance;
@@ -908,7 +918,8 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
     var adjPlane = undefined;
     // Edge direction at vertex, pointing from vertex
     var edgeEndDirection = i == 0 ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
-
+    var alignFlippedFlange = isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK);
+    var clearanceFromSide = definition.minimalClearance;
     if (sideFace == undefined && edgeY == undefined)
     {
         if (edgeToFlangeData[sideEdge] != undefined)
@@ -916,16 +927,26 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
        else
             sidePlane = plane(position, edgeEndDirection);
         adjPlane = edgeToFlangeData[edge].plane;
+        if (!alignFlippedFlange)
+            clearanceFromSide += 0.5 * (definition.frontThickness + definition.backThickness);
     }
     else
     {
         sidePlane = evPlane(context, {"face" : sideFace});
         adjPlane = evPlane(context, {"face" : flangeData.adjacentFace});
+        if ( dot(sidePlane.normal, edgeEndDirection) > 0)
+        {
+            clearanceFromSide += definition.frontThickness;
+        }
+        else
+        {
+            clearanceFromSide += definition.backThickness;
+        }
     }
     var needsTrimChanges = false;
     var autoMitered = false; // vertex is a corner where an actual miter happened when auto-miter is on
     var tighterClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V521_SM_CLEARANCE);
-    var clearanceFromSide = definition.minimalClearance + definition.thickness * 0.5;
+
     if (!definition.autoMiter)
     {
         var sidePlane = plane(position, edgeEndDirection);
@@ -966,11 +987,14 @@ function getVertexData(context is Context, edge is Query, vertex is Query, edgeT
         if (edgeY != undefined)
         {
             var components = representInVectors(getVectorForEdge(context, edgeY, position), getVectorForEdge(context, sideEdge, position), flangeData.direction);
+            if (alignFlippedFlange)
+            {
+                needsBaseUpdate = true;
+            }
             if (components[0] > TOLERANCE.zeroLength)
             {
                 needsBaseUpdate = true;
                 needsTrimChanges = true;
-
                 if (components[1] > -TOLERANCE.zeroLength)
                 {
                     needsSideDirUpdate = true;
@@ -1151,7 +1175,10 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     {
         minDelta += definition.offset;
     }
-    planeResult = movePlaneForFlangeClearance(flangePlane, planeResult, true, thickness, minDelta);
+
+    var withPlaneNormal = isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK) ?
+                            dot(flangeDirection, planeResult.normal) < 0 : true;
+    planeResult = movePlaneForFlangeClearance(flangePlane, planeResult, withPlaneNormal , thickness, minDelta);
     return planeResult;
 }
 
@@ -1163,7 +1190,7 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
 function movePlaneForFlangeClearance(flangePlane is Plane, otherPlane is Plane, withPlaneNormal is boolean, thickness, minDelta) returns Plane
 {
     //angle between flange plane and side plane
-    var angleClearance = .5 * thickness * abs(dot(flangePlane.normal, otherPlane.normal));
+    var angleClearance = thickness * abs(dot(flangePlane.normal, otherPlane.normal));
     var delta = minDelta + angleClearance;
     delta = (withPlaneNormal ? 1 : -1) * delta;
     otherPlane.origin = otherPlane.origin + delta * otherPlane.normal;
@@ -1174,7 +1201,6 @@ function movePlaneForFlangeClearance(flangePlane is Plane, otherPlane is Plane, 
 function createAndSolveSketch(context is Context, topLevelId is Id, id is Id, edge is Query, definition is map)
 {
     var flangeData = getFlangeData(context, edge, definition);
-    var thickness = definition.thickness;
     var flangeDirection = flangeData.direction;
 
     var distance = 0.0 * meter;
@@ -1183,11 +1209,14 @@ function createAndSolveSketch(context is Context, topLevelId is Id, id is Id, ed
     var basePoints = definition.flangeBasePoints;
     if (definition.limitType == SMFlangeBoundingType.BLIND)
     {
-        distance = definition.distance  - ((0.5 * thickness) / tan(.5 * (PI * radian - definition.bendAngle)));
+        var thickness = (definition.oppositeDirection) ? definition.backThickness : definition.frontThickness;
+        distance = definition.distance  - thickness * tan(.5 * definition.bendAngle);
         offsets = getOffsetsForSideEdgesForBlind(definition.flangeSideDirections, flangeDirection, distance);
     }
     else
     {
+        var obtuseAngle = definition.bendAngle > (0.5 * PI + TOLERANCE.zeroAngle) * radian;
+        var thickness = (obtuseAngle == definition.oppositeDirection) ? definition.backThickness : definition.frontThickness;
         var planeResult = getPlaneForLimitEntity(context, definition, flangeData, thickness);
         offsets = getOffsetsForSideEdgesUpToPlane(context, definition.flangeSideDirections, flangeDirection, basePoints, planeResult);
     }
@@ -1262,4 +1291,19 @@ function tolerantCoLinear(line0 is Line, line1 is Line) returns boolean
     }
     return false;
 }
+
+function inFlangeThickness(definition is map)
+{
+    if (definition.flangeAlignment == SMFlangeAlignment.OUTER)
+       return (definition.oppositeDirection) ? definition.backThickness : -definition.frontThickness;
+    else if (definition.flangeAlignment == SMFlangeAlignment.MIDDLE)
+    {
+       return 0.5 * (definition.backThickness - definition.frontThickness);
+    }
+    else if (definition.flangeAlignment == SMFlangeAlignment.INNER)
+    {
+       return (definition.oppositeDirection) ? -definition.frontThickness : definition.backThickness;
+    }
+}
+
 

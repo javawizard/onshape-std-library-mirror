@@ -1,30 +1,30 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "626.0");
-export import(path : "onshape/std/query.fs", version : "626.0");
-export import(path : "onshape/std/tool.fs", version : "626.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/tool.fs", version : "638.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "626.0");
+export import(path : "onshape/std/manipulator.fs", version : "638.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "626.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "626.0");
-import(path : "onshape/std/box.fs", version : "626.0");
-import(path : "onshape/std/containers.fs", version : "626.0");
-import(path : "onshape/std/coordSystem.fs", version : "626.0");
-import(path : "onshape/std/curveGeometry.fs", version : "626.0");
-import(path : "onshape/std/draft.fs", version : "626.0");
-import(path : "onshape/std/evaluate.fs", version : "626.0");
-import(path : "onshape/std/feature.fs", version : "626.0");
-import(path : "onshape/std/mathUtils.fs", version : "626.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
-import(path : "onshape/std/transform.fs", version : "626.0");
-import(path : "onshape/std/valueBounds.fs", version : "626.0");
+import(path : "onshape/std/boolean.fs", version : "638.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "638.0");
+import(path : "onshape/std/box.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "638.0");
+import(path : "onshape/std/coordSystem.fs", version : "638.0");
+import(path : "onshape/std/curveGeometry.fs", version : "638.0");
+import(path : "onshape/std/draft.fs", version : "638.0");
+import(path : "onshape/std/evaluate.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/mathUtils.fs", version : "638.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
+import(path : "onshape/std/transform.fs", version : "638.0");
+import(path : "onshape/std/valueBounds.fs", version : "638.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -274,7 +274,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                 else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY)
                 {
                     annotation { "Name" : "Up to surface or part",
-                                 "Filter" : EntityType.BODY && SketchObject.NO,
+                                 "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
                                  "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityBody is Query;
                 }

@@ -1,4 +1,4 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,25 +43,25 @@ FeatureScript 626; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "626.0");
+export import(path : "onshape/std/query.fs", version : "638.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "626.0");
-import(path : "onshape/std/evaluate.fs", version : "626.0");
-import(path : "onshape/std/feature.fs", version : "626.0");
-import(path : "onshape/std/mathUtils.fs", version : "626.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "626.0");
-import(path : "onshape/std/tool.fs", version : "626.0");
-import(path : "onshape/std/valueBounds.fs", version : "626.0");
-import(path : "onshape/std/matrix.fs", version : "626.0");
+import(path : "onshape/std/containers.fs", version : "638.0");
+import(path : "onshape/std/evaluate.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/mathUtils.fs", version : "638.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
+import(path : "onshape/std/tool.fs", version : "638.0");
+import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/matrix.fs", version : "638.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "626.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "626.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "626.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "626.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "626.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "626.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "638.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "638.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "638.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "638.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "638.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "638.0");
 
 /**
  * @internal
@@ -299,6 +299,8 @@ precondition
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
  *      @field construction {boolean} : `true` for a construction line @optional
+ *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally
+ *      @field mirrorVertical {boolean} : `true` for flipping text vertically
  * }}
  * @return {{
  *      @field textId
@@ -311,6 +313,8 @@ precondition
     value.fontName is string;
     value.text is string;
     value.construction is undefined || value.construction is boolean;
+    value.mirrorHorizontal is undefined || value.mirrorHorizontal is boolean;
+    value.mirrorVertical is undefined || value.mirrorVertical is boolean;
 }
 {
     return @skText(sketch, textId, value);

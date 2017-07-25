@@ -1,19 +1,19 @@
-FeatureScript 626; /* Automatically generated version */
+FeatureScript 638; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "626.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "626.0");
-import(path : "onshape/std/containers.fs", version : "626.0");
-import(path : "onshape/std/evaluate.fs", version : "626.0");
-import(path : "onshape/std/feature.fs", version : "626.0");
-import(path : "onshape/std/math.fs", version : "626.0");
-import(path : "onshape/std/string.fs", version : "626.0");
-import(path : "onshape/std/topologyUtils.fs", version : "626.0");
-import(path : "onshape/std/transform.fs", version : "626.0");
-import(path : "onshape/std/valueBounds.fs", version : "626.0");
-import(path : "onshape/std/vector.fs", version : "626.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "638.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "638.0");
+import(path : "onshape/std/evaluate.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/math.fs", version : "638.0");
+import(path : "onshape/std/string.fs", version : "638.0");
+import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/transform.fs", version : "638.0");
+import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/vector.fs", version : "638.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -120,6 +120,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 const extendedEndPoints = entitiesToExtrudeResult.extendedEndPoints;
 
                 var extrudeResult = extrudeRibs(context, instanceId, profile, entitiesToExtrudeResult, remainingTransform, extendLength, true, definition);
+                // Set ribDirection here so that extrudeRibs can reuse it for the next profile
+                definition.ribDirection = extrudeResult.ribDirection;
                 badSubtractions = concatenateArrays([badSubtractions, extrudeResult.badSubtractions]);
                 thickenId = extrudeResult.thickenId;
             }
@@ -325,23 +327,30 @@ function extrudeRibs(context is Context,
     // Find the direction to extrude a surface that will later be thickened to produce the rib.
     // First determine the normal or parallel direction, then, if specified,
     // choose the opposite of the normal or parallel direction.
-    const profilePlane = evOwnerSketchPlane(context, { "entity" : profile });
     var ribDirection;
-    if (definition.ribExtrusionDirection == RibExtrusionDirection.PARALLEL_TO_SKETCH_PLANE)
+    if (definition.ribDirection == undefined)
     {
-        // To get the parallel direction with the sketch plane, find the direction perpendicular
-        // to the sketch plane normal and the line that connects the start and end point of the profile.
-        const profileDirection = normalize(profileEndTangentLines[1].origin - profileEndTangentLines[0].origin);
-        ribDirection = cross(profilePlane.normal, profileDirection);
+        const profilePlane = evOwnerSketchPlane(context, { "entity" : profile });
+        if (definition.ribExtrusionDirection == RibExtrusionDirection.PARALLEL_TO_SKETCH_PLANE)
+        {
+            // To get the parallel direction with the sketch plane, find the direction perpendicular
+            // to the sketch plane normal and the line that connects the start and end point of the profile.
+            const profileDirection = normalize(profileEndTangentLines[1].origin - profileEndTangentLines[0].origin);
+            ribDirection = cross(profilePlane.normal, profileDirection);
+        }
+        else
+        {
+            ribDirection = profilePlane.normal;
+        }
+
+        if (definition.oppositeDirection)
+        {
+            ribDirection = ribDirection * -1;
+        }
     }
     else
     {
-        ribDirection = profilePlane.normal;
-    }
-
-    if (definition.oppositeDirection)
-    {
-        ribDirection = ribDirection * -1;
+        ribDirection = definition.ribDirection;
     }
 
     // Extrude a surface from the extended profile into the part(s), using the extend length
@@ -440,7 +449,7 @@ function extrudeRibs(context is Context,
                 "entities" : qUnion(entitiesToDelete)
                     });
 
-    return { "badSubtractions" : badSubtractions, "thickenId" : thickenId };
+    return { "badSubtractions" : badSubtractions, "thickenId" : thickenId, "ribDirection" : ribDirection };
 }
 
 function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Query, scopeSize is ValueWithUnits, definition is map) returns array
@@ -474,6 +483,8 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
         const extendedEndPoints = entitiesToExtrudeResult.extendedEndPoints;
 
         const extendResult = extrudeRibs(context, instanceId, profile, entitiesToExtrudeResult, remainingTransform, scopeSize, false, definition);
+        // Set ribDirection here so that extrudeRibs can reuse it for the next profile
+        definition.ribDirection = extendResult.ribDirection;
         var thickenQuery = qCreatedBy(extendResult.thickenId, EntityType.BODY);
         try
         {
