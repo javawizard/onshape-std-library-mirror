@@ -1,28 +1,28 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "638.0");
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/box.fs", version : "638.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/math.fs", version : "638.0");
-import(path : "onshape/std/primitives.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
-import(path : "onshape/std/string.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/box.fs", version : "660.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/primitives.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
+import(path : "onshape/std/string.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -383,6 +383,31 @@ export predicate surfaceOperationTypePredicate(surfaceDefinition is map)
     surfaceDefinition.surfaceOperationType is NewSurfaceOperationType;
 }
 
+/**
+ * Used by surface-creating feature preconditions to allow post-creation booleans,
+ * specifying the merge scope (or "Merge with all") for that boolean.
+ *
+ * Designed to be used together with [surfaceOperationTypePredicate].
+ *
+ * @param definition : @autocomplete `definition`
+ */
+
+export predicate surfaceJoinStepScopePredicate(definition is map)
+{
+    if (definition.surfaceOperationType != NewSurfaceOperationType.NEW)
+    {
+        if (definition.defaultSurfaceScope != undefined)
+        {
+            annotation { "Name" : "Merge with all", "Default" : true }
+            definition.defaultSurfaceScope is boolean;
+            if (definition.defaultSurfaceScope != true)
+            {
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES }
+                definition.booleanSurfaceScope is Query;
+            }
+        }
+    }
+}
 
 /**
  * @internal
@@ -446,7 +471,7 @@ function createJoinMatch(topology1 is Query, topology2 is Query) returns map
  * Used by features using surface boolean heuristics
  */
 export function surfaceOperationTypeEditLogic (context is Context, id is Id, definition is map,
-                                           specifiedParameters is map, inputEdges is Query)
+                                           specifiedParameters is map, inputEdges is Query, hiddenBodies is Query)
 {
     if (!specifiedParameters.surfaceOperationType)
     {
@@ -466,7 +491,8 @@ export function surfaceOperationTypeEditLogic (context is Context, id is Id, def
 
             for (var i = 0; i < size(otherEdges); i += 1)
             {
-                if (size(evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, otherEdges[i], identityTransform()))) > 0)
+                var siblingEdges = getJoinableSurfaceEdgeFromParentEdge(context, id, otherEdges[i], identityTransform());
+                if (size(evaluateQuery(context, qSubtraction(siblingEdges, qOwnedByBody(hiddenBodies, EntityType.EDGE)))) > 0)
                 {
                     anyJoinable = true;
                     break;
@@ -478,16 +504,38 @@ export function surfaceOperationTypeEditLogic (context is Context, id is Id, def
     return definition;
 }
 
+function filterByOwnerBody(context is Context, edges is Query, bodies is Query) returns Query
+{
+    var allEdges = evaluateQuery(context, edges);
+    var filteredEdges = [];
+    for (var edge in allEdges)
+    {
+        if (size(evaluateQuery(context, qSubtraction(qOwnerBody(edge), bodies))) == 0)
+        {
+            filteredEdges = append(filteredEdges, edge);
+        }
+    }
+
+    return qUnion(filteredEdges);
+}
+
 /**
  * @internal
  * Used by features using surface boolean.
+ * Designed to be used together with [surfaceJoinStepScopePredicate].
  * @param context {Context}
  * @param id {Id}: Identifier of the feature
+ * @param definition {{
+ *      @field defaultSurfaceScope {boolean}: @optional
+ *              @eg `true`  indicates merge scope of all the original and related surfaces used as input to create this surface (default)
+ *              @eg `false` indicates merge scope is specified in `booleanSurfaceScope`
+ *      @field booleanSurfaceScope {Query}: targets to use if `defaultSurfaceScope` is false
+ * }}
  * @param created {Query}: All newly created edges to be considered in matching.
  * @param originating {Query} : All original input edges that were used to create the edges.
  * @param transform {Transform} : Remaining feature pattern transform
  */
-export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id, created is Query, originating is Query, transform is Transform) returns array
+export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, created is Query, originating is Query, transform is Transform) returns array
 {
     var createdEdges = evaluateQuery(context, qEdgeTopologyFilter(created, EdgeTopology.LAMINAR));
     var originatingEdges = filterJoinableSurfaceEdges(originating);
@@ -501,6 +549,16 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
     {
         nonMatchedOriginatingEdges = qSketchFilter(originating, SketchObject.YES);
     }
+
+    if (definition.defaultSurfaceScope == false)
+    {
+        if (size(evaluateQuery(context, definition.booleanSurfaceScope)) == 0)
+        {
+            throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE, ["booleanSurfaceScope"]);
+        }
+        originatingEdges = filterByOwnerBody(context, originatingEdges, definition.booleanSurfaceScope);
+    }
+
     var nCreatedEdges = size(createdEdges);
 
     var matches = makeArray(nCreatedEdges);
@@ -510,28 +568,63 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
         var dependencies = qDependency(createdEdges[i]);
         var originals = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([originatingEdges, dependencies]), identityTransform()));
         var nOriginalMatches = size(originals);
+        var matchedEdge = undefined;
         if (nOriginalMatches == 1)
         {
-            matches[nMatches] = createJoinMatch(originals[0], createdEdges[i]);
-            nMatches += 1;
+            matchedEdge = originals[0];
         }
         else if (nOriginalMatches == 0)
         {
-            var originalEdge = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([nonMatchedOriginatingEdges, dependencies]), inverse(transform)));
-            if (size(originalEdge) == 1)
+            var originalEdges = evaluateQuery(context, filterOverlappingEdges(context, createdEdges[i], qIntersection([nonMatchedOriginatingEdges, dependencies]), inverse(transform)));
+            if (size(originalEdges) == 1)
             {
-                var edges = evaluateQuery(context, getJoinableSurfaceEdgeFromParentEdge(context, id, originalEdge[0], transform));
+                var siblingEdges = getJoinableSurfaceEdgeFromParentEdge(context, id, originalEdges[0], transform);
+                if (definition.defaultSurfaceScope == false)
+                {
+                    siblingEdges = filterByOwnerBody(context, siblingEdges, definition.booleanSurfaceScope);
+                }
+                var edges = evaluateQuery(context, siblingEdges);
                 if (size(edges) == 1)
                 {
-                    matches[nMatches] = createJoinMatch(edges[0], createdEdges[i]);
-                    nMatches += 1;
+                    matchedEdge = edges[0];
                 }
             }
+        }
+
+        if (matchedEdge != undefined)
+        {
+            matches[nMatches] = createJoinMatch(matchedEdge, createdEdges[i]);
+            nMatches += 1;
         }
     }
 
     return resize(matches, nMatches);
 }
+
+/**
+ * @internal
+ * Throws error if booleanSurfaceScope contains a surface that is not present in matches
+ * Used by features using surface boolean.
+ * Designed to be used together with [createTopologyMatchesForSurfaceJoin].
+ */
+export function checkForNotJoinableSurfacesInScope(context is Context, id is Id, definition is map, matches is array)
+{
+    if (definition.defaultSurfaceScope == false)
+    {
+        var allMatchTargets = [];
+        for (var i = 0; i < size(matches); i += 1 )
+        {
+            allMatchTargets = append(allMatchTargets, qOwnerBody(matches[i].topology1));
+        }
+        var notJoinableSurfacesInScope = qSubtraction(definition.booleanSurfaceScope, qUnion(allMatchTargets));
+        if (size(evaluateQuery(context, notJoinableSurfacesInScope)) > 0)
+        {
+             setErrorEntities(context, id, { "entities" : notJoinableSurfacesInScope });
+             reportFeatureWarning(context, id, ErrorStringEnum.BOOLEAN_NO_SHARED_EDGE_WITH_SURFACE_IN_MERGE_SCOPE);
+        }
+    }
+}
+
 /**
  * Joins surface bodies at the matching edges.
  * @param context {Context}
@@ -550,7 +643,10 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
     var nMatches = size(matches);
     if (nMatches == 0)
     {
-        reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
+        if (!featureHasNonTrivialStatus(context, id))
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE);
+        }
     }
     else
     {
@@ -568,7 +664,8 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
             "operationType" : BooleanOperationType.UNION,
             "makeSolid" : makeSolid,
             "eraseImprintedEdges" : true,
-            "matches" : matches
+            "matches" : matches,
+            "recomputeMatches" : true
         }));
         processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
     }
@@ -744,9 +841,19 @@ function createOutline(context is Context, id is Id, trimmed is Query, planarFac
     return qCreatedBy(outlineId, EntityType.FACE);
 }
 
-function createBooleanToolsForFace(context is Context, id is Id, planarFace is Query, tool is Query, modelParameters is map)
+/**
+ * @internal
+ */
+export function createBooleanToolsForFace(context is Context, id is Id, planarFace is Query, tool is Query, modelParameters is map)
 {
-    const thickened = thickenFace(context, id, modelParameters, planarFace);
+    var thickened = thickenFace(context, id, modelParameters, planarFace);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V646_SM_MULTI_TOOL_FIX))
+    {
+        // The intersection of the thickened body with the tool creates multiple bits and
+        // they get evaluated by the original 'thickened' query in subsequent passes through the loop.
+        // We don't want that and so we will evaluate the thickened body first
+        thickened = qUnion(evaluateQuery(context, thickened));
+    }
     const toolCount = size(evaluateQuery(context, tool));
     var tools = [];
     var allTrimmed = [];

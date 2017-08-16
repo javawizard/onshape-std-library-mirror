@@ -1,20 +1,20 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "638.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/boolean.fs", version : "660.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -55,6 +55,10 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             booleanStepScopePredicate(definition);
+        }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
         }
     }
     {
@@ -109,7 +113,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
-    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW });
+    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 
 
 /**
@@ -126,7 +130,7 @@ export function sweepEditLogic(context is Context, id is Id, oldDefinition is ma
     }
     else
     {
-        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceProfiles);
+        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceProfiles, hiddenBodies);
     }
 }
 
@@ -135,9 +139,10 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
-        var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
+        var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
         matches = concatenateArrays([capMatches, sweptMatches]);
+        checkForNotJoinableSurfacesInScope(context, id, definition, matches);
     }
     return matches;
 }

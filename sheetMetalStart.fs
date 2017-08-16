@@ -1,34 +1,34 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
 
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
-import(path : "onshape/std/box.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/coordSystem.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
-import(path : "onshape/std/error.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/geomOperations.fs", version : "638.0");
-import(path : "onshape/std/manipulator.fs", version : "638.0");
-import(path : "onshape/std/math.fs", version : "638.0");
-import(path : "onshape/std/modifyFillet.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
-import(path : "onshape/std/sketch.fs", version : "638.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "638.0");
-import(path : "onshape/std/string.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/tool.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/vector.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
+import(path : "onshape/std/box.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/coordSystem.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
+import(path : "onshape/std/error.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/geomOperations.fs", version : "660.0");
+import(path : "onshape/std/manipulator.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/modifyFillet.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
+import(path : "onshape/std/sketch.fs", version : "660.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "660.0");
+import(path : "onshape/std/string.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/tool.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/vector.fs", version : "660.0");
 
 /**
  * Method of initializing sheet metal model
@@ -251,15 +251,20 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
     }
     catch (e)
     {
-        if (e.message == ErrorStringEnum.BOOLEAN_INVALID)
+        var messageAsEnum = try silent(e.message as ErrorStringEnum);
+        if (messageAsEnum == ErrorStringEnum.BOOLEAN_INVALID)
         {
             // I can't think of anything more useful to tell the user right now. Analyzing such cases
             // may make it clearer when it can happen
             throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
         }
-        else if (e.message == ErrorStringEnum.BAD_GEOMETRY)
+        else if (messageAsEnum == ErrorStringEnum.BAD_GEOMETRY)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN);
+        }
+        else if (messageAsEnum == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
         }
         else
         {

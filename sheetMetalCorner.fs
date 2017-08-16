@@ -1,20 +1,20 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "638.0");
+export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "660.0");
 
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
 
 /**
  * Corner feature is used to override default sheet metal model corner relief style or dimensions for an individual corner
@@ -38,6 +38,10 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         }
     }
     {
+        if (size(evaluateQuery(context, definition.corner)) == 0)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_SELECT_ENTITIES, ['corner']);
+        }
         var corner = findCornerDefinitionVertex(context, definition.corner);
         var cornerInfo = evCornerType(context, {
                 "vertex" : corner
@@ -48,7 +52,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         else if (cornerInfo.cornerType == SMCornerType.BEND_END) {
             throw regenError(ErrorStringEnum.SHEET_METAL_BEND_END_NOT_A_CORNER, ['corner']);
         }
-        if (cornerInfo.cornerType !=  SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED) {
+        if (cornerInfo.cornerType != SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED) {
             throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle']);
         }
 

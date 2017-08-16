@@ -1,20 +1,20 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "638.0");
+export import(path : "onshape/std/patternUtils.fs", version : "660.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "638.0");
+export import(path : "onshape/std/path.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/sketch.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/sketch.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -267,7 +267,7 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
     for (var i = 0; i < size(path.edges); i += 1)
     {
         // find the tangents at the endpoints of the current edge, and flip them if necessary.
-        currEdgeEndpointTangents = evEdgeTangentLines(context, { "edge" : path.edges[i], "parameters" : [0, 1], "arcLengthParameterization" : false });
+        currEdgeEndpointTangents = evEdgeTangentLines(context, { "edge" : path.edges[i], "parameters" : [0, 1] });
         if (path.flipped[i])
         {
             currEdgeEndpointTangents[0].direction = -currEdgeEndpointTangents[0].direction;

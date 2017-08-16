@@ -1,28 +1,28 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "638.0");
+export import(path : "onshape/std/manipulator.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/box.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/box.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
 
 
 /**
@@ -995,5 +995,56 @@ function moveFaceCreateLegacy(context is Context, id is Id, definition is map, q
             "transform" : definition.transform
         });
     }
+}
+
+/**
+ * Splits input sheet metal edges and adjusts them to lie on corresponding sheet metal part faces.
+ */
+export function deripEdges(context is Context, id is Id, edges is Query) returns boolean
+{
+    var facesToMove = [];
+    for (var edge in evaluateQuery(context, edges))
+    {
+        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        if (size(adjacentFaces) != 2)
+        {
+            continue;
+        }
+
+        const jointAttribute = try silent(getJointAttribute(context, edge));
+        if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointType.value != SMJointType.RIP)
+        {
+            return false;
+        }
+
+        const attributes = getAttributes(context, { "entities" : edge, "attributePattern" : {} as SMAssociationAttribute });
+        if (size(attributes) != 1)
+        {
+            return false;
+        }
+        facesToMove = append(facesToMove, qAttributeFilter(qEverything(EntityType.FACE), attributes[0]));
+    }
+
+    if (size(facesToMove) != 0)
+    {
+        var definition = { "moveFaces" : qUnion(facesToMove),
+            "moveFaceType" : MoveFaceType.OFFSET,
+            "offsetDistance" : 0 * meter };
+
+        const toolId = id + "tool";
+        const operationInfo = createToolBodies(context, toolId, definition.moveFaces, definition);
+        if (size(operationInfo.edgeLimitOptions) > 0)
+        {
+            sheetMetalExtendSheetBodyCall(context, id + "extend", {
+                        "entities" : qUnion(operationInfo.edgesToExtend),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : operationInfo.edgeLimitOptions });
+        }
+        try silent(opDeleteBodies(context, id + "deleteBodies", {
+                    "entities" : qCreatedBy(toolId, EntityType.BODY)
+                }));
+    }
+
+    return true;
 }
 

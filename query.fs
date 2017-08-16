@@ -1,4 +1,4 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 638; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/context.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/units.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/context.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/units.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -122,6 +122,7 @@ export predicate canBeQuery(value)
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
  * @value LAMINAR_DEPENDENCY         : Used in [qLaminarDependency]
+ * @value PLANE_PARALLEL_DIRECTION   : Used in [qPlanesParallelToDirection]
  ******************************************************************************/
 export enum QueryType
 {
@@ -186,7 +187,8 @@ export enum QueryType
     MODIFIABLE_ENTITY_FILTER,
     SKETCH_OBJECT_FILTER,
     COINCIDES_WITH_PLANE,
-    LAMINAR_DEPENDENCY
+    LAMINAR_DEPENDENCY,
+    PLANE_PARALLEL_DIRECTION
 }
 
 /**
@@ -753,6 +755,7 @@ precondition
 
 /**
  * A query for entities which match all of a list of queries.
+ * qIntersection preserves the order of the first subquery.
  */
 export function qIntersection(subqueries is array) returns Query
 precondition
@@ -766,6 +769,7 @@ precondition
 
 /**
  * A query for entities which match `query1`, but do not match `query2`.
+ * qSubtraction preserves the order of `query1`.
  */
 export function qSubtraction(query1 is Query, query2 is Query) returns Query
 {
@@ -983,6 +987,14 @@ export function qParallelPlanes(subquery is Query, referencePlane is Plane) retu
 export function qParallelPlanes(subquery is Query, normal is Vector, allowAntiparallel is boolean) returns Query
 {
     return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
+}
+
+/**
+ * A query for all planar faces that are parallel to the given direction vector (i.e., the plane normal is perpendicular to `direction`).
+ */
+export function qPlanesParallelToDirection(subquery is Query, direction is Vector) returns Query
+{
+    return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : direction } as Query;
 }
 
 /**

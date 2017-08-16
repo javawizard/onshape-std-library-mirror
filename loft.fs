@@ -1,24 +1,24 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/boolean.fs", version : "638.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/units.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/vector.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/boolean.fs", version : "660.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/units.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/vector.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -137,12 +137,18 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             booleanStepScopePredicate(definition);
         }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
+        }
     }
     {
         var profileQuery = definition.sheetProfiles;
         if (definition.bodyType != ToolBodyType.SOLID)
         {
             definition.wireProfileDependencies = replaceWireSubQueriesWithDependencies(context, definition.wireProfiles, true);
+            // Replace sketch faces with sketch wire edges so that created loft cap edges can be traced back easily and joined with other surfaces created from the same sketch.
+            definition.wireProfileDependencies = replaceEndSketchFacesWithWireEdges(context, definition.wireProfileDependencies);
             profileQuery = definition.wireProfileDependencies;
         }
         if (profileQuery.queryType == QueryType.UNION)
@@ -228,7 +234,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
-        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW, addSections : false, sectionCount : 0 });
+        startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW, addSections : false, sectionCount : 0, defaultSurfaceScope : true });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
@@ -238,7 +244,7 @@ export function createProfileConditions(context is Context, endCondition is Loft
         var derivativeInfo = { "profileIndex" : profileIndex,
                                "magnitude" : magnitude,
                                "tangentToPlane" : endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE };
-        var planeResult = try(evPlane(context, { "face" : profileQuery }));
+        var planeResult = try silent(evPlane(context, { "face" : profileQuery }));
         if (planeResult is Plane)
         {
             derivativeInfo.vector = normalize(planeResult.normal);
@@ -303,7 +309,7 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
     }
     else
     {
-        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, wireProfilesAndGuides(definition));
+        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, wireProfilesAndGuides(definition), hiddenBodies);
     }
 }
 
@@ -354,22 +360,61 @@ precondition
     return query;
 }
 
+function replaceSketchFaceWithWireEdges(context is Context, query is Query) returns Query
+{
+    var sketchFace = qSketchFilter(qEntityFilter(query, EntityType.FACE), SketchObject.YES);
+    if (size(evaluateQuery(context, sketchFace)) == 0)
+    {
+        return query;
+    }
+    else
+    {
+        return qDependency(qEdgeAdjacent(sketchFace, EntityType.EDGE));
+    }
+}
+
+function replaceEndSketchFacesWithWireEdges(context is Context, query is Query) returns Query
+precondition
+{
+    query.subqueries is array;
+}
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V657_SURFACE_JOIN_BUGS))
+    {
+        return query;
+    }
+
+    const count = size(query.subqueries);
+    if (count > 0)
+    {
+        query.subqueries[0] = replaceSketchFaceWithWireEdges(context, query.subqueries[0]);
+    }
+
+    if (count > 1)
+    {
+        query.subqueries[count - 1] = replaceSketchFaceWithWireEdges(context, query.subqueries[count - 1]);
+    }
+
+    return query;
+}
+
 function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
 {
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfileDependencies, transform);
+        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfileDependencies, transform);
 
         if (undefined != definition.guideDependencies)
         {
-            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guideDependencies, transform);
+            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guideDependencies, transform);
             matches = concatenateArrays([profileMatches, guideMatches]);
         }
         else
         {
             matches = profileMatches;
         }
+        checkForNotJoinableSurfacesInScope(context, id, definition, matches);
     }
     return matches;
 }

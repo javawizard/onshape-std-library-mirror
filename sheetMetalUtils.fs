@@ -1,29 +1,29 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "638.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/coordSystem.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/math.fs", version : "638.0");
-import(path : "onshape/std/manipulator.fs", version : "638.0");
-import(path : "onshape/std/query.fs", version : "638.0");
-import(path : "onshape/std/sketch.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "638.0");
-import(path : "onshape/std/string.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/tool.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/vector.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "660.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/coordSystem.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/manipulator.fs", version : "660.0");
+import(path : "onshape/std/query.fs", version : "660.0");
+import(path : "onshape/std/sketch.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "660.0");
+import(path : "onshape/std/string.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/tool.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/vector.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
 
 
 

@@ -1,18 +1,36 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/string.fs", version : "638.0");
-import(path : "onshape/std/tool.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/string.fs", version : "660.0");
+import(path : "onshape/std/tool.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/manipulator.fs", version : "660.0");
+
+/**
+ * Specifies the type of values `assignVariable` is allowed to set.
+ *
+ * @value ANY : The variable can be any immutable FeatureScript value; boxes and builtins are not allowed.
+ */
+export enum VariableType
+{
+    annotation { "Name" : "Length" }
+    LENGTH,
+    annotation { "Name" : "Angle" }
+    ANGLE,
+    annotation { "Name" : "Number" }
+    NUMBER,
+    annotation { "Name" : "Any" }
+    ANY
+}
 
 /**
  * Feature performing a `setVariable` allowing a user to assign a FeatureScript
@@ -22,33 +40,76 @@ import(path : "onshape/std/valueBounds.fs", version : "638.0");
  * parameter of another variable!)
  *
  * @param definition {{
- *      @field name : Must be an identifier.
- *      @field value : Can be anything, including a length, an array, or a function.
+ *      @field variableType {VariableType} : The type of variable.  If it is not ANY, the value is restricted
+ *          to be a length, angle, or number and is passed through the `lengthValue`, `angleValue`, or `numberValue`
+ *          field, respectively.
+ *      @field name {string} : Must be an identifier.
+ *      @field lengthValue {ValueWithUnits} : Used if `variableType` is `LENGTH`.
+ *      @field angleValue {ValueWithUnits} : Used if `variableType` is `ANGLE`.
+ *      @field numberValue {number} : Used if `variableType` is `NUMBER`.
+ *      @field anyValue : Used if `variableType` is `ANY`.  Can be any immutable FeatureScript value, including a length, an array, or a function.
  * }}
  */
-annotation {"Feature Type Name" : "Variable", "Feature Name Template": "Variable ###name = #value", "UIHint" : "NO_PREVIEW_PROVIDED"}
+annotation {"Feature Type Name" : "Variable", "Feature Name Template": "###name = #value", "UIHint" : "NO_PREVIEW_PROVIDED", "Editing Logic Function" : "variableEditLogic"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
+        definition.variableType is VariableType;
+
         annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE" }
         definition.name is string;
 
-        annotation { "Name" : "Value" }
+        if (definition.variableType == VariableType.LENGTH)
+        {
+            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            isLength(definition.lengthValue, ZERO_DEFAULT_LENGTH_BOUNDS);
+        }
+        if (definition.variableType == VariableType.ANGLE)
+        {
+            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            isAngle(definition.angleValue, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+        }
+        if (definition.variableType == VariableType.NUMBER)
+        {
+            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            isReal(definition.numberValue, { (unitless) : [-1e12, 0, 1e12] } as RealBoundSpec);
+        }
+        if (definition.variableType == VariableType.ANY)
+        {
+            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            isAnything(definition.anyValue);
+        }
+
+        annotation { "UIHint" : "ALWAYS_HIDDEN" }
         isAnything(definition.value);
     }
     {
         verifyVariableName(definition.name);
 
-        setVariable(context, definition.name, definition.value);
+        var value;
+
+        if (definition.variableType == VariableType.LENGTH)
+            value = definition.lengthValue;
+        else if (definition.variableType == VariableType.ANGLE)
+            value = definition.angleValue;
+        else if (definition.variableType == VariableType.NUMBER)
+            value = definition.numberValue;
+        else if (definition.variableType == VariableType.ANY)
+            value = definition.anyValue;
+
+        setFeatureComputedParameter(context, id, { "name" : "value", "value" : value });
+
+        setVariable(context, definition.name, value);
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
         {
-            if (definition.value == undefined)
+            if (value == undefined)
             {
                 reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
             }
         }
-    });
+    }, { variableType : VariableType.ANY });
 
 /**
  * Throws an error if `name` is not a valid identifier.
@@ -70,4 +131,22 @@ export function makeLookupFunction(context is Context, id is Id) returns functio
             return getVariable(context, name);
         };
 }
+
+/**
+ * @internal
+ * Editing logic function for populating the displayValue parameter
+ */
+export function variableEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, isCreating is boolean) returns map
+{
+    if (definition.variableType == VariableType.LENGTH)
+        definition.value = copyParameter("lengthValue");
+    else if (definition.variableType == VariableType.ANGLE)
+        definition.value = copyParameter("angleValue");
+    else if (definition.variableType == VariableType.NUMBER)
+        definition.value = copyParameter("numberValue");
+    else
+        definition.value = copyParameter("anyValue");
+    return definition;
+}
+
 

@@ -1,4 +1,4 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,9 +9,9 @@ FeatureScript 638; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/error.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/query.fs", version : "638.0");
+import(path : "onshape/std/error.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/query.fs", version : "660.0");
 
 
 

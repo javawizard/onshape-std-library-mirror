@@ -1,19 +1,19 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "638.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/math.fs", version : "638.0");
-import(path : "onshape/std/string.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/vector.fs", version : "638.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "660.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/string.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/vector.fs", version : "660.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -223,8 +223,7 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
     // so we can determine what needs to be extended and what direction to extend.
     const profileEndTangentLines = evEdgeTangentLines(context, {
                 "edge" : profile,
-                "parameters" : [0, 1],
-                "arcLengthParameterization" : false
+                "parameters" : [0, 1]
             });
 
     const extendDirections = [-profileEndTangentLines[0].direction, profileEndTangentLines[1].direction];

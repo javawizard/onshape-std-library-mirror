@@ -1,20 +1,20 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "638.0");
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/units.fs", version : "638.0");
+export import(path : "onshape/std/context.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/units.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/topologyUtils.fs", version : "638.0");
+import(path : "onshape/std/box.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "660.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -48,7 +48,7 @@ export predicate canBePath(value)
 }
 
 /**
- * Distance information returned by `computePath` and `evPathTangentLines` when either function is provided with `referenceGeometry`
+ * Distance information returned by `constructPath` and `evPathTangentLines` when either function is provided with `referenceGeometry`
  * @type {{
  *      @field distance {ValueWithUnits} : The distance between the the start of the [Path] and the center of the
  *          bounding box of `referenceGeometry`, or infinity if `referenceGeometry` is empty
@@ -235,7 +235,7 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
     var pathPoints = [];
     for (var edge in edges)
     {
-        var endpoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "arcLengthParameterization" : false });
+        var endpoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] });
         pathPoints = append(pathPoints, endpoints[0].origin);
         pathPoints = append(pathPoints, endpoints[1].origin);
     }

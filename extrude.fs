@@ -1,30 +1,30 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/boundingtype.gen.fs", version : "638.0");
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "638.0");
+export import(path : "onshape/std/manipulator.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "638.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "638.0");
-import(path : "onshape/std/box.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/coordSystem.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
-import(path : "onshape/std/draft.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
+import(path : "onshape/std/boolean.fs", version : "660.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "660.0");
+import(path : "onshape/std/box.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/coordSystem.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
+import(path : "onshape/std/draft.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -327,6 +327,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         {
             booleanStepScopePredicate(definition);
         }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
+        }
     }
     {
         // Handle negative inputs
@@ -481,7 +485,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
 
@@ -505,7 +510,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             offsetOppositeDirection: false, secondDirectionOffsetOppositeDirection: false,
             hasDraft: false, hasSecondDirectionDraft: false,
             draftPullDirection : false, secondDirectionDraftPullDirection : false,
-            surfaceOperationType : NewSurfaceOperationType.NEW });
+            surfaceOperationType : NewSurfaceOperationType.NEW,
+            defaultSurfaceScope : true
+    });
 
 predicate supportsDraft(definition is map)
 {
@@ -1056,7 +1063,7 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
             }
             else
             {
-                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
             }
         }
     }

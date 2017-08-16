@@ -1,4 +1,4 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,13 @@ FeatureScript 638; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "638.0");
-import(path : "onshape/std/curveGeometry.fs", version : "638.0");
+import(path : "onshape/std/context.fs", version : "660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "660.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "638.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "638.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "660.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "660.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "638.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "660.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -41,6 +41,12 @@ export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "63
  *              as part of a body-creating feature (such as extrude). Default is `false`.
  *
  *      @field keepTools {boolean} : If true, the tools do not get consumed by the operation. Default is false. @optional
+ *      @field matches {array}: @optional
+ *          Array of topology matches between tools and targets. Each matching element is a map with fields `topology1`, `topology2`
+ *          and `matchType`; where `topology1` and `topology2` are a pair of matching edges or faces and
+ *          `matchType` is the type of match [TopologyMatchType] between them.
+ *      @field recomputeMatches {boolean} :  @optional
+ *          If true, matches will be recomputed and specified matches will be used only for surface alignment purposes (for surface boolean). Defaults to `false`.
  * }}
  */
 /* TODO: describe `targetsAndToolsNeedGrouping` in fuller detail */

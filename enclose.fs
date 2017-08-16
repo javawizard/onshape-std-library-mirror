@@ -1,13 +1,13 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "638.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
 
 /**
  * Feature performing an [opEnclose].
@@ -25,7 +25,7 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
     {
         // Evaluate inputs here for delete later so that passing tracking queries won't cause the results to get deleted
         // Exclude construction planes and sketch regions so they don't get deleted.
-        const evaluatedTools = qUnion(evaluateQuery(context, qSketchFilter(qConstructionFilter(definition.entities,
+        var evaluatedTools = qUnion(evaluateQuery(context, qSketchFilter(qConstructionFilter(definition.entities,
                             ConstructionObject.NO), SketchObject.NO)));
         opEnclose(context, id + "enclose", {
                     "entities" : definition.entities,
@@ -36,6 +36,8 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
         {
             try silent
             {
+                evaluatedTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V647_ENCLOSE_DELETE_MODIFIABLE_TOOLS) ?
+                    qModifiableEntityFilter(evaluatedTools) : evaluatedTools;
                 opDeleteBodies(context, id + "delete",
                     { "entities" : evaluatedTools
                 });

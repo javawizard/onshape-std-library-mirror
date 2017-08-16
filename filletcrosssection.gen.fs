@@ -6,14 +6,16 @@ FeatureScript 660; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies how a constraint between lines or axes (such as parallel or
- * coincident) should align the two constrained axes.
+ * Specifies the cross section for a fillet operation.
  */
-export enum DimensionAlignment
+export enum FilletCrossSection
 {
-    UNSPECIFIED,
-    ALIGNED,
-    ANTI_ALIGNED
+    annotation {"Name" : "Circular"}
+    CIRCULAR,
+    annotation {"Name" : "Conic"}
+    CONIC,
+    annotation {"Name" : "Curvature"}
+    CURVATURE
 }
 
 

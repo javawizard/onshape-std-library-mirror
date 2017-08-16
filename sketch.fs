@@ -1,4 +1,4 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,25 +43,25 @@ FeatureScript 638; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/mathUtils.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/tool.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/matrix.fs", version : "638.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/tool.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/matrix.fs", version : "660.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "638.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "638.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "638.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "638.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "638.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "638.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "660.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "660.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "660.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "660.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "660.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "660.0");
 
 /**
  * @internal

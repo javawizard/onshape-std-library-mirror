@@ -1,26 +1,26 @@
-FeatureScript 638; /* Automatically generated version */
+FeatureScript 660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "638.0");
-export import(path : "onshape/std/tool.fs", version : "638.0");
+export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/tool.fs", version : "660.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "638.0");
-import(path : "onshape/std/boolean.fs", version : "638.0");
-import(path : "onshape/std/containers.fs", version : "638.0");
-import(path : "onshape/std/evaluate.fs", version : "638.0");
-import(path : "onshape/std/feature.fs", version : "638.0");
-import(path : "onshape/std/math.fs", version : "638.0");
-import(path : "onshape/std/moveFace.fs", version : "638.0");
-import(path : "onshape/std/transform.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "638.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "638.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "638.0");
-import(path : "onshape/std/valueBounds.fs", version : "638.0");
-import(path : "onshape/std/vector.fs", version : "638.0");
+import(path : "onshape/std/attributes.fs", version : "660.0");
+import(path : "onshape/std/boolean.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/evaluate.fs", version : "660.0");
+import(path : "onshape/std/feature.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/moveFace.fs", version : "660.0");
+import(path : "onshape/std/transform.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
+import(path : "onshape/std/valueBounds.fs", version : "660.0");
+import(path : "onshape/std/vector.fs", version : "660.0");
 
 /**
 * TODO: stub
@@ -40,7 +40,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         annotation { "Name" : "Union scope", "Filter" : SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.booleanUnionScope is Query;
 
-        annotation { "Name" : "Subtraction scope", "Filter" : SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
+        annotation { "Name" : "Subtraction scope", "Filter" : (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES) || (BodyType.SOLID && EntityType.BODY) }
         definition.booleanSubtractScope is Query;
     }
     {
@@ -49,15 +49,13 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
 
         const unionEntities = try silent(getSMDefinitionEntities(context, definition.booleanUnionScope));
         if (unionEntities is undefined)
-            throw regenError("No sheet metal in merge scope");
+            throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_WALL, ["booleanUnionScope"]);
         const unionEntityQuery = qUnion(unionEntities);
-
         const sheetMetalBodies = evaluateQuery(context, qOwnerBody(unionEntityQuery));
-        if (size(sheetMetalBodies) == 0)
-        {
-            throw regenError("It's called sheet metal tab");
-        }
-        const sheetMetalBodiesQuery = qUnion(sheetMetalBodies);
+
+        const subtractBodies = getOwnerSMModel(context, definition.booleanSubtractScope);
+        var sheetMetalBodiesQuery = qUnion(concatenateArrays([subtractBodies, sheetMetalBodies]));
+        sheetMetalBodiesQuery = qUnion([startTracking(context, sheetMetalBodiesQuery), sheetMetalBodiesQuery]);
         const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalBodiesQuery));
 
         // The deripping step breaks these queries otherwise.
@@ -77,15 +75,18 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
                         deripCandidates]);
             tabIndex += 1;
         }
-        performDeripsAsNecessary(context, id + "derip", deripCandidates);
+        if (!deripEdges(context, id + "derip", qUnion(deripCandidates)))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_BEND, ["booleanUnionScope"]);
+        }
 
-        const subtractSMFaces = try silent(getSMDefinitionEntities(context, definition.booleanSubtractScope));
+        const separatedSubtractQueries = separateSheetMetalQueries(context, definition.booleanSubtractScope);
         for (var wall in evaluateQuery(context, unionEntityPersistantQuery))
         {
             var oneSuccess = false;
             for (var tabBody in evaluatedBodies)
             {
-                var status = doOneTab(context, id + unstableIdComponent(tabIndex), definition, tabBody, wall, subtractSMFaces);
+                var status = doOneTab(context, id + unstableIdComponent(tabIndex), definition, tabBody, wall, separatedSubtractQueries);
 
                 if (status.statusEnum != ErrorStringEnum.BOOLEAN_UNION_NO_OP)
                 {
@@ -96,7 +97,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
 
             if (!oneSuccess)
             {
-                throw regenError("Wall no merge", wall);
+                throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_MERGE, wall);
             }
         }
 
@@ -112,18 +113,22 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         opDeleteBodies(context, id + "deleteBodies", {
                     "entities" : tabQuery
                 });
-    }, {});
+    }, { booleanOffset : 0 * meter, booleanSubtractScope : qNothing() });
 
 // For now, enforce that all tools are on parallel planes to simplify things.
 function createTools(context is Context, id is Id, tools is Query)
 {
     const faces = evaluateQuery(context, tools);
+    if (size(faces) == 0)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_TAB, ["faces"]);
+    }
     var planes = [];
     for (var face in faces)
     {
         const aPlane = evPlane(context, { "face" : face });
         if (aPlane is undefined)
-            throw regenError("Tab no plane");
+            throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NONPLANAR, face);
         planes = append(planes, aPlane);
     }
 
@@ -152,7 +157,7 @@ function moveTabToFace(context is Context, id is Id, tabBody is Query, wall is Q
     {
         const translationVector = dot(wallPlane.origin - tabPlane.origin, tabPlane.normal) * tabPlane.normal;
         const tabTransform = dot(wallPlane.normal, tabPlane.normal) > 0 ? transform(translationVector) : transform(translationVector) * mirrorAcross(tabPlane);
-        opTransform(context, id + "transform", {
+        opTransform(context, id, {
                     "bodies" : tabBody,
                     "transform" : tabTransform
                 });
@@ -165,60 +170,71 @@ function moveTabToFace(context is Context, id is Id, tabBody is Query, wall is Q
 
 function identifyEdgesForDeripping(context is Context, id is Id, tabBody is Query, unionFaces is Query) returns array
 {
-    var facesForDerip = [];
+    var edgesForDerip = [];
     for (var wall in evaluateQuery(context, unionFaces))
     {
-        moveTabToFace(context, id, tabBody, wall);
+        startFeature(context, id, {});
+        moveTabToFace(context, id + "subfeature", tabBody, wall);
         const collisions = evCollision(context, {
                     "tools" : tabBody,
                     "targets" : qEdgeAdjacent(unionFaces, EntityType.FACE)
                 });
+        abortFeature(context, id);
         for (var collision in collisions)
         {
-            facesForDerip = append(facesForDerip, collision.target);
+            const relatedEdge = qUnion(getSMDefinitionEntities(context, collision.target));
+            edgesForDerip = append(edgesForDerip, relatedEdge);
         }
     }
-    return facesForDerip;
+    return edgesForDerip;
 }
 
-function performDeripsAsNecessary(context is Context, id is Id, faces is array)
+function smSubtractTab(context is Context, id is Id, tab is Query, subtractFaces, unionBody is Query)
 {
-    var facesToMove = [];
-    for (var face in faces)
+    if (subtractFaces is undefined)
     {
-        const relatedEdge = qUnion(getSMDefinitionEntities(context, face));
-        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(relatedEdge, EntityType.FACE));
-        if (size(adjacentFaces) != 2)
-        {
-            continue;
-        }
-
-        const attributes = getAttributes(context, { "entities" : relatedEdge, "attributePattern" : {} as SMAssociationAttribute });
-        if (size(attributes) != 1)
-        {
+        return;
+    }
+    var index = 0;
+    for (var face in subtractFaces)
+    {
+        const targetModelParameters = try silent(getModelParameters(context, unionBody));
+        if (targetModelParameters is undefined)
             throw regenError(ErrorStringEnum.REGEN_ERROR);
+        const tool = createBooleanToolsForFace(context, id + unstableIdComponent(index) + "tool", face, tab, targetModelParameters);
+        if (tool != undefined)
+        {
+            opBoolean(context, id + unstableIdComponent(index) + "booleanSubtract", {
+                        "tools" : qCreatedBy(id + unstableIdComponent(index) + "tool", EntityType.FACE),
+                        "targets" : face,
+                        "operationType" : BooleanOperationType.SUBTRACTION,
+                        "localizedInFaces" : true,
+                        "allowSheets" : true
+                    });
         }
-        facesToMove = append(facesToMove, qAttributeFilter(qEverything(EntityType.FACE), attributes[0]));
+        index += 1;
     }
 
-    if (size(facesToMove) == 0)
-    {
-        return;
-    }
-    // This rebuilds the sheet metal model. TODO: break out a portion of moveFace that avoids the rebuild but still derips.
-    // Also needs to accept a 0 meter offset.
-    moveFace(context, id, { "moveFaces" : qUnion(facesToMove),
-                "moveFaceType" : MoveFaceType.OFFSET,
-                "offsetDistance" : 2 * TOLERANCE.zeroLength * meter });
 }
 
-function subtractTab(context is Context, id is Id, definition is map, tabBody is Query, faces)
+function solidSubtractTab(context is Context, id is Id, tab is Query, targets)
 {
-    if (faces is undefined)
+    if (targets is undefined)
     {
         return;
     }
-    const modelParameters = try silent(getModelParameters(context, qOwnerBody(faces[0])));
+    try silent(opBoolean(context, id, {
+                    "tools" : tab,
+                    "targets" : targets,
+                    "operationType" : BooleanOperationType.SUBTRACTION,
+                    "allowSheets" : true
+                }));
+}
+
+function subtractTab(context is Context, id is Id, definition is map, tabBody is Query, subtractQueries is map, unionBody is Query)
+{
+    const subtractSMFaces = try silent(getSMDefinitionEntities(context, subtractQueries.sheetMetalQueries));
+    const modelParameters = try silent(getModelParameters(context, unionBody));
     if (modelParameters is undefined)
         throw regenError(ErrorStringEnum.REGEN_ERROR);
 
@@ -228,11 +244,6 @@ function subtractTab(context is Context, id is Id, definition is map, tabBody is
                 "thickness2" : modelParameters.backThickness
             });
 
-    if (definition.booleanOffset < modelParameters.minimalClearance)
-    {
-        throw regenError("Clearance too low");
-    }
-
     const moveFaceDefinition = {
             "moveFaces" : qCreatedBy(id + "thicken", EntityType.FACE),
             "moveFaceType" : MoveFaceType.OFFSET,
@@ -241,25 +252,20 @@ function subtractTab(context is Context, id is Id, definition is map, tabBody is
 
     opOffsetFace(context, id + "move", moveFaceDefinition);
 
-    try silent(opBoolean(context, id + "booleanSubtract", {
-                    "tools" : qCreatedBy(id + "thicken", EntityType.FACE),
-                    "targets" : qUnion(faces),
-                    "operationType" : BooleanOperationType.SUBTRACTION,
-                    "localizedInFaces" : true,
-                    "allowSheets" : true
-                }));
+    smSubtractTab(context, id + "sm", qCreatedBy(id + "thicken", EntityType.BODY), subtractSMFaces, unionBody);
+    solidSubtractTab(context, id + "solid", qCreatedBy(id + "thicken", EntityType.BODY), subtractQueries.nonSheetMetalQueries);
 
     try silent(opDeleteBodies(context, id + "deleteBodies", {
                     "entities" : qCreatedBy(id + "thicken", EntityType.BODY)
                 }));
 }
 
-function doOneTab(context is Context, id is Id, definition is map, tabBody is Query, wall is Query, subtractScope) returns FeatureStatus
+function doOneTab(context is Context, id is Id, definition is map, tabBody is Query, wall is Query, subtractQueries is map) returns FeatureStatus
 {
-    moveTabToFace(context, id, tabBody, wall);
+    moveTabToFace(context, id + "transform", tabBody, wall);
 
     // Do the remove now because the tab sheet body has been oriented but not yet joined.
-    subtractTab(context, id, definition, tabBody, subtractScope);
+    subtractTab(context, id, definition, tabBody, subtractQueries, qOwnerBody(wall));
 
     opPattern(context, id + "copyTool", {
                 "entities" : tabBody,
