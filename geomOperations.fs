@@ -41,6 +41,12 @@ export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "âœ
  *              as part of a body-creating feature (such as extrude). Default is `false`.
  *
  *      @field keepTools {boolean} : If true, the tools do not get consumed by the operation. Default is false. @optional
+ *      @field matches {array}: @optional
+ *          Array of topology matches between tools and targets. Each matching element is a map with fields `topology1`, `topology2`
+ *          and `matchType`; where `topology1` and `topology2` are a pair of matching edges or faces and
+ *          `matchType` is the type of match [TopologyMatchType] between them.
+ *      @field recomputeMatches {boolean} :  @optional
+ *          If true, matches will be recomputed and specified matches will be used only for surface alignment purposes (for surface boolean). Defaults to `false`.
  * }}
  */
 /* TODO: describe `targetsAndToolsNeedGrouping` in fuller detail */

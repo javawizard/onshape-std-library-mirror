@@ -56,6 +56,10 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         {
             booleanStepScopePredicate(definition);
         }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
+        }
     }
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V203_SWEEP_PATH_NO_CONSTRUCTION))
@@ -109,7 +113,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
-    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW });
+    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 
 
 /**
@@ -126,7 +130,7 @@ export function sweepEditLogic(context is Context, id is Id, oldDefinition is ma
     }
     else
     {
-        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceProfiles);
+        return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceProfiles, hiddenBodies);
     }
 }
 
@@ -135,9 +139,10 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
-        var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
+        var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
         matches = concatenateArrays([capMatches, sweptMatches]);
+        checkForNotJoinableSurfacesInScope(context, id, definition, matches);
     }
     return matches;
 }

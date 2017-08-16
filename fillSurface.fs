@@ -48,6 +48,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         annotation {"Name" : "Show iso curves"}
         definition.showIsocurves is boolean;
 
+        surfaceJoinStepScopePredicate(definition);
     }
     {
         if (size(definition.edges) == 0)
@@ -69,8 +70,9 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCreatedBy(id, EntityType.EDGE),
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCreatedBy(id, EntityType.EDGE),
                 definition.allEdges, remainingTransform);
+            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, true, reconstructOp);
 
             if (getFeatureInfo(context, id) == ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE ||
@@ -81,7 +83,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
             }
 
         }
-    }, { showIsocurves : false, preselectedEntities : qNothing() });
+    }, { showIsocurves : false, preselectedEntities : qNothing(), defaultSurfaceScope : true });
 
 function updateEdgeSelections(context is Context, definition is map) returns map
 {
@@ -134,7 +136,7 @@ export function fillEditLogic(context is Context, id is Id, oldDefinition is map
     }
 
     var updatedDefinition = updateEdgeSelections(context, definition);
-    return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, updatedDefinition.allEdges);
+    return surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, updatedDefinition.allEdges, hiddenBodies);
 }
 
 

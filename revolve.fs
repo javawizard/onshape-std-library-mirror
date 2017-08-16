@@ -96,9 +96,13 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             isAngle(definition.angleBack, ANGLE_360_REVERSE_DEFAULT_BOUNDS);
         }
 
-        if (definition.bodyType != ToolBodyType.SURFACE)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
             booleanStepScopePredicate(definition);
+        }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
         }
     }
     {
@@ -167,10 +171,11 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.entities, remainingTransform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, true), definition.entities, remainingTransform);
+            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
-    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW });
+    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 
 //Manipulator functions
 
@@ -359,7 +364,7 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
         }
         else
         {
-            newDefinition = surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+            newDefinition = surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
         }
     }
 

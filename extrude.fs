@@ -327,6 +327,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         {
             booleanStepScopePredicate(definition);
         }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
+        }
     }
     {
         // Handle negative inputs
@@ -481,7 +485,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
 
@@ -505,7 +510,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             offsetOppositeDirection: false, secondDirectionOffsetOppositeDirection: false,
             hasDraft: false, hasSecondDirectionDraft: false,
             draftPullDirection : false, secondDirectionDraftPullDirection : false,
-            surfaceOperationType : NewSurfaceOperationType.NEW });
+            surfaceOperationType : NewSurfaceOperationType.NEW,
+            defaultSurfaceScope : true
+    });
 
 predicate supportsDraft(definition is map)
 {
@@ -1056,7 +1063,7 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
             }
             else
             {
-                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities);
+                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
             }
         }
     }

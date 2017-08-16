@@ -223,8 +223,7 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
     // so we can determine what needs to be extended and what direction to extend.
     const profileEndTangentLines = evEdgeTangentLines(context, {
                 "edge" : profile,
-                "parameters" : [0, 1],
-                "arcLengthParameterization" : false
+                "parameters" : [0, 1]
             });
 
     const extendDirections = [-profileEndTangentLines[0].direction, profileEndTangentLines[1].direction];

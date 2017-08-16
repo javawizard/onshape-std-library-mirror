@@ -997,3 +997,54 @@ function moveFaceCreateLegacy(context is Context, id is Id, definition is map, q
     }
 }
 
+/**
+ * Splits input sheet metal edges and adjusts them to lie on corresponding sheet metal part faces.
+ */
+export function deripEdges(context is Context, id is Id, edges is Query) returns boolean
+{
+    var facesToMove = [];
+    for (var edge in evaluateQuery(context, edges))
+    {
+        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        if (size(adjacentFaces) != 2)
+        {
+            continue;
+        }
+
+        const jointAttribute = try silent(getJointAttribute(context, edge));
+        if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointType.value != SMJointType.RIP)
+        {
+            return false;
+        }
+
+        const attributes = getAttributes(context, { "entities" : edge, "attributePattern" : {} as SMAssociationAttribute });
+        if (size(attributes) != 1)
+        {
+            return false;
+        }
+        facesToMove = append(facesToMove, qAttributeFilter(qEverything(EntityType.FACE), attributes[0]));
+    }
+
+    if (size(facesToMove) != 0)
+    {
+        var definition = { "moveFaces" : qUnion(facesToMove),
+            "moveFaceType" : MoveFaceType.OFFSET,
+            "offsetDistance" : 0 * meter };
+
+        const toolId = id + "tool";
+        const operationInfo = createToolBodies(context, toolId, definition.moveFaces, definition);
+        if (size(operationInfo.edgeLimitOptions) > 0)
+        {
+            sheetMetalExtendSheetBodyCall(context, id + "extend", {
+                        "entities" : qUnion(operationInfo.edgesToExtend),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : operationInfo.edgeLimitOptions });
+        }
+        try silent(opDeleteBodies(context, id + "deleteBodies", {
+                    "entities" : qCreatedBy(toolId, EntityType.BODY)
+                }));
+    }
+
+    return true;
+}
+

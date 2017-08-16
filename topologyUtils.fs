@@ -113,3 +113,42 @@ export function extractDirection(context is Context, entity is Query)
     return undefined;
 }
 
+/**
+ * Find connected components in the topological graph of provided edges. Each component is a chain of topologically
+ * connected edges, and each component is disjoint with (does not connect topologically with) any other component.
+ *
+ * Returns an array of components. Each component is an array of individual queries. The queries in any group will respect the
+ * query evaluation order of the supplied `edges` [Query]. The components themselves will also be ordered by query evaluation
+ * order, sorted by the first edge in each component.
+ *
+ * Unlike [constructPath], this function operates on topological connections (underlying connections by a vertex). Distinct
+ * bodies are not topologically connected, so even if two edges on distinct bodies are geometrically related by having a
+ * vertex in the same location, the edges connected to these similar vertices will fall into different components.
+ * Notice that wire edges representing sketch curves are not topologically connected, this method cannot be used for them.
+ */
+export function connectedComponentsOfEdges(context is Context, edges is Query)
+{
+    var remainingEdges = evaluateQuery(context, qEntityFilter(edges, EntityType.EDGE));
+
+    var groups = [];
+    while (remainingEdges != [])
+    {
+        var group = remainingEdges[0];
+        var prevAdded = [remainingEdges[0]];
+
+        while (size(prevAdded) > 0)
+        {
+            var adjacentEdges = qVertexAdjacent(qUnion(prevAdded), EntityType.EDGE);
+            var edgesToAdd = qIntersection([qUnion(remainingEdges), adjacentEdges]);
+            prevAdded = evaluateQuery(context, qSubtraction(edgesToAdd, group));
+
+            group = qUnion([group, edgesToAdd]);
+        }
+        // Intersect the group with the initial edge set to sort by initial query evaluation order
+        groups = append(groups, evaluateQuery(context, qIntersection([edges, group])));
+        // Subtraction respects evaluation ordering of the first parameter, so remainingEdges stays ordered
+        remainingEdges = evaluateQuery(context, qSubtraction(qUnion(remainingEdges), group));
+    }
+    return groups;
+}
+

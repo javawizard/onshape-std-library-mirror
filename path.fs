@@ -48,7 +48,7 @@ export predicate canBePath(value)
 }
 
 /**
- * Distance information returned by `computePath` and `evPathTangentLines` when either function is provided with `referenceGeometry`
+ * Distance information returned by `constructPath` and `evPathTangentLines` when either function is provided with `referenceGeometry`
  * @type {{
  *      @field distance {ValueWithUnits} : The distance between the the start of the [Path] and the center of the
  *          bounding box of `referenceGeometry`, or infinity if `referenceGeometry` is empty
@@ -235,7 +235,7 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
     var pathPoints = [];
     for (var edge in edges)
     {
-        var endpoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "arcLengthParameterization" : false });
+        var endpoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] });
         pathPoints = append(pathPoints, endpoints[0].origin);
         pathPoints = append(pathPoints, endpoints[1].origin);
     }

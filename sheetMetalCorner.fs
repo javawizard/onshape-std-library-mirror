@@ -38,6 +38,10 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         }
     }
     {
+        if (size(evaluateQuery(context, definition.corner)) == 0)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_SELECT_ENTITIES, ['corner']);
+        }
         var corner = findCornerDefinitionVertex(context, definition.corner);
         var cornerInfo = evCornerType(context, {
                 "vertex" : corner
@@ -48,7 +52,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         else if (cornerInfo.cornerType == SMCornerType.BEND_END) {
             throw regenError(ErrorStringEnum.SHEET_METAL_BEND_END_NOT_A_CORNER, ['corner']);
         }
-        if (cornerInfo.cornerType !=  SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED) {
+        if (cornerInfo.cornerType != SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED) {
             throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle']);
         }
 

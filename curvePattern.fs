@@ -267,7 +267,7 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
     for (var i = 0; i < size(path.edges); i += 1)
     {
         // find the tangents at the endpoints of the current edge, and flip them if necessary.
-        currEdgeEndpointTangents = evEdgeTangentLines(context, { "edge" : path.edges[i], "parameters" : [0, 1], "arcLengthParameterization" : false });
+        currEdgeEndpointTangents = evEdgeTangentLines(context, { "edge" : path.edges[i], "parameters" : [0, 1] });
         if (path.flipped[i])
         {
             currEdgeEndpointTangents[0].direction = -currEdgeEndpointTangents[0].direction;

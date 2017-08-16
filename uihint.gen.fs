@@ -44,6 +44,9 @@ FeatureScript ✨; /* Automatically generated version */
  *      what is set on the last item.
  * @value COLLAPSE_ARRAY_ITEMS : For an array parameter, create new items (and items in a newly opened
  *      dialog) as collapsed by default.
+ * @value INITIAL_FOCUS_ON_EDIT : When an existing feature is edited, the first visible parameter with this UI hint will get focus.
+ * @value INITIAL_FOCUS : When creating or editing, the first visible parameter with this UI hint will get focus
+ *      (but when editing, a parameter with INITIAL_FOCUS_ON_EDIT takes precedence).
  */
 export enum UIHint
 {
@@ -63,7 +66,9 @@ export enum UIHint
     HORIZONTAL_ENUM,
     UNCONFIGURABLE,
     MATCH_LAST_ARRAY_ITEM,
-    COLLAPSE_ARRAY_ITEMS
+    COLLAPSE_ARRAY_ITEMS,
+    INITIAL_FOCUS_ON_EDIT,
+    INITIAL_FOCUS
 }
 
 

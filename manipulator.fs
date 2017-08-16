@@ -328,3 +328,29 @@ export function processDefinitionDifference(context is Context, oldDefinition is
     return result;
 }
 
+/**
+ * @internal
+ */
+ export type CopyParameter typecheck canBeCopyParameter;
+
+/**
+ * @internal
+ */
+ export predicate canBeCopyParameter(value)
+ {
+    value is string;
+ }
+
+/**
+ * @internal
+ *
+ * In an editing logic function, set a parameter to copyParameter("anotherParameter") to clone anotherParameter, including
+ * configurations.  This works if the old parameter is a quantity (length, real, anything, etc.) and the new parameter is the
+ * same type of quantity or an isAnything.
+ */
+ export function copyParameter(parameterId is string) returns CopyParameter
+ {
+    return parameterId as CopyParameter;
+ }
+
+

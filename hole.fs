@@ -60,7 +60,7 @@ annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditL
 export const hole = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Style", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "INITIAL_FOCUS"] }
         definition.style is HoleStyle;
 
         annotation { "Name" : "Termination", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }

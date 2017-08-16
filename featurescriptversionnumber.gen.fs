@@ -551,7 +551,24 @@ export enum FeatureScriptVersionNumber
     V635_PREVENT_MOVE_FACE_DISASSOCIATION,
     V636_CONIC_FILLET_API_UPDATE,
     V637_PS_VERSION_30_0_185,
-    V638_LONGER_BEND_RELIEF_AT_START
+    V638_LONGER_BEND_RELIEF_AT_START,
+    V644_TYPE_FOR_VARIABLE_FEATURE,
+    V645_LOFT_BUGS,
+    V646_SM_MULTI_TOOL_FIX,
+    V647_ENCLOSE_DELETE_MODIFIABLE_TOOLS,
+    V648_EXTRUDE_REFERENCE_ALL_PROFILES,
+    V649_FLANGE_LOOSEN_EDGE_Y,
+    V650_TAB_IDENTITY,
+    V651_BLOCK_SM_FEATURE_PATTERN,
+    V652_DCM_VERSION_67_5_4,
+    V653_EV_EDGE_TANGENT_LINES_FIX,
+    V654_MISMATCHED_BEND_END,
+    V655_EXTEND_SHEET_BODY_WITH_SPLIT,
+    V656_VRFILLET_SERVER,
+    V657_SURFACE_JOIN_BUGS,
+    V658_SURFACE_JOIN_FS_CHANGES,
+    V659_HOLE_FEATURE_INITIAL_FOCUS_BUG,
+    V660_ENCLOSE_AUTO_MATCHING
 }
 
 /**
@@ -562,6 +579,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V638_LONGER_BEND_RELIEF_AT_START;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V660_ENCLOSE_AUTO_MATCHING;
 
 

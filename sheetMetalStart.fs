@@ -251,15 +251,20 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
     }
     catch (e)
     {
-        if (e.message == ErrorStringEnum.BOOLEAN_INVALID)
+        var messageAsEnum = try silent(e.message as ErrorStringEnum);
+        if (messageAsEnum == ErrorStringEnum.BOOLEAN_INVALID)
         {
             // I can't think of anything more useful to tell the user right now. Analyzing such cases
             // may make it clearer when it can happen
             throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
         }
-        else if (e.message == ErrorStringEnum.BAD_GEOMETRY)
+        else if (messageAsEnum == ErrorStringEnum.BAD_GEOMETRY)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN);
+        }
+        else if (messageAsEnum == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
         }
         else
         {

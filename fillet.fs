@@ -8,6 +8,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 
 // Features using manipulators must export manipulator.fs.
 export import(path : "onshape/std/manipulator.fs", version : "✨");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "✨");
 
 // Imports used internally
 import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "✨");

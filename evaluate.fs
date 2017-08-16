@@ -489,9 +489,6 @@ precondition
         i is number;
 }
 {
-    if (arg.arcLengthParameterization == undefined)
-        arg.arcLengthParameterization = true;
-
     var result = @evEdgeTangentLines(context, arg);
     for (var i = 0; i < @size(result); i += 1)
         result[i] = lineFromBuiltin(result[i]);

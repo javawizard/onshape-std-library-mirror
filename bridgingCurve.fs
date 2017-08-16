@@ -269,8 +269,7 @@ function matchVerticesAtEndsOfEdge(context is Context, edge is Query, vertices i
 {
     const ends = evEdgeTangentLines(context, {
                 "edge" : edge,
-                "parameters" : [0, 1],
-                "arcLengthParameterization" : false
+                "parameters" : [0, 1]
             });
     if (size(ends) != 2)
     {
@@ -302,8 +301,7 @@ function matchEdgesThatEndAtVertex(context is Context, vertex is Query, edges is
     {
         const ends = evEdgeTangentLines(context, {
                     "edge" : edge,
-                    "parameters" : [0, 1],
-                    "arcLengthParameterization" : false
+                    "parameters" : [0, 1]
                 });
         if (size(ends) == 2)
         {
