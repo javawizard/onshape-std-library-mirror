@@ -94,36 +94,10 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
     }
     {
-        if (definition.patternType == PatternType.FACE)
-            definition.entities = definition.faces;
+        definition = adjustPatternDefinitionEntities(context, definition, false);
 
-        var referenceEntities;
-        if (definition.patternType == PatternType.FEATURE)
-        {
-            var referenceEntityQueries = [];
-            for (var idToFunction in definition.instanceFunction)
-            {
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V491_CURVE_PATTERN_WIRES_ONLY) && isIdForSketch(context, idToFunction.key))
-                {
-                    referenceEntityQueries = append(referenceEntityQueries, qBodyType(qCreatedBy(idToFunction.key, EntityType.BODY), BodyType.WIRE));
-                }
-                else
-                {
-                    referenceEntityQueries = append(referenceEntityQueries, qCreatedBy(idToFunction.key));
-                }
-            }
-            referenceEntities = qUnion(referenceEntityQueries);
-
-            if (size(evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES))) > 0)
-                throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, ["instanceFunction"]);
-        }
-        else
-        {
-            // Part and face pattern
-            referenceEntities = definition.entities;
-        }
-
-        checkInput(context, id, definition, false);
+        // must be done before transforming definition.instanceFunction with valuesSortedById(...)
+        var referenceEntities = collectReferenceEntities(context, definition);
 
         if (definition.patternType == PatternType.FEATURE)
             definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
@@ -191,6 +165,40 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false });
+
+/**
+ * Collect reference entities for the distance heuristic used to determine the path direction.
+ * Must be called before transforming  definition.instanceFunction with valuesSortedById(...)
+ */
+function collectReferenceEntities(context is Context, definition is map) returns Query
+{
+    var referenceEntities;
+    if (definition.patternType == PatternType.FEATURE)
+    {
+        var referenceEntityQueries = [];
+        for (var idToFunction in definition.instanceFunction)
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V491_CURVE_PATTERN_WIRES_ONLY) && isIdForSketch(context, idToFunction.key))
+            {
+                referenceEntityQueries = append(referenceEntityQueries, qBodyType(qCreatedBy(idToFunction.key, EntityType.BODY), BodyType.WIRE));
+            }
+            else
+            {
+                referenceEntityQueries = append(referenceEntityQueries, qCreatedBy(idToFunction.key));
+            }
+        }
+        referenceEntities = qUnion(referenceEntityQueries);
+
+        if (size(evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES))) > 0)
+            throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, ["instanceFunction"]);
+    }
+    else
+    {
+        // Part and face pattern
+        referenceEntities = definition.entities;
+    }
+    return referenceEntities;
+}
 
 /**
  * If keepOrientation is true, return tangent [Lines]s whose `origin`s lay at correct intervals along the [Path], and

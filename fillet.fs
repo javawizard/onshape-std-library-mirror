@@ -27,37 +27,94 @@ const FILLET_RHO_BOUNDS =
     (unitless) : [0.0, 0.5, 0.99999]
 } as RealBoundSpec;
 
+const VR_BLEND_BOUNDS =
+{
+    (meter)      : [0, 0.005, 500], //allows zero
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch)       : 0.2,
+    (foot)       : 0.015,
+    (yard)       : 0.005
+} as LengthBoundSpec;
+
+
 /**
  * Feature performing an [opFillet].
  */
-annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange",
+             "Filter Selector" : "allparts",  "Editing Logic Function" : "filletEditLogic"}
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Entities to fillet",
-                     "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
+                    "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
                                 || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
-                                && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
-                     "AdditionalBoxSelectFilter" : EntityType.EDGE }
+                        && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                    "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
-
-        annotation { "Name" : "Radius" }
-        isLength(definition.radius, BLEND_BOUNDS);
 
         annotation { "Name" : "Tangent propagation", "Default" : true }
         definition.tangentPropagation is boolean;
 
-        annotation { "Name" : "Conic fillet" }
-        definition.conicFillet is boolean;
+        annotation { "Name" : "Cross section", "UIHint" : "SHOW_LABEL" }
+        definition.crossSection is FilletCrossSection;
 
-        if (definition.conicFillet)
+        annotation { "Name" : "Radius" }
+        isLength(definition.radius, BLEND_BOUNDS);
+
+        if (definition.crossSection == FilletCrossSection.CONIC)
         {
             annotation { "Name" : "Rho" }
             isReal(definition.rho, FILLET_RHO_BOUNDS);
         }
+        else if (definition.crossSection == FilletCrossSection.CURVATURE)
+        {
+            annotation { "Name" : "Magnitude" }
+            isReal(definition.magnitude, FILLET_RHO_BOUNDS);
+        }
+
+        //to show an info only when certain parameters are changed
+        annotation {"Name" : "Defaults changed", "UIHint" : "ALWAYS_HIDDEN"}
+        definition.defaultsChanged is boolean;
+
+        annotation {"Name" : "Variable fillet"}
+        definition.isVariable is boolean;
+
+        if (definition.isVariable)
+        {
+            annotation { "Name" : "Vertices", "Item name" : "Vertex",
+                        "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex" }
+            definition.vertexSettings is array;
+            for (var setting in definition.vertexSettings)
+            {
+                annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO,
+                            "MaxNumberOfPicks" : 1 ,
+                            "UIHint" : "ALWAYS_HIDDEN" }
+                setting.vertex is Query;
+
+                annotation { "Name" : "Radius", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
+
+                if (definition.crossSection == FilletCrossSection.CONIC)
+                {
+                    annotation { "Name" : "Rho", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                    isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                }
+                else if (definition.crossSection == FilletCrossSection.CURVATURE)
+                {
+                    annotation { "Name" : "Magnitude", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                    isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
+                }
+            }
+            annotation {"Name" : "Smooth transition"}
+            definition.smoothTransition is boolean;
+        }
     }
     {
-        try(addFilletManipulator(context, id, definition));
+        if (!definition.isVariable)
+        {
+            try(addFilletManipulator(context, id, definition));
+        }
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
         {
             sheetMetalAwareFillet(context, id, definition);
@@ -67,7 +124,38 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             opFillet(context, id, definition);
         }
 
-    }, { tangentPropagation : false, conicFillet : false });
+        if (!definition.defaultsChanged) //defaults did not change, suppress info if needed
+        {
+            var result = getFeatureStatus(context, id);
+            if (result != undefined && result.statusEnum == ErrorStringEnum.VRFILLET_NO_EFFECT)
+            {
+                clearFeatureStatus(context, id, {"withDisplayData" : false}); //keep supplemental graphics
+            }
+        }
+
+    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false });
+
+
+/**
+ * @internal
+ * Edit logic to check if a default value has been changed. So that we only display the info when needed
+ */
+export function filletEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    definition.defaultsChanged = false;
+    if (specifiedParameters.radius  || specifiedParameters.rho || specifiedParameters.magnitude)
+    {
+        if (definition.radius != oldDefinition.radius ||
+            definition.rho != oldDefinition.rho ||
+            definition.magnitude != oldDefinition.magnitude)
+        {
+            definition.defaultsChanged = true; //default values are being changed, server decides if they're being used anywhere
+        }
+    }
+    return definition;
+}
+
 
 /*
  * Call sheetMetalCornerBreak on active sheet metal entities and opFillet on the remaining entities
@@ -85,11 +173,14 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 
     if (hasSheetMetalQueries)
     {
-        if (definition.conicFillet)
+        if (definition.crossSection != FilletCrossSection.CIRCULAR)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["conicFillet"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["crossSection"]);
         }
-
+        if (definition.isVariable)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["isVariable"]);
+        }
         var cornerBreakDefinition = {
                     "entities" : separatedQueries.sheetMetalQueries,
                     "cornerBreakStyle" : SMCornerBreakStyle.FILLET,

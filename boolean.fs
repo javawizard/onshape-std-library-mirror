@@ -554,7 +554,7 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
     {
         if (size(evaluateQuery(context, definition.booleanSurfaceScope)) == 0)
         {
-            throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE, ["booleanSurfaceScope"]);
+            throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE, ["booleanSurfaceScope"], qCreatedBy(id, EntityType.BODY));
         }
         originatingEdges = filterByOwnerBody(context, originatingEdges, definition.booleanSurfaceScope);
     }

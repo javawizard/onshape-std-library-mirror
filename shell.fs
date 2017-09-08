@@ -25,13 +25,13 @@ export const shell = defineFeature(function(context is Context, id is Id, defini
         if (!definition.isHollow)
         {
             annotation { "Name" : "Faces to remove",
-                "Filter" : EntityType.FACE && BodyType.SOLID && ModifiableEntityOnly.YES }
+                "Filter" : EntityType.FACE && BodyType.SOLID && ModifiableEntityOnly.YES && ActiveSheetMetal.NO}
             definition.entities is Query;
         }
         else
         {
             annotation { "Name" : "Parts to hollow",
-                "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
+                "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && ActiveSheetMetal.NO }
             definition.parts is Query;
         }
 

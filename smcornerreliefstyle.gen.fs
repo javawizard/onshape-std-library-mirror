@@ -8,11 +8,16 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * @internal.
  * Types of corner relief in sheet metal parts.
- */
+ * Is only ever used in FeatureScript and no built-ins work with it.
+ * See [SMReliefStyle] for the enum used in built-ins */
 export enum SMCornerReliefStyle
 {
+    annotation {"Name" : "Sized rectangle"}
+    SIZED_RECTANGLE,
     annotation {"Name" : "Rectangle"}
     RECTANGLE,
+    annotation {"Name" : "Sized round"}
+    SIZED_ROUND,
     annotation {"Name" : "Round"}
     ROUND,
     annotation {"Name" : "Closed"}

@@ -653,7 +653,13 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const smEdges = operationInfo.edgesToExtend;
         const trackingSMModel = startTracking(context, operationInfo.sheetMetalModels);
         const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
-        var modifiedEdges = startTracking(context, qUnion(smEdges));
+        const newly2SidedAsRips = isAtVersionOrLater(context, FeatureScriptVersionNumber.V664_FLAT_JOINT_TO_RIP);
+        var edgesToTrack = qUnion(smEdges);
+        if (newly2SidedAsRips)
+        {
+            edgesToTrack = qEdgeAdjacent(qEdgeAdjacent(edgesToTrack, EntityType.FACE), EntityType.EDGE);
+        }
+        var modifiedEdges = startTracking(context, edgesToTrack);
         const associateChanges = qUnion([startTracking(context, allFaces), modifiedEdges]);
         const mergeFaces = (definition.moveFaceType != MoveFaceType.ROTATE) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
@@ -692,18 +698,21 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 }
                 modifiedEdges = qUnion([modifiedEdges, qCreatedBy(id + "extend", EntityType.EDGE)]);
             }
-            for (var edge in evaluateQuery(context, modifiedEdges))
+            if (!newly2SidedAsRips)
             {
-                const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
-                if (size(adjacentFaces) != 1)
+                for (var edge in evaluateQuery(context, modifiedEdges))
                 {
-                    throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
+                    const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+                    if (size(adjacentFaces) != 1)
+                    {
+                        throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
+                    }
                 }
             }
         }
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V483_FLAT_QUERY_EVAL_FIX))
+        if (newly2SidedAsRips)
         {
-            addRipsForNewEdges(context, id);
+            addRipsForNewEdges(context, id,  modifiedEdges);
         }
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]),
                 originalEntities, initialAssociationAttributes);
@@ -866,9 +875,8 @@ export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition
     return definition;
 }
 
-function addRipsForNewEdges(context is Context, id is Id)
+function addRipsForNewEdges(context is Context, id is Id, edges is Query)
 {
-    const edges = qCreatedBy(id, EntityType.EDGE);
     var index = 0;
     for (var edge in evaluateQuery(context, edges))
     {
@@ -881,7 +889,8 @@ function addRipsForNewEdges(context is Context, id is Id)
         if (size(adjacentFaces) == 2)
         {
             const jointAttributeId = toAttributeId(id + "joint" + index);
-            createRipAttribute(context, edge, jointAttributeId, SMJointStyle.EDGE, {});
+            const ripAttribute = createRipAttribute(context, edge, jointAttributeId, SMJointStyle.EDGE, {});
+            setAttribute(context, {"entities" : edge, "attribute" : ripAttribute});
         }
         index += 1;
     }

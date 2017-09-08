@@ -51,6 +51,22 @@ export enum MirrorType
 
 /**
  * @internal
+ * Preprocess the entities and instance function for pattern
+ */
+export function adjustPatternDefinitionEntities(context is Context, definition is map, isMirror is boolean) returns map
+{
+    if (isFacePattern(definition.patternType))
+        definition.entities = definition.faces;
+    else if (isFeaturePattern(definition.patternType) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V666_FEATURE_PATTERN_ENTITIES))
+        definition.entities = qNothing();
+
+    checkPatternInput(context, definition, isMirror);
+
+    return definition;
+}
+
+/**
+ * @internal
  * TODO: Is this worth exposing?
  */
 export function computePatternOffset(context is Context, entity is Query, oppositeDir is boolean, distance is ValueWithUnits,
@@ -117,7 +133,7 @@ function isFacePattern(patternType)
 }
 
 /** @internal */
-export function checkInput(context is Context, id is Id, definition is map, isMirror is boolean)
+function checkPatternInput(context is Context, definition is map, isMirror is boolean)
 {
     if (isFeaturePattern(definition.patternType))
     {
@@ -189,9 +205,9 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                 }
                 catch (e)
                 {
-                    if (e is map && e.message == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+                    if (e is map && try silent(e.message as ErrorStringEnum) == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
                     {
-                        throw regenError(e.message, ["instanceFunction"]);
+                        throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN, ["instanceFunction"]);
                     }
                 }
             }

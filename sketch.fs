@@ -278,6 +278,7 @@ precondition
  * @param textId : @autocomplete `"text1"`
  * @param value {{
  *      @field text {string}: A string of text to write. May contain newlines.
+ *          @autocomplete `"Example Text"`
  *
  *      @field fontName {string}: A font name, with extension ".ttf" or ".otf".
  *              To change font weight, replace "-Regular" with "-Bold",
@@ -299,8 +300,8 @@ precondition
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
  *      @field construction {boolean} : `true` for a construction line @optional
- *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally
- *      @field mirrorVertical {boolean} : `true` for flipping text vertically
+ *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally @optional
+ *      @field mirrorVertical {boolean} : `true` for flipping text vertically @optional
  * }}
  * @return {{
  *      @field textId

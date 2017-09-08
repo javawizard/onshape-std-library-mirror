@@ -22,7 +22,13 @@ export enum SMReliefStyle
     annotation {"Name" : "Tear"}
     TEAR,
     annotation {"Name" : "Simple"}
-    SIMPLE
+    SIMPLE,
+    annotation {"Name" : "Sized rectangle"}
+    SIZED_RECTANGLE,
+    annotation {"Name" : "Sized round"}
+    SIZED_ROUND,
+    annotation {"Name" : "Sized obround"}
+    SIZED_OBROUND
 }
 
 

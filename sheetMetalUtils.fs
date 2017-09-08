@@ -72,6 +72,8 @@ export enum SMThicknessDirection
 *       @field controlsThickness{boolean}
 *       @field thickness{ValueWithUnits}
 *       @field defaultCornerReliefScale{number}
+*       @field defaultRoundReliefDiameter{ValueWithUnits}
+*       @field defaultSquareReliefWidth{ValueWithUnits}
 *       @field defaultBendReliefScale{number}
 * }}
 */
@@ -105,6 +107,16 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         "controllingFeatureId" : featureIdString,
         "parameterIdInFeature" : "defaultCornerReliefScale"
         };
+    var defaultRoundReliefDiameter = { "value" : args.defaultRoundReliefDiameter,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "defaultRoundReliefDiameter"
+        };
+    var defaultSquareReliefWidth = { "value" : args.defaultSquareReliefWidth,
+        "canBeEdited" : true,
+        "controllingFeatureId" : featureIdString,
+        "parameterIdInFeature" : "defaultSquareReliefWidth"
+        };
     var defaultBendReliefScale = { "value" : args.defaultBendReliefScale,
         "canBeEdited" : true,
         "controllingFeatureId" : featureIdString,
@@ -123,6 +135,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "minimalClearance" : minimalClearanceData,
                     "defaultBendRadius" : {"value" : args.defaultRadius},
                     "defaultCornerReliefScale" : defaultCornerReliefScale,
+                    "defaultRoundReliefDiameter" : defaultRoundReliefDiameter,
+                    "defaultSquareReliefWidth" : defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : defaultBendReliefScale,
                     "fsVersion" : getCurrentVersion(context)});
@@ -365,7 +379,18 @@ export const SM_THICKNESS_BOUNDS =
     (yard)       : 0.002
 } as LengthBoundSpec;
 
-
+/**
+ * A `LengthBoundSpec` for relief size, corners or bend relief, in sheet metal features.
+ */
+export const SM_RELIEF_SIZE_BOUNDS =
+{
+    (meter)      : [1e-5, 0.005 , 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5,
+    (inch)       : 0.25,
+    (foot)       : 0.015,
+    (yard)       : 0.005
+} as LengthBoundSpec;
 
 /**
  * Partitions allParts into non-sheet metal parts and sheet metal parts.
@@ -546,6 +571,16 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                         throw "Existing entity not fit for definition attribute";
                     }
                     removeAttributes(context, { "entities" : entity, "attributePattern" : {} as SMAttribute });
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V664_FLAT_JOINT_TO_RIP))
+                    {
+                        var edgeQ = qEntityFilter(entity, EntityType.EDGE);
+                        if (definitionAttributes[0].jointType.value == SMJointType.BEND && try silent(edgeIsTwoSided(context, edgeQ)) == true)
+                        {
+                            const jointAttributeId = definitionAttributes[0].attribute_id ~ ".rip";
+                            const ripAttribute = createRipAttribute(context, edgeQ, jointAttributeId, SMJointStyle.EDGE, {});
+                            setAttribute(context, {"entities" : edgeQ, "attribute" : ripAttribute});
+                        }
+                    }
                 }
                 else if (!attributeSurvived) // favore one of the entities inheriting the attribute to be a masterEntity
                 {
@@ -583,6 +618,10 @@ function isEntityAppropriateForAttribute(context is Context, entity is Query, at
     else if (attribute.objectType == SMObjectType.JOINT)
     {
         filteredQ = qEntityFilter(entity, EntityType.EDGE);
+        if (try silent(edgeIsTwoSided(context, filteredQ)) != true)
+        {
+            return false;
+        }
         if (attribute.jointType.value == SMJointType.BEND)
         {
             if (size(evaluateQuery(context, qGeometry(entity, GeometryType.CYLINDER))) == 1)
@@ -594,8 +633,14 @@ function isEntityAppropriateForAttribute(context is Context, entity is Query, at
             {
                 return false;
             }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V664_FLAT_JOINT_TO_RIP))
+            {
+                var angleVal = try(edgeAngle(context, filteredQ));
+                var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
+                return !zeroAngle;
+            }
         }
-        return edgeIsTwoSided(context, filteredQ);
+        return true;
     }
     else if (attribute.objectType == SMObjectType.WALL)
     {
@@ -671,10 +716,20 @@ export function separateSheetMetalQueries(context is Context, targets is Query) 
  */
 export function checkNotInFeaturePattern(context is Context, references is Query, error is ErrorStringEnum)
 {
-    var remainingTransform = getRemainderPatternTransform(context, {"references" : references});
-    if (remainingTransform != identityTransform())
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V675_MORE_TAB_FIXES))
     {
-        throw regenError(error);
+        if (@isInFeaturePattern(context))
+        {
+            throw regenError(error);
+        }
+    }
+    else
+    {
+        var remainingTransform = getRemainderPatternTransform(context, {"references" : references});
+        if (remainingTransform != identityTransform())
+        {
+            throw regenError(error);
+        }
     }
 }
 
@@ -1073,6 +1128,26 @@ export function getOwnerSMModel(context is Context, selection is Query) returns 
         }
     }
     return out;
+}
+
+/**
+ * Returns a query for all sheet metal part entities of entityType related to the input sheet metal model entities.
+ */
+export function qSMCorrespondingInPart(context is Context, selection is Query, entityType is EntityType) returns Query
+{
+    var entityAssociations = getAttributes(context, {
+            "entities" : selection,
+            "attributePattern" : {} as SMAssociationAttribute
+        });
+    var out = [];
+    for (var attribute in entityAssociations)
+    {
+        var associatedEntities = evaluateQuery(context, qBodyType(qAttributeQuery(attribute), BodyType.SOLID));
+        out = concatenateArrays([out, associatedEntities]);
+    }
+
+    var corresponding = qEntityFilter(qUnion(out), entityType);
+    return qSubtraction(corresponding, qCorrespondingInFlat(corresponding));
 }
 
 

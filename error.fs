@@ -305,6 +305,19 @@ export function reportFeatureStatus(context is Context, id is Id, status is Feat
 }
 
 /**
+ * Clear the status of a feature to StatusType.OK
+ * * @param definition {{
+ *      @field withDisplayData {boolean} : Clear status display data attached to feature. Default true. @optional
+ * }}
+ * @param id {Id}
+ */
+export function clearFeatureStatus(context is Context, id is Id, definition is map) returns boolean
+{
+    @clearFeatureStatus(context, id, definition);
+    return true;
+}
+
+/**
  * @internal
  *
  * To get the statusEnum as ErrorStringEnum or the statusMsg as a string of a feature if feature status is of statusType

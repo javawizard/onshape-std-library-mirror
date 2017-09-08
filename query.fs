@@ -123,6 +123,7 @@ export predicate canBeQuery(value)
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
  * @value LAMINAR_DEPENDENCY         : Used in [qLaminarDependency]
  * @value PLANE_PARALLEL_DIRECTION   : Used in [qPlanesParallelToDirection]
+ * @value FACE_PARALLEL_DIRECTION    : Used in [qFacesParallelToDirection]
  ******************************************************************************/
 export enum QueryType
 {
@@ -188,7 +189,8 @@ export enum QueryType
     SKETCH_OBJECT_FILTER,
     COINCIDES_WITH_PLANE,
     LAMINAR_DEPENDENCY,
-    PLANE_PARALLEL_DIRECTION
+    PLANE_PARALLEL_DIRECTION,
+    FACE_PARALLEL_DIRECTION
 }
 
 /**
@@ -995,6 +997,18 @@ export function qParallelPlanes(subquery is Query, normal is Vector, allowAntipa
 export function qPlanesParallelToDirection(subquery is Query, direction is Vector) returns Query
 {
     return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : direction } as Query;
+}
+
+/**
+ * A query for all faces that are parallel to the given direction vector
+ * e.g.
+ *    if it is a planar face, the plane normal is perpendicular to `direction`
+ *    if it is a cylindrical face, the axis is parallel to `direction`
+ *    if it is an extruded face, the extrude direction is parallel to `direction`
+ */
+export function qFacesParallelToDirection(subquery is Query, direction is Vector) returns Query
+{
+    return { "queryType" : QueryType.FACE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : direction } as Query;
 }
 
 /**

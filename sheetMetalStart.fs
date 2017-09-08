@@ -59,8 +59,12 @@ export enum SMExtrudeBoundingType
  */
 export enum SMCornerStrategyType
 {
+    annotation { "Name" : "Sized rectangle" }
+    SIZED_RECTANGLE,
     annotation { "Name" : "Rectangle" }
     RECTANGLE,
+    annotation { "Name" : "Sized round" }
+    SIZED_ROUND,
     annotation { "Name" : "Round" }
     ROUND,
     annotation { "Name" : "Closed" }
@@ -197,6 +201,18 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
         }
 
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+        {
+            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
+        }
+
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+        {
+            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
+        }
+
         annotation { "Name" : "Bend relief type",
                      "Default" : SMBendStrategyType.OBROUND,
                      "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
@@ -235,6 +251,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "initEntities" : qNothing(),
       "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
       "defaultCornerReliefScale" : 1.5,
+      "defaultRoundReliefDiameter" : 0 * meter,
+      "defaultSquareReliefWidth" : 0 * meter,
       "defaultBendReliefStyle" :  SMBendStrategyType.OBROUND,
       "defaultBendReliefDepthScale" : 1.5,
       "defaultBendReliefScale" : 1.0625,
@@ -363,6 +381,8 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
                     "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
                     "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
                     "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+                    "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+                    "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : definition.defaultBendReliefScale}, 0);
         if (getFeatureError(context, id) != undefined)
@@ -701,6 +721,8 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
         "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
         "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
         "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
         "defaultBendReliefScale" : definition.defaultBendReliefScale
     };
@@ -730,6 +752,14 @@ function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
     else if (definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
     {
         return SMReliefStyle.ROUND;
+    }
+    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+    {
+        return SMReliefStyle.SIZED_ROUND;
+    }
+    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+    {
+        return SMReliefStyle.SIZED_RECTANGLE;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.CLOSED)
     {

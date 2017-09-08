@@ -140,10 +140,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         }
     }
     {
-        if (definition.patternType == PatternType.FACE)
-            definition.entities = definition.faces;
-
-        checkInput(context, id, definition, false);
+        definition = adjustPatternDefinitionEntities(context, definition, false);
 
         if (definition.patternType == PatternType.FEATURE)
             definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);

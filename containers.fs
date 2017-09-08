@@ -329,3 +329,16 @@ export function values(container is map) returns array
     return arr;
 }
 
+/**
+ * Returns the sub array `[startIndex, endIndex)`
+ */
+export function subArray(input is array, startIndex is number, endIndex is number) returns array
+{
+    var output = [];
+    for (var i = startIndex; i < endIndex; i += 1)
+    {
+        output = append(output, input[i]);
+    }
+    return output;
+}
+

@@ -568,7 +568,20 @@ export enum FeatureScriptVersionNumber
     V657_SURFACE_JOIN_BUGS,
     V658_SURFACE_JOIN_FS_CHANGES,
     V659_HOLE_FEATURE_INITIAL_FOCUS_BUG,
-    V660_ENCLOSE_AUTO_MATCHING
+    V660_ENCLOSE_AUTO_MATCHING,
+    V663_REVOLVE_ID_FIX,
+    V664_FLAT_JOINT_TO_RIP,
+    V665_PERTURBED_SM_TOL,
+    V666_FEATURE_PATTERN_ENTITIES,
+    V667_PS_VERSION_30_0_226,
+    V668_ASME_HOLE_SCREW_CLEARANCES,
+    V669_TIGHTER_SKETCH_OFFSET_APPROXIMATION,
+    V670_VR_FILLET_UPGRADE_TASK,
+    V671_FRESH_CORNER_OVERRIDE,
+    V672_TAB_IDENTITY,
+    V673_VRFILLET_FIXES,
+    V674_TAB_FIXES,
+    V675_MORE_TAB_FIXES
 }
 
 /**
@@ -579,6 +592,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V660_ENCLOSE_AUTO_MATCHING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V675_MORE_TAB_FIXES;
 
 

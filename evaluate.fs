@@ -579,7 +579,7 @@ precondition
 }
 
 /**
- * Given a face of a fillet, return the radius of the fillet.
+ * Given a face of a constant radius fillet, return the radius of fillet.
  * @param arg {{
  *      @field face{Query}
  * }}

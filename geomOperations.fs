@@ -202,12 +202,15 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *              @eg `1 * inch`
  *      @field tangentPropagation {boolean} : @optional
  *              `true` to propagate the fillet along edges tangent to those passed in. Default is `false`.
- *      @field conicFillet {boolean} : @optional
- *              `true` to make a conic fillet, rather than rolling ball. Default is `false`.
- *      @field rho {number} : @requiredif {`conicFillet` is `true`.}
+ *      @field crossSection {FilletCrossSection} : Fillet cross section. One of `CIRCULAR`, `CONIC`, `CURVATURE`.
+ *      @field rho {number} : @requiredif {`crossSection` is `CONIC`.}
  *              A number between 0 and 1, specifying the Rho value of a conic fillet
  *              @ex `0.01` creates a flat, nearly-chamfered shape.
  *              @ex `0.99` creates a pointed, nearly-unchanged shape.
+ *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
+ *              A number between 0 and 1, specifying the magnitude of curvature match.
+ *      @field isVariable {boolean} : Fillet controls can be varied at vertices via `vertexSettings`.
+ *      @field vertexSettings {array} : Array of fillet settings at specified vertices.
  * }}
  */
 export function opFillet(context is Context, id is Id, definition is map)
@@ -399,7 +402,7 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "pattern1"`
  * @param definition {{
  *      @field entities {Query} : Bodies and faces to pattern.
- *      @field transforms {array} : An array of `transforms` to apply to `entities`. The transforms do not have to be
+ *      @field transforms {array} : An array of [Transform]s to apply to `entities`. The transforms do not have to be
  *          rigid.
  *      @field instanceNames {array} : An array of distinct non-empty strings the same size as `transforms` to identify
  *              the patterned entities.
@@ -636,7 +639,8 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  *    @field faces {Query} : List of faces to be converted. If `tangentPropagation` is `true`, these are the seed faces.
  *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
  *    @field offset {ValueWithUnits} : Offset extracted surface faces by this distance along normal @optional
- *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset.Default `true`. @optional
+ *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset. Default `true`. @optional
+ *    @field removeRedundant {boolean} : Removes all redundant edges from result if true. Default is `false`. @optional
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

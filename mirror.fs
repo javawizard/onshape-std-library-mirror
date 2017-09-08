@@ -60,10 +60,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
     }
     {
-       if (definition.patternType == MirrorType.FACE)
-            definition.entities = definition.faces;
-
-        checkInput(context, id, definition, true);
+        definition = adjustPatternDefinitionEntities(context, definition, true);
 
         if (definition.patternType == MirrorType.FEATURE)
             definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
