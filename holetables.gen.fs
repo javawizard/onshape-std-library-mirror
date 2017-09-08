@@ -1,8 +1,8 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "660.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "660.0");
+import(path : "onshape/std/units.fs", version : "675.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "675.0");
 
 const ANSI_drillTable = {
     "name" : "size",
@@ -190,341 +190,373 @@ const ANSI_ClearanceHoleTable = {
         "#0" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.0635 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.07 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#1" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.076 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.089 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.096 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#3" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.104 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.11 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.120 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.1285 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.12 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#5" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.1285 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.136 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#6" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.170 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.144 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.1495 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.17 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.180 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.1695 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.177 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.18 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#10" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.196 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.201 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree"}
             }
         },
         "#12" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree"}
             }
         },
         "5/16" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.328 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.328 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3/8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree"}
             }
         },
         "7/16" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.453 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.453 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1/2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree"}
             }
         },
         "9/16" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "0.5781 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.5938 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "0.5938 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "5/8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree"}
             }
         },
         "7/8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1 1/8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "1.1406 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.1719 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "1.156 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "1.219 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.312 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1 1/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1 3/8" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "1.3906 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.4219 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "1.438 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "1.5 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.609 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1 1/2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
+                "Close (ASME)" : {"holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
+                "Normal (ASME)" : {"holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"},
+                "Loose (ASME)" : {"holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree"}
             }
         },
         "1 3/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "2.0469 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "2 1/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "2.2656 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "2.2969 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "2.2812 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "2.2812 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "2 1/2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "2.5156 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "2.5469 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "2.5312 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "2.5312 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "2 3/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "2.7656 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "2.7969 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "2.7812 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "2.7812 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "3.0469 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3 1/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "3.2656 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "3.2969 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "3.2812 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "3.2656 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "3.2812 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3 1/2" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "3.5156 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "3.5469 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "3.5312 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "3.5312 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "3 3/4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
                 "Close" : {"holeDiameter" : "3.7656 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "3.7969 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "3.7812 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Free" : {"holeDiameter" : "3.7812 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         },
         "4" : {
             "name" : "fit",
             "displayName" : "Fit",
-            "default" : "Normal",
+            "default" : "Free",
             "entries" : {
-                "Close" : {"holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Loose" : {"holeDiameter" : "4.0469 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
-                "Normal" : {"holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
+                "Close" : {"holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"},
+                "Free" : {"holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree"}
             }
         }
     }
@@ -545,8 +577,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.052 in", "tapDrillDiameter" : "0.052 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"},
-                        "75%" : {"holeDiameter" : "0.0469 in", "tapDrillDiameter" : "0.0469 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"}
+                        "50%" : {"holeDiameter" : "0.052 in", "tapDrillDiameter" : "0.052 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                        "75%" : {"holeDiameter" : "0.0469 in", "tapDrillDiameter" : "0.0469 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
                     }
                 }
             }
@@ -561,8 +593,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.0625 in", "tapDrillDiameter" : "0.0625 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                        "75%" : {"holeDiameter" : "0.0595 in", "tapDrillDiameter" : "0.0595 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                        "50%" : {"holeDiameter" : "0.0625 in", "tapDrillDiameter" : "0.0625 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                        "75%" : {"holeDiameter" : "0.0595 in", "tapDrillDiameter" : "0.0595 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                     }
                 },
                 "72 tpi" : {
@@ -570,8 +602,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.0635 in", "tapDrillDiameter" : "0.0635 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                        "75%" : {"holeDiameter" : "0.0595 in", "tapDrillDiameter" : "0.0595 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                        "50%" : {"holeDiameter" : "0.0635 in", "tapDrillDiameter" : "0.0635 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                        "75%" : {"holeDiameter" : "0.0595 in", "tapDrillDiameter" : "0.0595 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                     }
                 }
             }
@@ -586,8 +618,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.073 in", "tapDrillDiameter" : "0.073 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                        "75%" : {"holeDiameter" : "0.07 in", "tapDrillDiameter" : "0.07 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                        "50%" : {"holeDiameter" : "0.073 in", "tapDrillDiameter" : "0.073 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                        "75%" : {"holeDiameter" : "0.07 in", "tapDrillDiameter" : "0.07 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                     }
                 },
                 "64 tpi" : {
@@ -595,8 +627,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.076 in", "tapDrillDiameter" : "0.076 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                        "75%" : {"holeDiameter" : "0.07 in", "tapDrillDiameter" : "0.07 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                        "50%" : {"holeDiameter" : "0.076 in", "tapDrillDiameter" : "0.076 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                        "75%" : {"holeDiameter" : "0.07 in", "tapDrillDiameter" : "0.07 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                     }
                 }
             }
@@ -611,8 +643,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.086 in", "tapDrillDiameter" : "0.086 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                        "75%" : {"holeDiameter" : "0.0785 in", "tapDrillDiameter" : "0.0785 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                        "50%" : {"holeDiameter" : "0.086 in", "tapDrillDiameter" : "0.086 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                        "75%" : {"holeDiameter" : "0.0785 in", "tapDrillDiameter" : "0.0785 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                     }
                 },
                 "56 tpi" : {
@@ -620,8 +652,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.089 in", "tapDrillDiameter" : "0.089 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                        "75%" : {"holeDiameter" : "0.082 in", "tapDrillDiameter" : "0.082 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                        "50%" : {"holeDiameter" : "0.089 in", "tapDrillDiameter" : "0.089 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                        "75%" : {"holeDiameter" : "0.082 in", "tapDrillDiameter" : "0.082 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                     }
                 }
             }
@@ -636,8 +668,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.096 in", "tapDrillDiameter" : "0.096 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                        "75%" : {"holeDiameter" : "0.089 in", "tapDrillDiameter" : "0.089 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                        "50%" : {"holeDiameter" : "0.096 in", "tapDrillDiameter" : "0.096 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                        "75%" : {"holeDiameter" : "0.089 in", "tapDrillDiameter" : "0.089 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                     }
                 },
                 "48 tpi" : {
@@ -645,8 +677,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.098 in", "tapDrillDiameter" : "0.098 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                        "75%" : {"holeDiameter" : "0.0935 in", "tapDrillDiameter" : "0.0935 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                        "50%" : {"holeDiameter" : "0.098 in", "tapDrillDiameter" : "0.098 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                        "75%" : {"holeDiameter" : "0.0935 in", "tapDrillDiameter" : "0.0935 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                     }
                 }
             }
@@ -661,8 +693,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.1094 in", "tapDrillDiameter" : "0.1094 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                        "75%" : {"holeDiameter" : "0.1015 in", "tapDrillDiameter" : "0.1015 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                        "50%" : {"holeDiameter" : "0.1094 in", "tapDrillDiameter" : "0.1094 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                        "75%" : {"holeDiameter" : "0.1015 in", "tapDrillDiameter" : "0.1015 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                     }
                 },
                 "44 tpi" : {
@@ -670,8 +702,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.11 in", "tapDrillDiameter" : "0.11 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                        "75%" : {"holeDiameter" : "0.104 in", "tapDrillDiameter" : "0.104 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                        "50%" : {"holeDiameter" : "0.11 in", "tapDrillDiameter" : "0.11 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                        "75%" : {"holeDiameter" : "0.104 in", "tapDrillDiameter" : "0.104 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                     }
                 }
             }
@@ -686,8 +718,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.116 in", "tapDrillDiameter" : "0.116 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                        "75%" : {"holeDiameter" : "0.1065 in", "tapDrillDiameter" : "0.1065 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                        "50%" : {"holeDiameter" : "0.116 in", "tapDrillDiameter" : "0.116 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                        "75%" : {"holeDiameter" : "0.1065 in", "tapDrillDiameter" : "0.1065 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                     }
                 },
                 "40 tpi" : {
@@ -695,8 +727,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.12 in", "tapDrillDiameter" : "0.12 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                        "75%" : {"holeDiameter" : "0.113 in", "tapDrillDiameter" : "0.113 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                        "50%" : {"holeDiameter" : "0.12 in", "tapDrillDiameter" : "0.12 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                        "75%" : {"holeDiameter" : "0.113 in", "tapDrillDiameter" : "0.113 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                     }
                 }
             }
@@ -711,8 +743,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.144 in", "tapDrillDiameter" : "0.144 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                        "75%" : {"holeDiameter" : "0.136 in", "tapDrillDiameter" : "0.136 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                        "50%" : {"holeDiameter" : "0.144 in", "tapDrillDiameter" : "0.144 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                        "75%" : {"holeDiameter" : "0.136 in", "tapDrillDiameter" : "0.136 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                     }
                 },
                 "36 tpi" : {
@@ -720,8 +752,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.147 in", "tapDrillDiameter" : "0.147 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                        "75%" : {"holeDiameter" : "0.136 in", "tapDrillDiameter" : "0.136 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                        "50%" : {"holeDiameter" : "0.147 in", "tapDrillDiameter" : "0.147 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                        "75%" : {"holeDiameter" : "0.136 in", "tapDrillDiameter" : "0.136 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                     }
                 }
             }
@@ -736,8 +768,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.161 in", "tapDrillDiameter" : "0.161 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                        "75%" : {"holeDiameter" : "0.1495 in", "tapDrillDiameter" : "0.1495 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                        "50%" : {"holeDiameter" : "0.161 in", "tapDrillDiameter" : "0.161 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                        "75%" : {"holeDiameter" : "0.1495 in", "tapDrillDiameter" : "0.1495 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                     }
                 },
                 "32 tpi" : {
@@ -745,8 +777,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.1695 in", "tapDrillDiameter" : "0.1695 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                        "75%" : {"holeDiameter" : "0.159 in", "tapDrillDiameter" : "0.159 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                        "50%" : {"holeDiameter" : "0.1695 in", "tapDrillDiameter" : "0.1695 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                        "75%" : {"holeDiameter" : "0.159 in", "tapDrillDiameter" : "0.159 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                     }
                 }
             }
@@ -761,8 +793,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                        "75%" : {"holeDiameter" : "0.177 in", "tapDrillDiameter" : "0.177 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                        "50%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                        "75%" : {"holeDiameter" : "0.177 in", "tapDrillDiameter" : "0.177 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                     }
                 },
                 "28 tpi" : {
@@ -770,8 +802,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.1935 in", "tapDrillDiameter" : "0.1935 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                        "75%" : {"holeDiameter" : "0.182 in", "tapDrillDiameter" : "0.182 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                        "50%" : {"holeDiameter" : "0.1935 in", "tapDrillDiameter" : "0.1935 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                        "75%" : {"holeDiameter" : "0.182 in", "tapDrillDiameter" : "0.182 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                     }
                 },
                 "32 tpi" : {
@@ -779,8 +811,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.196 in", "tapDrillDiameter" : "0.196 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                        "75%" : {"holeDiameter" : "0.185 in", "tapDrillDiameter" : "0.185 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                        "50%" : {"holeDiameter" : "0.196 in", "tapDrillDiameter" : "0.196 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                        "75%" : {"holeDiameter" : "0.185 in", "tapDrillDiameter" : "0.185 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                     }
                 }
             }
@@ -795,8 +827,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.2188 in", "tapDrillDiameter" : "0.2188 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                        "75%" : {"holeDiameter" : "0.201 in", "tapDrillDiameter" : "0.201 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                        "50%" : {"holeDiameter" : "0.2188 in", "tapDrillDiameter" : "0.2188 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                        "75%" : {"holeDiameter" : "0.201 in", "tapDrillDiameter" : "0.201 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                     }
                 },
                 "28 tpi" : {
@@ -804,8 +836,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.228 in", "tapDrillDiameter" : "0.228 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                        "75%" : {"holeDiameter" : "0.213 in", "tapDrillDiameter" : "0.213 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                        "50%" : {"holeDiameter" : "0.228 in", "tapDrillDiameter" : "0.228 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                        "75%" : {"holeDiameter" : "0.213 in", "tapDrillDiameter" : "0.213 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                     }
                 },
                 "32 tpi" : {
@@ -813,8 +845,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.228 in", "tapDrillDiameter" : "0.228 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                        "75%" : {"holeDiameter" : "0.2188 in", "tapDrillDiameter" : "0.2188 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                        "50%" : {"holeDiameter" : "0.228 in", "tapDrillDiameter" : "0.228 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                        "75%" : {"holeDiameter" : "0.2188 in", "tapDrillDiameter" : "0.2188 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                     }
                 }
             }
@@ -863,8 +895,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.332 in", "tapDrillDiameter" : "0.332 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                        "75%" : {"holeDiameter" : "0.3125 in", "tapDrillDiameter" : "0.3125 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                        "50%" : {"holeDiameter" : "0.332 in", "tapDrillDiameter" : "0.332 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                        "75%" : {"holeDiameter" : "0.3125 in", "tapDrillDiameter" : "0.3125 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                     }
                 },
                 "24 tpi" : {
@@ -872,8 +904,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.348 in", "tapDrillDiameter" : "0.348 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                        "75%" : {"holeDiameter" : "0.332 in", "tapDrillDiameter" : "0.332 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                        "50%" : {"holeDiameter" : "0.348 in", "tapDrillDiameter" : "0.348 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                        "75%" : {"holeDiameter" : "0.332 in", "tapDrillDiameter" : "0.332 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                     }
                 },
                 "32 tpi" : {
@@ -881,8 +913,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.358 in", "tapDrillDiameter" : "0.358 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                        "75%" : {"holeDiameter" : "0.3438 in", "tapDrillDiameter" : "0.3438 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                        "50%" : {"holeDiameter" : "0.358 in", "tapDrillDiameter" : "0.358 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                        "75%" : {"holeDiameter" : "0.3438 in", "tapDrillDiameter" : "0.3438 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                     }
                 }
             }
@@ -931,8 +963,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.4531 in", "tapDrillDiameter" : "0.4531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                        "75%" : {"holeDiameter" : "0.4219 in", "tapDrillDiameter" : "0.4219 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                        "50%" : {"holeDiameter" : "0.4531 in", "tapDrillDiameter" : "0.4531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                        "75%" : {"holeDiameter" : "0.4219 in", "tapDrillDiameter" : "0.4219 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                     }
                 },
                 "20 tpi" : {
@@ -940,8 +972,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                        "75%" : {"holeDiameter" : "0.4531 in", "tapDrillDiameter" : "0.4531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                        "50%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                        "75%" : {"holeDiameter" : "0.4531 in", "tapDrillDiameter" : "0.4531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                     }
                 },
                 "28 tpi" : {
@@ -949,8 +981,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                        "75%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                        "50%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                        "75%" : {"holeDiameter" : "0.4688 in", "tapDrillDiameter" : "0.4688 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                     }
                 }
             }
@@ -999,8 +1031,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.5625 in", "tapDrillDiameter" : "0.5625 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                        "75%" : {"holeDiameter" : "0.5312 in", "tapDrillDiameter" : "0.5312 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                        "50%" : {"holeDiameter" : "0.5625 in", "tapDrillDiameter" : "0.5625 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                        "75%" : {"holeDiameter" : "0.5312 in", "tapDrillDiameter" : "0.5312 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                     }
                 },
                 "18 tpi" : {
@@ -1008,8 +1040,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.5938 in", "tapDrillDiameter" : "0.5938 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                        "75%" : {"holeDiameter" : "0.5781 in", "tapDrillDiameter" : "0.5781 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                        "50%" : {"holeDiameter" : "0.5938 in", "tapDrillDiameter" : "0.5938 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                        "75%" : {"holeDiameter" : "0.5781 in", "tapDrillDiameter" : "0.5781 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                     }
                 },
                 "24 tpi" : {
@@ -1017,8 +1049,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.5938 in", "tapDrillDiameter" : "0.5938 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                        "75%" : {"holeDiameter" : "0.5781 in", "tapDrillDiameter" : "0.5781 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                        "50%" : {"holeDiameter" : "0.5938 in", "tapDrillDiameter" : "0.5938 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                        "75%" : {"holeDiameter" : "0.5781 in", "tapDrillDiameter" : "0.5781 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                     }
                 }
             }
@@ -1033,8 +1065,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.6875 in", "tapDrillDiameter" : "0.6875 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                        "75%" : {"holeDiameter" : "0.6562 in", "tapDrillDiameter" : "0.6562 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                        "50%" : {"holeDiameter" : "0.6875 in", "tapDrillDiameter" : "0.6875 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                        "75%" : {"holeDiameter" : "0.6562 in", "tapDrillDiameter" : "0.6562 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                     }
                 },
                 "16 tpi" : {
@@ -1042,8 +1074,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.7031 in", "tapDrillDiameter" : "0.7031 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                        "75%" : {"holeDiameter" : "0.6875 in", "tapDrillDiameter" : "0.6875 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                        "50%" : {"holeDiameter" : "0.7031 in", "tapDrillDiameter" : "0.7031 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                        "75%" : {"holeDiameter" : "0.6875 in", "tapDrillDiameter" : "0.6875 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                     }
                 },
                 "20 tpi" : {
@@ -1051,8 +1083,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.7188 in", "tapDrillDiameter" : "0.7188 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                        "75%" : {"holeDiameter" : "0.7031 in", "tapDrillDiameter" : "0.7031 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                        "50%" : {"holeDiameter" : "0.7188 in", "tapDrillDiameter" : "0.7188 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                        "75%" : {"holeDiameter" : "0.7031 in", "tapDrillDiameter" : "0.7031 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                     }
                 }
             }
@@ -1067,8 +1099,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.7969 in", "tapDrillDiameter" : "0.7969 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                        "75%" : {"holeDiameter" : "0.7656 in", "tapDrillDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                        "50%" : {"holeDiameter" : "0.7969 in", "tapDrillDiameter" : "0.7969 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                        "75%" : {"holeDiameter" : "0.7656 in", "tapDrillDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                     }
                 },
                 "14 tpi" : {
@@ -1076,8 +1108,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.8281 in", "tapDrillDiameter" : "0.8281 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                        "75%" : {"holeDiameter" : "0.8125 in", "tapDrillDiameter" : "0.8125 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                        "50%" : {"holeDiameter" : "0.8281 in", "tapDrillDiameter" : "0.8281 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                        "75%" : {"holeDiameter" : "0.8125 in", "tapDrillDiameter" : "0.8125 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                     }
                 },
                 "20 tpi" : {
@@ -1085,8 +1117,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.8438 in", "tapDrillDiameter" : "0.8438 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                        "75%" : {"holeDiameter" : "0.8281 in", "tapDrillDiameter" : "0.8281 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                        "50%" : {"holeDiameter" : "0.8438 in", "tapDrillDiameter" : "0.8438 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                        "75%" : {"holeDiameter" : "0.8281 in", "tapDrillDiameter" : "0.8281 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                     }
                 }
             }
@@ -1101,8 +1133,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.9219 in", "tapDrillDiameter" : "0.9219 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                        "75%" : {"holeDiameter" : "0.875 in", "tapDrillDiameter" : "0.875 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                        "50%" : {"holeDiameter" : "0.9219 in", "tapDrillDiameter" : "0.9219 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                        "75%" : {"holeDiameter" : "0.875 in", "tapDrillDiameter" : "0.875 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1110,8 +1142,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.9531 in", "tapDrillDiameter" : "0.9531 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                        "75%" : {"holeDiameter" : "0.9219 in", "tapDrillDiameter" : "0.9219 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                        "50%" : {"holeDiameter" : "0.9531 in", "tapDrillDiameter" : "0.9531 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                        "75%" : {"holeDiameter" : "0.9219 in", "tapDrillDiameter" : "0.9219 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                     }
                 },
                 "20 tpi" : {
@@ -1119,8 +1151,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "0.9688 in", "tapDrillDiameter" : "0.9688 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                        "75%" : {"holeDiameter" : "0.9531 in", "tapDrillDiameter" : "0.9531 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                        "50%" : {"holeDiameter" : "0.9688 in", "tapDrillDiameter" : "0.9688 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                        "75%" : {"holeDiameter" : "0.9531 in", "tapDrillDiameter" : "0.9531 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                     }
                 }
             }
@@ -1160,8 +1192,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.1562 in", "tapDrillDiameter" : "1.1562 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                        "75%" : {"holeDiameter" : "1.1094 in", "tapDrillDiameter" : "1.1094 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                        "50%" : {"holeDiameter" : "1.1562 in", "tapDrillDiameter" : "1.1562 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                        "75%" : {"holeDiameter" : "1.1094 in", "tapDrillDiameter" : "1.1094 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1169,8 +1201,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.2031 in", "tapDrillDiameter" : "1.2031 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                        "75%" : {"holeDiameter" : "1.1719 in", "tapDrillDiameter" : "1.1719 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                        "50%" : {"holeDiameter" : "1.2031 in", "tapDrillDiameter" : "1.2031 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                        "75%" : {"holeDiameter" : "1.1719 in", "tapDrillDiameter" : "1.1719 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                     }
                 },
                 "18 tpi" : {
@@ -1178,8 +1210,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.2187 in", "tapDrillDiameter" : "1.2187 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                        "75%" : {"holeDiameter" : "1.1875 in", "tapDrillDiameter" : "1.1875 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                        "50%" : {"holeDiameter" : "1.2187 in", "tapDrillDiameter" : "1.2187 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                        "75%" : {"holeDiameter" : "1.1875 in", "tapDrillDiameter" : "1.1875 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                     }
                 }
             }
@@ -1219,8 +1251,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.3906 in", "tapDrillDiameter" : "1.3906 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                        "75%" : {"holeDiameter" : "1.3437 in", "tapDrillDiameter" : "1.3437 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                        "50%" : {"holeDiameter" : "1.3906 in", "tapDrillDiameter" : "1.3906 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                        "75%" : {"holeDiameter" : "1.3437 in", "tapDrillDiameter" : "1.3437 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1228,8 +1260,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.4375 in", "tapDrillDiameter" : "1.4375 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                        "75%" : {"holeDiameter" : "1.4219 in", "tapDrillDiameter" : "1.4219 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                        "50%" : {"holeDiameter" : "1.4375 in", "tapDrillDiameter" : "1.4375 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                        "75%" : {"holeDiameter" : "1.4219 in", "tapDrillDiameter" : "1.4219 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                     }
                 },
                 "18 tpi" : {
@@ -1237,8 +1269,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.4687 in", "tapDrillDiameter" : "1.4687 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                        "75%" : {"holeDiameter" : "1.4375 in", "tapDrillDiameter" : "1.4375 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                        "50%" : {"holeDiameter" : "1.4687 in", "tapDrillDiameter" : "1.4687 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                        "75%" : {"holeDiameter" : "1.4375 in", "tapDrillDiameter" : "1.4375 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                     }
                 }
             }
@@ -1253,8 +1285,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.6417 in", "tapDrillDiameter" : "1.6417 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                        "75%" : {"holeDiameter" : "1.5625 in", "tapDrillDiameter" : "1.5625 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                        "50%" : {"holeDiameter" : "1.6417 in", "tapDrillDiameter" : "1.6417 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                        "75%" : {"holeDiameter" : "1.5625 in", "tapDrillDiameter" : "1.5625 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1262,8 +1294,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.6959 in", "tapDrillDiameter" : "1.6959 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                        "75%" : {"holeDiameter" : "1.6735 in", "tapDrillDiameter" : "1.6735 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                        "50%" : {"holeDiameter" : "1.6959 in", "tapDrillDiameter" : "1.6959 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                        "75%" : {"holeDiameter" : "1.6735 in", "tapDrillDiameter" : "1.6735 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                     }
                 },
                 "16 tpi" : {
@@ -1271,8 +1303,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.7094 in", "tapDrillDiameter" : "1.7094 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                        "75%" : {"holeDiameter" : "1.6925 in", "tapDrillDiameter" : "1.6925 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                        "50%" : {"holeDiameter" : "1.7094 in", "tapDrillDiameter" : "1.7094 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                        "75%" : {"holeDiameter" : "1.6925 in", "tapDrillDiameter" : "1.6925 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                     }
                 }
             }
@@ -1287,8 +1319,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.8594 in", "tapDrillDiameter" : "1.8594 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                        "75%" : {"holeDiameter" : "1.7812 in", "tapDrillDiameter" : "1.7812 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                        "50%" : {"holeDiameter" : "1.8594 in", "tapDrillDiameter" : "1.8594 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                        "75%" : {"holeDiameter" : "1.7812 in", "tapDrillDiameter" : "1.7812 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1296,8 +1328,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "1.9531 in", "tapDrillDiameter" : "1.9531 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                        "75%" : {"holeDiameter" : "1.9219 in", "tapDrillDiameter" : "1.9219 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                        "50%" : {"holeDiameter" : "1.9531 in", "tapDrillDiameter" : "1.9531 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                        "75%" : {"holeDiameter" : "1.9219 in", "tapDrillDiameter" : "1.9219 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                     }
                 }
             }
@@ -1387,8 +1419,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "2.8376 in", "tapDrillDiameter" : "2.8376 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                        "75%" : {"holeDiameter" : "2.7575 in", "tapDrillDiameter" : "2.7575 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                        "50%" : {"holeDiameter" : "2.8376 in", "tapDrillDiameter" : "2.8376 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                        "75%" : {"holeDiameter" : "2.7575 in", "tapDrillDiameter" : "2.7575 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1396,8 +1428,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "2.9459 in", "tapDrillDiameter" : "2.9459 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                        "75%" : {"holeDiameter" : "2.9235 in", "tapDrillDiameter" : "2.9235 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                        "50%" : {"holeDiameter" : "2.9459 in", "tapDrillDiameter" : "2.9459 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                        "75%" : {"holeDiameter" : "2.9235 in", "tapDrillDiameter" : "2.9235 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                     }
                 }
             }
@@ -1412,8 +1444,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "3.0876 in", "tapDrillDiameter" : "3.0876 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                        "75%" : {"holeDiameter" : "3.0075 in", "tapDrillDiameter" : "3.0075 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                        "50%" : {"holeDiameter" : "3.0876 in", "tapDrillDiameter" : "3.0876 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                        "75%" : {"holeDiameter" : "3.0075 in", "tapDrillDiameter" : "3.0075 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1421,8 +1453,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "3.1959 in", "tapDrillDiameter" : "3.1959 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                        "75%" : {"holeDiameter" : "3.1735 in", "tapDrillDiameter" : "3.1735 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                        "50%" : {"holeDiameter" : "3.1959 in", "tapDrillDiameter" : "3.1959 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                        "75%" : {"holeDiameter" : "3.1735 in", "tapDrillDiameter" : "3.1735 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                     }
                 }
             }
@@ -1487,8 +1519,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "3.8376 in", "tapDrillDiameter" : "3.8376 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                        "75%" : {"holeDiameter" : "3.7575 in", "tapDrillDiameter" : "3.7575 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                        "50%" : {"holeDiameter" : "3.8376 in", "tapDrillDiameter" : "3.8376 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                        "75%" : {"holeDiameter" : "3.7575 in", "tapDrillDiameter" : "3.7575 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                     }
                 },
                 "12 tpi" : {
@@ -1496,8 +1528,8 @@ const ANSI_TappedHoleTable = {
                     "displayName" : "% diametric engagement",
                     "default" : "75%",
                     "entries" : {
-                        "50%" : {"holeDiameter" : "3.9459 in", "tapDrillDiameter" : "3.9459 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                        "75%" : {"holeDiameter" : "3.9235 in", "tapDrillDiameter" : "3.9235 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                        "50%" : {"holeDiameter" : "3.9459 in", "tapDrillDiameter" : "3.9459 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                        "75%" : {"holeDiameter" : "3.9235 in", "tapDrillDiameter" : "3.9235 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                     }
                 }
             }
@@ -1518,33 +1550,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "80 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"}
+                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.0635 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.0635 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"}
+                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.07 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.07 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0600 in"}
+                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.067 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.052 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0469 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "1/8 in", "cBoreDepth" : "0.06 in", "cSinkDiameter" : "0.138 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.06 in"}
                             }
                         }
                     }
@@ -1559,33 +1609,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "64 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.0625 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/32 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         }
                     }
@@ -1593,33 +1661,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "72 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.076 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0730 in"}
+                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.081 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.0635 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0595 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "5/33 in", "cBoreDepth" : "0.073 in", "cSinkDiameter" : "0.168 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.073 in"}
                             }
                         }
                     }
@@ -1634,33 +1720,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "56 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.096 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.096 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.073 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         }
                     }
@@ -1668,33 +1772,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "64 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.089 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.096 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.096 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"},
-                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0860 in"}
+                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.094 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.102 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.076 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"},
+                                "75%" : {"tapDrillDiameter" : "0.07 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "3/16 in", "cBoreDepth" : "0.086 in", "cSinkDiameter" : "0.197 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.086 in"}
                             }
                         }
                     }
@@ -1709,33 +1831,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "48 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.11 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.11 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.086 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0785 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         }
                     }
@@ -1743,33 +1883,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "56 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.104 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.11 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.11 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"},
-                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.0990 in"}
+                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.106 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"},
+                                "75%" : {"tapDrillDiameter" : "0.082 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/33 in", "cBoreDepth" : "0.099 in", "cSinkDiameter" : "0.226 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.099 in"}
                             }
                         }
                     }
@@ -1784,33 +1942,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "40 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.120 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.120 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.12 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.12 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.096 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.089 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         }
                     }
@@ -1818,33 +1994,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "48 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.120 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.120 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.116 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"},
-                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1120 in"}
+                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.12 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.12 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.128 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.098 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"},
+                                "75%" : {"tapDrillDiameter" : "0.0935 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "7/32 in", "cBoreDepth" : "0.112 in", "cSinkDiameter" : "0.255 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.112 in"}
                             }
                         }
                     }
@@ -1859,33 +2053,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "40 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.136 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.136 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.1094 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1015 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         }
                     }
@@ -1893,33 +2105,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "44 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.1285 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.136 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.136 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.141 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.156 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.11 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.104 in", "holeDiameter" : "0.172 in", "cBoreDiameter" : "1/4 in", "cBoreDepth" : "0.125 in", "cSinkDiameter" : "0.281 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.125 in"}
                             }
                         }
                     }
@@ -1934,33 +2164,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.1495 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.1495 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.170 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.170 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.17 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.17 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.116 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1065 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         }
                     }
@@ -1968,33 +2216,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "40 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.144 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.1495 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.1495 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.170 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"},
-                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.170 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1380 in"}
+                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.154 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.17 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.17 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.12 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"},
+                                "75%" : {"tapDrillDiameter" : "0.113 in", "holeDiameter" : "0.185 in", "cBoreDiameter" : "9/32 in", "cBoreDepth" : "0.138 in", "cSinkDiameter" : "0.307 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.138 in"}
                             }
                         }
                     }
@@ -2009,33 +2275,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.180 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.180 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.1695 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.1695 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.177 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.177 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.18 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.18 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         }
                     }
@@ -2043,33 +2327,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "36 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.180 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.180 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.1695 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.1695 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.177 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.177 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"},
-                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1640 in"}
+                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.18 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.18 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.147 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"},
+                                "75%" : {"tapDrillDiameter" : "0.136 in", "holeDiameter" : "0.213 in", "cBoreDiameter" : "5/16 in", "cBoreDepth" : "0.164 in", "cSinkDiameter" : "0.359 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.164 in"}
                             }
                         }
                     }
@@ -2084,33 +2386,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.201 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.201 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.161 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.1495 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         }
                     }
@@ -2118,33 +2438,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.196 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.201 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.201 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"},
-                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.1900 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.206 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.1695 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"},
+                                "75%" : {"tapDrillDiameter" : "0.159 in", "holeDiameter" : "0.238 in", "cBoreDiameter" : "3/8 in", "cBoreDepth" : "0.19 in", "cSinkDiameter" : "0.411 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.19 in"}
                             }
                         }
                     }
@@ -2159,33 +2497,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.177 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.177 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.177 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.177 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.177 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         }
                     }
@@ -2193,33 +2522,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "28 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1935 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.182 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1935 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.182 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1935 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.182 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.1935 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.182 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.1935 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.182 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         }
                     }
@@ -2227,33 +2547,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.185 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.185 in", "holeDiameter" : "0.221 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.185 in", "holeDiameter" : "0.246 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"},
-                                "75%" : {"tapDrillDiameter" : "0.185 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.450 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2160 in"}
+                                "50%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"},
+                                "75%" : {"tapDrillDiameter" : "0.185 in", "holeDiameter" : "0.228 in", "cBoreDiameter" : "13/32 in", "cBoreDepth" : "0.216 in", "cSinkDiameter" : "0.45 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.216 in"}
                             }
                         }
                     }
@@ -2268,33 +2579,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.201 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         }
                     }
@@ -2302,33 +2631,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "28 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.213 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         }
                     }
@@ -2336,33 +2683,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.257 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.266 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.281 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.228 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2188 in", "holeDiameter" : "0.297 in", "cBoreDiameter" : "7/16 in", "cBoreDepth" : "0.25 in", "cSinkDiameter" : "0.531 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.25 in"}
                             }
                         }
                     }
@@ -2377,9 +2742,27 @@ const ANSI_ThroughTappedScrewTable = {
                 "18 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.277 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.277 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2388,16 +2771,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.328 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.277 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
-                                "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Normal (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2405,15 +2779,42 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "0.277 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
                                 "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.277 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.257 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
                         }
                     }
                 },
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2422,16 +2823,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.328 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
-                                "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Normal (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2439,15 +2831,42 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
                                 "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
                         }
                     }
                 },
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.29 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.323 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.29 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.332 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2456,22 +2875,22 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.328 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.29 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
-                                "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Normal (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.29 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
                                 "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.344 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.29 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.2812 in", "holeDiameter" : "0.359 in", "cBoreDiameter" : "17/32 in", "cBoreDepth" : "0.3125 in", "cSinkDiameter" : "0.656 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3125 in"}
                             }
                         }
                     }
@@ -2486,33 +2905,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "16 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3125 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         }
                     }
@@ -2520,33 +2957,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.348 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.332 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         }
                     }
@@ -2554,33 +3009,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "32 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.386 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.397 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.3750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.391 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.406 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.358 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3438 in", "holeDiameter" : "0.422 in", "cBoreDiameter" : "5/8 in", "cBoreDepth" : "0.375 in", "cSinkDiameter" : "0.781 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.375 in"}
                             }
                         }
                     }
@@ -2595,9 +3068,27 @@ const ANSI_ThroughTappedScrewTable = {
                 "14 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2606,16 +3097,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.453 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
-                                "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Normal (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2623,15 +3105,42 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
                                 "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.368 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
                         }
                     }
                 },
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4062 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4062 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2640,16 +3149,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.453 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4062 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
-                                "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Normal (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2657,15 +3157,42 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "0.4062 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
                                 "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4062 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.3906 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
                         }
                     }
                 },
                 "28 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.413 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.4531 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Free" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.413 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2674,22 +3201,22 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.453 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
                         },
-                        "Loose" : {
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.413 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
+                                "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.469 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.413 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
                                 "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.484 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.413 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"},
-                                "75%" : {"tapDrillDiameter" : "0.404 in", "holeDiameter" : "0.4687 in", "cBoreDiameter" : "23/32 in", "cBoreDepth" : "0.4375 in", "cSinkDiameter" : "0.844 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.4375 in"}
                             }
                         }
                     }
@@ -2704,33 +3231,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "13 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4219 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         }
                     }
@@ -2738,33 +3283,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4531 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         }
                     }
@@ -2772,33 +3335,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "28 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5156 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.5312 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.531 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.562 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"},
+                                "75%" : {"tapDrillDiameter" : "0.4688 in", "holeDiameter" : "0.609 in", "cBoreDiameter" : "13/16 in", "cBoreDepth" : "0.5 in", "cSinkDiameter" : "0.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5 in"}
                             }
                         }
                     }
@@ -2813,7 +3394,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -2824,16 +3405,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.4844 in", "holeDiameter" : "0.5781 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5156 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"},
-                                "75%" : {"tapDrillDiameter" : "0.4844 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2847,7 +3419,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "18 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -2858,16 +3430,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.5156 in", "holeDiameter" : "0.5781 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5156 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2881,7 +3444,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -2892,16 +3455,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.5156 in", "holeDiameter" : "0.5781 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5156 in", "holeDiameter" : "0.6094 in", "cBoreDiameter" : "29/32 in", "cBoreDepth" : "0.5625 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.5625 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -2922,33 +3476,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "11 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5625 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5312 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         }
                     }
@@ -2956,33 +3528,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "18 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         }
                     }
@@ -2990,33 +3580,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "24 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.6406 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.6562 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"},
-                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.6250 in"}
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.656 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.688 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.5938 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"},
+                                "75%" : {"tapDrillDiameter" : "0.5781 in", "holeDiameter" : "0.734 in", "cBoreDiameter" : "1 in", "cBoreDepth" : "0.625 in", "cSinkDiameter" : "1.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.625 in"}
                             }
                         }
                     }
@@ -3031,33 +3639,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "10 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6562 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         }
                     }
@@ -3065,33 +3691,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "16 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.6875 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         }
                     }
@@ -3099,33 +3743,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.7656 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.7812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.781 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.812 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7188 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7031 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/16 in", "cBoreDepth" : "0.75 in", "cSinkDiameter" : "1.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.75 in"}
                             }
                         }
                     }
@@ -3140,33 +3802,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "9 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.7969 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.7656 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         }
                     }
@@ -3174,33 +3854,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "14 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8125 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         }
                     }
@@ -3208,33 +3906,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.8906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.9062 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"},
-                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.8750 in"}
+                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.906 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "0.938 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.8438 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"},
+                                "75%" : {"tapDrillDiameter" : "0.8281 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 3/8 in", "cBoreDepth" : "0.875 in", "cSinkDiameter" : "1.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "0.875 in"}
                             }
                         }
                     }
@@ -3249,33 +3965,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "8 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.875 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         }
                     }
@@ -3283,33 +4017,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9219 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         }
                     }
@@ -3317,33 +4069,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "20 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.0156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.0313 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.0000 in"}
+                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.031 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.094 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9688 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9531 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1 5/8 in", "cBoreDepth" : "1 in", "cSinkDiameter" : "1.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1 in"}
                             }
                         }
                     }
@@ -3358,7 +4128,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "7 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3369,16 +4139,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.1406 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.0313 in", "holeDiameter" : "1.1719 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
-                                "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.1719 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -3386,13 +4147,40 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "1.0313 in", "holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
                                 "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
                             }
+                        },
+                        "Close (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0313 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0313 in", "holeDiameter" : "1.219 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.219 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0313 in", "holeDiameter" : "1.312 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "0.9844 in", "holeDiameter" : "1.312 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
                         }
                     }
                 },
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3403,22 +4191,40 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.1406 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.0781 in", "holeDiameter" : "1.1719 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
-                                "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.1719 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.0781 in", "holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
                                 "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.1562 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0781 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.156 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0781 in", "holeDiameter" : "1.219 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.219 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0781 in", "holeDiameter" : "1.312 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"},
+                                "75%" : {"tapDrillDiameter" : "1.0469 in", "holeDiameter" : "1.312 in", "cBoreDiameter" : "1.8125 in", "cBoreDepth" : "1.125 in", "cSinkDiameter" : "2.188 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.125 in"}
                             }
                         }
                     }
@@ -3433,33 +4239,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "7 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.1562 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1094 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         }
                     }
@@ -3467,33 +4291,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2031 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1719 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         }
                     }
@@ -3501,33 +4343,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "18 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.2656 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.2812 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.2500 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.2500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.281 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.344 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"},
+                                "75%" : {"tapDrillDiameter" : "1.1875 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2 in", "cBoreDepth" : "1.25 in", "cSinkDiameter" : "2.438 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.25 in"}
                             }
                         }
                     }
@@ -3542,7 +4402,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "6 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3553,16 +4413,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.3906 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2656 in", "holeDiameter" : "1.4219 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
-                                "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.4219 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -3570,13 +4421,40 @@ const ANSI_ThroughTappedScrewTable = {
                                 "50%" : {"tapDrillDiameter" : "1.2656 in", "holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
                                 "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
                             }
+                        },
+                        "Close (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2656 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2656 in", "holeDiameter" : "1.5 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.5 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2656 in", "holeDiameter" : "1.609 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2187 in", "holeDiameter" : "1.609 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
                         }
                     }
                 },
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3587,22 +4465,40 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.3906 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.3281 in", "holeDiameter" : "1.4219 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
-                                "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.4219 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.3281 in", "holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
                                 "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.4062 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
+                        },
+                        "Close (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3281 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.438 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3281 in", "holeDiameter" : "1.5 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.5 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3281 in", "holeDiameter" : "1.609 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"},
+                                "75%" : {"tapDrillDiameter" : "1.2969 in", "holeDiameter" : "1.609 in", "cBoreDiameter" : "2.1875 in", "cBoreDepth" : "1.375 in", "cSinkDiameter" : "2.688 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.375 in"}
                             }
                         }
                     }
@@ -3617,33 +4513,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "6 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3906 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.3437 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         }
                     }
@@ -3651,33 +4565,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4219 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         }
                     }
@@ -3685,33 +4617,51 @@ const ANSI_ThroughTappedScrewTable = {
                 "18 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.5156 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.5312 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         },
-                        "Normal" : {
+                        "Close (ASME)" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"},
-                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5000 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5000 in"}
+                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.562 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Normal (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.625 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
+                            }
+                        },
+                        "Loose (ASME)" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.4687 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"},
+                                "75%" : {"tapDrillDiameter" : "1.4375 in", "holeDiameter" : "1.734 in", "cBoreDiameter" : "2 3/8 in", "cBoreDepth" : "1.5 in", "cSinkDiameter" : "2.938 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.5 in"}
                             }
                         }
                     }
@@ -3726,33 +4676,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "5 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6417 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.5625 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.6417 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.5625 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6417 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.5625 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6417 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.5625 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.6417 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.5625 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         }
                     }
@@ -3760,33 +4701,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6959 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6735 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.6959 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.6735 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6959 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6735 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.6959 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6735 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.6959 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.6735 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         }
                     }
@@ -3794,33 +4726,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "16 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.7094 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6925 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.7094 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.6925 in", "holeDiameter" : "1.7656 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.7094 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6925 in", "holeDiameter" : "1.7969 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.7094 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"},
-                                "75%" : {"tapDrillDiameter" : "1.6925 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.7500 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.7500 in"}
+                                "50%" : {"tapDrillDiameter" : "1.7094 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"},
+                                "75%" : {"tapDrillDiameter" : "1.6925 in", "holeDiameter" : "1.7812 in", "cBoreDiameter" : "2 3/4 in", "cBoreDepth" : "1.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "1.75 in"}
                             }
                         }
                     }
@@ -3835,33 +4758,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 1/2 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.8594 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.7812 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                                "50%" : {"tapDrillDiameter" : "1.8594 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                                "75%" : {"tapDrillDiameter" : "1.7812 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.8594 in", "holeDiameter" : "2.0469 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.7812 in", "holeDiameter" : "2.0469 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.8594 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.7812 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                                "50%" : {"tapDrillDiameter" : "1.8594 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                                "75%" : {"tapDrillDiameter" : "1.7812 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                             }
                         }
                     }
@@ -3869,33 +4783,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.9531 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.9219 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                                "50%" : {"tapDrillDiameter" : "1.9531 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                                "75%" : {"tapDrillDiameter" : "1.9219 in", "holeDiameter" : "2.0156 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.9531 in", "holeDiameter" : "2.0469 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.9219 in", "holeDiameter" : "2.0469 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.9531 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"},
-                                "75%" : {"tapDrillDiameter" : "1.9219 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.0 in"}
+                                "50%" : {"tapDrillDiameter" : "1.9531 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"},
+                                "75%" : {"tapDrillDiameter" : "1.9219 in", "holeDiameter" : "2.0312 in", "cBoreDiameter" : "3.125 in", "cBoreDepth" : "2 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2 in"}
                             }
                         }
                     }
@@ -3910,7 +4815,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 1/2 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3921,16 +4826,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.036 in", "holeDiameter" : "2.2656 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.1057 in", "holeDiameter" : "2.2969 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"},
-                                "75%" : {"tapDrillDiameter" : "2.036 in", "holeDiameter" : "2.2969 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -3944,7 +4840,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3955,16 +4851,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.1735 in", "holeDiameter" : "2.2656 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.1959 in", "holeDiameter" : "2.2969 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"},
-                                "75%" : {"tapDrillDiameter" : "2.1735 in", "holeDiameter" : "2.2969 in", "cBoreDiameter" : "3.5 in", "cBoreDepth" : "2.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.25 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -3985,7 +4872,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -3996,16 +4883,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.2575 in", "holeDiameter" : "2.5156 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.3376 in", "holeDiameter" : "2.5469 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"},
-                                "75%" : {"tapDrillDiameter" : "2.2575 in", "holeDiameter" : "2.5469 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4019,7 +4897,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4030,16 +4908,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.435 in", "holeDiameter" : "2.5156 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.4459 in", "holeDiameter" : "2.5469 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"},
-                                "75%" : {"tapDrillDiameter" : "2.435 in", "holeDiameter" : "2.5469 in", "cBoreDiameter" : "3.875 in", "cBoreDepth" : "2.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.5 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4060,7 +4929,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4071,16 +4940,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.5075 in", "holeDiameter" : "2.7656 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.5876 in", "holeDiameter" : "2.7969 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"},
-                                "75%" : {"tapDrillDiameter" : "2.5075 in", "holeDiameter" : "2.7969 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4094,7 +4954,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4105,16 +4965,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.6735 in", "holeDiameter" : "2.7656 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.6959 in", "holeDiameter" : "2.7969 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"},
-                                "75%" : {"tapDrillDiameter" : "2.6735 in", "holeDiameter" : "2.7969 in", "cBoreDiameter" : "4.25 in", "cBoreDepth" : "2.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "2.75 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4135,33 +4986,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.8376 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.7575 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                                "50%" : {"tapDrillDiameter" : "2.8376 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                                "75%" : {"tapDrillDiameter" : "2.7575 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.8376 in", "holeDiameter" : "3.0469 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.7575 in", "holeDiameter" : "3.0469 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.8376 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.7575 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                                "50%" : {"tapDrillDiameter" : "2.8376 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                                "75%" : {"tapDrillDiameter" : "2.7575 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                             }
                         }
                     }
@@ -4169,33 +5011,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.9459 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.9235 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                                "50%" : {"tapDrillDiameter" : "2.9459 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                                "75%" : {"tapDrillDiameter" : "2.9235 in", "holeDiameter" : "3.0156 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.9459 in", "holeDiameter" : "3.0469 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.9235 in", "holeDiameter" : "3.0469 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.9459 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"},
-                                "75%" : {"tapDrillDiameter" : "2.9235 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.0 in"}
+                                "50%" : {"tapDrillDiameter" : "2.9459 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"},
+                                "75%" : {"tapDrillDiameter" : "2.9235 in", "holeDiameter" : "3.0312 in", "cBoreDiameter" : "4.625 in", "cBoreDepth" : "3 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3 in"}
                             }
                         }
                     }
@@ -4210,33 +5043,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.0876 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.0075 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                                "50%" : {"tapDrillDiameter" : "3.0876 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                                "75%" : {"tapDrillDiameter" : "3.0075 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.0876 in", "holeDiameter" : "3.2969 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.0075 in", "holeDiameter" : "3.2969 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.0876 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.0075 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                                "50%" : {"tapDrillDiameter" : "3.0876 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                                "75%" : {"tapDrillDiameter" : "3.0075 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                             }
                         }
                     }
@@ -4244,33 +5068,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.1959 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.1735 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                                "50%" : {"tapDrillDiameter" : "3.1959 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                                "75%" : {"tapDrillDiameter" : "3.1735 in", "holeDiameter" : "3.2656 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.1959 in", "holeDiameter" : "3.2969 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.1735 in", "holeDiameter" : "3.2969 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.1959 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
-                                "75%" : {"tapDrillDiameter" : "3.1735 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5.0 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
+                                "50%" : {"tapDrillDiameter" : "3.1959 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"},
+                                "75%" : {"tapDrillDiameter" : "3.1735 in", "holeDiameter" : "3.2812 in", "cBoreDiameter" : "5 in", "cBoreDepth" : "3.25 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.25 in"}
                             }
                         }
                     }
@@ -4285,7 +5100,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4296,16 +5111,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.2575 in", "holeDiameter" : "3.5156 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.3376 in", "holeDiameter" : "3.5469 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"},
-                                "75%" : {"tapDrillDiameter" : "3.2575 in", "holeDiameter" : "3.5469 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4319,7 +5125,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4330,16 +5136,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.4235 in", "holeDiameter" : "3.5156 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.4459 in", "holeDiameter" : "3.5469 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"},
-                                "75%" : {"tapDrillDiameter" : "3.4235 in", "holeDiameter" : "3.5469 in", "cBoreDiameter" : "5.375 in", "cBoreDepth" : "3.5 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.5 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4360,7 +5157,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4371,16 +5168,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.5075 in", "holeDiameter" : "3.7656 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.5876 in", "holeDiameter" : "3.7969 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"},
-                                "75%" : {"tapDrillDiameter" : "3.5075 in", "holeDiameter" : "3.7969 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4394,7 +5182,7 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
@@ -4405,16 +5193,7 @@ const ANSI_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.6735 in", "holeDiameter" : "3.7656 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.6959 in", "holeDiameter" : "3.7969 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"},
-                                "75%" : {"tapDrillDiameter" : "3.6735 in", "holeDiameter" : "3.7969 in", "cBoreDiameter" : "5.75 in", "cBoreDepth" : "3.75 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "3.75 in"}
-                            }
-                        },
-                        "Normal" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
@@ -4435,33 +5214,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "4 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.8376 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.7575 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                                "50%" : {"tapDrillDiameter" : "3.8376 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                                "75%" : {"tapDrillDiameter" : "3.7575 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.8376 in", "holeDiameter" : "4.0469 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.7575 in", "holeDiameter" : "4.0469 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.8376 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.7575 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                                "50%" : {"tapDrillDiameter" : "3.8376 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                                "75%" : {"tapDrillDiameter" : "3.7575 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                             }
                         }
                     }
@@ -4469,33 +5239,24 @@ const ANSI_ThroughTappedScrewTable = {
                 "12 tpi" : {
                     "name" : "fit",
                     "displayName" : "Fit",
-                    "default" : "Normal",
+                    "default" : "Free",
                     "entries" : {
                         "Close" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.9459 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.9235 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                                "50%" : {"tapDrillDiameter" : "3.9459 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                                "75%" : {"tapDrillDiameter" : "3.9235 in", "holeDiameter" : "4.0156 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                             }
                         },
-                        "Loose" : {
+                        "Free" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
                             "default" : "75%",
                             "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.9459 in", "holeDiameter" : "4.0469 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.9235 in", "holeDiameter" : "4.0469 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
-                            }
-                        },
-                        "Normal" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.9459 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"},
-                                "75%" : {"tapDrillDiameter" : "3.9235 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4.0 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4.0 in"}
+                                "50%" : {"tapDrillDiameter" : "3.9459 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"},
+                                "75%" : {"tapDrillDiameter" : "3.9235 in", "holeDiameter" : "4.0312 in", "cBoreDiameter" : "6.125 in", "cBoreDepth" : "4 in", "cSinkDiameter" : "-1 in", "cSinkAngle" : "82 degree", "majorDiameter" : "4 in"}
                             }
                         }
                     }
@@ -4681,8 +5442,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M1.1" : {
@@ -4691,8 +5452,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M1.2" : {
@@ -4701,8 +5462,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M1.4" : {
@@ -4711,8 +5472,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M1.6" : {
@@ -4721,8 +5482,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M1.8" : {
@@ -4731,8 +5492,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M2" : {
@@ -4741,8 +5502,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M2.2" : {
@@ -4751,8 +5512,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M2.5" : {
@@ -4761,8 +5522,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M3" : {
@@ -4771,8 +5532,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M4" : {
@@ -4781,8 +5542,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M4.5" : {
@@ -4791,8 +5552,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M5" : {
@@ -4801,8 +5562,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M6" : {
@@ -4811,8 +5572,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M7" : {
@@ -4821,8 +5582,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M8" : {
@@ -4831,8 +5592,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M10" : {
@@ -4841,8 +5602,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M12" : {
@@ -4851,8 +5612,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M14" : {
@@ -4861,8 +5622,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M16" : {
@@ -4871,8 +5632,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M18" : {
@@ -4881,8 +5642,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M20" : {
@@ -4891,8 +5652,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M22" : {
@@ -4901,8 +5662,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M24" : {
@@ -4911,8 +5672,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M27" : {
@@ -4921,8 +5682,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M30" : {
@@ -4931,8 +5692,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M33" : {
@@ -4941,8 +5702,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M36" : {
@@ -4951,8 +5712,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M39" : {
@@ -4961,8 +5722,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M42" : {
@@ -4971,8 +5732,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M45" : {
@@ -4981,8 +5742,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M48" : {
@@ -4991,8 +5752,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M52" : {
@@ -5001,8 +5762,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M56" : {
@@ -5011,8 +5772,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M60" : {
@@ -5021,8 +5782,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M64" : {
@@ -5031,8 +5792,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"}
             }
         },
         "M68" : {
@@ -5041,8 +5802,8 @@ const ISO_ClearanceHoleTable = {
             "default" : "Normal",
             "entries" : {
                 "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"}
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree"}
             }
         }
     }
@@ -6059,15 +6820,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
-                                "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6075,6 +6827,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
                                 "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
+                                "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
                             }
                         }
                     }
@@ -6093,15 +6854,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
-                                "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6109,6 +6861,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
                                 "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"},
+                                "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
                             }
                         }
                     }
@@ -6134,15 +6895,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
-                                "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6150,6 +6902,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
                                 "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
+                                "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
                             }
                         }
                     }
@@ -6168,15 +6929,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
-                                "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6184,6 +6936,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
                                 "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"},
+                                "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
                             }
                         }
                     }
@@ -6209,15 +6970,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6225,6 +6977,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
                             }
                         }
                     }
@@ -6243,15 +7004,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
-                                "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6259,6 +7011,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
                                 "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"},
+                                "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
                             }
                         }
                     }
@@ -6284,15 +7045,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.3 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6300,6 +7052,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.3 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.3 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
                             }
                         }
                     }
@@ -6318,15 +7079,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6334,6 +7086,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
                             }
                         }
                     }
@@ -6359,15 +7120,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.5 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6375,6 +7127,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.5 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.5 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
                             }
                         }
                     }
@@ -6393,15 +7154,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.35 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6409,6 +7161,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.35 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.35 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
                             }
                         }
                     }
@@ -6434,15 +7195,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6450,6 +7202,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
                             }
                         }
                     }
@@ -6468,15 +7229,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.55 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6484,6 +7236,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.55 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.55 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
                             }
                         }
                     }
@@ -6509,15 +7270,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.85 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6525,6 +7277,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.85 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.85 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
                             }
                         }
                     }
@@ -6543,15 +7304,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6559,6 +7311,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
                             }
                         }
                     }
@@ -6584,15 +7345,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6600,6 +7352,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "2.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "2.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
                             }
                         }
                     }
@@ -6618,15 +7379,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "1.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
-                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6634,6 +7386,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "1.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
                                 "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "1.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"},
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
                             }
                         }
                     }
@@ -6659,15 +7420,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.3 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
-                                "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6675,6 +7427,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "2.3 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
                                 "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "2.3 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
+                                "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
                             }
                         }
                     }
@@ -6693,15 +7454,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.2 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
-                                "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6709,6 +7461,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "2.2 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
                                 "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "2.2 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"},
+                                "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.5 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
                             }
                         }
                     }
@@ -6734,15 +7495,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.8 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
-                                "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6750,6 +7502,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "2.8 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
                                 "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "2.8 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
+                                "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
                             }
                         }
                     }
@@ -6768,15 +7529,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "2.7 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
-                                "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6784,6 +7536,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "2.7 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
                                 "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "2.7 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"},
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3 mm", "cSinkDiameter" : "6.72 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
                             }
                         }
                     }
@@ -6809,15 +7570,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
-                                "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6825,6 +7577,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
                                 "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
                             }
                         }
                     }
@@ -6843,15 +7604,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
-                                "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6859,6 +7611,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
                                 "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"},
+                                "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8.25 mm", "cBoreDepth" : "4 mm", "cSinkDiameter" : "8.96 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
                             }
                         }
                     }
@@ -6884,15 +7645,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
-                                "75%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6900,6 +7652,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
                                 "75%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
+                                "75%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
                             }
                         }
                     }
@@ -6918,15 +7679,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
-                                "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6934,6 +7686,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
                                 "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"},
+                                "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
                             }
                         }
                     }
@@ -6959,15 +7720,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "4.7 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
-                                "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -6975,6 +7727,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "4.7 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
                                 "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.7 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
                             }
                         }
                     }
@@ -6993,15 +7754,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
-                                "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7009,6 +7761,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
                                 "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"},
+                                "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
                             }
                         }
                     }
@@ -7034,15 +7795,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "5.25 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "5.5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
-                                "75%" : {"tapDrillDiameter" : "5.25 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7050,6 +7802,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "5.5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
                                 "75%" : {"tapDrillDiameter" : "5.25 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "5.5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
+                                "75%" : {"tapDrillDiameter" : "5.25 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
                             }
                         }
                     }
@@ -7068,15 +7829,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "5.4 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
-                                "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7084,6 +7836,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "5.4 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
                                 "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "5.4 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"},
+                                "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11.25 mm", "cBoreDepth" : "6 mm", "cSinkDiameter" : "13.44 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
                             }
                         }
                     }
@@ -7109,15 +7870,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "6.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
-                                "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7125,6 +7877,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "6.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
                                 "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "6.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
+                                "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
                             }
                         }
                     }
@@ -7143,15 +7904,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "6.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "6.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
-                                "75%" : {"tapDrillDiameter" : "6.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7159,6 +7911,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "6.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
                                 "75%" : {"tapDrillDiameter" : "6.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "6.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"},
+                                "75%" : {"tapDrillDiameter" : "6.0 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
                             }
                         }
                     }
@@ -7184,15 +7945,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "7.5 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
-                                "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7200,6 +7952,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "7.5 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
                                 "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "7.5 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
+                                "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         }
                     }
@@ -7218,15 +7979,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "7.4 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
-                                "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7234,6 +7986,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "7.4 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
                                 "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "7.4 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
+                                "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         }
                     }
@@ -7252,15 +8013,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
-                                "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7268,6 +8020,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
                                 "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"},
+                                "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "14.25 mm", "cBoreDepth" : "8 mm", "cSinkDiameter" : "17.92 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
                             }
                         }
                     }
@@ -7293,15 +8054,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "9.4 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
-                                "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7309,6 +8061,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "9.4 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
                                 "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "9.4 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
+                                "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         }
                     }
@@ -7327,15 +8088,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "9.2 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
-                                "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7343,6 +8095,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "9.2 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
                                 "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "9.2 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
+                                "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         }
                     }
@@ -7361,15 +8122,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
-                                "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7377,6 +8129,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
                                 "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"},
+                                "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "17.25 mm", "cBoreDepth" : "10 mm", "cSinkDiameter" : "22.4 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
                             }
                         }
                     }
@@ -7402,15 +8163,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
-                                "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7418,6 +8170,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
                                 "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
+                                "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         }
                     }
@@ -7436,15 +8197,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "11 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
-                                "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7452,6 +8204,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "11 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
                                 "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "11 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
+                                "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         }
                     }
@@ -7470,15 +8231,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "10.3 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
-                                "75%" : {"tapDrillDiameter" : "10.3 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7486,6 +8238,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
                                 "75%" : {"tapDrillDiameter" : "10.3 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "11.2 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"},
+                                "75%" : {"tapDrillDiameter" : "10.3 mm", "cBoreDiameter" : "19.25 mm", "cBoreDepth" : "12 mm", "cSinkDiameter" : "26.88 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
                             }
                         }
                     }
@@ -7511,15 +8272,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "13.2 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
-                                "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7527,6 +8279,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "13.2 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
                                 "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "13.2 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
+                                "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         }
                     }
@@ -7545,15 +8306,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "13 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
-                                "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7561,6 +8313,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "13 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
                                 "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "13 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
+                                "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         }
                     }
@@ -7579,15 +8340,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "12.1 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "12.7 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
-                                "75%" : {"tapDrillDiameter" : "12.1 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7595,6 +8347,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "12.7 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
                                 "75%" : {"tapDrillDiameter" : "12.1 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "12.7 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"},
+                                "75%" : {"tapDrillDiameter" : "12.1 mm", "cBoreDiameter" : "22.25 mm", "cBoreDepth" : "14 mm", "cSinkDiameter" : "30.8 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
                             }
                         }
                     }
@@ -7620,15 +8381,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "15 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
-                                "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7636,6 +8388,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "15 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
                                 "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "15 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
+                                "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
                             }
                         }
                     }
@@ -7654,15 +8415,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "14.75 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
-                                "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7670,6 +8422,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "14.75 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
                                 "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "14.75 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"},
+                                "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "25.5 mm", "cBoreDepth" : "16 mm", "cSinkDiameter" : "33.6 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
                             }
                         }
                     }
@@ -7695,15 +8456,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "17 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
-                                "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7711,6 +8463,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "17 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
                                 "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "17 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
+                                "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         }
                     }
@@ -7729,15 +8490,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "16.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
-                                "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7745,6 +8497,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "16.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
                                 "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "16.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
+                                "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         }
                     }
@@ -7763,15 +8524,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "16.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
-                                "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7779,6 +8531,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "16.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
                                 "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "16.4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"},
+                                "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
                             }
                         }
                     }
@@ -7804,15 +8565,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "19 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
-                                "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7820,6 +8572,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "19 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
                                 "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "19 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
+                                "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         }
                     }
@@ -7838,15 +8599,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
-                                "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7854,6 +8606,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
                                 "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
+                                "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         }
                     }
@@ -7872,15 +8633,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
-                                "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7888,6 +8640,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
                                 "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"},
+                                "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "31.5 mm", "cBoreDepth" : "20 mm", "cSinkDiameter" : "42 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
                             }
                         }
                     }
@@ -7913,15 +8674,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
-                                "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7929,6 +8681,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
                                 "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
+                                "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         }
                     }
@@ -7947,15 +8708,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
-                                "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7963,6 +8715,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
                                 "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
+                                "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         }
                     }
@@ -7981,15 +8742,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
-                                "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -7997,6 +8749,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
                                 "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"},
+                                "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
                             }
                         }
                     }
@@ -8022,15 +8783,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "22.5 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
-                                "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8038,6 +8790,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "22.5 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
                                 "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "22.5 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
+                                "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
                             }
                         }
                     }
@@ -8056,15 +8817,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
-                                "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8072,6 +8824,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
                                 "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"},
+                                "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
                             }
                         }
                     }
@@ -8097,15 +8858,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "25.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
-                                "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8113,6 +8865,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "25.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
                                 "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "25.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
+                                "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
                             }
                         }
                     }
@@ -8131,15 +8892,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
-                                "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8147,6 +8899,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
                                 "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"},
+                                "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
                             }
                         }
                     }
@@ -8172,15 +8933,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "28.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
-                                "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8188,6 +8940,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "28.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
                                 "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "28.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
+                                "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
                             }
                         }
                     }
@@ -8206,15 +8967,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "27.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
-                                "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8222,6 +8974,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "27.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
                                 "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "27.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"},
+                                "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
                             }
                         }
                     }
@@ -8247,15 +9008,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "31.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
-                                "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8263,6 +9015,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "31.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
                                 "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "31.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
+                                "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
                             }
                         }
                     }
@@ -8281,15 +9042,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "30.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
-                                "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8297,6 +9049,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "30.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
                                 "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "30.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"},
+                                "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
                             }
                         }
                     }
@@ -8322,15 +9083,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "34 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
-                                "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8338,6 +9090,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "34 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
                                 "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "34 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
+                                "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
                             }
                         }
                     }
@@ -8356,15 +9117,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "33.5 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
-                                "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8372,6 +9124,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "33.5 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
                                 "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "33.5 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"},
+                                "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
                             }
                         }
                     }
@@ -8397,15 +9158,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "37 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
-                                "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8413,6 +9165,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "37 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
                                 "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "37 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
+                                "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
                             }
                         }
                     }
@@ -8431,15 +9192,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "36.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
-                                "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8447,6 +9199,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "36.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
                                 "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "36.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"},
+                                "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
                             }
                         }
                     }
@@ -8472,15 +9233,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "40 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
-                                "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8488,6 +9240,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "40 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
                                 "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "40 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
+                                "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
                             }
                         }
                     }
@@ -8506,15 +9267,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
-                                "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8522,6 +9274,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
                                 "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"},
+                                "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69.3 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
                             }
                         }
                     }
@@ -8547,15 +9308,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
-                                "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8563,6 +9315,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
                                 "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
+                                "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
                             }
                         }
                     }
@@ -8581,15 +9342,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
-                                "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8597,6 +9349,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
                                 "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"},
+                                "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
                             }
                         }
                     }
@@ -8622,15 +9383,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "46 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
-                                "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8638,6 +9390,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "46 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
                                 "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "46 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
+                                "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
                             }
                         }
                     }
@@ -8656,15 +9417,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
-                                "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8672,6 +9424,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
                                 "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"},
+                                "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "79.2 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
                             }
                         }
                     }
@@ -8697,15 +9458,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "49.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
-                                "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8713,6 +9465,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "49.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
                                 "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "49.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
+                                "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
                             }
                         }
                     }
@@ -8731,15 +9492,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "49 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
-                                "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8747,6 +9499,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "49 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
                                 "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "49 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"},
+                                "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
                             }
                         }
                     }
@@ -8772,15 +9533,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "53.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
-                                "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8788,6 +9540,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "53.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
                                 "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "53.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
+                                "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
                             }
                         }
                     }
@@ -8806,15 +9567,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "52.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
-                                "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8822,6 +9574,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "52.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
                                 "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "52.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"},
+                                "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "92.4 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
                             }
                         }
                     }
@@ -8847,15 +9608,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "57.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
-                                "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8863,6 +9615,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "57.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
                                 "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "57.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
+                                "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
                             }
                         }
                     }
@@ -8881,15 +9642,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "56.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
-                                "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8897,6 +9649,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "56.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
                                 "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "56.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"},
+                                "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
                             }
                         }
                     }
@@ -8922,15 +9683,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "61.5 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
-                                "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8938,6 +9690,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "61.5 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
                                 "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "61.5 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
+                                "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
                             }
                         }
                     }
@@ -8956,15 +9717,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
-                                "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -8972,6 +9724,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
                                 "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"},
+                                "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "105.6 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
                             }
                         }
                     }
@@ -8997,15 +9758,6 @@ const ISO_ThroughTappedScrewTable = {
                                 "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
                             }
                         },
-                        "Loose" : {
-                            "name" : "engagement",
-                            "displayName" : "% diametric engagement",
-                            "default" : "75%",
-                            "entries" : {
-                                "50%" : {"tapDrillDiameter" : "64 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"},
-                                "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
-                            }
-                        },
                         "Normal" : {
                             "name" : "engagement",
                             "displayName" : "% diametric engagement",
@@ -9013,6 +9765,15 @@ const ISO_ThroughTappedScrewTable = {
                             "entries" : {
                                 "50%" : {"tapDrillDiameter" : "64 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"},
                                 "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "50%" : {"tapDrillDiameter" : "64 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"},
+                                "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
                             }
                         }
                     }

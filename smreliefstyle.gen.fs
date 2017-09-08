@@ -1,4 +1,4 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -22,7 +22,13 @@ export enum SMReliefStyle
     annotation {"Name" : "Tear"}
     TEAR,
     annotation {"Name" : "Simple"}
-    SIMPLE
+    SIMPLE,
+    annotation {"Name" : "Sized rectangle"}
+    SIZED_RECTANGLE,
+    annotation {"Name" : "Sized round"}
+    SIZED_ROUND,
+    annotation {"Name" : "Sized obround"}
+    SIZED_OBROUND
 }
 
 

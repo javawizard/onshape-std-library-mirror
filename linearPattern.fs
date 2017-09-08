@@ -1,16 +1,16 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "660.0");
-export import(path : "onshape/std/tool.fs", version : "660.0");
-export import(path : "onshape/std/patternUtils.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "675.0");
+export import(path : "onshape/std/tool.fs", version : "675.0");
+export import(path : "onshape/std/patternUtils.fs", version : "675.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "660.0");
-import(path : "onshape/std/units.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "675.0");
+import(path : "onshape/std/units.fs", version : "675.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -140,10 +140,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         }
     }
     {
-        if (definition.patternType == PatternType.FACE)
-            definition.entities = definition.faces;
-
-        checkInput(context, id, definition, false);
+        definition = adjustPatternDefinitionEntities(context, definition, false);
 
         if (definition.patternType == PatternType.FEATURE)
             definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);

@@ -1,18 +1,18 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "660.0");
-export import(path : "onshape/std/containers.fs", version : "660.0");
-export import(path : "onshape/std/evaluate.fs", version : "660.0");
-export import(path : "onshape/std/feature.fs", version : "660.0");
-export import(path : "onshape/std/featureList.fs", version : "660.0");
-export import(path : "onshape/std/valueBounds.fs", version : "660.0");
+export import(path : "onshape/std/boolean.fs", version : "675.0");
+export import(path : "onshape/std/containers.fs", version : "675.0");
+export import(path : "onshape/std/evaluate.fs", version : "675.0");
+export import(path : "onshape/std/feature.fs", version : "675.0");
+export import(path : "onshape/std/featureList.fs", version : "675.0");
+export import(path : "onshape/std/valueBounds.fs", version : "675.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "660.0");
-import(path : "onshape/std/topologyUtils.fs", version : "660.0");
+import(path : "onshape/std/mathUtils.fs", version : "675.0");
+import(path : "onshape/std/topologyUtils.fs", version : "675.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -47,6 +47,22 @@ export enum MirrorType
     FEATURE,
     annotation { "Name" : "Face mirror" }
     FACE
+}
+
+/**
+ * @internal
+ * Preprocess the entities and instance function for pattern
+ */
+export function adjustPatternDefinitionEntities(context is Context, definition is map, isMirror is boolean) returns map
+{
+    if (isFacePattern(definition.patternType))
+        definition.entities = definition.faces;
+    else if (isFeaturePattern(definition.patternType) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V666_FEATURE_PATTERN_ENTITIES))
+        definition.entities = qNothing();
+
+    checkPatternInput(context, definition, isMirror);
+
+    return definition;
 }
 
 /**
@@ -117,7 +133,7 @@ function isFacePattern(patternType)
 }
 
 /** @internal */
-export function checkInput(context is Context, id is Id, definition is map, isMirror is boolean)
+function checkPatternInput(context is Context, definition is map, isMirror is boolean)
 {
     if (isFeaturePattern(definition.patternType))
     {
@@ -189,9 +205,9 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                 }
                 catch (e)
                 {
-                    if (e is map && e.message == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
+                    if (e is map && try silent(e.message as ErrorStringEnum) == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
                     {
-                        throw regenError(e.message, ["instanceFunction"]);
+                        throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN, ["instanceFunction"]);
                     }
                 }
             }

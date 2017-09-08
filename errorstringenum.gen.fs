@@ -1,4 +1,4 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -630,7 +630,6 @@ export enum ErrorStringEnum
     MIRROR_BODY_FAILED,
     /* You cannot pierce the sketch with a plane. */
     SKETCH_CANNOT_PIERCE_WITH_PLANE,
-    /* {0} Support code {1}. */
     WITH_SUPPORT_CODE,
     /* Cannot fillet smooth edges. */
     FILLET_FAIL_SMOOTH,
@@ -772,7 +771,6 @@ export enum ErrorStringEnum
     HOLE_EMPTY_SCOPE,
     /* None of the holes intersected a part. */
     HOLE_NO_HITS,
-    /* {0} : {1}. */
     WITH_EXTRA_DATA,
     /* Hole operation split part into multiple parts. */
     HOLE_DISJOINT,
@@ -1343,13 +1341,11 @@ export enum ErrorStringEnum
     FIT_SPLINE_REPEATED_POINT,
     /* A feature id is required */
     FEATURE_ID_REQUIRED,
-    /* Parameter {0} was not found in feature {1} */
     PARAMETER_NOT_FOUND,
-    /* Parameter {0} in feature {1} of type {2} does not match its feature spec */
     PARAMETER_DOES_NOT_MATCH_ITS_FEATURE_SPEC,
     /* Fillet and chamfer not allowed on active sheet metal models. */
     SHEET_METAL_CORNER_BREAK_DISABLED,
-    /* Cannot create a conic fillet on an active sheet metal model. */
+    /* Can only create a circular cross section constant fillet on an active sheet metal model. */
     SHEET_METAL_FILLET_NO_CONIC,
     /* Cannot create a two distance chamfer on an active sheet metal model. */
     SHEET_METAL_CHAMFER_NO_TWO_OFFSETS,
@@ -1423,9 +1419,7 @@ export enum ErrorStringEnum
     ACCESS_NOT_ALLOWED,
     /* Cannot have more than 3 guides when using path. */
     LOFT_SPINE_TOO_MANY_GUIDES,
-    /* Feature {0} has an invalid namespace */
     FEATURE_INVALID_NAMESPACE,
-    /* Feature {0} has a null in field {1} */
     FEATURE_NULL_NOT_ALLOWED,
     /* The dimension value is outside its limits. */
     SKETCH_DIMENSION_LIMIT_ERROR,
@@ -1453,19 +1447,12 @@ export enum ErrorStringEnum
     LOFT_NO_FACE_FOR_GUIDE_CLAMP,
     /* Internal guides cannot have a specified continuity. */
     LOFT_NO_CONTINUITY_CONDITION_AT_INTERNAL_GUIDE,
-    /* Sketch constraint with nodeId {0} not found in sketch {1} */
     SKETCH_CONSTRAINT_NOT_FOUND,
-    /* Parameter with parameterId {0} not found in sketch constraint {1} */
     SKETCH_CONSTRAINT_PARAMETER_NOT_FOUND,
-    /* Sketch entity with nodeId {0} not found in sketch {1} */
     SKETCH_ENTITY_NOT_FOUND,
-    /* Parameter with parameterId {0} not found in sketch entity {1} */
     SKETCH_ENTITY_PARAMETER_NOT_FOUND,
-    /* Parameter with parameterId {0} in object with nodeId {1} in feature {2} does not have the correct type */
     FEATURE_PARAMETER_TYPE_MISMATCH,
-    /* Parameter with parameterId {0} in object with nodeId {1} in feature {2} has no configured values */
     FEATURE_CONFIGURED_PARAMETER_NO_VALUES,
-    /* Parameter with parameterId {0} in object with nodeId {1} in feature {2} has inconsistent configured types */
     FEATURE_CONFIGURED_PARAMETER_INCONSISTENT_TYPES,
     /* Cannot create automatic miter between selected edges. */
     SHEET_METAL_FLANGE_FAIL_AUTO_MITER,
@@ -1501,9 +1488,9 @@ export enum ErrorStringEnum
     VRFILLET_MAG_REQUIRED_AT_VERTEX,
     /* Select vertices on fillet chain. */
     VRFILLET_SELECT_VERTICES,
-    /* At least one selected vertex is not on edge chain. */
+    /* Some selected vertices are not on an edge chain. */
     VRFILLET_VERTEX_NOT_ON_CHAIN,
-    /* At least two vertices need to be selected for closed edge chains. */
+    /* At least two vertices need to be selected for variable fillet on closed edge chains. */
     VRFILLET_INVALID_CHAIN,
     /* No tabs meet the selected sheet metal. */
     SHEET_METAL_TAB_NO_MERGE,
@@ -1513,10 +1500,26 @@ export enum ErrorStringEnum
     SHEET_METAL_TAB_NO_WALL,
     /* Select a face for the tab. */
     SHEET_METAL_TAB_NO_TAB,
-    /* Default settings are not used when overridden by vertex settings. */
+    /* Default settings are not used when overridden by variable fillet settings. */
     VRFILLET_NO_EFFECT,
-    /* A vertex can appear in vertex settings only once. */
-    VRFILLET_MULTI_SELECTION
+    /* A vertex can appear in variable fillet settings only once. */
+    VRFILLET_MULTI_SELECTION,
+    /* Highlighted tabs have no parallel wall to join. */
+    SHEET_METAL_TAB_NO_PARALLEL_WALL,
+    /* A corner relief is too small to be successfully applied. */
+    SHEET_METAL_CORNER_UNDER_SIZED,
+    /* Could not fillet selections on some bodies. */
+    FILLET_PARTIAL_FAIL,
+    /* Only end vertices of an edge chain can have zero radius. */
+    VRFILLET_INTERNAL_ZERO,
+    /* Tabs are entirely contained by the sheet metal walls. */
+    SHEET_METAL_TAB_NO_EFFECT,
+    /* Clearance of tab is less than minimal clearance. */
+    SHEET_METAL_TAB_LOW_CLEARANCE,
+    /* Fails to add tab. */
+    SHEET_METAL_TAB_FAILS_MERGE,
+    /* Tabs interfere with sheet metal walls. */
+    SHEET_METAL_TAB_COLLISION
 }
 
 

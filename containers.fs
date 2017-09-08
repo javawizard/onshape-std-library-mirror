@@ -1,4 +1,4 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,7 @@ FeatureScript 660; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "660.0");
+import(path : "onshape/std/math.fs", version : "675.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -327,5 +327,18 @@ export function values(container is map) returns array
         arr = append(arr, entry.value);
     }
     return arr;
+}
+
+/**
+ * Returns the sub array `[startIndex, endIndex)`
+ */
+export function subArray(input is array, startIndex is number, endIndex is number) returns array
+{
+    var output = [];
+    for (var i = startIndex; i < endIndex; i += 1)
+    {
+        output = append(output, input[i]);
+    }
+    return output;
 }
 

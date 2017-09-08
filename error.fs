@@ -1,15 +1,15 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "660.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "675.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "675.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "660.0");
-import(path : "onshape/std/containers.fs", version : "660.0");
+import(path : "onshape/std/context.fs", version : "675.0");
+import(path : "onshape/std/containers.fs", version : "675.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -301,6 +301,19 @@ export function getFeatureStatus(context is Context, id is Id) returns FeatureSt
 export function reportFeatureStatus(context is Context, id is Id, status is FeatureStatus) returns boolean
 {
     @functionReportFeatureStatus(context, id, status);
+    return true;
+}
+
+/**
+ * Clear the status of a feature to StatusType.OK
+ * * @param definition {{
+ *      @field withDisplayData {boolean} : Clear status display data attached to feature. Default true. @optional
+ * }}
+ * @param id {Id}
+ */
+export function clearFeatureStatus(context is Context, id is Id, definition is map) returns boolean
+{
+    @clearFeatureStatus(context, id, definition);
     return true;
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 660; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "660.0");
-import(path : "onshape/std/coordSystem.fs", version : "660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "660.0");
-import(path : "onshape/std/mathUtils.fs", version : "660.0");
-import(path : "onshape/std/string.fs", version : "660.0");
-import(path : "onshape/std/units.fs", version : "660.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "660.0");
+import(path : "onshape/std/context.fs", version : "675.0");
+import(path : "onshape/std/coordSystem.fs", version : "675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "675.0");
+import(path : "onshape/std/mathUtils.fs", version : "675.0");
+import(path : "onshape/std/string.fs", version : "675.0");
+import(path : "onshape/std/units.fs", version : "675.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "675.0");
 
 //===================================== Plane ======================================
 
@@ -313,6 +313,16 @@ export function intersection(plane is Plane, line is Line) returns LinePlaneInte
     }
     const t = dot(plane.origin - line.origin, plane.normal) / dotPr;
     return { 'dim' : 0, 'intersection' : line.origin + t * line.direction } as LinePlaneIntersection;
+}
+
+/**
+ * Returns true if the two planes are coplanar.
+ */
+export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
+{
+    const point1 = project(plane1, vector(0, 0, 0) * meter);
+    const point2 = project(plane2, vector(0, 0, 0) * meter);
+    return tolerantEquals(point1, point2);
 }
 
 // ===================================== Cone ======================================

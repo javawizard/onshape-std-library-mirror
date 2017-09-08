@@ -1,18 +1,18 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "660.0");
-import(path : "onshape/std/coordSystem.fs", version : "660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "660.0");
-import(path : "onshape/std/feature.fs", version : "660.0");
-import(path : "onshape/std/mathUtils.fs", version : "660.0");
-import(path : "onshape/std/primitives.fs", version : "660.0");
-import(path : "onshape/std/sketch.fs", version : "660.0");
-import(path : "onshape/std/string.fs", version : "660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
-import(path : "onshape/std/units.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "675.0");
+import(path : "onshape/std/coordSystem.fs", version : "675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "675.0");
+import(path : "onshape/std/feature.fs", version : "675.0");
+import(path : "onshape/std/mathUtils.fs", version : "675.0");
+import(path : "onshape/std/primitives.fs", version : "675.0");
+import(path : "onshape/std/sketch.fs", version : "675.0");
+import(path : "onshape/std/string.fs", version : "675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
+import(path : "onshape/std/units.fs", version : "675.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;

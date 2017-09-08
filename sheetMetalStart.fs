@@ -1,34 +1,34 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "675.0");
 
-import(path : "onshape/std/attributes.fs", version : "660.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "660.0");
-import(path : "onshape/std/box.fs", version : "660.0");
-import(path : "onshape/std/containers.fs", version : "660.0");
-import(path : "onshape/std/coordSystem.fs", version : "660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "660.0");
-import(path : "onshape/std/error.fs", version : "660.0");
-import(path : "onshape/std/evaluate.fs", version : "660.0");
-import(path : "onshape/std/feature.fs", version : "660.0");
-import(path : "onshape/std/geomOperations.fs", version : "660.0");
-import(path : "onshape/std/manipulator.fs", version : "660.0");
-import(path : "onshape/std/math.fs", version : "660.0");
-import(path : "onshape/std/modifyFillet.fs", version : "660.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "660.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "660.0");
-import(path : "onshape/std/sketch.fs", version : "660.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "660.0");
-import(path : "onshape/std/string.fs", version : "660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
-import(path : "onshape/std/tool.fs", version : "660.0");
-import(path : "onshape/std/topologyUtils.fs", version : "660.0");
-import(path : "onshape/std/valueBounds.fs", version : "660.0");
-import(path : "onshape/std/vector.fs", version : "660.0");
+import(path : "onshape/std/attributes.fs", version : "675.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "675.0");
+import(path : "onshape/std/box.fs", version : "675.0");
+import(path : "onshape/std/containers.fs", version : "675.0");
+import(path : "onshape/std/coordSystem.fs", version : "675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "675.0");
+import(path : "onshape/std/error.fs", version : "675.0");
+import(path : "onshape/std/evaluate.fs", version : "675.0");
+import(path : "onshape/std/feature.fs", version : "675.0");
+import(path : "onshape/std/geomOperations.fs", version : "675.0");
+import(path : "onshape/std/manipulator.fs", version : "675.0");
+import(path : "onshape/std/math.fs", version : "675.0");
+import(path : "onshape/std/modifyFillet.fs", version : "675.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "675.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "675.0");
+import(path : "onshape/std/sketch.fs", version : "675.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "675.0");
+import(path : "onshape/std/string.fs", version : "675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
+import(path : "onshape/std/tool.fs", version : "675.0");
+import(path : "onshape/std/topologyUtils.fs", version : "675.0");
+import(path : "onshape/std/valueBounds.fs", version : "675.0");
+import(path : "onshape/std/vector.fs", version : "675.0");
 
 /**
  * Method of initializing sheet metal model
@@ -59,8 +59,12 @@ export enum SMExtrudeBoundingType
  */
 export enum SMCornerStrategyType
 {
+    annotation { "Name" : "Sized rectangle" }
+    SIZED_RECTANGLE,
     annotation { "Name" : "Rectangle" }
     RECTANGLE,
+    annotation { "Name" : "Sized round" }
+    SIZED_ROUND,
     annotation { "Name" : "Round" }
     ROUND,
     annotation { "Name" : "Closed" }
@@ -197,6 +201,18 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
         }
 
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+        {
+            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
+        }
+
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+        {
+            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
+        }
+
         annotation { "Name" : "Bend relief type",
                      "Default" : SMBendStrategyType.OBROUND,
                      "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
@@ -235,6 +251,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "initEntities" : qNothing(),
       "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
       "defaultCornerReliefScale" : 1.5,
+      "defaultRoundReliefDiameter" : 0 * meter,
+      "defaultSquareReliefWidth" : 0 * meter,
       "defaultBendReliefStyle" :  SMBendStrategyType.OBROUND,
       "defaultBendReliefDepthScale" : 1.5,
       "defaultBendReliefScale" : 1.0625,
@@ -363,6 +381,8 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendEd
                     "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
                     "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
                     "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+                    "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+                    "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : definition.defaultBendReliefScale}, 0);
         if (getFeatureError(context, id) != undefined)
@@ -701,6 +721,8 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
         "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
         "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
         "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
         "defaultBendReliefScale" : definition.defaultBendReliefScale
     };
@@ -730,6 +752,14 @@ function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
     else if (definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
     {
         return SMReliefStyle.ROUND;
+    }
+    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+    {
+        return SMReliefStyle.SIZED_ROUND;
+    }
+    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+    {
+        return SMReliefStyle.SIZED_RECTANGLE;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.CLOSED)
     {

@@ -1,4 +1,4 @@
-FeatureScript 660; /* Automatically generated version */
+FeatureScript 675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,25 +43,25 @@ FeatureScript 660; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "660.0");
+export import(path : "onshape/std/query.fs", version : "675.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "660.0");
-import(path : "onshape/std/evaluate.fs", version : "660.0");
-import(path : "onshape/std/feature.fs", version : "660.0");
-import(path : "onshape/std/mathUtils.fs", version : "660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "660.0");
-import(path : "onshape/std/tool.fs", version : "660.0");
-import(path : "onshape/std/valueBounds.fs", version : "660.0");
-import(path : "onshape/std/matrix.fs", version : "660.0");
+import(path : "onshape/std/containers.fs", version : "675.0");
+import(path : "onshape/std/evaluate.fs", version : "675.0");
+import(path : "onshape/std/feature.fs", version : "675.0");
+import(path : "onshape/std/mathUtils.fs", version : "675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
+import(path : "onshape/std/tool.fs", version : "675.0");
+import(path : "onshape/std/valueBounds.fs", version : "675.0");
+import(path : "onshape/std/matrix.fs", version : "675.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "660.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "660.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "660.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "660.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "660.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "660.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "675.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "675.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "675.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "675.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "675.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "675.0");
 
 /**
  * @internal
@@ -278,6 +278,7 @@ precondition
  * @param textId : @autocomplete `"text1"`
  * @param value {{
  *      @field text {string}: A string of text to write. May contain newlines.
+ *          @autocomplete `"Example Text"`
  *
  *      @field fontName {string}: A font name, with extension ".ttf" or ".otf".
  *              To change font weight, replace "-Regular" with "-Bold",
@@ -299,8 +300,8 @@ precondition
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
  *      @field construction {boolean} : `true` for a construction line @optional
- *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally
- *      @field mirrorVertical {boolean} : `true` for flipping text vertically
+ *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally @optional
+ *      @field mirrorVertical {boolean} : `true` for flipping text vertically @optional
  * }}
  * @return {{
  *      @field textId
