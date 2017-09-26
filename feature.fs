@@ -11,6 +11,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
 import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
@@ -500,4 +501,27 @@ export function verifyNonemptyQuery(context is Context, definition is map,
         throw regenError(errorToReport, [parameterName]);
     }
 }
+
+/**
+ * Adjust angle out of bounds angles to lie in `[0 to 2pi]` if the feature is new,
+ * do a range check otherwise.
+ */
+export function adjustAngle(context is Context, angle is ValueWithUnits) returns ValueWithUnits
+precondition
+{
+    isAngle(angle);
+}
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V681_ANGLE_BOUNDS_CHANGE))
+    {
+        const CIRCLE = 2 * PI * radian;
+        if (abs(angle - CIRCLE) < TOLERANCE.zeroAngle * radian)
+            return CIRCLE;
+        return angle % CIRCLE;
+    }
+    if (angle < 0 * degree || angle > 360 * degree)
+        throw regenError(ErrorStringEnum.PARAMETER_OUT_OF_RANGE);
+    return angle;
+}
+
 

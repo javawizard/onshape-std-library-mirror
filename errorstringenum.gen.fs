@@ -1385,7 +1385,7 @@ export enum ErrorStringEnum
     FILL_SURFACE_ATTACH_FAIL,
     /* Could not meet curvature constraints at highlighted points. */
     FILL_SURFACE_G2_FAIL,
-    /* Could not satisfy guide vertex constraints. */
+    /* Could not satisfy all guide constraints. */
     FILL_SURFACE_VERTEX_INTERPOLATION_FAIL,
     /* Loft path must be a contiguous set of curves. */
     LOFT_SPINE_DISJOINT_PATH,
@@ -1519,7 +1519,17 @@ export enum ErrorStringEnum
     /* Fails to add tab. */
     SHEET_METAL_TAB_FAILS_MERGE,
     /* Tabs interfere with sheet metal walls. */
-    SHEET_METAL_TAB_COLLISION
+    SHEET_METAL_TAB_COLLISION,
+    /* Replace face would split or merge faces. */
+    REPLACE_FACE_FACE_COUNT_CHANGED,
+    /* This operation creates overlapping geometry. */
+    FACE_OVERLAP,
+    /* Entire face would be removed by operation. */
+    FACE_REMOVED,
+    /* This operation creates intersecting edges. */
+    INTERSECTING_EDGES,
+    /* This operation would split the face. */
+    CANNOT_SPLIT_FACE
 }
 
 

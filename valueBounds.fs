@@ -250,7 +250,7 @@ export const PLANE_SIZE_BOUNDS =
  */
 export const ANGLE_360_BOUNDS =
 {
-    (degree) : [0, 30, 360],
+    (degree) : [-1e5, 30, 1e5],
     (radian) : 1
 } as AngleBoundSpec;
 
@@ -259,7 +259,7 @@ export const ANGLE_360_BOUNDS =
  */
 export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 330, 360],
+    (degree) : [-1e5, 330, 1e5],
     (radian) : 2
 } as AngleBoundSpec;
 
@@ -268,7 +268,7 @@ export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 0, 360],
+    (degree) : [-1e5, 0, 1e5],
     (radian) : 0
 } as AngleBoundSpec;
 
@@ -277,7 +277,7 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_FULL_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 360, 360],
+    (degree) : [-1e5, 360, 1e5],
     (radian) : 2 * PI
 } as AngleBoundSpec;
 
@@ -514,4 +514,6 @@ export predicate canBeRealBoundSpec(value)
     @size(value) == 1;
     value[unitless] is array;
 }
+
+
 

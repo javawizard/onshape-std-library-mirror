@@ -85,6 +85,9 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         isAnything(definition.value);
     }
     {
+        if (definition.variableType == VariableType.ANGLE)
+            definition.angleValue = adjustAngle(context, definition.angleValue);
+
         verifyVariableName(definition.name);
 
         var value;

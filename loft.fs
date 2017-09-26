@@ -38,6 +38,19 @@ export enum LoftEndDerivativeType
 }
 
 /**
+ * Specifies derivative condition for a guide
+ */
+export enum LoftGuideDerivativeType
+{
+    annotation { "Name" : "None" }
+    DEFAULT,
+    annotation { "Name" : "Match tangent" }
+    MATCH_TANGENT,
+    annotation { "Name" : "Match curvature" }
+    MATCH_CURVATURE
+}
+
+/**
  * Internal
  */
 const LOFT_INTERNAL_SECTIONS_COUNT =
@@ -70,41 +83,33 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            annotation { "Name" : "Profiles",
+            annotation { "Name" : "Profiles", "Item name" : "Profile",
+                "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+            definition.sheetProfilesArray is array;
+            for (var profile in definition.sheetProfilesArray)
+            {
+                annotation { "Name" : "Faces and sketch regions",
                          "Filter" : (EntityType.FACE || EntityType.VERTEX ||
                                     (EntityType.BODY && BodyType.SHEET))
                                     && ConstructionObject.NO }
-            definition.sheetProfiles is Query;
+                profile.sheetProfileEntities is Query;
+            }
         }
         else
         {
-            annotation { "Name" : "Profiles",
+            annotation { "Name" : "Profiles", "Item name" : "Profile",
+                "Driven query" : "wireProfileEntities", "Item label template" : "#wireProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+            definition.wireProfilesArray is array;
+            for (var profile in definition.wireProfilesArray)
+            {
+                annotation { "Name" : "Edges, curves and sketches",
                          "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE ||
                                     (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET)))
                                     && ConstructionObject.NO }
-            definition.wireProfiles is Query;
+                profile.wireProfileEntities is Query;
+            }
         }
 
-        annotation { "Name" : "Path" }
-        definition.addSections is boolean;
-
-        if (definition.addSections)
-        {
-            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
-            definition.spine is Query;
-
-            annotation { "Name" : "Section count"}
-            isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
-        }
-
-        annotation { "Name" : "Guides" }
-        definition.addGuides is boolean;
-
-        if (definition.addGuides)
-        {
-            annotation { "Name" : "Guides", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
-            definition.guides is Query;
-        }
         annotation { "Name" : "Start profile condition", "UIHint" : "SHOW_LABEL" }
         definition.startCondition is LoftEndDerivativeType;
 
@@ -120,6 +125,39 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             annotation { "Name" : "End magnitude" }
             isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+        }
+
+        annotation { "Name" : "Guides and continuity" }
+        definition.addGuides is boolean;
+
+        if (definition.addGuides)
+        {
+            annotation { "Name" : "Guides", "Item name" : "Guide",
+                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+            definition.guidesArray is array;
+            for (var guide in definition.guidesArray)
+            {
+                annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
+                guide.guideEntities is Query;
+
+                annotation { "Name" : "Continuity", "UIHint" : [ "SHOW_LABEL", "MATCH_LAST_ARRAY_ITEM" ] }
+                guide.guideDerivativeType is LoftGuideDerivativeType;
+
+                annotation { "Name" : "Magnitude", "UIHint" : "ALWAYS_HIDDEN" }
+                isReal(guide.guideDerivativeMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
+        }
+
+        annotation { "Name" : "Path" }
+        definition.addSections is boolean;
+
+        if (definition.addSections)
+        {
+            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+            definition.spine is Query;
+
+            annotation { "Name" : "Section count"}
+            isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
         annotation { "Name" : "Match vertices" }
@@ -143,39 +181,46 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
     }
     {
-        var profileQuery = definition.sheetProfiles;
-        if (definition.bodyType != ToolBodyType.SOLID)
+        definition.profileSubqueries = [];
+        if (definition.bodyType == ToolBodyType.SURFACE)
         {
-            definition.wireProfileDependencies = replaceWireSubQueriesWithDependencies(context, definition.wireProfiles, true);
+            definition.profileSubqueries = collectSubParameters(definition.wireProfilesArray, "wireProfileEntities");
+            definition.profileSubqueries = replaceWireQueriesWithDependencies(context, definition.profileSubqueries, true);
             // Replace sketch faces with sketch wire edges so that created loft cap edges can be traced back easily and joined with other surfaces created from the same sketch.
-            definition.wireProfileDependencies = replaceEndSketchFacesWithWireEdges(context, definition.wireProfileDependencies);
-            profileQuery = definition.wireProfileDependencies;
+            definition.profileSubqueries = replaceEndSketchFacesWithWireEdges(context, definition.profileSubqueries);
         }
-        if (profileQuery.queryType == QueryType.UNION)
+        else
         {
-            const subQ = wrapSubqueriesInConstructionFilter(context, profileQuery.subqueries);
-            if (size(subQ) < 1)
-            {
-                const errorEntities = (definition.bodyType == ToolBodyType.SOLID) ? "sheetProfiles" : "wireProfiles";
-                throw regenError(ErrorStringEnum.LOFT_SELECT_PROFILES, [errorEntities]);
-            }
-
-            definition.profileSubqueries = subQ;
+            definition.profileSubqueries = collectSubParameters(definition.sheetProfilesArray, "sheetProfileEntities");
         }
-        var queriesForTransform = [profileQuery];
 
+        definition.profileSubqueries = wrapSubqueriesInConstructionFilter(context, definition.profileSubqueries);
+
+        if (size(definition.profileSubqueries) < 1)
+        {
+            const errorEntities = (definition.bodyType == ToolBodyType.SOLID) ? "sheetProfilesArray" : "wireProfilesArray";
+            throw regenError(ErrorStringEnum.LOFT_SELECT_PROFILES, [errorEntities]);
+        }
+
+        var queriesForTransform = definition.profileSubqueries;
+        var derivatives = [];
         if (definition.addGuides)
         {
-            definition.guideDependencies = replaceWireSubQueriesWithDependencies(context, definition.guides, false);
-            queriesForTransform = append(queriesForTransform, definition.guideDependencies);
-            if (definition.guideDependencies.queryType == QueryType.UNION)
+            definition.guideSubqueries = collectSubParameters(definition.guidesArray, "guideEntities");
+            definition.guideSubqueries = replaceWireQueriesWithDependencies(context, definition.guideSubqueries, false);
+            var setQueriesForTransformAfterConstructionFilter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V683_LOFT_ARRAY_PARAMETERS);
+            if (!setQueriesForTransformAfterConstructionFilter)
             {
-                const subQ = definition.guideDependencies.subqueries;
-                definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, subQ);
+                queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
             }
+            definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, definition.guideSubqueries);
+            if (setQueriesForTransformAfterConstructionFilter)
+            {
+                queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
+            }
+            derivatives = concatenateArrays([derivatives, collectGuideDerivatives(context, definition)]);
         }
 
-        var derivatives = [];
         if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
         {
             derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
@@ -316,46 +361,27 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
 function wireProfilesAndGuides(definition is map) returns Query
 {
     var subqueries = [];
-    if (undefined != definition.wireProfiles)
+    if (undefined != definition.wireProfilesArray)
     {
-        subqueries = append(subqueries, definition.wireProfiles);
+        subqueries = concatenateArrays([subqueries, collectSubParameters(definition.wireProfilesArray, "wireProfileEntities")]);
     }
-    if (undefined != definition.guides)
+    if (undefined != definition.guidesArray)
     {
-        subqueries = append(subqueries, definition.guides);
+        subqueries = concatenateArrays([subqueries, collectSubParameters(definition.guidesArray, "guideEntities")]);
     }
     return qUnion(subqueries);
 }
 
-function replaceWireSubQueriesWithDependencies(context is Context, query is Query, firstAndLastOnly is boolean) returns Query
+function replaceWireSubQueriesWithDependencies(context is Context, query is Query) returns Query
 precondition
 {
     query.subqueries is array;
 }
 {
-    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
-    {
-        return query;
-    }
-
     const count = size(query.subqueries);
-    if (firstAndLastOnly)
+    for (var index = 0; index < count; index += 1)
     {
-        if (count > 0)
-        {
-            query.subqueries[0] = followWireEdgesToLaminarSource(context, query.subqueries[0]);
-        }
-        if (count > 1)
-        {
-            query.subqueries[count - 1] = followWireEdgesToLaminarSource(context, query.subqueries[count - 1]);
-        }
-    }
-    else
-    {
-        for (var index = 0; index < count; index += 1)
-        {
-            query.subqueries[index] = followWireEdgesToLaminarSource(context, query.subqueries[index]);
-        }
+        query.subqueries[index] = followWireEdgesToLaminarSource(context, query.subqueries[index]);
     }
     return query;
 }
@@ -373,29 +399,83 @@ function replaceSketchFaceWithWireEdges(context is Context, query is Query) retu
     }
 }
 
-function replaceEndSketchFacesWithWireEdges(context is Context, query is Query) returns Query
-precondition
-{
-    query.subqueries is array;
-}
+function replaceEndSketchFacesWithWireEdges(context is Context, queries is array) returns array
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V657_SURFACE_JOIN_BUGS))
     {
-        return query;
+        return queries;
     }
 
-    const count = size(query.subqueries);
+    const count = size(queries);
     if (count > 0)
     {
-        query.subqueries[0] = replaceSketchFaceWithWireEdges(context, query.subqueries[0]);
+        queries[0] = replaceSketchFaceWithWireEdges(context, queries[0]);
     }
 
     if (count > 1)
     {
-        query.subqueries[count - 1] = replaceSketchFaceWithWireEdges(context, query.subqueries[count - 1]);
+        queries[count - 1] = replaceSketchFaceWithWireEdges(context, queries[count - 1]);
     }
 
-    return query;
+    return queries;
+}
+
+function replaceWireQueriesWithDependencies(context is Context, queries is array, firstAndLastOnly is boolean) returns array
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
+    {
+        return queries;
+    }
+
+    const count = size(queries);
+    for (var index = 0; index < count; index += 1)
+    {
+        if (firstAndLastOnly && index != 0 && index != count - 1)
+        {
+            continue;
+        }
+        queries[index] = replaceWireSubQueriesWithDependencies(context, queries[index]);
+    }
+
+    return queries;
+}
+
+function collectSubParameters(parameterArray is array, parameterName is string) returns array
+{
+    var retSubParameters = [];
+
+    for (var param in parameterArray)
+    {
+        retSubParameters = append(retSubParameters, param[parameterName]);
+    }
+
+    return retSubParameters;
+}
+
+function collectGuideDerivatives(context is Context, definition is map) returns array
+{
+    var derivatives = [];
+
+    for (var index = 0; index < size(definition.guidesArray); index +=1)
+    {
+        var parameter = definition.guidesArray[index];
+        if (parameter.guideDerivativeType != LoftGuideDerivativeType.DEFAULT)
+        {
+            const adjacentFaceQuery = qEdgeAdjacent(parameter.guideEntities, EntityType.FACE);
+            if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
+            {
+                throw regenError(ErrorStringEnum.LOFT_NO_FACE_FOR_GUIDE_CLAMP);
+            }
+            var derivativeInfo = { "profileIndex" : index,
+                         "magnitude" : parameter.guideDerivativeMagnitude,
+                         "matchCurvature" : parameter.guideDerivativeType == LoftGuideDerivativeType.MATCH_CURVATURE,
+                         "adjacentFaces" : adjacentFaceQuery,
+                         "forGuide" : true };
+            derivatives = append(derivatives, derivativeInfo);
+        }
+    }
+
+    return derivatives;
 }
 
 function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
@@ -403,11 +483,11 @@ function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, d
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), definition.wireProfileDependencies, transform);
+        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), qUnion(definition.profileSubqueries), transform);
 
-        if (undefined != definition.guideDependencies)
+        if (undefined != definition.guideSubqueries)
         {
-            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.guideDependencies, transform);
+            var guideMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), qUnion(definition.guideSubqueries), transform);
             matches = concatenateArrays([profileMatches, guideMatches]);
         }
         else

@@ -106,6 +106,13 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
+
+        if (definition.revolveType != RevolveType.FULL)
+            definition.angle = adjustAngle(context, definition.angle);
+
+        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+            definition.angleBack = adjustAngle(context, definition.angleBack);
+
         definition.entities = getEntitiesToUse(context, definition);
         const resolvedEntities = evaluateQuery(context, definition.entities);
         if (@size(resolvedEntities) == 0)

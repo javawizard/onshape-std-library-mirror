@@ -114,6 +114,9 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     }
     //============================ Body =============================
     {
+        if (definition.cplaneType == CPlaneType.LINE_ANGLE)
+            definition.angle = adjustAngle(context, definition.angle);
+
         const entities = evaluateQuery(context, definition.entities);
         const numEntities = @size(entities);
 

@@ -55,17 +55,25 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_SELECT_ENTITIES, ['bendRelief']);
         }
-        var corner = findCornerDefinitionVertex(context, definition.bendRelief);
+        var corner;
+        try
+        {
+            corner = findCornerDefinitionVertex(context, definition.bendRelief);
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief'], definition.bendRelief);
+        }
         var cornerInfo = evCornerType(context, {
                 "vertex" : corner
             });
         if (cornerInfo.cornerType == SMCornerType.NOT_A_CORNER)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief'], definition.bendRelief);
         }
         else if (cornerInfo.cornerType != SMCornerType.BEND_END)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_NOT_A_BEND_END, ['bendRelief']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_NOT_A_BEND_END, ['bendRelief'], definition.bendRelief);
         }
 
         corner = cornerInfo.primaryVertex;

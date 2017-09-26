@@ -581,7 +581,14 @@ export enum FeatureScriptVersionNumber
     V672_TAB_IDENTITY,
     V673_VRFILLET_FIXES,
     V674_TAB_FIXES,
-    V675_MORE_TAB_FIXES
+    V675_MORE_TAB_FIXES,
+    V680_SHELL_RECORD_FIX,
+    V681_ANGLE_BOUNDS_CHANGE,
+    V682_REPLACE_FACE_NO_MERGE,
+    V683_LOFT_ARRAY_PARAMETERS,
+    V684_SM_SWEPT_SUPPORT,
+    V685_EXTEND_SHEET_BODY_STEP_EDGES,
+    V686_LOFT_FS_BUG_FIXES
 }
 
 /**
@@ -592,6 +599,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V675_MORE_TAB_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V686_LOFT_FS_BUG_FIXES;
 
 

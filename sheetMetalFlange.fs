@@ -512,7 +512,8 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
         var flangeData = edgeToFlangeData[edge];
 
         //create a plane as a limit surface for extending the underlying sheet
-        var planeNormal = flangeData.plane.normal;
+        const planeNormal = isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES) ?
+            cross(normalize(flangeData.edgeEndPoints[1].origin - flangeData.edgeEndPoints[0].origin), flangeData.wallPlane.normal) : flangeData.plane.normal;
         var edgeMidpoint = .5 * (flangeData.edgeEndPoints[1].origin + flangeData.edgeEndPoints[0].origin);
         var origin = edgeMidpoint + edgeToExtensionDistance[edge] * flangeData.wallExtendDirection;
         var extendIndexedId = id + "extend" + unstableIdComponent(index);
@@ -521,7 +522,8 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
             sheetMetalExtendSheetBodyCall(context, extendIndexedId, {
                     "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
                     "entities" : updatedEdge,
-                    "limitEntity" : plane(origin, planeNormal)
+                    "limitEntity" : plane(origin, planeNormal),
+                    "fence" : true
             });
         }
         catch

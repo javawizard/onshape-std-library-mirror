@@ -253,6 +253,9 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
     }
     {
+        if (definition.transformType == TransformType.ROTATION)
+            definition.angle = adjustAngle(context, definition.angle);
+
         //Start by figuring out the transform
         var transformMatrix = identityTransform();
         const transformType = definition.transformType;

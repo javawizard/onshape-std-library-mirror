@@ -142,6 +142,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         var remainingTransform;
         var revolutions;
 
+        definition.startAngle = adjustAngle(context, definition.startAngle);
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
             remainingTransform = getRemainderPatternTransform(context, {"references" : definition.entities});

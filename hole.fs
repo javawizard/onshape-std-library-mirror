@@ -1451,15 +1451,23 @@ function adjustThreadDepth(oldDefinition is map, definition is map) returns map
                     return definition;
                 }
                 definition.showTappedDepth = true;
-                if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+
+                // if blind hole type and have valid tap clearance value, then calculate and set either tapped or hole depth
+                if ((definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST) && definition.tapClearance != undefined)
                 {
                     if (definition.holeDepth != oldDefinition.holeDepth)
                     {
-                        definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                        if (definition.holeDepth != undefined)
+                        {
+                            definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                        }
                     }
                     else
                     {
-                        definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
+                        if (definition.tappedDepth != undefined)
+                        {
+                            definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
+                        }
                     }
                 }
             }
@@ -1546,11 +1554,11 @@ export function updateHoleDefinitionWithStandard(oldDefinition is map, definitio
 
 function syncStandards(oldDefinition is map, definition is map) returns map
 {
-    if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance)
+    if (oldDefinition.standardTappedOrClearance != undefined && oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance)
     {
         definition.standardBlindInLast = definition.standardTappedOrClearance;
     }
-    else if (oldDefinition.standardBlindInLast != definition.standardBlindInLast)
+    else if (oldDefinition.standardBlindInLast != undefined && oldDefinition.standardBlindInLast != definition.standardBlindInLast)
     {
         definition.standardTappedOrClearance = definition.standardBlindInLast;
     }

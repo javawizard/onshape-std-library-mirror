@@ -52,21 +52,29 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_SELECT_ENTITIES, ['corner']);
         }
-        var corner = findCornerDefinitionVertex(context, definition.corner);
+        var corner;
+        try
+        {
+            corner = findCornerDefinitionVertex(context, definition.corner);
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NO_CORNER, ['corner'], definition.corner);
+        }
         var cornerInfo = evCornerType(context, {
                 "vertex" : corner
             });
         if (cornerInfo.cornerType == SMCornerType.NOT_A_CORNER)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NO_CORNER, ['corner']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NO_CORNER, ['corner'], definition.corner);
         }
         else if (cornerInfo.cornerType == SMCornerType.BEND_END)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_END_NOT_A_CORNER, ['corner']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_END_NOT_A_CORNER, ['corner'], definition.corner);
         }
         if (cornerInfo.cornerType != SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle'], definition.corner);
         }
 
         corner = cornerInfo.primaryVertex;
