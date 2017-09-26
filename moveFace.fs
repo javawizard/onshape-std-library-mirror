@@ -1,28 +1,28 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "675.0");
-export import(path : "onshape/std/tool.fs", version : "675.0");
+export import(path : "onshape/std/query.fs", version : "686.0");
+export import(path : "onshape/std/tool.fs", version : "686.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "675.0");
+export import(path : "onshape/std/manipulator.fs", version : "686.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "675.0");
-import(path : "onshape/std/box.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/mathUtils.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
-import(path : "onshape/std/topologyUtils.fs", version : "675.0");
-import(path : "onshape/std/valueBounds.fs", version : "675.0");
+import(path : "onshape/std/attributes.fs", version : "686.0");
+import(path : "onshape/std/box.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/curveGeometry.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/mathUtils.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
+import(path : "onshape/std/topologyUtils.fs", version : "686.0");
+import(path : "onshape/std/valueBounds.fs", version : "686.0");
 
 
 /**
@@ -168,6 +168,9 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     }
     //============================ Body =============================
     {
+        if (definition.angle != undefined)
+            definition.angle = adjustAngle(context, definition.angle);
+
         var qSurfacesAndFaces;
         if (definition.outputType == MoveFaceOutputType.MOVE)
         {
@@ -214,7 +217,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         }
 
         // Extract an axis defined by the moved face for use in the manipulators.
-        var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
+        var facePlane = try silent(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
         if (facePlane == undefined)
             throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
         const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
@@ -527,7 +530,14 @@ function createEdgeLimitOption(context is Context, id is Id, definition is map, 
                 // If moving a nonplanar face or up to an entity, create a tool body and use opMoveFace for positioning.
                 opExtractSurface(context, id, {"faces" : faceToMove});
                 limitPlane = qCreatedBy(id, EntityType.FACE);
-                opMoveFace(context, id + "moveFace", mergeMaps(definition, {"moveFaces" : limitPlane}));
+                if (definition.moveFaceType == MoveFaceType.OFFSET && isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES))
+                {
+                    opOffsetFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitPlane }));
+                }
+                else
+                {
+                    opMoveFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitPlane }));
+                }
             }
             else
             {
@@ -686,10 +696,19 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         }
         if (size(edgeLimitOptions) > 0)
         {
-            sheetMetalExtendSheetBodyCall(context, id + "extend", {
-                        "entities" : qUnion(smEdges),
-                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
-                        "edgeLimitOptions" : edgeLimitOptions });
+            try
+            {
+                sheetMetalExtendSheetBodyCall(context, id + "extend", {
+                            "entities" : qUnion(smEdges),
+                            "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                            "edgeLimitOptions" : edgeLimitOptions,
+                            "fence" : true });
+            }
+            catch (error)
+            {
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + "extend", "propagateErrorDisplay" : true });
+                throw error;
+            }
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V512_MOVE_FACE_OVERLAP))
             {
                 if (size(evaluateQuery(context, qCreatedBy(id + "extend", EntityType.FACE))) != 0)
@@ -932,7 +951,7 @@ function moveFaceCreateLegacy(context is Context, id is Id, definition is map, q
     }
 
     // Extract an axis defined by the moved face for use in the manipulators.
-    var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
+    var facePlane = try silent(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
     if (facePlane == undefined)
         throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
 

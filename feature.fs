@@ -1,19 +1,20 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "675.0");
-export import(path : "onshape/std/error.fs", version : "675.0");
-export import(path : "onshape/std/geomOperations.fs", version : "675.0");
-export import(path : "onshape/std/query.fs", version : "675.0");
+export import(path : "onshape/std/context.fs", version : "686.0");
+export import(path : "onshape/std/error.fs", version : "686.0");
+export import(path : "onshape/std/geomOperations.fs", version : "686.0");
+export import(path : "onshape/std/query.fs", version : "686.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/string.fs", version : "675.0");
-import(path : "onshape/std/transform.fs", version : "675.0");
-import(path : "onshape/std/units.fs", version : "675.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/math.fs", version : "686.0");
+import(path : "onshape/std/string.fs", version : "686.0");
+import(path : "onshape/std/transform.fs", version : "686.0");
+import(path : "onshape/std/units.fs", version : "686.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -500,4 +501,27 @@ export function verifyNonemptyQuery(context is Context, definition is map,
         throw regenError(errorToReport, [parameterName]);
     }
 }
+
+/**
+ * Adjust angle out of bounds angles to lie in `[0 to 2pi]` if the feature is new,
+ * do a range check otherwise.
+ */
+export function adjustAngle(context is Context, angle is ValueWithUnits) returns ValueWithUnits
+precondition
+{
+    isAngle(angle);
+}
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V681_ANGLE_BOUNDS_CHANGE))
+    {
+        const CIRCLE = 2 * PI * radian;
+        if (abs(angle - CIRCLE) < TOLERANCE.zeroAngle * radian)
+            return CIRCLE;
+        return angle % CIRCLE;
+    }
+    if (angle < 0 * degree || angle > 360 * degree)
+        throw regenError(ErrorStringEnum.PARAMETER_OUT_OF_RANGE);
+    return angle;
+}
+
 

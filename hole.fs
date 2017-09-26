@@ -1,34 +1,34 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "675.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "675.0");
-import(path : "onshape/std/box.fs", version : "675.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/coordSystem.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/extrude.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/mathUtils.fs", version : "675.0");
-import(path : "onshape/std/revolve.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "675.0");
-import(path : "onshape/std/sketch.fs", version : "675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
-import(path : "onshape/std/tool.fs", version : "675.0");
-import(path : "onshape/std/valueBounds.fs", version : "675.0");
-import(path : "onshape/std/string.fs", version : "675.0");
-import(path : "onshape/std/holetables.gen.fs", version : "675.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "675.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "675.0");
-import(path : "onshape/std/cylinderCast.fs", version : "675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "675.0");
-import(path : "onshape/std/attributes.fs", version : "675.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "675.0");
-export import(path : "onshape/std/holeUtils.fs", version : "675.0");
+import(path : "onshape/std/boolean.fs", version : "686.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "686.0");
+import(path : "onshape/std/box.fs", version : "686.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/coordSystem.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/extrude.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/mathUtils.fs", version : "686.0");
+import(path : "onshape/std/revolve.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
+import(path : "onshape/std/sketch.fs", version : "686.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
+import(path : "onshape/std/tool.fs", version : "686.0");
+import(path : "onshape/std/valueBounds.fs", version : "686.0");
+import(path : "onshape/std/string.fs", version : "686.0");
+import(path : "onshape/std/holetables.gen.fs", version : "686.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "686.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "686.0");
+import(path : "onshape/std/cylinderCast.fs", version : "686.0");
+import(path : "onshape/std/curveGeometry.fs", version : "686.0");
+import(path : "onshape/std/attributes.fs", version : "686.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "686.0");
+export import(path : "onshape/std/holeUtils.fs", version : "686.0");
 
 
 /**
@@ -1451,15 +1451,23 @@ function adjustThreadDepth(oldDefinition is map, definition is map) returns map
                     return definition;
                 }
                 definition.showTappedDepth = true;
-                if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+
+                // if blind hole type and have valid tap clearance value, then calculate and set either tapped or hole depth
+                if ((definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST) && definition.tapClearance != undefined)
                 {
                     if (definition.holeDepth != oldDefinition.holeDepth)
                     {
-                        definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                        if (definition.holeDepth != undefined)
+                        {
+                            definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                        }
                     }
                     else
                     {
-                        definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
+                        if (definition.tappedDepth != undefined)
+                        {
+                            definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
+                        }
                     }
                 }
             }
@@ -1546,11 +1554,11 @@ export function updateHoleDefinitionWithStandard(oldDefinition is map, definitio
 
 function syncStandards(oldDefinition is map, definition is map) returns map
 {
-    if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance)
+    if (oldDefinition.standardTappedOrClearance != undefined && oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance)
     {
         definition.standardBlindInLast = definition.standardTappedOrClearance;
     }
-    else if (oldDefinition.standardBlindInLast != definition.standardBlindInLast)
+    else if (oldDefinition.standardBlindInLast != undefined && oldDefinition.standardBlindInLast != definition.standardBlindInLast)
     {
         definition.standardTappedOrClearance = definition.standardBlindInLast;
     }

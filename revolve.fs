@@ -1,24 +1,24 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "675.0");
+export import(path : "onshape/std/tool.fs", version : "686.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "675.0");
+export import(path : "onshape/std/manipulator.fs", version : "686.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "675.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/mathUtils.fs", version : "675.0");
-import(path : "onshape/std/topologyUtils.fs", version : "675.0");
-import(path : "onshape/std/transform.fs", version : "675.0");
-import(path : "onshape/std/valueBounds.fs", version : "675.0");
+import(path : "onshape/std/boolean.fs", version : "686.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/mathUtils.fs", version : "686.0");
+import(path : "onshape/std/topologyUtils.fs", version : "686.0");
+import(path : "onshape/std/transform.fs", version : "686.0");
+import(path : "onshape/std/valueBounds.fs", version : "686.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -106,6 +106,13 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
+
+        if (definition.revolveType != RevolveType.FULL)
+            definition.angle = adjustAngle(context, definition.angle);
+
+        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+            definition.angleBack = adjustAngle(context, definition.angleBack);
+
         definition.entities = getEntitiesToUse(context, definition);
         const resolvedEntities = evaluateQuery(context, definition.entities);
         if (@size(resolvedEntities) == 0)

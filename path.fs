@@ -1,20 +1,20 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "675.0");
-export import(path : "onshape/std/query.fs", version : "675.0");
-export import(path : "onshape/std/units.fs", version : "675.0");
+export import(path : "onshape/std/context.fs", version : "686.0");
+export import(path : "onshape/std/query.fs", version : "686.0");
+export import(path : "onshape/std/units.fs", version : "686.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/mathUtils.fs", version : "675.0");
-import(path : "onshape/std/topologyUtils.fs", version : "675.0");
+import(path : "onshape/std/box.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/mathUtils.fs", version : "686.0");
+import(path : "onshape/std/topologyUtils.fs", version : "686.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.

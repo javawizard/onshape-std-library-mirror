@@ -1,4 +1,4 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 675; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/math.fs", version : "675.0");
-import(path : "onshape/std/error.fs", version : "675.0");
-export import(path : "onshape/std/units.fs", version : "675.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/math.fs", version : "686.0");
+import(path : "onshape/std/error.fs", version : "686.0");
+export import(path : "onshape/std/units.fs", version : "686.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -250,7 +250,7 @@ export const PLANE_SIZE_BOUNDS =
  */
 export const ANGLE_360_BOUNDS =
 {
-    (degree) : [0, 30, 360],
+    (degree) : [-1e5, 30, 1e5],
     (radian) : 1
 } as AngleBoundSpec;
 
@@ -259,7 +259,7 @@ export const ANGLE_360_BOUNDS =
  */
 export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 330, 360],
+    (degree) : [-1e5, 330, 1e5],
     (radian) : 2
 } as AngleBoundSpec;
 
@@ -268,7 +268,7 @@ export const ANGLE_360_REVERSE_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 0, 360],
+    (degree) : [-1e5, 0, 1e5],
     (radian) : 0
 } as AngleBoundSpec;
 
@@ -277,7 +277,7 @@ export const ANGLE_360_ZERO_DEFAULT_BOUNDS =
  */
 export const ANGLE_360_FULL_DEFAULT_BOUNDS =
 {
-    (degree) : [0, 360, 360],
+    (degree) : [-1e5, 360, 1e5],
     (radian) : 2 * PI
 } as AngleBoundSpec;
 
@@ -514,4 +514,6 @@ export predicate canBeRealBoundSpec(value)
     @size(value) == 1;
     value[unitless] is array;
 }
+
+
 

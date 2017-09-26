@@ -1,28 +1,28 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "675.0");
-import(path : "onshape/std/boolean.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "675.0");
-import(path : "onshape/std/extrude.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/math.fs", version : "675.0");
-import(path : "onshape/std/matrix.fs", version : "675.0");
-import(path : "onshape/std/query.fs", version : "675.0");
-import(path : "onshape/std/sketch.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "675.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "675.0");
-import(path : "onshape/std/topologyUtils.fs", version : "675.0");
-import(path : "onshape/std/units.fs", version : "675.0");
-import(path : "onshape/std/valueBounds.fs", version : "675.0");
-import(path : "onshape/std/vector.fs", version : "675.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "675.0");
+import(path : "onshape/std/attributes.fs", version : "686.0");
+import(path : "onshape/std/boolean.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/curveGeometry.fs", version : "686.0");
+import(path : "onshape/std/extrude.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/math.fs", version : "686.0");
+import(path : "onshape/std/matrix.fs", version : "686.0");
+import(path : "onshape/std/query.fs", version : "686.0");
+import(path : "onshape/std/sketch.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "686.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
+import(path : "onshape/std/topologyUtils.fs", version : "686.0");
+import(path : "onshape/std/units.fs", version : "686.0");
+import(path : "onshape/std/valueBounds.fs", version : "686.0");
+import(path : "onshape/std/vector.fs", version : "686.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "686.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -512,7 +512,8 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
         var flangeData = edgeToFlangeData[edge];
 
         //create a plane as a limit surface for extending the underlying sheet
-        var planeNormal = flangeData.plane.normal;
+        const planeNormal = isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES) ?
+            cross(normalize(flangeData.edgeEndPoints[1].origin - flangeData.edgeEndPoints[0].origin), flangeData.wallPlane.normal) : flangeData.plane.normal;
         var edgeMidpoint = .5 * (flangeData.edgeEndPoints[1].origin + flangeData.edgeEndPoints[0].origin);
         var origin = edgeMidpoint + edgeToExtensionDistance[edge] * flangeData.wallExtendDirection;
         var extendIndexedId = id + "extend" + unstableIdComponent(index);
@@ -521,7 +522,8 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
             sheetMetalExtendSheetBodyCall(context, extendIndexedId, {
                     "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
                     "entities" : updatedEdge,
-                    "limitEntity" : plane(origin, planeNormal)
+                    "limitEntity" : plane(origin, planeNormal),
+                    "fence" : true
             });
         }
         catch

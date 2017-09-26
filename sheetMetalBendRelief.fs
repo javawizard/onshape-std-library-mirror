@@ -1,20 +1,20 @@
-FeatureScript 675; /* Automatically generated version */
+FeatureScript 686; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "675.0");
+export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "686.0");
 
-import(path : "onshape/std/attributes.fs", version : "675.0");
-import(path : "onshape/std/containers.fs", version : "675.0");
-import(path : "onshape/std/evaluate.fs", version : "675.0");
-import(path : "onshape/std/feature.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "675.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "675.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "675.0");
-import(path : "onshape/std/valueBounds.fs", version : "675.0");
+import(path : "onshape/std/attributes.fs", version : "686.0");
+import(path : "onshape/std/containers.fs", version : "686.0");
+import(path : "onshape/std/evaluate.fs", version : "686.0");
+import(path : "onshape/std/feature.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "686.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "686.0");
+import(path : "onshape/std/valueBounds.fs", version : "686.0");
 
 /**
  * Bend relief feature is used to override default bend relief of sheet metal model
@@ -55,17 +55,25 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_SELECT_ENTITIES, ['bendRelief']);
         }
-        var corner = findCornerDefinitionVertex(context, definition.bendRelief);
+        var corner;
+        try
+        {
+            corner = findCornerDefinitionVertex(context, definition.bendRelief);
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief'], definition.bendRelief);
+        }
         var cornerInfo = evCornerType(context, {
                 "vertex" : corner
             });
         if (cornerInfo.cornerType == SMCornerType.NOT_A_CORNER)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_NO_CORNER, ['bendRelief'], definition.bendRelief);
         }
         else if (cornerInfo.cornerType != SMCornerType.BEND_END)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_NOT_A_BEND_END, ['bendRelief']);
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_NOT_A_BEND_END, ['bendRelief'], definition.bendRelief);
         }
 
         corner = cornerInfo.primaryVertex;
