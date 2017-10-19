@@ -3,6 +3,8 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+export import(path: "onshape/std/patternCommon.fs", version : "✨");
+
 // Most patterns use these
 export import(path : "onshape/std/boolean.fs", version : "✨");
 export import(path : "onshape/std/containers.fs", version : "✨");
@@ -12,42 +14,12 @@ export import(path : "onshape/std/featureList.fs", version : "✨");
 export import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
-
-/**
- * The type of pattern.
- * @value PART : Creates copies of bodies.
- * @value FEATURE : Calls a feature function multiple times, first informing the
- *          `context` of the transform to be applied.
- * @value FACE : Creates copies of faces and attempts to merge them with
- *          existing bodies.
- */
-export enum PatternType
-{
-    annotation { "Name" : "Part pattern" }
-    PART,
-    annotation { "Name" : "Feature pattern" }
-    FEATURE,
-    annotation { "Name" : "Face pattern" }
-    FACE
-}
-
-/**
- * The type of mirror.
- * @seealso [PatternType]
- */
-export enum MirrorType
-{
-    annotation { "Name" : "Part mirror" }
-    PART,
-    annotation { "Name" : "Feature mirror" }
-    FEATURE,
-    annotation { "Name" : "Face mirror" }
-    FACE
-}
 
 /**
  * @internal
@@ -112,26 +84,6 @@ export function verifyPatternSize(context is Context, id is Id, instances is num
     throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_MANY_INSTANCES);
 }
 
-/**
- * @internal
- * @param patternType : Either a `PatternType` or a `FeatureType`
- * @return {boolean} : `true` if the given enum value represents a feature pattern.
- */
-export function isFeaturePattern(patternType)
-{
-    return (patternType == PatternType.FEATURE || patternType == MirrorType.FEATURE);
-}
-
-function isPartPattern(patternType)
-{
-    return (patternType == PatternType.PART || patternType == MirrorType.PART);
-}
-
-function isFacePattern(patternType)
-{
-    return (patternType == PatternType.FACE || patternType == MirrorType.FACE);
-}
-
 /** @internal */
 function checkPatternInput(context is Context, definition is map, isMirror is boolean)
 {
@@ -184,10 +136,14 @@ export function applyPattern(context is Context, id is Id, definition is map, re
 {
     if (!isFeaturePattern(definition.patternType))
     {
-        opPattern(context, id, definition);
-        transformResultIfNecessary(context, id, remainingTransform);
-
-        processPatternBooleansIfNeeded(context, id, definition);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V693_SM_PATTERN))
+        {
+            sheetMetalAwareGeometryPattern(context, id, definition, remainingTransform);
+        }
+        else
+        {
+            geometryPattern(context, id, definition, remainingTransform);
+        }
     }
     else
     {
@@ -216,6 +172,39 @@ export function applyPattern(context is Context, id is Id, definition is map, re
 
         if (featureSuccessCount == 0) // TODO: better error
             throw regenError(ErrorStringEnum.PATTERN_FEATURE_FAILED, ["instanceFunction"]);
+    }
+}
+
+/**
+ * Perform a face or body pattern as described by the definition, then transform and boolean the result if necessary.
+ */
+function geometryPattern(context is Context, id is Id, definition is map, remainingTransform is Transform)
+{
+    opPattern(context, id, definition);
+    transformResultIfNecessary(context, id, remainingTransform);
+
+    processPatternBooleansIfNeeded(context, id, definition);
+}
+
+/**
+ * Split the input entities of the pattern and perform face and body patterns for standard entities and sheet metal entities.
+ */
+function sheetMetalAwareGeometryPattern(context is Context, id is Id, definition is map, remainingTransform is Transform)
+{
+    var separatedQueries = separateSheetMetalQueries(context, definition.entities);
+    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
+
+    if (hasNonSheetMetalQueries)
+    {
+        definition.entities = separatedQueries.nonSheetMetalQueries;
+        geometryPattern(context, id, definition, remainingTransform);
+    }
+    if (hasSheetMetalQueries)
+    {
+        definition.entities = separatedQueries.sheetMetalQueries;
+        definition.topLevelId = id;
+        sheetMetalGeometryPattern(context, id + "smPattern", definition);
     }
 }
 

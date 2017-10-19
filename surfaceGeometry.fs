@@ -322,7 +322,7 @@ export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
 {
     const point1 = project(plane1, vector(0, 0, 0) * meter);
     const point2 = project(plane2, vector(0, 0, 0) * meter);
-    return tolerantEquals(point1, point2);
+    return tolerantEquals(point1, point2) && abs(dot(plane1.normal, plane2.normal)) > 1 - TOLERANCE.zeroAngle;
 }
 
 // ===================================== Cone ======================================

@@ -101,6 +101,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
     if (size(collisions) > 0)
     {
         const collisionClasses = classifyCollisions(context, collisions);
+        var tools = [];
         var target = undefined;
         for (var entry in collisionClasses)
         {
@@ -120,6 +121,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
                 }
                 else
                 {
+                    tools = append(tools, entry.key);
                     target = collisions[0];
                 }
             }
@@ -127,13 +129,18 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         // classifyCollisions filters out abutting along edge, so we might come empty here
         if (target != undefined)
         {
-            if (queryContainsActiveSheetMetal(context, target))
+            if (!queryContainsActiveSheetMetal(context, target))
             {
-                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
+                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            }
+            else if (queryContainsActiveSheetMetal(context, qUnion(tools)))
+            {
+                // Sheet metal cannot be the tool of a boolean step subtract. Use NEW.
+                return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
             }
             else
             {
-                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
             }
         }
     }

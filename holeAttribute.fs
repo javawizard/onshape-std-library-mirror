@@ -84,6 +84,17 @@ export function makeCSinkHoleAttribute(attributeId is string) returns HoleAttrib
 /**
 * @internal
 */
+export function getHoleAttributes(context is Context, topology is Query) returns array
+{
+    return getAttributes(context, {
+                "entities" : topology,
+                "attributePattern" : asHoleAttribute({})
+        });
+}
+
+/**
+* @internal
+*/
 export function getHoleTypeAttributes(context is Context, topology is Query, holeType is HoleStyle) returns array
 {
     return getAttributes(context, {

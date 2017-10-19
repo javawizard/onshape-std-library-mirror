@@ -588,7 +588,18 @@ export enum FeatureScriptVersionNumber
     V683_LOFT_ARRAY_PARAMETERS,
     V684_SM_SWEPT_SUPPORT,
     V685_EXTEND_SHEET_BODY_STEP_EDGES,
-    V686_LOFT_FS_BUG_FIXES
+    V686_LOFT_FS_BUG_FIXES,
+    V691_FILL_GUIDE_CURVES,
+    V692_VECTOR_IMPRINT,
+    V693_SM_PATTERN,
+    V694_FILL_GUIDE_CURVES_FS,
+    V695_SM_SWEPT_SUPPORT,
+    V696_REMOVE_ADDED_REDUNDANCY,
+    V697_FILL_UPDATE,
+    V698_EXTEND_SHEET_PERIODIC,
+    V699_SM_PATTERN_FIXES,
+    V700_REVERTED_TANGENT_JOINT,
+    V701_REVERTED_SM_FACE_PATTERN
 }
 
 /**
@@ -599,6 +610,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V686_LOFT_FS_BUG_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V701_REVERTED_SM_FACE_PATTERN;
 
 

@@ -321,7 +321,10 @@ function createTools(context is Context, id is Id, tools is Query)
         return;
 
     const direction = planes[0].normal;
-    opExtractSurface(context, id, { "faces" : tools, "removeRedundant" : true });
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V696_REMOVE_ADDED_REDUNDANCY))
+        opExtractSurface(context, id, { "faces" : tools, "redundancyType" : ExtractSurfaceRedundancyType.REMOVE_ALL_REDUNDANCY });
+    else
+        opExtractSurface(context, id, { "faces" : tools, "removeRedundant" : true });
 }
 
 function applyPlaneToPlaneTransform(context is Context, id is Id, bodies is Query, fromPlane is Plane, toPlane is Plane)

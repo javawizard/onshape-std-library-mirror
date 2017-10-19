@@ -680,7 +680,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                updateJointAngle(context, qEdgeAdjacent(allFaces, EntityType.EDGE));
+                updateJointAngle(context, id, qEdgeAdjacent(allFaces, EntityType.EDGE));
             }
         }
         else

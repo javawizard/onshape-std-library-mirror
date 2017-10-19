@@ -506,6 +506,21 @@ precondition
  * }}
  */
 export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
+{
+    return evFaceTangentPlaneAtEdge(context, arg).normal;
+}
+
+/**
+ * Return a [Plane] tangent to face at a position on one of its edges.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameter{number}
+ * }}
+ */
+export function evFaceTangentPlaneAtEdge(context is Context, arg is map) returns Plane
 precondition
 {
     arg is map;
@@ -527,7 +542,7 @@ precondition
             "face" : arg.face,
             "parameter" : parameter
     });
-    return faceTangent.normal;
+    return faceTangent;
 }
 
 /**
@@ -688,7 +703,7 @@ precondition
  * Return a descriptive value for a face, or the first face if the query
  * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
  * or [Torus] as appropriate for the face, or an unspecified map value
- * if the face is none of these.
+ * if the face is none of these with surfaceType filled of type SurfaceType
  * @param arg {{
  *      @field face{Query}
  * }}
@@ -722,6 +737,10 @@ precondition
         else if (result.surfaceType == (SurfaceType.PLANE as string))
         {
             result = planeFromBuiltin(result);
+        }
+        else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
+        {
+            result.surfaceType = result.surfaceType as SurfaceType;
         }
     }
 

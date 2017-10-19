@@ -85,10 +85,13 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         isAnything(definition.value);
     }
     {
-        if (definition.variableType == VariableType.ANGLE)
-            definition.angleValue = adjustAngle(context, definition.angleValue);
-
         verifyVariableName(definition.name);
+
+        if (definition.variableType == VariableType.ANGLE &&
+                !isAtVersionOrLater(context, FeatureScriptVersionNumber.V694_FILL_GUIDE_CURVES_FS))
+        {
+            definition.angleValue = adjustAngle(context, definition.angleValue);
+        }
 
         var value;
 

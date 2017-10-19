@@ -301,6 +301,19 @@ precondition
 export function processDefinitionDifference(context is Context, oldDefinition is map, newDefinition is map) returns map
 {
     var result = {};
+    // First clear out any unchanged entries, so we don't have to eval queries for them
+    for (var newEntry in newDefinition)
+    {
+        if (newEntry.value == oldDefinition[newEntry.key])
+        {
+            oldDefinition[newEntry.key] = undefined;
+            newDefinition[newEntry.key] = undefined;
+        }
+    }
+    // Now evaluate queries
+    newDefinition = evaluateQueries(context, newDefinition);
+    oldDefinition = evaluateQueries(context, oldDefinition);
+    // And finally, compare
     for (var newEntry in newDefinition)
     {
         if (newEntry.value != oldDefinition[newEntry.key])
@@ -312,20 +325,33 @@ export function processDefinitionDifference(context is Context, oldDefinition is
             //We have to distinguish removal from no change, so we use [undefined] to indicate parameter removal
             result[oldEntry.key] = [undefined];
     }
-    for (var entry in result)
+    return result;
+}
+
+function evaluateQueries(context is Context, definition is map) returns map
+{
+    for (var entry in definition)
     {
         if (entry.value is Query)
         {
-            const newEvaluation = evaluateQuery(context, entry.value);
-            const oldQuery = oldDefinition[entry.key];
-            if (oldQuery is Query && evaluateQuery(context, oldQuery) == newEvaluation)
-                result[entry.key] = undefined; // No change
-            else
-                result[entry.key] = qUnion(newEvaluation);
+            definition[entry.key] = qUnion(evaluateQuery(context, entry.value));
+        }
+        else if (entry.value is array)
+        {
+            const arraySize = @size(entry.value);
+            for (var i = 0; i < arraySize; i += 1)
+            {
+                for (var itemEntry in entry.value[i])
+                {
+                    if (itemEntry.value is Query)
+                    {
+                        definition[entry.key][i][itemEntry.key] = qUnion(evaluateQuery(context, itemEntry.value));
+                    }
+                }
+            }
         }
     }
-
-    return result;
+    return definition;
 }
 
 /**

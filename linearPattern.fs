@@ -112,26 +112,26 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Centered"}
         definition.isCentered is boolean;
 
-        annotation { "Name" : "Second direction" }
+        annotation { "Name" : "Second direction", "Column Name" : "Has second direction" }
         definition.hasSecondDir is boolean;
 
         if (definition.hasSecondDir)
         {
-            annotation { "Name" : "Direction",
+            annotation { "Name" : "Direction", "Column Name" : "Second direction",
                          "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
                          "MaxNumberOfPicks" : 1 }
             definition.directionTwo is Query;
 
-            annotation { "Name" : "Distance" }
+            annotation { "Name" : "Distance", "Column Name" : "Second distance" }
             isLength(definition.distanceTwo, PATTERN_OFFSET_BOUND);
 
-            annotation { "Name" : "Instance count" }
+            annotation { "Name" : "Instance count", "Column Name" : "Second instance count" }
             isInteger(definition.instanceCountTwo, SECONDARY_PATTERN_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             definition.oppositeDirectionTwo is boolean;
 
-            annotation { "Name" : "Centered"}
+            annotation { "Name" : "Centered", "Column Name" : "Second centered"}
             definition.isCenteredTwo is boolean;
         }
         if (definition.patternType == PatternType.PART)

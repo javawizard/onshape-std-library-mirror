@@ -261,7 +261,7 @@ export const fCone = defineFeature(function(context is Context, id is Id, defini
  *      @field center {Vector} :
  *              @eg `vector(0, 0, 0) * inch`
  *      @field radius {Vector} : The three radii, as measured along the x, y, and z axes.
- *              @eg `[0.5 * inch, 1 * inch, 2 * inch]`
+ *              @eg `vector(0.5 * inch, 1 * inch, 2 * inch)`
  * }}
  */
 export const fEllipsoid = defineFeature(function(context is Context, id is Id, definition is map)

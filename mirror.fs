@@ -42,7 +42,8 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
         else if (definition.patternType == MirrorType.FACE)
         {
-            annotation { "Name" : "Faces to mirror", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+            annotation { "Name" : "Faces to mirror",
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == MirrorType.FEATURE)

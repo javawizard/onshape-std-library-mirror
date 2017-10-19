@@ -218,7 +218,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.endBound == BoundingType.UP_TO_BODY ||
             definition.endBound == BoundingType.UP_TO_VERTEX)
         {
-            annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+            annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : "DISPLAY_SHORT" }
             definition.hasOffset is boolean;
 
             if (definition.hasOffset)
@@ -226,7 +226,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                 annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
                 isLength(definition.offsetDistance, LENGTH_BOUNDS);
 
-                annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+                annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
                 definition.offsetOppositeDirection is boolean;
             }
         }
@@ -241,7 +241,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                 annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
                 isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
 
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
                 definition.draftPullDirection is boolean;
             }
         }
@@ -253,27 +253,28 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
             if (definition.hasSecondDirection)
             {
-                annotation { "Name" : "End type" }
+                annotation { "Name" : "End type", "Column Name" : "Second end type" }
                 definition.secondDirectionBound is SecondDirectionBoundingType;
 
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                             "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
                 definition.secondDirectionOppositeDirection is boolean;
 
                 if (definition.secondDirectionBound == SecondDirectionBoundingType.BLIND)
                 {
-                    annotation { "Name" : "Depth" }
+                    annotation { "Name" : "Depth", "Column Name" : "Second depth" }
                     isLength(definition.secondDirectionDepth, LENGTH_BOUNDS);
                 }
                 else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE)
                 {
-                    annotation { "Name" : "Up to face",
+                    annotation { "Name" : "Up to face", "Column Name" : "Second up to face",
                         "Filter" : EntityType.FACE && SketchObject.NO,
                         "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityFace is Query;
                 }
                 else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY)
                 {
-                    annotation { "Name" : "Up to surface or part",
+                    annotation { "Name" : "Up to surface or part", "Column Name" : "Second up to surface or part",
                                  "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
                                  "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityBody is Query;
@@ -281,7 +282,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
                 else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
                 {
-                    annotation { "Name" : "Up to vertex or mate connector",
+                    annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
                         "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
                         "MaxNumberOfPicks" : 1 }
                     definition.secondDirectionBoundEntityVertex is Query;
@@ -292,15 +293,15 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                     definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY ||
                     definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX)
                 {
-                    annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                    annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : "DISPLAY_SHORT" }
                     definition.hasSecondDirectionOffset is boolean;
 
                     if (definition.hasSecondDirectionOffset)
                     {
-                        annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                        annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : "DISPLAY_SHORT" }
                         isLength(definition.secondDirectionOffsetDistance, LENGTH_BOUNDS);
 
-                        annotation {"Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+                        annotation {"Name" : "Opposite direction", "Column Name" : "Second offset opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
                         definition.secondDirectionOffsetOppositeDirection is boolean;
                     }
                 }
@@ -309,15 +310,15 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                     ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
                      (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
                 {
-                    annotation { "Name" : "Draft", "UIHint" : "DISPLAY_SHORT" }
+                    annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : "DISPLAY_SHORT" }
                     definition.hasSecondDirectionDraft is boolean;
 
                     if (definition.hasSecondDirectionDraft)
                     {
-                        annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
+                        annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : "DISPLAY_SHORT" }
                         isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
 
-                        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                        annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
                         definition.secondDirectionDraftPullDirection is boolean;
                     }
                 }

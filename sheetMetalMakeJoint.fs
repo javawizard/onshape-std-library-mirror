@@ -207,7 +207,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
             else if (jointType == SMJointType.BEND)
             {
                 var bendRadius = definition.useDefaultRadius? modelParameters.defaultBendRadius : definition.radius;
-                setBendAttribute(context, resultingEdge, toAttributeId(id), bendRadius,  definition.useDefaultRadius);
+                setBendAttribute(context, id, resultingEdge, bendRadius,  definition.useDefaultRadius);
             }
         }
     }
@@ -232,9 +232,14 @@ function setRipAttribute(context is Context, entity is Query, id is string, join
     setAttribute(context, {"entities" : entity, "attribute" : ripAttribute});
 }
 
-function setBendAttribute(context is Context, entity is Query, id is string, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
+function setBendAttribute(context is Context, id is Id, entity is Query, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
 {
-    var bendAttribute = createBendAttribute(context, entity, id, {"bendRadius" : bendRadius});
+    var bendAttribute = createBendAttribute(context, id, entity, toAttributeId(id), bendRadius,
+                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT));
+    if (bendAttribute == undefined)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND, ["entities"]);
+    }
     bendAttribute.jointType = mergeMaps(bendAttribute.jointType, {"controllingFeatureId" : id, "parameterIdInFeature" : "joint"});
     if (!isDefaultRadius)
     {

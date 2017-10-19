@@ -5,19 +5,12 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * The subset of `GeometryType` which applies to 2-dimensional entities
- */
-export enum SurfaceType
+/** @internal See [opExtractSurface]. */
+export enum ExtractSurfaceRedundancyType
 {
-    PLANE,
-    CYLINDER,
-    CONE,
-    SPHERE,
-    TORUS,
-    OTHER,
-    REVOLVED,
-    EXTRUDED
+    ALLOW_REDUNDANCY,
+    REMOVE_ADDED_REDUNDANCY,
+    REMOVE_ALL_REDUNDANCY
 }
 
 
