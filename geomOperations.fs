@@ -1,4 +1,4 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,13 +15,15 @@ FeatureScript 686; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
+import(path : "onshape/std/context.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "686.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "686.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "701.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "701.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "686.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "701.0");
+/* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "701.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -202,15 +204,18 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *              @eg `1 * inch`
  *      @field tangentPropagation {boolean} : @optional
  *              `true` to propagate the fillet along edges tangent to those passed in. Default is `false`.
- *      @field crossSection {FilletCrossSection} : Fillet cross section. One of `CIRCULAR`, `CONIC`, `CURVATURE`.
+ *      @field crossSection {FilletCrossSection} : @optional
+               Fillet cross section. One of `CIRCULAR`, `CONIC`, `CURVATURE`. Default is `CIRCULAR`.
  *      @field rho {number} : @requiredif {`crossSection` is `CONIC`.}
  *              A number between 0 and 1, specifying the Rho value of a conic fillet
  *              @ex `0.01` creates a flat, nearly-chamfered shape.
  *              @ex `0.99` creates a pointed, nearly-unchanged shape.
  *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
  *              A number between 0 and 1, specifying the magnitude of curvature match.
- *      @field isVariable {boolean} : Fillet controls can be varied at vertices via `vertexSettings`.
- *      @field vertexSettings {array} : Array of fillet settings at specified vertices.
+ *      @field isVariable {boolean} : @optional Fillet controls can be varied at vertices via `vertexSettings`. Default is `false`.
+ *      @field vertexSettings {array} : @optional Array of fillet settings at specified vertices.
+        @field createDetachedSurface {boolean} : @optional
+               Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
  * }}
  */
 export function opFillet(context is Context, id is Id, definition is map)
@@ -640,7 +645,11 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
  *    @field offset {ValueWithUnits} : Offset extracted surface faces by this distance along normal @optional
  *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset. Default `true`. @optional
- *    @field removeRedundant {boolean} : Removes all redundant edges from result if true. Default is `false`. @optional
+ *    @field redundancyType {ExtractSurfaceRedundancyType} : @optional
+ *              Controls the culling of redundant geometry on the result body, such as tangent edges and vertices.
+ *              `ALLOW_REDUNDANCY` does not delete any redundant geometry. `REMOVE_ADDED_REDUNDANCY` removes redundancy
+ *              created by this operation.  `REMOVE_ALL_REDUNDANCY` removes all redundant edges and vertices.
+ *              `REMOVE_ADDED_REDUNDANCY` is the default.
  * }}
  */
 export function opExtractSurface(context is Context, id is Id, definition is map)

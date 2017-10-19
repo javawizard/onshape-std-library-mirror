@@ -1,14 +1,14 @@
-FeatureScript 686; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/coordSystem.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
-import(path : "onshape/std/evaluate.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/manipulator.fs", version : "686.0");
-import(path : "onshape/std/math.fs", version : "686.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
-import(path : "onshape/std/valueBounds.fs", version : "686.0");
-import(path : "onshape/std/vector.fs", version : "686.0");
+FeatureScript 701; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/coordSystem.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+import(path : "onshape/std/evaluate.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/manipulator.fs", version : "701.0");
+import(path : "onshape/std/math.fs", version : "701.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/vector.fs", version : "701.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -57,7 +57,7 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         definition.match1 is BridgingCurveMatchType;
         annotation { "Name" : "Second side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
-        annotation { "Name" : "Match", "Default" : BridgingCurveMatchType.TANGENCY }
+        annotation { "Name" : "Match", "Column Name" : "Second match", "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
         if (definition.match1 == BridgingCurveMatchType.TANGENCY || definition.match2 == BridgingCurveMatchType.TANGENCY)
         {

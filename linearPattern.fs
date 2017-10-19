@@ -1,16 +1,16 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "686.0");
-export import(path : "onshape/std/tool.fs", version : "686.0");
-export import(path : "onshape/std/patternUtils.fs", version : "686.0");
+export import(path : "onshape/std/query.fs", version : "701.0");
+export import(path : "onshape/std/tool.fs", version : "701.0");
+export import(path : "onshape/std/patternUtils.fs", version : "701.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
+import(path : "onshape/std/mathUtils.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -112,26 +112,26 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Centered"}
         definition.isCentered is boolean;
 
-        annotation { "Name" : "Second direction" }
+        annotation { "Name" : "Second direction", "Column Name" : "Has second direction" }
         definition.hasSecondDir is boolean;
 
         if (definition.hasSecondDir)
         {
-            annotation { "Name" : "Direction",
+            annotation { "Name" : "Direction", "Column Name" : "Second direction",
                          "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
                          "MaxNumberOfPicks" : 1 }
             definition.directionTwo is Query;
 
-            annotation { "Name" : "Distance" }
+            annotation { "Name" : "Distance", "Column Name" : "Second distance" }
             isLength(definition.distanceTwo, PATTERN_OFFSET_BOUND);
 
-            annotation { "Name" : "Instance count" }
+            annotation { "Name" : "Instance count", "Column Name" : "Second instance count" }
             isInteger(definition.instanceCountTwo, SECONDARY_PATTERN_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
             definition.oppositeDirectionTwo is boolean;
 
-            annotation { "Name" : "Centered"}
+            annotation { "Name" : "Centered", "Column Name" : "Second centered"}
             definition.isCenteredTwo is boolean;
         }
         if (definition.patternType == PatternType.PART)

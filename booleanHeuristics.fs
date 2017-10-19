@@ -1,23 +1,23 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "686.0");
-export import(path : "onshape/std/query.fs", version : "686.0");
-export import(path : "onshape/std/tool.fs", version : "686.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "701.0");
+export import(path : "onshape/std/query.fs", version : "701.0");
+export import(path : "onshape/std/tool.fs", version : "701.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "686.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/evaluate.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/primitives.fs", version : "686.0");
-import(path : "onshape/std/transform.fs", version : "686.0");
-import(path : "onshape/std/valueBounds.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
+import(path : "onshape/std/box.fs", version : "701.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/evaluate.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/primitives.fs", version : "701.0");
+import(path : "onshape/std/transform.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "701.0");
 
 
 /** @internal */
@@ -101,6 +101,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
     if (size(collisions) > 0)
     {
         const collisionClasses = classifyCollisions(context, collisions);
+        var tools = [];
         var target = undefined;
         for (var entry in collisionClasses)
         {
@@ -120,6 +121,7 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
                 }
                 else
                 {
+                    tools = append(tools, entry.key);
                     target = collisions[0];
                 }
             }
@@ -127,13 +129,18 @@ function autoSelectionForBooleanStep(context is Context, toolFeatureId is Id, fe
         // classifyCollisions filters out abutting along edge, so we might come empty here
         if (target != undefined)
         {
-            if (queryContainsActiveSheetMetal(context, target))
+            if (!queryContainsActiveSheetMetal(context, target))
             {
-                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
+                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+            }
+            else if (queryContainsActiveSheetMetal(context, qUnion(tools)))
+            {
+                // Sheet metal cannot be the tool of a boolean step subtract. Use NEW.
+                return setOperationType(featureDefinition, NewBodyOperationType.NEW, []);
             }
             else
             {
-                return setOperationType(featureDefinition, NewBodyOperationType.ADD, [target]);
+                return setOperationType(featureDefinition, NewBodyOperationType.REMOVE, [target]);
             }
         }
     }

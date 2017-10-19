@@ -1,4 +1,4 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 686; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "686.0");
-import(path : "onshape/std/coordSystem.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
-import(path : "onshape/std/mathUtils.fs", version : "686.0");
-import(path : "onshape/std/string.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "686.0");
+import(path : "onshape/std/context.fs", version : "701.0");
+import(path : "onshape/std/coordSystem.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+import(path : "onshape/std/mathUtils.fs", version : "701.0");
+import(path : "onshape/std/string.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "701.0");
 
 //===================================== Plane ======================================
 
@@ -322,7 +322,7 @@ export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
 {
     const point1 = project(plane1, vector(0, 0, 0) * meter);
     const point2 = project(plane2, vector(0, 0, 0) * meter);
-    return tolerantEquals(point1, point2);
+    return tolerantEquals(point1, point2) && abs(dot(plane1.normal, plane2.normal)) > 1 - TOLERANCE.zeroAngle;
 }
 
 // ===================================== Cone ======================================

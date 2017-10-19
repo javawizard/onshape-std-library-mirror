@@ -1,28 +1,28 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "686.0");
-import(path : "onshape/std/boolean.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
-import(path : "onshape/std/extrude.fs", version : "686.0");
-import(path : "onshape/std/evaluate.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/math.fs", version : "686.0");
-import(path : "onshape/std/matrix.fs", version : "686.0");
-import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/sketch.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "686.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
-import(path : "onshape/std/topologyUtils.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
-import(path : "onshape/std/valueBounds.fs", version : "686.0");
-import(path : "onshape/std/vector.fs", version : "686.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "686.0");
+import(path : "onshape/std/attributes.fs", version : "701.0");
+import(path : "onshape/std/boolean.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+import(path : "onshape/std/extrude.fs", version : "701.0");
+import(path : "onshape/std/evaluate.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/math.fs", version : "701.0");
+import(path : "onshape/std/matrix.fs", version : "701.0");
+import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/sketch.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "701.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "701.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
+import(path : "onshape/std/topologyUtils.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/vector.fs", version : "701.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "701.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -390,6 +390,8 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     // Sketch each flange and add it to the underlying sheet body
     var surfaceBodies = [];
     var originalEntities = [];
+    var trackingBendEdges = [];
+    var setBendAttributesAfterBoolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     for (var edge in evaluateQuery(context,edges))
     {
         var ownerBody = qOwnerBody(edge);
@@ -404,8 +406,15 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
 
         var bendEdge = createFlangeSurfaceReturnBendEdge(context, topLevelId, indexedId, edge, edgeToFlangeData[edge],
                 edgeToSideAndBase[edge], edgeToFlangeDistance[edge], definition);
-        addBendAttribute(context, bendEdge, edgeToFlangeData[edge], topLevelId, objectCounter, definition);
-        objectCounter += 1;
+        if (setBendAttributesAfterBoolean)
+        {
+            trackingBendEdges = append(trackingBendEdges, qUnion([bendEdge, startTracking(context, bendEdge)]));
+        }
+        else
+        {
+            addBendAttribute(context, bendEdge, edgeToFlangeData[edge], topLevelId, objectCounter, definition);
+            objectCounter += 1;
+        }
         //add wall attributes to faces
         for (var face in evaluateQuery(context, qCreatedBy(surfaceId, EntityType.FACE)))
         {
@@ -466,15 +475,29 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
         }
     }
 
+    for (var bendEdge in trackingBendEdges)
+    {
+        var bendAttribute = createBendAttribute(context, topLevelId, bendEdge,
+                                                toAttributeId(topLevelId + objectCounter), definition.bendRadius, false);
+        if (bendAttribute != undefined)
+        {
+            setAttribute(context, {"entities" : bendEdge, "attribute" : bendAttribute});
+            objectCounter += 1;
+        }
+    }
+
     //add rips to new interior edges
     for (var entity in evaluateQuery(context, qOwnedByBody(allSurfaces, EntityType.EDGE)))
     {
         var attributes = getAttributes(context, {"entities" : entity, "attributePattern" : asSMAttribute({})});
-        if (size(attributes) == 0 && edgeIsTwoSided(context, entity))
+        if (size(attributes) == 0)
         {
-            setAttribute(context, {"entities" : entity,
-                "attribute" : createRipAttribute(context, entity, toAttributeId(topLevelId + objectCounter), SMJointStyle.EDGE, undefined)});
-            objectCounter += 1;
+            var jointAttribute = makeNewJointAttributeIfNeeded(context, entity,  toAttributeId(topLevelId + objectCounter));
+            if (jointAttribute != undefined)
+            {
+                setAttribute(context, {"entities" : entity, "attribute" : jointAttribute});
+                objectCounter += 1;
+            }
         }
     }
 
@@ -783,13 +806,12 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     var vertexToUse = vertex;
     var vertexEdges = qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge);
     var vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
-    if (size(vertexEdgesArray) == 1)
+    if (size(vertexEdgesArray) == 1 && edgeToFlangeData[vertexEdgesArray[0]] != undefined)
     {
-        var flangeDataForNeighbor = edgeToFlangeData[vertexEdgesArray[0]];
-        if (flangeDataForNeighbor != undefined && flangeDataForNeighbor.adjFace == edgeToFlangeData[edge].adjFace)
-        {
-            return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertexToUse}) };
-        }
+        // There is only one non-smooth edge besides `edge` extending from `vertex`.  This edge is also part of this
+        // flange operation, so it must be laminar and linear.  Due to these constraints, the edge must lie on the
+        // same face as `edge`, and therefore qualifies as `edgeX`
+        return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertexToUse}) };
     }
 
     vertexEdges = qUnion(vertexEdgesArray);
@@ -804,12 +826,13 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     // e.g. if the edgeY is a bendEdge of a flange with angled miter.
     var edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
 
+    var failIfNotLines = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     var lineX;
     if (size(evaluateQuery(context, edgeY)) != 0)
     {
         //if edgeY is collinear with edgeX,look for next edge on sideFace
-        var line1 = evLine(context, {"edge" : edgeX});
-        var line2 = evLine(context, {"edge" : edgeY});
+        var line1 = (failIfNotLines) ? evLine(context, {"edge" : edgeX}) : try silent(evLine(context, {"edge" : edgeX}));
+        var line2 = (failIfNotLines) ? evLine(context, {"edge" : edgeY}) : try silent(evLine(context, {"edge" : edgeY}));
         lineX = line1;
         if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V649_FLANGE_LOOSEN_EDGE_Y)))
         {
@@ -1065,8 +1088,8 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     }
     else
     {
-        sidePlane = evPlane(context, {"face" : sideFace});
-        adjPlane = evPlane(context, {"face" : flangeData.adjacentFace});
+        sidePlane = getFacePlane(context, sideFace, sideEdge);
+        adjPlane = getFacePlane(context, flangeData.adjacentFace, edge);
         if ( dot(sidePlane.normal, edgeEndDirection) > 0)
         {
             clearanceFromSide += definition.frontThickness;
@@ -1315,7 +1338,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
     }
     const adjacentFace = adjacentFaces[0];
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
-    const sidePlane = evPlane(context, {"face" : adjacentFace});
+    const sidePlane = getFacePlane(context, adjacentFace, edge);
     var sketchPlane = createSketchPlane(context, topLevelId, edge, edgeEndPoints[0], sidePlane.normal, definition);
     var direction = cross(edgeEndPoints[0].direction, sketchPlane.normal);
     var bendAngle = angleBetween(sketchPlane.normal, sidePlane.normal);
@@ -1745,8 +1768,11 @@ const calculateMatchedExtensionDistance = function(context is Context, currEdge 
         // after the extension is applied
 
         var parentFlangeData = args.edgeToFlangeData[parentEdge];
+        var samePlane = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT)) ?
+                        coplanarPlanes(parentFlangeData.wallPlane, currFlangeData.wallPlane) :
+                        tolerantEquals(parentFlangeData.wallPlane, currFlangeData.wallPlane);
 
-        if (tolerantEquals(parentFlangeData.wallPlane, currFlangeData.wallPlane))
+        if (samePlane)
         {
             // Parent edge and current edge belong to the same wall.  Any extension will align.
             extensionLength = getSimpleExtensionDistance(args.definition, currFlangeData);
@@ -1877,5 +1903,20 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
     }
 
     return edgeToData;
+}
+
+function getFacePlane(context is Context, face is Query, edge is Query) returns Plane
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
+    {
+        return evFaceTangentPlaneAtEdge(context, {
+                                "face" : face,
+                                "edge" : edge,
+                                "parameter" : 0.5 });
+    }
+    else
+    {
+        return evPlane(context, {"face" : face});
+    }
 }
 

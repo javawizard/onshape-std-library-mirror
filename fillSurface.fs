@@ -1,18 +1,49 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/tool.fs", version : "686.0");
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "686.0");
+export import(path : "onshape/std/tool.fs", version : "701.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "701.0");
 
-import(path : "onshape/std/boolean.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/topologyUtils.fs", version : "686.0");
-import(path : "onshape/std/transform.fs", version : "686.0");
+import(path : "onshape/std/boolean.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/topologyUtils.fs", version : "701.0");
+import(path : "onshape/std/transform.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
 
+/**
+ * @internal
+ * Whether we're using the guides as precise constraints or sampling them
+ */
+export enum FillConstraintMode
+{
+    annotation { "Name" : "Precise" }
+    PRECISE,
+    annotation { "Name" : "Sampled" }
+    SAMPLED
+}
+
+/**
+ * @internal
+ * The bounds for density of isocurves.
+ */
+export const CURVE_BOUNDS =
+{
+    (unitless) : [1, 10, 50]
+} as IntegerBoundSpec;
+
+/**
+ * @internal
+ * The bounds for number of samples used in constraint sampling.
+ */
+export const SAMPLE_BOUNDS =
+{
+    (unitless) : [1, 5, 50]
+} as IntegerBoundSpec;
 
 /**
  * Creates a surface bounded by input edges with prescribed continuity conditions, using [opFillSurface].
@@ -41,19 +72,43 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
             edge.continuity is GeometricContinuity;
         }
 
-        annotation { "Name" : "Guide vertices",
-                     "Filter" : EntityType.VERTEX}
-        definition.guideVertices is Query;
+        annotation {"Name" : "Guides"}
+        definition.addGuides is boolean;
+
+        if (definition.addGuides)
+        {
+            annotation { "Name" : "Vertices or curves",
+                     "Filter" : EntityType.VERTEX ||  EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)}
+            definition.guideEntities is Query;
+
+            annotation {"Name" : "Mode"}
+            definition.constraintMode is FillConstraintMode;
+
+            if (definition.constraintMode == FillConstraintMode.SAMPLED)
+            {
+                annotation {"Name" : "Sample size" }
+                isInteger(definition.sampleSize, SAMPLE_BOUNDS);
+            }
+        }
 
         annotation {"Name" : "Show iso curves"}
         definition.showIsocurves is boolean;
+
+        if (definition.showIsocurves)
+        {
+            annotation {"Name" : "Count" }
+            isInteger(definition.curveCount, CURVE_BOUNDS);
+        }
 
         surfaceJoinStepScopePredicate(definition);
     }
     {
         if (size(definition.edges) == 0)
             throw regenError(ErrorStringEnum.FILL_SURFACE_NO_EDGES, ["edges"]);
+        if (!definition.addGuides)
+            definition.guideEntities = qNothing();
 
+        definition.useSampling = (definition.constraintMode == FillConstraintMode.SAMPLED);
         definition = updateEdgeSelections(context, definition);
 
         var remainingTransform = getRemainderPatternTransform(context,
@@ -83,7 +138,8 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
             }
 
         }
-    }, { showIsocurves : false, preselectedEntities : qNothing(), defaultSurfaceScope : true });
+    }, { showIsocurves : false, preselectedEntities : qNothing(), defaultSurfaceScope : true, useSampling : false,
+        addGuides : false, constraintMode : FillConstraintMode.PRECISE, curveCount : 10, sampleSize : 5});
 
 function updateEdgeSelections(context is Context, definition is map) returns map
 {

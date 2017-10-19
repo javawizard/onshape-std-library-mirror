@@ -1,4 +1,4 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1117,7 +1117,7 @@ export enum ErrorStringEnum
     DRAWING_PARTSTUDIO_INVALID_SECTION_CUT,
     /* Sheet metal model cannot be unfolded. */
     SHEET_METAL_COULD_NOT_UNFOLD,
-    /* Error regenerating. */
+    /* Error regenerating: a parameter is out of range. */
     PARAMETER_OUT_OF_RANGE,
     /* Edge between tangent walls can not be a bend. */
     SHEET_METAL_NO_0_ANGLE_BEND,
@@ -1529,7 +1529,23 @@ export enum ErrorStringEnum
     /* This operation creates intersecting edges. */
     INTERSECTING_EDGES,
     /* This operation would split the face. */
-    CANNOT_SPLIT_FACE
+    CANNOT_SPLIT_FACE,
+    /* Guide entities cannot be used as selected. */
+    FILL_SURFACE_BAD_SUPPORT,
+    /* Guide entities should touch the boundary. */
+    FILL_SURFACE_SUPPORT_NOT_ON_BOUNDARY,
+    /* All intersecting guides need to meet smoothly and guides intersecting the boundary must match the selected boundary condition. */
+    FILL_SURFACE_SUPPORT_NOT_SMOOTH,
+    /* Guide curves and vertices cannot be used in combination in Precise mode. Vertex selections are not used. */
+    FILL_CURVE_OR_POINT_CONSTRAINTS,
+    /* Sheet metal cannot be added to non-sheet metal or other sheet metal models. Sheet metal can only be added to the same sheet metal model. */
+    SHEET_METAL_ADD_WRONG_MODEL,
+    /* Cannot remove or intersect patterned sheet metal bodies. */
+    SHEET_METAL_PATTERN_DISABLED_BOOLEANS,
+    /* All instances have been hidden. */
+    DRAWING_ALL_INSTANCES_HIDDEN,
+    /* All tangents at highlighted vertices should be coplanar. */
+    FILL_SUPPORT_NOT_SMOOTH_INTERNAL
 }
 
 

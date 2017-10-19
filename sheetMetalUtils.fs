@@ -1,29 +1,29 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "686.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "686.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/coordSystem.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
-import(path : "onshape/std/evaluate.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/math.fs", version : "686.0");
-import(path : "onshape/std/manipulator.fs", version : "686.0");
-import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/sketch.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "686.0");
-import(path : "onshape/std/string.fs", version : "686.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
-import(path : "onshape/std/tool.fs", version : "686.0");
-import(path : "onshape/std/valueBounds.fs", version : "686.0");
-import(path : "onshape/std/vector.fs", version : "686.0");
-import(path : "onshape/std/topologyUtils.fs", version : "686.0");
-import(path : "onshape/std/transform.fs", version : "686.0");
+import(path : "onshape/std/attributes.fs", version : "701.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "701.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/coordSystem.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+import(path : "onshape/std/evaluate.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/math.fs", version : "701.0");
+import(path : "onshape/std/manipulator.fs", version : "701.0");
+import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/sketch.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "701.0");
+import(path : "onshape/std/string.fs", version : "701.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
+import(path : "onshape/std/tool.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/vector.fs", version : "701.0");
+import(path : "onshape/std/topologyUtils.fs", version : "701.0");
+import(path : "onshape/std/transform.fs", version : "701.0");
 
 
 
@@ -66,9 +66,9 @@ export enum SMThicknessDirection
 * Assign SMAttributes to topology of sheet metal definition sheet body
 * @param args {{
 *       @field surfaceBodies{Query}
-*       @field bendEdges{Query}
+*       @field bendEdgesAndFaces{Query}
 *       @field specialRadiiBends{array} : array of pairs "(edge, bendRadius)"
-*       @field defaultRadius{ValueWithUnits} : bend radius to be applied to bendEdges
+*       @field defaultRadius{ValueWithUnits} : bend radius to be applied to edges in bendEdgesAndFaces
 *       @field controlsThickness{boolean}
 *       @field thickness{ValueWithUnits}
 *       @field defaultCornerReliefScale{number}
@@ -163,6 +163,33 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
     {
         modelAttribute.defaultBendReliefStyle = args.defaultBendReliefStyle;
     }
+    if (args.kFactorRolled != undefined)
+    {
+           modelAttribute.kFactorRolled = { "value" : args.kFactorRolled,
+                "canBeEdited" : true,
+                "controllingFeatureId" : featureIdString,
+                "parameterIdInFeature" : "kFactorRolled"
+                };
+    }
+
+    for (var body in surfaceBodies)
+    {
+        setAttribute(context, {
+                "entities" : body,
+                "attribute" : modelAttribute
+        });
+    }
+
+    // bend entity to either true ( use default radius in case of edge, figure it out from geometry in case of face) or radius value
+    var bendMap = {};
+    for (var entity in evaluateQuery(context, args.bendEdgesAndFaces))
+    {
+        bendMap[entity] = true;
+    }
+    for (var edgeAndRadius in args.specialRadiiBends)
+    {
+        bendMap[edgeAndRadius[0]] = edgeAndRadius[1];
+    }
 
     var facesQ =  qOwnedByBody(args.surfaceBodies, EntityType.FACE);
     var count = objectCount;
@@ -171,7 +198,9 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         var surface = evSurfaceDefinition(context, {
                 "face" : face
         });
-        if (surface is Plane)
+        if (surface is Plane ||
+            surface.surfaceType == SurfaceType.EXTRUDED ||
+            (surface is Cylinder && bendMap[face] != true))
         {
             setAttribute(context, {
                     "entities" : face,
@@ -183,8 +212,13 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         {
             var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
             bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+            const angleVal = cylinderAngle(context, face);
+            bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
 
-            var bendRadius = surface.radius - args.thickness;
+            const tanPlane = evFaceTangentPlane(context, { "face" : face, "parameter" : vector(0.5, 0.5)});
+            const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
+            var thicknessData = (convex) ? modelAttribute.backThickness : modelAttribute.frontThickness;
+            var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData.value;
             bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
             setAttribute(context, {
                     "entities" : face,
@@ -194,18 +228,10 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         }
         else
         {
-            regenError("Only planar walls are supported");
+            regenError("Surface not supported " ~ toString(surface));
         }
     }
-    var bendMap = {};
-    for (var edge in evaluateQuery(context, args.bendEdges))
-    {
-        bendMap[edge] = true;
-    }
-    for (var edgeAndRadius in args.specialRadiiBends)
-    {
-        bendMap[edgeAndRadius[0]] = edgeAndRadius[1];
-    }
+
     var edgesQ = qOwnedByBody(args.surfaceBodies, EntityType.EDGE);
     for (var edge in evaluateQuery(context, edgesQ))
     {
@@ -219,24 +245,19 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             continue;
         }
         var bendRadius = bendMap[edge];
-        var angleVal = try(edgeAngle(context, edge));
-        var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
         if (bendRadius != undefined)
         {
-            if (zeroAngle)
+            if (bendRadius == true)
+            {
+                bendRadius = args.defaultRadius;
+            }
+            var bendAttribute = createBendAttribute(context, id, edge, toAttributeId(id + count), bendRadius, false);
+            if (bendAttribute == undefined)
             {
                 setErrorEntities(context, id, {"entities" : edge});
                 reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND);
                 return 0;
             }
-            var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
-            bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
-            if (bendRadius == true)
-            {
-                bendRadius = args.defaultRadius;
-            }
-            bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : true, "isDefault" : true};
-            bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
             setAttribute(context, {
                     "entities" : edge,
                     "attribute" : bendAttribute
@@ -245,6 +266,12 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         }
         else
         {
+            var angleVal = try silent(edgeAngle(context, edge));
+            var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
+            if (zeroAngle && !treatTangentEdgeAsRip(context, faces[0], faces[1]))
+            {
+                continue;
+            }
             var ripAttribute = makeSMJointAttribute(toAttributeId(id + count));
             ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
             if (angleVal != undefined)
@@ -262,73 +289,215 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         }
         count += 1;
     }
-    for (var body in surfaceBodies)
-    {
-        setAttribute(context, {
-                "entities" : body,
-                "attribute" : modelAttribute
-        });
-    }
+
     var verticesQ = qOwnedByBody(args.surfaceBodies, EntityType.VERTEX);
     assignSmAssociationAttributes(context, qUnion([args.surfaceBodies, facesQ, edgesQ, verticesQ]));
     return count;
 }
 
+// Redundant edge between planes should be treated as a rip.
+function treatTangentEdgeAsRip(context, face0 is Query, face1 is Query) returns boolean
+{
+    var surface0 = evSurfaceDefinition(context, {
+                "face" : face0
+        });
+    var surface1 = evSurfaceDefinition(context, {
+                "face" : face1
+        });
+    if (surface0 is Plane && surface1 is Plane)
+    {
+        return true;
+    }
+    return false;
+}
+
 /**
- * For an edge between two planes computes angle between plane normals.
+ * Compute angle between face normals at edge mid point.
  */
 export function edgeAngle(context is Context, edge is Query) returns ValueWithUnits
 {
     var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(faces) != 2)
     {
-        throw "Expects 2-sided faces";
+        throw "Expects 2-sided edge";
     }
-    var plane0 = evPlane(context, {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V684_SM_SWEPT_SUPPORT))
+    {
+        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : 0.5 });
+        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : 0.5 });
+        return angleBetween(normal0, normal1);
+    }
+    else
+    {
+        var plane0 = evPlane(context, {
             "face" : faces[0]
-    });
-    var plane1 = evPlane(context, {
+        });
+        var plane1 = evPlane(context, {
             "face" : faces[1]
+        });
+        return angleBetween(plane0.normal, plane1.normal);
+    }
+}
+
+function bendAngle(context is Context, id is Id, edge is Query, bendRadius is ValueWithUnits) returns ValueWithUnits
+{
+    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    if (size(faces) != 2)
+    {
+        throw "Expects 2-sided edge";
+    }
+    const plane0 = try silent(evPlane(context, {"face" : faces[0]}));
+    const plane1 = try silent(evPlane(context, {"face" : faces[1]}));
+
+    if (plane0 != undefined && plane1 != undefined)
+        return angleBetween(plane0.normal, plane1.normal);
+    else
+    {
+       const modelParams = getModelParameters(context, qOwnerBody(edge));
+       var thickness = 0;
+       var convexity = evEdgeConvexity(context, {"edge" : edge});
+       if (convexity == EdgeConvexityType.CONVEX)
+          thickness = modelParams.backThickness;
+       else if (convexity == EdgeConvexityType.CONCAVE)
+          thickness = modelParams.frontThickness;
+       return computeFilletAngle(context, id, edge, bendRadius + thickness);
+    }
+}
+
+function computeFilletAngle(context is Context, id is Id, edge is Query, radius) returns ValueWithUnits
+{
+    var tempFilletId = id + "tempFillet";
+    startFeature(context, tempFilletId);
+    var angle;
+    try
+    {
+        opFillet(context, tempFilletId, {
+                "entities" : edge,
+                "radius" : radius,
+                "createDetachedSurface" : true
+        });
+
+        var filletFaces = qCreatedBy(tempFilletId, EntityType.FACE);
+        angle = cylinderAngle(context, filletFaces);
+    } catch (error)
+    {
+       // making sure the operation is rolled back
+        abortFeature(context, tempFilletId);
+        throw error;
+    }
+    abortFeature(context, tempFilletId);
+    return angle;
+}
+
+function cylinderAngle(context, face is Query) returns ValueWithUnits
+{
+    const plane0 = evFaceTangentPlane(context, {
+            "face" : qNthElement(face, 0),
+            "parameter" : vector(0., 0.5)
     });
-    return angleBetween(plane0.normal, plane1.normal);
+
+    const plane1 = evFaceTangentPlane(context, {
+            "face" : qNthElement(face, 0),
+            "parameter" : vector(0.5, 0.5)
+    });
+
+    return 2 * angleBetween(plane0.normal, plane1.normal);
 }
 
 /**
  * @internal
+ * id is required for bendAngle() to create temporary fillet if needed
  */
-export function updateJointAngle(context is Context, edges is Query)
+export function updateJointAngle(context is Context, id is Id, edges is Query)
 {
+    var moreFlexibleUpdate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     for (var edge in evaluateQuery(context, edges))
     {
         const jointAttribute = try silent(getJointAttribute(context, edge));
-        if (jointAttribute == undefined || jointAttribute.angle == undefined)
+        if (jointAttribute == undefined)
         {
             continue;
         }
+        var replacementAttribute = (moreFlexibleUpdate) ? computeReplacementAttribute(context, id, edge, jointAttribute) :
+                                                legacyComputeReplacementAttribute(context, edge, jointAttribute);
 
-        var angleVal = try silent(edgeAngle(context, edge));
-        if (angleVal == undefined || tolerantEquals(angleVal, jointAttribute.angle.value))
+        if (replacementAttribute == undefined)
         {
             continue;
         }
-
-        var replacementAttribute = jointAttribute;
-
-        if (abs(angleVal) < TOLERANCE.zeroAngle * radian)
-        {
-            replacementAttribute.jointStyle = undefined;
-            replacementAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited" : false };
-        }
-        else if (replacementAttribute.jointType != undefined && replacementAttribute.jointType.value == SMJointType.RIP)
-        {
-            replacementAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited" : true };
-            replacementAttribute.jointType.canBeEdited = true;
-        }
-
-        replacementAttribute.angle = { "value" : angleVal, "canBeEdited" : jointAttribute.angle.canBeEdited };
         replaceSMAttribute(context, jointAttribute, replacementAttribute);
     }
 }
+
+function computeReplacementAttribute(context is Context, id is Id, edge is Query, jointAttribute is map)
+{
+    if (!edgeIsTwoSided(context, edge)) // can not continue as joint
+    {
+        clearSmAttributes(context, edge);
+        return undefined;
+    }
+
+    var angleVal = try silent(edgeAngle(context, edge));
+    if (jointAttribute.jointType.value == SMJointType.BEND &&
+        jointAttribute.bendRadius != undefined)
+    {
+       angleVal = try silent(bendAngle(context, id, edge, jointAttribute.bendRadius.value));
+    }
+
+    if ((angleVal == undefined && jointAttribute.angle == undefined) ||
+         try silent(tolerantEquals(angleVal, jointAttribute.angle.value)) == true) // nothing changed
+    {
+        return undefined;
+    }
+
+    var replacementAttribute = jointAttribute;
+
+    if (angleVal == undefined || abs(angleVal) < TOLERANCE.zeroAngle * radian)
+    {
+        replacementAttribute.jointStyle = undefined;
+        replacementAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited" : false };
+    }
+    else if (replacementAttribute.jointType != undefined && replacementAttribute.jointType.value == SMJointType.RIP)
+    {
+        replacementAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited" : true };
+        replacementAttribute.jointStyle.canBeEdited = true;
+    }
+
+    replacementAttribute.angle = { "value" : angleVal, "canBeEdited" :
+                            jointAttribute.angle != undefined && jointAttribute.angle.canBeEdited };
+    return replacementAttribute;
+}
+
+function legacyComputeReplacementAttribute(context is Context, edge is Query, jointAttribute is map)
+{
+    if (jointAttribute.angle == undefined)
+    {
+        return undefined;
+    }
+
+    var angleVal = try silent(edgeAngle(context, edge));
+    if (angleVal == undefined || tolerantEquals(angleVal, jointAttribute.angle.value))
+    {
+        return undefined;
+    }
+
+    var replacementAttribute = jointAttribute;
+
+    if (abs(angleVal) < TOLERANCE.zeroAngle * radian)
+    {
+        replacementAttribute.jointStyle = undefined;
+        replacementAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited" : false };
+    }
+    else if (replacementAttribute.jointType != undefined && replacementAttribute.jointType.value == SMJointType.RIP)
+    {
+        replacementAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited" : true };
+        replacementAttribute.jointType.canBeEdited = true;
+    }
+
+    replacementAttribute.angle = { "value" : angleVal, "canBeEdited" : jointAttribute.angle.canBeEdited };
+    return replacementAttribute;
+}
+
 
 /**
  * A `RealBoundSpec` for sheet metal K-factor between 0. and 1., defaulting to `.45`.
@@ -338,6 +507,13 @@ export const K_FACTOR_BOUNDS =
     (unitless) : [0, 0.45, 1]
 } as RealBoundSpec;
 
+/**
+ * A `RealBoundSpec` for rolled sheet metal K-factor between 0. and 1., defaulting to `.5`.
+ */
+export const ROLLED_K_FACTOR_BOUNDS =
+{
+    (unitless) : [0, 0.5, 1]
+} as RealBoundSpec;
 
 /**
  * A `LengthBoundSpec` for minimal clearance of sheet  metal rips
@@ -464,6 +640,15 @@ export function getActiveSheetMetalId(context is Context, query is Query)
 export function queryContainsActiveSheetMetal(context is Context, query is Query) returns boolean
 {
     return getActiveSheetMetalId(context, query) != undefined;
+}
+
+/**
+ * @internal
+ */
+export function queryContainsNonSheetMetal(context is Context, query is Query) returns boolean
+{
+    var nonSheetMetal = separateSheetMetalQueries(context, query).nonSheetMetalQueries;
+    return size(evaluateQuery(context, nonSheetMetal)) > 0;
 }
 
 /**
@@ -610,7 +795,10 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
     return { "modifiedEntities" : entitiesToAddAssociationsQ, "deletedAttributes" : deletedAttributes};
 }
 
-function isEntityAppropriateForAttribute(context is Context, entity is Query, attribute is SMAttribute) returns boolean
+/**
+ * @internal
+ */
+export function isEntityAppropriateForAttribute(context is Context, entity is Query, attribute is SMAttribute) returns boolean
 {
     var filteredQ;
     if (attribute.objectType == SMObjectType.MODEL)
@@ -801,6 +989,35 @@ export function clearSheetMetalData(context, id) returns Query
 /**
  * @internal
  */
+export function makeNewJointAttributeIfNeeded(context is Context, edge is Query, attributeId is string)
+{
+    var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    if (size(faces) != 2)
+    {
+        return undefined;
+    }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
+    {
+        //2-sided edge without attribute might be an edge of cylindrical bend or a tangent joint
+        if (size(getSmObjectTypeAttributes(context, qUnion(faces), SMObjectType.WALL)) != 2)
+        {
+            return undefined;
+        }
+        var angleVal = try silent(edgeAngle(context, edge));
+        var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
+        if (zeroAngle && !treatTangentEdgeAsRip(context, faces[0], faces[1]))
+        {
+            return undefined;
+        }
+    }
+    //default to RIP
+    return createRipAttribute(context, edge, attributeId, SMJointStyle.EDGE, undefined);
+}
+
+/**
+ * @internal
+ */
 export function createRipAttribute(context is Context, entity is Query, ripId is string, ripStyle is SMJointStyle, jointAttributes)
 {
     var ripAttribute = makeSMJointAttribute(ripId);
@@ -812,7 +1029,7 @@ export function createRipAttribute(context is Context, entity is Query, ripId is
         ripAttribute.angle = {"value" : angle, "canBeEdited" : false};
     }
     // If the angle is zero then this rip should not have a style
-    if (abs(angle) >= TOLERANCE.zeroAngle * radian) {
+    if (angle != undefined && abs(angle) >= TOLERANCE.zeroAngle * radian) {
         ripAttribute.jointStyle = { "value" : ripStyle, "canBeEdited": true };
     }
 
@@ -826,18 +1043,20 @@ export function createRipAttribute(context is Context, entity is Query, ripId is
 /**
  * @internal
  */
-export function createBendAttribute(context is Context, entity is Query, bendId is string, jointAttributes)
+export function createBendAttribute(context is Context, id is Id, edge is Query, bendId is string,
+                                    bendRadius is ValueWithUnits, allowNoAngle is boolean)
 {
     var bendAttribute = makeSMJointAttribute(bendId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
-    if (jointAttributes != undefined && jointAttributes.bendRadius != undefined)
-    {
-        bendAttribute.radius = {
-            "value" : jointAttributes.bendRadius,
-            "canBeEdited" : true
-        };
-    }
-    var angle = try silent(edgeAngle(context, entity));
+    bendAttribute.radius = {
+        "value" : bendRadius,
+        "canBeEdited" : true
+    };
+    const angle = try silent(bendAngle(context, id, edge, bendRadius));
+    if (!allowNoAngle &&
+         (angle == undefined || abs(angle) < TOLERANCE.zeroAngle * radian))
+        return undefined;
+
     if (angle != undefined)
     {
         bendAttribute.angle = {"value" : angle, "canBeEdited" : false};

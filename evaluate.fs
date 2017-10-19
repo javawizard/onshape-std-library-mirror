@@ -1,4 +1,4 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 686; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "686.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/context.fs", version : "686.0");
-import(path : "onshape/std/coordSystem.fs", version : "686.0");
-import(path : "onshape/std/curveGeometry.fs", version : "686.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "686.0");
-import(path : "onshape/std/mathUtils.fs", version : "686.0");
-import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/string.fs", version : "686.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "686.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
+import(path : "onshape/std/box.fs", version : "701.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/context.fs", version : "701.0");
+import(path : "onshape/std/coordSystem.fs", version : "701.0");
+import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "701.0");
+import(path : "onshape/std/mathUtils.fs", version : "701.0");
+import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/string.fs", version : "701.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "701.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -506,6 +506,21 @@ precondition
  * }}
  */
 export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
+{
+    return evFaceTangentPlaneAtEdge(context, arg).normal;
+}
+
+/**
+ * Return a [Plane] tangent to face at a position on one of its edges.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameter{number}
+ * }}
+ */
+export function evFaceTangentPlaneAtEdge(context is Context, arg is map) returns Plane
 precondition
 {
     arg is map;
@@ -527,7 +542,7 @@ precondition
             "face" : arg.face,
             "parameter" : parameter
     });
-    return faceTangent.normal;
+    return faceTangent;
 }
 
 /**
@@ -688,7 +703,7 @@ precondition
  * Return a descriptive value for a face, or the first face if the query
  * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
  * or [Torus] as appropriate for the face, or an unspecified map value
- * if the face is none of these.
+ * if the face is none of these with surfaceType filled of type SurfaceType
  * @param arg {{
  *      @field face{Query}
  * }}
@@ -722,6 +737,10 @@ precondition
         else if (result.surfaceType == (SurfaceType.PLANE as string))
         {
             result = planeFromBuiltin(result);
+        }
+        else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
+        {
+            result.surfaceType = result.surfaceType as SurfaceType;
         }
     }
 

@@ -1,26 +1,26 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "686.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "686.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "701.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "701.0");
 
-import(path : "onshape/std/attributes.fs", version : "686.0");
-import(path : "onshape/std/boolean.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/error.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/evaluate.fs", version : "686.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "686.0");
-import(path : "onshape/std/geomOperations.fs", version : "686.0");
-import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "686.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "686.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "686.0");
-import(path : "onshape/std/topologyUtils.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
-import(path : "onshape/std/valueBounds.fs", version : "686.0");
+import(path : "onshape/std/attributes.fs", version : "701.0");
+import(path : "onshape/std/boolean.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/error.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/evaluate.fs", version : "701.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "701.0");
+import(path : "onshape/std/geomOperations.fs", version : "701.0");
+import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "701.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
+import(path : "onshape/std/topologyUtils.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
+import(path : "onshape/std/valueBounds.fs", version : "701.0");
 
 
 
@@ -207,7 +207,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
             else if (jointType == SMJointType.BEND)
             {
                 var bendRadius = definition.useDefaultRadius? modelParameters.defaultBendRadius : definition.radius;
-                setBendAttribute(context, resultingEdge, toAttributeId(id), bendRadius,  definition.useDefaultRadius);
+                setBendAttribute(context, id, resultingEdge, bendRadius,  definition.useDefaultRadius);
             }
         }
     }
@@ -232,9 +232,14 @@ function setRipAttribute(context is Context, entity is Query, id is string, join
     setAttribute(context, {"entities" : entity, "attribute" : ripAttribute});
 }
 
-function setBendAttribute(context is Context, entity is Query, id is string, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
+function setBendAttribute(context is Context, id is Id, entity is Query, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
 {
-    var bendAttribute = createBendAttribute(context, entity, id, {"bendRadius" : bendRadius});
+    var bendAttribute = createBendAttribute(context, id, entity, toAttributeId(id), bendRadius,
+                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT));
+    if (bendAttribute == undefined)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND, ["entities"]);
+    }
     bendAttribute.jointType = mergeMaps(bendAttribute.jointType, {"controllingFeatureId" : id, "parameterIdInFeature" : "joint"});
     if (!isDefaultRadius)
     {

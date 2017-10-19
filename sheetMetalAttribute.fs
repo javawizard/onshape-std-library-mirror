@@ -1,4 +1,4 @@
-FeatureScript 686; /* Automatically generated version */
+FeatureScript 701; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,18 +29,18 @@ FeatureScript 686; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "686.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "686.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "686.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "686.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "686.0");
-export import(path : "onshape/std/context.fs", version : "686.0");
-export import(path : "onshape/std/query.fs", version : "686.0");
-import(path : "onshape/std/attributes.fs", version : "686.0");
-import(path : "onshape/std/containers.fs", version : "686.0");
-import(path : "onshape/std/units.fs", version : "686.0");
-import(path : "onshape/std/feature.fs", version : "686.0");
-import(path : "onshape/std/string.fs", version : "686.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "701.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "701.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "701.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "701.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "701.0");
+export import(path : "onshape/std/context.fs", version : "701.0");
+export import(path : "onshape/std/query.fs", version : "701.0");
+import(path : "onshape/std/attributes.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "701.0");
+import(path : "onshape/std/units.fs", version : "701.0");
+import(path : "onshape/std/feature.fs", version : "701.0");
+import(path : "onshape/std/string.fs", version : "701.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -377,7 +377,7 @@ precondition
     cornerBreakMap.value is SMCornerBreak;
 }
 {
-    if (attribute.cornerBreaks is undefined)
+    if (attribute.cornerBreaks == undefined)
     {
         attribute.cornerBreaks = [];
     }
@@ -428,5 +428,52 @@ precondition
                 "attribute" : attribute
         });
     }
+}
+
+/**
+ * Removes all controllingFeatureId and parameterIdInFeature information from an SMAttribute. Replaces the provided
+ * attribute with sanitized attribute if `replaceExisting` is true. Return the sanitized attribute
+ *
+ * Fail if the attribute is a model attribute as a safety precaution, as removing the controllingFeatureId information
+ * from a model attribute would invalidate it from being the same model attribute as it was before
+ */
+export function sanitizeControllingInformation(context is Context, attribute is SMAttribute, replaceExisting is boolean) returns SMAttribute
+precondition
+{
+    attribute.objectType is SMObjectType;
+    attribute.objectType != SMObjectType.MODEL;
+}
+{
+    var newAttribute = clearControllingInformation(attribute);
+    if ((attribute != newAttribute) && replaceExisting)
+        replaceSMAttribute(context, attribute, newAttribute);
+
+    return newAttribute;
+}
+
+function clearControllingInformation(m is map) returns map
+{
+    m.controllingFeatureId = undefined;
+    m.parameterIdInFeature = undefined;
+    for (var key in keys(m))
+    {
+        if (m[key] is map || m[key] is array)
+        {
+            m[key] = clearControllingInformation(m[key]);
+        }
+    }
+    return m;
+}
+
+function clearControllingInformation(arr is array) returns array
+{
+    for (var i = 0; i < size(arr); i += 1)
+    {
+        if (arr[i] is map || arr[i] is array)
+        {
+            arr[i] = clearControllingInformation(arr[i]);
+        }
+    }
+    return arr;
 }
 

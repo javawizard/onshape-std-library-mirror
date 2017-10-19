@@ -5,13 +5,12 @@ FeatureScript 701; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies the filter type when requesting inference mate connectors.
- */
-export enum CoordinateSystemInferenceSelectionFilter
+/** @internal See [opExtractSurface]. */
+export enum ExtractSurfaceRedundancyType
 {
-    NONE,
-    HOLE_GEOMETRY
+    ALLOW_REDUNDANCY,
+    REMOVE_ADDED_REDUNDANCY,
+    REMOVE_ALL_REDUNDANCY
 }
 
 
