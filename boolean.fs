@@ -1,28 +1,28 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "701.0");
-export import(path : "onshape/std/query.fs", version : "701.0");
-export import(path : "onshape/std/tool.fs", version : "701.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "708.0");
+export import(path : "onshape/std/query.fs", version : "708.0");
+export import(path : "onshape/std/tool.fs", version : "708.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "701.0");
-import(path : "onshape/std/box.fs", version : "701.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "701.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "701.0");
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/math.fs", version : "701.0");
-import(path : "onshape/std/primitives.fs", version : "701.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "701.0");
-import(path : "onshape/std/string.fs", version : "701.0");
-import(path : "onshape/std/transform.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/attributes.fs", version : "708.0");
+import(path : "onshape/std/box.fs", version : "708.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "708.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "708.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/primitives.fs", version : "708.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "708.0");
+import(path : "onshape/std/string.fs", version : "708.0");
+import(path : "onshape/std/transform.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -809,15 +809,21 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
     }
 }
 
-function thickenFace(context is Context, id is Id, modelParameters is map, planarFace is Query) returns Query
+function thickenFaces(context is Context, id is Id, modelParameters is map, faces is Query) returns Query
 {
-    const thickenId = id + "thicken";
-    opThicken(context, thickenId, {
-                "entities" : planarFace,
+    opThicken(context, id, {
+                "entities" : faces,
                 "thickness1" : modelParameters.frontThickness,
                 "thickness2" : modelParameters.backThickness
             });
-    return qOwnerBody(qCreatedBy(thickenId));
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V708_SM_BOOLEAN))
+    {
+        return qCreatedBy(id, EntityType.BODY);
+    }
+    else
+    {
+        return qOwnerBody(qCreatedBy(id));
+    }
 }
 
 function trimTool(context is Context, id is Id, thickened is Query, tool is Query) returns Query
@@ -831,12 +837,12 @@ function trimTool(context is Context, id is Id, thickened is Query, tool is Quer
     return qOwnerBody(qCreatedBy(intersectionId));
 }
 
-function createOutline(context is Context, id is Id, trimmed is Query, planarFace is Query)
+function createOutline(context is Context, id is Id, trimmed is Query, face is Query)
 {
     const outlineId = id + "outline";
     opCreateOutline(context, outlineId, {
                 "tools" : trimmed,
-                "plane" : planarFace
+                "target" : face
             });
     return qCreatedBy(outlineId, EntityType.FACE);
 }
@@ -844,9 +850,10 @@ function createOutline(context is Context, id is Id, trimmed is Query, planarFac
 /**
  * @internal
  */
-export function createBooleanToolsForFace(context is Context, id is Id, planarFace is Query, tool is Query, modelParameters is map)
+export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tool is Query, modelParameters is map)
 {
-    var thickened = thickenFace(context, id, modelParameters, planarFace);
+    var thickened = thickenFaces(context, id + "thicken", modelParameters, face);
+    var planarFace = (size(evaluateQuery(context, qGeometry(face, GeometryType.PLANE))) > 0);
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V646_SM_MULTI_TOOL_FIX))
     {
         // The intersection of the thickened body with the tool creates multiple bits and
@@ -877,31 +884,47 @@ export function createBooleanToolsForFace(context is Context, id is Id, planarFa
         if (trimResultIsValid)
         {
             allTrimmed = append(allTrimmed, trimmed);
-            const outline = createOutline(context, subId, trimmed, planarFace);
+            const outline = createOutline(context, subId, trimmed, face);
             if (outline != undefined)
             {
                 tools = append(tools, outline);
             }
         }
     }
-    opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(append(allTrimmed, thickened)) });
+    var toDeleteArray = append(allTrimmed, thickened);
+    var toolsOut;
     if (size(tools) > 0)
     {
-        return qOwnerBody(qUnion(tools));
+        toolsOut = qOwnerBody(qUnion(tools));
+        if (!planarFace)
+        {
+            toDeleteArray = append(toDeleteArray, toolsOut);
+            const thin = 1.e-4 * meter;
+            toolsOut = thickenFaces(context, id + "thickenTools",
+                {"frontThickness" : thin, "backThickness" : thin}, qUnion(tools));
+        }
     }
-    else
-    {
-        return undefined;
-    }
+    opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(toDeleteArray) });
+    return toolsOut;
 }
 
-function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targetFaces is Query, toolFaces is Query) returns boolean
+function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query) returns boolean
 {
     definition.allowSheets = true;
-    definition.tools = toolFaces;
-    definition.targets = targetFaces;
+    definition.targets = targets;
     definition.keepTools = false;
-    try(opBoolean(context, id, definition));
+    const sheetTools = evaluateQuery(context, qBodyType(tools, BodyType.SHEET));
+    if (size(sheetTools) > 0)
+    {
+        definition.tools = qUnion(sheetTools);
+        try(opBoolean(context, id, definition));
+    }
+    const solidTools = evaluateQuery(context, qBodyType(tools, BodyType.SOLID));
+    if (size(solidTools) > 0)
+    {
+        definition.tools = qUnion(solidTools);
+        try(opBoolean(context, id + "solid", definition));
+    }
     return true;
 }
 
@@ -941,9 +964,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     // We get the faces not from the targets but from the faces of the source part that have associations
     const definitionEntities = qUnion(getSMDefinitionEntities(context, qOwnedByBody(definition.sheetMetalPart, EntityType.FACE)));
     const facesQ = qEntityFilter(definitionEntities, EntityType.FACE);
-
-    var planarFacesQ = qGeometry(facesQ, GeometryType.PLANE);
-    var planarFaceArray = evaluateQuery(context, planarFacesQ);
+    var faceArray = evaluateQuery(context, facesQ);
     var index = 0;
     var allToolBodies = [];
     var modifiedFaces = [];
@@ -962,19 +983,19 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     }
     // Doesn't matter which box we extend. Extending the tool box reduces what we do
     const thickenedBox = try(extendBox3d(toolBox, thickness, 0));
-    for (var planarFace in planarFaceArray)
+    for (var face in faceArray)
     {
         index += 1;
-        if (!faceBoxClashesWithBox(context, planarFace, thickenedBox))
+        if (!faceBoxClashesWithBox(context, face, thickenedBox))
         {
             continue;
         }
 
-        const toolBodies = createBooleanToolsForFace(context, id + unstableIdComponent(index), planarFace, definition.tools, modelParameters);
+        const toolBodies = createBooleanToolsForFace(context, id + unstableIdComponent(index), face, definition.tools, modelParameters);
         if (toolBodies != undefined)
         {
             allToolBodies = append(allToolBodies, toolBodies);
-            modifiedFaces = append(modifiedFaces, planarFace);
+            modifiedFaces = append(modifiedFaces, face);
         }
     }
 

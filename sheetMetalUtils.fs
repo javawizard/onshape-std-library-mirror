@@ -1,29 +1,28 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "701.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "701.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "701.0");
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/coordSystem.fs", version : "701.0");
-import(path : "onshape/std/curveGeometry.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/math.fs", version : "701.0");
-import(path : "onshape/std/manipulator.fs", version : "701.0");
-import(path : "onshape/std/query.fs", version : "701.0");
-import(path : "onshape/std/sketch.fs", version : "701.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "701.0");
-import(path : "onshape/std/string.fs", version : "701.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
-import(path : "onshape/std/tool.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
-import(path : "onshape/std/vector.fs", version : "701.0");
-import(path : "onshape/std/topologyUtils.fs", version : "701.0");
-import(path : "onshape/std/transform.fs", version : "701.0");
+import(path : "onshape/std/attributes.fs", version : "708.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "708.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "708.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/coordSystem.fs", version : "708.0");
+import(path : "onshape/std/curveGeometry.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/manipulator.fs", version : "708.0");
+import(path : "onshape/std/query.fs", version : "708.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "708.0");
+import(path : "onshape/std/string.fs", version : "708.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
+import(path : "onshape/std/tool.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
+import(path : "onshape/std/vector.fs", version : "708.0");
+import(path : "onshape/std/topologyUtils.fs", version : "708.0");
+import(path : "onshape/std/transform.fs", version : "708.0");
 
 
 
@@ -411,11 +410,23 @@ function cylinderAngle(context, face is Query) returns ValueWithUnits
 export function updateJointAngle(context is Context, id is Id, edges is Query)
 {
     var moreFlexibleUpdate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
+    var insertNewAttributeIfNecessary = isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM);
+
+    var newAttributeCounter = 0;
     for (var edge in evaluateQuery(context, edges))
     {
         const jointAttribute = try silent(getJointAttribute(context, edge));
         if (jointAttribute == undefined)
         {
+            if (insertNewAttributeIfNecessary)
+            {
+                const newJointAttribute = makeNewJointAttributeIfNeeded(context, edge, toAttributeId(id + newAttributeCounter));
+                if (newJointAttribute != undefined)
+                {
+                    setAttribute(context, {"entities" : edge, "attribute" : newJointAttribute});
+                    newAttributeCounter += 1;
+                }
+            }
             continue;
         }
         var replacementAttribute = (moreFlexibleUpdate) ? computeReplacementAttribute(context, id, edge, jointAttribute) :
@@ -805,6 +816,13 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
         filteredQ = qEntityFilter(entity, EntityType.BODY);
     else if (attribute.objectType == SMObjectType.JOINT)
     {
+        if (attribute.jointType.value == SMJointType.BEND &&
+            size(evaluateQuery(context, qGeometry(entity, GeometryType.CYLINDER))) == 1)
+        {
+            //TODO : check tangent to walls around
+            return true;
+        }
+
         filteredQ = qEntityFilter(entity, EntityType.EDGE);
         if (try silent(edgeIsTwoSided(context, filteredQ)) != true)
         {

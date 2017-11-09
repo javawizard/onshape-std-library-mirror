@@ -1,24 +1,26 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "701.0");
+export import(path : "onshape/std/query.fs", version : "708.0");
 
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/manipulator.fs", version : "701.0");
-import(path : "onshape/std/math.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
-import(path : "onshape/std/vector.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/manipulator.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/topologyUtils.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
+import(path : "onshape/std/vector.fs", version : "708.0");
 
 /**
  * Feature performing an [opFitSpline]
  */
 annotation { "Feature Type Name" : "Fit spline",
         "Manipulator Change Function" : "fitSplineManipulatorChange",
+        "Editing Logic Function" : "fitSplineEditLogic",
         "UIHint" : "NO_PREVIEW_PROVIDED" }
 export const fitSpline = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -31,17 +33,36 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
 
         if (!definition.closed)
         {
-            annotation { "Name" : "Start direction", "Filter" : EntityType.EDGE, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Start direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
             definition.startDirection is Query;
 
             annotation { "Name" : "Start magnitude" }
             isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
 
-            annotation { "Name" : "End direction", "Filter" : EntityType.EDGE, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirectionStart is boolean;
+
+            annotation { "Name" : "Match curvature at start" }
+            definition.matchStartCurvature is boolean;
+
+
+            annotation { "Name" : "End direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
             definition.endDirection is Query;
 
             annotation { "Name" : "End magnitude" }
             isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.oppositeDirectionEnd is boolean;
+
+            annotation { "Name" : "Match curvature at end" }
+            definition.matchEndCurvature is boolean;
+
+            annotation { "Name" : "Has start direction", "UIHint" : "ALWAYS_HIDDEN" }
+            definition.hasStartDirection is boolean;
+
+            annotation { "Name" : "Has end direction", "UIHint" : "ALWAYS_HIDDEN" }
+            definition.hasEndDirection is boolean;
         }
 
     }
@@ -66,6 +87,16 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             throw regenError(ErrorStringEnum.SPLINE_TWO_POINTS, ["vertices"]);
         }
 
+        if (definition.oppositeDirectionStart)
+        {
+            definition.startMagnitude *= -1;
+        }
+
+        if (definition.oppositeDirectionEnd)
+        {
+            definition.endMagnitude *= -1;
+        }
+
         const boundingBox = evBox3d(context, {
                     "topology" : definition.vertices,
                     "tight" : true
@@ -79,6 +110,9 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
 
         var startDerivative = undefined;
         var endDerivative = undefined;
+        var start2ndDerivative = undefined;
+        var end2ndDerivative = undefined;
+
         if (!definition.closed)
         {
             // The sum of the square roots of distances between interpolation points.
@@ -88,7 +122,7 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             const startCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, true);
             const endCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, false);
 
-            addFitSplineManipulators(context, id, definition, startCondition, endCondition, points, totalSpan);
+           addFitSplineManipulators(context, id, definition, startCondition, endCondition, points, totalSpan);
 
             if (startCondition != undefined)
             {
@@ -97,6 +131,7 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
                     throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_START_MAGNITUDE, ['startMagnitude']);
                 }
                 startDerivative = startCondition.magnitude * startCondition.direction;
+                start2ndDerivative =  startCondition.second;
             }
 
             if (endCondition != undefined)
@@ -106,16 +141,27 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
                     throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_END_MAGNITUDE, ['endMagnitude']);
                 }
                 endDerivative = endCondition.direction * endCondition.magnitude;
+                end2ndDerivative = endCondition.second;
             }
         }
-
-        opFitSpline(context, id, { "points" : points,
+        var fitSplineDefn = { "points" : points,
                     "startDerivative" : startDerivative,
-                    "endDerivative" : endDerivative });
+                    "endDerivative" : endDerivative };
+        if (definition.matchStartCurvature)
+        {
+            fitSplineDefn = mergeMaps(fitSplineDefn, {"start2ndDerivative" : start2ndDerivative });
+        }
+        if (definition.matchEndCurvature)
+        {
+            fitSplineDefn = mergeMaps(fitSplineDefn, {"end2ndDerivative" : end2ndDerivative });
+        }
+        opFitSpline(context, id, fitSplineDefn);
 
         // Part 2 of 2 calls for making the feature patternable via feature pattern.
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { closed : false, startMagnitude : 1, endMagnitude : 1, startDirection : qNothing(), endDirection : qNothing() });
+    }, { closed : false, startMagnitude : 1, endMagnitude : 1, startDirection : qNothing(), endDirection : qNothing(),
+        matchStartCurvature : false, matchEndCurvature : false, oppositeDirectionStart : false, oppositeDirectionEnd : false,
+        hasStartDirection : false, hasEndDirection : false});
 
 // Returns direction and magnitude for end condition.
 // Returns a direction and magnitude instead of just a vector to avoid some expensive operations downstream.
@@ -123,47 +169,116 @@ function getEndCondition(context is Context, definition is map, points is array,
 {
     const directionProperty = isStart ? "startDirection" : "endDirection";
     const magnitudeProperty = isStart ? "startMagnitude" : "endMagnitude";
+    const matchingCurvature = isStart ? definition.matchStartCurvature : definition.matchEndCurvature;
+    const magnitudeOppositeDirection = isStart ? "oppositeDirectionStart" : "oppositeDirectionEnd";
+
     // Index of either the first or the last point.
     const pointIndex = isStart ? 0 : size(points) - 1;
 
+    var magnitude = definition[magnitudeProperty] * totalSpan;
     const interpolationPointDistance = norm(isStart ? points[0] - points[1] : points[pointIndex] - points[pointIndex - 1]);
     if (tolerantEquals(interpolationPointDistance, 0 * meter))
     {
         throw regenError(ErrorStringEnum.FIT_SPLINE_REPEATED_POINT, ["vertices"]);
     }
 
-    const startEdges = evaluateQuery(context, definition[directionProperty]);
-    if (size(startEdges) > 1)
+    const directionFaces = evaluateQuery(context, qEntityFilter(definition[directionProperty], EntityType.FACE));
+    const directionEdges = evaluateQuery(context, qEntityFilter(definition[directionProperty], EntityType.EDGE));
+    if (size(directionFaces) + size(directionEdges) > 1)
     {
         throw regenError(ErrorStringEnum.TANGENCY_ONE_EDGE, [directionProperty]);
     }
-    else if (size(startEdges) == 1)
+
+    if (size(directionFaces) == 1)
     {
+        if (matchingCurvature)
+        {
+            throw regenError(ErrorStringEnum.FIT_SPLINE_CURVATURE_FACE, [directionProperty]);
+        }
+        const direction = extractDirection(context, directionFaces[0]);
+        return { "direction" : direction, "magnitude" : magnitude };
+    }
+    else if (size(directionEdges) == 1)
+    {
+        var param = 0.0;
+        var tangentDirection = undefined;
         try silent
         {
             var result = evDistance(context, {
-                    "side0" : startEdges[0],
+                    "side0" : directionEdges[0],
                     "side1" : points[pointIndex]
                 });
+            param = result.sides[0].parameter;
+            tangentDirection = evEdgeTangentLine(context, {
+                            "edge" : directionEdges[0],
+                            "parameter" : param
+                }).direction;
 
-            const direction = evEdgeTangentLine(context, {
-                            "edge" : startEdges[0],
-                            "parameter" : result.sides[0].parameter
-                        }).direction;
-
-            // The ratio between the manipulator magnitude and the actual magnitude is the difference in parameters to the next point.
-            // This keeps the influence of the manipulator constant as the number of interpolation points and their spacing changes.
-            // The other reason for this choice is to make the manipulators equivalent to the handles for sketch splines.
-            const magnitude = definition[magnitudeProperty] * totalSpan * sqrtDistance / sqrt(interpolationPointDistance.value);
-            return { "direction" : direction, "magnitude" : magnitude };
+            //creates better looking curves given the centripetal parameterization (and creates same geometry for legacy features)
+            magnitude *= (sqrtDistance / sqrt(interpolationPointDistance.value));
+            if (!matchingCurvature)
+            {
+               return { "direction" : tangentDirection, "magnitude" : magnitude };
+            }
         }
         catch
         {
             throw regenError(ErrorStringEnum.FIT_SPLINE_CANNOT_EVALUATE_END_CONDITION, [directionProperty]);
         }
+        try silent
+        {
+            const edgeCurvatureData = evEdgeCurvature(context, {
+                    "edge" : directionEdges[0],
+                    "parameters" : [param],
+                    "curveLengthParameterization" : false
+                });
+
+            //Using f'' = |f'|^2 * k * n
+            var secondDerivative = magnitude * magnitude * edgeCurvatureData[0].curvature * curvatureFrameNormal(edgeCurvatureData[0]);
+            return { "direction" : tangentDirection, "magnitude" : magnitude, "second" : secondDerivative};
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.FIT_SPLINE_CANNOT_EVALUATE_CURVATURE_END_CONDITION, [directionProperty]);
+        }
+    }
+
+    // we don't have direction input, cannot match curvature
+    if (matchingCurvature)
+    {
+        throw regenError(ErrorStringEnum.FIT_SPLINE_NEED_DIRECTION_FOR_CURVATURE, [directionProperty]);
+    }
+
+    //if we do have selections but we could not use them
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V705_G2_CURVES) &&
+       (isStart ? definition.hasStartDirection : definition.hasEndDirection))
+    {
+        throw regenError(ErrorStringEnum.FIT_SPLINE_CANNOT_EVALUATE_END_CONDITION, [directionProperty]);
     }
 
     return undefined;
+}
+
+/**
+ * @internal
+ * Keep track of whether a selection was made for directions so that we can give correct error if it goes missing
+ */
+export function fitSplineEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+        isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    definition.hasStartDirection = false;
+    definition.hasEndDirection = false;
+
+    if (specifiedParameters.startDirection && size(evaluateQuery(context, definition.startDirection)) > 0)
+    {
+        definition.hasStartDirection = true;
+    }
+
+    if (specifiedParameters.endDirection && size(evaluateQuery(context, definition.endDirection)) > 0)
+    {
+        definition.hasEndDirection = true;
+    }
+    return definition;
 }
 
 function getSumSqrtDistances(points is array) returns number
@@ -242,4 +357,5 @@ export function fitSplineManipulatorChange(context is Context, definition is map
 
     return definition;
 }
+
 

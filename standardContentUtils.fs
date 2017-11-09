@@ -1,12 +1,12 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/string.fs", version : "701.0");
-import(path : "onshape/std/units.fs", version : "701.0");
-export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/string.fs", version : "708.0");
+import(path : "onshape/std/units.fs", version : "708.0");
+export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "708.0");
 
 /*
  ******************************************
@@ -124,7 +124,7 @@ export predicate canBeParameterValue(value)
  * @internal
  * Filter results for a parameter
  * @type {{
- *      @field ParameterName {string} : name of the parameter
+ *      @field ParameterId {string} : Id of the parameter
  *      @field Visible {boolean} : whether (true) or not (false) the parameter is visible in the UI
  *      @field DataTable {string} : the data table name referenced by this parameter, if any
  *      @field DefaultValue {ParameterValue} : default value for this parameter
@@ -145,7 +145,8 @@ export type ParameterFilter typecheck canBeParameterFilter;
 export predicate canBeParameterFilter(value)
 {
     value is map;
-    value.ParameterName is string;
+    value.ParameterId is string;
+    value.DisplayName is string;
     value.DataTable is string;
     value.Visible is boolean;
     value.ValueFieldType is undefined || value.ValueFieldType is StandardContentValueFieldType;
@@ -244,10 +245,10 @@ export function scMakeFilterArray(parameters is ParameterSpecs) returns ContentF
         var parameterEntry = parameters[index];
         if (parameterEntry is map)
         {
-            var parameterName = "<unknown>";
+            var parameterId = "<unknown>";
             for (var parameterSpec in parameterEntry)
             {
-                parameterName = parameterSpec.key;
+                parameterId = parameterSpec.key;
 
                 // there should only be one entry in the map
                 break;
@@ -257,9 +258,10 @@ export function scMakeFilterArray(parameters is ParameterSpecs) returns ContentF
                                                 "DefaultValue" : { "value" : "", "row" : -1 } as ParameterValue,
                                                 "DataTable" : "",
                                                 "ParameterValues" : [],
-                                                "ParameterName" : parameterName } as ParameterFilter
+                                                "ParameterId" : parameterId,
+                                                "DisplayName": parameterId } as ParameterFilter
                                         );
-            parameterIndexes[parameterName] = index;
+            parameterIndexes[parameterId] = index;
         }
     }
 
@@ -361,15 +363,15 @@ export function scGetDefaultDataValue(dataTables is DataTables, fieldName is str
  * @internal
  * Gets the default value for a specified parameter within the specified current filter map.
 
- * @param parameterName {string} : the name of the parameter to get the default value for
+ * @param parameterId {string} : the Id of the parameter to get the default value for
  * @param currentFilter {ContentFilter} : the current content filter results map
  * @returns {string} : the current default value of the specified parameter, if doesn't exist, uses empty string
 */
-export function scGetParameterDefaultFilterValue(parameterName is string, currentFilter is ContentFilter) returns string
+export function scGetParameterDefaultFilterValue(parameterId is string, currentFilter is ContentFilter) returns string
 {
     if (currentFilter.parameters != undefined)
     {
-        var parameterIndex = currentFilter.parameterIndexes[parameterName];
+        var parameterIndex = currentFilter.parameterIndexes[parameterId];
 
         if (parameterIndex != undefined)
         {
@@ -415,16 +417,16 @@ export function scGetFieldValuesFromTable(dataTables is DataTables, tableName is
  * in the table. This method is used to get another field value within that current default value row.
 
  * @param dataTables {DataTables} : the data tables map
- * @param parameterName {string} : the name of the parameter to get the default data value for
+ * @param parameterId {string} : the Id of the parameter to get the default data value for
  * @param fieldName {string} : the field name to get the data value for
  * @param currentFilter {ContentFilter} : the current filter results map
  * @returns {string} : the current default data value of the specified field for the specified parameter, if the parameter doesn't use a data table, or the field doesn't
  *                      exists, an empty string is used.
 */
 
-export function scGetParameterDefaultDataValue(dataTables is DataTables, parameterName is string, fieldName is string, currentFilter is ContentFilter) returns string
+export function scGetParameterDefaultDataValue(dataTables is DataTables, parameterId is string, fieldName is string, currentFilter is ContentFilter) returns string
 {
-    var parameterIndex = currentFilter.parameterIndexes[parameterName];
+    var parameterIndex = currentFilter.parameterIndexes[parameterId];
 
     if (parameterIndex != undefined)
     {
@@ -541,7 +543,8 @@ export function scPrettyPrint(currentFilter is ContentFilter)
         {
             for (var parameterSpecMap in filterEntry.value)
             {
-                println("Parameter Name: " ~ parameterSpecMap["ParameterName"]);
+                println("Parameter Id: " ~ parameterSpecMap["ParameterId"]);
+                println("Display Name: " ~ parameterSpecMap["DisplayName"]);
                 println("    visible: " ~ parameterSpecMap["Visible"]);
                 println("    data table: " ~ parameterSpecMap["DataTable"]);
                 var valueFieldType = parameterSpecMap["valueFieldType"];

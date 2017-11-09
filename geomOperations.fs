@@ -1,4 +1,4 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,15 +15,15 @@ FeatureScript 701; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "701.0");
-import(path : "onshape/std/curveGeometry.fs", version : "701.0");
+import(path : "onshape/std/context.fs", version : "708.0");
+import(path : "onshape/std/curveGeometry.fs", version : "708.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "701.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "701.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "708.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "708.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "701.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "708.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "701.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "708.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -244,6 +244,10 @@ export function opFillet(context is Context, id is Id, definition is map)
  *          is closed.  @optional
  *      @field endDerivative {Vector} : A `Vector` with length units that specifies the derivative at the end of
  *          the resulting spline.  Ignored if spline is closed.  @optional
+ *      @field start2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the start of
+ *          the resulting spline.  Ignored if spline is closed, or if `startDerivative` is not defined @optional
+ *      @field end2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the end of
+ *          the resulting spline.  Ignored if spline is closed, or if `endDerivative` is not defined @optional
  * }}
  */
 export function opFitSpline(context is Context, id is Id, definition is map)
@@ -625,7 +629,7 @@ export function opTransform(context is Context, id is Id, definition is map)
  *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
  *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
  *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
- *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend"). Both offset and limitEntity are optional
+ *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend", "helpPoint"). Both offset and limitEntity are optional
  *                                      and will override the other offset and limitEntity parameters for the specified edge.
  *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
  * }}
@@ -658,12 +662,12 @@ export function opExtractSurface(context is Context, id is Id, definition is map
 }
 
 /**
- * @internal
- * Generates surfaces representing the outlines of parts or surfaces projected onto a plane
+ * Generates surfaces representing the outlines of parts or surfaces projected onto a surface
  * @param id : @autocomplete `id + "createOutline1"`
  * @param definition {{
  *      @field tools {Query} : The tool parts or surfaces
- *      @field plane {Query} : The plane that the surfaces will be created on
+ *      @field target {Query} : The face whose surface will be used to create outline.
+ *                              Currently only planes, cylinders or extruded surfaces are supported.
  * }}
  */
 export function opCreateOutline(context is Context, id is Id, definition is map)

@@ -1,4 +1,4 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -599,7 +599,13 @@ export enum FeatureScriptVersionNumber
     V698_EXTEND_SHEET_PERIODIC,
     V699_SM_PATTERN_FIXES,
     V700_REVERTED_TANGENT_JOINT,
-    V701_REVERTED_SM_FACE_PATTERN
+    V701_REVERTED_SM_FACE_PATTERN,
+    V703_EXTERNAL_ROLL_BACK,
+    V704_MOVE_FACE_ROLLED_SM,
+    V705_G2_CURVES,
+    V706_SM_PATTERN_RIP,
+    V707_FITSPLINE_UPGRADE,
+    V708_SM_BOOLEAN
 }
 
 /**
@@ -610,6 +616,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V701_REVERTED_SM_FACE_PATTERN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V708_SM_BOOLEAN;
 
 

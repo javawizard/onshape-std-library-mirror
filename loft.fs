@@ -1,24 +1,24 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "701.0");
-export import(path : "onshape/std/tool.fs", version : "701.0");
+export import(path : "onshape/std/query.fs", version : "708.0");
+export import(path : "onshape/std/tool.fs", version : "708.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/boolean.fs", version : "701.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
-import(path : "onshape/std/transform.fs", version : "701.0");
-import(path : "onshape/std/units.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
-import(path : "onshape/std/vector.fs", version : "701.0");
-import(path : "onshape/std/topologyUtils.fs", version : "701.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/boolean.fs", version : "708.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
+import(path : "onshape/std/transform.fs", version : "708.0");
+import(path : "onshape/std/units.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
+import(path : "onshape/std/vector.fs", version : "708.0");
+import(path : "onshape/std/topologyUtils.fs", version : "708.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -83,7 +83,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            annotation { "Name" : "Profiles", "Item name" : "Profile",
+            annotation { "Name" : "Profiles", "Item name" : "profile",
                 "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.sheetProfilesArray is array;
             for (var profile in definition.sheetProfilesArray)
@@ -97,7 +97,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
         else
         {
-            annotation { "Name" : "Profiles", "Item name" : "Profile",
+            annotation { "Name" : "Profiles", "Item name" : "profile",
                 "Driven query" : "wireProfileEntities", "Item label template" : "#wireProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.wireProfilesArray is array;
             for (var profile in definition.wireProfilesArray)
@@ -132,7 +132,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.addGuides)
         {
-            annotation { "Name" : "Guides", "Item name" : "Guide",
+            annotation { "Name" : "Guides", "Item name" : "guide",
                 "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)

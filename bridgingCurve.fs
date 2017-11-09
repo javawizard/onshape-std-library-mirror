@@ -1,26 +1,29 @@
-FeatureScript 701; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/coordSystem.fs", version : "701.0");
-import(path : "onshape/std/curveGeometry.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/manipulator.fs", version : "701.0");
-import(path : "onshape/std/math.fs", version : "701.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
-import(path : "onshape/std/vector.fs", version : "701.0");
+FeatureScript 708; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/coordSystem.fs", version : "708.0");
+import(path : "onshape/std/curveGeometry.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/manipulator.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
+import(path : "onshape/std/vector.fs", version : "708.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
  * @value POSITION : The bridging curve will end at the provided vertex. Direction of the curve is unspecified
  * @value TANGENCY : The bridging curve will end at the vertex and the curve will be tangent to the edge
+ * @value CURVATURE : The bridging curve will end at the vertex and the curve will have same curvature as the edge at the vertex
  */
 export enum BridgingCurveMatchType
 {
     annotation { "Name" : "Match position" }
     POSITION,
     annotation { "Name" : "Match tangent" }
-    TANGENCY
+    TANGENCY,
+    annotation { "Name" : "Match curvature" }
+    CURVATURE
 }
 
 /**
@@ -59,12 +62,12 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         definition.side2 is Query;
         annotation { "Name" : "Match", "Column Name" : "Second match", "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
-        if (definition.match1 == BridgingCurveMatchType.TANGENCY || definition.match2 == BridgingCurveMatchType.TANGENCY)
+        if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
         {
             annotation { "Name" : "Magnitude" }
             isReal(definition.magnitude, POSITIVE_REAL_BOUNDS);
         }
-        if (definition.match1 == BridgingCurveMatchType.TANGENCY && definition.match2 == BridgingCurveMatchType.TANGENCY)
+        if (definition.match1 != BridgingCurveMatchType.POSITION && definition.match2 != BridgingCurveMatchType.POSITION)
         {
             annotation { "Name" : "Bias" }
             isReal(definition.bias, BIAS_BOUNDS);
@@ -89,6 +92,10 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             {
                 createG0G1BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
             }
+            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+            {
+                createG0G2BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
+            }
         }
         else if (definition.match1 == BridgingCurveMatchType.TANGENCY)
         {
@@ -99,6 +106,25 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
             {
                 createG1G1BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
+            }
+            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+            {
+                createG1G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias, false);
+            }
+        }
+        else if (definition.match1 == BridgingCurveMatchType.CURVATURE)
+        {
+            if (definition.match2 == BridgingCurveMatchType.POSITION)
+            {
+                createG0G2BridgingCurve(context, id, side2Data.point, side1Data.frame, definition.magnitude, true);
+            }
+            else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
+            {
+                createG1G2BridgingCurve(context, id, side2Data.frame, side1Data.frame, definition.magnitude, definition.bias, true);
+            }
+            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+            {
+                createG2G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
             }
         }
         transformResultIfNecessary(context, id, remainingTransform);
@@ -327,11 +353,11 @@ export function onManipulatorChange(context is Context, definition is map, newMa
     {
         const manipulator = newManipulators[MAGNITUDE_MANIPULATOR];
         var defaultSpeed;
-        if (definition.match1 == BridgingCurveMatchType.TANGENCY)
+        if (definition.match1 != BridgingCurveMatchType.POSITION)
         {
             defaultSpeed = determineDefaultG0G1Speed(side2Data.point, side1Data.point, curvatureFrameTangent(side1Data.frame));
         }
-        else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
+        else if (definition.match2 != BridgingCurveMatchType.POSITION)
         {
             defaultSpeed = determineDefaultG0G1Speed(side1Data.point, side2Data.point, curvatureFrameTangent(side2Data.frame));
         }
@@ -432,7 +458,6 @@ function findClosestEndFrame(point is Vector, startFrame is EdgeCurvatureResult,
         return endFrame;
     }
 }
-
 
 function getDataForSide(context is Context, side is Query, match is BridgingCurveMatchType, sideName is string, otherSide is Query) returns map
 {
@@ -545,23 +570,9 @@ function determineDefaultG0G1Speed(point1 is Vector, point2 is Vector, direction
 function createG0G1BridgingCurve(context is Context, id is Id,
     point is Vector, curvatureFrame is EdgeCurvatureResult, magnitude is number, flipDirection is boolean)
 {
-    // OK. The tangent vector of the edge curvature result goes away from the edge
-    // Very simple to begin with
+
     const defaultSpeed = determineDefaultG0G1Speed(point, curvatureFrame.frame.origin, curvatureFrameTangent(curvatureFrame));
-    const speed = magnitude * defaultSpeed;
-    var middlePoint = curvatureFrame.frame.origin + (curvatureFrameTangent(curvatureFrame) * speed);
-
-    var controlPoints = [
-        point,
-        middlePoint,
-        curvatureFrame.frame.origin
-    ];
-    if (flipDirection)
-    {
-        controlPoints = reverse(controlPoints);
-    }
-
-    var magnitudeManipulator is Manipulator = linearManipulator(
+     var magnitudeManipulator is Manipulator = linearManipulator(
         curvatureFrame.frame.origin,
         curvatureFrameTangent(curvatureFrame),
         magnitude * UI_SCALING * defaultSpeed
@@ -571,18 +582,18 @@ function createG0G1BridgingCurve(context is Context, id is Id,
                 (MAGNITUDE_MANIPULATOR) : magnitudeManipulator
             });
 
-    const bCurve = {
-                'degree' : 2,
-                'dimension' : 3,
-                'isPeriodic' : false,
-                'isRational' : false,
-                'knots' : [0, 0, 0, 1, 1, 1],
-                'controlPoints' : controlPoints
-            } as BSplineCurve;
+    // OK. The tangent vector of the edge curvature result goes away from the edge
+    // Very simple to begin with
+    const speed = magnitude * defaultSpeed;
+    var middlePoint = curvatureFrame.frame.origin + (curvatureFrameTangent(curvatureFrame) * speed);
 
-    opCreateBSplineCurve(context, id, {
-                "bSplineCurve" : bCurve
-            });
+    var controlPoints = [
+        point,
+        middlePoint,
+        curvatureFrame.frame.origin
+    ];
+
+    return createBezierCurve(context, id, flipDirection ? reverse(controlPoints) : controlPoints);
 }
 
 function determineDefaultG1G1Speed(frame1 is EdgeCurvatureResult, frame2 is EdgeCurvatureResult) returns array
@@ -647,7 +658,6 @@ function createG1G1Manipulators(context is Context, id is Id,
                 (CENTRAL_MAGNITUDE_MANIPULATOR) : magnitudeManipulator,
                 (BIAS_MANIPULATOR) : biasManipulator
             });
-
 }
 
 function createG1G1BridgingCurve(context is Context, id is Id,
@@ -680,14 +690,136 @@ function createG1G1BridgingCurve(context is Context, id is Id,
             curvatureFrame2.frame.origin
         ];
 
+    return createBezierCurve(context, id, controlPoints);
+}
+
+function createG0G2BridgingCurve(context is Context, id is Id,
+    point is Vector, curvatureFrame is EdgeCurvatureResult, magnitude is number, flipDirection is boolean)
+{
+    const defaultSpeed = determineDefaultG0G1Speed(point, curvatureFrame.frame.origin, curvatureFrameTangent(curvatureFrame));
+    const speed = magnitude * defaultSpeed;
+
+    var P2 = curvatureFrame.frame.origin + (curvatureFrameTangent(curvatureFrame) * speed);
+    var P3 = curvatureFrame.frame.origin;
+    var degree = 3;
+    // using k = ((degree - 1) / degree) * h / |t| ^ 2, where k is curvature, t is tangent vector, h is the minimum distance
+    // from the next control point to the extension of tangent direction
+    var distance = (degree / (degree - 1)) * curvatureFrame.curvature * speed * speed;
+    var P1 = P2 + distance * curvatureFrameNormal(curvatureFrame);
+
+    var controlPoints = [
+        point,
+        P1,
+        P2,
+        P3
+    ];
+
+    var magnitudeManipulator is Manipulator = linearManipulator(
+        curvatureFrame.frame.origin,
+        curvatureFrameTangent(curvatureFrame),
+        magnitude * UI_SCALING * defaultSpeed
+    );
+    magnitudeManipulator.minValue = TOLERANCE.zeroLength;
+    addManipulators(context, id, {
+                (MAGNITUDE_MANIPULATOR) : magnitudeManipulator
+            });
+
+    return createBezierCurve(context, id, flipDirection ? reverse(controlPoints) : controlPoints);
+}
+
+function createG1G2BridgingCurve(context is Context, id is Id,
+    curvatureFrame1 is EdgeCurvatureResult, curvatureFrame2 is EdgeCurvatureResult, magnitude is number, bias is number, flipDirection is boolean)
+{
+    const speeds = determineDefaultG1G1Speed(curvatureFrame1, curvatureFrame2);
+
+    const speed1 = speeds[0] * magnitude * 2 * (1 - bias);
+    const speed2 = speeds[1] * magnitude * 2 * bias;
+
+    const point1 = curvatureFrame1.frame.origin;
+    const point2 = curvatureFrame2.frame.origin;
+    const tangent1 = curvatureFrameTangent(curvatureFrame1);
+    const tangent2 = curvatureFrameTangent(curvatureFrame2);
+
+    createG1G1Manipulators(context, id, line(point1, tangent1), line(point2, tangent2),
+            speeds[0], speeds[1],
+            magnitude, bias);
+
+    // using k = ((degree - 1) / degree) * h / |t| ^ 2, where k is curvature, t is tangent vector, h is the minimum distance
+    // from the next control point to the extension of tangent direction
+    var P1 = point1 + (speed1 * tangent1);
+    var P3 = point2 + (speed2 * tangent2);
+    var degree = 4;
+    var distance = (degree / (degree - 1)) * curvatureFrame2.curvature * speed2 * speed2;
+    var P2 = P3 + distance * curvatureFrameNormal(curvatureFrame2);
+
+    var controlPoints = [
+            curvatureFrame1.frame.origin,
+            P1,
+            P2,
+            P3,
+            curvatureFrame2.frame.origin
+    ];
+    return createBezierCurve(context, id, flipDirection ? reverse(controlPoints) : controlPoints);
+}
+
+function createG2G2BridgingCurve(context is Context, id is Id,
+    curvatureFrame1 is EdgeCurvatureResult, curvatureFrame2 is EdgeCurvatureResult, magnitude is number, bias is number)
+{
+    const speeds = determineDefaultG1G1Speed(curvatureFrame1, curvatureFrame2);
+
+    const speed1 = speeds[0] * magnitude * 2 * (1 - bias);
+    const speed2 = speeds[1] * magnitude * 2 * bias;
+
+    const point1 = curvatureFrame1.frame.origin;
+    const point2 = curvatureFrame2.frame.origin;
+    const tangent1 = curvatureFrameTangent(curvatureFrame1);
+    const tangent2 = curvatureFrameTangent(curvatureFrame2);
+
+    createG1G1Manipulators(context, id, line(point1, tangent1), line(point2, tangent2),
+            speeds[0], speeds[1],
+            magnitude, bias);
+
+    // using k = ((degree - 1) / degree) * h / |t| ^ 2, where k is curvature, t is tangent vector, h is the minimum distance
+    // from the next control point to the extension of tangent direction
+    var degree = 5;
+    var P1 = point1 + (speed1 * tangent1);
+    var P4 = point2 + (speed2 * tangent2);
+    var distance1 = (degree / (degree - 1)) * curvatureFrame1.curvature * speed1 * speed1;
+    var P2 = P1 + distance1 * curvatureFrameNormal(curvatureFrame1);
+    var distance2 = (degree / (degree - 1)) * curvatureFrame2.curvature * speed2 * speed2;
+    var P3 = P4 + distance2 * curvatureFrameNormal(curvatureFrame2);
+
+    var controlPoints = [
+            curvatureFrame1.frame.origin,
+            P1,
+            P2,
+            P3,
+            P4,
+            curvatureFrame2.frame.origin
+    ];
+
+    return createBezierCurve(context, id, controlPoints);
+}
+
+function createBezierCurve(context is Context, id is Id, controlPoints is array)
+{
+    const degree = size(controlPoints) - 1;
+    var knots = makeArray(2 * size(controlPoints));
+    for (var i = 0; i < degree + 1; i += 1)
+    {
+        knots[i] = 0;
+        knots[i + degree + 1] = 1;
+    }
+
     const bCurve = {
-                'degree' : 3,
+                'degree' : degree,
                 'dimension' : 3,
                 'isPeriodic' : false,
                 'isRational' : false,
-                'knots' : [0, 0, 0, 0, 1, 1, 1, 1],
+                'knots' : knots,
                 'controlPoints' : controlPoints
             } as BSplineCurve;
+
     opCreateBSplineCurve(context, id, {
                 "bSplineCurve" : bCurve
             });

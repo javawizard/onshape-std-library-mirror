@@ -1,19 +1,19 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/tool.fs", version : "701.0");
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "701.0");
+export import(path : "onshape/std/tool.fs", version : "708.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "708.0");
 
-import(path : "onshape/std/boolean.fs", version : "701.0");
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/query.fs", version : "701.0");
-import(path : "onshape/std/topologyUtils.fs", version : "701.0");
-import(path : "onshape/std/transform.fs", version : "701.0");
-import(path : "onshape/std/units.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
+import(path : "onshape/std/boolean.fs", version : "708.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/query.fs", version : "708.0");
+import(path : "onshape/std/topologyUtils.fs", version : "708.0");
+import(path : "onshape/std/transform.fs", version : "708.0");
+import(path : "onshape/std/units.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
 
 /**
  * @internal
@@ -59,7 +59,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
 
         surfaceOperationTypePredicate(definition);
 
-        annotation { "Name" : "Edges", "Item name" : "Edge",
+        annotation { "Name" : "Edges", "Item name" : "edge",
                 "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
         definition.edges is array;
         for (var edge in definition.edges)

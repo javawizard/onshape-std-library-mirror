@@ -1,34 +1,34 @@
-FeatureScript 701; /* Automatically generated version */
+FeatureScript 708; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "701.0");
+export import(path : "onshape/std/query.fs", version : "708.0");
 
-import(path : "onshape/std/attributes.fs", version : "701.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "701.0");
-import(path : "onshape/std/box.fs", version : "701.0");
-import(path : "onshape/std/containers.fs", version : "701.0");
-import(path : "onshape/std/coordSystem.fs", version : "701.0");
-import(path : "onshape/std/curveGeometry.fs", version : "701.0");
-import(path : "onshape/std/error.fs", version : "701.0");
-import(path : "onshape/std/evaluate.fs", version : "701.0");
-import(path : "onshape/std/feature.fs", version : "701.0");
-import(path : "onshape/std/geomOperations.fs", version : "701.0");
-import(path : "onshape/std/manipulator.fs", version : "701.0");
-import(path : "onshape/std/math.fs", version : "701.0");
-import(path : "onshape/std/modifyFillet.fs", version : "701.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "701.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "701.0");
-import(path : "onshape/std/sketch.fs", version : "701.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "701.0");
-import(path : "onshape/std/string.fs", version : "701.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "701.0");
-import(path : "onshape/std/tool.fs", version : "701.0");
-import(path : "onshape/std/topologyUtils.fs", version : "701.0");
-import(path : "onshape/std/valueBounds.fs", version : "701.0");
-import(path : "onshape/std/vector.fs", version : "701.0");
+import(path : "onshape/std/attributes.fs", version : "708.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "708.0");
+import(path : "onshape/std/box.fs", version : "708.0");
+import(path : "onshape/std/containers.fs", version : "708.0");
+import(path : "onshape/std/coordSystem.fs", version : "708.0");
+import(path : "onshape/std/curveGeometry.fs", version : "708.0");
+import(path : "onshape/std/error.fs", version : "708.0");
+import(path : "onshape/std/evaluate.fs", version : "708.0");
+import(path : "onshape/std/feature.fs", version : "708.0");
+import(path : "onshape/std/geomOperations.fs", version : "708.0");
+import(path : "onshape/std/manipulator.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/modifyFillet.fs", version : "708.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "708.0");
+import(path : "onshape/std/sketch.fs", version : "708.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "708.0");
+import(path : "onshape/std/string.fs", version : "708.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
+import(path : "onshape/std/tool.fs", version : "708.0");
+import(path : "onshape/std/topologyUtils.fs", version : "708.0");
+import(path : "onshape/std/valueBounds.fs", version : "708.0");
+import(path : "onshape/std/vector.fs", version : "708.0");
 
 /**
  * Method of initializing sheet metal model
@@ -355,7 +355,8 @@ function convertFaces(context is Context, id is Id, definition, faces is Query, 
         opExtractSurface(context, surfaceId, {
                     "faces" : faces,
                     "offset" : offset,
-                    "useFacesAroundToTrimOffset" : trimWithFacesAround });
+                    "useFacesAroundToTrimOffset" : trimWithFacesAround,
+                    "tangentPropagation" : definition.tangentPropagation });
     }
     catch
     {
@@ -580,6 +581,7 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     if (nFaces != 0)
     {
         var useFacesAround = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V525_SM_THICKEN_NO_NEIGHBORS);
+        facesToConvert = append(facesToConvert, qEntityFilter(definition.bends, EntityType.FACE));
         bendsQ = convertFaces(context, id, definition, qUnion(facesToConvert), useFacesAround);
     }
     definition.keepInputParts = true;
@@ -1098,6 +1100,9 @@ export const sheetMetalRolled = defineSheetMetalFeature(function(context is Cont
             annotation { "Name" : "Faces or sketch regions to thicken",
                         "Filter" : EntityType.FACE && ConstructionObject.NO }
             definition.regions is Query;
+
+            annotation { "Name" : "Tangent propagation", "Default" : false }
+            definition.tangentPropagation is boolean;
         }
 
         if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
@@ -1210,6 +1215,7 @@ export const sheetMetalRolled = defineSheetMetalFeature(function(context is Cont
       "defaultBendReliefScale" : 1.0625,
       "bendsIncluded" : false,
       "clearance" : 0 * meter,
-      "keepInputParts" : false
+      "keepInputParts" : false,
+      "tangentPropagation" : false
     });
 
