@@ -482,6 +482,79 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
     }
 }
 
+function computeLimitEntityLegacy(context is Context, id is Id, faceToMove is Query, definition is map) returns map
+{
+    // Create a plane to use as a limit for opExtendSheetBody for extending faceToMove.
+    var limitEntity = try silent(evPlane(context, { "face" : faceToMove }));
+    if (limitEntity == undefined)
+    {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR))
+        {
+            // If moving a nonplanar face or up to an entity, create a tool body and use opMoveFace for positioning.
+            opExtractSurface(context, id, { "faces" : faceToMove });
+            limitEntity = qCreatedBy(id, EntityType.FACE);
+            if (definition.moveFaceType == MoveFaceType.OFFSET && isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES))
+            {
+                opOffsetFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitEntity }));
+            }
+            else
+            {
+                opMoveFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitEntity }));
+            }
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_NOT_PLANAR, ["moveFaces"], faceToMove);
+        }
+    }
+    else if (definition.moveFaceType == MoveFaceType.OFFSET)
+    {
+        limitEntity.origin += limitEntity.normal * definition.offsetDistance;
+    }
+    else
+    {
+        limitEntity = definition.transform * limitEntity;
+    }
+
+    return { "limitEntity" : limitEntity };
+}
+
+function computeLimitEntityAndHelpPoint(context is Context, id is Id, faceToMove is Query, definition is map) returns map
+{
+    var limitEntityTransform = identityTransform();
+    const faceToMoveTangentPlane = evFaceTangentPlane(context, { "face" : faceToMove, "parameter" : vector(0.5, 0.5) });
+    if (definition.transform != undefined)
+    {
+        limitEntityTransform = definition.transform;
+    }
+    else if (definition.moveFaceType == MoveFaceType.OFFSET)
+    {
+        limitEntityTransform = transform(faceToMoveTangentPlane.normal * definition.offsetDistance);
+    }
+
+    var limitEntity = try silent(evPlane(context, { "face" : faceToMove }));
+    if (limitEntity == undefined)
+    {
+        // If moving a nonplanar face or up to an entity, create a tool body and use opMoveFace for positioning.
+        opExtractSurface(context, id, { "faces" : faceToMove });
+        limitEntity = qCreatedBy(id, EntityType.FACE);
+        if (definition.moveFaceType == MoveFaceType.OFFSET && isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES))
+        {
+            opOffsetFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitEntity }));
+        }
+        else
+        {
+            opMoveFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitEntity }));
+        }
+    }
+    else
+    {
+        limitEntity = limitEntityTransform * limitEntity;
+    }
+
+    return { "helpPoint" : limitEntityTransform * faceToMoveTangentPlane.origin, "limitEntity" : limitEntity };
+}
+
 /**
  * @param smEntity : A query for a sheet metal edge to move.
  * @param faceToMove : A query for the sheet metal part face that the operation is moving.
@@ -521,40 +594,35 @@ function createEdgeLimitOption(context is Context, id is Id, definition is map, 
             operationInfo.derippedFaces = append(operationInfo.derippedFaces, qAttributeFilter(qEverything(EntityType.FACE), attributes[0]));
         }
 
-        // Create a plane to use as a limit for opExtendSheetBody for extending faceToMove.
-        var limitPlane = try silent(evPlane(context, { "face" : faceToMove }));
-        if (limitPlane == undefined)
+        var edgeLimitOptions = [];
+        var edgeLimitOptionBase = { "edge" : smEdge, "faceToExtend" : faceToExtend };
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM))
         {
-            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR))
+            if (definition.transformList != undefined)
             {
-                // If moving a nonplanar face or up to an entity, create a tool body and use opMoveFace for positioning.
-                opExtractSurface(context, id, {"faces" : faceToMove});
-                limitPlane = qCreatedBy(id, EntityType.FACE);
-                if (definition.moveFaceType == MoveFaceType.OFFSET && isAtVersionOrLater(context, FeatureScriptVersionNumber.V685_EXTEND_SHEET_BODY_STEP_EDGES))
+                // opExtendSheetBody only knows about the final position and not the rotation angle, so it will pick
+                // the closest solution. Give it two steps for large angles so it gets the expected result.
+                var cumulativeTransform = identityTransform();
+                for (var transform in definition.transformList)
                 {
-                    opOffsetFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitPlane }));
-                }
-                else
-                {
-                    opMoveFace(context, id + "moveFace", mergeMaps(definition, { "moveFaces" : limitPlane }));
+                    cumulativeTransform = transform * cumulativeTransform;
+                    definition.transform = cumulativeTransform;
+                    const edgeLimitOption = mergeMaps(edgeLimitOptionBase, computeLimitEntityAndHelpPoint(context, id, faceToMove, definition));
+                    edgeLimitOptions = append(edgeLimitOptions, edgeLimitOption);
                 }
             }
             else
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_NOT_PLANAR, ["moveFaces"], faceToMove);
+                edgeLimitOptions = [mergeMaps(edgeLimitOptionBase, computeLimitEntityAndHelpPoint(context, id, faceToMove, definition))];
             }
-        }
-        else if (definition.moveFaceType == MoveFaceType.OFFSET)
-        {
-            limitPlane.origin += limitPlane.normal * definition.offsetDistance;
         }
         else
         {
-            limitPlane = definition.transform * limitPlane;
+            edgeLimitOptions = [mergeMaps(edgeLimitOptionBase, computeLimitEntityLegacy(context, id, faceToMove, definition))];
         }
-        const edgeLimitOption = { "edge" : smEdge, "limitEntity" : limitPlane, "faceToExtend" : faceToExtend };
+
         const sheetMetalModel = qOwnerBody(smEdge);
-        operationInfo.edgeLimitOptions = append(operationInfo.edgeLimitOptions, edgeLimitOption);
+        operationInfo.edgeLimitOptions = concatenateArrays([operationInfo.edgeLimitOptions, edgeLimitOptions]);
         operationInfo.edgesToExtend = append(operationInfo.edgesToExtend, smEdge);
         operationInfo.sheetMetalModels = append(operationInfo.sheetMetalModels, sheetMetalModel);
     }
@@ -586,9 +654,25 @@ function createToolBodies(context is Context, id is Id, entities is Query, defin
         const smFace = qEntityFilter(smEntity, EntityType.FACE);
         if (size(evaluateQuery(context, smFace)) == 1)
         {
-            const partFaceNormal = evPlane(context, { "face" : evaluatedFace }).normal;
-            const smModelFaceNormal = evPlane(context, { "face" : smFace }).normal;
-            if (dot(partFaceNormal, smModelFaceNormal) > 0)
+            var partFaceNormal;
+            var smDefinitionFaceNormal;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM))
+            {
+                const partFaceNormalTangentPlane = evFaceTangentPlane(context, { "face" : evaluatedFace, "parameter" : vector(0.5, 0.5) });
+                const distanceResult = evDistance(context, {
+                            "side0" : partFaceNormalTangentPlane.origin,
+                            "side1" : smFace
+                        });
+                smDefinitionFaceNormal = evFaceTangentPlane(context, { "face" : smFace, "parameter" : distanceResult.sides[1].parameter }).normal;
+                partFaceNormal = partFaceNormalTangentPlane.normal;
+            }
+            else
+            {
+                partFaceNormal = evPlane(context, { "face" : evaluatedFace }).normal;
+                smDefinitionFaceNormal = evPlane(context, { "face" : smFace }).normal;
+            }
+
+            if (dot(partFaceNormal, smDefinitionFaceNormal) > 0)
             {
                 operationInfo.alignedSMFaces = append(operationInfo.alignedSMFaces, smFace);
             }
@@ -659,7 +743,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                     "attributePattern" : {} as SMAssociationAttribute });
 
         const edgeLimitOptions = concatenateArrays([derippingOperationInfo.edgeLimitOptions, operationInfo.edgeLimitOptions]);
-        const modifiedFaces = operationInfo.modifiedFaces;
+        var modifiedFaces = operationInfo.modifiedFaces;
         const smEdges = operationInfo.edgesToExtend;
         const trackingSMModel = startTracking(context, operationInfo.sheetMetalModels);
         const allFaces = qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces]));
@@ -667,7 +751,25 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         var edgesToTrack = qUnion(smEdges);
         if (newly2SidedAsRips)
         {
-            edgesToTrack = qEdgeAdjacent(qEdgeAdjacent(edgesToTrack, EntityType.FACE), EntityType.EDGE);
+            const allAdjacentEdges = qEdgeAdjacent(qEdgeAdjacent(edgesToTrack, EntityType.FACE), EntityType.EDGE);
+            // Rolled sheet metal has interior edges with no attributes, make sure to preserve those.
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM))
+            {
+                edgesToTrack = [];
+                for (var edge in evaluateQuery(context, allAdjacentEdges))
+                {
+                    const jointAttribute = try silent(getJointAttribute(context, edge));
+                    if (jointAttribute != undefined)
+                    {
+                        edgesToTrack = append(edgesToTrack, edge);
+                    }
+                }
+                edgesToTrack = qUnion(edgesToTrack);
+            }
+            else
+            {
+                edgesToTrack = allAdjacentEdges;
+            }
         }
         var modifiedEdges = startTracking(context, edgesToTrack);
         const associateChanges = qUnion([startTracking(context, allFaces), modifiedEdges]);
@@ -685,13 +787,14 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         }
         else
         {
+            var reFillet = isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM) ? definition.reFillet : false;
             if (size(operationInfo.alignedSMFaces) > 0)
             {
-                opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(operationInfo.alignedSMFaces), "offsetDistance" : definition.offsetDistance, "mergeFaces" : mergeFaces });
+                opOffsetFace(context, id + "offset" + unstableIdComponent(1), { "moveFaces" : qUnion(operationInfo.alignedSMFaces), "offsetDistance" : definition.offsetDistance, "mergeFaces" : mergeFaces, "reFillet" : reFillet });
             }
             if (size(operationInfo.antiAlignedSMFaces) > 0)
             {
-                opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(operationInfo.antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : mergeFaces });
+                opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(operationInfo.antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : mergeFaces, "reFillet" : reFillet });
             }
         }
         if (size(edgeLimitOptions) > 0)
@@ -733,6 +836,12 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         {
             addRipsForNewEdges(context, id,  modifiedEdges);
         }
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM) && definition.reFillet)
+        {
+            // With the addition of rolled sheet metal, the faces next to cylindrical faces also need to be rebuilt if reFillet is true.
+            modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
+        }
+
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]),
                 originalEntities, initialAssociationAttributes);
 

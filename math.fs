@@ -306,7 +306,7 @@ export function argMin(arr is array)
  * Return the index of the largest element of an array, as determined
  * by the `>` operator, or undefined if the array is empty.
  *
- * @example `argMax([1 * inch, 2 * inch, 3 * inch])` returns `3`
+ * @example `argMax([1 * inch, 2 * inch, 3 * inch])` returns `2`
  */
 export function argMax(arr is array)
 {

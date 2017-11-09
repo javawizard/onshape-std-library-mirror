@@ -244,6 +244,10 @@ export function opFillet(context is Context, id is Id, definition is map)
  *          is closed.  @optional
  *      @field endDerivative {Vector} : A `Vector` with length units that specifies the derivative at the end of
  *          the resulting spline.  Ignored if spline is closed.  @optional
+ *      @field start2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the start of
+ *          the resulting spline.  Ignored if spline is closed, or if `startDerivative` is not defined @optional
+ *      @field end2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the end of
+ *          the resulting spline.  Ignored if spline is closed, or if `endDerivative` is not defined @optional
  * }}
  */
 export function opFitSpline(context is Context, id is Id, definition is map)
@@ -625,7 +629,7 @@ export function opTransform(context is Context, id is Id, definition is map)
  *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
  *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
  *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
- *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend"). Both offset and limitEntity are optional
+ *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend", "helpPoint"). Both offset and limitEntity are optional
  *                                      and will override the other offset and limitEntity parameters for the specified edge.
  *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
  * }}
@@ -658,12 +662,12 @@ export function opExtractSurface(context is Context, id is Id, definition is map
 }
 
 /**
- * @internal
- * Generates surfaces representing the outlines of parts or surfaces projected onto a plane
+ * Generates surfaces representing the outlines of parts or surfaces projected onto a surface
  * @param id : @autocomplete `id + "createOutline1"`
  * @param definition {{
  *      @field tools {Query} : The tool parts or surfaces
- *      @field plane {Query} : The plane that the surfaces will be created on
+ *      @field target {Query} : The face whose surface will be used to create outline.
+ *                              Currently only planes, cylinders or extruded surfaces are supported.
  * }}
  */
 export function opCreateOutline(context is Context, id is Id, definition is map)

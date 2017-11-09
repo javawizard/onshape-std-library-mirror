@@ -83,7 +83,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            annotation { "Name" : "Profiles", "Item name" : "Profile",
+            annotation { "Name" : "Profiles", "Item name" : "profile",
                 "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.sheetProfilesArray is array;
             for (var profile in definition.sheetProfilesArray)
@@ -97,7 +97,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
         else
         {
-            annotation { "Name" : "Profiles", "Item name" : "Profile",
+            annotation { "Name" : "Profiles", "Item name" : "profile",
                 "Driven query" : "wireProfileEntities", "Item label template" : "#wireProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.wireProfilesArray is array;
             for (var profile in definition.wireProfilesArray)
@@ -132,7 +132,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.addGuides)
         {
-            annotation { "Name" : "Guides", "Item name" : "Guide",
+            annotation { "Name" : "Guides", "Item name" : "guide",
                 "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)

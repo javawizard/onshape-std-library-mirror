@@ -1333,7 +1333,7 @@ export enum ErrorStringEnum
     SPLINE_TWO_POINTS,
     /* Select at least three vertices to make a closed spline. */
     CLOSED_SPLINE_THREE_POINTS,
-    /* Select exactly one edge for end condition. */
+    /* Select exactly one entity for end condition. */
     TANGENCY_ONE_EDGE,
     /* Cannot evaluate tangency for end condition. */
     FIT_SPLINE_CANNOT_EVALUATE_END_CONDITION,
@@ -1545,7 +1545,21 @@ export enum ErrorStringEnum
     /* All instances have been hidden. */
     DRAWING_ALL_INSTANCES_HIDDEN,
     /* All tangents at highlighted vertices should be coplanar. */
-    FILL_SUPPORT_NOT_SMOOTH_INTERNAL
+    FILL_SUPPORT_NOT_SMOOTH_INTERNAL,
+    /* External constraints can only be to the same flattened sheet metal as the sketch. */
+    SKETCH_CONSTRAINT_WRONG_SHEET_METAL_BODY,
+    /* A sketch on flattened sheet metal cannot have constraints to 3D parts. */
+    SKETCH_CONSTRAINT_FLAT_IN_3D,
+    /* A sketch on 3D parts cannot have constraints to flattened sheet metal. */
+    SKETCH_CONSTRAINT_3D_IN_FLAT,
+    /* Can match curvature only if direction is defined by an edge. */
+    FIT_SPLINE_CURVATURE_FACE,
+    /* Cannot evaluate curvature for end condition. */
+    FIT_SPLINE_CANNOT_EVALUATE_CURVATURE_END_CONDITION,
+    /* Cannot match curvature if direction is not defined. */
+    FIT_SPLINE_NEED_DIRECTION_FOR_CURVATURE,
+    /* The workspace no longer exists. */
+    WORKSPACE_NO_LONGER_EXISTS
 }
 
 

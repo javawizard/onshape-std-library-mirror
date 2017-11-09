@@ -85,6 +85,11 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
             throw "This joint type is not supported";
         }
 
+        if (!isEntityAppropriateForAttribute(context, jointEdge, newAttribute))
+        {
+            throw "Can not assign attribute type";
+        }
+
         var jointEdgesQ = replaceSMAttribute(context, existingAttribute, newAttribute);
         updateSheetMetalGeometry(context, id, { "entities" : jointEdgesQ ,
                                                 "associatedChanges" : jointEdgesQ

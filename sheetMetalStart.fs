@@ -355,7 +355,8 @@ function convertFaces(context is Context, id is Id, definition, faces is Query, 
         opExtractSurface(context, surfaceId, {
                     "faces" : faces,
                     "offset" : offset,
-                    "useFacesAroundToTrimOffset" : trimWithFacesAround });
+                    "useFacesAroundToTrimOffset" : trimWithFacesAround,
+                    "tangentPropagation" : definition.tangentPropagation });
     }
     catch
     {
@@ -580,6 +581,7 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     if (nFaces != 0)
     {
         var useFacesAround = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V525_SM_THICKEN_NO_NEIGHBORS);
+        facesToConvert = append(facesToConvert, qEntityFilter(definition.bends, EntityType.FACE));
         bendsQ = convertFaces(context, id, definition, qUnion(facesToConvert), useFacesAround);
     }
     definition.keepInputParts = true;
@@ -1098,6 +1100,9 @@ export const sheetMetalRolled = defineSheetMetalFeature(function(context is Cont
             annotation { "Name" : "Faces or sketch regions to thicken",
                         "Filter" : EntityType.FACE && ConstructionObject.NO }
             definition.regions is Query;
+
+            annotation { "Name" : "Tangent propagation", "Default" : false }
+            definition.tangentPropagation is boolean;
         }
 
         if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
@@ -1210,6 +1215,7 @@ export const sheetMetalRolled = defineSheetMetalFeature(function(context is Cont
       "defaultBendReliefScale" : 1.0625,
       "bendsIncluded" : false,
       "clearance" : 0 * meter,
-      "keepInputParts" : false
+      "keepInputParts" : false,
+      "tangentPropagation" : false
     });
 

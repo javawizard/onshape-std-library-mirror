@@ -82,7 +82,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.isVariable)
         {
-            annotation { "Name" : "Vertices", "Item name" : "Vertex",
+            annotation { "Name" : "Vertices", "Item name" : "vertex",
                         "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex" }
             definition.vertexSettings is array;
             for (var setting in definition.vertexSettings)

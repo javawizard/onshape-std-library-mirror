@@ -50,6 +50,7 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
@@ -141,7 +142,7 @@ export function newSketch(context is Context, id is Id, value is map) returns Sk
 precondition
 {
     annotation { "Name" : "Sketch plane",
-                "Filter" : GeometryType.PLANE,
+                "Filter" : (GeometryType.PLANE && AllowFlattenedGeometry.NO) || (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && GeometryType.PLANE),
                 "MaxNumberOfPicks" : 1 }
     value.sketchPlane is Query;
 }
@@ -150,6 +151,12 @@ precondition
 
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
+
+    // Look to see if there are references to flattened sheet metal bodies. If there are, the plane origin will
+    // not be set to the projected world origin to prevent bend order id changes from moving the sketch.
+    const correspondingInPart = try silent(qSMCorrespondingInPart(context, value.sketchPlane, EntityType.FACE));
+    const isInFlat = correspondingInPart == undefined ? false : size(evaluateQuery(context, correspondingInPart)) > 0 &&
+        size(evaluateQuery(context, qCorrespondingInFlat(value.sketchPlane))) == 0;
 
     value.planeReference = value.sketchPlane;
     const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
@@ -163,8 +170,11 @@ precondition
     value.sketchPlane = sketchPlane;
 
     // We can't use the usual wrapped function because the context does not have the version set here yet
-    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
-        value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
+    if (!isInFlat)
+    {
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+            value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
+    }
 
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
     {

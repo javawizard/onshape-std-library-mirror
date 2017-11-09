@@ -18,7 +18,9 @@ export enum StandardContentValueFieldType
     annotation {"Name" : "Static text"}
     STATIC,
     annotation {"Name" : "Check box"}
-    CHECKBOX
+    CHECKBOX,
+    annotation {"Name" : "Material List"}
+    MATERIALLIST
 }
 
 
