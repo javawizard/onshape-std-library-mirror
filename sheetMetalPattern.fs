@@ -1,22 +1,24 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "708.0");
-import(path : "onshape/std/boolean.fs", version : "708.0");
-import(path : "onshape/std/containers.fs", version : "708.0");
-import(path : "onshape/std/evaluate.fs", version : "708.0");
-import(path : "onshape/std/feature.fs", version : "708.0");
-import(path : "onshape/std/holeAttribute.fs", version : "708.0");
-import(path : "onshape/std/patternCommon.fs", version : "708.0");
-import(path : "onshape/std/topologyUtils.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "708.0");
-import(path : "onshape/std/curveGeometry.fs", version : "708.0");
-import(path : "onshape/std/math.fs", version : "708.0");
-import(path : "onshape/std/units.fs", version : "708.0");
-import(path : "onshape/std/vector.fs", version : "708.0");
+import(path : "onshape/std/attributes.fs", version : "718.0");
+import(path : "onshape/std/boolean.fs", version : "718.0");
+import(path : "onshape/std/containers.fs", version : "718.0");
+import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/evaluate.fs", version : "718.0");
+import(path : "onshape/std/feature.fs", version : "718.0");
+import(path : "onshape/std/holeAttribute.fs", version : "718.0");
+import(path : "onshape/std/math.fs", version : "718.0");
+import(path : "onshape/std/patternCommon.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
+import(path : "onshape/std/topologyUtils.fs", version : "718.0");
+import(path : "onshape/std/transform.fs", version : "718.0");
+import(path : "onshape/std/units.fs", version : "718.0");
+import(path : "onshape/std/vector.fs", version : "718.0");
 
 /**
  * @internal
@@ -26,7 +28,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
     {
         const topLevelId = definition.topLevelId;
 
-        var definitionFaces;
+        var updateMap;
         if (isPartPattern(definition.patternType))
         {
             var solidBodyInput = qBodyType(qEntityFilter(definition.entities, EntityType.BODY), BodyType.SOLID);
@@ -39,75 +41,222 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             // We cannot body pattern the entire underlying sheet body because the selected part may only correspond to
             // a subset of the walls of the sheet body. This happens when the sheet metal has a rip or rips that leave the
             // underlying sheet body as one body, but builds out as multiple thickened sheet metal parts.
-            definitionFaces = getSMDefinitionEntities(context, qOwnedByBody(definition.entities), EntityType.FACE);
+            const definitionFaces = getSMDefinitionEntities(context, qOwnedByBody(definition.entities), EntityType.FACE);
+
+            updateMap = sheetMetalWallPattern(context, topLevelId, id, definitionFaces, definition);
         }
         else if (isFacePattern(definition.patternType))
         {
             // Short-circuit wall pattern
-            throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED);
+            if (definition.testEnv != true)
+                throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED);
 
-            definitionFaces = getSMDefinitionEntities(context, definition.entities);
-            if (size(definitionFaces) !=
-                    size(evaluateQuery(context, qEntityFilter(qUnion(definitionFaces), EntityType.FACE))))
+            const separatedEntities = separateEntitiesForFacePattern(context, topLevelId, definition);
+            const definitionWalls = separatedEntities.definitionWalls;
+
+            // Combine edges and vertices with their tracking queries such that if wall pattern changes their identity,
+            // they can still be evaluated
+            var definitionEdgesAndVerticesQ = qUnion(separatedEntities.definitionEdgesAndVertices);
+            definitionEdgesAndVerticesQ = qUnion([definitionEdgesAndVerticesQ, startTracking(context, definitionEdgesAndVerticesQ)]);
+
+            var modifiedEntities = [];
+            var deletedAttributes = [];
+            if (size(definitionWalls) > 0)
             {
-                throw "Entries should be sheet metal walls";
+                const wallUpdateMap = sheetMetalWallPattern(context, topLevelId, id + "wallPattern", definitionWalls, definition);
+                modifiedEntities = [wallUpdateMap.modifiedEntities];
+                deletedAttributes = wallUpdateMap.deletedAttributes;
             }
+
+            const definitionEdgesAndVertices = evaluateQuery(context, definitionEdgesAndVerticesQ);
+            if (size(definitionEdgesAndVertices) > 0)
+            {
+
+                const cutUpdateMap = sheetMetalCutPattern(context, topLevelId, id + "cutPattern", definitionEdgesAndVertices, definition);
+                modifiedEntities = append(modifiedEntities, cutUpdateMap.modifiedEntities);
+                deletedAttributes = concatenateArrays([deletedAttributes, cutUpdateMap.deletedAttributes]);
+            }
+
+            updateMap = {
+                "modifiedEntities" : qUnion(modifiedEntities),
+                "deletedAttributes" : deletedAttributes
+            };
         }
         else
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN, ["patternType"]);
         }
-        const definitionFacesQ = qUnion(definitionFaces);
-
-        var modelIdToModelAndFaces = groupFacesByModelAttribute(context, definitionFaces);
-
-        var attributeIdCounter = new box(0);
-        var modifiedEntities = [];
-        var deletedAttributes = [];
-        for (var modelIdToModelAndFacesPair in modelIdToModelAndFaces)
-        {
-            // Pattern the faces of the given model
-            const modelAttribute = modelIdToModelAndFacesPair.value.modelAttribute;
-            const patternModelId = id + modelIdToModelAndFacesPair.key;
-            const faces = qUnion(modelIdToModelAndFacesPair.value.faces);
-            const patternResult = patternFacesForModel(context, topLevelId, patternModelId, definition, modelAttribute,
-                    faces, attributeIdCounter);
-
-            // Store the results for later use
-            modifiedEntities = append(modifiedEntities, patternResult.modifiedEntities);
-            deletedAttributes = concatenateArrays([deletedAttributes, patternResult.deletedAttributes]);
-        }
-        modifiedEntities = qUnion(modifiedEntities);
 
         // Build out final sheet metal
         try(updateSheetMetalGeometry(context, id + "smUpdate", {
-                    "entities" : modifiedEntities,
-                    "deletedAttributes" : deletedAttributes
+                    "entities" : updateMap.modifiedEntities,
+                    "deletedAttributes" : updateMap.deletedAttributes
                 }));
         processSubfeatureStatus(context, topLevelId, {"subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true});
     }, {});
 
+//////////////////// FACE PATTERN ENTITY SORTING ////////////////////
+
+function separateEntitiesForFacePattern(context is Context, topLevelId is Id, definition is map) returns map
+{
+    const definitionEntities = getSMDefinitionEntities(context, definition.entities);
+
+    const definitionFacesQ = qEntityFilter(qUnion(definitionEntities), EntityType.FACE);
+    const definitionFaces = evaluateQuery(context, definitionFacesQ);
+
+    // Allow the user to select definition edges and vertices that lie on a definition face, but ignore them internally.
+    // They will be successfully patterned by the wall pattern of the definition face.
+    const definitionFaceEdges = qEdgeAdjacent(definitionFacesQ, EntityType.EDGE);
+    const originalDefinitionEdges = qEntityFilter(qUnion(definitionEntities), EntityType.EDGE);
+    const definitionEdgesQ = qSubtraction(originalDefinitionEdges, definitionFaceEdges);
+    const definitionEdges = evaluateQuery(context, definitionEdgesQ);
+
+    // Some vertices (fillets/chamfers) can be face patterned
+    const definitionFaceVertices = qVertexAdjacent(definitionFacesQ, EntityType.VERTEX);
+    const originalDefinitionVertices = qEntityFilter(qUnion(definitionEntities), EntityType.VERTEX);
+    const definitionVerticesQ = qSubtraction(originalDefinitionVertices, definitionFaceVertices);
+    const definitionVertices = evaluateQuery(context, definitionVerticesQ);
+
+    failFacePatternAcrossJoint(context, topLevelId, definitionEdges, definitionVertices, definition);
+
+    return {
+        "definitionWalls" : definitionFaces,
+        "definitionEdgesAndVertices" : concatenateArrays([definitionEdges, definitionVertices])
+    };
+}
+
+function failFacePatternAcrossJoint(context is Context, topLevelId is Id, definitionEdges is array,
+        definitionVertices is array, definition is map)
+{
+    var errorEntities = [];
+    for (var edge in definitionEdges)
+    {
+        // Ensure that each vertex of this edge only connects to two edges, otherwise the edge is involved in a joint.
+        for (var vertex in evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX)))
+        {
+            if (size(evaluateQuery(context, qVertexAdjacent(vertex, EntityType.EDGE))) != 2)
+            {
+                errorEntities = append(errorEntities, edge);
+            }
+        }
+    }
+
+    for (var vertex in definitionVertices)
+    {
+        // Ensure that each vertex only connects to two edges, otherwise the vertex is involved in a joint.
+        if (size(evaluateQuery(context, qVertexAdjacent(vertex, EntityType.EDGE))) != 2)
+        {
+            errorEntities = append(errorEntities, vertex);
+        }
+    }
+
+    if (size(errorEntities) > 0)
+    {
+        var associationAttributes = getAttributes(context, {
+                    "entities" : qUnion(errorEntities),
+                    "attributePattern" : {} as SMAssociationAttribute
+                });
+        var errorFaces = [];
+        for (var attribute in associationAttributes)
+        {
+            var associatedFacesQ = qEntityFilter(qAttributeQuery(attribute), EntityType.FACE);
+            errorFaces = append(errorFaces, associatedFacesQ);
+        }
+        var selectedErrorFaces = qIntersection([qUnion(errorFaces), definition.entities]);
+
+        var errorEntities = qUnion([selectedErrorFaces, qEdgeAdjacent(selectedErrorFaces, EntityType.EDGE)]);
+        setErrorEntities(context, topLevelId, { "entities" : errorEntities });
+        throw regenError(ErrorStringEnum.SHEET_METAL_FACE_PATTERN_NO_JOINT, ["entities"]);
+    }
+}
+
+//////////////////// WALL PATTERN ////////////////////
+
+/**
+ * Execute a sheet metal wall pattern on the specified faces of the sheet metal definition sheet body.
+ * @returns {{
+ *     @field modifiedEntities {Query} : entities created or modified by the wall pattern
+ *     @field deletedAttributes {array} : attributes deleted by the wall pattern
+ * }}
+ */
+function sheetMetalWallPattern(context is Context, topLevelId is Id, id is Id, definitionFaces is array, definition is map) returns map
+{
+    const definitionFacesQ = qUnion(definitionFaces);
+
+    checkMirrorBodiesWillBuild(context, topLevelId, definitionFacesQ, definition);
+
+    var modelIdToModelAndEntities = groupEntitiesByModelAttribute(context, definitionFaces);
+
+    var attributeIdCounter = new box(0);
+    var modifiedEntities = [];
+    var deletedAttributes = [];
+    for (var modelIdToModelAndEntitiesPair in modelIdToModelAndEntities)
+    {
+        // Pattern the faces of the given model
+        const modelAttribute = modelIdToModelAndEntitiesPair.value.modelAttribute;
+        const patternModelId = id + modelIdToModelAndEntitiesPair.key;
+        const faces = qUnion(modelIdToModelAndEntitiesPair.value.entities);
+        const patternResult = patternWallsForModel(context, topLevelId, patternModelId, definition, modelAttribute,
+                faces, attributeIdCounter);
+
+        // Store the results for later use
+        modifiedEntities = append(modifiedEntities, patternResult.modifiedEntities);
+        deletedAttributes = concatenateArrays([deletedAttributes, patternResult.deletedAttributes]);
+    }
+
+    return {
+        "modifiedEntities" : qUnion(modifiedEntities),
+        "deletedAttributes" : deletedAttributes
+    };
+}
+
+/**
+ * BEL-80023: Fail the feature if any sheet metal definition faces to mirror are coplanar with the mirror plane, and our
+ * feature is set to ADD.  If we allow these cases through, the seed will consume the antiparallel patterned face,
+ * and the user will see a passing feature with no change.
+ */
+function checkMirrorBodiesWillBuild(context is Context, topLevelId is Id, faces is Query, definition is map)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V715_SM_PATTERN_FAIL_MIRROR))
+        return;
+
+    if (!isMirror(definition.patternType) || definition.operationType != NewBodyOperationType.ADD)
+        return;
+
+    const parallelSeeds = qParallelPlanes(faces, definition.mirrorPlaneCalculated);
+    for (var seed in evaluateQuery(context, parallelSeeds))
+    {
+        const seedPlane = evPlane(context, { "face" : seed });
+        if (coplanarPlanes(definition.mirrorPlaneCalculated, seedPlane))
+        {
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([seed, qEdgeAdjacent(seed, EntityType.EDGE)]) });
+            throw regenError(ErrorStringEnum.BOOLEAN_INVALID, ["entities"]);
+        }
+    }
+}
+
+// TODO - REORGANIZE: Move into 'utilities' section
 /**
  * Return a map from model id to a map of  {
  *         "modelAttribute" : the model attribute corresponding to the model
- *         "faces" : an array of the subset of input faces which belong to the model
+ *         "entities" : an array of the subset of input entities which belong to the model
  * }
  */
-function groupFacesByModelAttribute(context is Context, faces is array) returns map
+function groupEntitiesByModelAttribute(context is Context, entities is array) returns map
 {
-    var modelIdToModelAndFaces = {};
-    for (var face in faces)
+    var modelIdToModelAndEntities = {};
+    for (var entity in entities)
     {
-        const modelAttribute = try(getSmObjectTypeAttributes(context, qOwnerBody(face), SMObjectType.MODEL)[0]);
+        const modelAttribute = try(getSmObjectTypeAttributes(context, qOwnerBody(entity), SMObjectType.MODEL)[0]);
         if (modelAttribute == undefined)
-            throw "Sheet metal face owner body should have an associated model attribute";
+            throw "Sheet metal entity owner body should have an associated model attribute";
         const modelId = modelAttribute.attributeId;
-        if (modelIdToModelAndFaces[modelId] == undefined)
-            modelIdToModelAndFaces[modelId] = { "modelAttribute" : modelAttribute, "faces" : [face] };
+        if (modelIdToModelAndEntities[modelId] == undefined)
+            modelIdToModelAndEntities[modelId] = { "modelAttribute" : modelAttribute, "entities" : [entity] };
         else
-            modelIdToModelAndFaces[modelId].faces = append(modelIdToModelAndFaces[modelId].faces, face);
+            modelIdToModelAndEntities[modelId].entities = append(modelIdToModelAndEntities[modelId].entities, entity);
     }
-    return modelIdToModelAndFaces;
+    return modelIdToModelAndEntities;
 }
 
 /**
@@ -455,10 +604,12 @@ function reapplyCornerAttributes(context is Context, topLevelId is Id, smTrackin
     }
 }
 
+
+// TODO - REORGANIZE: Move below sheetMetalWallPattern
 /**
  * Pattern the faces of one sheet metal model.  Return a map containing modified entities and deleted attributes.
  */
-function patternFacesForModel(context is Context, topLevelId is Id, id is Id, definition is map,
+function patternWallsForModel(context is Context, topLevelId is Id, id is Id, definition is map,
         modelAttribute is SMAttribute, faces is Query, attributeIdCounter is box) returns map
 {
     const modelId = modelAttribute.attributeId;
@@ -481,7 +632,7 @@ function patternFacesForModel(context is Context, topLevelId is Id, id is Id, de
 
     const smTrackingAndAttributeByType = createSMTrackingAndAttributeByType(context, facesAndSurrounding);
     const holeTrackingAndAttribute = createHoleTrackingAndAttribute(context, facesAndSurrounding);
-    var adjustForRips = isAtVersionOrLater(context, FeatureScriptVersionNumber.V706_SM_PATTERN_RIP);
+    var adjustForRips = isAtVersionOrLater(context, FeatureScriptVersionNumber.V706_SM_PATTERN_RIP) && isPartPattern(definition.patternType);
     const limitingDataForRipsAtRisk = (adjustForRips) ? collectLimitingDataForRipsAtRisk(context, faces, qOwnerBody(definition.entities)) : [];
 
     // Extracted the selected faces into isolated sheet bodies. Connected selected faces will stay connected as a single
@@ -491,18 +642,9 @@ function patternFacesForModel(context is Context, topLevelId is Id, id is Id, de
     if (adjustForRips)
         adjustForLostRips(context, topLevelId, id, limitingDataForRipsAtRisk);
 
-    const seedQ = qCreatedBy(extractId, EntityType.BODY);
-    // Pattern the sheet bodies
-    var definitionForOp = definition;
-    definitionForOp.entities = seedQ;
-    const isMirror = (definition.patternType == MirrorType.FACE) || (definition.patternType == MirrorType.PART);
-    definitionForOp.patternType = isMirror ? MirrorType.PART : PatternType.PART;
-    const patternId = id + "pattern";
-    opPattern(context, patternId, definitionForOp);
-    const createdBodies = qCreatedBy(patternId, EntityType.BODY);
-
-    // Delete the seed extracted body
-    opDeleteBodies(context, id + "deleteBodies", { "entities" : seedQ});
+    // Pattern the seeds and delete them
+    const createdBodies = patternSeeds(context, id, qCreatedBy(extractId, EntityType.BODY), definition);
+    const numCreatedBodies = size(evaluateQuery(context, createdBodies));
 
     // Assign necessary attributes for created sheets to be built out as sheet metal
     // Assign these attributes before the patterned bodies are booleaned back onto owner sheet model
@@ -520,13 +662,31 @@ function patternFacesForModel(context is Context, topLevelId is Id, id is Id, de
 
     // Apply booleans based on options set in the definition.
     // Face patterns should always boolean, user has control of part pattern boolean.
-    booleanSMBodiesIfNecessary(context, topLevelId, id + "boolean", createdBodies, allBodiesOfModel, definition);
+    booleanSMBodiesIfNecessary(context, topLevelId, id + "boolean", faces, createdBodies, allBodiesOfModel, definition);
 
     // Apply model attribute to bodies that did not manage to boolean
-    if (size(evaluateQuery(context, createdBodies)) > 0)
+    const numRemainingBodies = size(evaluateQuery(context, createdBodies));
+    if (numRemainingBodies > 0)
     {
-        setAttribute(context, { "entities" : createdBodies, "attribute" : modelAttribute });
-        allBodiesOfModel = qUnion([allBodiesOfModel, createdBodies]);
+        if (isPartPattern(definition.patternType))
+        {
+            setAttribute(context, { "entities" : createdBodies, "attribute" : modelAttribute });
+            allBodiesOfModel = qUnion([allBodiesOfModel, createdBodies]);
+        }
+        else
+        {
+            const errorEntities = qUnion([createdBodies, qOwnedByBody(createdBodies, EntityType.EDGE)]);
+            if (numRemainingBodies == numCreatedBodies) // No bodies attached
+            {
+                throwFacePatternError(context, topLevelId, createdBodies, definition.patternType);
+            }
+            else // some bodies attached
+            {
+                setErrorEntities(context, topLevelId, { "entities" : errorEntities });
+                reportFeatureInfo(context, topLevelId, ErrorStringEnum.SHEET_METAL_FACE_PATTERN_FLOATING_WALL);
+                opDeleteBodies(context, id + "deleteFloating", { "entities" : createdBodies });
+            }
+        }
     }
 
     // Assign association attributes and gather modified entities
@@ -548,16 +708,18 @@ function patternFacesForModel(context is Context, topLevelId is Id, id is Id, de
 /**
  * Boolean bodies onto master sheet body if necessary
  */
-function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is Id, bodiesToAttach is Query,
+function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is Id, seedFaces is Query, bodiesToAttach is Query,
         allBodiesOfModel is Query, definition is map)
 {
     var needsBoolean = false;
-    var booleanScope;
+    var tools = bodiesToAttach;
+    var targets;
+    var targetsAndToolsNeedGrouping = true;
     if (isFacePattern(definition.patternType))
     {
         // Always attempt to boolean the face pattern
         needsBoolean = true;
-        booleanScope = allBodiesOfModel;
+        targets = allBodiesOfModel;
     }
     else if (isPartPattern(definition.patternType))
     {
@@ -569,30 +731,48 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
             needsBoolean = true;
             if (definition.defaultScope)
             {
-                booleanScope = allBodiesOfModel;
+                targets = allBodiesOfModel;
             }
             else
             {
-                if (size(evaluateQuery(context, definition.booleanScope)) == 0)
+                targets = qNothing();
+
+                if (size(evaluateQuery(context, definition.booleanScope)) != 0)
                 {
-                    setErrorEntities(context, topLevelId, { "entities" : bodiesToAttach });
-                    throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"]);
+                    if (queryContainsNonSheetMetal(context, definition.booleanScope))
+                    {
+                        var nonSheetMetal = separateSheetMetalQueries(context, definition.booleanScope).nonSheetMetalQueries;
+                        setErrorEntities(context, topLevelId, { "entities" : qUnion([bodiesToAttach, nonSheetMetal]) });
+                        throw regenError(ErrorStringEnum.SHEET_METAL_ADD_WRONG_MODEL, ["booleanScope"]);
+                    }
+                    var targetsArr = getSMDefinitionEntities(context, definition.booleanScope);
+                    targets = qUnion(targetsArr);
+                    var scopeFromCorrectModel = qIntersection([targets, allBodiesOfModel]);
+                    if (size(targetsArr) != size(evaluateQuery(context, scopeFromCorrectModel)))
+                    {
+                        var scopeFromIncorrectModel = qSubtraction(targets, scopeFromCorrectModel);
+                        setErrorEntities(context, topLevelId, { "entities" : qUnion([bodiesToAttach, scopeFromIncorrectModel]) });
+                        throw regenError(ErrorStringEnum.SHEET_METAL_ADD_WRONG_MODEL, ["booleanScope"]);
+                    }
                 }
-                if (queryContainsNonSheetMetal(context, definition.booleanScope))
+            }
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V712_SKIP_TARGET_BOOLEAN))
+            {
+                // mimic subfeatureToolsTargets(...) in boolean.fs by adding the seed bodies to tools and setting grouping as appropriate
+                var seedBodies = qOwnerBody(seedFaces);
+                tools = qUnion([seedBodies, tools]);
+                targets = qSubtraction(targets, seedBodies);
+                if (size(evaluateQuery(context, targets)) == 0)
                 {
-                    var nonSheetMetal = separateSheetMetalQueries(context, definition.booleanScope).nonSheetMetalQueries;
-                    setErrorEntities(context, topLevelId, { "entities" : qUnion([bodiesToAttach, nonSheetMetal]) });
-                    throw regenError(ErrorStringEnum.SHEET_METAL_ADD_WRONG_MODEL, ["booleanScope"]);
+                    targetsAndToolsNeedGrouping = false;
                 }
-                var booleanScopeArr = getSMDefinitionEntities(context, definition.booleanScope);
-                booleanScope = qUnion(booleanScopeArr);
-                var scopeFromCorrectModel = qIntersection([booleanScope, allBodiesOfModel]);
-                if (size(booleanScopeArr) != size(evaluateQuery(context, scopeFromCorrectModel)))
-                {
-                    var scopeFromIncorrectModel = qSubtraction(booleanScope, scopeFromCorrectModel);
-                    setErrorEntities(context, topLevelId, { "entities" : qUnion([bodiesToAttach, scopeFromIncorrectModel]) });
-                    throw regenError(ErrorStringEnum.SHEET_METAL_ADD_WRONG_MODEL, ["booleanScope"]);
-                }
+            }
+
+            if (targetsAndToolsNeedGrouping && size(evaluateQuery(context, targets)) == 0)
+            {
+                setErrorEntities(context, topLevelId, { "entities" : bodiesToAttach });
+                throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"]);
             }
         }
         else if (definition.operationType == NewBodyOperationType.REMOVE || definition.operationType == NewBodyOperationType.INTERSECT)
@@ -608,9 +788,9 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
         try
         {
             opBoolean(context, id, {
-                        "tools" : bodiesToAttach,
-                        "targets" : booleanScope,
-                        "targetsAndToolsNeedGrouping" : true,
+                        "tools" : tools,
+                        "targets" : targets,
+                        "targetsAndToolsNeedGrouping" : targetsAndToolsNeedGrouping,
                         "operationType" : BooleanOperationType.UNION,
                         "allowSheets" : true
                     });
@@ -936,5 +1116,288 @@ function getRipSideFace(context is Context, ripEdge is Query, inBodies is Query,
         return candidateFaces[1];
     else
         return candidateFaces[0];
+}
+
+//////////////////// CUT PATTERN ////////////////////
+
+/**
+ * Execute a sheet metal cut pattern on the specified edges of the sheet metal definition sheet body. `definition.entities`
+ * must include the pocket face of the cut that the user intends to pattern.
+ * @returns {{
+ *     @field modifiedEntities {Query} : entities created or modified by the wall pattern
+ *     @field deletedAttributes {array} : attributes deleted by the wall pattern
+ * }}
+ */
+function sheetMetalCutPattern(context is Context, topLevelId is Id, id is Id, definitionEdgesAndVertices is array, definition is map) returns map
+{
+    var modelIdToModelAndEntities = groupEntitiesByModelAttribute(context, definitionEdgesAndVertices);
+
+    var attributeIdCounter = new box(0);
+    var modifiedEntities = [];
+    var deletedAttributes = [];
+    for (var modelIdToModelAndEntitiesPair in modelIdToModelAndEntities)
+    {
+        // Pattern the faces of the given model
+        const modelAttribute = modelIdToModelAndEntitiesPair.value.modelAttribute;
+        const patternModelId = id + modelIdToModelAndEntitiesPair.key;
+        const edgesAndVertices = modelIdToModelAndEntitiesPair.value.entities;
+        const patternResult = patternCutsForModel(context, topLevelId, patternModelId, definition, modelAttribute,
+                edgesAndVertices, attributeIdCounter);
+
+        // Store the results for later use
+        modifiedEntities = append(modifiedEntities, patternResult.modifiedEntities);
+        deletedAttributes = concatenateArrays([deletedAttributes, patternResult.deletedAttributes]);
+    }
+
+    return {
+        "modifiedEntities" : qUnion(modifiedEntities),
+        "deletedAttributes" : deletedAttributes
+    };
+}
+
+/**
+ * Pattern the faces of one sheet metal model.  Return a map containing modified entities and deleted attributes.
+ */
+function patternCutsForModel(context is Context, topLevelId is Id, id is Id, definition is map,
+        modelAttribute is SMAttribute, edgesAndVertices is array, attributeIdCounter is box) returns map
+{
+    const modelId = modelAttribute.attributeId;
+    var allBodiesOfModel = qAttributeQuery(asSMAttribute({
+                "objectType" : SMObjectType.MODEL,
+                "attributeId" : modelId
+            }));
+
+    const originalEntities = evaluateQuery(context, qOwnedByBody(allBodiesOfModel));
+    const initialAssociationAttributes = getAttributes(context, {
+                "entities" : qUnion(originalEntities),
+                "attributePattern" : {} as SMAssociationAttribute });
+
+    const cutSurfaces = extractCutTools(context, id + "tools", edgesAndVertices, definition);
+    const toolBodies = patternSeeds(context, id + "pattern", cutSurfaces, definition);
+    const toolFaceTracking = collectToolFaceTracking(context, toolBodies);
+
+    makeCuts(context, topLevelId, id + "cut", definition, toolBodies, toolFaceTracking, allBodiesOfModel, attributeIdCounter);
+
+    opDeleteBodies(context, id + "deleteTools", { "entities" : toolBodies });
+
+    // Assign association attributes and gather modified entities
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, originalEntities, initialAssociationAttributes);
+
+    return {
+        "modifiedEntities" : toUpdate.modifiedEntities,
+        "deletedAttributes" : toUpdate.deletedAttributes
+    };
+}
+
+function extractCutTools(context is Context, id is Id, edgesAndVertices is array, definition is map) returns Query
+{
+    var facesToExtract = [];
+    for (var entity in edgesAndVertices)
+    {
+        var associationAttributes = getAttributes(context, {
+                    "entities" : entity,
+                    "attributePattern" : {} as SMAssociationAttribute
+                });
+        if (size(associationAttributes) != 1)
+            throw "Entity was not part of a sheet metal model";
+
+        var associatedFacesQ = qEntityFilter(qAttributeQuery(associationAttributes[0]), EntityType.FACE);
+        var associatedFaces = evaluateQuery(context, qIntersection([associatedFacesQ, definition.entities]));
+
+        // This is different than retrieving all the edges around the associated face. The entities adjacent to the
+        // associated face are not necessarily associated with the underlying entity in question.
+        var associatedEdgesQ = qEntityFilter(qAttributeQuery(associationAttributes[0]), EntityType.EDGE);
+        var edgesAroundSelectedFaces = qEdgeAdjacent(definition.entities, EntityType.EDGE);
+        var associatedEdges = evaluateQuery(context, qIntersection([associatedEdgesQ, edgesAroundSelectedFaces]));
+
+        if (size(associatedFaces) != 1 || size(associatedEdges) < 2)
+            throw "Trouble finding associations for cut pattern";
+
+        facesToExtract = append(facesToExtract, associatedFaces[0]);
+    }
+    opExtractSurface(context, id + "extract", { "faces" : qUnion(facesToExtract) });
+
+    const toolEdges = evaluateQuery(context, qCreatedBy(id + "extract", EntityType.EDGE));
+    const edgesToExtend = filter(toolEdges, function(edge) { return !edgeIsTwoSided(context, edge); });
+    opExtendSheetBody(context, id + "extend", {
+                "extendMethod" : ExtendSheetBoundingType.EXTEND_BY_DISTANCE,
+                "entities" : qUnion(edgesToExtend),
+                "distance" : SM_THIN_EXTENSION
+            });
+
+    return qCreatedBy(id + "extract", EntityType.BODY);
+}
+
+/**
+ * Return an array of maps: each map will have a `tool` field that contains a tool body Query and a `faces` field that contains
+ * an an array of maps.  Each of these maps will have a `face` field containing a Query for a face of the tool, and a `tracking`
+ * field containing a tracking Query for partial dependencies on the specified face.
+ */
+function collectToolFaceTracking(context is Context, toolBodies is Query) returns array
+{
+    var toolInformation = [];
+    for (var body in evaluateQuery(context, toolBodies))
+    {
+        var singleToolInformation = { "tool" : body, "faces" : []};
+        for (var face in evaluateQuery(context, qOwnedByBody(body, EntityType.FACE)))
+        {
+            const tracking = startTracking(context, {
+                         "subquery" : face,
+                         "trackPartialDependency" : true
+                     });
+            singleToolInformation.faces = append(singleToolInformation.faces, { "face" : face, "tracking" : tracking });
+        }
+        toolInformation = append(toolInformation, singleToolInformation);
+    }
+    return toolInformation;
+}
+
+/**
+ * Split the bodies of the model with the tool bodies, then delete the internal faces to make cuts.  Use toolFaceTracking
+ * to determine the cuts made by each tool (see collectToolFaceTracking for information about this data structure).
+ */
+function makeCuts(context is Context, topLevelId is Id, id is Id, definition is map, toolBodies is Query,
+        toolFaceTracking is array, allBodiesOfModel is Query, attributeIdCounter is box)
+{
+    try
+    {
+        opSplitFace(context, id + "split", {
+                    "faceTargets" : qOwnedByBody(allBodiesOfModel, EntityType.FACE),
+                    "bodyTools" : toolBodies
+                });
+    }
+    catch
+    {
+        processSubfeatureStatus(context, topLevelId, { "subfeatureId" : id + "split", "propagateErrorDisplay" : true });
+        const errorEntities = qUnion([toolBodies, qOwnedByBody(toolBodies, EntityType.EDGE)]);
+        throwFacePatternError(context, topLevelId, errorEntities, definition.patternType);
+    }
+
+    // Keep track of the set of faces to delete.  Use a set for easy lookup.
+    var facesToDelete = {};
+    var failedTools = [];
+    for (var toolInformation in toolFaceTracking)
+    {
+        var toolMadeCut = false;
+
+        for (var faceInformation in toolInformation.faces)
+        {
+            var holeAttribute = getHoleAttributes(context, faceInformation.face);
+            holeAttribute = size(holeAttribute) > 0 ? holeAttribute[0] : undefined;
+
+            // Calculate the tool face normal once if it is a plane, otherwise calculate the value for each resulting edge.
+            const initialToolFaceNormal = try silent(evPlane(context, { "face" : faceInformation.face }).normal);
+
+            for (var resultingEdge in evaluateQuery(context, qEntityFilter(faceInformation.tracking, EntityType.EDGE)))
+            {
+                toolMadeCut = true;
+
+                // Apply hole attribute if necessary.
+                if (holeAttribute != undefined && size(getHoleAttributes(context, resultingEdge)) == 0)
+                {
+                    holeAttribute.attributeId = toAttributeId(topLevelId + attributeIdCounter[]);
+                    attributeIdCounter[] += 1;
+                    setAttribute(context, { "entities" : resultingEdge, "attribute" : holeAttribute });
+                }
+
+                // Find which resulting face to delete by checking the cross product of the test face co-edge tangent line and
+                // the test face normal against the normal of the tool face.  If these two vectors point in the same direction,
+                // keep the test face, otherwise keep the other face.
+                const testFace = qNthElement(qEdgeAdjacent(resultingEdge, EntityType.FACE), 0);
+                const otherFace = qNthElement(qEdgeAdjacent(resultingEdge, EntityType.FACE), 1);
+
+                // If both the test face and the other face have been marked for deletion, we can skip. We cannot do
+                // something similar for faces to keep because the face we find to keep in this step may be deleted
+                // by a later step if we have overlapping cut tools.
+                if (facesToDelete[testFace] == true && facesToDelete[otherFace] == true)
+                    continue;
+
+                const coEdgeTangentLine = evEdgeTangentLine(context, {
+                            "edge" : resultingEdge,
+                            "face" : testFace,
+                            "parameter" : 0.5
+                        });
+                const faceNormal = evFaceNormalAtEdge(context, {
+                            "face" : testFace,
+                            "edge" : resultingEdge,
+                            "parameter" : 0.5
+                        });
+                const intoOtherFace = cross(coEdgeTangentLine.direction, faceNormal);
+
+                var toolFaceNormal = initialToolFaceNormal;
+                if (toolFaceNormal == undefined)
+                {
+                    const toolFaceParameter = evDistance(context, {
+                                "side0" : faceInformation.face,
+                                "side1" : coEdgeTangentLine.origin
+                            }).sides[0].parameter;
+                    toolFaceNormal = evFaceTangentPlane(context, {
+                                "face" : faceInformation.face,
+                                "parameter" : toolFaceParameter
+                            }).normal;
+                }
+
+                const faceToDelete = (dot(intoOtherFace, toolFaceNormal) < 0) ? testFace : otherFace;
+                facesToDelete[faceToDelete] = true;
+            }
+        }
+
+        if (!toolMadeCut)
+        {
+            failedTools = append(failedTools, toolInformation.tool);
+        }
+    }
+
+    if (size(facesToDelete) == 0)
+    {
+        const errorEntities = qUnion([toolBodies, qOwnedByBody(toolBodies, EntityType.EDGE)]);
+        throwFacePatternError(context, topLevelId, errorEntities, definition.patternType);
+    }
+    if (size(failedTools) != 0)
+    {
+        failedTools = qUnion(failedTools);
+        const errorEntities = qUnion([failedTools, qOwnedByBody(failedTools, EntityType.EDGE)]);
+        setErrorEntities(context, topLevelId, { "entities" : errorEntities });
+        reportFeatureInfo(context, topLevelId, ErrorStringEnum.SHEET_METAL_FACE_PATTERN_FLOATING_CUT);
+    }
+
+    opDeleteFace(context, id + "cutModel", {
+                "deleteFaces" : qUnion(keys(facesToDelete)),
+                "includeFillet" : false,
+                "capVoid" : false,
+                "leaveOpen" : true
+            });
+
+}
+
+//////////////////// UTILITIES ////////////////////
+
+/**
+ * Pattern the seed bodies and delete them.  Returned the patterned copies.
+ */
+function patternSeeds(context is Context, id is Id, seeds is Query, definition is map) returns Query
+{
+    // Pattern the sheet bodies
+    var definitionForOp = definition;
+    definitionForOp.entities = seeds;
+    const isMirror = (definition.patternType == MirrorType.FACE) || (definition.patternType == MirrorType.PART);
+    definitionForOp.patternType = isMirror ? MirrorType.PART : PatternType.PART;
+    const patternId = id + "pattern";
+    opPattern(context, patternId, definitionForOp);
+
+    // Delete the seed extracted body
+    opDeleteBodies(context, id + "deleteBodies", { "entities" : seeds});
+
+    return qCreatedBy(patternId, EntityType.BODY);
+}
+
+/**
+ * Throw an appropriate face pattern error given the pattern type.
+ */
+function throwFacePatternError(context is Context, topLevelId is Id, errorEntities is Query, patternType)
+{
+    setErrorEntities(context, topLevelId, { "entities" : errorEntities });
+    const error = (patternType == PatternType.FACE) ? ErrorStringEnum.PATTERN_FACE_FAILED : ErrorStringEnum.MIRROR_FACE_FAILED;
+    throw regenError(error);
 }
 

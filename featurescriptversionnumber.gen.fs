@@ -1,4 +1,4 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -605,7 +605,15 @@ export enum FeatureScriptVersionNumber
     V705_G2_CURVES,
     V706_SM_PATTERN_RIP,
     V707_FITSPLINE_UPGRADE,
-    V708_SM_BOOLEAN
+    V708_SM_BOOLEAN,
+    V711_LOFT_BUG_FIX,
+    V712_SKIP_TARGET_BOOLEAN,
+    V713_SM_PATTERN_COLORS,
+    V714_SM_BEND_DETERMINISM,
+    V715_SM_PATTERN_FAIL_MIRROR,
+    V716_PS_VERSION_30_0_280,
+    V717_DEFER_SM_BODY_DELETE_2,
+    V718_ADD_DEPRECATED_FS_FOR_MOBILE
 }
 
 /**
@@ -616,6 +624,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V708_SM_BOOLEAN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V718_ADD_DEPRECATED_FS_FOR_MOBILE;
 
 

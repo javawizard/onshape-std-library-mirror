@@ -1,4 +1,4 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 708; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "708.0");
-import(path : "onshape/std/coordSystem.fs", version : "708.0");
-import(path : "onshape/std/curveGeometry.fs", version : "708.0");
-import(path : "onshape/std/mathUtils.fs", version : "708.0");
-import(path : "onshape/std/string.fs", version : "708.0");
-import(path : "onshape/std/units.fs", version : "708.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "708.0");
+import(path : "onshape/std/context.fs", version : "718.0");
+import(path : "onshape/std/coordSystem.fs", version : "718.0");
+import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/mathUtils.fs", version : "718.0");
+import(path : "onshape/std/string.fs", version : "718.0");
+import(path : "onshape/std/units.fs", version : "718.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "718.0");
 
 //===================================== Plane ======================================
 

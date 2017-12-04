@@ -1,4 +1,4 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,7 @@ FeatureScript 708; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "708.0");
+import(path : "onshape/std/math.fs", version : "718.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.

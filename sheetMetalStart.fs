@@ -1,34 +1,34 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "708.0");
+export import(path : "onshape/std/query.fs", version : "718.0");
 
-import(path : "onshape/std/attributes.fs", version : "708.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "708.0");
-import(path : "onshape/std/box.fs", version : "708.0");
-import(path : "onshape/std/containers.fs", version : "708.0");
-import(path : "onshape/std/coordSystem.fs", version : "708.0");
-import(path : "onshape/std/curveGeometry.fs", version : "708.0");
-import(path : "onshape/std/error.fs", version : "708.0");
-import(path : "onshape/std/evaluate.fs", version : "708.0");
-import(path : "onshape/std/feature.fs", version : "708.0");
-import(path : "onshape/std/geomOperations.fs", version : "708.0");
-import(path : "onshape/std/manipulator.fs", version : "708.0");
-import(path : "onshape/std/math.fs", version : "708.0");
-import(path : "onshape/std/modifyFillet.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "708.0");
-import(path : "onshape/std/sketch.fs", version : "708.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "708.0");
-import(path : "onshape/std/string.fs", version : "708.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
-import(path : "onshape/std/tool.fs", version : "708.0");
-import(path : "onshape/std/topologyUtils.fs", version : "708.0");
-import(path : "onshape/std/valueBounds.fs", version : "708.0");
-import(path : "onshape/std/vector.fs", version : "708.0");
+import(path : "onshape/std/attributes.fs", version : "718.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "718.0");
+import(path : "onshape/std/box.fs", version : "718.0");
+import(path : "onshape/std/containers.fs", version : "718.0");
+import(path : "onshape/std/coordSystem.fs", version : "718.0");
+import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/error.fs", version : "718.0");
+import(path : "onshape/std/evaluate.fs", version : "718.0");
+import(path : "onshape/std/feature.fs", version : "718.0");
+import(path : "onshape/std/geomOperations.fs", version : "718.0");
+import(path : "onshape/std/manipulator.fs", version : "718.0");
+import(path : "onshape/std/math.fs", version : "718.0");
+import(path : "onshape/std/modifyFillet.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
+import(path : "onshape/std/sketch.fs", version : "718.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "718.0");
+import(path : "onshape/std/string.fs", version : "718.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
+import(path : "onshape/std/tool.fs", version : "718.0");
+import(path : "onshape/std/topologyUtils.fs", version : "718.0");
+import(path : "onshape/std/valueBounds.fs", version : "718.0");
+import(path : "onshape/std/vector.fs", version : "718.0");
 
 /**
  * Method of initializing sheet metal model

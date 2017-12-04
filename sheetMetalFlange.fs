@@ -1,28 +1,28 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "708.0");
-import(path : "onshape/std/boolean.fs", version : "708.0");
-import(path : "onshape/std/containers.fs", version : "708.0");
-import(path : "onshape/std/curveGeometry.fs", version : "708.0");
-import(path : "onshape/std/extrude.fs", version : "708.0");
-import(path : "onshape/std/evaluate.fs", version : "708.0");
-import(path : "onshape/std/feature.fs", version : "708.0");
-import(path : "onshape/std/math.fs", version : "708.0");
-import(path : "onshape/std/matrix.fs", version : "708.0");
-import(path : "onshape/std/query.fs", version : "708.0");
-import(path : "onshape/std/sketch.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "708.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "708.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
-import(path : "onshape/std/topologyUtils.fs", version : "708.0");
-import(path : "onshape/std/units.fs", version : "708.0");
-import(path : "onshape/std/valueBounds.fs", version : "708.0");
-import(path : "onshape/std/vector.fs", version : "708.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "708.0");
+import(path : "onshape/std/attributes.fs", version : "718.0");
+import(path : "onshape/std/boolean.fs", version : "718.0");
+import(path : "onshape/std/containers.fs", version : "718.0");
+import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/extrude.fs", version : "718.0");
+import(path : "onshape/std/evaluate.fs", version : "718.0");
+import(path : "onshape/std/feature.fs", version : "718.0");
+import(path : "onshape/std/math.fs", version : "718.0");
+import(path : "onshape/std/matrix.fs", version : "718.0");
+import(path : "onshape/std/query.fs", version : "718.0");
+import(path : "onshape/std/sketch.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "718.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
+import(path : "onshape/std/topologyUtils.fs", version : "718.0");
+import(path : "onshape/std/units.fs", version : "718.0");
+import(path : "onshape/std/valueBounds.fs", version : "718.0");
+import(path : "onshape/std/vector.fs", version : "718.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "718.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -554,7 +554,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
             // Error display
             processSubfeatureStatus(context, topLevelId, {"subfeatureId" : extendIndexedId, "propagateErrorDisplay" : true});
             setErrorEntities(context, topLevelId, { "entities" : updatedEdge });
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["edges"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
         changedEntities = append(changedEntities, qCreatedBy(extendIndexedId));
         index += 1;
@@ -563,6 +563,13 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     for (var e in originalFlangeEdges)
     {
         var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
+        if (size(newEdge) == 0)
+        {
+            const errorFace = edgeToFlangeData[e].adjacentFace;
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qEdgeAdjacent(errorFace, EntityType.EDGE)]) });
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+        // checking for multiples happens in updateEdgeToFlangeDataAfterAlignmentChange(...)
         updatedEdges = append(updatedEdges, newEdge[0]);
     }
 
@@ -862,7 +869,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         //find Edge among vertexEdges also adjacent to adjacentFace
         edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
         //check for sanity that the newly found edgeX is collinear with the one we found initially
-        var lineNewX = evLine(context, {"edge" : edgeX});
+        var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
+                            try silent(evLine(context, {"edge" : edgeX})) : evLine(context, {"edge" : edgeX});
         if (lineNewX == undefined || !tolerantCoLinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
             return undefined;
         sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);

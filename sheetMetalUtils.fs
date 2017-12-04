@@ -1,28 +1,28 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "708.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "708.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "708.0");
-import(path : "onshape/std/containers.fs", version : "708.0");
-import(path : "onshape/std/coordSystem.fs", version : "708.0");
-import(path : "onshape/std/curveGeometry.fs", version : "708.0");
-import(path : "onshape/std/evaluate.fs", version : "708.0");
-import(path : "onshape/std/feature.fs", version : "708.0");
-import(path : "onshape/std/math.fs", version : "708.0");
-import(path : "onshape/std/manipulator.fs", version : "708.0");
-import(path : "onshape/std/query.fs", version : "708.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "708.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "708.0");
-import(path : "onshape/std/string.fs", version : "708.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "708.0");
-import(path : "onshape/std/tool.fs", version : "708.0");
-import(path : "onshape/std/valueBounds.fs", version : "708.0");
-import(path : "onshape/std/vector.fs", version : "708.0");
-import(path : "onshape/std/topologyUtils.fs", version : "708.0");
-import(path : "onshape/std/transform.fs", version : "708.0");
+import(path : "onshape/std/attributes.fs", version : "718.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "718.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "718.0");
+import(path : "onshape/std/containers.fs", version : "718.0");
+import(path : "onshape/std/coordSystem.fs", version : "718.0");
+import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/evaluate.fs", version : "718.0");
+import(path : "onshape/std/feature.fs", version : "718.0");
+import(path : "onshape/std/math.fs", version : "718.0");
+import(path : "onshape/std/manipulator.fs", version : "718.0");
+import(path : "onshape/std/query.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "718.0");
+import(path : "onshape/std/string.fs", version : "718.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
+import(path : "onshape/std/tool.fs", version : "718.0");
+import(path : "onshape/std/valueBounds.fs", version : "718.0");
+import(path : "onshape/std/vector.fs", version : "718.0");
+import(path : "onshape/std/topologyUtils.fs", version : "718.0");
+import(path : "onshape/std/transform.fs", version : "718.0");
 
 
 
@@ -49,6 +49,13 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
     adjustCornerBreakAttributes(context, args.entities);
     @updateSheetMetalGeometry(context, id, args);
  }
+
+/**
+ * @internal
+ * Used in boolean and sheet metal cut pattern to extend through the sheet body at a distance greater than boolean
+ * tolerance.
+ */
+export const SM_THIN_EXTENSION = 1.e-4 * meter;
 
 /**
 * Direction of material from definition body. For old models (before V629_SM_MODEL_FRONT_N_BACK)

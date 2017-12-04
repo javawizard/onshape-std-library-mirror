@@ -1,4 +1,4 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -66,3 +66,14 @@ export function isFacePattern(patternType)
 {
     return (patternType == PatternType.FACE || patternType == MirrorType.FACE);
 }
+
+/**
+ * @internal
+ * @param patternType : Either a `PatternType` or a `MirrorType`
+ * @return {boolean} : `true` if the given enum value represents a mirror.
+ */
+export function isMirror(patternType)
+{
+    return (patternType == MirrorType.PART || patternType == MirrorType.FEATURE || patternType == MirrorType.FACE);
+}
+

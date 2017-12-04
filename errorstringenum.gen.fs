@@ -1,4 +1,4 @@
-FeatureScript 708; /* Automatically generated version */
+FeatureScript 718; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1558,8 +1558,25 @@ export enum ErrorStringEnum
     FIT_SPLINE_CANNOT_EVALUATE_CURVATURE_END_CONDITION,
     /* Cannot match curvature if direction is not defined. */
     FIT_SPLINE_NEED_DIRECTION_FOR_CURVATURE,
+    /* The configuration parameter list has invalid entries */
+    CONFIGURATION_HAS_BAD_PARAMETERS,
+    /* The current configuration parameter list has invalid entries */
+    CONFIGURATION_HAS_BAD_CURRENT_CONFIGURATION,
+    FEATURE_CONFIGURED_PARAMETER_VALUES_HAVE_IDS,
     /* The workspace no longer exists. */
-    WORKSPACE_NO_LONGER_EXISTS
+    WORKSPACE_NO_LONGER_EXISTS,
+    /* Cannot stack, invalid stack mode specified. */
+    CONTENT_STACKING_INVALID_MODE,
+    /* Existing components do not exist to perform stacking. */
+    CONTENT_STACKING_INVALID_COMPONENTS,
+    /* Component on top of existing stack cannot accept additional top stack components. */
+    CONTENT_STACKING_INVALID_TOP_STACK,
+    /* Cannot pattern faces that touch a joint. */
+    SHEET_METAL_FACE_PATTERN_NO_JOINT,
+    /* Some patterned faces could not cut the sheet metal model. */
+    SHEET_METAL_FACE_PATTERN_FLOATING_CUT,
+    /* Some patterned faces could not join the sheet metal model. */
+    SHEET_METAL_FACE_PATTERN_FLOATING_WALL
 }
 
 
