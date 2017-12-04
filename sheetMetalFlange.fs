@@ -554,7 +554,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
             // Error display
             processSubfeatureStatus(context, topLevelId, {"subfeatureId" : extendIndexedId, "propagateErrorDisplay" : true});
             setErrorEntities(context, topLevelId, { "entities" : updatedEdge });
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["edges"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
         changedEntities = append(changedEntities, qCreatedBy(extendIndexedId));
         index += 1;
@@ -563,6 +563,13 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     for (var e in originalFlangeEdges)
     {
         var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
+        if (size(newEdge) == 0)
+        {
+            const errorFace = edgeToFlangeData[e].adjacentFace;
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qEdgeAdjacent(errorFace, EntityType.EDGE)]) });
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+        // checking for multiples happens in updateEdgeToFlangeDataAfterAlignmentChange(...)
         updatedEdges = append(updatedEdges, newEdge[0]);
     }
 
@@ -862,7 +869,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         //find Edge among vertexEdges also adjacent to adjacentFace
         edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
         //check for sanity that the newly found edgeX is collinear with the one we found initially
-        var lineNewX = evLine(context, {"edge" : edgeX});
+        var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
+                            try silent(evLine(context, {"edge" : edgeX})) : evLine(context, {"edge" : edgeX});
         if (lineNewX == undefined || !tolerantCoLinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
             return undefined;
         sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);

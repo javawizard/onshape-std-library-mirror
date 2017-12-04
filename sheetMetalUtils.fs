@@ -51,6 +51,13 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
  }
 
 /**
+ * @internal
+ * Used in boolean and sheet metal cut pattern to extend through the sheet body at a distance greater than boolean
+ * tolerance.
+ */
+export const SM_THIN_EXTENSION = 1.e-4 * meter;
+
+/**
 * Direction of material from definition body. For old models (before V629_SM_MODEL_FRONT_N_BACK)
 * It is BOTH, for new models FRONT/BACK depends on oppositeDirection in sheetMetalStart
 */

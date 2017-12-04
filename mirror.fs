@@ -80,6 +80,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         if (planeResult == undefined)
             throw regenError(ErrorStringEnum.MIRROR_NO_PLANE, ["mirrorPlane"]);
 
+        definition.mirrorPlaneCalculated = planeResult;
         const transform = mirrorAcross(planeResult);
 
         definition.transforms = [transform];

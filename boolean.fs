@@ -271,6 +271,7 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
  * @returns {{
  *    @field targets {Query}: targets to use
  *    @field tools {Query}: tools to use
+ *    @field targetsAndToolsNeedGrouping {boolean}: target and tool grouping to use in [opBoolean]
  * }}
  */
 function subfeatureToolsTargets(context is Context, id is Id, definition is map) returns map
@@ -289,14 +290,27 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
     output.tools = defaultTools;
     output.targets = (definition.defaultScope != false) ? qAllModifiableSolidBodies() : definition.booleanScope;
     output.targets = qSubtraction(output.targets, defaultTools);
+    output.targetsAndToolsNeedGrouping = true;
 
     // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.
     // (This logic comes from the fact that grouping of tools/targets has a significant effect on output.)
     if (definition.operationType == NewBodyOperationType.ADD &&
-        size(evaluateQuery(context, output.targets)) <= 0)
+        size(evaluateQuery(context, output.targets)) == 0)
     {
-        output.tools = resultQuery;
-        output.targets = definition.seed;
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V712_SKIP_TARGET_BOOLEAN))
+        {
+            // BEL-37474 made this behave as if we were just using all tools and targets as tools with no grouping
+            output.tools = resultQuery;
+            output.targets = definition.seed;
+        }
+        else
+        {
+            // Always keep the seed in the tools.  Do not group if we have seeds.
+            if (size(evaluateQuery(context, seedQuery)) > 0)
+            {
+                output.targetsAndToolsNeedGrouping = false;
+            }
+        }
     }
 
     return output;
@@ -346,10 +360,9 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         }
         throw regenError(errorEnum, solidsQuery);
     }
-    if (size(evaluateQuery(context, booleanDefinition.targets)) == 0)
+    if (booleanDefinition.targetsAndToolsNeedGrouping && size(evaluateQuery(context, booleanDefinition.targets)) == 0)
         throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"], solidsQuery);
 
-    booleanDefinition.targetsAndToolsNeedGrouping = true;
     const boolId = id + "boolean";
     try(booleanBodies(context, boolId, booleanDefinition));
     processSubfeatureStatus(context, id, { "subfeatureId" : boolId, "propagateErrorDisplay" : true });
@@ -837,12 +850,13 @@ function trimTool(context is Context, id is Id, thickened is Query, tool is Quer
     return qOwnerBody(qCreatedBy(intersectionId));
 }
 
-function createOutline(context is Context, id is Id, trimmed is Query, face is Query)
+function createOutline(context is Context, id is Id, trimmed is Query, face is Query, capFacesTracking is Query) returns Query
 {
     const outlineId = id + "outline";
     opCreateOutline(context, outlineId, {
                 "tools" : trimmed,
-                "target" : face
+                "target" : face,
+                "offsetFaces" : qIntersection([capFacesTracking, qOwnedByBody(trimmed, EntityType.FACE)])
             });
     return qCreatedBy(outlineId, EntityType.FACE);
 }
@@ -864,9 +878,11 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
     const toolCount = size(evaluateQuery(context, tool));
     var tools = [];
     var allTrimmed = [];
+    var capFacesQ = qEntityFilter(qUnion([qCapEntity(id + "thicken", true), qCapEntity(id + "thicken", false)]), EntityType.FACE);
     for (var index = 0; index < toolCount; index += 1)
     {
         const subId = id + unstableIdComponent(index);
+        var trackingCapFaces = startTracking(context, capFacesQ);
         const trimmed = trimTool(context, subId, thickened, qNthElement(tool, index));
         var trimResultIsValid = false;
         if (trimmed != undefined)
@@ -884,7 +900,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
         if (trimResultIsValid)
         {
             allTrimmed = append(allTrimmed, trimmed);
-            const outline = createOutline(context, subId, trimmed, face);
+            const outline = createOutline(context, subId, trimmed, face, trackingCapFaces);
             if (outline != undefined)
             {
                 tools = append(tools, outline);
@@ -899,7 +915,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
         if (!planarFace)
         {
             toDeleteArray = append(toDeleteArray, toolsOut);
-            const thin = 1.e-4 * meter;
+            const thin = SM_THIN_EXTENSION;
             toolsOut = thickenFaces(context, id + "thickenTools",
                 {"frontThickness" : thin, "backThickness" : thin}, qUnion(tools));
         }

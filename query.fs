@@ -101,7 +101,7 @@ export predicate canBeQuery(value)
  * @value FACE_OR_EDGE_BOUNDED_FACES : Used in [qFaceOrEdgeBoundedFaces]
  * @value HOLE_FACES                 : Used in [qHoleFaces]
  * @value FILLET_FACES               : Used in [qFilletFaces]
- * @value PATTERN                    : Used in [qMatchingFaces]
+ * @value PATTERN                    : Used in [qMatching]
  * @value CONTAINS_POINT             : Used in [qContainsPoint]
  * @value INTERSECTS_LINE            : Used in [qIntersectsLine]
  * @value INTERSECTS_PLANE           : Used in [qIntersectsPlane]
@@ -124,6 +124,9 @@ export predicate canBeQuery(value)
  * @value LAMINAR_DEPENDENCY         : Used in [qLaminarDependency]
  * @value PLANE_PARALLEL_DIRECTION   : Used in [qPlanesParallelToDirection]
  * @value FACE_PARALLEL_DIRECTION    : Used in [qFacesParallelToDirection]
+ * @value TANGENT_CONNECTED_EDGES    : Used in [qTangentConnectedEdges]
+ * @value LOOP_EDGES                 : Used in [qLoopEdges]
+ * @value PARALLEL_EDGES             : Used in [qParallelEdges]
  ******************************************************************************/
 export enum QueryType
 {
@@ -167,6 +170,10 @@ export enum QueryType
     HOLE_FACES,
     FILLET_FACES,
     PATTERN,
+    // edge related queries
+    TANGENT_CONNECTED_EDGES,
+    LOOP_EDGES,
+    PARALLEL_EDGES,
     //Containment / Intersection
     CONTAINS_POINT,
     INTERSECTS_LINE,
@@ -1074,6 +1081,34 @@ export function qTangentConnectedFaces(subquery is Query) returns Query
 }
 
 /**
+ * A query that returns a tangent chain of edges with seed edges defined by `subquery`.
+ */
+export function qTangentConnectedEdges(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.TANGENT_CONNECTED_EDGES, "subquery" : subquery } as Query;
+}
+
+/**
+ * A query for a set of edges defining a loop. If the `subquery` has laminar edges, the query will extend
+ * to include the laminar loops that contain the edges. For face selections in `subquery` it returns
+ * the loops forming the outer boundary of joined faces.
+ */
+export function qLoopEdges(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.LOOP_EDGES, "subquery" : subquery } as Query;
+}
+
+/**
+ * A query that returns edges that are parallel to the edges in `subquery`.
+ * Only edges from the owner bodies of seeds are returned.
+ */
+export function qParallelEdges(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.PARALLEL_EDGES, "subquery" : subquery } as Query;
+}
+
+
+/**
  * Given a face and an edge, query for all faces bounded by the given face, on
  * the side of the given edge.
  *
@@ -1175,18 +1210,24 @@ precondition
 }
 
 /**
- * Matches any faces in the `context` which are geometrically identical (same size and shape) to the face in
- * `subquery`.
+ * Matches any faces or edges within owner bodies of entities in `subquery` which are geometrically identical
+ * (same size and shape) to the face or edge in `subquery`.
  *
- * If `subquery` resolves to multiple faces, all are matched independently. That is,
- * `qMatchingFaces(qUnion([q1, q2]))` returns the same thing as
- * `qUnion([qMatchingFaces(q1), qMatchingFaces(q2)])`.
+ * If `subquery` resolves to multiple entities, all are matched independently. That is,
+ * `qMatching(qUnion([q1, q2]))` returns the same thing as
+ * `qUnion([qMatching(q1), qMatching(q2)])`.
  */
-export function qMatchingFaces(subquery is Query) returns Query
+export function qMatching(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.PATTERN, "subquery" : subquery } as Query;
 }
 
+/** @internal */
+annotation { "Deprecated" : "Prefer `qMatching`" }
+export function qMatchingFaces(subquery is Query) returns Query
+{
+    return qMatching(subquery);
+}
 
 //===================================== Containment / Intersection Queries =====================================
 /**

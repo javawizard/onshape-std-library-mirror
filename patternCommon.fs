@@ -66,3 +66,14 @@ export function isFacePattern(patternType)
 {
     return (patternType == PatternType.FACE || patternType == MirrorType.FACE);
 }
+
+/**
+ * @internal
+ * @param patternType : Either a `PatternType` or a `MirrorType`
+ * @return {boolean} : `true` if the given enum value represents a mirror.
+ */
+export function isMirror(patternType)
+{
+    return (patternType == MirrorType.PART || patternType == MirrorType.FEATURE || patternType == MirrorType.FACE);
+}
+

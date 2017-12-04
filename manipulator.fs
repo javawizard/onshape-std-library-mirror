@@ -341,11 +341,14 @@ function evaluateQueries(context is Context, definition is map) returns map
             const arraySize = @size(entry.value);
             for (var i = 0; i < arraySize; i += 1)
             {
-                for (var itemEntry in entry.value[i])
+                if (entry.value[i] is map)
                 {
-                    if (itemEntry.value is Query)
+                    for (var itemEntry in entry.value[i])
                     {
-                        definition[entry.key][i][itemEntry.key] = qUnion(evaluateQuery(context, itemEntry.value));
+                        if (itemEntry.value is Query)
+                        {
+                            definition[entry.key][i][itemEntry.key] = qUnion(evaluateQuery(context, itemEntry.value));
+                        }
                     }
                 }
             }

@@ -106,8 +106,9 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
  *              cannot be filled by extending the surrounding faces, will
  *              attempt to replace the face with a planar face.
  *              @autocomplete `false`
- *      @field leaveOpen {boolean} : If `leaveOpen` is `true` the void from deleting faces is left open, potentially
- *              creating a surface out of a solid body.
+ *      @field leaveOpen {boolean} : @optional
+ *              If `leaveOpen` is `true` the void from deleting faces is left open, potentially creating a surface out
+ *              of a solid body. Default is `false`.
  *              @autocomplete `false`
  * }}
  */
@@ -662,12 +663,14 @@ export function opExtractSurface(context is Context, id is Id, definition is map
 }
 
 /**
+ * @internal
  * Generates surfaces representing the outlines of parts or surfaces projected onto a surface
  * @param id : @autocomplete `id + "createOutline1"`
  * @param definition {{
  *      @field tools {Query} : The tool parts or surfaces
  *      @field target {Query} : The face whose surface will be used to create outline.
  *                              Currently only planes, cylinders or extruded surfaces are supported.
+ *      @field offsetFaces {Query} : Faces in tools which are offsets of target face. @optional
  * }}
  */
 export function opCreateOutline(context is Context, id is Id, definition is map)
