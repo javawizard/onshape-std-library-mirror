@@ -1,31 +1,40 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "718.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "718.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "729.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "729.0");
 
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/boolean.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/error.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "718.0");
-import(path : "onshape/std/geomOperations.fs", version : "718.0");
-import(path : "onshape/std/query.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/topologyUtils.fs", version : "718.0");
-import(path : "onshape/std/units.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-
-
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/boolean.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/error.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "729.0");
+import(path : "onshape/std/geomOperations.fs", version : "729.0");
+import(path : "onshape/std/query.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/topologyUtils.fs", version : "729.0");
+import(path : "onshape/std/units.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
 
 /**
-*  Produces a sheet metal joint, currently as a rip only, by extending or trimming
+* MakeJointType is a subset of SMJointType to restrict options visible in sheetMetalMakeJoint
+*/
+export enum MakeJointType
+{
+    annotation {"Name" : "Bend"}
+    BEND,
+    annotation {"Name" : "Rip"}
+    RIP
+}
+
+/**
+*  Produces a sheet metal joint of type RIP or BEND by extending or trimming
 *  walls of selected edges. Rip is created as an edge joint by default.
 */
 annotation { "Feature Type Name" : "Make joint", "Filter Selector" : "allparts", "Editing Logic Function" : "makeJointEditLogic"  }
@@ -37,10 +46,10 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
                     "MaxNumberOfPicks" : 2}
         definition.entities is Query;
 
-        annotation {"Name" : "Joint type", "Default" : SMJointType.RIP }
-        definition.joint is SMJointType;
+        annotation {"Name" : "Joint type", "Default" : MakeJointType.RIP }
+        definition.joint is MakeJointType;
 
-        if (definition.joint == SMJointType.BEND)
+        if (definition.joint == MakeJointType.BEND)
         {
             annotation { "Name" : "Use model bend radius", "Default" : true }
             definition.useDefaultRadius is boolean;
@@ -51,7 +60,7 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
             }
         }
 
-        if (definition.joint == SMJointType.RIP)
+        if (definition.joint == MakeJointType.RIP)
         {
             annotation { "Name" : "Joint style" }
             definition.jointType is SMJointStyle;
@@ -70,7 +79,7 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
 
         var smEntities = qUnion(getSMDefinitionEntities(context, definition.entities));
         createEdgeJoint(context, id, smEntities, definition);
-    }, {joint: SMJointType.RIP, jointType : SMJointStyle.EDGE}
+    }, {joint: MakeJointType.RIP, jointType : SMJointStyle.EDGE}
     );
 
 
@@ -117,7 +126,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     var edges = evaluateQuery(context, smEntities);
     var faces = [];
 
-    var jointType = definition.joint;
+    var jointType = definition.joint as SMJointType;
     var jointStyle = definition.jointType;
     //For selected edges, we need to get to the wall they're on.
     for (var edge in edges)

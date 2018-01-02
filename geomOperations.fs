@@ -1,4 +1,4 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,15 +15,15 @@ FeatureScript 718; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/context.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "718.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "718.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "729.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "729.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "718.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "729.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "718.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "729.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -55,6 +55,20 @@ export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version 
 export function opBoolean(context is Context, id is Id, definition is map)
 {
     return @opBoolean(context, id, definition);
+}
+
+/**
+ * Either adds or removes material from the flat.
+ * @internal
+ * @param id : @autocomplete `id + "flatOp"`
+ * @param definition {{
+ *      @field faces {Query} : Faces to add or remove.
+ *      @field operationType {BooleanOperationType} : The boolean operation to perform. Must be union or subtraction.
+ * }}
+ */
+export function opSMFlatOperation(context is Context, id is Id, definition is map)
+{
+    return @opSMFlatOperation(context, id, definition);
 }
 
 /**

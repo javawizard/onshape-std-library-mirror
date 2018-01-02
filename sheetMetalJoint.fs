@@ -1,23 +1,23 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "718.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "718.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "729.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "729.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/math.fs", version : "718.0");
-import(path : "onshape/std/modifyFillet.fs", version : "718.0");
-import(path : "onshape/std/string.fs", version : "718.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "729.0");
+import(path : "onshape/std/modifyFillet.fs", version : "729.0");
+import(path : "onshape/std/string.fs", version : "729.0");
 
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
@@ -74,11 +74,15 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
             {
                 definition.radius = getDefaultSheetMetalRadius(context, definition.entity);
             }
-            newAttribute = createNewBendAttribute(id, existingAttribute, definition.radius, definition.useDefaultRadius);
+            newAttribute = createNewBendAttribute(context, id, jointEdge, existingAttribute, definition.radius, definition.useDefaultRadius);
         }
         else if (definition.jointType == SMJointType.RIP)
         {
             newAttribute = createNewRipAttribute(id, existingAttribute, definition.jointStyle);
+        }
+        else if (definition.jointType == SMJointType.TANGENT)
+        {
+            newAttribute = createNewTangentAttribute(id, existingAttribute);
         }
         else
         {
@@ -114,7 +118,8 @@ function findJointDefinitionEdge(context is Context, entity is Query) returns Qu
 }
 
 
-function createNewBendAttribute(id is Id, existingAttribute is SMAttribute, radius, useDefaultRadius is boolean) returns SMAttribute
+function createNewBendAttribute(context is Context, id is Id, jointEdge is Query,
+       existingAttribute is SMAttribute, radius, useDefaultRadius is boolean) returns SMAttribute
 precondition
 {
     isLength(radius);
@@ -129,6 +134,16 @@ precondition
     else
     {
         bendAttribute = existingAttribute;
+    }
+
+    const planarFacesQ = qGeometry(qEdgeAdjacent(jointEdge, EntityType.FACE), GeometryType.PLANE);
+    if (size(evaluateQuery(context, planarFacesQ)) != 2)
+    {
+        // If walls are non-planar bend angle depends on the radius and needs to be re-computed
+        const angle = try silent(bendAngle(context, id, jointEdge, radius));
+        if (angle == undefined || abs(angle) < TOLERANCE.zeroAngle * radian)
+            throw regenError(ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND, ["entity"]);
+        bendAttribute.angle = {"value" : angle, "canBeEdited" : false};
     }
 
     bendAttribute.jointType = {
@@ -159,13 +174,30 @@ function createNewRipAttribute(id is Id, existingAttribute is SMAttribute, joint
         "canBeEdited" : true
     };
     ripAttribute.angle = existingAttribute.angle;
-    ripAttribute.jointStyle = {
-        "value" : jointStyle,
-        "controllingFeatureId" : toAttributeId(id),
-        "parameterIdInFeature" : "jointStyle",
-        "canBeEdited": true
-    };
+    if (ripAttribute.angle != undefined &&
+        ripAttribute.angle.value != undefined &&
+        abs(ripAttribute.angle.value/radian) > TOLERANCE.zeroAngle)
+    {
+        ripAttribute.jointStyle = {
+            "value" : jointStyle,
+            "controllingFeatureId" : toAttributeId(id),
+            "parameterIdInFeature" : "jointStyle",
+            "canBeEdited": true
+        };
+    }
     return ripAttribute;
+}
+
+function createNewTangentAttribute(id is Id, existingAttribute is SMAttribute) returns SMAttribute
+{
+    var tangentAttribute = makeSMJointAttribute(existingAttribute.attributeId);
+    tangentAttribute.jointType = {
+        "value" : SMJointType.TANGENT,
+        "controllingFeatureId" : toAttributeId(id),
+        "parameterIdInFeature" : "jointType",
+        "canBeEdited" : true
+    };
+    return tangentAttribute;
 }
 
 

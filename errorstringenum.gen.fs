@@ -1,4 +1,4 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -910,7 +910,7 @@ export enum ErrorStringEnum
     FEATURE_INVALID_ROLLBACK_INDEX,
     /* Error in input */
     FEATURE_ERROR_IN_INPUT,
-    /* A concurrent update interferred with this operation */
+    /* A concurrent update interfered with this operation */
     FEATURE_CONCURRENCY_ERROR,
     /* The change would result in the feature list becoming invalid */
     FEATURE_CHANGE_BREAKS_MODEL,
@@ -1468,7 +1468,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FLANGE_NO_PARALLEL_ENTITY,
     /* Select an entity to align from. */
     SHEET_METAL_FLANGE_NO_DIRECTION_ENTITY,
-    /* Cannot add a tab to a bend. */
+    /* Tab can only be added to a free edge or rip. */
     SHEET_METAL_TAB_NO_BEND,
     /* No surface selected in merge scope. */
     BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE,
@@ -1576,7 +1576,31 @@ export enum ErrorStringEnum
     /* Some patterned faces could not cut the sheet metal model. */
     SHEET_METAL_FACE_PATTERN_FLOATING_CUT,
     /* Some patterned faces could not join the sheet metal model. */
-    SHEET_METAL_FACE_PATTERN_FLOATING_WALL
+    SHEET_METAL_FACE_PATTERN_FLOATING_WALL,
+    /* No faces meet flattened sheet metal bodies. */
+    SM_FLAT_OP_NO_INTERSECT,
+    /* Some faces don't meet flattened sheet metal bodies. */
+    SM_FLAT_OP_PARTIAL_INTERSECT,
+    /* Added material can't cross edges of flattened sheet metal body. */
+    SM_FLAT_OP_ADD_CROSSES_EDGE,
+    /* Can only use planar faces. */
+    SM_FLAT_OP_NON_PLANAR_TOOL,
+    /* Can only modify planar faces of flattened sheet metal body. */
+    SM_FLAT_OP_NON_PLANAR_TARGET,
+    /* Sheet metal flat operation failed. Please open a JIRA ticket. */
+    SM_FLAT_OPERATION_FAILED,
+    /* Sheet metal flat operation only works on sheet metal created at V629 or later. */
+    SM_FLAT_OP_LEGACY_MODEL,
+    /* Only linear edges can be used to flange. */
+    SHEET_METAL_FLANGE_NON_LINEAR_EDGES,
+    /* Selected cylinder cannot be used as a bend. */
+    SHEET_METAL_CYLINDER_BEND,
+    /* Only planar, cylindrical or extruded faces can be converted to sheet metal. */
+    SHEET_METAL_INVALID_FACE,
+    /* Only Simple corner relief can be applied to rolled walls and cylindrical bends. */
+    SHEET_METAL_ROLLED_CORNER_RELIF,
+    /* Failed to apply some reliefs. */
+    SHEET_METAL_RELIEF_FAILURES
 }
 
 

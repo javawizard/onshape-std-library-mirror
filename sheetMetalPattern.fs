@@ -1,24 +1,24 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/boolean.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/holeAttribute.fs", version : "718.0");
-import(path : "onshape/std/math.fs", version : "718.0");
-import(path : "onshape/std/patternCommon.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/topologyUtils.fs", version : "718.0");
-import(path : "onshape/std/transform.fs", version : "718.0");
-import(path : "onshape/std/units.fs", version : "718.0");
-import(path : "onshape/std/vector.fs", version : "718.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/boolean.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/holeAttribute.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "729.0");
+import(path : "onshape/std/patternCommon.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/topologyUtils.fs", version : "729.0");
+import(path : "onshape/std/transform.fs", version : "729.0");
+import(path : "onshape/std/units.fs", version : "729.0");
+import(path : "onshape/std/vector.fs", version : "729.0");
 
 /**
  * @internal
@@ -247,7 +247,7 @@ function groupEntitiesByModelAttribute(context is Context, entities is array) re
     var modelIdToModelAndEntities = {};
     for (var entity in entities)
     {
-        const modelAttribute = try(getSmObjectTypeAttributes(context, qOwnerBody(entity), SMObjectType.MODEL)[0]);
+        const modelAttribute = try silent(getSmObjectTypeAttributes(context, qOwnerBody(entity), SMObjectType.MODEL)[0]);
         if (modelAttribute == undefined)
             throw "Sheet metal entity owner body should have an associated model attribute";
         const modelId = modelAttribute.attributeId;
@@ -305,7 +305,7 @@ function reapplyHoleAttributes(context is Context, topLevelId is Id, holeTrackin
  * attribute. For CORNER objects, also returns the result of `evCornerType`. If `required` is set to `true`, enforce that
  * every entity of `entities` must have an `objectType` attribute.
  */
-function createSMTrackingAndAttribute(context is Context, entities is Query, objectType is SMObjectType, required is boolean) returns array
+function createSMTrackingAndAttribute(context is Context, entities is Query, objectType is SMObjectType) returns array
 {
     var smTrackingAndAttribute = [];
     for (var entity in evaluateQuery(context, entities))
@@ -333,10 +333,6 @@ function createSMTrackingAndAttribute(context is Context, entities is Query, obj
                         "cornerType" : cornerType
                     });
         }
-        else if (required)
-        {
-            throw "Supplied entities should have an " ~ objectType ~ " attribute.";
-        }
     }
     return smTrackingAndAttribute;
 }
@@ -349,11 +345,13 @@ function createSMTrackingAndAttributeByType(context is Context, definitionTopolo
 {
     var smTrackingAndAttributeByType = {};
     smTrackingAndAttributeByType[SMObjectType.WALL] =
-        createSMTrackingAndAttribute(context, qEntityFilter(definitionTopology, EntityType.FACE), SMObjectType.WALL, true);
-    smTrackingAndAttributeByType[SMObjectType.JOINT] =
-        createSMTrackingAndAttribute(context, qEntityFilter(definitionTopology, EntityType.EDGE), SMObjectType.JOINT, false);
+        createSMTrackingAndAttribute(context, qEntityFilter(definitionTopology, EntityType.FACE), SMObjectType.WALL);
+
+    const jointQ = qUnion([qEntityFilter(definitionTopology, EntityType.EDGE), qGeometry(definitionTopology, GeometryType.CYLINDER)]);
+    smTrackingAndAttributeByType[SMObjectType.JOINT] = createSMTrackingAndAttribute(context, jointQ, SMObjectType.JOINT);
+
     smTrackingAndAttributeByType[SMObjectType.CORNER] =
-        createSMTrackingAndAttribute(context, qEntityFilter(definitionTopology, EntityType.VERTEX), SMObjectType.CORNER, false);
+        createSMTrackingAndAttribute(context, qEntityFilter(definitionTopology, EntityType.VERTEX), SMObjectType.CORNER);
 
     return smTrackingAndAttributeByType;
 }

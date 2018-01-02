@@ -1,4 +1,4 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -613,7 +613,15 @@ export enum FeatureScriptVersionNumber
     V715_SM_PATTERN_FAIL_MIRROR,
     V716_PS_VERSION_30_0_280,
     V717_DEFER_SM_BODY_DELETE_2,
-    V718_ADD_DEPRECATED_FS_FOR_MOBILE
+    V718_ADD_DEPRECATED_FS_FOR_MOBILE,
+    V722_DELETE_FACE_REDUNDANCY,
+    V723_REMAP_TAB_BREAKS,
+    V724_SM_MAKE_JOINT_TYPE,
+    V725_FLANGE_ROLLED_SIDE,
+    V726_ROLLED_CORNER_RELIEF,
+    V727_SM_SUPPORT_ROLLED,
+    V728_ACTIVE_SKETCH_ON_FLAT,
+    V729_UPGRADE_FIXES
 }
 
 /**
@@ -624,6 +632,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V718_ADD_DEPRECATED_FS_FOR_MOBILE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V729_UPGRADE_FIXES;
 
 

@@ -1,4 +1,4 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,9 +15,9 @@ FeatureScript 718; /* Automatically generated version */
  * Entities can be queried by attributes with [qAttributeFilter] and
  * [qAttributeQuery].
  */
-import(path : "onshape/std/context.fs", version : "718.0");
-import(path : "onshape/std/query.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
+import(path : "onshape/std/context.fs", version : "729.0");
+import(path : "onshape/std/query.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
 
 /**
  * Attach an attribute to one or several entities.
@@ -42,8 +42,8 @@ precondition
  * Get attributes attached to entities.
  *
  * @param definition {{
- *      @field entities {Query} : Entities to get attributes on. Throws an error
- *              if the query resolves to nothing.
+ *      @field entities {Query} : Entities to get attributes on.
+ *              If query resolves to nothing, empty array is returned
  *              @eg `qEverything()`
  *      @field attributePattern : @optional
  *              If provided, will only return attributes of this type. If a map

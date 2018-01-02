@@ -1,4 +1,4 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,12 @@ FeatureScript 718; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/context.fs", version : "718.0");
-import(path : "onshape/std/mathUtils.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/units.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/context.fs", version : "729.0");
+import(path : "onshape/std/mathUtils.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/units.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -273,9 +273,10 @@ export enum EntityType
  * @value CONE : A surface which forms the side of a right circular cone
  * @value SPHERE : A surface which forms the boundary of a sphere
  * @value TORUS : A surface which forms the boundary of a torus
- * @value OTHER_SURFACE : Any two-dimensional entity which is not described
+ * @value REVOLVED : A surface constructed by revolving a curve around an axis (unless it is simplified to one of the types above)
+ * @value EXTRUDED : A surface constructed by extruding or sweeping a curve along a line (unless it is simplified to one of the types above)
+ * @value OTHER_SURFACE : Any two-dimensional entity which is not described above (e.g. the side of an arbitrary loft)
  * @value MESH : A surface or a body that contains surface that is a mesh
- *      above (e.g. the side of an arbitrary extrude, revolve, or loft)
  */
 export enum GeometryType
 {
@@ -288,6 +289,8 @@ export enum GeometryType
     CONE,
     SPHERE,
     TORUS,
+    REVOLVED,
+    EXTRUDED,
     OTHER_SURFACE,
     MESH
 }

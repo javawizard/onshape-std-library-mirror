@@ -1,34 +1,34 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "718.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "718.0");
-import(path : "onshape/std/box.fs", version : "718.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/coordSystem.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/extrude.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/mathUtils.fs", version : "718.0");
-import(path : "onshape/std/revolve.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/sketch.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/tool.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-import(path : "onshape/std/string.fs", version : "718.0");
-import(path : "onshape/std/holetables.gen.fs", version : "718.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "718.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "718.0");
-import(path : "onshape/std/cylinderCast.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
-import(path : "onshape/std/attributes.fs", version : "718.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "718.0");
-export import(path : "onshape/std/holeUtils.fs", version : "718.0");
+import(path : "onshape/std/boolean.fs", version : "729.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "729.0");
+import(path : "onshape/std/box.fs", version : "729.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/coordSystem.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/extrude.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/mathUtils.fs", version : "729.0");
+import(path : "onshape/std/revolve.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/sketch.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/tool.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/string.fs", version : "729.0");
+import(path : "onshape/std/holetables.gen.fs", version : "729.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "729.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "729.0");
+import(path : "onshape/std/cylinderCast.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "729.0");
+export import(path : "onshape/std/holeUtils.fs", version : "729.0");
 
 
 /**
@@ -289,6 +289,10 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                     const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
                     if (finalBodyCount > startingBodyCount)
                         reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+                    else if (opResult.warning != undefined)
+                    {
+                        reportFeatureWarning(context, id, opResult.warning);
+                    }
                 }
             }
         }
@@ -423,6 +427,10 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     if (result.error == undefined && cutHoleResult.error != undefined)
     {
         result.error = cutHoleResult.error;
+    }
+    if (result.warning == undefined && cutHoleResult.warning != undefined)
+    {
+        result.warning = cutHoleResult.warning;
     }
     return result;
 }
@@ -699,6 +707,13 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
         try
         {
             spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+            var warning = getFeatureWarning(context, id);
+            if (warning is ErrorStringEnum &&
+                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD ||
+                 warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT))
+            {
+                result.warning = warning;
+            }
         }
         catch (error)
         {

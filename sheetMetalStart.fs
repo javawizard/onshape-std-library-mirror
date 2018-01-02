@@ -1,34 +1,34 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/query.fs", version : "718.0");
+export import(path : "onshape/std/query.fs", version : "729.0");
 
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "718.0");
-import(path : "onshape/std/box.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/coordSystem.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
-import(path : "onshape/std/error.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/geomOperations.fs", version : "718.0");
-import(path : "onshape/std/manipulator.fs", version : "718.0");
-import(path : "onshape/std/math.fs", version : "718.0");
-import(path : "onshape/std/modifyFillet.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/sketch.fs", version : "718.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "718.0");
-import(path : "onshape/std/string.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/tool.fs", version : "718.0");
-import(path : "onshape/std/topologyUtils.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-import(path : "onshape/std/vector.fs", version : "718.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "729.0");
+import(path : "onshape/std/box.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/coordSystem.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
+import(path : "onshape/std/error.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/geomOperations.fs", version : "729.0");
+import(path : "onshape/std/manipulator.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "729.0");
+import(path : "onshape/std/modifyFillet.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/sketch.fs", version : "729.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "729.0");
+import(path : "onshape/std/string.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/tool.fs", version : "729.0");
+import(path : "onshape/std/topologyUtils.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/vector.fs", version : "729.0");
 
 /**
  * Method of initializing sheet metal model
@@ -112,7 +112,7 @@ annotation { "Feature Type Name" : "Sheet metal model",
              "Filter Selector" : "allparts",
              "Editing Logic Function" : "sheetMetalStartEditLogic" }
 export const sheetMetalStart = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
-    precondition
+     precondition
     {
         annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
             ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
@@ -134,14 +134,19 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         else if (definition.process == SMProcessType.EXTRUDE)
         {
             annotation { "Name" : "Sketch curves to extrude",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES &&
-                            (EntityType.EDGE && GeometryType.LINE) }
+                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
             definition.sketchCurves is Query;
+
+            annotation { "Name" : "Arcs to extrude as bends",
+                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
+            definition.bendArcs is Query;
 
             annotation { "Name" : "End type" }
             definition.endBound is SMExtrudeBoundingType;
+
             annotation { "Name" : "Depth" }
             isLength(definition.depth, NONNEGATIVE_LENGTH_BOUNDS);
+
             if (definition.endBound == SMExtrudeBoundingType.BLIND)
             {
                 annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : false }
@@ -151,13 +156,18 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         else if (definition.process == SMProcessType.THICKEN)
         {
             annotation { "Name" : "Faces or sketch regions to thicken",
-                        "Filter" : EntityType.FACE && GeometryType.PLANE && ConstructionObject.NO }
+                        "Filter" : ConstructionObject.NO && (GeometryType.PLANE || GeometryType.CYLINDER || GeometryType.EXTRUDED) }
             definition.regions is Query;
+
+            annotation { "Name" : "Tangent propagation", "Default" : false }
+            definition.tangentPropagation is boolean;
         }
 
         if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
         {
-            annotation { "Name" : "Edges to bend", "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE && SketchObject.NO }
+            annotation { "Name" : "Edges or cylinders to bend",
+                         "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE) ||
+                                     (EntityType.FACE && GeometryType.CYLINDER)) && SketchObject.NO }
             definition.bends is Query;
 
             annotation { "Name" : "Clearance from input" }
@@ -183,8 +193,11 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         annotation { "Name" : "Bend radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
 
-        annotation { "Name" : "K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Bend K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isReal(definition.kFactor, K_FACTOR_BOUNDS);
+
+        annotation { "Name" : "Rolled K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
 
         annotation { "Name" : "Minimal gap", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
         isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
@@ -229,6 +242,9 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
     }
     {
+        definition.supportRolled = isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED);
+        // tangentPropagation is meaningful only for Thicken option
+        definition.tangentPropagation = (definition.tangentPropagation && definition.process == SMProcessType.THICKEN);
         if (definition.process == SMProcessType.CONVERT)
         {
             checkNotInFeaturePattern(context, definition.partToConvert, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
@@ -236,7 +252,6 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
-            definition.sketchCurves = qConstructionFilter(definition.sketchCurves, ConstructionObject.NO);
             checkNotInFeaturePattern(context, definition.sketchCurves, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
             extrudeSheetMetal(context, id, definition);
         }
@@ -246,9 +261,11 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             thickenToSheetMetal(context, id, definition);
         }
     }, { "kFactor" : 0.45,
+      "kFactorRolled" : 0.5,
       "minimalClearance" : 2e-5 * meter,
       "oppositeDirection" : false,
       "initEntities" : qNothing(),
+      "bendArcs" : qNothing(),
       "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
       "defaultCornerReliefScale" : 1.5,
       "defaultRoundReliefDiameter" : 0 * meter,
@@ -258,7 +275,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "defaultBendReliefScale" : 1.0625,
       "bendsIncluded" : false,
       "clearance" : 0 * meter,
-      "keepInputParts" : false
+      "keepInputParts" : false,
+      "tangentPropagation" : false
     });
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
@@ -276,7 +294,8 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
             // may make it clearer when it can happen
             throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
         }
-        else if (messageAsEnum == ErrorStringEnum.BAD_GEOMETRY)
+        else if (messageAsEnum == ErrorStringEnum.BAD_GEOMETRY ||
+                messageAsEnum == ErrorStringEnum.THICKEN_FAILED)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN);
         }
@@ -328,7 +347,11 @@ function convertExistingPart(context is Context, id is Id, definition is map)
     var nComplimentFaces = size(evaluateQuery(context, complimentFacesQ));
     var nBends = size(evaluateQuery(context, definition.bends));
 
-    if (definition.supportRolled != true)
+    if (definition.supportRolled == true)
+    {
+        throwOnUnsupportedFaces(context, complimentFacesQ, ["partToConvert", "facesToExclude"]);
+    }
+    else
     {
         // Let's be careful to screen out unwanted faces here, i.e. anything that isn't planar
         var planarFaces = qGeometry(complimentFacesQ, GeometryType.PLANE);
@@ -489,7 +512,7 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
     const createdSheetBodies = evaluateQuery(context, sheetQuery);
     if (size(createdSheetBodies) == 0)
     {
-        throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE);
+        throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["sketchCurves"]);
     }
 
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK))
@@ -575,6 +598,11 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
         convertRegion(context, id + unstableIdComponent(index), definition);
         index += 1;
     }
+
+    if (definition.supportRolled == true)
+    {
+        throwOnUnsupportedFaces(context, qUnion(facesToConvert), ["regions"]);
+    }
     var bendsQ = qNothing();
     var nFaces = size(facesToConvert);
     var nBends = size(evaluateQuery(context, definition.bends));
@@ -638,6 +666,7 @@ function extrudeSketchCurves(context is Context, id is Id, definition is map) re
 {
     var sketchCurves = (definition.supportRolled == true) ? qUnion([definition.bendArcs, definition.sketchCurves]) :
                                                     qGeometry(definition.sketchCurves, GeometryType.LINE);
+    sketchCurves = qConstructionFilter(sketchCurves, ConstructionObject.NO);
     const resolvedEntities = evaluateQuery(context, sketchCurves);
     if (size(resolvedEntities) > 0)
     {
@@ -697,7 +726,7 @@ function addExtrudeManipulator(context is Context, id is Id, definition is map, 
                         definition.entities) });
 }
 
-function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is Query, definition is map)
+function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is Query, definition is map) returns Query
 {
     var sharpEdges = [];
     for (var edge in evaluateQuery(context, qOwnedByBody(surfaceBodies, EntityType.EDGE)))
@@ -741,7 +770,7 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         annotateSmSurfaceBodies(context, id, surfaceData, 0);
         if (getFeatureError(context, id) != undefined)
         {
-            return;
+            return qNothing();
         }
     }
     catch
@@ -821,6 +850,21 @@ function getDefaultBendReliefStyle(definition is map) returns SMReliefStyle
     else
     {
         return SMReliefStyle.OBROUND;
+    }
+}
+
+function throwOnUnsupportedFaces(context is Context, faceQ is Query, parameterIds is array)
+{
+    const supportedGeomTypes = [GeometryType.PLANE, GeometryType.CYLINDER, GeometryType.EXTRUDED];
+    var allowedQs = [];
+    for (var geom in supportedGeomTypes)
+    {
+        allowedQs = append(allowedQs, qGeometry(faceQ, geom));
+    }
+    const unsupportedQ = qSubtraction(faceQ, qUnion(allowedQs));
+    if (size(evaluateQuery(context, unsupportedQ)) > 0)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_INVALID_FACE, parameterIds, unsupportedQ);
     }
 }
 
@@ -1020,16 +1064,16 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
     if (oldDefinition == {})
     {
         const bodies = qEntityFilter(definition.initEntities, EntityType.BODY);
-        const planarFaces = qGeometry(qEntityFilter(definition.initEntities, EntityType.FACE), GeometryType.PLANE);
-        const edges = qGeometry(qModifiableEntityFilter(qEntityFilter(definition.initEntities, EntityType.EDGE)), GeometryType.LINE);
+        const faces = qEntityFilter(definition.initEntities, EntityType.FACE);
+        const edges = qModifiableEntityFilter(qEntityFilter(definition.initEntities, EntityType.EDGE));
         definition.process = SMProcessType.CONVERT;
         if (size(evaluateQuery(context, bodies)) > 0)
         {
             definition.partToConvert = bodies;
         }
-        else if (size(evaluateQuery(context, planarFaces)) > 0)
+        else if (size(evaluateQuery(context, faces)) > 0)
         {
-            definition.regions = planarFaces;
+            definition.regions = faces;
             definition.process = SMProcessType.THICKEN;
         }
         else if (size(evaluateQuery(context, edges)) > 0)
@@ -1042,180 +1086,4 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
     }
     return definition;
 }
-
-
-
-/**
- * @internal
- * covered with WEB.SHEET_METAL_INTERNAL_TOOLS capability
- */
-annotation { "Feature Type Name" : "Sheet metal rolled",
-             "Manipulator Change Function" : "sheetMetalStartManipulatorChange",
-             "Filter Selector" : "allparts",
-             "Editing Logic Function" : "sheetMetalStartEditLogic" }
-export const sheetMetalRolled = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
-    precondition
-    {
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
-            ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
-        definition.initEntities is Query;
-
-        annotation { "Name" : "Process", "UIHint" : "HORIZONTAL_ENUM" }
-        definition.process is SMProcessType;
-
-        // First the entities
-        if (definition.process == SMProcessType.CONVERT)
-        {
-            annotation { "Name" : "Parts and surfaces to convert",
-                        "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
-            definition.partToConvert is Query;
-
-            annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-            definition.facesToExclude is Query;
-        }
-        else if (definition.process == SMProcessType.EXTRUDE)
-        {
-            annotation { "Name" : "Sketch curves to extrude",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
-            definition.sketchCurves is Query;
-
-            annotation { "Name" : "Arcs to extrude as bends",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
-            definition.bendArcs is Query;
-
-            annotation { "Name" : "End type" }
-            definition.endBound is SMExtrudeBoundingType;
-
-            annotation { "Name" : "Depth" }
-            isLength(definition.depth, NONNEGATIVE_LENGTH_BOUNDS);
-
-            if (definition.endBound == SMExtrudeBoundingType.BLIND)
-            {
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : false }
-                definition.oppositeExtrudeDirection is boolean;
-            }
-        }
-        else if (definition.process == SMProcessType.THICKEN)
-        {
-            annotation { "Name" : "Faces or sketch regions to thicken",
-                        "Filter" : EntityType.FACE && ConstructionObject.NO }
-            definition.regions is Query;
-
-            annotation { "Name" : "Tangent propagation", "Default" : false }
-            definition.tangentPropagation is boolean;
-        }
-
-        if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
-        {
-            annotation { "Name" : "Edges or cylinders to bend",
-                         "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE) ||
-                                     (EntityType.FACE && GeometryType.CYLINDER)) && SketchObject.NO }
-            definition.bends is Query;
-
-            annotation { "Name" : "Clearance from input" }
-            isLength(definition.clearance, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
-
-            annotation { "Name" : "Clearance includes bends" }
-            definition.bendsIncluded is boolean;
-        }
-
-        if (definition.process == SMProcessType.CONVERT)
-        {
-            annotation { "Name" : "Keep input parts" }
-            definition.keepInputParts is boolean;
-        }
-
-        // Then some common parameters
-        annotation { "Name" : "Thickness", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isLength(definition.thickness, SM_THICKNESS_BOUNDS);
-
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-        definition.oppositeDirection is boolean;
-
-        annotation { "Name" : "Bend radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
-
-        annotation { "Name" : "Bend K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isReal(definition.kFactor, K_FACTOR_BOUNDS);
-
-        annotation { "Name" : "Rolled K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
-
-        annotation { "Name" : "Minimal gap", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-        isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
-
-        annotation { "Name" : "Corner relief type",
-                     "Default" : SMCornerStrategyType.SIMPLE,
-                     "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-        definition.defaultCornerStyle is SMCornerStrategyType;
-
-        if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
-            definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
-        {
-            annotation { "Name" : "Corner relief scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
-        }
-
-        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
-        {
-            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
-        }
-
-        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
-        {
-            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
-        }
-
-        annotation { "Name" : "Bend relief type",
-                     "Default" : SMBendStrategyType.OBROUND,
-                     "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-        definition.defaultBendReliefStyle is SMBendStrategyType;
-
-
-        if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
-            definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
-        {
-            annotation { "Name" : "Bend relief depth scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isReal(definition.defaultBendReliefDepthScale, CORNER_RELIEF_SCALE_BOUNDS);
-            annotation { "Name" : "Bend relief width scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isReal(definition.defaultBendReliefScale, BEND_RELIEF_SCALE_BOUNDS);
-        }
-    }
-    {
-        definition.supportRolled = true;
-        if (definition.process == SMProcessType.CONVERT)
-        {
-            checkNotInFeaturePattern(context, definition.partToConvert, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            convertExistingPart(context, id, definition);
-        }
-        else if (definition.process == SMProcessType.EXTRUDE)
-        {
-            definition.sketchCurves = qConstructionFilter(definition.sketchCurves, ConstructionObject.NO);
-            checkNotInFeaturePattern(context, definition.sketchCurves, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            extrudeSheetMetal(context, id, definition);
-        }
-        else if (definition.process == SMProcessType.THICKEN)
-        {
-            checkNotInFeaturePattern(context, definition.regions, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            thickenToSheetMetal(context, id, definition);
-        }
-    }, { "kFactor" : 0.45,
-      "kFactorRolled" : 0.5,
-      "minimalClearance" : 2e-5 * meter,
-      "oppositeDirection" : false,
-      "initEntities" : qNothing(),
-      "defaultCornerStyle" :  SMCornerStrategyType.SIMPLE,
-      "defaultCornerReliefScale" : 1.5,
-      "defaultRoundReliefDiameter" : 0 * meter,
-      "defaultSquareReliefWidth" : 0 * meter,
-      "defaultBendReliefStyle" :  SMBendStrategyType.OBROUND,
-      "defaultBendReliefDepthScale" : 1.5,
-      "defaultBendReliefScale" : 1.0625,
-      "bendsIncluded" : false,
-      "clearance" : 0 * meter,
-      "keepInputParts" : false,
-      "tangentPropagation" : false
-    });
 

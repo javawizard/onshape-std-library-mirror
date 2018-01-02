@@ -1,27 +1,27 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "718.0");
-export import(path : "onshape/std/tool.fs", version : "718.0");
+export import(path : "onshape/std/query.fs", version : "729.0");
+export import(path : "onshape/std/tool.fs", version : "729.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/boolean.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/math.fs", version : "718.0");
-import(path : "onshape/std/moveFace.fs", version : "718.0");
-import(path : "onshape/std/transform.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/topologyUtils.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-import(path : "onshape/std/vector.fs", version : "718.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/boolean.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "729.0");
+import(path : "onshape/std/moveFace.fs", version : "729.0");
+import(path : "onshape/std/transform.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/topologyUtils.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/vector.fs", version : "729.0");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
@@ -51,7 +51,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         createTools(context, id + "extract", definition.tabFaces);
 
         const unionEntities = try silent(getSMDefinitionEntities(context, definition.booleanUnionScope));
-        if (unionEntities is undefined)
+        if (unionEntities is undefined || size(unionEntities) == 0)
             throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_WALL, ["booleanUnionScope"]);
         const unionEntityQuery = qUnion(unionEntities);
         const sheetMetalBodies = evaluateQuery(context, qOwnerBody(unionEntityQuery));
@@ -360,14 +360,14 @@ function reportBooleanIssues(context is Context, id is Id, tabBody is Query, wal
     }
 }
 
-function identifyEdgesForDeripping(context is Context, id is Id, tabBody is Query, partFaces is Query) returns array
+function identifyEdgesForDeripping(context is Context, id is Id, tabBody is Query, partEntities is Query) returns array
 {
     try silent
     {
         var edgesForDerip = [];
         const collisions = evCollision(context, {
                     "tools" : qOwnedByBody(tabBody, EntityType.FACE),
-                    "targets" : partFaces
+                    "targets" : partEntities
                 });
         for (var collision in collisions)
         {
@@ -430,22 +430,37 @@ function solidSubtractTab(context is Context, id is Id, tab is Query, targets)
  * Given a query for sheet metal model faces. Return a query for all sheet metal part faces corresponding to joints
  * on the edges of the input faces.
  */
-function getCorrespondingJointEntitiesInPart(context is Context, selection is Query, entityType is EntityType) returns Query
+function getCorrespondingJointEntitiesInPart(context is Context, selection is Query) returns Query
 {
     const evaluatedEdges = evaluateQuery(context, selection);
-    var twoSidedEdges = [];
+    var toCollectFaces = [];
+    var toCollectEdges = [];
     for (var edge in evaluatedEdges)
     {
         if (edgeIsTwoSided(context, edge))
         {
-            twoSidedEdges = append(twoSidedEdges, edge);
+            const jointAttributes = getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT);
+            if (size(jointAttributes) == 0 ||
+                jointAttributes[0].jointType == undefined ||
+                jointAttributes[0].jointType.value != SMJointType.TANGENT)
+            {
+                toCollectFaces = append(toCollectFaces, edge);
+            }
+            else
+            {
+                toCollectEdges = append(toCollectEdges, edge);
+            }
         }
     }
-    if (size(twoSidedEdges) == 0)
+    const nToFaces = size(toCollectFaces);
+    const nToEdges = size(toCollectEdges);
+    if (nToFaces == 0 && nToEdges == 0)
     {
         return qNothing();
     }
-    return qSMCorrespondingInPart(context, qUnion(twoSidedEdges), entityType);
+    const facesQ = (nToFaces == 0) ? qNothing() : getSMCorrespondingInPart(context, qUnion(toCollectFaces), EntityType.FACE);
+    const edgesQ = (nToEdges == 0) ? qNothing() : getSMCorrespondingInPart(context, qUnion(toCollectEdges), EntityType.EDGE);
+    return qUnion([facesQ, edgesQ]);
 }
 
 /**
@@ -476,10 +491,10 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
     const tabPlane = evPlane(context, { "face" : qOwnedByBody(coincidentGrouping.tabs, EntityType.FACE) });
     applyPlaneToPlaneTransform(context, id, qCreatedBy(id + "thicken", EntityType.BODY), tabPlane, coincidentGrouping.plane);
 
-    const unionPartFaces = qSMCorrespondingInPart(context, coincidentGrouping.walls, EntityType.FACE);
+    const unionPartFaces = getSMCorrespondingInPart(context, coincidentGrouping.walls, EntityType.FACE);
     reportBooleanIssues(context, id + "union", qCreatedBy(id + "thicken", EntityType.BODY), unionPartFaces);
 
-    const corresponding = getCorrespondingJointEntitiesInPart(context, qEdgeAdjacent(coincidentGrouping.walls, EntityType.EDGE), EntityType.FACE);
+    const corresponding = getCorrespondingJointEntitiesInPart(context, qEdgeAdjacent(coincidentGrouping.walls, EntityType.EDGE));
     const deripCandidates = identifyEdgesForDeripping(context, id + "identify", qCreatedBy(id + "thicken", EntityType.BODY), corresponding);
 
     if (!deripEdges(context, id + "derip", qUnion(deripCandidates)))
@@ -513,7 +528,7 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
 
     if (modelParameters.minimalClearance > definition.booleanOffset && size(evaluateQuery(context, unionComplementTracking)) > 0)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_TAB_LOW_CLEARANCE, ["booleanOffset"], qSMCorrespondingInPart(context, unionComplementTracking, EntityType.FACE));
+        throw regenError(ErrorStringEnum.SHEET_METAL_TAB_LOW_CLEARANCE, ["booleanOffset"], getSMCorrespondingInPart(context, unionComplementTracking, EntityType.FACE));
     }
 
     try silent(opDeleteBodies(context, id + "deleteBodies", {
@@ -527,6 +542,11 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
 function booleanOneTabGroup(context is Context, id is Id, definition is map, coincidentGrouping is map, subtractQueries is map, rootId is Id)
 {
     const wallBodies = qOwnerBody(coincidentGrouping.walls);
+
+    var cornerBreakTracking;
+    const fixCornerBreaks = isAtVersionOrLater(context, FeatureScriptVersionNumber.V723_REMAP_TAB_BREAKS);
+    if (fixCornerBreaks)
+        cornerBreakTracking = collectCornerBreakTracking(context, wallBodies);
 
     subtractTab(context, id + "subtract", definition, subtractQueries, coincidentGrouping, rootId);
     moveTabsToPlane(context, id + "transform", coincidentGrouping.tabs, coincidentGrouping.plane);
@@ -560,7 +580,7 @@ function booleanOneTabGroup(context is Context, id is Id, definition is map, coi
            if (collision['type'] != ClashType.NONE)
            {
               errorGeom = append(errorGeom, collision.tool);
-              errorGeom = append(errorGeom, qSMCorrespondingInPart(context, collision.target,  EntityType.FACE));
+              errorGeom = append(errorGeom, getSMCorrespondingInPart(context, collision.target,  EntityType.FACE));
            }
         }
         if (size(errorGeom) > 0)
@@ -576,6 +596,9 @@ function booleanOneTabGroup(context is Context, id is Id, definition is map, coi
     }
     try silent(opDeleteBodies(context, id + "unionDelete", { "entities" : qCreatedBy(id + "copyTool", EntityType.BODY) }));
 
+    if (fixCornerBreaks)
+        remapCornerBreaks(context, cornerBreakTracking);
+
     return getFeatureStatus(context, id + "boolean");
 }
 
@@ -586,7 +609,7 @@ function filterSimilarSMFaces(context is Context, faces is Query) returns Query
 {
     var filteredOutArray = [];
     const definitionFaceArray = try silent(getSMDefinitionEntities(context, faces, EntityType.FACE));
-    if (definitionFaceArray is undefined)
+    if (definitionFaceArray is undefined || size(definitionFaceArray) == 0)
         return qNothing();
     for (var definitionFace in definitionFaceArray)
     {
@@ -634,7 +657,7 @@ export function sheetMetalTabEditingLogic(context is Context, id is Id, oldDefin
                     "attributePattern" : {} as SMAssociationAttribute
                 }));
         var allSMWalls = [];
-        if (entityAssociations != undefined)
+        if (entityAssociations != undefined && size(entityAssociations) > 0)
         {
             for (var attribute in entityAssociations)
             {
@@ -662,8 +685,8 @@ export function sheetMetalTabEditingLogic(context is Context, id is Id, oldDefin
             if (tabPlane is undefined)
                 continue;
 
-            const sheetMetalFacePlane = evPlane(context, { "face" : collision.target });
-            if (parallelVectors(tabPlane.normal, sheetMetalFacePlane.normal))
+            const sheetMetalFacePlane = try silent(evPlane(context, { "face" : collision.target }));
+            if (sheetMetalFacePlane != undefined && parallelVectors(tabPlane.normal, sheetMetalFacePlane.normal))
             {
                 union = append(union, collision.target);
             }

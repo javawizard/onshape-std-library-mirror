@@ -1,28 +1,28 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/boolean.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/curveGeometry.fs", version : "718.0");
-import(path : "onshape/std/extrude.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/math.fs", version : "718.0");
-import(path : "onshape/std/matrix.fs", version : "718.0");
-import(path : "onshape/std/query.fs", version : "718.0");
-import(path : "onshape/std/sketch.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "718.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "718.0");
-import(path : "onshape/std/topologyUtils.fs", version : "718.0");
-import(path : "onshape/std/units.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
-import(path : "onshape/std/vector.fs", version : "718.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "718.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/boolean.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/curveGeometry.fs", version : "729.0");
+import(path : "onshape/std/extrude.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "729.0");
+import(path : "onshape/std/matrix.fs", version : "729.0");
+import(path : "onshape/std/query.fs", version : "729.0");
+import(path : "onshape/std/sketch.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "729.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
+import(path : "onshape/std/topologyUtils.fs", version : "729.0");
+import(path : "onshape/std/units.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/vector.fs", version : "729.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "729.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -194,11 +194,26 @@ precondition
     }
 
     var edges = qUnion(getSMDefinitionEntities(context, definition.edges));
+    var nonLineEdgeQ = qSubtraction(qEntityFilter(edges, EntityType.EDGE), qGeometry(edges, GeometryType.LINE));
+    if (size(evaluateQuery(context, nonLineEdgeQ)) != 0)
+    {
+        setErrorEntities(context, id, {"entities" : nonLineEdgeQ});
+        edges = qGeometry(edges, GeometryType.LINE);
+        if (size(evaluateQuery(context, edges)) != 0)
+        {
+            reportFeatureWarning(context, id , ErrorStringEnum.SHEET_METAL_FLANGE_NON_LINEAR_EDGES);
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NON_LINEAR_EDGES, ["edges"]);
+        }
+    }
     var evaluatedEdgeQuery = evaluateQuery(context, edges);
     if (size(evaluatedEdgeQuery) == 0)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_EDGE_NEEDED, ["edges"]);
     }
+
     removeCornerBreaksAtEdgeVertices(context, edges);
     var edgeMaps = groupEdgesByBodyOrModel(context, evaluatedEdgeQuery);
     var modelToEdgeMap = edgeMaps.modelToEdgeMap;
@@ -788,14 +803,17 @@ function getOrderedEdgeVertices(context is Context, edge is Query) returns map
 function getVectorForEdge(context is Context, edge is Query, position is Vector) returns Vector
 {
     var edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] });
-    var d1 = norm(edgeEndPoints[0].origin - position);
-    var d2 = norm(edgeEndPoints[1].origin - position);
-    var vectorForEdge;
-    if (d1 >= d2)
-        vectorForEdge = edgeEndPoints[0].origin - edgeEndPoints[1].origin;
+    var closerPointIdx = (squaredNorm(edgeEndPoints[0].origin - position) < squaredNorm(edgeEndPoints[1].origin - position)) ? 0 : 1;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V725_FLANGE_ROLLED_SIDE))
+    {
+        // vectorForEdge should always be pointing into the edge
+        const sign = (closerPointIdx == 0) ? 1 : -1;
+        return (sign * edgeEndPoints[closerPointIdx].direction);
+    }
     else
-        vectorForEdge = edgeEndPoints[1].origin - edgeEndPoints[0].origin;
-    return stripUnits(vectorForEdge) as Vector;
+    {
+        return stripUnits(edgeEndPoints[1 - closerPointIdx].origin - edgeEndPoints[closerPointIdx].origin) as Vector;
+    }
 }
 
 function filterSmoothEdges(context is Context, inputEdges is Query) returns array

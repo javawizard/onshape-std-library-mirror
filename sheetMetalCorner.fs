@@ -1,20 +1,20 @@
-FeatureScript 718; /* Automatically generated version */
+FeatureScript 729; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "718.0");
+export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "729.0");
 
-import(path : "onshape/std/attributes.fs", version : "718.0");
-import(path : "onshape/std/containers.fs", version : "718.0");
-import(path : "onshape/std/evaluate.fs", version : "718.0");
-import(path : "onshape/std/feature.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "718.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "718.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "718.0");
-import(path : "onshape/std/valueBounds.fs", version : "718.0");
+import(path : "onshape/std/attributes.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "729.0");
+import(path : "onshape/std/evaluate.fs", version : "729.0");
+import(path : "onshape/std/feature.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "729.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "729.0");
+import(path : "onshape/std/valueBounds.fs", version : "729.0");
 
 /**
  * Corner feature is used to override default sheet metal model corner relief style or dimensions for an individual corner
@@ -75,6 +75,16 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         if (cornerInfo.cornerType != SMCornerType.CLOSED_CORNER && definition.cornerStyle == SMCornerReliefStyle.CLOSED)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle'], definition.corner);
+        }
+
+        if (definition.cornerStyle != SMCornerReliefStyle.SIMPLE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED))
+        {
+            var facesQ = qVertexAdjacent(qUnion(cornerInfo.allVertices), EntityType.FACE);
+            var rolledQ = qSubtraction(facesQ, qGeometry(facesQ, GeometryType.PLANE));
+            if (size(evaluateQuery(context, rolledQ)) > 0)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_ROLLED_CORNER_RELIF, ['cornerStyle'], rolledQ);
+            }
         }
 
         corner = cornerInfo.primaryVertex;
