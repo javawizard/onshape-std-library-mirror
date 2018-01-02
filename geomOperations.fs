@@ -58,6 +58,20 @@ export function opBoolean(context is Context, id is Id, definition is map)
 }
 
 /**
+ * Either adds or removes material from the flat.
+ * @internal
+ * @param id : @autocomplete `id + "flatOp"`
+ * @param definition {{
+ *      @field faces {Query} : Faces to add or remove.
+ *      @field operationType {BooleanOperationType} : The boolean operation to perform. Must be union or subtraction.
+ * }}
+ */
+export function opSMFlatOperation(context is Context, id is Id, definition is map)
+{
+    return @opSMFlatOperation(context, id, definition);
+}
+
+/**
  * Adds a chamfer to given edges and faces.
  * @param id : @autocomplete `id + "chamfer1"`
  * @param definition {{

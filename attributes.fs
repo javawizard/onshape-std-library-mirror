@@ -42,8 +42,8 @@ precondition
  * Get attributes attached to entities.
  *
  * @param definition {{
- *      @field entities {Query} : Entities to get attributes on. Throws an error
- *              if the query resolves to nothing.
+ *      @field entities {Query} : Entities to get attributes on.
+ *              If query resolves to nothing, empty array is returned
  *              @eg `qEverything()`
  *      @field attributePattern : @optional
  *              If provided, will only return attributes of this type. If a map

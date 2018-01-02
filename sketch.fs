@@ -152,12 +152,6 @@ precondition
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
 
-    // Look to see if there are references to flattened sheet metal bodies. If there are, the plane origin will
-    // not be set to the projected world origin to prevent bend order id changes from moving the sketch.
-    const correspondingInPart = try silent(qSMCorrespondingInPart(context, value.sketchPlane, EntityType.FACE));
-    const isInFlat = correspondingInPart == undefined ? false : size(evaluateQuery(context, correspondingInPart)) > 0 &&
-        size(evaluateQuery(context, qCorrespondingInFlat(value.sketchPlane))) == 0;
-
     value.planeReference = value.sketchPlane;
     const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
     var sketchPlane = try(evPlane(context, planeDefinition));
@@ -170,11 +164,8 @@ precondition
     value.sketchPlane = sketchPlane;
 
     // We can't use the usual wrapped function because the context does not have the version set here yet
-    if (!isInFlat)
-    {
-        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
-            value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
-    }
+    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+        value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
 
     if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
     {

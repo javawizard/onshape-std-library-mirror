@@ -155,6 +155,7 @@ precondition
  * @returns {{
   *      @field cornerType {SMCornerType} : the type of the corner
   *      @field primaryVertex {Query} : the vertex that defines the corner
+  *      @field allVertices {array} : array of transient queries for all definition vertices associated with the corner
   * }}
  */
 export function evCornerType(context is Context, arg is map) returns map
@@ -167,9 +168,18 @@ precondition
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V488_CLASSIFY_CORNER_RETURNS_MAP))
     {
+        var allVertices = [];
+        if (data.allVertices != undefined)
+        {
+            for (var vert in data.allVertices)
+            {
+                allVertices = append(allVertices, qTransient(vert as TransientId));
+            }
+        }
         return {
             "cornerType" : data.cornerType as SMCornerType,
-            "primaryVertex" : qTransient(data.primaryVertex as TransientId)
+            "primaryVertex" : qTransient(data.primaryVertex as TransientId),
+            "allVertices" : allVertices
         };
     }
     else

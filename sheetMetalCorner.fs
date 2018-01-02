@@ -77,6 +77,16 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
             throw regenError(ErrorStringEnum.SHEET_METAL_NOT_A_CLOSED_CORNER, ['cornerStyle'], definition.corner);
         }
 
+        if (definition.cornerStyle != SMCornerReliefStyle.SIMPLE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED))
+        {
+            var facesQ = qVertexAdjacent(qUnion(cornerInfo.allVertices), EntityType.FACE);
+            var rolledQ = qSubtraction(facesQ, qGeometry(facesQ, GeometryType.PLANE));
+            if (size(evaluateQuery(context, rolledQ)) > 0)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_ROLLED_CORNER_RELIF, ['cornerStyle'], rolledQ);
+            }
+        }
+
         corner = cornerInfo.primaryVertex;
 
         var existingAttribute = getCornerAttribute(context, corner);

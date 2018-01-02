@@ -289,6 +289,10 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                     const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
                     if (finalBodyCount > startingBodyCount)
                         reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+                    else if (opResult.warning != undefined)
+                    {
+                        reportFeatureWarning(context, id, opResult.warning);
+                    }
                 }
             }
         }
@@ -423,6 +427,10 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     if (result.error == undefined && cutHoleResult.error != undefined)
     {
         result.error = cutHoleResult.error;
+    }
+    if (result.warning == undefined && cutHoleResult.warning != undefined)
+    {
+        result.warning = cutHoleResult.warning;
     }
     return result;
 }
@@ -699,6 +707,13 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
         try
         {
             spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+            var warning = getFeatureWarning(context, id);
+            if (warning is ErrorStringEnum &&
+                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD ||
+                 warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT))
+            {
+                result.warning = warning;
+            }
         }
         catch (error)
         {

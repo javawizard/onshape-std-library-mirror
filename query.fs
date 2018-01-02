@@ -273,9 +273,10 @@ export enum EntityType
  * @value CONE : A surface which forms the side of a right circular cone
  * @value SPHERE : A surface which forms the boundary of a sphere
  * @value TORUS : A surface which forms the boundary of a torus
- * @value OTHER_SURFACE : Any two-dimensional entity which is not described
+ * @value REVOLVED : A surface constructed by revolving a curve around an axis (unless it is simplified to one of the types above)
+ * @value EXTRUDED : A surface constructed by extruding or sweeping a curve along a line (unless it is simplified to one of the types above)
+ * @value OTHER_SURFACE : Any two-dimensional entity which is not described above (e.g. the side of an arbitrary loft)
  * @value MESH : A surface or a body that contains surface that is a mesh
- *      above (e.g. the side of an arbitrary extrude, revolve, or loft)
  */
 export enum GeometryType
 {
@@ -288,6 +289,8 @@ export enum GeometryType
     CONE,
     SPHERE,
     TORUS,
+    REVOLVED,
+    EXTRUDED,
     OTHER_SURFACE,
     MESH
 }

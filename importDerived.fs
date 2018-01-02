@@ -65,7 +65,9 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             if (size(evaluateQuery(otherContext, definition.parts)) == 0)
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 
+            // Record the parts query in the old context -- the record will be merged into the new context
             recordParameters(otherContext, id, definition);
+
             // remove sheet metal attributes and helper bodies
             var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal");
 

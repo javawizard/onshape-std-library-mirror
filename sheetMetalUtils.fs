@@ -199,6 +199,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
 
     var facesQ =  qOwnedByBody(args.surfaceBodies, EntityType.FACE);
     var count = objectCount;
+    var cylinderBends = [];
+    var containsRolledFaces = false;
     for (var face in evaluateQuery(context, facesQ))
     {
         var surface = evSurfaceDefinition(context, {
@@ -216,28 +218,44 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         }
         else if (surface is Cylinder)
         {
-            var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
-            bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
-            const angleVal = cylinderAngle(context, face);
-            bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
-
-            const tanPlane = evFaceTangentPlane(context, { "face" : face, "parameter" : vector(0.5, 0.5)});
-            const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
-            var thicknessData = (convex) ? modelAttribute.backThickness : modelAttribute.frontThickness;
-            var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData.value;
-            bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
-            setAttribute(context, {
-                    "entities" : face,
-                    "attribute" : bendAttribute
-            });
-            count += 1;
+            cylinderBends = append(cylinderBends, face);
         }
         else
         {
-            regenError("Surface not supported " ~ toString(surface));
+           setErrorEntities(context, id, { "entities" : face });
+           reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_INVALID_FACE);
+           return 0;
         }
+        if (!(surface is Plane))
+              containsRolledFaces = true;
     }
+    for (var face in cylinderBends)
+    {
+        if (!cylinderCanBeBend(context, face))
+        {
+           setErrorEntities(context, id, { "entities" : face });
+           reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_CYLINDER_BEND);
+           return 0;
+        }
+        var surface = evSurfaceDefinition(context, {
+                "face" : face
+        });
+        var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
+        bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+        const angleVal = cylinderAngle(context, face);
+        bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
 
+        const tanPlane = evFaceTangentPlane(context, { "face" : face, "parameter" : vector(0.5, 0.5)});
+        const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
+        var thicknessData = (convex) ? modelAttribute.backThickness : modelAttribute.frontThickness;
+        var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData.value;
+        bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
+        setAttribute(context, {
+                "entities" : face,
+                "attribute" : bendAttribute
+        });
+        count += 1;
+    }
     var edgesQ = qOwnedByBody(args.surfaceBodies, EntityType.EDGE);
     for (var edge in evaluateQuery(context, edgesQ))
     {
@@ -251,13 +269,15 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             continue;
         }
         var bendRadius = bendMap[edge];
+        var attributeId = toAttributeId(id + count);
+        count += 1;
         if (bendRadius != undefined)
         {
             if (bendRadius == true)
             {
                 bendRadius = args.defaultRadius;
             }
-            var bendAttribute = createBendAttribute(context, id, edge, toAttributeId(id + count), bendRadius, false);
+            var bendAttribute = createBendAttribute(context, id, edge, attributeId, bendRadius, false);
             if (bendAttribute == undefined)
             {
                 setErrorEntities(context, id, {"entities" : edge});
@@ -268,34 +288,40 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "entities" : edge,
                     "attribute" : bendAttribute
             });
-            count += 1;
         }
         else
         {
             var angleVal = try silent(edgeAngle(context, edge));
             var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
+            var jointAttribute = makeSMJointAttribute(attributeId);
             if (zeroAngle && !treatTangentEdgeAsRip(context, faces[0], faces[1]))
             {
-                continue;
+                jointAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited": true };
             }
-            var ripAttribute = makeSMJointAttribute(toAttributeId(id + count));
-            ripAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
-            if (angleVal != undefined)
+            else
             {
-                ripAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
-            }
-            if (!zeroAngle)
-            {
-                ripAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited": true };
+                jointAttribute.jointType = { "value" : SMJointType.RIP, "canBeEdited": true };
+                if (angleVal != undefined)
+                {
+                    jointAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
+                }
+                if (!zeroAngle)
+                {
+                    jointAttribute.jointStyle = { "value" : SMJointStyle.EDGE, "canBeEdited": true };
+                }
             }
             setAttribute(context, {
                     "entities" : edge,
-                    "attribute" : ripAttribute
+                    "attribute" : jointAttribute
             });
         }
-        count += 1;
     }
-
+    // Non-trivial corner relief does not work on rolled walls
+    if (containsRolledFaces &&
+        (args.defaultTwoCornerStyle != SMReliefStyle.SIMPLE || args.defaultThreeCornerStyle != SMReliefStyle.SIMPLE))
+    {
+        reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_ROLLED_CORNER_RELIF, ["defaultCornerStyle"]);
+    }
     var verticesQ = qOwnedByBody(args.surfaceBodies, EntityType.VERTEX);
     assignSmAssociationAttributes(context, qUnion([args.surfaceBodies, facesQ, edgesQ, verticesQ]));
     return count;
@@ -315,6 +341,36 @@ function treatTangentEdgeAsRip(context, face0 is Query, face1 is Query) returns 
         return true;
     }
     return false;
+}
+
+function cylinderCanBeBend(context is Context, face is Query) returns boolean
+{
+    var lineEdgesQ = qGeometry(qEdgeAdjacent(face, EntityType.EDGE), GeometryType.LINE);
+    var lineEdges = evaluateQuery(context, lineEdgesQ);
+    if (size(lineEdges) < 2)
+    {
+        return false;
+    }
+    for (var edge in lineEdges)
+    {
+        var otherFaceQ = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), face);
+        var otherFaces = evaluateQuery(context, otherFaceQ);
+        if (size(otherFaces) != 1)
+        {
+            return false;
+        }
+        var wallAttributes = getSmObjectTypeAttributes(context, otherFaces[0], SMObjectType.WALL);
+        if (size(wallAttributes) != 1)
+        {
+            return false;
+        }
+
+        if (edgeAngle(context, edge) > TOLERANCE.zeroAngle * radian)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -345,7 +401,11 @@ export function edgeAngle(context is Context, edge is Query) returns ValueWithUn
     }
 }
 
-function bendAngle(context is Context, id is Id, edge is Query, bendRadius is ValueWithUnits) returns ValueWithUnits
+/**
+*   @internal
+*   Compute angle for sheet metal bend of given radius built on edge of sheet metal definition model
+*/
+export function bendAngle(context is Context, id is Id, edge is Query, bendRadius is ValueWithUnits) returns ValueWithUnits
 {
     var faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(faces) != 2)
@@ -826,14 +886,20 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
         if (attribute.jointType.value == SMJointType.BEND &&
             size(evaluateQuery(context, qGeometry(entity, GeometryType.CYLINDER))) == 1)
         {
-            //TODO : check tangent to walls around
-            return true;
+            return cylinderCanBeBend(context, qGeometry(entity, GeometryType.CYLINDER));
         }
 
         filteredQ = qEntityFilter(entity, EntityType.EDGE);
         if (try silent(edgeIsTwoSided(context, filteredQ)) != true)
         {
             return false;
+        }
+        var nLines = size(evaluateQuery(context, qGeometry(entity, GeometryType.LINE)));
+        var zeroAngle = false;
+        if (nLines == 1)
+        {
+            var angleVal = try silent(edgeAngle(context, filteredQ));
+            zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
         }
         if (attribute.jointType.value == SMJointType.BEND)
         {
@@ -842,16 +908,28 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
                 //TODO : check tangent to walls around
                 return true;
             }
-            if (size(evaluateQuery(context, qGeometry(entity, GeometryType.LINE))) != 1)
+            if (nLines != 1)
             {
                 return false;
             }
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V664_FLAT_JOINT_TO_RIP))
             {
-                var angleVal = try(edgeAngle(context, filteredQ));
-                var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
                 return !zeroAngle;
             }
+        }
+        if (attribute.jointType.value == SMJointType.TANGENT)
+        {
+            if (nLines != 1 ||
+                size(evaluateQuery(context, qGeometry(qEdgeAdjacent(entity, EntityType.FACE), GeometryType.PLANE))) == 2)
+            {
+                return false;
+            }
+            return zeroAngle;
+        }
+        if (attribute.jointType.value == SMJointType.RIP && zeroAngle && nLines == 1)
+        {
+            const faceBendAttributes = getSmObjectTypeAttributes(context, qEdgeAdjacent(entity, EntityType.FACE), SMObjectType.JOINT);
+            return (size(faceBendAttributes) == 0);
         }
         return true;
     }
@@ -973,11 +1051,18 @@ export function clearSheetMetalData(context, id) returns Query
         smPartNBendLineQArr = append(smPartNBendLineQArr, qAttributeQuery(attribute));
     }
 
-    // Bend centerlines are wire bodies associated with edges of sheet bodies
-    // there is more topology associated with edges that  why we have to apply filters to qAttributeQuery
+    // Bend centerlines are wire bodies associated with edges or cylinder faces of sheet bodies.
+    // There is more topology associated with edges that  why we have to apply filters to qAttributeQuery
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V557_NO_BEND_CENTERLINE_IN_DERIVED))
     {
-        associationAttributes = getAttributes(context, {"entities" : qOwnedByBody(smModelsQ, EntityType.EDGE), "attributePattern" : {} as SMAssociationAttribute});
+        var smEdgeQ = qOwnedByBody(smModelsQ, EntityType.EDGE);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V724_SM_MAKE_JOINT_TYPE))
+        { // As to avoid too many iterations on FS side filter out laminar and non-linear edges which can't be bends .
+            smEdgeQ = qGeometry(qEdgeTopologyFilter(smEdgeQ, EdgeTopology.TWO_SIDED), GeometryType.LINE);
+        }
+        const smCylinderQ = qGeometry(qOwnedByBody(smModelsQ, EntityType.FACE), GeometryType.CYLINDER);
+
+        associationAttributes = getAttributes(context, {"entities" : qUnion([smEdgeQ, smCylinderQ]), "attributePattern" : {} as SMAssociationAttribute});
         for (var attribute in associationAttributes)
         {
             smPartNBendLineQArr = append(smPartNBendLineQArr, qEntityFilter(qBodyType(qAttributeQuery(attribute), BodyType.WIRE), EntityType.BODY));
@@ -1033,7 +1118,9 @@ export function makeNewJointAttributeIfNeeded(context is Context, edge is Query,
         var zeroAngle = angleVal == undefined || angleVal < TOLERANCE.zeroAngle * radian;
         if (zeroAngle && !treatTangentEdgeAsRip(context, faces[0], faces[1]))
         {
-            return undefined;
+            var jointAttribute = makeSMJointAttribute(attributeId);
+            jointAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited": true };
+            return jointAttribute;
         }
     }
     //default to RIP
@@ -1377,7 +1464,7 @@ export function getOwnerSMModel(context is Context, selection is Query) returns 
 /**
  * Returns a query for all sheet metal part entities of entityType related to the input sheet metal model entities.
  */
-export function qSMCorrespondingInPart(context is Context, selection is Query, entityType is EntityType) returns Query
+export function getSMCorrespondingInPart(context is Context, selection is Query, entityType is EntityType) returns Query
 {
     var entityAssociations = getAttributes(context, {
             "entities" : selection,
@@ -1394,4 +1481,154 @@ export function qSMCorrespondingInPart(context is Context, selection is Query, e
     return qSubtraction(corresponding, qCorrespondingInFlat(corresponding));
 }
 
+/**
+ * Collect information before adding material which may merge sheet metal walls. The map returned by this function should
+ * be passed directly into [remapCornerBreaks] after making the desired geometry changes.
+ *
+ * Only walls which have broken corners are tracked.
+ * @returns {{
+ *     @field wallIdToPersistentWall {map} : a map from wall id to a tracked query for the wall
+ *     @field wallIdToVerticesWithBreaks {array} : a map from wall id to an array of tracked vertices which break the wall
+ * }}
+ */
+export function collectCornerBreakTracking(context is Context, bodies is Query) returns map
+{
+    const walls = qOwnedByBody(bodies, EntityType.FACE);
+
+    var wallIdToPersistentWall = {};
+    var wallIdToVerticesWithBreaks = {};
+    for (var wall in evaluateQuery(context, walls))
+    {
+        const wallId = try silent(getWallAttribute(context, wall).attributeId);
+        if (wallId == undefined)
+        {
+            // This should not happen, but we should be tolerant to it.
+            continue;
+        }
+        for (var vertex in evaluateQuery(context, qVertexAdjacent(wall, EntityType.VERTEX)))
+        {
+            const cornerBreaks = try silent(getCornerAttribute(context, vertex).cornerBreaks);
+            if (cornerBreaks == undefined)
+                continue;
+            for (var cornerBreak in cornerBreaks)
+            {
+                // If the corner break breaks the wall in question
+                if (cornerBreak.value.wallId == wallId)
+                {
+                    // Add the wall to the persistent wall map
+                    if (wallIdToPersistentWall[wallId] == undefined)
+                    {
+                        var wallTracking = startTracking(context, { "subquery" : wall, "trackPartialDependency" : true });
+                        wallTracking = qEntityFilter(wallTracking, EntityType.FACE);
+                        wallIdToPersistentWall[wallId] = qUnion([wall, wallTracking]);
+                    }
+
+                    // Add the vertex to the list of vertices breaking the wall
+                    if (wallIdToVerticesWithBreaks[wallId] == undefined)
+                    {
+                        wallIdToVerticesWithBreaks[wallId] = [];
+                    }
+                    const persistentVertexQuery = qUnion([vertex, startTracking(context, vertex)]);
+                    wallIdToVerticesWithBreaks[wallId] = append(wallIdToVerticesWithBreaks[wallId], persistentVertexQuery);
+                }
+            }
+        }
+    }
+
+    return {
+        "wallIdToPersistentWall" : wallIdToPersistentWall,
+        "wallIdToVerticesWithBreaks" : wallIdToVerticesWithBreaks
+    };
+}
+
+/**
+ * Remap corner breaks on walls whose wall id has changed.  Takes the output of [collectCornerBreakTracking] as
+ * `cornerBreakTracking`.
+ */
+export function remapCornerBreaks(context is Context, cornerBreakTracking is map)
+{
+    var oldWallIdToNewWallId = {};
+    for (var wallIdToWallQuery in cornerBreakTracking.wallIdToPersistentWall)
+    {
+        const newWalls = evaluateQuery(context, wallIdToWallQuery.value);
+        var newWallId;
+        // Make sure all the walls that came from the wall in question have the same wall id.
+        for (var wall in newWalls)
+        {
+            const wallId = try silent(getWallAttribute(context, wall).attributeId);
+            if (wallId == undefined)
+            {
+                // All walls should have wall ids.
+                newWallId = undefined;
+                break;
+            }
+
+            if (newWallId == undefined)
+            {
+                newWallId = wallId;
+            }
+            if (wallId != newWallId)
+            {
+                // Wall split into multiple wall ids.  There is nothing we can do.
+                newWallId = undefined;
+                break;
+            }
+        }
+        if (newWallId == undefined)
+            continue;
+
+        // Add a mapping if a remap is required
+        if (newWallId != wallIdToWallQuery.key)
+        {
+            oldWallIdToNewWallId[wallIdToWallQuery.key] = newWallId;
+        }
+    }
+
+    var vertexToOriginalAndNewAttribute = {};
+    for (var oldAndNew in oldWallIdToNewWallId)
+    {
+        const oldWallId = oldAndNew.key;
+        const newWallId = oldAndNew.value;
+        for (var vertex in evaluateQuery(context, qUnion(cornerBreakTracking.wallIdToVerticesWithBreaks[oldWallId])))
+        {
+            var originalAndNewAttribute = vertexToOriginalAndNewAttribute[vertex];
+            var attributeToModify;
+            if (originalAndNewAttribute == undefined)
+            {
+                const originalAttribute = getCornerAttribute(context, vertex);
+                if (originalAttribute == undefined)
+                {
+                    // This should not happen, but we should be tolerant to it.
+                    continue;
+                }
+                vertexToOriginalAndNewAttribute[vertex] = {
+                        "originalAttribute" : originalAttribute,
+                        "newAttribute" : originalAttribute
+                };
+                attributeToModify = originalAttribute;
+            }
+            else
+            {
+                attributeToModify = vertexToOriginalAndNewAttribute[vertex].newAttribute;
+            }
+
+            // Remap the ids in question and store the new attribute for batch update.
+            for (var i = 0; i < size(attributeToModify.cornerBreaks); i += 1)
+            {
+                if (attributeToModify.cornerBreaks[i].value.wallId == oldWallId)
+                {
+                    attributeToModify.cornerBreaks[i].value.wallId = newWallId;
+                    vertexToOriginalAndNewAttribute[vertex].newAttribute = attributeToModify;
+                    break;
+                }
+            }
+        }
+    }
+
+    // Update the attributes which have recieved changes.
+    for (var originalAndNewAttribute in values(vertexToOriginalAndNewAttribute))
+    {
+        replaceSMAttribute(context, originalAndNewAttribute.originalAttribute, originalAndNewAttribute.newAttribute);
+    }
+}
 
