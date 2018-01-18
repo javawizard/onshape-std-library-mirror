@@ -1,4 +1,4 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -621,7 +621,14 @@ export enum FeatureScriptVersionNumber
     V726_ROLLED_CORNER_RELIEF,
     V727_SM_SUPPORT_ROLLED,
     V728_ACTIVE_SKETCH_ON_FLAT,
-    V729_UPGRADE_FIXES
+    V729_UPGRADE_FIXES,
+    V730_EXTEND_SHEET_BODY_INTERSECTION_CLASSIFICATION,
+    V731_SM_BLEND_PARTIAL,
+    V732_HOLE_PROPAGATE_EDGE,
+    V733_EDGE_CHANGE,
+    V734_PS_VERSION_30_1_168,
+    V735_MOVE_FACE_BUG_FIXES,
+    V736_SM_74
 }
 
 /**
@@ -632,6 +639,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V729_UPGRADE_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V736_SM_74;
 
 

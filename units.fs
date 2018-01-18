@@ -1,11 +1,11 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "729.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "729.0");
-import(path : "onshape/std/string.fs", version : "729.0");
+import(path : "onshape/std/math.fs", version : "736.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "736.0");
+import(path : "onshape/std/string.fs", version : "736.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
@@ -70,6 +70,8 @@ export const TEMPERATURE_UNITS = { "kelvin" : 1 } as UnitSpec;
 export const TIME_UNITS = { "second" : 1 } as UnitSpec;
 /** @internal */
 export const CURRENT_UNITS = { "ampere" : 1 } as UnitSpec;
+/** @internal */
+export const DENSITY_UNITS = { "kilogram" : 1, "meter" : -3 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
 /**

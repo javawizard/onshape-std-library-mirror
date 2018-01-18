@@ -1,4 +1,4 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,26 +43,26 @@ FeatureScript 729; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "729.0");
+export import(path : "onshape/std/query.fs", version : "736.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "729.0");
-import(path : "onshape/std/evaluate.fs", version : "729.0");
-import(path : "onshape/std/feature.fs", version : "729.0");
-import(path : "onshape/std/mathUtils.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
-import(path : "onshape/std/tool.fs", version : "729.0");
-import(path : "onshape/std/valueBounds.fs", version : "729.0");
-import(path : "onshape/std/matrix.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "736.0");
+import(path : "onshape/std/evaluate.fs", version : "736.0");
+import(path : "onshape/std/feature.fs", version : "736.0");
+import(path : "onshape/std/mathUtils.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
+import(path : "onshape/std/tool.fs", version : "736.0");
+import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/matrix.fs", version : "736.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "729.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "729.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "729.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "729.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "729.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "729.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "736.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "736.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "736.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "736.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "736.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "736.0");
 
 /**
  * @internal
@@ -163,23 +163,26 @@ precondition
     }
     value.sketchPlane = sketchPlane;
 
-    // We can't use the usual wrapped function because the context does not have the version set here yet
-    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
-        value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
-
-    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
+    if (!queryContainsFlattenedSheetMetal(context, value.planeReference))
     {
-        // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
-        var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
-        planeOriginal = alignCanonically(context, planeOriginal);
-        planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
-        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
+        // We can't use the usual wrapped function because the context does not have the version set here yet
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+            value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
+
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
         {
-            value.sketchPlane = planeOriginal;
-            value.transform = fullTransform;
+            // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
+            var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
+            planeOriginal = alignCanonically(context, planeOriginal);
+            planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
+            if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
+            {
+                value.sketchPlane = planeOriginal;
+                value.transform = fullTransform;
+            }
+            else
+                value.sketchPlane = fullTransform * planeOriginal;
         }
-        else
-            value.sketchPlane = fullTransform * planeOriginal;
     }
     return newSketchOnPlane(context, id, value);
 }

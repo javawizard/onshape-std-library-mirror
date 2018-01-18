@@ -1,21 +1,21 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "729.0");
-export import(path : "onshape/std/query.fs", version : "729.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "736.0");
+export import(path : "onshape/std/query.fs", version : "736.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "729.0");
-import(path : "onshape/std/feature.fs", version : "729.0");
-import(path : "onshape/std/math.fs", version : "729.0");
-import(path : "onshape/std/matrix.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
-import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/containers.fs", version : "736.0");
+import(path : "onshape/std/feature.fs", version : "736.0");
+import(path : "onshape/std/math.fs", version : "736.0");
+import(path : "onshape/std/matrix.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
+import(path : "onshape/std/valueBounds.fs", version : "736.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -129,7 +129,10 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
                     "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
                     "range" : definition.width
                 };
-        sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition);
+        try(sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition));
+        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smChamfer", "propagateErrorDisplay" : true});
+        if (featureHasError(context, id))
+            return;
     }
 
     if (hasNonSheetMetalQueries)

@@ -6,21 +6,23 @@ FeatureScript 736; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies how a mate connector's coordinate system is defined with respect an entity.
+ * Defines the type of property that is being applied to a part.
+ * @value CUSTOM : Not yet supported
  */
-export enum EntityInferenceType
+export enum PropertyType
 {
-    PART_ORIGIN,
-    POINT,
-    CENTROID,
-    CENTER,
-    MID_POINT,
-    TOP_AXIS_POINT,
-    MID_AXIS_POINT,
-    BOTTOM_AXIS_POINT,
-    ORIGIN_X,
-    ORIGIN_Y,
-    ORIGIN_Z
+    NAME,
+    MATERIAL,
+    APPEARANCE,
+    DESCRIPTION,
+    PART_NUMBER,
+    VENDOR,
+    PROJECT,
+    PRODUCT_LINE,
+    TITLE_1,
+    TITLE_2,
+    TITLE_3,
+    CUSTOM
 }
 
 

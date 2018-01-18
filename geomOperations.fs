@@ -1,4 +1,4 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,15 +15,15 @@ FeatureScript 729; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "729.0");
-import(path : "onshape/std/curveGeometry.fs", version : "729.0");
+import(path : "onshape/std/context.fs", version : "736.0");
+import(path : "onshape/std/curveGeometry.fs", version : "736.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "729.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "729.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "736.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "736.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "729.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "736.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "729.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "736.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -652,6 +652,22 @@ export function opTransform(context is Context, id is Id, definition is map)
 export function opExtendSheetBody(context is Context, id is Id, definition is map)
 {
     return @opExtendSheetBody(context, id, definition);
+}
+
+/**
+ * @internal
+ * @param id : @autocomplete `id + "changeEdge1"`
+ * @param definition {{
+ *    @field edgeChangeOptions {array} : An array of maps of the form ("edge", "face", "offset", "transformList", "replaceFace").
+ *                                      Edge and face are required and are the edge and face being modified.
+ *                                      The other parameters are optional. If offset is a length parameter, the edge will
+ *                                      be offset. If transform list is an array of transforms, they will be applied to the edge.
+ *                                      If replaceFace is a face, the edge will be moved to that face.
+ * }}
+ */
+export function opEdgeChange(context is Context, id is Id, definition is map)
+{
+    return @opEdgeChange(context, id, definition);
 }
 
 /**

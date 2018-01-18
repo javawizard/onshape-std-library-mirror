@@ -1,28 +1,28 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "729.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "729.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "729.0");
-import(path : "onshape/std/containers.fs", version : "729.0");
-import(path : "onshape/std/coordSystem.fs", version : "729.0");
-import(path : "onshape/std/curveGeometry.fs", version : "729.0");
-import(path : "onshape/std/evaluate.fs", version : "729.0");
-import(path : "onshape/std/feature.fs", version : "729.0");
-import(path : "onshape/std/math.fs", version : "729.0");
-import(path : "onshape/std/manipulator.fs", version : "729.0");
-import(path : "onshape/std/query.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "729.0");
-import(path : "onshape/std/string.fs", version : "729.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "729.0");
-import(path : "onshape/std/tool.fs", version : "729.0");
-import(path : "onshape/std/valueBounds.fs", version : "729.0");
-import(path : "onshape/std/vector.fs", version : "729.0");
-import(path : "onshape/std/topologyUtils.fs", version : "729.0");
-import(path : "onshape/std/transform.fs", version : "729.0");
+import(path : "onshape/std/attributes.fs", version : "736.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "736.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "736.0");
+import(path : "onshape/std/containers.fs", version : "736.0");
+import(path : "onshape/std/coordSystem.fs", version : "736.0");
+import(path : "onshape/std/curveGeometry.fs", version : "736.0");
+import(path : "onshape/std/evaluate.fs", version : "736.0");
+import(path : "onshape/std/feature.fs", version : "736.0");
+import(path : "onshape/std/math.fs", version : "736.0");
+import(path : "onshape/std/manipulator.fs", version : "736.0");
+import(path : "onshape/std/query.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "736.0");
+import(path : "onshape/std/string.fs", version : "736.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
+import(path : "onshape/std/tool.fs", version : "736.0");
+import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/vector.fs", version : "736.0");
+import(path : "onshape/std/topologyUtils.fs", version : "736.0");
+import(path : "onshape/std/transform.fs", version : "736.0");
 
 
 
@@ -66,6 +66,34 @@ export enum SMThicknessDirection
     BOTH,
     FRONT,
     BACK
+}
+
+/**
+ * Set a bend attribute on a cylindrical face
+ * @param face {Query} : face to set bend attribute on
+ * @param frontThickness {ValueWithUnits}
+ * @param backThickness {ValueWithUnits}
+ * @param attributeId {string} : id of new bend attribute
+ */
+export function setCylindricalBendAttribute(context is Context, face is Query, frontThickness, backThickness, attributeId is string)
+{
+    var surface = evSurfaceDefinition(context, {
+            "face" : face
+    });
+    var bendAttribute = makeSMJointAttribute(attributeId);
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+    const angleVal = cylinderAngle(context, face);
+    bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
+
+    const tanPlane = evFaceTangentPlane(context, { "face" : face, "parameter" : vector(0.5, 0.5)});
+    const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
+    var thicknessData = (convex) ? backThickness : frontThickness;
+    var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData;
+    bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
+    setAttribute(context, {
+            "entities" : face,
+            "attribute" : bendAttribute
+    });
 }
 
 /**
@@ -237,23 +265,9 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
            reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_CYLINDER_BEND);
            return 0;
         }
-        var surface = evSurfaceDefinition(context, {
-                "face" : face
-        });
-        var bendAttribute = makeSMJointAttribute(toAttributeId(id + count));
-        bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
-        const angleVal = cylinderAngle(context, face);
-        bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
-
-        const tanPlane = evFaceTangentPlane(context, { "face" : face, "parameter" : vector(0.5, 0.5)});
-        const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
-        var thicknessData = (convex) ? modelAttribute.backThickness : modelAttribute.frontThickness;
-        var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData.value;
-        bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
-        setAttribute(context, {
-                "entities" : face,
-                "attribute" : bendAttribute
-        });
+        const frontThickness = (modelAttribute.frontThickness == undefined) ? undefined : modelAttribute.frontThickness.value;
+        const backThickness = (modelAttribute.backThickness == undefined) ? undefined : modelAttribute.backThickness.value;
+        setCylindricalBendAttribute(context, face, frontThickness, backThickness, toAttributeId(id + count));
         count += 1;
     }
     var edgesQ = qOwnedByBody(args.surfaceBodies, EntityType.EDGE);
@@ -718,6 +732,14 @@ export function getActiveSheetMetalId(context is Context, query is Query)
 export function queryContainsActiveSheetMetal(context is Context, query is Query) returns boolean
 {
     return getActiveSheetMetalId(context, query) != undefined;
+}
+
+/**
+ * @internal
+ */
+export function queryContainsFlattenedSheetMetal(context is Context, query is Query) returns boolean
+{
+    return @queryContainsFlattenedSheetMetal(context, { "entities" : query });
 }
 
 /**
@@ -1285,6 +1307,18 @@ export function sheetMetalExtendSheetBodyCall(context is Context, id is Id, defi
     adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
 }
 
+/**
+*  Wrapper around opEdgeChange used in sheet metal operations to handle remapping of cornerBreak data
+*/
+export function sheetMetalEdgeChangeCall(context is Context, id is Id, edges is Query, definition is map)
+{
+    var vertexToTrackingAndAttribute = collectAttributesOfAdjacentVertices(context, edges);
+    var edgeToTrackingAndAssociation = removeAssociationsFromFreeEdges(context, edges);
+    opEdgeChange(context, id, definition);
+    restoreAssociations(context, edgeToTrackingAndAssociation);
+    adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
+}
+
 function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) returns map
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V599_SM_ASSOCIATION_FIX))
@@ -1630,5 +1664,25 @@ export function remapCornerBreaks(context is Context, cornerBreakTracking is map
     {
         replaceSMAttribute(context, originalAndNewAttribute.originalAttribute, originalAndNewAttribute.newAttribute);
     }
+}
+
+/**
+ * @internal
+ */
+export function removeJointAttributesFromOneSidedEdges(context is Context, sheetMetalModels is Query) returns array
+{
+    var modifiedEdges = [];
+    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(sheetMetalModels, EntityType.EDGE), EdgeTopology.LAMINAR)))
+    {
+        if (size(getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT)) > 0)
+        {
+            modifiedEdges = append(modifiedEdges, edge);
+        }
+    }
+    removeAttributes(context, {
+                "entities" : qUnion(modifiedEdges),
+                "attributePattern" : { "objectType" : SMObjectType.JOINT } as SMAttribute
+            });
+    return modifiedEdges;
 }
 

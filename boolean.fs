@@ -1,28 +1,28 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "729.0");
-export import(path : "onshape/std/query.fs", version : "729.0");
-export import(path : "onshape/std/tool.fs", version : "729.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "736.0");
+export import(path : "onshape/std/query.fs", version : "736.0");
+export import(path : "onshape/std/tool.fs", version : "736.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "729.0");
-import(path : "onshape/std/box.fs", version : "729.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "729.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "729.0");
-import(path : "onshape/std/containers.fs", version : "729.0");
-import(path : "onshape/std/evaluate.fs", version : "729.0");
-import(path : "onshape/std/feature.fs", version : "729.0");
-import(path : "onshape/std/math.fs", version : "729.0");
-import(path : "onshape/std/primitives.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
-import(path : "onshape/std/string.fs", version : "729.0");
-import(path : "onshape/std/transform.fs", version : "729.0");
-import(path : "onshape/std/valueBounds.fs", version : "729.0");
+import(path : "onshape/std/attributes.fs", version : "736.0");
+import(path : "onshape/std/box.fs", version : "736.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "736.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "736.0");
+import(path : "onshape/std/containers.fs", version : "736.0");
+import(path : "onshape/std/evaluate.fs", version : "736.0");
+import(path : "onshape/std/feature.fs", version : "736.0");
+import(path : "onshape/std/math.fs", version : "736.0");
+import(path : "onshape/std/primitives.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
+import(path : "onshape/std/string.fs", version : "736.0");
+import(path : "onshape/std/transform.fs", version : "736.0");
+import(path : "onshape/std/valueBounds.fs", version : "736.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -369,9 +369,17 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     if (featureHasNonTrivialStatus(context, boolId))
     {
         const errorId = id + "errorEntities";
-        reconstructOp(errorId);
-        setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
-        opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        try
+        {
+            reconstructOp(errorId);
+            setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+            opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        }
+        catch (e)
+        {
+            if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
+                throw e;
+        }
     }
 }
 
@@ -771,16 +779,24 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                             "attributePattern" : {} as SMAssociationAttribute });
 
                                 definition.targets = sheetMetalModel;
-                                const trackingSMModel = startTracking(context, sheetMetalModel);
+                                const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
                                 const modifiedFaceArray = performSheetMetalBoolean(context, id, definition);
-                                if (size(modifiedFaceArray) != 0 || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
+
+                                var modifiedEntityArray = modifiedFaceArray;
+                                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
                                 {
-                                    const modifiedFaces = qUnion(modifiedFaceArray);
-                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
+                                    const modifiedEdgeArray = removeJointAttributesFromOneSidedEdges(context, robustSMModel);
+                                    modifiedEntityArray = concatenateArrays([modifiedFaceArray, modifiedEdgeArray]);
+                                }
+
+                                if (size(modifiedEntityArray) != 0 || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
+                                {
+                                    const modifiedEntities = qUnion(modifiedEntityArray);
+                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel,
                                             originalEntities, initialAssociationAttributes);
 
                                     updateSheetMetalGeometry(context, id + "smUpdate", {
-                                                "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                                                "entities" : qUnion([toUpdate.modifiedEntities, modifiedEntities]),
                                                 "deletedAttributes" : toUpdate.deletedAttributes });
                                 }
                             }

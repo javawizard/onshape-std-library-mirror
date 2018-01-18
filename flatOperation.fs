@@ -1,17 +1,20 @@
-FeatureScript 729; /* Automatically generated version */
+FeatureScript 736; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Under development, internal use only
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "729.0");
+export import(path : "onshape/std/query.fs", version : "736.0");
 
-import(path : "onshape/std/attributes.fs", version : "729.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "729.0");
-import(path : "onshape/std/feature.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "729.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "729.0");
+import(path : "onshape/std/attributes.fs", version : "736.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "736.0");
+import(path : "onshape/std/containers.fs", version : "736.0");
+import(path : "onshape/std/evaluate.fs", version : "736.0");
+import(path : "onshape/std/feature.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
 
 /**
  * @internal
@@ -33,11 +36,33 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         definition.operationType = definition.add ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);
+
+        for (var body in evaluateQuery(context, qOwnerBody(newEntities)))
+        {
+            const modelParameters = getModelParameters(context, body);
+            var count = 0;
+
+            for (var face in evaluateQuery(context, qOwnedByBody(body, EntityType.FACE)))
+            {
+                const surfaceDefinition = evSurfaceDefinition(context, {
+                            "face" : face
+                        });
+                const attributes = getAttributes(context, {
+                            "entities" : face
+                        });
+                if (surfaceDefinition is Cylinder && size(attributes) == 0)
+                {
+                    setCylindricalBendAttribute(context, face, modelParameters.frontThickness, modelParameters.backThickness, toAttributeId(id + count));
+                    count += 1;
+                }
+            }
+        }
+
         const originalEntities = evaluateQuery(context, qSubtraction(qOwnedByBody(qOwnerBody(tracking)), newEntities));
         const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qOwnedByBody(qOwnerBody(tracking)),
+                    "entities" : qOwnedByBody(qOwnerBody(newEntities)),
                     "attributePattern" : {} as SMAssociationAttribute });
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(tracking),
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities),
                 originalEntities, initialAssociationAttributes);
 
         updateSheetMetalGeometry(context, id + "smUpdate", {
@@ -45,3 +70,4 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
                     "deletedAttributes" : toUpdate.deletedAttributes,
                     "associatedChanges" : tracking });
     }, {});
+
