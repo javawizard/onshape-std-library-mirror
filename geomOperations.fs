@@ -656,6 +656,22 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
 
 /**
  * @internal
+ * @param id : @autocomplete `id + "changeEdge1"`
+ * @param definition {{
+ *    @field edgeChangeOptions {array} : An array of maps of the form ("edge", "face", "offset", "transformList", "replaceFace").
+ *                                      Edge and face are required and are the edge and face being modified.
+ *                                      The other parameters are optional. If offset is a length parameter, the edge will
+ *                                      be offset. If transform list is an array of transforms, they will be applied to the edge.
+ *                                      If replaceFace is a face, the edge will be moved to that face.
+ * }}
+ */
+export function opEdgeChange(context is Context, id is Id, definition is map)
+{
+    return @opEdgeChange(context, id, definition);
+}
+
+/**
+ * @internal
  * This function takes a list of faces and creates one or more surfaces from those faces.
  * The source faces and body are not affected.
  * @param id : @autocomplete `id + "extractSurface1"`

@@ -260,11 +260,16 @@ function groupEntitiesByModelAttribute(context is Context, entities is array) re
 }
 
 /**
+ * Deprecated in favor of a server side implementation.
+ *
  * Create an array of maps containing a tracking query and hole attribute for each entity of `definitionTopology` which
  * has a hole attribute.
  */
 function createHoleTrackingAndAttribute(context is Context, definitionTopology is Query) returns array
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V732_HOLE_PROPAGATE_EDGE))
+        return [];
+
     var holeTrackingAndAttribute = [];
     const holeCandidates = qEntityFilter(definitionTopology, EntityType.EDGE);
     for (var entity in evaluateQuery(context, holeCandidates))
@@ -283,10 +288,15 @@ function createHoleTrackingAndAttribute(context is Context, definitionTopology i
 }
 
 /**
+ * Deprecated in favor of a server side implementation.
+ *
  * Reapply hole attributes to patterned sheet metal entities.
  */
 function reapplyHoleAttributes(context is Context, topLevelId is Id, holeTrackingAndAttribute is array, attributeIdCounter is box)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V732_HOLE_PROPAGATE_EDGE))
+        return;
+
     for (var trackingAndAttribute in holeTrackingAndAttribute)
     {
         var newEdges = evaluateQuery(context, trackingAndAttribute.tracking);

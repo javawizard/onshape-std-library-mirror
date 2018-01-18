@@ -163,23 +163,26 @@ precondition
     }
     value.sketchPlane = sketchPlane;
 
-    // We can't use the usual wrapped function because the context does not have the version set here yet
-    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
-        value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
-
-    if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
+    if (!queryContainsFlattenedSheetMetal(context, value.planeReference))
     {
-        // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
-        var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
-        planeOriginal = alignCanonically(context, planeOriginal);
-        planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
-        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
+        // We can't use the usual wrapped function because the context does not have the version set here yet
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+            value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
+
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
         {
-            value.sketchPlane = planeOriginal;
-            value.transform = fullTransform;
+            // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
+            var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
+            planeOriginal = alignCanonically(context, planeOriginal);
+            planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
+            if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
+            {
+                value.sketchPlane = planeOriginal;
+                value.transform = fullTransform;
+            }
+            else
+                value.sketchPlane = fullTransform * planeOriginal;
         }
-        else
-            value.sketchPlane = fullTransform * planeOriginal;
     }
     return newSketchOnPlane(context, id, value);
 }

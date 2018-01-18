@@ -70,6 +70,8 @@ export const TEMPERATURE_UNITS = { "kelvin" : 1 } as UnitSpec;
 export const TIME_UNITS = { "second" : 1 } as UnitSpec;
 /** @internal */
 export const CURRENT_UNITS = { "ampere" : 1 } as UnitSpec;
+/** @internal */
+export const DENSITY_UNITS = { "kilogram" : 1, "meter" : -3 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
 /**

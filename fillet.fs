@@ -186,7 +186,10 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
                     "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
                     "range" : definition.radius
                 };
-        sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition);
+        try(sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition));
+        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smFillet", "propagateErrorDisplay" : true});
+        if (featureHasError(context, id))
+            return;
     }
 
     if (hasNonSheetMetalQueries)

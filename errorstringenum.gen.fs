@@ -1508,7 +1508,7 @@ export enum ErrorStringEnum
     SHEET_METAL_TAB_NO_PARALLEL_WALL,
     /* A corner relief is too small to be successfully applied. */
     SHEET_METAL_CORNER_UNDER_SIZED,
-    /* Could not fillet selections on some bodies. */
+    /* Could not fillet selections on some parts. */
     FILLET_PARTIAL_FAIL,
     /* Only end vertices of an edge chain can have zero radius. */
     VRFILLET_INTERNAL_ZERO,
@@ -1600,7 +1600,11 @@ export enum ErrorStringEnum
     /* Only Simple corner relief can be applied to rolled walls and cylindrical bends. */
     SHEET_METAL_ROLLED_CORNER_RELIF,
     /* Failed to apply some reliefs. */
-    SHEET_METAL_RELIEF_FAILURES
+    SHEET_METAL_RELIEF_FAILURES,
+    /* Failed to modify edge. */
+    EDGE_CHANGE_FAILED,
+    /* Not all inputs are solids. */
+    BOOLEAN_INPUTS_NOT_SOLID
 }
 
 

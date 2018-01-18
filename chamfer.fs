@@ -129,7 +129,10 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
                     "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
                     "range" : definition.width
                 };
-        sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition);
+        try(sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition));
+        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smChamfer", "propagateErrorDisplay" : true});
+        if (featureHasError(context, id))
+            return;
     }
 
     if (hasNonSheetMetalQueries)
