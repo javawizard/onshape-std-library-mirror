@@ -489,6 +489,23 @@ export function setExternalDisambiguation(context is Context, id is Id, query is
 
 /**
  * @internal
+ * Suppose you have a sequence of operations with unstable components that are creating entities that
+ * will be referenced within the feature and then deleted.  If this method is applied to mark the original
+ * operation, order-based disambiguation of the original operation will be skipped, allowing the identity
+ * of entities created by downstream operations to be based on other criteria (for instance, external disambiguation).
+ *
+ * Because this allows ambiguous entities to exist in the context, if any operation is marked with this without its
+ * entities being deleted at the end of a feature, a warning will be reported.
+ *
+ * Used by the instantiator.
+ */
+export function skipOrderDisambiguation(context is Context, id is Id)
+{
+    @skipOrderDisambiguation(context, id);
+}
+
+/**
+ * @internal
  * Throws a regeneration error if the parameter specified is not a query for at least one
  * entity, marking the given parameter as faulty.
  */

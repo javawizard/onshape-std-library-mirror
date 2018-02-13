@@ -36,7 +36,8 @@ export enum SplitType
 /**
  * Feature performing an [opSplitPart].
  */
-annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts",
+             "Editing Logic Function" : "splitEditLogic" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -49,12 +50,15 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",
-                        "Filter" : (EntityType.BODY && BodyType.SHEET) || (GeometryType.PLANE && ConstructionObject.YES),
+                        "Filter" : (EntityType.BODY && BodyType.SHEET) || (GeometryType.PLANE && ConstructionObject.YES) || EntityType.FACE,
                         "MaxNumberOfPicks" : 1 }
             definition.tool is Query;
 
             annotation { "Name" : "Keep tools" }
             definition.keepTools is boolean;
+
+            annotation { "Name" : "Trim to face boundaries" }
+            definition.useTrimmed is boolean;
         }
         else
         {
@@ -70,13 +74,29 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
     }
     {
         performSplit(context, id, definition);
-    }, { keepTools : false, splitType : SplitType.PART });
+    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false});
 
 function performSplit(context is Context, id is Id, definition is map)
 {
     if (definition.splitType == SplitType.PART)
     {
-        definition.tool = qOwnerBody(definition.tool);
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V747_SPLIT_ALLOW_FACES))
+            definition.tool = qOwnerBody(definition.tool);
+        else
+        {
+            const sizeF = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));
+            if (sizeF == 1)
+            {
+                if (definition.keepTools == false)
+                    reportFeatureInfo(context, id, ErrorStringEnum.SPLIT_KEEP_TOOLS_WITH_FACE);
+            }
+            else
+            {
+                const allFaces = evaluateQuery(context, qOwnedByBody(definition.tool, EntityType.FACE));
+                if (size(allFaces) > 1 && definition.useTrimmed) //multi-face surface body as tool
+                    reportFeatureInfo(context, id, ErrorStringEnum.SPLIT_TRIM_WITH_SINGLE_FACE);
+            }
+        }
         opSplitPart(context, id, definition);
     }
     else
@@ -103,5 +123,20 @@ function performSplit(context is Context, id is Id, definition is map)
 
         opSplitFace(context, id, splitFaceDefinition);
     }
+}
+
+/**
+ * @internal
+ * Edit logic to set keepTools to true when a face is selected
+ */
+export function splitEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    const sizeF = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));
+    if (sizeF == 1 && !specifiedParameters.keepTools)
+    {
+        definition.keepTools = true;
+    }
+    return definition;
 }
 

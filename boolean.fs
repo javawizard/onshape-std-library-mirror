@@ -778,9 +778,18 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                             "entities" : qOwnedByBody(sheetMetalModel),
                                             "attributePattern" : {} as SMAssociationAttribute });
 
+                                const trackedSheets = trackModelBySheet(context, sheetMetalModel);
+
                                 definition.targets = sheetMetalModel;
                                 const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
                                 const modifiedFaceArray = performSheetMetalBoolean(context, id, definition);
+
+                                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V748_SM_FAIL_SHEET_DELETION)
+                                    && !eachSheetStillExists(context, trackedSheets))
+                                {
+                                    reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_SUBTRACT_DESTROYS_SHEET);
+                                    return;
+                                }
 
                                 var modifiedEntityArray = modifiedFaceArray;
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
@@ -836,6 +845,24 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
             reportBooleanNoOpWarning(context, id, definition);
         }
     }
+}
+
+function trackModelBySheet(context is Context, sheetMetalModel is Query) returns array
+{
+    return mapArray(evaluateQuery(context, sheetMetalModel), function(sheetOfModel)
+            { return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]); });
+}
+
+function eachSheetStillExists(context is Context, sheetTracking is array) returns boolean
+{
+    for (var sheet in sheetTracking)
+    {
+        if (size(evaluateQuery(context, sheet)) == 0)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 function thickenFaces(context is Context, id is Id, modelParameters is map, faces is Query) returns Query

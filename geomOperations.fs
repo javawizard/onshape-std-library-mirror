@@ -429,7 +429,8 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
  *      @field transforms {array} : An array of [Transform]s to apply to `entities`. The transforms do not have to be
  *          rigid.
  *      @field instanceNames {array} : An array of distinct non-empty strings the same size as `transforms` to identify
- *              the patterned entities.
+ *              the patterned entities.  Similar to an `Id`, an instance names may consist only of letters, numbers, and any of `+`, `-`, `/`, `_`.
+ *      @field copyPropertiesAndAttributes {boolean} : If true (default), copies properties and attributes to patterned entities. @optional
  * }}
  */
 /* TODO: make it easy to query for instance names */
@@ -543,10 +544,11 @@ export function opShell(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
  *      @field targets {Query} : The solid and sheet bodies to split.
- *      @field tool {Query} : The sheet body or construction plane to cut with.
- *              If a planar face is passed in, the split will extend the plane infinitely.
+ *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
+ *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
  *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
  *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
+ *      @field useTrimmed {boolean} : Controls whether the underlying surface or the trimmed face boundaries are used as the tool. @optional
  * }}
  */
 /* TODO: why not wires? */

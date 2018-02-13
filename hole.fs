@@ -117,7 +117,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         /*
          * showTappedDepth, tappedDepth and tapClearance are for hole annotations;
-         * they currently have no effect on regeneration. If we modeled the hole's
+         * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
          * threads, then they would have an effect.
          */
         annotation { "Name" : "Tapped details", "UIHint" : "ALWAYS_HIDDEN" }
@@ -151,7 +151,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.endStyle == HoleEndStyle.BLIND || (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
         {
-            annotation { "Name" : "Start from sketch plane", "Default" : false, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Start from sketch plane", "Default" : true}
             definition.startFromSketch is boolean;
         }
 

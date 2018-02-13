@@ -30,9 +30,9 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         definition.add is boolean;
     }
     {
-        const smEdgesAndFaces = qUnion([qOwnedByBody(qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL })), EntityType.EDGE),
-                    qAttributeQuery(asSMAttribute({ objectType : SMObjectType.WALL }))]);
-        const tracking = startTracking(context, smEdgesAndFaces);
+        const smEdgesAndUp = qUnion([qOwnedByBody(qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL })), EntityType.EDGE),
+                    qAttributeQuery(asSMAttribute({ objectType : SMObjectType.WALL })), qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL }))]);
+        const tracking = startTracking(context, smEdgesAndUp);
         definition.operationType = definition.add ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);

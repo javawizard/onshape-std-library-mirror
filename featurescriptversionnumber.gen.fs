@@ -628,7 +628,17 @@ export enum FeatureScriptVersionNumber
     V733_EDGE_CHANGE,
     V734_PS_VERSION_30_1_168,
     V735_MOVE_FACE_BUG_FIXES,
-    V736_SM_74
+    V736_SM_74,
+    V740_PROPAGATE_PROPERTIES_IN_PATTERNS,
+    V741_FLATTENED_BEND_SWAP,
+    V742_REPLACE_FACES_UPGRADE,
+    V743_EDGE_ORIENTATION,
+    V744_SM_FLANGE_PATTERN_EDGE_CHANGE,
+    V745_COMPRESSED_QUERIES,
+    V746_EXTERNAL_DISAMBIGUATION,
+    V747_SPLIT_ALLOW_FACES,
+    V748_SM_FAIL_SHEET_DELETION,
+    V749_SPLIT_UX_FIXES
 }
 
 /**
@@ -639,6 +649,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V736_SM_74;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V749_SPLIT_UX_FIXES;
 
 

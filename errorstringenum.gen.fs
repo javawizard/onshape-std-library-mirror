@@ -1604,7 +1604,15 @@ export enum ErrorStringEnum
     /* Failed to modify edge. */
     EDGE_CHANGE_FAILED,
     /* Not all inputs are solids. */
-    BOOLEAN_INPUTS_NOT_SOLID
+    BOOLEAN_INPUTS_NOT_SOLID,
+    /* Scale requires a vertex or a mate connector. */
+    TRANSFORM_SCALE_SELECTION,
+    /* Removal destroys sheet metal part. */
+    SHEET_METAL_SUBTRACT_DESTROYS_SHEET,
+    /* Faces selected as split tools must be kept. */
+    SPLIT_KEEP_TOOLS_WITH_FACE,
+    /* Trim to face boundaries option requires the selection of a single face. */
+    SPLIT_TRIM_WITH_SINGLE_FACE
 }
 
 

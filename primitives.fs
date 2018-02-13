@@ -78,7 +78,7 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
             remainingTransform = getRemainderPatternTransform(context, {"references" : definition.center});
         }
         if (definition.center is Query)
-            definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
+            definition.center = try silent(evVertexPoint(context, { "vertex" : definition.center }));
         if (definition.center == undefined)
             definition.center = vector(0, 0, 0) * meter;
 
