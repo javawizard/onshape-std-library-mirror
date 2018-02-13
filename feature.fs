@@ -1,20 +1,20 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "736.0");
-export import(path : "onshape/std/error.fs", version : "736.0");
-export import(path : "onshape/std/geomOperations.fs", version : "736.0");
-export import(path : "onshape/std/query.fs", version : "736.0");
+export import(path : "onshape/std/context.fs", version : "749.0");
+export import(path : "onshape/std/error.fs", version : "749.0");
+export import(path : "onshape/std/geomOperations.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "749.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/math.fs", version : "736.0");
-import(path : "onshape/std/string.fs", version : "736.0");
-import(path : "onshape/std/transform.fs", version : "736.0");
-import(path : "onshape/std/units.fs", version : "736.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/math.fs", version : "749.0");
+import(path : "onshape/std/string.fs", version : "749.0");
+import(path : "onshape/std/transform.fs", version : "749.0");
+import(path : "onshape/std/units.fs", version : "749.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -485,6 +485,23 @@ function lastOperationId(context is Context) returns Id
 export function setExternalDisambiguation(context is Context, id is Id, query is Query)
 {
     @setExternalDisambiguation(context, id, {"entity" : query});
+}
+
+/**
+ * @internal
+ * Suppose you have a sequence of operations with unstable components that are creating entities that
+ * will be referenced within the feature and then deleted.  If this method is applied to mark the original
+ * operation, order-based disambiguation of the original operation will be skipped, allowing the identity
+ * of entities created by downstream operations to be based on other criteria (for instance, external disambiguation).
+ *
+ * Because this allows ambiguous entities to exist in the context, if any operation is marked with this without its
+ * entities being deleted at the end of a feature, a warning will be reported.
+ *
+ * Used by the instantiator.
+ */
+export function skipOrderDisambiguation(context is Context, id is Id)
+{
+    @skipOrderDisambiguation(context, id);
 }
 
 /**

@@ -1,34 +1,34 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "736.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "736.0");
-import(path : "onshape/std/box.fs", version : "736.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/coordSystem.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/extrude.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/mathUtils.fs", version : "736.0");
-import(path : "onshape/std/revolve.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
-import(path : "onshape/std/sketch.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/tool.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
-import(path : "onshape/std/string.fs", version : "736.0");
-import(path : "onshape/std/holetables.gen.fs", version : "736.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "736.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "736.0");
-import(path : "onshape/std/cylinderCast.fs", version : "736.0");
-import(path : "onshape/std/curveGeometry.fs", version : "736.0");
-import(path : "onshape/std/attributes.fs", version : "736.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "736.0");
-export import(path : "onshape/std/holeUtils.fs", version : "736.0");
+import(path : "onshape/std/boolean.fs", version : "749.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "749.0");
+import(path : "onshape/std/box.fs", version : "749.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/coordSystem.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/extrude.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/mathUtils.fs", version : "749.0");
+import(path : "onshape/std/revolve.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
+import(path : "onshape/std/sketch.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/tool.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
+import(path : "onshape/std/string.fs", version : "749.0");
+import(path : "onshape/std/holetables.gen.fs", version : "749.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "749.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "749.0");
+import(path : "onshape/std/cylinderCast.fs", version : "749.0");
+import(path : "onshape/std/curveGeometry.fs", version : "749.0");
+import(path : "onshape/std/attributes.fs", version : "749.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "749.0");
+export import(path : "onshape/std/holeUtils.fs", version : "749.0");
 
 
 /**
@@ -117,7 +117,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         /*
          * showTappedDepth, tappedDepth and tapClearance are for hole annotations;
-         * they currently have no effect on regeneration. If we modeled the hole's
+         * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
          * threads, then they would have an effect.
          */
         annotation { "Name" : "Tapped details", "UIHint" : "ALWAYS_HIDDEN" }
@@ -151,7 +151,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.endStyle == HoleEndStyle.BLIND || (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
         {
-            annotation { "Name" : "Start from sketch plane", "Default" : false, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Start from sketch plane", "Default" : true}
             definition.startFromSketch is boolean;
         }
 

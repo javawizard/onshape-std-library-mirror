@@ -1,22 +1,22 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "736.0");
+export import(path : "onshape/std/query.fs", version : "749.0");
 
 // Imports used internally
-import(path : "onshape/std/boundingtype.gen.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/curveGeometry.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/mathUtils.fs", version : "736.0");
-import(path : "onshape/std/sketch.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/tool.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/curveGeometry.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/mathUtils.fs", version : "749.0");
+import(path : "onshape/std/sketch.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/tool.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
 
 /**
  * Create a cube of a specified size, with one corner on the origin.
@@ -78,7 +78,7 @@ export const fSphere = defineFeature(function(context is Context, id is Id, defi
             remainingTransform = getRemainderPatternTransform(context, {"references" : definition.center});
         }
         if (definition.center is Query)
-            definition.center = try(evVertexPoint(context, { "vertex" : definition.center }));
+            definition.center = try silent(evVertexPoint(context, { "vertex" : definition.center }));
         if (definition.center == undefined)
             definition.center = vector(0, 0, 0) * meter;
 

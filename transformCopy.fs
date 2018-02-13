@@ -1,28 +1,28 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "736.0");
-export import(path : "onshape/std/query.fs", version : "736.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "749.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "736.0");
-export import(path : "onshape/std/tool.fs", version : "736.0");
+export import(path : "onshape/std/manipulator.fs", version : "749.0");
+export import(path : "onshape/std/tool.fs", version : "749.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/coordSystem.fs", version : "736.0");
-import(path : "onshape/std/curveGeometry.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/mathUtils.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/tool.fs", version : "736.0");
-import(path : "onshape/std/topologyUtils.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/box.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/coordSystem.fs", version : "749.0");
+import(path : "onshape/std/curveGeometry.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/mathUtils.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/tool.fs", version : "749.0");
+import(path : "onshape/std/topologyUtils.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -41,7 +41,7 @@ export enum TransformType
     ROTATION,
     annotation { "Name" : "Copy in place" }
     COPY,
-    annotation { "Name" : "Scale uniformly" }
+    annotation { "Name" : "Scale" }
     SCALE_UNIFORMLY
 }
 
@@ -185,8 +185,25 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (definition.transformType == TransformType.SCALE_UNIFORMLY)
         {
-            annotation { "Name" : "Scale" }
-            isReal(definition.scale, SCALE_BOUNDS);
+            annotation { "Name" : "Scale uniformly", "Default" : true }
+            definition.uniform is boolean;
+
+            if (definition.uniform)
+            {
+                annotation { "Name" : "Scale" }
+                isReal(definition.scale, SCALE_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "X scale" }
+                isReal(definition.scaleX, SCALE_BOUNDS);
+
+                annotation { "Name" : "Y scale" }
+                isReal(definition.scaleY, SCALE_BOUNDS);
+
+                annotation { "Name" : "Z scale" }
+                isReal(definition.scaleZ, SCALE_BOUNDS);
+            }
         }
         else if (definition.transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
         {
@@ -240,8 +257,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
         if (definition.transformType == TransformType.SCALE_UNIFORMLY)
         {
-            annotation { "Name" : "Point",
-                         "Filter" : EntityType.VERTEX,
+            annotation { "Name" : "Point or mate connector",
+                         "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
                          "MaxNumberOfPicks" : 1 }
             definition.scalePoint is Query;
         }
@@ -375,16 +392,31 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.SCALE_UNIFORMLY)
         {
-            const vertices = evaluateQuery(context, definition.scalePoint);
-            if (@size(vertices) == 0)
+            const scalePoint = evaluateQuery(context, definition.scalePoint);
+            if (@size(scalePoint) == 0)
             {
-                throw regenError(ErrorStringEnum.TRANSFORM_SCALE_UNIFORMLY);
+                throw regenError(ErrorStringEnum.TRANSFORM_SCALE_SELECTION, ["scalePoint"]);
             }
 
-            const matrix = identityMatrix(3) * definition.scale;
+            var coordSys = try silent (evMateConnector(context, { "mateConnector" : scalePoint[0] }));
+            if (coordSys == undefined)
+            {
+                coordSys = coordSystem(evVertexPoint(context, { "vertex" : scalePoint[0] }), vector(1, 0, 0), vector(0, 0, 1));
+            }
 
-            const centerPoint = evVertexPoint(context, { "vertex" : definition.scalePoint });
-            transformMatrix = transform(matrix, centerPoint - matrix * centerPoint);
+            var matrix = identityMatrix(3);
+            if (definition.uniform)
+            {
+                matrix *= definition.scale;
+                transformMatrix = transform(matrix, coordSys.origin - matrix * coordSys.origin);
+            }
+            else
+            {
+                matrix[0][0] = definition.scaleX;
+                matrix[1][1] = definition.scaleY;
+                matrix[2][2] = definition.scaleZ;
+                transformMatrix = toWorld(coordSys) * transform(matrix, vector(0, 0, 0) * meter) * fromWorld(coordSys);
+            }
         }
         else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)
         {
@@ -462,7 +494,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                         });
             }
         }
-    }, { oppositeDirection : false, scale : 1.0 });
+    }, { oppositeDirection : false, scale : 1.0, uniform : true });
 
 function extractOffset(input is map, axis is string)
 {

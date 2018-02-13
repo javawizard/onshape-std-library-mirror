@@ -1,20 +1,20 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Under development, internal use only
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "736.0");
+export import(path : "onshape/std/query.fs", version : "749.0");
 
-import(path : "onshape/std/attributes.fs", version : "736.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
+import(path : "onshape/std/attributes.fs", version : "749.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
 
 /**
  * @internal
@@ -30,9 +30,9 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         definition.add is boolean;
     }
     {
-        const smEdgesAndFaces = qUnion([qOwnedByBody(qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL })), EntityType.EDGE),
-                    qAttributeQuery(asSMAttribute({ objectType : SMObjectType.WALL }))]);
-        const tracking = startTracking(context, smEdgesAndFaces);
+        const smEdgesAndUp = qUnion([qOwnedByBody(qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL })), EntityType.EDGE),
+                    qAttributeQuery(asSMAttribute({ objectType : SMObjectType.WALL })), qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL }))]);
+        const tracking = startTracking(context, smEdgesAndUp);
         definition.operationType = definition.add ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);

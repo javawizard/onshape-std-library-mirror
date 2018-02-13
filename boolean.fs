@@ -1,28 +1,28 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "736.0");
-export import(path : "onshape/std/query.fs", version : "736.0");
-export import(path : "onshape/std/tool.fs", version : "736.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "749.0");
+export import(path : "onshape/std/tool.fs", version : "749.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "736.0");
-import(path : "onshape/std/box.fs", version : "736.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "736.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/math.fs", version : "736.0");
-import(path : "onshape/std/primitives.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
-import(path : "onshape/std/string.fs", version : "736.0");
-import(path : "onshape/std/transform.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/attributes.fs", version : "749.0");
+import(path : "onshape/std/box.fs", version : "749.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "749.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/math.fs", version : "749.0");
+import(path : "onshape/std/primitives.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
+import(path : "onshape/std/string.fs", version : "749.0");
+import(path : "onshape/std/transform.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -778,9 +778,18 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                             "entities" : qOwnedByBody(sheetMetalModel),
                                             "attributePattern" : {} as SMAssociationAttribute });
 
+                                const trackedSheets = trackModelBySheet(context, sheetMetalModel);
+
                                 definition.targets = sheetMetalModel;
                                 const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
                                 const modifiedFaceArray = performSheetMetalBoolean(context, id, definition);
+
+                                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V748_SM_FAIL_SHEET_DELETION)
+                                    && !eachSheetStillExists(context, trackedSheets))
+                                {
+                                    reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_SUBTRACT_DESTROYS_SHEET);
+                                    return;
+                                }
 
                                 var modifiedEntityArray = modifiedFaceArray;
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
@@ -836,6 +845,24 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
             reportBooleanNoOpWarning(context, id, definition);
         }
     }
+}
+
+function trackModelBySheet(context is Context, sheetMetalModel is Query) returns array
+{
+    return mapArray(evaluateQuery(context, sheetMetalModel), function(sheetOfModel)
+            { return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]); });
+}
+
+function eachSheetStillExists(context is Context, sheetTracking is array) returns boolean
+{
+    for (var sheet in sheetTracking)
+    {
+        if (size(evaluateQuery(context, sheet)) == 0)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 function thickenFaces(context is Context, id is Id, modelParameters is map, faces is Query) returns Query

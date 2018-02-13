@@ -1,4 +1,4 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,12 +31,13 @@ FeatureScript 736; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/context.fs", version : "736.0");
-import(path : "onshape/std/mathUtils.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/units.fs", version : "736.0");
-import(path : "onshape/std/curveGeometry.fs", version : "736.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/context.fs", version : "749.0");
+import(path : "onshape/std/mathUtils.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/units.fs", version : "749.0");
+import(path : "onshape/std/curveGeometry.fs", version : "749.0");
+import(path : "onshape/std/featureList.fs", version : "749.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -221,8 +222,7 @@ export enum QueryType
  *      result of opHelix)
  * @value POINT : A zero-dimensional point (e.g. a sketch point, or the result
  *      of opPoint)
- * @value MATE_CONNECTOR : A part studio mate connector. For filtering
- *      selections only.
+ * @value MATE_CONNECTOR : A part studio mate connector.
  */
 export enum BodyType
 {
@@ -615,6 +615,7 @@ export function qCorrespondingInFlat(subquery is Query) returns Query
 {
     return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : subquery} as Query;
 }
+
 /**
  * A query for all the entities created by a feature or operation. The feature
  * is given by its feature id, which was passed into the the operation function
@@ -646,6 +647,22 @@ export function qCreatedBy(featureId is Id, entityType is EntityType) returns Qu
 export function qCreatedBy(featureId is Id) returns Query
 {
     return { "queryType" : QueryType.CREATED_BY, "featureId" : featureId } as Query;
+}
+
+export function qCreatedBy(features is FeatureList) returns Query
+{
+    var query = [];
+    for (var feature in features)
+        query = append(query, qCreatedBy(feature.key));
+    return qUnion(query);
+}
+
+export function qCreatedBy(features is FeatureList, entityType is EntityType) returns Query
+{
+    var query = [];
+    for (var feature in features)
+        query = append(query, qCreatedBy(feature.key, entityType));
+    return qUnion(query);
 }
 
 /**
@@ -1485,6 +1502,17 @@ export function toString(value is TransientId)
 export function notFoundErrorKey(paramName is string) returns string
 {
     return paramName ~ "notFoundError";
+}
+
+
+/** @internal */
+export function qCompressed(version is number, query is string, root is Id) returns Query
+precondition
+{
+    isInteger(version);
+}
+{
+    return @unpackQuery(version, query, root);
 }
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.

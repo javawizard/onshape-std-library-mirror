@@ -1,28 +1,28 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "736.0");
-import(path : "onshape/std/boolean.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/curveGeometry.fs", version : "736.0");
-import(path : "onshape/std/extrude.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/math.fs", version : "736.0");
-import(path : "onshape/std/matrix.fs", version : "736.0");
-import(path : "onshape/std/query.fs", version : "736.0");
-import(path : "onshape/std/sketch.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/topologyUtils.fs", version : "736.0");
-import(path : "onshape/std/units.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
-import(path : "onshape/std/vector.fs", version : "736.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "736.0");
+import(path : "onshape/std/attributes.fs", version : "749.0");
+import(path : "onshape/std/boolean.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/curveGeometry.fs", version : "749.0");
+import(path : "onshape/std/extrude.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/math.fs", version : "749.0");
+import(path : "onshape/std/matrix.fs", version : "749.0");
+import(path : "onshape/std/query.fs", version : "749.0");
+import(path : "onshape/std/sketch.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/topologyUtils.fs", version : "749.0");
+import(path : "onshape/std/units.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
+import(path : "onshape/std/vector.fs", version : "749.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "749.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -236,6 +236,7 @@ precondition
             "attributePattern" : {} as SMAssociationAttribute
     });
     var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
+    const robustSMBodiesQ = qUnion([smBodiesQ, startTracking(context, smBodiesQ)]);
 
     var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
     var containerToLoop = isAtVersionOrLater(context, FeatureScriptVersionNumber.V483_FLAT_QUERY_EVAL_FIX) ? edgeMaps.bodyToEdgeMap : edgeMaps.modelToEdgeMap;
@@ -245,7 +246,7 @@ precondition
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, allOriginalEntities, initialAssociationAttributes);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, allOriginalEntities, initialAssociationAttributes);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes});
 
@@ -533,9 +534,84 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
 {
     var originalCornerVertices = trackCornerVertices(context, edges);
 
-    var changedEntities = [];
-    var index = 0;
+    var changedEntitiesQ;
     var originalFlangeEdges = evaluateQuery(context, edges);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V744_SM_FLANGE_PATTERN_EDGE_CHANGE))
+    {
+        changedEntitiesQ = changeUnderlyingSheetUsingEdgeChange(context, topLevelId, id, originalFlangeEdges,
+                edgeToFlangeData, edgeToExtensionDistance);
+    }
+    else
+    {
+        changedEntitiesQ = changeUnderlyingSheetUsingExtendSheetBody(context, topLevelId, id, useExternalDisambiguation,
+                originalFlangeEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
+    }
+
+    var updatedEdges = [];
+    for (var e in originalFlangeEdges)
+    {
+        var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
+        if (size(newEdge) == 0)
+        {
+            const errorFace = edgeToFlangeData[e].adjacentFace;
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qEdgeAdjacent(errorFace, EntityType.EDGE)]) });
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+        // checking for multiples happens in updateEdgeToFlangeDataAfterAlignmentChange(...)
+        updatedEdges = append(updatedEdges, newEdge[0]);
+    }
+
+    return {
+        "updatedEdges" : qUnion(updatedEdges),
+        "modifiedEntities" : changedEntitiesQ,
+        "cornerVertices" : evaluateQuery(context, qUnion(originalCornerVertices))
+    };
+}
+
+function changeUnderlyingSheetUsingEdgeChange(context is Context, topLevelId is Id, id is Id, flangeEdges is array,
+        edgeToFlangeData is map, edgeToExtensionDistance is map) returns Query
+{
+    var edgeChangeOptions = [];
+    var edgesNeedingChange = [];
+    for (var edge in flangeEdges)
+    {
+        if (abs(edgeToExtensionDistance[edge]) < TOLERANCE.zeroLength * meter)
+            continue;
+
+        edgeChangeOptions = append(edgeChangeOptions, {
+                "edge" : edge,
+                "face" : edgeToFlangeData[edge].adjacentFace,
+                "offset" : edgeToExtensionDistance[edge]
+        });
+        edgesNeedingChange = append(edgesNeedingChange, edge);
+    }
+
+    if (size(edgesNeedingChange) > 0)
+    {
+        const edgeChangeId = id + "edgeChange";
+        try
+        {
+            sheetMetalEdgeChangeCall(context, edgeChangeId, qUnion(edgesNeedingChange), {
+                    "edgeChangeOptions" : edgeChangeOptions
+            });
+        }
+        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : edgeChangeId, "propagateErrorDisplay" : true});
+        if (featureHasError(context, topLevelId))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+
+        return qUnion([qUnion(edgesNeedingChange), qCreatedBy(edgeChangeId)]);
+    }
+    return qNothing();
+}
+
+// Deprecated.  Use changeUnderlyingSheetUsingEdgeChange(...) instead
+function changeUnderlyingSheetUsingExtendSheetBody(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean,
+        originalFlangeEdges is array, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns Query
+{
+    var index = 0;
+    var changedEntities = [];
     for (var edge in originalFlangeEdges)
     {
         if (abs(edgeToExtensionDistance[edge]) < TOLERANCE.zeroLength * meter)
@@ -574,25 +650,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
         changedEntities = append(changedEntities, qCreatedBy(extendIndexedId));
         index += 1;
     }
-    var updatedEdges = [];
-    for (var e in originalFlangeEdges)
-    {
-        var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
-        if (size(newEdge) == 0)
-        {
-            const errorFace = edgeToFlangeData[e].adjacentFace;
-            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qEdgeAdjacent(errorFace, EntityType.EDGE)]) });
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
-        }
-        // checking for multiples happens in updateEdgeToFlangeDataAfterAlignmentChange(...)
-        updatedEdges = append(updatedEdges, newEdge[0]);
-    }
-
-    return {
-        "updatedEdges" : qUnion(updatedEdges),
-        "modifiedEntities" : qUnion(changedEntities),
-        "cornerVertices" : evaluateQuery(context, qUnion(originalCornerVertices))
-    };
+    return qUnion(changedEntities);
 }
 
 function failDueToAlignmentIssue(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean, edges is Query)

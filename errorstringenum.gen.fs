@@ -1,4 +1,4 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1604,7 +1604,15 @@ export enum ErrorStringEnum
     /* Failed to modify edge. */
     EDGE_CHANGE_FAILED,
     /* Not all inputs are solids. */
-    BOOLEAN_INPUTS_NOT_SOLID
+    BOOLEAN_INPUTS_NOT_SOLID,
+    /* Scale requires a vertex or a mate connector. */
+    TRANSFORM_SCALE_SELECTION,
+    /* Removal destroys sheet metal part. */
+    SHEET_METAL_SUBTRACT_DESTROYS_SHEET,
+    /* Faces selected as split tools must be kept. */
+    SPLIT_KEEP_TOOLS_WITH_FACE,
+    /* Trim to face boundaries option requires the selection of a single face. */
+    SPLIT_TRIM_WITH_SINGLE_FACE
 }
 
 

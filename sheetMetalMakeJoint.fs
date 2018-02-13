@@ -1,26 +1,26 @@
-FeatureScript 736; /* Automatically generated version */
+FeatureScript 749; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "736.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "736.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "749.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "749.0");
 
-import(path : "onshape/std/attributes.fs", version : "736.0");
-import(path : "onshape/std/boolean.fs", version : "736.0");
-import(path : "onshape/std/containers.fs", version : "736.0");
-import(path : "onshape/std/error.fs", version : "736.0");
-import(path : "onshape/std/feature.fs", version : "736.0");
-import(path : "onshape/std/evaluate.fs", version : "736.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "736.0");
-import(path : "onshape/std/geomOperations.fs", version : "736.0");
-import(path : "onshape/std/query.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "736.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "736.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "736.0");
-import(path : "onshape/std/topologyUtils.fs", version : "736.0");
-import(path : "onshape/std/units.fs", version : "736.0");
-import(path : "onshape/std/valueBounds.fs", version : "736.0");
+import(path : "onshape/std/attributes.fs", version : "749.0");
+import(path : "onshape/std/boolean.fs", version : "749.0");
+import(path : "onshape/std/containers.fs", version : "749.0");
+import(path : "onshape/std/error.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/evaluate.fs", version : "749.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "749.0");
+import(path : "onshape/std/geomOperations.fs", version : "749.0");
+import(path : "onshape/std/query.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
+import(path : "onshape/std/topologyUtils.fs", version : "749.0");
+import(path : "onshape/std/units.fs", version : "749.0");
+import(path : "onshape/std/valueBounds.fs", version : "749.0");
 
 /**
 * MakeJointType is a subset of SMJointType to restrict options visible in sheetMetalMakeJoint
