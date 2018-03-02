@@ -26,6 +26,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
+ * SCALE_UNIFORMLY actually also supports non-uniform scaling.
  */
 export enum TransformType
 {
@@ -123,9 +124,14 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  *              or `TransformType.ROTATION`}
  *          @ex `true` to transform in the opposite direction.
  *
- *      @field scale {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *      @field uniform {boolean} : True if the scale is uniform in all directions (default) @optional
+ *      @field scale {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is true}
  *          A positive real number specifying the scale factor.
  *      @field scalePoint {Query} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *          A point specifying the center of the scale or a mate connector specifying the coordinate system for a non-uniform scale.
+ *      @field scaleX {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
+ *      @field scaleY {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
+ *      @field scaleZ {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
  *
  *      @field baseConnector {Query} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
  *          The mate connector to transform from.

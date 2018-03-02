@@ -925,11 +925,6 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
         }
         if (attribute.jointType.value == SMJointType.BEND)
         {
-            if (size(evaluateQuery(context, qGeometry(entity, GeometryType.CYLINDER))) == 1)
-            {
-                //TODO : check tangent to walls around
-                return true;
-            }
             if (nLines != 1)
             {
                 return false;

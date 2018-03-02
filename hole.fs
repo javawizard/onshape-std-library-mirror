@@ -335,6 +335,10 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
     var result = { "numSuccess" : 0 };
     // for each hole
     var holeNumber = -1;
+    definition.cutOption = getCutOption(context, definition);
+    var faceTracking = {};
+    var instanceTracking = {};
+    const holeBodiesId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V763_HOLE_CUT_ALL) ? id + "holeBodies" : id;
     for (var location in locations)
     {
         try
@@ -347,7 +351,52 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
              * Now cut the hole.
              */
             holeNumber += 1;
-            result = holeAtLocation(context, id, holeNumber, location, definition, result);
+            result = holeAtLocation(context, holeBodiesId, holeNumber, location, definition, result);
+            if (result.faceTracking != undefined)
+            {
+                faceTracking[holeNumber] = result.faceTracking;
+            }
+            if (result.instanceTracking != undefined)
+            {
+                instanceTracking[holeNumber] = result.instanceTracking;
+            }
+        }
+    }
+    if (definition.cutOption == HoleCutOption.CUT_ALL && result.numSuccess > 0)
+    {
+        try
+        {
+            booleanBodies(context, id + "boolean", { "targets" : definition.scope,
+                                             "tools" : qBodyType(qCreatedBy(holeBodiesId, EntityType.BODY), BodyType.SOLID),
+                                             "operationType" : BooleanOperationType.SUBTRACTION});
+        }
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "boolean",
+                                               "propagateErrorDisplay" : true,
+                                               "featureParameterMap" : {"tools" : "locations", "targets" : "scope"}
+                                               });
+        if (hasErrors(context, id))
+        {
+            result.numSuccess = 0;
+            result.error = ErrorStringEnum.HOLE_CUT_FAIL;
+        }
+        else
+        {
+            var sheetMetalModels = getSheetMetalModels(context, definition);
+            var holeEdgesQ = qNothing();
+            if (sheetMetalModels != undefined)
+            {
+                holeEdgesQ = getSheetMetalHoleEdgesQuery(id + "boolean", sheetMetalModels, true);
+            }
+            for (var holeTracking in faceTracking)
+            {
+                const holeId = id + ("hole-" ~ holeTracking.key);
+                createAttributesFromTracking(context, holeId, definition, holeTracking.value, definition.style);
+                if (sheetMetalModels != undefined && instanceTracking[holeTracking.key] != undefined)
+                {
+                    const instanceHoleEdges = evaluateQuery(context, qIntersection([holeEdgesQ, instanceTracking[holeTracking.key]]));
+                    assignSheetMetalHoleAttributes(context, holeId, instanceHoleEdges, definition, definition.style);
+                }
+            }
         }
     }
     return result;
@@ -423,6 +472,8 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     if (cutHoleResult.success)
     {
         result.numSuccess += result.numSuccess + 1;
+        result.faceTracking = cutHoleResult.faceTracking;
+        result.instanceTracking = cutHoleResult.instanceTracking;
     }
     if (result.error == undefined && cutHoleResult.error != undefined)
     {
@@ -696,12 +747,10 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     cboreTrackingSpecs = startSketchTracking(context, sketchId, cboreTrackingSpecs);
     csinkTrackingSpecs = startSketchTracking(context, sketchId, csinkTrackingSpecs);
 
-    var offsetTappedHole = holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
-    blindBody != undefined &&
-    holeDefinition.tapDrillDiameter < (holeDefinition.holeDiameter - TOLERANCE.zeroLength * meter);
     const axisQuery = sketchEntityQuery(id + ("sketch" ~ ".wireOp"), EntityType.EDGE, "core_line_0");
     const sketchQuery = qSketchRegion(sketchId, false);
-    var doCut = holeDefinition.generateErrorBodies != true && holeDefinition.heuristics != true;
+    var doCut = (holeDefinition.cutOption == HoleCutOption.CUT_PER_LOCATION);
+
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V429_HOLE_SAFE_SKETCH_CLEANUP))
     {
         try
@@ -752,7 +801,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             }
         }
 
-        if (offsetTappedHole && blindBody != undefined)
+        if (blindBody != undefined && tappedHoleWithOffset(holeDefinition))
         {
             // Find the cylindrical face drilled by this feature in the body with the blind hole.
             var targetFace = qGeometry(qOwnedByBody(qCreatedBy(id, EntityType.FACE), blindBody), GeometryType.CYLINDER);
@@ -761,6 +810,15 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
                         "offsetDistance" : (holeDefinition.holeDiameter - holeDefinition.tapDrillDiameter) / 2
                     });
         }
+    }
+    else if (success && holeDefinition.cutOption == HoleCutOption.CUT_ALL)
+    {
+        result.faceTracking = concatenateArrays([coreTrackingSpecs, cboreTrackingSpecs, csinkTrackingSpecs]);
+        //Instance tracking is used to disambiguate topology corresponding to different hole instances created after cut
+        const circularEdgesQ = qGeometry(qCreatedBy(id, EntityType.EDGE), GeometryType.CIRCLE);
+        const cylindricalFacesQ = qGeometry(qCreatedBy(id, EntityType.FACE), GeometryType.CYLINDER);
+        result.instanceTracking = startTracking(context, { "subquery" : qUnion([circularEdgesQ, cylindricalFacesQ]),
+                                                        "trackPartialDependency" : true });
     }
     result.success = success;
     return result;
@@ -778,13 +836,20 @@ function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery i
                 "defaultScope" : false });
 }
 
-function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle)
+function getSheetMetalHoleEdgesQuery(id is Id, sheetMetalModels is Query, includeArcs is boolean) returns Query
 {
     // Now we look for edges affected by the sheet metal model
     const createdEdges = qBodyType(qCreatedBy(id, EntityType.EDGE), BodyType.SHEET);
     const smEdges = qOwnedByBody(createdEdges, sheetMetalModels);
-    const holeEdgesQ = qGeometry(smEdges, GeometryType.CIRCLE);
-    const holeEdges = evaluateQuery(context, holeEdgesQ);
+    if (includeArcs)
+        return qUnion([qGeometry(smEdges, GeometryType.CIRCLE), qGeometry(smEdges, GeometryType.ARC)]);
+    else
+       return qGeometry(smEdges, GeometryType.CIRCLE);
+}
+
+function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges is array,
+                                                    holeDefinition is map, holeStyle is HoleStyle)
+{
     for (var holeEdge in holeEdges)
     {
         var associations = getAttributes(context, { "entities" : holeEdge, "attributePattern" : {} as SMAssociationAttribute });
@@ -797,6 +862,11 @@ function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetal
             }
         }
     }
+}
+function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle)
+{
+    const holeEdgesQ = getSheetMetalHoleEdgesQuery(id, sheetMetalModels, false);
+    assignSheetMetalHoleAttributes(context, id, evaluateQuery(context, holeEdgesQ), holeDefinition, holeStyle);
 }
 
 function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeStyle is HoleStyle)
@@ -1375,6 +1445,29 @@ function getBlindTipSectionAttributeSpecs(holeDefinition is map) returns map
 
     // add anything else?
     return blindTipFaceSpec;
+}
+
+enum HoleCutOption
+{
+    NO_CUT,
+    CUT_PER_LOCATION,
+    CUT_ALL
+}
+
+function getCutOption(context is Context, holeDefinition is map) returns HoleCutOption
+{
+    if (holeDefinition.generateErrorBodies == true || holeDefinition.heuristics == true)
+        return HoleCutOption.NO_CUT;
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V763_HOLE_CUT_ALL) ||
+         tappedHoleWithOffset(holeDefinition))
+        return HoleCutOption.CUT_PER_LOCATION;
+    return HoleCutOption.CUT_ALL;
+}
+
+function tappedHoleWithOffset(holeDefinition is map) returns boolean
+{
+    return holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
+           holeDefinition.tapDrillDiameter < (holeDefinition.holeDiameter - TOLERANCE.zeroLength * meter);
 }
 
 /**

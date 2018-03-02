@@ -79,14 +79,16 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR }
             definition.entities is Query;
         }
         else if (definition.patternType == PatternType.FACE)
         {
             annotation { "Name" : "Faces to pattern",
-                         "UIHint" : "ALLOW_FEATURE_SELECTION",
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES &&
+                                    (ActiveSheetMetal.NO || (ActiveSheetMetal.YES &&
+                                    (SheetMetalDefinitionEntityType.FACE || SheetMetalDefinitionEntityType.EDGE))) }
             definition.faces is Query;
         }
         else if (definition.patternType == PatternType.FEATURE)

@@ -67,14 +67,17 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
             annotation { "Name" : "Entities to split with",
                         "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) ||
-                            (EntityType.BODY && BodyType.SHEET) ||
-                            (EntityType.FACE && GeometryType.PLANE && ConstructionObject.YES) }
+                            (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) ||
+                            EntityType.FACE || (GeometryType.PLANE && ConstructionObject.YES) }
             definition.faceTools is Query;
+
+            annotation {"Name" : "Keep tool surfaces", "Default" : true}
+            definition.keepToolSurfaces is boolean;
         }
     }
     {
         performSplit(context, id, definition);
-    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false});
+    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepToolSurfaces : true});
 
 function performSplit(context is Context, id is Id, definition is map)
 {
@@ -101,17 +104,21 @@ function performSplit(context is Context, id is Id, definition is map)
     }
     else
     {
-        var edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE),
+        const edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE),
             ConstructionObject.NO);
-        var bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY),
+        const bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY),
             ConstructionObject.NO);
-        var planeTools = qEntityFilter(definition.faceTools, EntityType.FACE);
-
+        const planeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
+            ConstructionObject.YES);
+        const faceTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
+            ConstructionObject.NO);
         var splitFaceDefinition = {
             "faceTargets" : definition.faceTargets,
             "edgeTools" : edgeTools,
             "bodyTools" : bodyTools,
-            "planeTools" : planeTools
+            "planeTools" : planeTools,
+            "faceTools" : faceTools,
+            "keepToolSurfaces" : definition.keepToolSurfaces
         };
 
         // edge tools could be empty

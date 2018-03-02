@@ -538,12 +538,12 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     var originalFlangeEdges = evaluateQuery(context, edges);
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V744_SM_FLANGE_PATTERN_EDGE_CHANGE))
     {
-        changedEntitiesQ = changeUnderlyingSheetUsingEdgeChange(context, topLevelId, id, originalFlangeEdges,
+        changedEntitiesQ = changeUnderlyingSheetBatched(context, topLevelId, id, originalFlangeEdges,
                 edgeToFlangeData, edgeToExtensionDistance);
     }
     else
     {
-        changedEntitiesQ = changeUnderlyingSheetUsingExtendSheetBody(context, topLevelId, id, useExternalDisambiguation,
+        changedEntitiesQ = changeUnderlyingSheetUnbatched(context, topLevelId, id, useExternalDisambiguation,
                 originalFlangeEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
     }
 
@@ -568,30 +568,68 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     };
 }
 
-function changeUnderlyingSheetUsingEdgeChange(context is Context, topLevelId is Id, id is Id, flangeEdges is array,
+function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id is Id, flangeEdges is array,
         edgeToFlangeData is map, edgeToExtensionDistance is map) returns Query
 {
-    var edgeChangeOptions = [];
-    var edgesNeedingChange = [];
+    var edgesForEdgeChange = [];
+    var edgesForExtendSheetBody = [];
     for (var edge in flangeEdges)
     {
         if (abs(edgeToExtensionDistance[edge]) < TOLERANCE.zeroLength * meter)
             continue;
 
+        // BEL-87432 Flange edges on non-planar walls will not land on the desired plane using offset option of edgeChange.
+        // Instead use limitEntity option of extendSheetBody.
+        const useOnlyEdgeChange = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED);
+        if (useOnlyEdgeChange || evSurfaceDefinition(context, { "face" : edgeToFlangeData[edge].adjacentFace }) is Plane)
+        {
+            edgesForEdgeChange = append(edgesForEdgeChange, edge);
+        }
+        else
+        {
+            edgesForExtendSheetBody = append(edgesForExtendSheetBody, edge);
+        }
+    }
+
+    var edgeChangeOptions = [];
+    for (var edge in edgesForEdgeChange)
+    {
         edgeChangeOptions = append(edgeChangeOptions, {
                 "edge" : edge,
                 "face" : edgeToFlangeData[edge].adjacentFace,
                 "offset" : edgeToExtensionDistance[edge]
         });
-        edgesNeedingChange = append(edgesNeedingChange, edge);
     }
 
-    if (size(edgesNeedingChange) > 0)
+    var extendSheetBodyOptions = [];
+    var trackedEdgesForExtendSheetBody = [];
+    for (var edge in edgesForExtendSheetBody)
     {
-        const edgeChangeId = id + "edgeChange";
+        const flangeData = edgeToFlangeData[edge];
+        var extensionPlane = getExtendedFlangePlane(flangeData, edgeToExtensionDistance[edge]);
+
+        // Ensure plane is facing the correct direction for extendSheetBody
+        if (dot(extensionPlane.normal, flangeData.wallExtendDirection) < 0)
+        {
+            extensionPlane.normal = -1 * extensionPlane.normal;
+        }
+
+        // extend sheet body is called after edge change. Make sure we can find the edge even if its identity changes.
+        const trackedEdge = qUnion([edge, startTracking(context, edge)]);
+        trackedEdgesForExtendSheetBody = append(trackedEdgesForExtendSheetBody, trackedEdge);
+        extendSheetBodyOptions = append(extendSheetBodyOptions, {
+                "edge" : trackedEdge,
+                "limitEntity" : extensionPlane,
+                "faceToExtend" : flangeData.adjacentFace
+        });
+    }
+
+    const edgeChangeId = id + "edgeChange";
+    if (size(edgesForEdgeChange) > 0)
+    {
         try
         {
-            sheetMetalEdgeChangeCall(context, edgeChangeId, qUnion(edgesNeedingChange), {
+            sheetMetalEdgeChangeCall(context, edgeChangeId, qUnion(edgesForEdgeChange), {
                     "edgeChangeOptions" : edgeChangeOptions
             });
         }
@@ -600,14 +638,40 @@ function changeUnderlyingSheetUsingEdgeChange(context is Context, topLevelId is 
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
-
-        return qUnion([qUnion(edgesNeedingChange), qCreatedBy(edgeChangeId)]);
     }
-    return qNothing();
+
+    const extendSheetBodyId = id + "extendSheetBody";
+    if (size(edgesForExtendSheetBody) > 0)
+    {
+        // Ensure none of the edges in edgesForExtendSheetBody have been split
+        for (var edge in trackedEdgesForExtendSheetBody)
+        {
+            if (size(evaluateQuery(context, edge)) != 1)
+            {
+                failDueToAlignmentIssue(context, topLevelId, edge);
+            }
+        }
+
+        try
+        {
+            sheetMetalExtendSheetBodyCall(context, extendSheetBodyId, {
+                    "entities" : qUnion(trackedEdgesForExtendSheetBody),
+                    "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                    "edgeLimitOptions" : extendSheetBodyOptions
+            });
+        }
+        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : extendSheetBodyId, "propagateErrorDisplay" : true});
+        if (featureHasError(context, topLevelId))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+    }
+
+    return qUnion([qUnion(edgesForEdgeChange), qUnion(edgesForExtendSheetBody), qCreatedBy(edgeChangeId), qCreatedBy(extendSheetBodyId)]);
 }
 
-// Deprecated.  Use changeUnderlyingSheetUsingEdgeChange(...) instead
-function changeUnderlyingSheetUsingExtendSheetBody(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean,
+// Deprecated.  Use changeUnderlyingSheetBatched(...) instead
+function changeUnderlyingSheetUnbatched(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean,
         originalFlangeEdges is array, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns Query
 {
     var index = 0;
@@ -916,7 +980,24 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         //if edgeY is collinear with edgeX,look for next edge on sideFace
         var line1 = (failIfNotLines) ? evLine(context, {"edge" : edgeX}) : try silent(evLine(context, {"edge" : edgeX}));
         var line2 = (failIfNotLines) ? evLine(context, {"edge" : edgeY}) : try silent(evLine(context, {"edge" : edgeY}));
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
+        {
+            // We are looking for the next edge that is not continuous with edgeX. For rolled sheet metal, the side
+            // edge may not be linear, but we should still skip to the next edge if the edgeX and edgeY are tangent.
+            const vertexPoint = evVertexPoint(context, { "vertex" : vertexToUse });
+            if (line1 == undefined)
+            {
+                line1 = line(vertexPoint, getVectorForEdge(context, edgeX, vertexPoint));
+            }
+            if (line2 == undefined)
+            {
+                line2 = line(vertexPoint, getVectorForEdge(context, edgeY, vertexPoint));
+            }
+        }
+
         lineX = line1;
+
         if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V649_FLANGE_LOOSEN_EDGE_Y)))
         {
             edgeY = qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), qSubtraction(qVertexAdjacent(edgeY, EntityType.EDGE), edgeX)]);
@@ -1172,8 +1253,16 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     }
     else
     {
-        sidePlane = getFacePlane(context, sideFace, sideEdge);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
+        {
+            sidePlane = getFacePlane(context, sideFace, sideEdge, vertexAndEdges.position);
+        }
+        else
+        {
+            sidePlane = getFacePlane(context, sideFace, sideEdge);
+        }
         adjPlane = getFacePlane(context, flangeData.adjacentFace, edge);
+
         if ( dot(sidePlane.normal, edgeEndDirection) > 0)
         {
             clearanceFromSide += definition.frontThickness;
@@ -1469,13 +1558,31 @@ function throwNoBendError(context is Context, topLevelId is Id, edge is Query, d
     throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_NO_BEND, faultyParameters);
 }
 
-// Update flange data after the wall attaching to the flange is moved extensionDistance along flangeData.wallExtendDirection
-function updateFlangeDataAfterAlignmentChange(context is Context, edge is Query, flangeData is map, extensionDistance is ValueWithUnits) returns map
+function getExtendedFlangePlane(flangeData is map, extensionDistance is ValueWithUnits) returns Plane
 {
-    var offset = flangeData.wallExtendDirection * extensionDistance;
+    var plane = flangeData.plane;
+    plane.origin += (flangeData.wallExtendDirection * extensionDistance);
+    return plane;
+}
 
-    flangeData.plane.origin += offset;
+// Update flange data after the wall attaching to the flange is moved extensionDistance along flangeData.wallExtendDirection
+function updateFlangeDataAfterAlignmentChange(context is Context, topLevelId is Id, edge is Query, flangeData is map,
+        extensionDistance is ValueWithUnits) returns map
+{
+    flangeData.plane = getExtendedFlangePlane(flangeData, extensionDistance);
     flangeData.edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": flangeData.adjacentFace});
+
+    // Ensure that plane was extended correctly
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
+    {
+        for (var endPoint in flangeData.edgeEndPoints)
+        {
+            if (!isPointOnPlane(endPoint.origin, flangeData.plane))
+            {
+                failDueToAlignmentIssue(context, topLevelId, edge);
+            }
+        }
+    }
 
     return flangeData;
 }
@@ -1497,7 +1604,7 @@ function updateEdgeToFlangeDataAfterAlignmentChange(context is Context, topLevel
         if (newEdge != edge)
         {
             // Edge was updated
-            newEdgeToFlangeData[newEdge] = updateFlangeDataAfterAlignmentChange(context, newEdge, edgeToFlangeData[edge], edgeToExtensionDistance[edge]);
+            newEdgeToFlangeData[newEdge] = updateFlangeDataAfterAlignmentChange(context, topLevelId, newEdge, edgeToFlangeData[edge], edgeToExtensionDistance[edge]);
         }
         else
         {
@@ -1989,6 +2096,19 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
     return edgeToData;
 }
 
+// For use when `edge` may not be linear
+function getFacePlane(context is Context, face is Query, edge is Query, position is Vector) returns Plane
+{
+    var edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] });
+    var closerPointParameter = (squaredNorm(edgeEndPoints[0].origin - position) < squaredNorm(edgeEndPoints[1].origin - position)) ? 0 : 1;
+    return evFaceTangentPlaneAtEdge(context, {
+                "face" : face,
+                "edge" : edge,
+                "parameter" : closerPointParameter
+            });
+}
+
+// For use when `edge` is linear
 function getFacePlane(context is Context, face is Query, edge is Query) returns Plane
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))

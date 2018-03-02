@@ -1571,11 +1571,11 @@ export enum ErrorStringEnum
     CONTENT_STACKING_INVALID_COMPONENTS,
     /* Component on top of existing stack cannot accept additional top stack components. */
     CONTENT_STACKING_INVALID_TOP_STACK,
-    /* Cannot pattern faces that touch a joint. */
+    /* Cannot pattern faces of joints. */
     SHEET_METAL_FACE_PATTERN_NO_JOINT,
     /* Some patterned faces could not cut the sheet metal model. */
     SHEET_METAL_FACE_PATTERN_FLOATING_CUT,
-    /* Some patterned faces could not join the sheet metal model. */
+    /* Patterned faces could not join the sheet metal model. */
     SHEET_METAL_FACE_PATTERN_FLOATING_WALL,
     /* No faces meet flattened sheet metal bodies. */
     SM_FLAT_OP_NO_INTERSECT,
@@ -1612,7 +1612,19 @@ export enum ErrorStringEnum
     /* Faces selected as split tools must be kept. */
     SPLIT_KEEP_TOOLS_WITH_FACE,
     /* Trim to face boundaries option requires the selection of a single face. */
-    SPLIT_TRIM_WITH_SINGLE_FACE
+    SPLIT_TRIM_WITH_SINGLE_FACE,
+    /* One of the faces sketched on has moved to another flat part. */
+    SHEET_METAL_SKETCH_DETACHED_FACE,
+    /* Hole creates invalid geometry. */
+    HOLE_CUT_FAIL,
+    /* Cannot wrap sketch to sheet metal. */
+    SHEET_METAL_FLAT_OP_ROLL_FAIL,
+    /* Could not pattern selected edges. */
+    PATTERN_EDGE_FAILED,
+    /* Cannot pattern fillets, chamfers, reliefs, or corners. */
+    SHEET_METAL_FACE_PATTERN_NO_VERTEX,
+    /* Some patterned faces could not join the sheet metal model. */
+    SHEET_METAL_FACE_PATTERN_PARTIAL_FLOATING_WALL
 }
 
 

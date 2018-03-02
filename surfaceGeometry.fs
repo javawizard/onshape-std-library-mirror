@@ -325,6 +325,19 @@ export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
     return tolerantEquals(point1, point2) && abs(dot(plane1.normal, plane2.normal)) > 1 - TOLERANCE.zeroAngle;
 }
 
+/**
+ * Returns true if the point lies on the plane.
+ */
+export function isPointOnPlane(point is Vector, plane is Plane) returns boolean
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    var originToPoint = point - plane.origin;
+    return abs(dot(originToPoint, plane.normal)) < (TOLERANCE.zeroLength * meter);
+}
+
 // ===================================== Cone ======================================
 
 /**
