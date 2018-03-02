@@ -1,16 +1,16 @@
-FeatureScript 749; /* Automatically generated version */
+FeatureScript 765; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "749.0");
-export import(path : "onshape/std/tool.fs", version : "749.0");
-export import(path : "onshape/std/patternUtils.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "765.0");
+export import(path : "onshape/std/tool.fs", version : "765.0");
+export import(path : "onshape/std/patternUtils.fs", version : "765.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "749.0");
-import(path : "onshape/std/units.fs", version : "749.0");
+import(path : "onshape/std/mathUtils.fs", version : "765.0");
+import(path : "onshape/std/units.fs", version : "765.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -79,14 +79,16 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR }
             definition.entities is Query;
         }
         else if (definition.patternType == PatternType.FACE)
         {
             annotation { "Name" : "Faces to pattern",
-                         "UIHint" : "ALLOW_FEATURE_SELECTION",
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES &&
+                                    (ActiveSheetMetal.NO || (ActiveSheetMetal.YES &&
+                                    (SheetMetalDefinitionEntityType.FACE || SheetMetalDefinitionEntityType.EDGE))) }
             definition.faces is Query;
         }
         else if (definition.patternType == PatternType.FEATURE)

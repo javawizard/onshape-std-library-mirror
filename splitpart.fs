@@ -1,25 +1,25 @@
-FeatureScript 749; /* Automatically generated version */
+FeatureScript 765; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "765.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "749.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "749.0");
-import(path : "onshape/std/boolean.fs", version : "749.0");
-import(path : "onshape/std/containers.fs", version : "749.0");
-import(path : "onshape/std/evaluate.fs", version : "749.0");
-import(path : "onshape/std/feature.fs", version : "749.0");
-import(path : "onshape/std/math.fs", version : "749.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "749.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "749.0");
-import(path : "onshape/std/sketch.fs", version : "749.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
-import(path : "onshape/std/tool.fs", version : "749.0");
-import(path : "onshape/std/vector.fs", version : "749.0");
+import(path : "onshape/std/attributes.fs", version : "765.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "765.0");
+import(path : "onshape/std/boolean.fs", version : "765.0");
+import(path : "onshape/std/containers.fs", version : "765.0");
+import(path : "onshape/std/evaluate.fs", version : "765.0");
+import(path : "onshape/std/feature.fs", version : "765.0");
+import(path : "onshape/std/math.fs", version : "765.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "765.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "765.0");
+import(path : "onshape/std/sketch.fs", version : "765.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "765.0");
+import(path : "onshape/std/tool.fs", version : "765.0");
+import(path : "onshape/std/vector.fs", version : "765.0");
 
 /**
  * Defines whether a `split` should split whole parts, or just faces.
@@ -67,14 +67,17 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
             annotation { "Name" : "Entities to split with",
                         "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) ||
-                            (EntityType.BODY && BodyType.SHEET) ||
-                            (EntityType.FACE && GeometryType.PLANE && ConstructionObject.YES) }
+                            (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) ||
+                            EntityType.FACE || (GeometryType.PLANE && ConstructionObject.YES) }
             definition.faceTools is Query;
+
+            annotation {"Name" : "Keep tool surfaces", "Default" : true}
+            definition.keepToolSurfaces is boolean;
         }
     }
     {
         performSplit(context, id, definition);
-    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false});
+    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepToolSurfaces : true});
 
 function performSplit(context is Context, id is Id, definition is map)
 {
@@ -101,17 +104,21 @@ function performSplit(context is Context, id is Id, definition is map)
     }
     else
     {
-        var edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE),
+        const edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE),
             ConstructionObject.NO);
-        var bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY),
+        const bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY),
             ConstructionObject.NO);
-        var planeTools = qEntityFilter(definition.faceTools, EntityType.FACE);
-
+        const planeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
+            ConstructionObject.YES);
+        const faceTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
+            ConstructionObject.NO);
         var splitFaceDefinition = {
             "faceTargets" : definition.faceTargets,
             "edgeTools" : edgeTools,
             "bodyTools" : bodyTools,
-            "planeTools" : planeTools
+            "planeTools" : planeTools,
+            "faceTools" : faceTools,
+            "keepToolSurfaces" : definition.keepToolSurfaces
         };
 
         // edge tools could be empty

@@ -1,13 +1,13 @@
-FeatureScript 749; /* Automatically generated version */
+FeatureScript 765; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "749.0");
+export import(path : "onshape/std/query.fs", version : "765.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "749.0");
+import(path : "onshape/std/feature.fs", version : "765.0");
 
 /**
  * Feature performing an [opDeleteBodies].

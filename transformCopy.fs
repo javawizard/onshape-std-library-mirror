@@ -1,31 +1,32 @@
-FeatureScript 749; /* Automatically generated version */
+FeatureScript 765; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "749.0");
-export import(path : "onshape/std/query.fs", version : "749.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "765.0");
+export import(path : "onshape/std/query.fs", version : "765.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "749.0");
-export import(path : "onshape/std/tool.fs", version : "749.0");
+export import(path : "onshape/std/manipulator.fs", version : "765.0");
+export import(path : "onshape/std/tool.fs", version : "765.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "749.0");
-import(path : "onshape/std/containers.fs", version : "749.0");
-import(path : "onshape/std/coordSystem.fs", version : "749.0");
-import(path : "onshape/std/curveGeometry.fs", version : "749.0");
-import(path : "onshape/std/evaluate.fs", version : "749.0");
-import(path : "onshape/std/feature.fs", version : "749.0");
-import(path : "onshape/std/mathUtils.fs", version : "749.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "749.0");
-import(path : "onshape/std/tool.fs", version : "749.0");
-import(path : "onshape/std/topologyUtils.fs", version : "749.0");
-import(path : "onshape/std/valueBounds.fs", version : "749.0");
+import(path : "onshape/std/box.fs", version : "765.0");
+import(path : "onshape/std/containers.fs", version : "765.0");
+import(path : "onshape/std/coordSystem.fs", version : "765.0");
+import(path : "onshape/std/curveGeometry.fs", version : "765.0");
+import(path : "onshape/std/evaluate.fs", version : "765.0");
+import(path : "onshape/std/feature.fs", version : "765.0");
+import(path : "onshape/std/mathUtils.fs", version : "765.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "765.0");
+import(path : "onshape/std/tool.fs", version : "765.0");
+import(path : "onshape/std/topologyUtils.fs", version : "765.0");
+import(path : "onshape/std/valueBounds.fs", version : "765.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
+ * SCALE_UNIFORMLY actually also supports non-uniform scaling.
  */
 export enum TransformType
 {
@@ -123,9 +124,14 @@ function reportCoincident(context is Context, id is Id, distance is Vector)
  *              or `TransformType.ROTATION`}
  *          @ex `true` to transform in the opposite direction.
  *
- *      @field scale {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *      @field uniform {boolean} : True if the scale is uniform in all directions (default) @optional
+ *      @field scale {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is true}
  *          A positive real number specifying the scale factor.
  *      @field scalePoint {Query} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY`}
+ *          A point specifying the center of the scale or a mate connector specifying the coordinate system for a non-uniform scale.
+ *      @field scaleX {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
+ *      @field scaleY {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
+ *      @field scaleZ {number} : @requiredIf {`transformType` is `TransformType.SCALE_UNIFORMLY` and `uniform` is false}
  *
  *      @field baseConnector {Query} : @requiredIf {`transformType` is `TransformType.TRANSFORM_MATE_CONNECTORS`}
  *          The mate connector to transform from.
