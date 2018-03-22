@@ -440,6 +440,15 @@ export function opPattern(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
+ * TODO!!
+ */
+export function opBooleanedPattern(context is Context, id is Id, definition is map)
+{
+    return @opBooleanedPattern(context, id, definition);
+}
+
+/**
  * Creates a construction plane.
  * @param id : @autocomplete `id + "plane1"`
  * @param definition {{

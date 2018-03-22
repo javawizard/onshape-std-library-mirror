@@ -142,6 +142,7 @@ export enum QueryType
     TRANSIENT,
     ATTRIBUTE_FILTER,
     CORRESPONDING_IN_FLAT,
+    SM_FLAT_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -310,6 +311,18 @@ export enum GeometryType
  * @value NO  : Matches only entities which are not created for construction
  */
 export enum ConstructionObject
+{
+    YES,
+    NO
+}
+
+/**
+ * Specified whether an entity lives in the sheet metal flat view or the main view.
+ *
+ * @value YES : Matches flat entities.
+ * @value NO  : Matches everything else.
+ */
+export enum SMFlatType
 {
     YES,
     NO
@@ -955,6 +968,14 @@ precondition
 export function qConstructionFilter(subquery is Query, constructionFilter is ConstructionObject) returns Query
 {
     return { "queryType" : QueryType.CONSTRUCTION_FILTER, "constructionFilter" : constructionFilter, "subquery" : subquery } as Query;
+}
+
+/**
+ * A query for all sheet metal flat entities or everything else.
+ */
+export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType)
+{
+    return {"queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : subquery } as Query;
 }
 
 /**

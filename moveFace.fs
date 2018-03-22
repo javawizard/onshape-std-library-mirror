@@ -732,7 +732,7 @@ function getAssociatedAxis(context is Context, definition) returns Query
     }
 }
 
-function makeEdgeChangeParameter(context is Context, id is Id, definition is map)
+function makeEdgeChangeParameter(context is Context, definition is map)
 {
     if (definition.moveFaceType == MoveFaceType.OFFSET)
     {
@@ -756,13 +756,17 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
         var smEdges = [];
         var edgeChangeOptions = [];
         var derippedEdgesMap = {};
+        var deripEdgesArray = [];
+        // Do one edge change for derip and one for the actual move face. At V761 and later, edge change does the edge changes
+        // in parallel rather than series, so the derip needs to be a separate step.
+        const doDeripSeparately = isAtVersionOrLater(context, FeatureScriptVersionNumber.V778_MOVE_FACE_UPGRADE);
         for (var evaluatedFace in evaluateQuery(context, definition.moveFaces))
         {
             // Separate selections into two categories: sheet metal model faces that the normal moveFace process will work on (aligned and antiAlignedFaces),
             // and edges that need to be moved with opEdgeChange.
             const smEntity = qUnion(getSMDefinitionEntities(context, evaluatedFace));
             const smFace = qEntityFilter(smEntity, EntityType.FACE);
-            const smEdge = qEntityFilter(smEntity, EntityType.EDGE);
+            var smEdge = qEntityFilter(smEntity, EntityType.EDGE);
             if (size(evaluateQuery(context, smFace)) == 1)
             {
                 var partFaceNormal;
@@ -786,7 +790,6 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
             }
             else if (size(evaluateQuery(context, smEdge)) == 1)
             {
-                smEdges = append(smEdges, smEdge);
                 // Check that the entity is not a bend edge. Checking here so that the picked face can be highlighted.
                 const jointAttribute = try silent(getJointAttribute(context, smEdge));
                 if (jointAttribute != undefined && jointAttribute.jointType != undefined && jointAttribute.jointType.value == SMJointType.BEND)
@@ -808,15 +811,24 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
                         {
                             if (derippedEdgesMap[smEdge] == undefined)
                             {
-                                const offsetDistance = evDistance(context, {
-                                            "side0" : partFace,
-                                            "side1" : smEdge
-                                        });
-                                edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
-                                            "face" : adjacentFaceSMFace[0],
-                                            "offset" : -offsetDistance.distance });
+                                if (!doDeripSeparately)
+                                {
+                                    const offsetDistance = evDistance(context, {
+                                              "side0" : partFace,
+                                              "side1" : smEdge
+                                           });
+                                    edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
+                                              "face" : adjacentFaceSMFace[0],
+                                              "offset" : -offsetDistance.distance });
+                                }
+                                else
+                                {
+                                   deripEdgesArray = append(deripEdgesArray, smEdge);
+                                   derippedEdgesMap[smEdge] = true;
+                                }
                             }
-
+                            // The edge will be split by the deripping operation. Track it and BTGEdgeChange will pick the correct one
+                            // based on the input face.
                             if (partFace == evaluatedFace)
                             {
                                 faceToExtend = adjacentFaceSMFace[0];
@@ -827,17 +839,22 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
                             throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_FAILED);
                         }
                     }
-                    derippedEdgesMap[smEdge] = true;
+                    if (!doDeripSeparately)
+                    {
+                       derippedEdgesMap[smEdge] = true;
+                    }
                 }
                 else
                 {
                     faceToExtend = adjacentFaces[0];
                 }
-
-                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, id, definition));
+                faceToExtend = qUnion([faceToExtend, startTracking(context, faceToExtend)]);
+                smEdge = qUnion([smEdge, startTracking(context, smEdge)]);
+                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, definition));
 
                 const sheetMetalModel = qOwnerBody(smEdge);
                 edgeChangeOptions = append(edgeChangeOptions, option);
+                smEdges = append(smEdges, smEdge);
             }
         }
         var modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), EntityType.FACE);
@@ -893,7 +910,11 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
         {
             try
             {
-                sheetMetalEdgeChangeCall(context, id + "edgeChange",
+                if (size(deripEdgesArray) > 0)
+                {
+                    deripEdges(context, id + "edgeChange" + "derip", qUnion(deripEdgesArray));
+                }
+                sheetMetalEdgeChangeCall(context, id + "edgeChange" + "move",
                         qUnion(smEdges),
                         { "edgeChangeOptions" : edgeChangeOptions });
             }
@@ -910,7 +931,6 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
         }
         addRipsForNewEdges(context, id, modifiedEdges);
         modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
-
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModels]),
                 originalEntities, initialAssociationAttributes);
 

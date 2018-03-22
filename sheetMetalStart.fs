@@ -3,11 +3,10 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-
+export import(path : "onshape/std/extrudeCommon.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 
 import(path : "onshape/std/attributes.fs", version : "✨");
-import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
 import(path : "onshape/std/box.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
@@ -41,17 +40,6 @@ export enum SMProcessType
     EXTRUDE,
     annotation { "Name" : "Thicken" }
     THICKEN
-}
-
-/**
- * Bounding type used with SMProcessType.EXTRUDE
- */
-export enum SMExtrudeBoundingType
-{
-    annotation { "Name" : "Blind" }
-    BLIND,
-    annotation { "Name" : "Symmetric" }
-    SYMMETRIC
 }
 
 /**
@@ -144,13 +132,30 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             annotation { "Name" : "End type" }
             definition.endBound is SMExtrudeBoundingType;
 
-            annotation { "Name" : "Depth" }
-            isLength(definition.depth, NONNEGATIVE_LENGTH_BOUNDS);
-
-            if (definition.endBound == SMExtrudeBoundingType.BLIND)
+            if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
             {
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : false }
+                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
                 definition.oppositeExtrudeDirection is boolean;
+            }
+
+            extrudeBoundParametersPredicate(definition);
+
+            if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
+            {
+                annotation { "Name" : "Second end position" }
+                definition.hasSecondDirection is boolean;
+
+                if (definition.hasSecondDirection)
+                {
+                    annotation { "Name" : "End type", "Column Name" : "Second end type" }
+                    definition.secondDirectionBound is SMExtrudeSecondDirectionBoundingType;
+
+                    annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                                 "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                    definition.secondDirectionOppositeExtrudeDirection is boolean;
+
+                    extrudeSecondDirectionBoundParametersPredicate(definition);
+                }
             }
         }
         else if (definition.process == SMProcessType.THICKEN)
@@ -276,7 +281,14 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "bendsIncluded" : false,
       "clearance" : 0 * meter,
       "keepInputParts" : false,
-      "tangentPropagation" : false
+      "tangentPropagation" : false,
+      "hasSecondDirection" : false, // option for extrude second direction
+      "oppositeExtrudeDirection" : false,
+      "secondDirectionOppositeExtrudeDirection" : false,
+      "hasOffset" : false,
+      "hasSecondDirectionOffset" : false,
+      "offsetOppositeDirection" : false,
+      "secondDirectionOffsetOppositeDirection" : false
     });
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
@@ -406,7 +418,7 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendsQ
                     "kFactor" : definition.kFactor,
                     "kFactorRolled" : definition.kFactorRolled,
                     "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-                    "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
+                    "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
                     "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
                     "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
                     "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
@@ -502,8 +514,6 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
 /*
  * Methods for EXTRUDE
  */
-
-const DEPTH_MANIPULATOR = "depthManipulator";
 
 function extrudeSheetMetal(context is Context, id is Id, definition is map)
 {
@@ -662,43 +672,32 @@ function convertRegion(context is Context, id is Id, definition is map)
     }
 }
 
+function getSketchCurvesToExtrude(definition is map)
+{
+    var sketchCurves = (definition.supportRolled == true) ?
+            qUnion([definition.bendArcs, definition.sketchCurves]) :
+            qGeometry(definition.sketchCurves, GeometryType.LINE);
+    return qConstructionFilter(sketchCurves, ConstructionObject.NO);
+}
+
 function extrudeSketchCurves(context is Context, id is Id, definition is map) returns Query
 {
-    var sketchCurves = (definition.supportRolled == true) ? qUnion([definition.bendArcs, definition.sketchCurves]) :
-                                                    qGeometry(definition.sketchCurves, GeometryType.LINE);
-    sketchCurves = qConstructionFilter(sketchCurves, ConstructionObject.NO);
+    const sketchCurves = getSketchCurvesToExtrude(definition);
     const resolvedEntities = evaluateQuery(context, sketchCurves);
     if (size(resolvedEntities) > 0)
     {
+        // Handle negative inputs
+        definition = adjustExtrudeDirectionForBlind(definition);
+
         const extrudeAxis = getExtrudeDirection(context, resolvedEntities[0]);
-        addExtrudeManipulator(context, id, definition, extrudeAxis);
+        addExtrudeManipulator(context, id, definition, sketchCurves, extrudeAxis);
+
+        definition = transformExtrudeDefinitionForOpExtrude(context, id, sketchCurves, extrudeAxis.direction, definition);
+
         const extrudeId = id + "extrude";
-
-        definition.entities = sketchCurves;
-        definition.direction = extrudeAxis.direction;
-        if (definition.oppositeExtrudeDirection)
-            definition.direction *= -1;
-
-        if (definition.depth != undefined && definition.depth < 0)
-        {
-            definition.depth *= -1;
-            if (definition.endBound == SMExtrudeBoundingType.BLIND)
-                definition.direction *= -1;
-        }
-
-        definition.startBound = BoundingType.BLIND;
-        definition.startDepth = 0;
-        definition.endDepth = definition.depth;
-        definition.isStartBoundOpposite = false;
-
-        if (definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
-        {
-            definition.endBound = BoundingType.BLIND;
-            definition.startDepth = definition.depth * -0.5;
-            definition.endDepth = definition.depth * 0.5;
-        }
-
         opExtrude(context, extrudeId, definition);
+        cleanupVertexBoundaryPlane(context, id, definition);
+
         return qCreatedBy(extrudeId, EntityType.BODY);
     }
     return qNothing();
@@ -712,18 +711,20 @@ function getExtrudeDirection(context is Context, entity is Query)
     return line(tangentAtEdge.origin, direction);
 }
 
-function addExtrudeManipulator(context is Context, id is Id, definition is map, extrudeAxis is Line)
+function extrudeUpToBoundaryFlip(context is Context, definition is map) returns map
 {
-    var offset = definition.depth;
-    if (definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
-        offset *= 0.5;
-    if (definition.oppositeExtrudeDirection)
-        offset *= -1;
-    addManipulators(context, id, { (DEPTH_MANIPULATOR) :
-                    linearManipulator(extrudeAxis.origin,
-                        extrudeAxis.direction,
-                        offset,
-                        definition.entities) });
+    const sketchCurves = getSketchCurvesToExtrude(definition);
+    const resolvedEntities = evaluateQuery(context, sketchCurves);
+    if (size(resolvedEntities) == 0)
+    {
+        return definition;
+    }
+    const extrudeAxis = try(getExtrudeDirection(context, resolvedEntities[0]));
+    if (extrudeAxis == undefined)
+    {
+        return definition;
+    }
+    return extrudeUpToBoundaryFlipCommon(context, extrudeAxis, definition);
 }
 
 function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is Query, definition is map) returns Query
@@ -756,7 +757,7 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "kFactor" : definition.kFactor,
         "kFactorRolled" : definition.kFactorRolled,
         "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(definition),
+        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
         "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
         "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
         "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
@@ -791,13 +792,13 @@ function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
     {
         return SMReliefStyle.ROUND;
     }
-    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
-    {
-        return SMReliefStyle.SIZED_ROUND;
-    }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
     {
         return SMReliefStyle.SIZED_RECTANGLE;
+    }
+    else if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+    {
+        return SMReliefStyle.SIZED_ROUND;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.CLOSED)
     {
@@ -813,8 +814,10 @@ function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
     }
 }
 
-function getDefaultThreeCornerStyle(definition is map) returns SMReliefStyle
+function getDefaultThreeCornerStyle(context is Context, definition is map) returns SMReliefStyle
 {
+    const includeSized = isAtVersionOrLater(context, FeatureScriptVersionNumber.V781_THREE_BEND_SIZED);
+
     if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE)
     {
         return SMReliefStyle.RECTANGLE;
@@ -822,6 +825,14 @@ function getDefaultThreeCornerStyle(definition is map) returns SMReliefStyle
     else if (definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
     {
         return SMReliefStyle.ROUND;
+    }
+    else if (includeSized && definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+    {
+        return SMReliefStyle.SIZED_RECTANGLE;
+    }
+    else if (includeSized && definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+    {
+        return SMReliefStyle.SIZED_ROUND;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.SIMPLE)
     {
@@ -1043,16 +1054,7 @@ function getThicknessDirection(context is Context, startModelDefinition is map) 
  */
 export function sheetMetalStartManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
-    if (newManipulators[DEPTH_MANIPULATOR] is map)
-    {
-        var newOffset = newManipulators[DEPTH_MANIPULATOR].offset;
-        if (definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
-            newOffset *= 2;
-        definition.oppositeExtrudeDirection = newOffset < 0 * meter;
-        definition.depth = abs(newOffset);
-    }
-
-    return definition;
+    return extrudeManipulatorChange(context, definition, newManipulators);
 }
 
 /**
@@ -1061,6 +1063,7 @@ export function sheetMetalStartManipulatorChange(context is Context, definition 
 export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    // Preselection processing
     if (oldDefinition == {})
     {
         const bodies = qEntityFilter(definition.initEntities, EntityType.BODY);
@@ -1084,6 +1087,18 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
         // Clear out the pre-selection data: this is especially important if the query is to imported data
         definition.initEntities = qNothing();
     }
+
+    // Extrude flips
+    // If this is changed, make sure to reflect the change in extrude::extrudeEditLogic.
+    if (canSetExtrudeFlips(definition, specifiedParameters))
+    {
+        if (canSetExtrudeUpToFlip(definition, specifiedParameters))
+        {
+            definition = extrudeUpToBoundaryFlip(context, definition);
+        }
+    }
+    definition = setExtrudeSecondDirectionFlip(definition, specifiedParameters);
+
     return definition;
 }
 

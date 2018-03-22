@@ -365,14 +365,27 @@ function cylinderCanBeBend(context is Context, face is Query) returns boolean
     {
         return false;
     }
+    var countOtherFaces = 0;
+    var allowCutBends = isAtVersionOrLater(context, FeatureScriptVersionNumber.V775_DETACHED_FILLET);
     for (var edge in lineEdges)
     {
         var otherFaceQ = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), face);
         var otherFaces = evaluateQuery(context, otherFaceQ);
-        if (size(otherFaces) != 1)
+        if (allowCutBends)
         {
-            return false;
+            if (size(otherFaces) == 0)
+            {
+                continue;
+            }
         }
+        else
+        {
+             if (size(otherFaces) != 1)
+            {
+                return false;
+            }
+        }
+        countOtherFaces += 1;
         var wallAttributes = getSmObjectTypeAttributes(context, otherFaces[0], SMObjectType.WALL);
         if (size(wallAttributes) != 1)
         {
@@ -384,7 +397,7 @@ function cylinderCanBeBend(context is Context, face is Query) returns boolean
             return false;
         }
     }
-    return true;
+    return (allowCutBends) ? (countOtherFaces >= 2) : true;
 }
 
 /**

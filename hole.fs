@@ -248,8 +248,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
 
-        // If we have no errors, test for sucess and disjoint and report those errors
-        if (!hasErrors(context, id))
+        // If we have no errors, warnings or info, test for sucess and disjoint and report those errors
+        if (!reportingStatus(context, id))
         {
             // ------------- Perform the operation ---------------
             var opResult = holeOp(context, id, locations, definition);
@@ -296,8 +296,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 }
             }
         }
-        // Test for errors again, now with success and disjoint check
-        if (hasErrors(context, id))
+        // Test status again, now with success and disjoint check
+        if (reportingStatus(context, id))
         {
             const errorId = id + "errorEntities";
             definition.generateErrorBodies = true;
@@ -325,9 +325,17 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             isTappedThrough : false
         });
 
-function hasErrors(context is Context, id is Id) returns boolean
+function reportingStatus(context is Context, id is Id) returns boolean
 {
     return getFeatureError(context, id) != undefined || getFeatureWarning(context, id) != undefined || getFeatureInfo(context, id) != undefined;
+}
+
+function hasErrors(context is Context, id is Id) returns boolean
+{
+     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V782_HOLE_ERROR_REPORTING))
+        return getFeatureError(context, id) != undefined;
+     else
+         return reportingStatus(context, id);
 }
 
 function holeOp(context is Context, id is Id, locations is array, definition is map) returns map

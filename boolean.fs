@@ -469,6 +469,12 @@ function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, pare
 {
     var track = filterOverlappingEdges(context, parentEdge, filterJoinableSurfaceEdges(startTracking(context,
                 {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V776_SURFACE_JOIN_BUG_FIX))
+    {
+        return qSubtraction(track, qCreatedBy(id));
+    }
+
     var trackedEdges = evaluateQuery(context, qSubtraction(track, qCreatedBy(id)));
 
     if (size(trackedEdges) == 1)
@@ -885,8 +891,9 @@ function thickenFaces(context is Context, id is Id, modelParameters is map, face
 function trimTool(context is Context, id is Id, thickened is Query, tool is Query) returns Query
 {
     const intersectionId = id + "intersect";
+    var toolsQ = isAtVersionOrLater(context, FeatureScriptVersionNumber.V779_BOOLEAN_TRACK_MERGE) ? qUnion([thickened, tool]) : qUnion([tool, thickened]);
     opBoolean(context, intersectionId, {
-                "tools" : qUnion([tool, thickened]),
+                "tools" : toolsQ,
                 "operationType" : BooleanOperationType.INTERSECTION,
                 "keepTools" : true
             });

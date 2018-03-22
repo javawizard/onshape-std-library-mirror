@@ -1624,7 +1624,9 @@ export enum ErrorStringEnum
     /* Cannot pattern fillets, chamfers, reliefs, or corners. */
     SHEET_METAL_FACE_PATTERN_NO_VERTEX,
     /* Some patterned faces could not join the sheet metal model. */
-    SHEET_METAL_FACE_PATTERN_PARTIAL_FLOATING_WALL
+    SHEET_METAL_FACE_PATTERN_PARTIAL_FLOATING_WALL,
+    /* Cannot select from the flattened sheet metal view and model view at the same time. */
+    EXTRUDE_3D_AND_FLAT
 }
 
 
