@@ -1,28 +1,28 @@
-FeatureScript 765; /* Automatically generated version */
+FeatureScript 782; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "765.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "765.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "765.0");
-import(path : "onshape/std/containers.fs", version : "765.0");
-import(path : "onshape/std/coordSystem.fs", version : "765.0");
-import(path : "onshape/std/curveGeometry.fs", version : "765.0");
-import(path : "onshape/std/evaluate.fs", version : "765.0");
-import(path : "onshape/std/feature.fs", version : "765.0");
-import(path : "onshape/std/math.fs", version : "765.0");
-import(path : "onshape/std/manipulator.fs", version : "765.0");
-import(path : "onshape/std/query.fs", version : "765.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "765.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "765.0");
-import(path : "onshape/std/string.fs", version : "765.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "765.0");
-import(path : "onshape/std/tool.fs", version : "765.0");
-import(path : "onshape/std/valueBounds.fs", version : "765.0");
-import(path : "onshape/std/vector.fs", version : "765.0");
-import(path : "onshape/std/topologyUtils.fs", version : "765.0");
-import(path : "onshape/std/transform.fs", version : "765.0");
+import(path : "onshape/std/attributes.fs", version : "782.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "782.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "782.0");
+import(path : "onshape/std/containers.fs", version : "782.0");
+import(path : "onshape/std/coordSystem.fs", version : "782.0");
+import(path : "onshape/std/curveGeometry.fs", version : "782.0");
+import(path : "onshape/std/evaluate.fs", version : "782.0");
+import(path : "onshape/std/feature.fs", version : "782.0");
+import(path : "onshape/std/math.fs", version : "782.0");
+import(path : "onshape/std/manipulator.fs", version : "782.0");
+import(path : "onshape/std/query.fs", version : "782.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "782.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "782.0");
+import(path : "onshape/std/string.fs", version : "782.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "782.0");
+import(path : "onshape/std/tool.fs", version : "782.0");
+import(path : "onshape/std/valueBounds.fs", version : "782.0");
+import(path : "onshape/std/vector.fs", version : "782.0");
+import(path : "onshape/std/topologyUtils.fs", version : "782.0");
+import(path : "onshape/std/transform.fs", version : "782.0");
 
 
 
@@ -365,14 +365,27 @@ function cylinderCanBeBend(context is Context, face is Query) returns boolean
     {
         return false;
     }
+    var countOtherFaces = 0;
+    var allowCutBends = isAtVersionOrLater(context, FeatureScriptVersionNumber.V775_DETACHED_FILLET);
     for (var edge in lineEdges)
     {
         var otherFaceQ = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), face);
         var otherFaces = evaluateQuery(context, otherFaceQ);
-        if (size(otherFaces) != 1)
+        if (allowCutBends)
         {
-            return false;
+            if (size(otherFaces) == 0)
+            {
+                continue;
+            }
         }
+        else
+        {
+             if (size(otherFaces) != 1)
+            {
+                return false;
+            }
+        }
+        countOtherFaces += 1;
         var wallAttributes = getSmObjectTypeAttributes(context, otherFaces[0], SMObjectType.WALL);
         if (size(wallAttributes) != 1)
         {
@@ -384,7 +397,7 @@ function cylinderCanBeBend(context is Context, face is Query) returns boolean
             return false;
         }
     }
-    return true;
+    return (allowCutBends) ? (countOtherFaces >= 2) : true;
 }
 
 /**

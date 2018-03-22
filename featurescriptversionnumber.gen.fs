@@ -1,4 +1,4 @@
-FeatureScript 765; /* Automatically generated version */
+FeatureScript 782; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -646,7 +646,15 @@ export enum FeatureScriptVersionNumber
     V762_FLANGE_NEAR_ROLLED,
     V763_HOLE_CUT_ALL,
     V764_EDGE_PATTERN,
-    V765_SM_PATTERN_FAIL_MIRROR_2
+    V765_SM_PATTERN_FAIL_MIRROR_2,
+    V775_DETACHED_FILLET,
+    V776_SURFACE_JOIN_BUG_FIX,
+    V777_HOLE_ATTRIBUTE_FIX,
+    V778_MOVE_FACE_UPGRADE,
+    V779_BOOLEAN_TRACK_MERGE,
+    V780_THICKEN_STRICT_ORDER,
+    V781_THREE_BEND_SIZED,
+    V782_HOLE_ERROR_REPORTING
 }
 
 /**
@@ -657,6 +665,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V765_SM_PATTERN_FAIL_MIRROR_2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V782_HOLE_ERROR_REPORTING;
 
 

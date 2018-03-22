@@ -1,28 +1,28 @@
-FeatureScript 765; /* Automatically generated version */
+FeatureScript 782; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "765.0");
-export import(path : "onshape/std/query.fs", version : "765.0");
-export import(path : "onshape/std/tool.fs", version : "765.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "782.0");
+export import(path : "onshape/std/query.fs", version : "782.0");
+export import(path : "onshape/std/tool.fs", version : "782.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "765.0");
-import(path : "onshape/std/box.fs", version : "765.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "765.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "765.0");
-import(path : "onshape/std/containers.fs", version : "765.0");
-import(path : "onshape/std/evaluate.fs", version : "765.0");
-import(path : "onshape/std/feature.fs", version : "765.0");
-import(path : "onshape/std/math.fs", version : "765.0");
-import(path : "onshape/std/primitives.fs", version : "765.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "765.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "765.0");
-import(path : "onshape/std/string.fs", version : "765.0");
-import(path : "onshape/std/transform.fs", version : "765.0");
-import(path : "onshape/std/valueBounds.fs", version : "765.0");
+import(path : "onshape/std/attributes.fs", version : "782.0");
+import(path : "onshape/std/box.fs", version : "782.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "782.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "782.0");
+import(path : "onshape/std/containers.fs", version : "782.0");
+import(path : "onshape/std/evaluate.fs", version : "782.0");
+import(path : "onshape/std/feature.fs", version : "782.0");
+import(path : "onshape/std/math.fs", version : "782.0");
+import(path : "onshape/std/primitives.fs", version : "782.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "782.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "782.0");
+import(path : "onshape/std/string.fs", version : "782.0");
+import(path : "onshape/std/transform.fs", version : "782.0");
+import(path : "onshape/std/valueBounds.fs", version : "782.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -469,6 +469,12 @@ function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, pare
 {
     var track = filterOverlappingEdges(context, parentEdge, filterJoinableSurfaceEdges(startTracking(context,
                 {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V776_SURFACE_JOIN_BUG_FIX))
+    {
+        return qSubtraction(track, qCreatedBy(id));
+    }
+
     var trackedEdges = evaluateQuery(context, qSubtraction(track, qCreatedBy(id)));
 
     if (size(trackedEdges) == 1)
@@ -885,8 +891,9 @@ function thickenFaces(context is Context, id is Id, modelParameters is map, face
 function trimTool(context is Context, id is Id, thickened is Query, tool is Query) returns Query
 {
     const intersectionId = id + "intersect";
+    var toolsQ = isAtVersionOrLater(context, FeatureScriptVersionNumber.V779_BOOLEAN_TRACK_MERGE) ? qUnion([thickened, tool]) : qUnion([tool, thickened]);
     opBoolean(context, intersectionId, {
-                "tools" : qUnion([tool, thickened]),
+                "tools" : toolsQ,
                 "operationType" : BooleanOperationType.INTERSECTION,
                 "keepTools" : true
             });
