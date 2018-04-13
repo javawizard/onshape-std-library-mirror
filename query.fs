@@ -128,6 +128,7 @@ export predicate canBeQuery(value)
  * @value TANGENT_CONNECTED_EDGES    : Used in [qTangentConnectedEdges]
  * @value LOOP_EDGES                 : Used in [qLoopEdges]
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
+ * @value PARTS_ATTACHED_TO          : Used in [qPartsAttachedTo]
  ******************************************************************************/
 export enum QueryType
 {
@@ -143,6 +144,7 @@ export enum QueryType
     ATTRIBUTE_FILTER,
     CORRESPONDING_IN_FLAT,
     SM_FLAT_FILTER,
+    PARTS_ATTACHED_TO,
     //Boolean
     UNION,
     INTERSECTION,
@@ -973,9 +975,17 @@ export function qConstructionFilter(subquery is Query, constructionFilter is Con
 /**
  * A query for all sheet metal flat entities or everything else.
  */
-export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType)
+export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType) returns Query
 {
     return {"queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : subquery } as Query;
+}
+
+/**
+* A query for parts to which subquery entities are attached (e.g. sheet metal bend line entities are attached to flat pattern)
+*/
+export function qPartsAttachedTo(subquery is Query) returns Query
+{
+    return {"queryType" : QueryType.PARTS_ATTACHED_TO, "subquery" : subquery } as Query;
 }
 
 /**

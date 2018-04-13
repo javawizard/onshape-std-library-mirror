@@ -142,9 +142,9 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         // Define the "jog section" points as a line extending across the bounding box y extents
         const cutPoints = [ toWorld(coordinateSystem, vector(0 * meter, boxResult.minCorner[1], boxResult.minCorner[2])),
                             toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
-
-        jogSectionCut(context, id, definition.target, sketchPlane, false, cutPoints);
-    });
+        const jogPointsArray = convertToPointsArray(false, cutPoints, []);
+        jogSectionCut(context, id, definition.target, sketchPlane, false, jogPointsArray, false);
+    }, {"isPartialSection" : false, "isBrokenOut" : false});
 
 /**
  * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
@@ -166,8 +166,11 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
              is3dLengthVector(point);
     }
     {
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, definition.jogPoints);
-    }, {"isPartialSection" : false});
+        const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
+        const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
+        const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);
+    }, {"isPartialSection" : false, "isBrokenOut" : false});
 
 /**
  * @internal
@@ -180,43 +183,89 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
         definition.sketchPlane is Plane;
         definition.jogPoints is array;
         for (var point in definition.jogPoints)
-             is3dLengthVector(point);
+            is3dLengthVector(point);
     }
     {
         // remove sheet metal attributes and helper bodies
         clearSheetMetalData(context, id + "sheetMetal");
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, definition.jogPoints);
-    }, {"isPartialSection" : false});
+        const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
+        const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);
+    }, { "isPartialSection" : false, "isBrokenOut" : false });
 
-function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPoints is array)
+/**
+ * Collect the spline points and the depth point from each broken-out section and convert it into an array of array
+ * for broken-out section, we store the spline points and depth points for multiple broken-out sections in 'jogPoints'.
+ * Format of 'jogPoints': [pointsForBrokenOut1, depthPoint1, pointsForBrokenOut2, depthPoint2, ...]
+ * 'brokenOutPointNumbers' tells us how many points each broken-out section has: [size(pointsForBrokenOut1), size(pointsForBrokenOut2), ...]
+ */
+function convertToPointsArray(isBrokenOut is boolean, jogPoints is array, brokenOutPointNumbers is array)
 {
-    opDeleteBodies(context, id + "initialDelete", {"entities" : qSubtraction(qEverything(EntityType.BODY), target)});
+    var jogPointsArray;
+    if (isBrokenOut && brokenOutPointNumbers != undefined && size(brokenOutPointNumbers) > 0)
+    {
+        var jogPointIndex = 0;
+        var numberOfBrokenOut = size(brokenOutPointNumbers);
+        jogPointsArray = makeArray(numberOfBrokenOut);
+        for (var i = 0; i < numberOfBrokenOut; i = i + 1)
+        {
+            const numberOfJogPoints = brokenOutPointNumbers[i];
+            var points = makeArray(numberOfJogPoints+1); // need to add an additional one for the depth point
+            for (var j = 0; j < numberOfJogPoints+1; j = j + 1)
+            {
+                points[j] = jogPoints[jogPointIndex];
+                jogPointIndex = jogPointIndex + 1;
+            }
+            jogPointsArray[i] = points;
+        }
+    }
+    else
+    {
+        jogPointsArray = makeArray(1);
+        jogPointsArray[0] = jogPoints;
+    }
+    return jogPointsArray;
+}
+
+function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPointsArray is array, isBrokenOut is boolean)
+{
+    opDeleteBodies(context, id + "initialDelete", { "entities" : qSubtraction(qEverything(EntityType.BODY), target) });
 
     try
     {
-        const coordinateSystem = planeToCSys(sketchPlane);
-        var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
-        boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
-        // Shift the plane and box to the box's min corner
-        const offsetPlane = plane(toWorld(coordinateSystem, boxResult.minCorner), sketchPlane.normal, sketchPlane.x);
-        boxResult.maxCorner = boxResult.maxCorner - boxResult.minCorner;
-        boxResult.minCorner = vector(0, 0, 0) * meter;
-        const numberOfPoints = size(jogPoints);
-        var projectedPoints = makeArray(numberOfPoints);
-        for (var i = 0; i < numberOfPoints; i = i + 1)
+        if (isBrokenOut)
         {
-            projectedPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
+            brokenOutSectionCut(context, id, target, sketchPlane, jogPointsArray);
         }
-        checkJogDirection(projectedPoints);
-        const polygon = isPartialSection ? createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane)
-                                         : createJogPolygon(projectedPoints, boxResult, offsetPlane);
-        const sketchId = id + "sketch";
+        else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
+        {
+            const jogPoints = jogPointsArray[0];
+            const coordinateSystem = planeToCSys(sketchPlane);
+            var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
+            boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+            // Shift the plane and box to the box's min corner
+            var origin = toWorld(coordinateSystem, boxResult.minCorner);
+            const offsetPlane = plane(origin, sketchPlane.normal, sketchPlane.x);
+            boxResult.maxCorner = boxResult.maxCorner - boxResult.minCorner;
+            boxResult.minCorner = vector(0, 0, 0) * meter;
+            const numberOfPoints = size(jogPoints);
+            var projectedPoints = makeArray(numberOfPoints);
+            for (var i = 0; i < numberOfPoints; i = i + 1)
+            {
+                projectedPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
+            }
+            checkJogDirection(projectedPoints);
+            const polygon = isPartialSection ? createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane)
+                : createJogPolygon(projectedPoints, boxResult, offsetPlane);
+            const sketchId = id + "sketch";
 
-        sketchPolyline(context, sketchId, polygon, offsetPlane);
-        const extrudeId = id + "extrude";
-        const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
-        opDeleteBodies(context, id + "deleteSketch", {"entities" : qCreatedBy(sketchId, EntityType.BODY)});
+            sketchPolyline(context, sketchId, polygon, offsetPlane);
+            const extrudeId = id + "extrude";
+            const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
+
+            extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
+            opDeleteBodies(context, id + "deleteSketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
+        }
     }
     catch
     {
@@ -224,17 +273,69 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
     }
 }
 
+/**
+ * 'jogPointsArray' is an array of array, each array contains the spline section points and the depth point
+ */
+function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array)
+{
+    const coordinateSystem = planeToCSys(sketchPlane);
+    var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
+    boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+    // Shift the plane and box to the box's min corner
+    var defaultOrigin = toWorld(coordinateSystem, boxResult.minCorner);
+    var numberOfBrokenOut = size(jogPointsArray);
+    for (var brokenOutIndex = 0; brokenOutIndex < numberOfBrokenOut; brokenOutIndex = brokenOutIndex + 1)
+    {
+        const jogPoints = jogPointsArray[brokenOutIndex];
+        var numberOfJogPoints = size(jogPoints) - 1;
+        var jogPointsForBrokenOut = makeArray(numberOfJogPoints);
+        for (var i = 0; i < numberOfJogPoints; i = i + 1)
+        {
+            jogPointsForBrokenOut[i] = jogPoints[i];
+        }
+        var uptoPoint = jogPoints[numberOfJogPoints]; //the last point in the array is the depth point
+
+        // Shift the plane and box to 'uptoPoint' if it is a broken-out section view and uptoPoint is specified
+        const dir = uptoPoint - defaultOrigin;
+        var origin = defaultOrigin + dot(dir, sketchPlane.normal) * sketchPlane.normal;
+        const offsetPlane = plane(origin, sketchPlane.normal, sketchPlane.x);
+
+        const isClosedSpline = tolerantEquals(jogPointsForBrokenOut[0], jogPointsForBrokenOut[numberOfJogPoints - 1]);
+        // if it is not closed, we add one to close it
+        if (!isClosedSpline)
+        {
+            jogPointsForBrokenOut = concatenateArrays([jogPointsForBrokenOut, makeArray(1)]);
+            jogPointsForBrokenOut[numberOfJogPoints] = jogPointsForBrokenOut[0];
+            numberOfJogPoints = numberOfJogPoints + 1;
+        }
+        var projectedPoints = makeArray(numberOfJogPoints);
+        for (var i = 0; i < numberOfJogPoints; i = i + 1)
+        {
+            projectedPoints[i] = worldToPlane(offsetPlane, jogPointsForBrokenOut[i]);
+        }
+
+        const sketchId = id + ("sketch" ~ brokenOutIndex);
+        sketchSplineSection(context, sketchId, projectedPoints, offsetPlane);
+
+        const extrudeId = id + ("extrude" ~ brokenOutIndex);
+        const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
+
+        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
+        opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
+    }
+}
+
 function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
     const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
-                          "operationType" : NewBodyOperationType.REMOVE,
-                          "entities" : sketchRegionQuery,
-                          "endBound" : BoundingType.BLIND,
-                          "depth" : depth,
-                          "defaultScope" : false,
-                          "eraseImprintedEdges" : noMerge ? false : true,
-                          "booleanScope" : target};
+            "operationType" : NewBodyOperationType.REMOVE,
+            "entities" : sketchRegionQuery,
+            "endBound" : BoundingType.BLIND,
+            "depth" : depth,
+            "defaultScope" : false,
+            "eraseImprintedEdges" : noMerge ? false : true,
+            "booleanScope" : target};
 
     extrude(context, id, extrudeDefinition);
 }
@@ -291,7 +392,7 @@ function createJogPolygonForPartialSection(points is array, boundingBox is Box3d
     const boxCenterInPlane = vector(boundingBox.maxCorner[0] / 2, boundingBox.maxCorner[1] / 2);
     const alignedDistanceToJogStart = abs(boxCenterInPlane[0] - points[0][0]);
     const alignedDistanceToJogEnd = abs(boxCenterInPlane[0] - points[pointCount - 1][0]);
-    const flipY = points[pointCount-1][1] < points[0][1];
+    const flipY = points[pointCount - 1][1] < points[0][1];
 
     polygonVertices[pointCount] = vector(boundingBox.maxCorner[0], points[pointCount - 1][1]);
     polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
@@ -313,6 +414,15 @@ function sketchPolyline(context is Context, sketchId is Id, points is array, ske
     {
         skLineSegment(sketch, "line_" ~ i, { "start" : points[i], "end" : points[i + 1] });
     }
+    skSolve(sketch);
+}
+
+function sketchSplineSection(context is Context, sketchId is Id, points is array, sketchPlane is Plane)
+{
+    const sketch = newSketchOnPlane(context, sketchId, { "sketchPlane" : sketchPlane });
+    skFitSpline(sketch, "spline", {
+                "points" : points
+            });
     skSolve(sketch);
 }
 

@@ -654,7 +654,15 @@ export enum FeatureScriptVersionNumber
     V779_BOOLEAN_TRACK_MERGE,
     V780_THICKEN_STRICT_ORDER,
     V781_THREE_BEND_SIZED,
-    V782_HOLE_ERROR_REPORTING
+    V782_HOLE_ERROR_REPORTING,
+    V792_OFFSET_CORRECT_LOOP,
+    V793_CHECK_UNROLLED_MATCH,
+    V794_EDGE_PATTERN_BREAKS,
+    V795_SPLIT_FIXES,
+    V796_PLANE_ORIENTATION_INSTABILITY,
+    V797_EDGE_DISAMBIGUATION,
+    V798_BOOLEAN_TRACKING,
+    V799_FIX_UNROLL_ORIGIN
 }
 
 /**
@@ -665,6 +673,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V782_HOLE_ERROR_REPORTING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V799_FIX_UNROLL_ORIGIN;
 
 

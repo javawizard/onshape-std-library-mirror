@@ -292,7 +292,7 @@ function groupEdgesByBodyOrModel(context is Context, edges is array) returns map
 export function flangeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.edges)));
+    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.edges, EntityType.EDGE)));
     if (edges == undefined)
         return definition;
     var evaluatedEdgeQuery = evaluateQuery(context, edges);

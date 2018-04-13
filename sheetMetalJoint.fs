@@ -22,7 +22,9 @@ import(path : "onshape/std/string.fs", version : "✨");
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
  */
-annotation { "Feature Type Name" : "Modify joint", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Modify joint",
+             "Filter Selector" : "allparts",
+             "Editing Logic Function" : "sheetMetalJointEditLogic" }
 export const sheetMetalJoint = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -47,8 +49,13 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
 
         if (definition.jointType == SMJointType.RIP)
         {
-            annotation { "Name" : "Joint style" }
-            definition.jointStyle is SMJointStyle;
+            annotation { "Name" : "Has style", "Default" : true, "UIHint" : "ALWAYS_HIDDEN"}
+            definition.hasStyle is boolean;
+            if (definition.hasStyle)
+            {
+                annotation { "Name" : "Joint style" }
+                definition.jointStyle is SMJointStyle;
+            }
         }
     }
     {
@@ -98,7 +105,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
         updateSheetMetalGeometry(context, id, { "entities" : jointEdgesQ ,
                                                 "associatedChanges" : jointEdgesQ
                                                 });
-    }, { jointStyle : SMJointStyle.EDGE, useDefaultRadius : true });
+    }, { jointStyle : SMJointStyle.EDGE, useDefaultRadius : true, hasStyle : true });
 
 function getDefaultSheetMetalRadius(context is Context, entity is Query)
 {
@@ -200,4 +207,28 @@ function createNewTangentAttribute(id is Id, existingAttribute is SMAttribute) r
     return tangentAttribute;
 }
 
+/**
+ * @internal
+ * Editing logic for sheetMetalJoint feature.
+ * Parameter isCreating is needed for this method to be called when editing.
+ */
+export function sheetMetalJointEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    const definitionEntities = try silent(getSMDefinitionEntities(context, definition.entity, EntityType.EDGE));
+    if (definitionEntities == undefined || size(definitionEntities) == 0)
+    {
+        return definition;
+    }
+    const jointEdgesQ = qUnion(definitionEntities);
+    var existingAttribute = try silent(getJointAttribute(context, jointEdgesQ));
+    if (existingAttribute != undefined &&
+        existingAttribute.angle != undefined &&
+        existingAttribute.angle.value != undefined &&
+        abs(existingAttribute.angle.value/radian) > TOLERANCE.zeroAngle)
+        definition.hasStyle = true;
+    else
+        definition.hasStyle = false;
+    return definition;
+}
 

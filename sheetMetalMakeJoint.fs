@@ -95,7 +95,7 @@ export function makeJointEditLogic(context is Context, id is Id, oldDefinition i
     if (singleModelEntities == undefined || !singleModelEntities)
         return definition;
 
-    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.entities)));
+    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.entities, EntityType.EDGE)));
     if (edges == undefined)
         return definition;
 

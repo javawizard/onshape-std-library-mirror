@@ -807,11 +807,14 @@ export function isActiveSheetMetalPart(context is Context, partQuery is Query) r
 export function assignSMAttributesToNewOrSplitEntities(context is Context, sheetMetalModels is Query,
                                             originalEntities is array, originalAttributes is array) returns map
 {
-    //Transient queries new to sheet metal body
+    var originalEntitiesMap = {};
+    for (var entity in originalEntities)
+        originalEntitiesMap[entity.transientId] = true;
+    // Transient queries new to sheet metal body
     var entitiesToAddAssociations = filter(evaluateQuery(context, qOwnedByBody(sheetMetalModels)),
                     function(entry)
                     {
-                        return !isIn(entry, originalEntities);
+                        return originalEntitiesMap[entry.transientId] != true;
                     });
     var entitiesToAddAssociationsQ = qUnion(entitiesToAddAssociations);
 
@@ -825,21 +828,28 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
         // However, we need to propagate any bend/wall information and so we will now take a look to
         // see which attributes need copying and copy all the data, but with a new ID
         const entitiesWithAttribute = qAttributeFilter(qOwnedByBody(sheetMetalModels), attribute);
-        const existingEntitiesWithAttribute = qSubtraction(entitiesWithAttribute, entitiesToAddAssociationsQ);
-        const newEntitiesWithAttribute = qSubtraction(entitiesWithAttribute, existingEntitiesWithAttribute);
+        var existingEntitiesWithAttribute = [];
+        var newEntitiesWithAttribute = [];
+        for (var entity in evaluateQuery(context, entitiesWithAttribute))
+        {
+            if (originalEntitiesMap[entity.transientId] == true)
+                existingEntitiesWithAttribute = append(existingEntitiesWithAttribute, entity);
+            else
+                newEntitiesWithAttribute = append(newEntitiesWithAttribute, entity);
+        }
 
         // First case: There is an existing entity that still has the attribute (masterEntities).
-        var masterEntities = existingEntitiesWithAttribute;
-        var entitiesToModify = newEntitiesWithAttribute;
-        var nMaster = size(evaluateQuery(context, masterEntities));
+        var masterEntities = qUnion(existingEntitiesWithAttribute);
+        var entitiesToModify = qUnion(newEntitiesWithAttribute);
+        var nMaster = size(existingEntitiesWithAttribute);
         if (nMaster == 0)
         {
             // Second case: There are no existing entities that have the attribute
             // But there may be multiple new entities with the same attribute
             // Let the 'master' be the first of the new entities. It might be
             // reassigned below to the first one keeping the definition attribute
-            masterEntities = qNthElement(newEntitiesWithAttribute, 0);
-            entitiesToModify = qSubtraction(newEntitiesWithAttribute, masterEntities);
+            masterEntities = newEntitiesWithAttribute[0];
+            entitiesToModify = qSubtraction(entitiesToModify, masterEntities);
         }
         else if (nMaster > 1)
         {
@@ -886,7 +896,7 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                     attributeSurvived = true;
                 }
             }
-            entitiesToModify = qSubtraction(newEntitiesWithAttribute, masterEntities);
+            entitiesToModify = qSubtraction(qUnion(newEntitiesWithAttribute), masterEntities);
         }
 
         // Clean up association attributes off of the entities that need new attributes
@@ -904,7 +914,14 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
             "entities" : qOwnedByBody(sheetMetalModels), // counting on body transient query surviving
             "attributePattern" : {} as SMAssociationAttribute
     });
-    var deletedAttributes = filter(originalAttributes, function(attribute){ return !isIn(attribute, finalAssociationAttributes);});
+    var finalAssociationAttributesMap = {};
+    for (var attribute in finalAssociationAttributes)
+        finalAssociationAttributesMap[attribute.attributeId] = true;
+    var deletedAttributes = filter(originalAttributes,
+                    function(attribute)
+                    {
+                        return finalAssociationAttributesMap[attribute.attributeId] != true;
+                    });
     return { "modifiedEntities" : entitiesToAddAssociationsQ, "deletedAttributes" : deletedAttributes};
 }
 

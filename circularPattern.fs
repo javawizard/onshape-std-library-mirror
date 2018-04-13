@@ -74,9 +74,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             annotation { "Name" : "Faces to pattern",
                          "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES &&
-                                    (ActiveSheetMetal.NO || (ActiveSheetMetal.YES &&
-                                    (SheetMetalDefinitionEntityType.FACE || SheetMetalDefinitionEntityType.EDGE))) }
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == PatternType.FEATURE)

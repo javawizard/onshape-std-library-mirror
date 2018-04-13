@@ -441,6 +441,7 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
         var depthOffset = definition.depth;
         if (isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
             depthOffset *= 0.5;
+        // Both BLIND and SYMMETRIC rely on oppositeDirection to determine the flip of the manipulator
         if (isOppositeDirection(definition))
             depthOffset *= -1;
         addManipulators(context, id, { (DEPTH_MANIPULATOR) :

@@ -149,6 +149,8 @@ precondition
 {
     recordParameters(context, id, value);
 
+    startFeature(context, id + "sketchPlane", { asVersion : value.asVersion });
+
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
 
@@ -184,6 +186,9 @@ precondition
                 value.sketchPlane = fullTransform * planeOriginal;
         }
     }
+
+    endFeature(context, id + "sketchPlane");
+
     return newSketchOnPlane(context, id, value);
 }
 
