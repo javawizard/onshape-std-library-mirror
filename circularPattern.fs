@@ -1,16 +1,16 @@
-FeatureScript 782; /* Automatically generated version */
+FeatureScript 799; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "782.0");
-export import(path : "onshape/std/tool.fs", version : "782.0");
-export import(path : "onshape/std/patternUtils.fs", version : "782.0");
+export import(path : "onshape/std/query.fs", version : "799.0");
+export import(path : "onshape/std/tool.fs", version : "799.0");
+export import(path : "onshape/std/patternUtils.fs", version : "799.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "782.0");
-import(path : "onshape/std/math.fs", version : "782.0");
+import(path : "onshape/std/curveGeometry.fs", version : "799.0");
+import(path : "onshape/std/math.fs", version : "799.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -74,9 +74,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             annotation { "Name" : "Faces to pattern",
                          "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES &&
-                                    (ActiveSheetMetal.NO || (ActiveSheetMetal.YES &&
-                                    (SheetMetalDefinitionEntityType.FACE || SheetMetalDefinitionEntityType.EDGE))) }
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.faces is Query;
         }
         else if (definition.patternType == PatternType.FEATURE)

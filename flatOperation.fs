@@ -1,73 +1,65 @@
-FeatureScript 782; /* Automatically generated version */
+FeatureScript 799; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Under development, internal use only
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "782.0");
+export import(path : "onshape/std/query.fs", version : "799.0");
 
-import(path : "onshape/std/attributes.fs", version : "782.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "782.0");
-import(path : "onshape/std/containers.fs", version : "782.0");
-import(path : "onshape/std/evaluate.fs", version : "782.0");
-import(path : "onshape/std/feature.fs", version : "782.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "782.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "782.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "782.0");
+import(path : "onshape/std/attributes.fs", version : "799.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "799.0");
+import(path : "onshape/std/containers.fs", version : "799.0");
+import(path : "onshape/std/evaluate.fs", version : "799.0");
+import(path : "onshape/std/feature.fs", version : "799.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
 
 /**
  * @internal
  * Feature performing an [opSMFlatOperation]
  */
-annotation { "Feature Type Name" : "SM flat operation" }
+annotation { "Feature Type Name" : "Flat cut" }
 export const SMFlatOperation = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE }
+        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        definition.flatOperationType is FlatOperationType;
+        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE && AllowFlattenedGeometry.YES }
         definition.faces is Query;
-        annotation { "Name" : "Add" }
-        definition.add is boolean;
     }
     {
-        const smEdgesAndUp = qUnion([qOwnedByBody(qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL })), EntityType.EDGE),
-                    qAttributeQuery(asSMAttribute({ objectType : SMObjectType.WALL })), qAttributeQuery(asSMAttribute({ objectType : SMObjectType.MODEL }))]);
-        const tracking = startTracking(context, smEdgesAndUp);
-        definition.operationType = definition.add ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
+        const smDefinitionBodiesQ = getSheetMetalModelForPart(context, qUnion([qPartsAttachedTo(definition.faces), qOwnerBody(definition.faces)]));
+        const sheetMetalEntitiesQ = qUnion([qOwnedByBody(smDefinitionBodiesQ, EntityType.EDGE), qOwnedByBody(smDefinitionBodiesQ, EntityType.FACE), smDefinitionBodiesQ]);
+        const tracking = startTracking(context, sheetMetalEntitiesQ);
+
+        const originalEntities = evaluateQuery(context,qOwnedByBody(smDefinitionBodiesQ));
+        const initialAssociationAttributes = getAttributes(context, {
+                    "entities" : qUnion(originalEntities),
+                    "attributePattern" : {} as SMAssociationAttribute });
+        definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);
-
-        for (var body in evaluateQuery(context, qOwnerBody(newEntities)))
-        {
-            const modelParameters = getModelParameters(context, body);
-            var count = 0;
-
-            for (var face in evaluateQuery(context, qOwnedByBody(body, EntityType.FACE)))
-            {
-                const surfaceDefinition = evSurfaceDefinition(context, {
-                            "face" : face
-                        });
-                const attributes = getAttributes(context, {
-                            "entities" : face
-                        });
-                if (surfaceDefinition is Cylinder && size(attributes) == 0)
-                {
-                    setCylindricalBendAttribute(context, face, modelParameters.frontThickness, modelParameters.backThickness, toAttributeId(id + count));
-                    count += 1;
-                }
-            }
-        }
-
-        const originalEntities = evaluateQuery(context, qSubtraction(qOwnedByBody(qOwnerBody(tracking)), newEntities));
-        const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qOwnedByBody(qOwnerBody(newEntities)),
-                    "attributePattern" : {} as SMAssociationAttribute });
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities),
                 originalEntities, initialAssociationAttributes);
 
-        updateSheetMetalGeometry(context, id + "smUpdate", {
+        try (updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,
                     "deletedAttributes" : toUpdate.deletedAttributes,
-                    "associatedChanges" : tracking });
+                    "associatedChanges" : tracking }));
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
     }, {});
+
+/**
+ * @internal
+ */
+export enum FlatOperationType
+{
+    annotation { "Name" : "Punch" }
+    REMOVE,
+    annotation { "Name" : "Tab" }
+    ADD
+}
+
 

@@ -1,18 +1,18 @@
-FeatureScript 782; /* Automatically generated version */
+FeatureScript 799; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "782.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "799.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "782.0");
-import(path : "onshape/std/evaluate.fs", version : "782.0");
-import(path : "onshape/std/feature.fs", version : "782.0");
-import(path : "onshape/std/manipulator.fs", version : "782.0");
-import(path : "onshape/std/query.fs", version : "782.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "782.0");
-import(path : "onshape/std/valueBounds.fs", version : "782.0");
-import(path : "onshape/std/vector.fs", version : "782.0");
+import(path : "onshape/std/curveGeometry.fs", version : "799.0");
+import(path : "onshape/std/evaluate.fs", version : "799.0");
+import(path : "onshape/std/feature.fs", version : "799.0");
+import(path : "onshape/std/manipulator.fs", version : "799.0");
+import(path : "onshape/std/query.fs", version : "799.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
+import(path : "onshape/std/valueBounds.fs", version : "799.0");
+import(path : "onshape/std/vector.fs", version : "799.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -441,6 +441,7 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
         var depthOffset = definition.depth;
         if (isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
             depthOffset *= 0.5;
+        // Both BLIND and SYMMETRIC rely on oppositeDirection to determine the flip of the manipulator
         if (isOppositeDirection(definition))
             depthOffset *= -1;
         addManipulators(context, id, { (DEPTH_MANIPULATOR) :

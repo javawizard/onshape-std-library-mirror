@@ -1,24 +1,24 @@
-FeatureScript 782; /* Automatically generated version */
+FeatureScript 799; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "782.0");
-import(path : "onshape/std/boolean.fs", version : "782.0");
-import(path : "onshape/std/containers.fs", version : "782.0");
-import(path : "onshape/std/curveGeometry.fs", version : "782.0");
-import(path : "onshape/std/evaluate.fs", version : "782.0");
-import(path : "onshape/std/feature.fs", version : "782.0");
-import(path : "onshape/std/holeAttribute.fs", version : "782.0");
-import(path : "onshape/std/math.fs", version : "782.0");
-import(path : "onshape/std/patternCommon.fs", version : "782.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "782.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "782.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "782.0");
-import(path : "onshape/std/topologyUtils.fs", version : "782.0");
-import(path : "onshape/std/transform.fs", version : "782.0");
-import(path : "onshape/std/units.fs", version : "782.0");
-import(path : "onshape/std/vector.fs", version : "782.0");
+import(path : "onshape/std/attributes.fs", version : "799.0");
+import(path : "onshape/std/boolean.fs", version : "799.0");
+import(path : "onshape/std/containers.fs", version : "799.0");
+import(path : "onshape/std/curveGeometry.fs", version : "799.0");
+import(path : "onshape/std/evaluate.fs", version : "799.0");
+import(path : "onshape/std/feature.fs", version : "799.0");
+import(path : "onshape/std/holeAttribute.fs", version : "799.0");
+import(path : "onshape/std/math.fs", version : "799.0");
+import(path : "onshape/std/patternCommon.fs", version : "799.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
+import(path : "onshape/std/topologyUtils.fs", version : "799.0");
+import(path : "onshape/std/transform.fs", version : "799.0");
+import(path : "onshape/std/units.fs", version : "799.0");
+import(path : "onshape/std/vector.fs", version : "799.0");
 
 /**
  * @internal
@@ -27,6 +27,7 @@ import(path : "onshape/std/vector.fs", version : "782.0");
 export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     {
         const topLevelId = definition.topLevelId;
+        var attributeIdCounter = new box(0);
 
         var updateMap;
         if (isPartPattern(definition.patternType))
@@ -43,7 +44,15 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             // underlying sheet body as one body, but builds out as multiple thickened sheet metal parts.
             const definitionFaces = getSMDefinitionEntities(context, qOwnedByBody(definition.entities), EntityType.FACE);
 
-            updateMap = sheetMetalWallPattern(context, topLevelId, id, definitionFaces, definition);
+            var patternMap = sheetMetalWallPattern(context, topLevelId, id, definitionFaces, definition, attributeIdCounter);
+            if (patternMap.booleanWasNoOp)
+            {
+                reportBooleanUnionNoOp(context, topLevelId, id + "noOp", definitionFaces, definition);
+            }
+
+            // Store only the modifiedEntities and deletedAttributes
+            patternMap.booleanWasNoOp = undefined;
+            updateMap = patternMap;
         }
         else if (isFacePattern(definition.patternType))
         {
@@ -62,7 +71,8 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             var deletedAttributes = [];
             if (size(definitionWalls) > 0)
             {
-                const wallUpdateMap = sheetMetalWallPattern(context, topLevelId, id + "wallPattern", definitionWalls, definition);
+                const wallUpdateMap = sheetMetalWallPattern(context, topLevelId, id + "wallPattern", definitionWalls,
+                        definition, attributeIdCounter);
                 modifiedEntities = [wallUpdateMap.modifiedEntities];
                 deletedAttributes = wallUpdateMap.deletedAttributes;
             }
@@ -70,7 +80,8 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             const definitionEdges = evaluateQuery(context, definitionEdgesQ);
             if (size(definitionEdges) > 0)
             {
-                const edgeUpdateMap = sheetMetalEdgePattern(context, topLevelId, id + "edgePattern", definitionEdges, definition);
+                const edgeUpdateMap = sheetMetalEdgePattern(context, topLevelId, id + "edgePattern", definitionEdges,
+                        definition, attributeIdCounter);
                 modifiedEntities = append(modifiedEntities, edgeUpdateMap.modifiedEntities);
                 deletedAttributes = concatenateArrays([deletedAttributes, edgeUpdateMap.deletedAttributes]);
             }
@@ -86,11 +97,12 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
         }
 
         // Build out final sheet metal
-        try(updateSheetMetalGeometry(context, id + "smUpdate", {
+        const smUpdateId = id + "smUpdate";
+        try(updateSheetMetalGeometry(context, smUpdateId, {
                     "entities" : updateMap.modifiedEntities,
                     "deletedAttributes" : updateMap.deletedAttributes
                 }));
-        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true});
+        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : smUpdateId, "propagateErrorDisplay" : true});
     }, {});
 
 //////////////////// FACE PATTERN ENTITY SORTING ////////////////////
@@ -120,8 +132,10 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
 
     // Vertices (fillets/chamfers/reliefs) cannot be face patterned by themselves
     const definitionFaceVertices = qVertexAdjacent(definitionFacesQ, EntityType.VERTEX);
+    const definitionEdgeVertices = qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX);
+    const allAbsorbedVertices = qUnion([definitionFaceVertices, definitionEdgeVertices]);
     const originalDefinitionVertices = qEntityFilter(qUnion(definitionEntities), EntityType.VERTEX);
-    const definitionVerticesQ = qSubtraction(originalDefinitionVertices, definitionFaceVertices);
+    const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
     if (size(definitionVertices) > 0)
@@ -146,7 +160,8 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
  *     @field deletedAttributes {array} : attributes deleted by the wall pattern
  * }}
  */
-function sheetMetalWallPattern(context is Context, topLevelId is Id, id is Id, definitionFaces is array, definition is map) returns map
+function sheetMetalWallPattern(context is Context, topLevelId is Id, id is Id, definitionFaces is array, definition is map,
+        attributeIdCounter is box) returns map
 {
     const definitionFacesQ = qUnion(definitionFaces);
 
@@ -154,9 +169,9 @@ function sheetMetalWallPattern(context is Context, topLevelId is Id, id is Id, d
 
     var modelIdToModelAndEntities = groupEntitiesByModelAttribute(context, definitionFaces);
 
-    var attributeIdCounter = new box(0);
     var modifiedEntities = [];
     var deletedAttributes = [];
+    var booleanWasNoOp = true;
     for (var modelIdToModelAndEntitiesPair in modelIdToModelAndEntities)
     {
         // Pattern the faces of the given model
@@ -169,11 +184,13 @@ function sheetMetalWallPattern(context is Context, topLevelId is Id, id is Id, d
         // Store the results for later use
         modifiedEntities = append(modifiedEntities, patternResult.modifiedEntities);
         deletedAttributes = concatenateArrays([deletedAttributes, patternResult.deletedAttributes]);
+        booleanWasNoOp = (booleanWasNoOp && patternResult.booleanWasNoOp);
     }
 
     return {
         "modifiedEntities" : qUnion(modifiedEntities),
-        "deletedAttributes" : deletedAttributes
+        "deletedAttributes" : deletedAttributes,
+        "booleanWasNoOp" : booleanWasNoOp
     };
 }
 
@@ -233,7 +250,8 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     // Apply booleans based on options set in the definition.
     // Face patterns should always boolean, user has control of part pattern boolean.
-    booleanSMBodiesIfNecessary(context, topLevelId, id + "boolean", faces, createdBodies, allBodiesOfModel, definition);
+    const booleanWasNoOp = booleanSMBodiesIfNecessary(context, topLevelId, id + "boolean", faces, createdBodies,
+            allBodiesOfModel, definition);
 
     // Apply model attribute to bodies that did not manage to boolean
     const numRemainingBodies = size(evaluateQuery(context, createdBodies));
@@ -272,7 +290,8 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     return {
         "modifiedEntities" : toUpdate.modifiedEntities,
-        "deletedAttributes" : toUpdate.deletedAttributes
+        "deletedAttributes" : toUpdate.deletedAttributes,
+        "booleanWasNoOp" : booleanWasNoOp
     };
 }
 
@@ -657,12 +676,14 @@ function reapplyCornerAttributes(context is Context, topLevelId is Id, smTrackin
 }
 
 /**
- * Boolean bodies onto master sheet body if necessary
+ * Boolean bodies onto master sheet body if necessary.
+ * Returns true if boolean was executed, but was a no-op.
  */
 function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is Id, seedFaces is Query, bodiesToAttach is Query,
-        allBodiesOfModel is Query, definition is map)
+        allBodiesOfModel is Query, definition is map) returns boolean
 {
     var needsBoolean = false;
+    var booleanNoOp = false;
     var tools = bodiesToAttach;
     var targets;
     var targetsAndToolsNeedGrouping = true;
@@ -745,6 +766,10 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
                         "operationType" : BooleanOperationType.UNION,
                         "allowSheets" : true
                     });
+
+            const booleanInfo = getFeatureInfo(context, id);
+            if (booleanInfo != undefined && booleanInfo == ErrorStringEnum.BOOLEAN_UNION_NO_OP)
+                booleanNoOp = true;
         }
         catch (error)
         {
@@ -754,6 +779,8 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
             throw error;
         }
     }
+
+    return booleanNoOp;
 }
 
 /**
@@ -1169,7 +1196,8 @@ function getRipSideFace(context is Context, ripEdge is Query, inBodies is Query,
  *     @field deletedAttributes {array} : attributes deleted by the wall pattern
  * }}
  */
-function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, definitionEdges is array, definition is map) returns map
+function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, definitionEdges is array, definition is map,
+        attributeIdCounter is box) returns map
 {
     const definitionEdgesQ = qUnion(definitionEdges);
     var allAffectedBodies = qUnion(evaluateQuery(context, qOwnerBody(definitionEdgesQ)));
@@ -1180,6 +1208,8 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     const initialAssociationAttributes = getAttributes(context, {
                 "entities" : qUnion(originalEntities),
                 "attributePattern" : {} as SMAssociationAttribute });
+
+    const cornerBreakTrackingAndAttribute = createCornerBreakTrackingAndAttribute(context, qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX));
 
     var definitionForPatternOp = definition;
     definitionForPatternOp.entities = definitionEdgesQ;
@@ -1195,8 +1225,90 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
         throwFacePatternError(context, topLevelId, qNothing(), definition);
     }
 
+    reapplyCornerBreaks(context, topLevelId, cornerBreakTrackingAndAttribute, attributeIdCounter);
+
     // Assign association attributes and gather modified entities
     return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, originalEntities, initialAssociationAttributes);
+}
+
+/**
+ * Create an array of maps with "tracking" (a tracking query) and "attribute" (a corner attribute) fields for every
+ * vertex of `vertices` which has exactly one corner break.  The "attribute" will be stripped of any unnecessary
+ * information besides the one corner break.
+ */
+function createCornerBreakTrackingAndAttribute(context is Context, vertices is Query) returns array
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V794_EDGE_PATTERN_BREAKS))
+        return [];
+
+    const cornerTrackingAndAttribute = createSMTrackingAndAttribute(context, vertices, SMObjectType.CORNER);
+    var cornerBreakTrackingAndAttribute = [];
+    for (var trackingAndAttribute in cornerTrackingAndAttribute)
+    {
+        const attribute = trackingAndAttribute.attribute;
+        // Corners with more than one break are ambiguous for edge pattern.  Skip them.
+        if (attribute.cornerBreaks != undefined && size(attribute.cornerBreaks) == 1)
+        {
+            // Erase all the map values except ones needed for corner breaks.
+            const newAttribute = {
+                "attributeId" : attribute.attributeId,
+                "cornerBreaks" : attribute.cornerBreaks,
+                "objectType" : attribute.objectType
+            } as SMAttribute;
+
+            cornerBreakTrackingAndAttribute = append(cornerBreakTrackingAndAttribute, {
+                        "tracking" : trackingAndAttribute.tracking,
+                        "attribute" : newAttribute
+                    });
+        }
+    }
+
+    return cornerBreakTrackingAndAttribute;
+}
+
+/**
+ * Reapply the corner breaks in `cornerBreakTrackingAndAttribute` to whatever wall the specified vertices were patterned
+ * onto.  If the vertex falls in an ambiguous location (a location where it is difficult to determine which wall to pattern
+ * the corner break onto), skip that patterned vertex.
+ */
+function reapplyCornerBreaks(context is Context, topLevelId is Id, cornerBreakTrackingAndAttribute is array, attributeIdCounter is box)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V794_EDGE_PATTERN_BREAKS))
+            return;
+
+    for (var trackingAndAttribute in cornerBreakTrackingAndAttribute)
+    {
+        const newVertices = evaluateQuery(context, trackingAndAttribute.tracking);
+        var attribute = trackingAndAttribute.attribute;
+
+        for (var vertex in newVertices)
+        {
+            const isOriginalVertex = getCornerAttribute(context, vertex) != undefined;
+            if (isOriginalVertex)
+            {
+                // Tracking query of edge pattern will also evaluate to the seed entities. If a vertex already has
+                // a corner attribute, it is an original vertex and should be skipped.
+                continue;
+            }
+
+            const adjacentWalls = evaluateQuery(context, qVertexAdjacent(vertex, EntityType.FACE));
+            if (size(adjacentWalls) != 1)
+            {
+                // If the vertex touches more than one wall, it is ambiguous and we should skip it.
+                continue;
+            }
+
+            const newCornerBreakId = toAttributeId(topLevelId + attributeIdCounter[]);
+            attributeIdCounter[] += 1;
+            attribute.attributeId = newCornerBreakId;
+
+            const wallId = getWallAttribute(context, adjacentWalls[0]).attributeId;
+            // createCornerBreakTrackingAndAttribute only stores corners with one corner break
+            attribute.cornerBreaks[0].value.wallId = wallId;
+
+            setAttribute(context, { "entities" : vertex, "attribute" : attribute });
+        }
+    }
 }
 
 //////////////////// UTILITIES ////////////////////
@@ -1270,5 +1382,27 @@ function getSelectedFacesForSMDefinitionEntities(context is Context, smDefinitio
         associatedFaces = append(associatedFaces, associatedFacesQ);
     }
     return qIntersection([qUnion(associatedFaces), definition.entities]);
+}
+
+/**
+ * If PART pattern with ADD does not make any geometry change, use this function to report a boolean no-op using
+ * reconstructed sheets as error entities.
+ */
+function reportBooleanUnionNoOp(context is Context, topLevelId is Id, id is Id, definitionFaces is array, definition is map)
+{
+    reportFeatureInfo(context, topLevelId, ErrorStringEnum.BOOLEAN_UNION_NO_OP);
+
+    const mockTopLevelId = id;
+    const mockId = mockTopLevelId + "reconstruct";
+    const mockCounter = new box(0);
+    var mockDefinition = definition;
+    mockDefinition.operationType = NewBodyOperationType.NEW;
+    startFeature(context, mockTopLevelId, { "isSheetMetal" : true });
+    try silent
+    {
+        sheetMetalWallPattern(context, mockTopLevelId, mockId, definitionFaces, mockDefinition, mockCounter);
+        setErrorEntities(context, topLevelId, { "entities" : qCreatedBy(mockId, EntityType.BODY) });
+    }
+    abortFeature(context, mockTopLevelId);
 }
 
