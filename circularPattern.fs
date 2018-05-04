@@ -105,14 +105,17 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             booleanStepScopePredicate(definition);
         }
+
+        if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         definition.angle = adjustAngle(context, definition.angle);
 
         definition = adjustPatternDefinitionEntities(context, definition, false);
-
-        if (definition.patternType == PatternType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
 
         var transforms = [];
         var instanceNames = [];
@@ -123,7 +126,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         if (definition.oppositeDirection == true)
             angle = -angle;
 
-        var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : getReferencesForRemainderTransform(definition) });
 
         var withAxisTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
         var direction = computePatternAxis(context, definition.axis, withAxisTransform, remainingTransform);
@@ -158,5 +161,5 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         oppositeDirection : false, equalSpace : false, isCentered : false });
+         oppositeDirection : false, equalSpace : false, isCentered : false, fullFeaturePattern : false});
 

@@ -171,11 +171,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     var smBodiesQ = qUnion(smBodies);
-    var initialAssociationAttributes = getAttributes(context, {
-        "entities" : qOwnedByBody(smBodiesQ),
-        "attributePattern" : {} as SMAssociationAttribute
-    });
-    var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
+    const initialData = getInitialEntitiesAndAttributes(context, smBodiesQ);
     var originalEdges = startTracking(context, smEntities);
 
     var intersectionData = intersection(plane1, plane2);
@@ -227,7 +223,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, allOriginalEntities, initialAssociationAttributes);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, initialData);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes,
                                            "associatedChanges" : originalEdges});

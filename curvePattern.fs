@@ -92,15 +92,17 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         {
             booleanStepScopePredicate(definition);
         }
+        if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
         // must be done before transforming definition.instanceFunction with valuesSortedById(...)
         var referenceEntities = collectReferenceEntities(context, definition);
-
-        if (definition.patternType == PatternType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
 
         verifyPatternSize(context, id, definition.instanceCount);
 
@@ -115,7 +117,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             definition.edges = dissolveWires(definition.edges);
         }
 
-        var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([definition.entities, definition.edges]) });
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([getReferencesForRemainderTransform(definition), definition.edges]) });
 
         var constructPathResult;
         try
@@ -164,7 +166,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false });
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false, fullFeaturePattern : false });
 
 /**
  * Collect reference entities for the distance heuristic used to determine the path direction.

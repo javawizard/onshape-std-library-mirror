@@ -170,10 +170,14 @@ export function getCurrentSubfeatureId(context is Context) returns Id
 
 /**
  * @internal
+ * Gather data used in feature dialog
  */
 export function recordParameters(context is Context, id is Id, definition is map)
 {
-    recordParameters(context, id, definition, undefined, undefined);
+    if (size(id) == 1)
+    {
+        recordParameters(context, id, definition, undefined, undefined);
+    }
 }
 
 /**
@@ -411,7 +415,7 @@ export function lastModifyingOperationId(context is Context, query is Query) ret
 * Generates a tracking query, which will evaluate to entities derived from subquery in features between
 * startTracking and when query is evaluated. If secondarySubquery is specified, the query would evaluate to
 * entities derived from both objects. If trackPartialDependency is set to true, query would also include entities
-* that are not exclusively derived from subquery1. Optional field lastOperationId can be used to specifiy the
+* that are not exclusively derived from subquery1. Optional field lastOperationId can be used to specify the
 * starting operation of tracking. Use example:
  * ```
  * // "sketch1" constructs a polygon of "line0", "line1", etc.
@@ -466,6 +470,21 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
     return startTracking(context, {
         'subquery' : qUnion([sketchQuery, makeQuery(sketchId, "IMPRINT", undefined, {"derivedFrom" : sketchQuery})])
         });
+}
+
+
+/**
+* Generates a tracking query, which will evaluate to the new entities inheriting the identity of
+* subquery evaluation result.
+*/
+export function startTrackingIdentity(context is Context, subquery is Query) returns Query
+{
+    var out = {};
+    out.subquery1 = evaluateQuery(context, subquery);
+    out.lastOperationId = lastOperationId(context);
+    out.identityPreservingOnly = true;
+    out.queryType = QueryType.TRACKING;
+    return out as Query;
 }
 /**
 * @internal

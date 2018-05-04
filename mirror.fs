@@ -65,8 +65,9 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition = adjustPatternDefinitionEntities(context, definition, true);
 
         if (definition.patternType == MirrorType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
-
+        {
+            definition.fullFeaturePattern = true;
+        }
         var remainingTransform;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
             remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities])});
@@ -95,7 +96,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW });
+    }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 
  /**
  * implements heuristics for mirror feature

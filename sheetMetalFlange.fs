@@ -231,11 +231,7 @@ precondition
     //get originals before any changes
     var smBodies = evaluateQuery(context, qOwnerBody(edges));
     var smBodiesQ = qUnion(smBodies);
-    var initialAssociationAttributes = getAttributes(context, {
-            "entities" : qOwnedByBody(smBodiesQ),
-            "attributePattern" : {} as SMAssociationAttribute
-    });
-    var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
+    const initialData = getInitialEntitiesAndAttributes(context, smBodiesQ);
     const robustSMBodiesQ = qUnion([smBodiesQ, startTracking(context, smBodiesQ)]);
 
     var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
@@ -246,7 +242,7 @@ precondition
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, allOriginalEntities, initialAssociationAttributes);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes});
 

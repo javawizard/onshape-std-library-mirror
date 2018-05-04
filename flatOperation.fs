@@ -34,15 +34,11 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         const sheetMetalEntitiesQ = qUnion([qOwnedByBody(smDefinitionBodiesQ, EntityType.EDGE), qOwnedByBody(smDefinitionBodiesQ, EntityType.FACE), smDefinitionBodiesQ]);
         const tracking = startTracking(context, sheetMetalEntitiesQ);
 
-        const originalEntities = evaluateQuery(context,qOwnedByBody(smDefinitionBodiesQ));
-        const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qUnion(originalEntities),
-                    "attributePattern" : {} as SMAssociationAttribute });
+        const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities),
-                originalEntities, initialAssociationAttributes);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
 
         try (updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,

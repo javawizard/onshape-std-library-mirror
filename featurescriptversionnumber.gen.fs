@@ -662,7 +662,17 @@ export enum FeatureScriptVersionNumber
     V796_PLANE_ORIENTATION_INSTABILITY,
     V797_EDGE_DISAMBIGUATION,
     V798_BOOLEAN_TRACKING,
-    V799_FIX_UNROLL_ORIGIN
+    V799_FIX_UNROLL_ORIGIN,
+    V810_EXTRUDE_OFFSET_EDGE_CAP,
+    V811_BRACKETS_CONFIG_ACCESS,
+    V812_PS_VERSION_30_1_232,
+    V813_FILLET_BEND,
+    V814_EDGE_CHANGE_PRECISION,
+    V815_STABLE_SWEPT_EDGE,
+    V816_FAST_FEATURE_PATTERN,
+    V817_SM_OPTIMIZATION,
+    V818_FFP_FIX,
+    V819_ERROR_STRING_ENUM_ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT
 }
 
 /**
@@ -673,6 +683,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V799_FIX_UNROLL_ORIGIN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V819_ERROR_STRING_ENUM_ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT;
 
 

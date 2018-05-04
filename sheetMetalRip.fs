@@ -124,11 +124,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
     }
 
     var sheetMetalModel = qOwnerBody(splitFacesEvaluated[0]);
-    const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
-    const initialAssociationAttributes = getAttributes(context, {
-                "entities" : qOwnedByBody(sheetMetalModel),
-                "attributePattern" : {} as SMAssociationAttribute });
-
+    const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModel);
     const trackingSMModel = startTracking(context, sheetMetalModel);
 
     const sheetMetalPlane = evPlane(context, {"face" : splitFacesEvaluated[0]});
@@ -155,8 +151,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
             "attribute" : createRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.EDGE, ripAttributes)});
         count += 1;
     }
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]),
-            originalEntities, initialAssociationAttributes);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]), initialData);
 
     updateSheetMetalGeometry(context, id + "smUpdate", {
                 "entities" : toUpdate.modifiedEntities,

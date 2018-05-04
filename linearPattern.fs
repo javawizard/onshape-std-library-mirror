@@ -138,15 +138,17 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             booleanStepScopePredicate(definition);
         }
+
+        if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
-        if (definition.patternType == PatternType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
-
-        var remainingTransform = getRemainderPatternTransform(context,
-            { "references" : definition.entities});
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : getReferencesForRemainderTransform(definition)});
 
         var withDirectionTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
         //Dir 1
@@ -220,6 +222,6 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false });
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, hasSecondDir : false,
+         oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false, fullFeaturePattern : false });
 

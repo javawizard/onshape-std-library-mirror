@@ -103,7 +103,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                     "deletedAttributes" : updateMap.deletedAttributes
                 }));
         processSubfeatureStatus(context, topLevelId, {"subfeatureId" : smUpdateId, "propagateErrorDisplay" : true});
-    }, {});
+    }, { filterVertices: false });
 
 //////////////////// FACE PATTERN ENTITY SORTING ////////////////////
 
@@ -138,8 +138,10 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
-    if (size(definitionVertices) > 0)
+    if (definition.filterVertices && (size(definitionFaces) + size(definitionEdges) == 0) ||
+        (!definition.filterVertices && size(definitionVertices) > 0))
     {
+        //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
         var errorEntities = getSelectedFacesForSMDefinitionEntities(context, qUnion(definitionVertices), definition);
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
         throw regenError(ErrorStringEnum.SHEET_METAL_FACE_PATTERN_NO_VERTEX, ["entities"]);
@@ -206,10 +208,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
                 "attributeId" : modelId
             }));
 
-    const originalEntities = evaluateQuery(context, qOwnedByBody(allBodiesOfModel));
-    const initialAssociationAttributes = getAttributes(context, {
-                "entities" : qUnion(originalEntities),
-                "attributePattern" : {} as SMAssociationAttribute });
+    const initialData = getInitialEntitiesAndAttributes(context, allBodiesOfModel);
 
     // Collect attributes preset on the underlying sheet bodies of the seeds
     const facesAndSurrounding = qUnion([
@@ -279,7 +278,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     }
 
     // Assign association attributes and gather modified entities
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, originalEntities, initialAssociationAttributes);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, initialData);
 
     fixJointAttributes(context, id, qEntityFilter(toUpdate.modifiedEntities, EntityType.EDGE), attributeIdCounter);
 
@@ -1203,12 +1202,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     var allAffectedBodies = qUnion(evaluateQuery(context, qOwnerBody(definitionEdgesQ)));
     // opPattern of edges may change body identity.  Make sure this query is robust.
     allAffectedBodies = qUnion([allAffectedBodies, startTracking(context, allAffectedBodies)]);
-
-    const originalEntities = evaluateQuery(context, qOwnedByBody(allAffectedBodies));
-    const initialAssociationAttributes = getAttributes(context, {
-                "entities" : qUnion(originalEntities),
-                "attributePattern" : {} as SMAssociationAttribute });
-
+    const initialData = getInitialEntitiesAndAttributes(context, allAffectedBodies);
     const cornerBreakTrackingAndAttribute = createCornerBreakTrackingAndAttribute(context, qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX));
 
     var definitionForPatternOp = definition;
@@ -1228,7 +1222,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     reapplyCornerBreaks(context, topLevelId, cornerBreakTrackingAndAttribute, attributeIdCounter);
 
     // Assign association attributes and gather modified entities
-    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, originalEntities, initialAssociationAttributes);
+    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, initialData);
 }
 
 /**

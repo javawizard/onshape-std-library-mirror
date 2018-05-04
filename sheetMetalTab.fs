@@ -25,7 +25,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
- * @internal
+ *
  */
 annotation { "Feature Type Name" : "Tab",
         "Editing Logic Function" : "sheetMetalTabEditingLogic" }
@@ -58,15 +58,11 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
 
         const subtractBodies = getOwnerSMModel(context, definition.booleanSubtractScope);
         var sheetMetalBodiesQuery = qUnion(concatenateArrays([subtractBodies, sheetMetalBodies]));
+        const initialData = getInitialEntitiesAndAttributes(context, sheetMetalBodiesQuery);
         sheetMetalBodiesQuery = qUnion([startTracking(context, sheetMetalBodiesQuery), sheetMetalBodiesQuery]);
-        const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalBodiesQuery));
 
         // The deripping step breaks these queries otherwise.
         const unionEntityPersistantQuery = qUnion([unionEntityQuery, startTracking(context, unionEntityQuery)]);
-
-        const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qOwnedByBody(sheetMetalBodiesQuery),
-                    "attributePattern" : {} as SMAssociationAttribute });
         const associateChanges = startTracking(context, qOwnedByBody(sheetMetalBodiesQuery, EntityType.FACE));
 
         const selectionsByModelId = partitionSheetMetalQueriesByModel(context, unionEntities);
@@ -88,8 +84,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
                     "entities" : qCreatedBy(id + "extract", EntityType.BODY)
                 });
 
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalBodiesQuery,
-                originalEntities, initialAssociationAttributes);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalBodiesQuery, initialData);
 
         updateSheetMetalGeometry(context, id, {
                     "entities" : qUnion([toUpdate.modifiedEntities, unionEntityPersistantQuery]),
