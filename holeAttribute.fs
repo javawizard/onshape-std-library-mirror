@@ -1,11 +1,11 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/holeUtils.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/holeUtils.fs", version : "819.0");
 
 /**
  * @internal

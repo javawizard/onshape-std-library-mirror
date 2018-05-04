@@ -1,26 +1,26 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "799.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "799.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "819.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "819.0");
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/boolean.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/error.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "799.0");
-import(path : "onshape/std/geomOperations.fs", version : "799.0");
-import(path : "onshape/std/query.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/topologyUtils.fs", version : "799.0");
-import(path : "onshape/std/units.fs", version : "799.0");
-import(path : "onshape/std/valueBounds.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/boolean.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/error.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "819.0");
+import(path : "onshape/std/geomOperations.fs", version : "819.0");
+import(path : "onshape/std/query.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/topologyUtils.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/valueBounds.fs", version : "819.0");
 
 /**
 * MakeJointType is a subset of SMJointType to restrict options visible in sheetMetalMakeJoint
@@ -171,11 +171,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     var smBodiesQ = qUnion(smBodies);
-    var initialAssociationAttributes = getAttributes(context, {
-        "entities" : qOwnedByBody(smBodiesQ),
-        "attributePattern" : {} as SMAssociationAttribute
-    });
-    var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
+    const initialData = getInitialEntitiesAndAttributes(context, smBodiesQ);
     var originalEdges = startTracking(context, smEntities);
 
     var intersectionData = intersection(plane1, plane2);
@@ -227,7 +223,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, allOriginalEntities, initialAssociationAttributes);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, initialData);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes,
                                            "associatedChanges" : originalEdges});

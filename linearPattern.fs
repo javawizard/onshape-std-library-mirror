@@ -1,16 +1,16 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "799.0");
-export import(path : "onshape/std/tool.fs", version : "799.0");
-export import(path : "onshape/std/patternUtils.fs", version : "799.0");
+export import(path : "onshape/std/query.fs", version : "819.0");
+export import(path : "onshape/std/tool.fs", version : "819.0");
+export import(path : "onshape/std/patternUtils.fs", version : "819.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "799.0");
-import(path : "onshape/std/units.fs", version : "799.0");
+import(path : "onshape/std/mathUtils.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "819.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -138,15 +138,17 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         {
             booleanStepScopePredicate(definition);
         }
+
+        if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
-        if (definition.patternType == PatternType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
-
-        var remainingTransform = getRemainderPatternTransform(context,
-            { "references" : definition.entities});
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : getReferencesForRemainderTransform(definition)});
 
         var withDirectionTransform = isFeaturePattern(definition.patternType) || isAtVersionOrLater(context, FeatureScriptVersionNumber.V518_MIRRORING_LIN_PATTERNS);
         //Dir 1
@@ -220,6 +222,6 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
-         hasSecondDir : false, oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false });
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, hasSecondDir : false,
+         oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false, fullFeaturePattern : false });
 

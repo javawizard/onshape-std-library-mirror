@@ -1,28 +1,28 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/boolean.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/curveGeometry.fs", version : "799.0");
-import(path : "onshape/std/extrude.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/math.fs", version : "799.0");
-import(path : "onshape/std/matrix.fs", version : "799.0");
-import(path : "onshape/std/query.fs", version : "799.0");
-import(path : "onshape/std/sketch.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/topologyUtils.fs", version : "799.0");
-import(path : "onshape/std/units.fs", version : "799.0");
-import(path : "onshape/std/valueBounds.fs", version : "799.0");
-import(path : "onshape/std/vector.fs", version : "799.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/boolean.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/curveGeometry.fs", version : "819.0");
+import(path : "onshape/std/extrude.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/math.fs", version : "819.0");
+import(path : "onshape/std/matrix.fs", version : "819.0");
+import(path : "onshape/std/query.fs", version : "819.0");
+import(path : "onshape/std/sketch.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/topologyUtils.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/vector.fs", version : "819.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "819.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -231,11 +231,7 @@ precondition
     //get originals before any changes
     var smBodies = evaluateQuery(context, qOwnerBody(edges));
     var smBodiesQ = qUnion(smBodies);
-    var initialAssociationAttributes = getAttributes(context, {
-            "entities" : qOwnedByBody(smBodiesQ),
-            "attributePattern" : {} as SMAssociationAttribute
-    });
-    var allOriginalEntities = evaluateQuery(context, qOwnedByBody(smBodiesQ));
+    const initialData = getInitialEntitiesAndAttributes(context, smBodiesQ);
     const robustSMBodiesQ = qUnion([smBodiesQ, startTracking(context, smBodiesQ)]);
 
     var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
@@ -246,7 +242,7 @@ precondition
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, allOriginalEntities, initialAssociationAttributes);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes});
 

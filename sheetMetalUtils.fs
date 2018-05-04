@@ -1,28 +1,28 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "799.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/coordSystem.fs", version : "799.0");
-import(path : "onshape/std/curveGeometry.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/math.fs", version : "799.0");
-import(path : "onshape/std/manipulator.fs", version : "799.0");
-import(path : "onshape/std/query.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "799.0");
-import(path : "onshape/std/string.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/tool.fs", version : "799.0");
-import(path : "onshape/std/valueBounds.fs", version : "799.0");
-import(path : "onshape/std/vector.fs", version : "799.0");
-import(path : "onshape/std/topologyUtils.fs", version : "799.0");
-import(path : "onshape/std/transform.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "819.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/coordSystem.fs", version : "819.0");
+import(path : "onshape/std/curveGeometry.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/math.fs", version : "819.0");
+import(path : "onshape/std/manipulator.fs", version : "819.0");
+import(path : "onshape/std/query.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "819.0");
+import(path : "onshape/std/string.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/tool.fs", version : "819.0");
+import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/vector.fs", version : "819.0");
+import(path : "onshape/std/topologyUtils.fs", version : "819.0");
+import(path : "onshape/std/transform.fs", version : "819.0");
 
 
 
@@ -750,14 +750,6 @@ export function queryContainsActiveSheetMetal(context is Context, query is Query
 /**
  * @internal
  */
-export function queryContainsFlattenedSheetMetal(context is Context, query is Query) returns boolean
-{
-    return @queryContainsFlattenedSheetMetal(context, { "entities" : query });
-}
-
-/**
- * @internal
- */
 export function queryContainsNonSheetMetal(context is Context, query is Query) returns boolean
 {
     var nonSheetMetal = separateSheetMetalQueries(context, query).nonSheetMetalQueries;
@@ -801,20 +793,30 @@ export function isActiveSheetMetalPart(context is Context, partQuery is Query) r
 
 /**
  * @internal
- * originalEntities is an array of queries that contains all the entities before changes were made to the model
- *    effectively it is the result of an earlier call to evaluateQuery(context, qOwnedByBody(sheetMetalModel))
+ * initialData is computed by a call to getInitialEntitiesAndAttributes at the beginning of the feature
  */
 export function assignSMAttributesToNewOrSplitEntities(context is Context, sheetMetalModels is Query,
-                                            originalEntities is array, originalAttributes is array) returns map
+                                            initialData is map) returns map
 {
-    var originalEntitiesMap = {};
-    for (var entity in originalEntities)
-        originalEntitiesMap[entity.transientId] = true;
+    var originalOrModifiedEntitiesMap = {};
+    for ( var entity in initialData.originalEntities)
+    {
+        originalOrModifiedEntitiesMap[entity.transientId] = true;
+    }
+    for (var entityQ in initialData.originalEntitiesTracking)
+    {
+        const ents = evaluateQuery(context, entityQ);
+        if (size(ents) == 1)
+        {
+            originalOrModifiedEntitiesMap[ents[0].transientId] = true;
+        }
+    }
+
     // Transient queries new to sheet metal body
     var entitiesToAddAssociations = filter(evaluateQuery(context, qOwnedByBody(sheetMetalModels)),
                     function(entry)
                     {
-                        return originalEntitiesMap[entry.transientId] != true;
+                        return originalOrModifiedEntitiesMap[entry.transientId] != true;
                     });
     var entitiesToAddAssociationsQ = qUnion(entitiesToAddAssociations);
 
@@ -832,7 +834,7 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
         var newEntitiesWithAttribute = [];
         for (var entity in evaluateQuery(context, entitiesWithAttribute))
         {
-            if (originalEntitiesMap[entity.transientId] == true)
+            if (originalOrModifiedEntitiesMap[entity.transientId] == true)
                 existingEntitiesWithAttribute = append(existingEntitiesWithAttribute, entity);
             else
                 newEntitiesWithAttribute = append(newEntitiesWithAttribute, entity);
@@ -882,7 +884,9 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V664_FLAT_JOINT_TO_RIP))
                     {
                         var edgeQ = qEntityFilter(entity, EntityType.EDGE);
-                        if (definitionAttributes[0].jointType.value == SMJointType.BEND && try silent(edgeIsTwoSided(context, edgeQ)) == true)
+                        if (definitionAttributes[0].jointType != undefined &&
+                            definitionAttributes[0].jointType.value == SMJointType.BEND &&
+                            try silent(edgeIsTwoSided(context, edgeQ)) == true)
                         {
                             const jointAttributeId = definitionAttributes[0].attribute_id ~ ".rip";
                             const ripAttribute = createRipAttribute(context, edgeQ, jointAttributeId, SMJointStyle.EDGE, {});
@@ -890,7 +894,7 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                         }
                     }
                 }
-                else if (!attributeSurvived) // favore one of the entities inheriting the attribute to be a masterEntity
+                else if (!attributeSurvived) // favor one of the entities inheriting the attribute to be a masterEntity
                 {
                     masterEntities = entity;
                     attributeSurvived = true;
@@ -917,7 +921,7 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
     var finalAssociationAttributesMap = {};
     for (var attribute in finalAssociationAttributes)
         finalAssociationAttributesMap[attribute.attributeId] = true;
-    var deletedAttributes = filter(originalAttributes,
+    var deletedAttributes = filter(initialData.initialAssociationAttributes,
                     function(attribute)
                     {
                         return finalAssociationAttributesMap[attribute.attributeId] != true;
@@ -1710,4 +1714,35 @@ export function removeJointAttributesFromOneSidedEdges(context is Context, sheet
             });
     return modifiedEdges;
 }
+
+/**
+ * @internal
+ */
+ export function getInitialEntitiesAndAttributes(context is Context, affectedSmBodies is Query) returns map
+ {
+    const originalEntities = evaluateQuery(context, qOwnedByBody(affectedSmBodies));
+    var trackingOriginalEntities = [];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V817_SM_OPTIMIZATION))
+    {
+        //Track non-object entities (e.g. laminar edges), no need to process their attributes if tracking
+        //resolves to a single entity.
+        for (var ent in evaluateQuery(context, qOwnedByBody(affectedSmBodies)))
+        {
+            if (size(getAttributes(context, {
+                    "entities" : ent,
+                    "attributePattern" : asSMAttribute({})
+                    })) == 0)
+            {
+                trackingOriginalEntities = append(trackingOriginalEntities, startTrackingIdentity(context, ent));
+            }
+        }
+    }
+    const initialAssociationAttributes = getAttributes(context, {
+                "entities" : qUnion(originalEntities),
+                "attributePattern" : {} as SMAssociationAttribute });
+
+    return { "originalEntities" : originalEntities,
+             "initialAssociationAttributes" : initialAssociationAttributes,
+             "originalEntitiesTracking" : trackingOriginalEntities};
+ }
 

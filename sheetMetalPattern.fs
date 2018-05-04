@@ -1,24 +1,24 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/boolean.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/curveGeometry.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/holeAttribute.fs", version : "799.0");
-import(path : "onshape/std/math.fs", version : "799.0");
-import(path : "onshape/std/patternCommon.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/topologyUtils.fs", version : "799.0");
-import(path : "onshape/std/transform.fs", version : "799.0");
-import(path : "onshape/std/units.fs", version : "799.0");
-import(path : "onshape/std/vector.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/boolean.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/curveGeometry.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/holeAttribute.fs", version : "819.0");
+import(path : "onshape/std/math.fs", version : "819.0");
+import(path : "onshape/std/patternCommon.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/topologyUtils.fs", version : "819.0");
+import(path : "onshape/std/transform.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/vector.fs", version : "819.0");
 
 /**
  * @internal
@@ -103,7 +103,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                     "deletedAttributes" : updateMap.deletedAttributes
                 }));
         processSubfeatureStatus(context, topLevelId, {"subfeatureId" : smUpdateId, "propagateErrorDisplay" : true});
-    }, {});
+    }, { filterVertices: false });
 
 //////////////////// FACE PATTERN ENTITY SORTING ////////////////////
 
@@ -138,8 +138,10 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
-    if (size(definitionVertices) > 0)
+    if (definition.filterVertices && (size(definitionFaces) + size(definitionEdges) == 0) ||
+        (!definition.filterVertices && size(definitionVertices) > 0))
     {
+        //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
         var errorEntities = getSelectedFacesForSMDefinitionEntities(context, qUnion(definitionVertices), definition);
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
         throw regenError(ErrorStringEnum.SHEET_METAL_FACE_PATTERN_NO_VERTEX, ["entities"]);
@@ -206,10 +208,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
                 "attributeId" : modelId
             }));
 
-    const originalEntities = evaluateQuery(context, qOwnedByBody(allBodiesOfModel));
-    const initialAssociationAttributes = getAttributes(context, {
-                "entities" : qUnion(originalEntities),
-                "attributePattern" : {} as SMAssociationAttribute });
+    const initialData = getInitialEntitiesAndAttributes(context, allBodiesOfModel);
 
     // Collect attributes preset on the underlying sheet bodies of the seeds
     const facesAndSurrounding = qUnion([
@@ -279,7 +278,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     }
 
     // Assign association attributes and gather modified entities
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, originalEntities, initialAssociationAttributes);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, initialData);
 
     fixJointAttributes(context, id, qEntityFilter(toUpdate.modifiedEntities, EntityType.EDGE), attributeIdCounter);
 
@@ -1203,12 +1202,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     var allAffectedBodies = qUnion(evaluateQuery(context, qOwnerBody(definitionEdgesQ)));
     // opPattern of edges may change body identity.  Make sure this query is robust.
     allAffectedBodies = qUnion([allAffectedBodies, startTracking(context, allAffectedBodies)]);
-
-    const originalEntities = evaluateQuery(context, qOwnedByBody(allAffectedBodies));
-    const initialAssociationAttributes = getAttributes(context, {
-                "entities" : qUnion(originalEntities),
-                "attributePattern" : {} as SMAssociationAttribute });
-
+    const initialData = getInitialEntitiesAndAttributes(context, allAffectedBodies);
     const cornerBreakTrackingAndAttribute = createCornerBreakTrackingAndAttribute(context, qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX));
 
     var definitionForPatternOp = definition;
@@ -1228,7 +1222,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     reapplyCornerBreaks(context, topLevelId, cornerBreakTrackingAndAttribute, attributeIdCounter);
 
     // Assign association attributes and gather modified entities
-    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, originalEntities, initialAssociationAttributes);
+    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, initialData);
 }
 
 /**

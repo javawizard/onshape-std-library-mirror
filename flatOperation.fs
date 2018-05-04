@@ -1,20 +1,20 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Under development, internal use only
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "799.0");
+export import(path : "onshape/std/query.fs", version : "819.0");
 
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
 
 /**
  * @internal
@@ -34,15 +34,11 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         const sheetMetalEntitiesQ = qUnion([qOwnedByBody(smDefinitionBodiesQ, EntityType.EDGE), qOwnedByBody(smDefinitionBodiesQ, EntityType.FACE), smDefinitionBodiesQ]);
         const tracking = startTracking(context, sheetMetalEntitiesQ);
 
-        const originalEntities = evaluateQuery(context,qOwnedByBody(smDefinitionBodiesQ));
-        const initialAssociationAttributes = getAttributes(context, {
-                    "entities" : qUnion(originalEntities),
-                    "attributePattern" : {} as SMAssociationAttribute });
+        const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
         const newEntities = qUnion([qCreatedBy(id), tracking]);
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities),
-                originalEntities, initialAssociationAttributes);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
 
         try (updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,

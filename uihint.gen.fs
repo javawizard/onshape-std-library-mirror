@@ -1,4 +1,4 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -48,6 +48,7 @@ FeatureScript 799; /* Automatically generated version */
  * @value INITIAL_FOCUS : When creating or editing, the first visible parameter with this UI hint will get focus
  *      (but when editing, a parameter with INITIAL_FOCUS_ON_EDIT takes precedence).
  * @value DISPLAY_CURRENT_VALUE_ONLY : For Onshape internal use.
+ * @value READ_ONLY : Prevent changes to the parameter from the feature dialog.  A read-only parameter can be modified by the editing logic function.
  */
 export enum UIHint
 {
@@ -70,7 +71,8 @@ export enum UIHint
     COLLAPSE_ARRAY_ITEMS,
     INITIAL_FOCUS_ON_EDIT,
     INITIAL_FOCUS,
-    DISPLAY_CURRENT_VALUE_ONLY
+    DISPLAY_CURRENT_VALUE_ONLY,
+    READ_ONLY
 }
 
 

@@ -1,13 +1,13 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/units.fs", version : "799.0");
-import(path : "onshape/std/valueBounds.fs", version : "799.0");
-import(path : "onshape/std/vector.fs", version : "799.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/vector.fs", version : "819.0");
 
 /**
  * Creates a [Context] with default planes and an origin.

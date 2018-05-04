@@ -1,20 +1,20 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "799.0");
+export import(path : "onshape/std/patternUtils.fs", version : "819.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "799.0");
+export import(path : "onshape/std/path.fs", version : "819.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "799.0");
-import(path : "onshape/std/mathUtils.fs", version : "799.0");
-import(path : "onshape/std/sketch.fs", version : "799.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "799.0");
-import(path : "onshape/std/topologyUtils.fs", version : "799.0");
+import(path : "onshape/std/curveGeometry.fs", version : "819.0");
+import(path : "onshape/std/mathUtils.fs", version : "819.0");
+import(path : "onshape/std/sketch.fs", version : "819.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/topologyUtils.fs", version : "819.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -92,15 +92,17 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         {
             booleanStepScopePredicate(definition);
         }
+        if (definition.patternType == PatternType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
         // must be done before transforming definition.instanceFunction with valuesSortedById(...)
         var referenceEntities = collectReferenceEntities(context, definition);
-
-        if (definition.patternType == PatternType.FEATURE)
-            definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
 
         verifyPatternSize(context, id, definition.instanceCount);
 
@@ -115,7 +117,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             definition.edges = dissolveWires(definition.edges);
         }
 
-        var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([definition.entities, definition.edges]) });
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([getReferencesForRemainderTransform(definition), definition.edges]) });
 
         var constructPathResult;
         try
@@ -164,7 +166,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false });
+    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false, fullFeaturePattern : false });
 
 /**
  * Collect reference entities for the distance heuristic used to determine the path direction.

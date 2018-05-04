@@ -1,28 +1,28 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "799.0");
-export import(path : "onshape/std/query.fs", version : "799.0");
-export import(path : "onshape/std/tool.fs", version : "799.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "819.0");
+export import(path : "onshape/std/query.fs", version : "819.0");
+export import(path : "onshape/std/tool.fs", version : "819.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "799.0");
-import(path : "onshape/std/box.fs", version : "799.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "799.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "799.0");
-import(path : "onshape/std/containers.fs", version : "799.0");
-import(path : "onshape/std/evaluate.fs", version : "799.0");
-import(path : "onshape/std/feature.fs", version : "799.0");
-import(path : "onshape/std/math.fs", version : "799.0");
-import(path : "onshape/std/primitives.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "799.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "799.0");
-import(path : "onshape/std/string.fs", version : "799.0");
-import(path : "onshape/std/transform.fs", version : "799.0");
-import(path : "onshape/std/valueBounds.fs", version : "799.0");
+import(path : "onshape/std/attributes.fs", version : "819.0");
+import(path : "onshape/std/box.fs", version : "819.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "819.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "819.0");
+import(path : "onshape/std/evaluate.fs", version : "819.0");
+import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/math.fs", version : "819.0");
+import(path : "onshape/std/primitives.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
+import(path : "onshape/std/string.fs", version : "819.0");
+import(path : "onshape/std/transform.fs", version : "819.0");
+import(path : "onshape/std/valueBounds.fs", version : "819.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -779,11 +779,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                     // See BEL-54458
                                     return;
                                 }
-                                const originalEntities = evaluateQuery(context, qOwnedByBody(sheetMetalModel));
-                                const initialAssociationAttributes = getAttributes(context, {
-                                            "entities" : qOwnedByBody(sheetMetalModel),
-                                            "attributePattern" : {} as SMAssociationAttribute });
-
+                                const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModel);
                                 const trackedSheets = trackModelBySheet(context, sheetMetalModel);
 
                                 definition.targets = sheetMetalModel;
@@ -807,8 +803,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 if (size(modifiedEntityArray) != 0 || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
                                 {
                                     const modifiedEntities = qUnion(modifiedEntityArray);
-                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel,
-                                            originalEntities, initialAssociationAttributes);
+                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel, initialData);
 
                                     updateSheetMetalGeometry(context, id + "smUpdate", {
                                                 "entities" : qUnion([toUpdate.modifiedEntities, modifiedEntities]),

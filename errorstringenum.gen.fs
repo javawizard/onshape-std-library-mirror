@@ -1,4 +1,4 @@
-FeatureScript 799; /* Automatically generated version */
+FeatureScript 819; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -128,7 +128,7 @@ export enum ErrorStringEnum
     PATTERN_INPUT_TOO_MANY_INSTANCES,
     /* Instance count cannot be less than 2. */
     PATTERN_INPUT_TOO_FEW_INSTANCES,
-    /* Failed to create face pattern, check input. */
+    /* Failed to create pattern, check input. */
     PATTERN_FACE_FAILED,
     /* Pattern could not be created on the same part. */
     PATTERN_NOT_ON_BODY,
@@ -1626,7 +1626,15 @@ export enum ErrorStringEnum
     /* Some patterned faces could not join the sheet metal model. */
     SHEET_METAL_FACE_PATTERN_PARTIAL_FLOATING_WALL,
     /* Cannot select from the flattened sheet metal view and model view at the same time. */
-    EXTRUDE_3D_AND_FLAT
+    EXTRUDE_3D_AND_FLAT,
+    /* Could not create all instances as entered. Try selecting "Apply per instance" option. */
+    PATTERN_SWITCH_TO_PER_INSTANCE,
+    /* Selected features do not create any geometry that may be patterned. */
+    PATTERN_NO_GEOM_FROM_FEATURES,
+    /* You do not have LINK permission to one or more revisions. */
+    RM_NO_LINK_PERMISSION_TO_REVISION,
+    /* Total pattern instances cannot exceed 2500. */
+    ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT
 }
 
 
