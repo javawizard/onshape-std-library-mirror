@@ -350,6 +350,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
 
     booleanDefinition.eraseImprintedEdges = definition.eraseImprintedEdges;
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
+    booleanDefinition.allowSheets = definition.allowSheets;
 
     if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
     {
@@ -923,7 +924,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
     const toolCount = size(evaluateQuery(context, tool));
     var tools = [];
     var allTrimmed = [];
-    var capFacesQ = qEntityFilter(qUnion([qCapEntity(id + "thicken", true), qCapEntity(id + "thicken", false)]), EntityType.FACE);
+    var capFacesQ = qCapEntity(id + "thicken", CapType.EITHER, EntityType.FACE);
     for (var index = 0; index < toolCount; index += 1)
     {
         const subId = id + unstableIdComponent(index);

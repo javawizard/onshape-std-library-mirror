@@ -7,48 +7,865 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/drafttype.gen.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/manipulator.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
- * Feature performing an [opDraft].
+ * Types of drafts available for the draft feature.
+ * @value NEUTRAL_PLANE: Draft by holding the intersection between a set of faces and a neutral plane as a constant.
+ * @value PARTING_LINE: Draft by holding a set of parting edges as a constant.
  */
-annotation { "Feature Type Name" : "Draft", "Filter Selector" : "allparts" }
+export enum DraftFeatureType
+{
+    annotation { "Name" : "Neutral plane" }
+    NEUTRAL_PLANE,
+    annotation { "Name" : "Parting line" }
+    PARTING_LINE
+}
+
+/**
+ * Specifies which faces to draft when drafting with DraftFeatureType.PARTING_LINE.
+ * @value ONE_SIDED: Draft one of the faces attached to the parting line.
+ * @value SYMMETRIC: Draft both of the faces attached to the parting line symmetrically.
+ * @value TWO_SIDED: Draft both of the faces attached to the parting line with separate draft angles.
+ */
+export enum PartingLineSides
+{
+    annotation { "Name" : "One sided" }
+    ONE_SIDED,
+    annotation { "Name" : "Symmetric" }
+    SYMMETRIC,
+    annotation { "Name" : "Two sided" }
+    TWO_SIDED
+}
+
+// Steepness tolerance for `steepness` output of getOrderedFaceData.
+const STEEPNESS_TOLERANCE = sin(TOLERANCE.zeroAngle * radian);
+
+/**
+ * Feature performing an [opDraft].
+ *
+ * @param id : @autocomplete `id + "draft1"`
+ * @param definition {{
+ *      @field draftFeatureType {DraftFeatureType}: @optional
+ *              Specifies a NEUTRAL_PLANE or PARTING_LINE draft. Default is `NEUTRAL_PLANE`.
+ *
+ *      @field neutralPlane {Query}: @requiredif { `draftFeatureType` is `NEUTRAL_PLANE` }
+ *              A planar face defining both the neutral plane and pull direction of the the draft.  The intersection of
+ *              the drafted faces and the neutral plane remains unchanged.  The pull direction of the draft will be the
+ *              normal of the face.
+ *              @autocomplete `neutralPlane`
+ *      @field draftFaces {Query}: @requiredif { `draftFeatureType` is `NEUTRAL_PLANE` }
+ *              The faces to draft for a `NEUTRAL_PLANE` draft.
+ *              @autocomplete `draftFaces`
+ *
+ *      @field pullDirectionEntity {Query}: @requiredif { `draftFeatureType` is `PARTING_LINE` }
+ *              An entity defining the pull direction of the draft. This entity should conform to the `ALLOWS_DIRECTION`
+ *              specification in [QueryFilterCompound].
+ *      @field partingEdges {Query}: @requiredif { `draftFeatureType` is `PARTING_LINE` }
+ *              Edges defining the parting line of the draft. These edges will remain unchanged as some adjacent faces,
+ *              as defined by `partingLineSides`, are drafted.
+ *      @field hintFaces {Query} : @optional
+ *              For Onshape internal use. For `PARTING_LINE` draft, specifies in advance which adjacent faces of
+ *              `partingEdges` should be treated as more along the pull direction. When unspecified, the feature will
+ *              use a geometric calculation to determine this distinction.
+ *      @field partingLineSides {PartingLineSides}: @requiredif { `draftFeatureType` is `PARTING_LINE` }
+ *              Specifies whether to draft one or both faces adjacent to the parting edges, and whether the draft should
+ *              be symmetrical if drafting both faces.  See [PartingLineSides].
+ *      @field alongPull {boolean}: @requiredif { `PartingLineSides` is `ONE_SIDED` }
+ *              Specifies which face will be drafted in a `ONE_SIDED` `PARTING_LINE` draft.  If `true`, the face which
+ *              is more along the pull direction from the perspective of the parting edge is drafted.  If `false`, the
+ *              face which is more away from the pull direction from the perspective of the parting edge is drafted.
+ *
+ *      @field angle {ValueWithUnits}:
+ *              The draft angle, must be between 0 and 89.9 degrees.
+ *              @eg `3 * degree`
+ *      @field pullDirection {boolean}: @optional
+ *              Whether the pull direction of the draft should be reversed.  In equivalent terms, whether the draft
+ *              should use `-angle` as the draft angle (`true`), or `angle` as the draft angle (`false`).
+ *              Default is `false`.
+ *      @field secondAngle {ValueWithUnits}: @requiredif { `PartingLineSides` is `TWO_SIDED` }
+ *              The second draft angle for a `TWO_SIDED` `PARTING_LINE` draft. Must be between 0 and 89.9 degrees.
+ *              Note that when using `TWO_SIDED`, `angle` will be applied to faces that are away from the pull direction,
+ *              from the perspective of the edge.  `secondAngle` will be applied to faces that are along the pull direction,
+ *              from the perspective of the edge.
+ *              @ex `3 * degree`
+ *      @field secondPullDirection {boolean}: @optional
+ *              Whether the pull direction of the draft should be reversed for the second angle of a `TWO_SIDED` draft.
+ *              In equivalent terms, whether the draft should use `-secondAngle` as the second draft angle (`true`), or
+ *              `secondAngle` as the second draft angle (`false`).
+ *              Default is `false`.
+ *
+ *      @field tangentPropagation {boolean}: @optional
+ *              For a `NEUTRAL_PLANE` draft, `true` to propagate draft across tangent faces.
+ *              Default is `false`.
+ *      @field referenceEdgePropagation {boolean}: @optional
+ *              For a `PARTING_LINE` draft, `true` to extend the parting line across connected edges of already included
+ *              faces and tangent faces.
+ *              Default is `false`.
+ *
+ *      @field reFillet {boolean}: @optional
+ *              `true` to attempt to defillet draft faces before the draft and reapply the fillets after.
+ *               Default is `false`.
+ * }}
+ */
+annotation { "Feature Type Name" : "Draft",
+        "Manipulator Change Function" : "draftManipulatorChange",
+        "Editing Logic Function" : "draftEditLogic",
+        "Filter Selector" : "allparts" }
 export const draft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Neutral plane",
-                     "Filter" : GeometryType.PLANE,
-                     "MaxNumberOfPicks" : 1 }
-        definition.neutralPlane is Query;
+        annotation { "Name" : "Draft type", "UIHint" : "HORIZONTAL_ENUM" }
+        definition.draftFeatureType is DraftFeatureType;
 
-        annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-        definition.draftFaces is Query;
+        if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+        {
+            annotation { "Name" : "Neutral plane",
+                        "Filter" : GeometryType.PLANE,
+                        "MaxNumberOfPicks" : 1 }
+            definition.neutralPlane is Query;
+
+            annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+            definition.draftFaces is Query;
+        }
+        else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+        {
+            annotation { "Name" : "Pull direction",
+                        "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,
+                        "MaxNumberOfPicks" : 1 }
+            definition.pullDirectionEntity is Query;
+
+            annotation { "Name" : "Parting edges", "UIHint" : "SHOW_CREATE_SELECTION",
+                         "Filter" : EntityType.EDGE && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ModifiableEntityOnly.YES }
+            definition.partingEdges is Query;
+
+            annotation { "UIHint" : "ALWAYS_HIDDEN" }
+            definition.hintFaces is Query;
+
+            annotation { "Name" : "Sides" }
+            definition.partingLineSides is PartingLineSides;
+
+            if (definition.partingLineSides == PartingLineSides.ONE_SIDED)
+            {
+                annotation { "Name" : "Switch face", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                definition.alongPull is boolean;
+            }
+        }
 
         annotation { "Name" : "Draft angle" }
         isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR", "Default" : false }
         definition.pullDirection is boolean;
 
-        annotation { "Name" : "Tangent propagation", "Default" : true }
-        definition.tangentPropagation is boolean;
+        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE && definition.partingLineSides == PartingLineSides.TWO_SIDED)
+        {
+            annotation { "Name" : "Second draft angle" }
+            isAngle(definition.secondAngle, ANGLE_STRICT_90_BOUNDS);
+
+            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR", "Default" : true }
+            definition.secondPullDirection is boolean;
+        }
+
+        if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+        {
+            annotation { "Name" : "Tangent propagation", "Default" : true }
+            definition.tangentPropagation is boolean;
+        }
+        else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+        {
+            annotation { "Name" : "Parting line propagation", "Default" : true }
+            definition.referenceEdgePropagation is boolean;
+        }
 
         annotation { "Name" : "Reapply fillet", "Default" : false }
         definition.reFillet is boolean;
     }
     {
-        const planeResult = try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
-        if (planeResult == undefined)
-            throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
-
-        definition.pullVec = planeResult.normal;
-
+        const rawPullDirection = getPullDirection(context, definition);
+        definition.pullVec = rawPullDirection;
         if (definition.pullDirection)
+        {
+            // definition.pullDirection is an opposite direction flipper
             definition.pullVec = -definition.pullVec;
+        }
+
+        definition.draftType = getDraftType(definition);
+
+        // add draft manipulators before getting reference entity draft options, as getting reference entity draft
+        // options may fail on cases where we still want to show manipulators.
+        addDraftManipulators(context, id, rawPullDirection, definition);
+
+        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+        {
+            definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection, definition);
+        }
 
         opDraft(context, id, definition);
-    }, { pullDirection : false, tangentPropagation : false, reFillet : false });
+    }, { draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,
+         pullDirection : false, secondPullDirection : false,
+         tangentPropagation : false, referenceEdgePropagation: false,
+         reFillet : false, hintFaces : qNothing() });
+
+function getPullDirection(context is Context, definition is map) returns Vector
+{
+    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+    {
+        const planeResult = getNeutralPlane(context, definition);
+        if (planeResult == undefined)
+            throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
+        return planeResult.normal;
+    }
+    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+    {
+        const directionResult = extractDirection(context, definition.pullDirectionEntity);
+        if (directionResult == undefined)
+            throw regenError(ErrorStringEnum.DRAFT_SELECT_PULL_DIRECTION_ENTITY, ["pullDirectionEntity"]);
+        return directionResult;
+    }
+    else
+    {
+        throw "Unsupported draft type";
+    }
+}
+
+function getDraftType(definition is map) returns DraftType
+{
+    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+    {
+        return DraftType.NEUTRAL_PLANE;
+    }
+    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+    {
+        return DraftType.REFERENCE_ENTITY;
+    }
+    else
+    {
+        throw "Unsupported draft type";
+    }
+}
+
+////////// Neutral Plane Utilities //////////
+
+function getNeutralPlane(context is Context, definition is map)
+{
+    return try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
+}
+
+////////// Parting Line Utilities //////////
+
+/**
+ * Assemble referenceEntityDraftOptions map to pass into [opDraft].
+ */
+function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, definition is map) returns array
+{
+    const partingEdges = evaluateQuery(context, definition.partingEdges);
+    if (size(partingEdges) == 0)
+        throw regenError(ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES, ["partingEdges"]);
+
+    var edgeToOrderedFaceData = {};
+    for (var edge in partingEdges)
+    {
+        try
+        {
+            edgeToOrderedFaceData[edge] = getOrderedFaceData(context, edge, rawPullDirection, definition.hintFaces);
+        }
+        catch (e)
+        {
+            var errEnum = ErrorStringEnum.DRAFT_FAILED;
+            if (e is ErrorStringEnum)
+                errEnum = e;
+
+            throw regenError(errEnum, ["partingEdges"], edge);
+        }
+    }
+
+    var draftOptions = [];
+    if (definition.partingLineSides == PartingLineSides.ONE_SIDED)
+    {
+        // The first item in the faceData array corresponds to the face that is more along the pull direction.
+        const faceIndex = definition.alongPull ? 0 : 1;
+
+        for (var edge in partingEdges)
+        {
+            const faceData = edgeToOrderedFaceData[edge][faceIndex];
+            if (abs(faceData.steepness) < STEEPNESS_TOLERANCE)
+            {
+                // Face normal is parallel to pull direction.
+                throw regenError(ErrorStringEnum.DRAFT_FAILED, qUnion([edge, faceData.face]));
+            }
+
+            draftOptions = append(draftOptions, {
+                        "face" : edgeToOrderedFaceData[edge][faceIndex].face,
+                        "references" : edge
+                    });
+        }
+    }
+    else // SYMMETRIC or TWO_SIDED
+    {
+        const angles = getAlongAndAwayDraftAngles(definition);
+
+        for (var edge in partingEdges)
+        {
+            // Draft both of the faces in the orderedFaceData for this edge
+            for (var faceData in edgeToOrderedFaceData[edge])
+            {
+                if (abs(faceData.steepness) < STEEPNESS_TOLERANCE)
+                {
+                    // Face normal is parallel to pull direction.
+                    throw regenError(ErrorStringEnum.DRAFT_FAILED, qUnion([edge, faceData.face]));
+                }
+
+                draftOptions = append(draftOptions, {
+                            "face" : faceData.face,
+                            "references" : edge,
+                            "angle" : faceData.isAlong ? angles.along : angles.away
+                        });
+            }
+        }
+    }
+
+    return draftOptions;
+}
+
+function getAlongAndAwayDraftAngles(definition is map) returns map
+{
+    // Faces that are away always get the first angle
+    var angles = { "away" : definition.angle };
+
+    if (definition.partingLineSides == PartingLineSides.SYMMETRIC)
+    {
+        // Create symmetry with opposite angle
+        angles.along = -1 * definition.angle;
+    }
+    else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
+    {
+        // Switch the sign of the second angle if the flippers don't match
+        const sign = (definition.pullDirection == definition.secondPullDirection) ? 1 : -1;
+        angles.along = sign * definition.secondAngle;
+    }
+    else
+    {
+        // Along and away get the same angle
+        angles.along = definition.angle;
+    }
+
+    return angles;
+}
+
+/**
+ * Each adjacent face to `edge` can be along, orthogonal, or away from the draft direction from the perspective of the
+ * edge in question. Return an array of information for both adjacent faces. If exactly one of the faces is found in the
+ * hintFaces query, that face will be the first face in the array.  Otherwise, the face that is more along the pull
+ * direction (from the perspective of the edge) will be first face in the array. Accompany this data with:
+ *     `isAlong`: whether the face is along the pull direction from the perspective of the edge.
+ *     `steepness`: a measure of the steepness of the face between -1 and 1.  -1 means the face is fully away from
+ *                  the pull direction from the perspective of the edge. 0 means the normal of this face's plane
+ *                  aligns with the pull direction.  1 means the face is fully along the the pull direction from
+ *                  the perspective of the edge. Decimal values indicate that the face has some sort of lean in the
+ *                  positive or negative direction.
+ *
+ *                  Example: imagine rectangular planar face aligned canonically with the front plane.  With a pull
+ *                  direction of "up", the face has a steepness of -1 from the perspective of its top edge and a
+ *                  steepness of 1 from the perspective of its bottom edge.  If instead we have a pull direction of
+ *                  "forward", the face has a steepness of 0 from the perspective of all its edges.
+ *
+ * In cases where the edge is a laminar edge of a surface, return an array of two identical elements both representing
+ * the face of the surface.  In cases where there is no matching hintFace and the two faces have equal steepness, throw
+ * an error.
+ */
+function getOrderedFaceData(context is Context, edge is Query, rawPullDirection is Vector, hintFaces is Query) returns array
+{
+    const bothFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    if (size(bothFaces) == 0 || size(bothFaces) > 2)
+    {
+        // Should never be hit by UI user
+        throw ("Unsupported edge with " ~ size(bothFaces) ~ " faces");
+    }
+
+    var faceData = [];
+    for (var face in bothFaces)
+    {
+        const faceInfo = getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context, face, edge, 0.5);
+        const faceTangentPlane = faceInfo.faceTangentPlane;
+        const coEdgeLine = faceInfo.coEdgeLine;
+
+        if (parallelVectors(coEdgeLine.direction, rawPullDirection))
+        {
+            throw ErrorStringEnum.DRAFT_PARALLEL_PARTING_EDGE;
+        }
+
+        // if the coEdge direction cross the pull direction points out of the face, then the face is along the pull
+        // direction (from the perspective of the edge).  Otherwise it is away from the pull direction.
+        const steepness = dot(faceTangentPlane.normal, normalize(cross(coEdgeLine.direction, rawPullDirection)));
+
+        faceData = append(faceData, {
+                    "face" : face,
+                    "isAlong" : steepness > 0,
+                    "steepness" : steepness
+                });
+    }
+
+    // Laminar edge of a surface returns two copies of identical data.
+    if (size(faceData) == 1)
+    {
+        return [faceData[0], faceData[0]];
+    }
+
+    const hintFacesMatchingEdgeFaces = evaluateQuery(context, qIntersection([qUnion(bothFaces), hintFaces]));
+    if (size(hintFacesMatchingEdgeFaces) == 1)
+    {
+        // hintFaces are faces determined to be steeper (or chosen deterministically in ambiguous cases) in `draftEditLogic(...)`.
+        // Use this information first to establish an ordering.
+        return (hintFacesMatchingEdgeFaces[0] == faceData[0].face) ? faceData : [faceData[1], faceData[0]];
+    }
+    else if (abs(faceData[0].steepness - faceData[1].steepness) > STEEPNESS_TOLERANCE)
+    {
+        // Fall back on ordering by steepness
+        return (faceData[0].steepness > faceData[1].steepness) ? faceData : [faceData[1], faceData[0]];
+    }
+    else
+    {
+        throw "Ambiguous edge with no hint face";
+    }
+}
+
+function getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context is Context, face is Query, edge is Query, parameter is number) returns map
+{
+    try
+    {
+        const faceTangentPlane = evFaceTangentPlaneAtEdge(context, {
+                    "face" : face,
+                    "edge" : edge,
+                    "parameter" : parameter,
+                    "usingFaceOrientation" : true
+                });
+
+        const coEdgeLine = evEdgeTangentLine(context, {
+                    "edge" : edge,
+                    "parameter" : parameter,
+                    "face" : face
+                });
+
+        return {
+                "faceTangentPlane" : faceTangentPlane,
+                "coEdgeLine" : coEdgeLine
+            };
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.DRAFT_FAILED);
+    }
+}
+
+/**
+ * Augment an ordered face data array with coEdge and tangent plane information for quarter-way and halfway along the edge
+ */
+function augmentOrderedFaceDataWithGeometryData(context is Context, edge is Query, orderedFaceData is array) returns array
+{
+    orderedFaceData[0] = mergeMaps(orderedFaceData[0], {
+                "quarterGeometry" : getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context, orderedFaceData[0].face, edge, 0.25),
+                "halfGeometry" : getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context, orderedFaceData[0].face, edge, 0.5)
+            });
+
+    // Use .75 for other face so that the coEdgeLine origin matches up.
+    orderedFaceData[1] = mergeMaps(orderedFaceData[1], {
+                "quarterGeometry" : getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context, orderedFaceData[1].face, edge, 0.75),
+                "halfGeometry" : getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context, orderedFaceData[1].face, edge, 0.5)
+            });
+
+    return orderedFaceData;
+}
+
+/**
+ * Return a map with "manipulatorFaceData" as the faceData map (augmented with geometry data) for the face that
+ * will receive a manipulator and "otherFaceData" as the faceData map (augmented with geometry data) for the
+ * other face attached to the edge with the manipulator. "otherFaceData" may also receive a manipulator for
+ * `TWO_SIDED` draft, depending on the circumstances.
+ *
+ * `addGeometryData` may be turned off for a performance gain if geometry data is not needed.
+ */
+function getDataForManipulator(context is Context, rawPullDirection is Vector, definition is map, addGeometryData is boolean) returns map
+{
+    const edges = evaluateQuery(context, definition.partingEdges);
+    const manipulatorEdge = edges[size(edges) - 1];
+    var lastOrderedFaceData = getOrderedFaceData(context, manipulatorEdge, rawPullDirection, definition.hintFaces);
+
+    if (addGeometryData)
+    {
+        // adds .quarterGeometry and .halfGeometry to each of the faceData maps. This data is used in addDraftManipulators(...)
+        lastOrderedFaceData = augmentOrderedFaceDataWithGeometryData(context, manipulatorEdge, lastOrderedFaceData);
+    }
+
+    var index;
+    if (definition.partingLineSides == PartingLineSides.ONE_SIDED)
+    {
+        index = definition.alongPull ? 0 : 1;
+    }
+    else
+    {
+        // Put the manipulator on the more away face
+        if (lastOrderedFaceData[1].steepness < lastOrderedFaceData[0].steepness ||
+            abs(lastOrderedFaceData[1].steepness - lastOrderedFaceData[0].steepness) < STEEPNESS_TOLERANCE)
+        {
+            index = 1;
+        }
+        else
+        {
+            index = 0;
+        }
+    }
+
+    return {
+            "manipulatorEdge" : manipulatorEdge,
+            "manipulatorFaceData" : lastOrderedFaceData[index],
+            "otherFaceData" : lastOrderedFaceData[1 - index]
+        };
+}
+
+////////// Manipulators //////////
+
+const ANGLE_MANIPULATOR = "angleManipulator";
+const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
+const FLIP_MANIPULATOR = "flipManipulator";
+
+function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirection is Vector, definition is map)
+{
+    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+    {
+        addNeutralPlaneDraftAngularManipulator(context, topLevelId, definition);
+    }
+    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+    {
+        try silent
+        {
+            const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, true);
+            const manipulatorFaceData = manipulatorData.manipulatorFaceData;
+            const otherFaceData = manipulatorData.otherFaceData;
+
+            // Flip manipulator dictates which face we are drafting.
+            if (definition.partingLineSides == PartingLineSides.ONE_SIDED && edgeIsTwoSided(context, manipulatorData.manipulatorEdge))
+            {
+                addPartingLineDraftFlipManipulator(context, topLevelId, manipulatorFaceData, rawPullDirection);
+            }
+
+            if (definition.partingLineSides == PartingLineSides.ONE_SIDED || definition.partingLineSides == PartingLineSides.SYMMETRIC)
+            {
+                const angles = getAlongAndAwayDraftAngles(definition);
+                const angle = manipulatorFaceData.isAlong ? angles.along : angles.away;
+
+                addPartingLineDraftAngularManipulator(context, topLevelId, ANGLE_MANIPULATOR, manipulatorFaceData, rawPullDirection,
+                        angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT);
+            }
+            else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
+            {
+                // Add a manipulator on the designated face
+                const firstParams = getTwoSidedManipulatorParameters(manipulatorFaceData.isAlong, definition);
+                const added = addPartingLineDraftAngularManipulator(context, topLevelId, firstParams.manipulatorName, manipulatorFaceData,
+                        rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style);
+
+                // Add an additional manipulator if possible
+                if (!added || manipulatorFaceData.isAlong != otherFaceData.isAlong)
+                {
+                    // Ideally we would like to add both manipulators, but if both faces are along or both faces are
+                    // away, the manipulator will be redundant.  If for some reason we failed to add the first
+                    // manipulator, we are also safe adding this one.
+                    const secondParams = getTwoSidedManipulatorParameters(otherFaceData.isAlong, definition);
+                    addPartingLineDraftAngularManipulator(context, topLevelId, secondParams.manipulatorName, otherFaceData,
+                            rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style);
+                }
+            }
+        }
+    }
+}
+
+function addNeutralPlaneDraftAngularManipulator(context is Context, topLevelId is Id, definition is map)
+{
+    try silent
+    {
+        const neutralPlane = getNeutralPlane(context, definition);
+
+        const firstFacePlane = evFaceTangentPlane(context, {
+                    "face" : qNthElement(definition.draftFaces, 0),
+                    "parameter" : vector(0.5, 0.5)
+                });
+
+        const manipulator = angularManipulator({
+                    "axisOrigin" : project(neutralPlane, firstFacePlane.origin),
+                    "axisDirection" : normalize(cross(firstFacePlane.normal, neutralPlane.normal)),
+                    "rotationOrigin" : firstFacePlane.origin,
+                    "angle" : definition.pullDirection ? -definition.angle : definition.angle,
+                    "minValue" : -ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
+                    "maxValue" : ANGLE_STRICT_90_BOUNDS[degree][2] * degree
+                });
+        addManipulators(context, topLevelId, { (ANGLE_MANIPULATOR) : manipulator });
+    }
+}
+
+function addPartingLineDraftFlipManipulator(context is Context, topLevelId is Id, faceData is map, rawPullDirection is Vector)
+{
+    // Flip manipulator will point directly into the face from the perspective of its anchor point on the edge. Use
+    // `quarterGeometry` to put the flip manipulator off to the side so that it does not overlap with the angular manipulator.
+    const manipulatorOrigin = faceData.quarterGeometry.coEdgeLine.origin;
+    const manipulatorDirection = cross(faceData.quarterGeometry.faceTangentPlane.normal, faceData.quarterGeometry.coEdgeLine.direction);
+
+    const manipulator = flipManipulator(manipulatorOrigin, manipulatorDirection, false);
+    addManipulators(context, topLevelId, { (FLIP_MANIPULATOR) : manipulator });
+}
+
+function addPartingLineDraftAngularManipulator(context is Context, topLevelId is Id, manipulatorName is string, faceData is map,
+        rawPullDirection is Vector, angle is ValueWithUnits, flipped is boolean, style is ManipulatorStyleEnum) returns boolean
+{
+    try silent
+    {
+        if (abs(faceData.steepness) > STEEPNESS_TOLERANCE)
+        {
+            const axisOrigin = faceData.halfGeometry.coEdgeLine.origin;
+            const manipulator = angularManipulator({
+                        "axisOrigin" : axisOrigin,
+                        "axisDirection" : normalize(cross(faceData.halfGeometry.faceTangentPlane.normal, rawPullDirection)),
+                        "rotationOrigin" : axisOrigin + ((faceData.isAlong ? 1 : -1) * inch * rawPullDirection),
+                        "angle" : flipped ? -angle : angle,
+                        "minValue" : -ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
+                        "maxValue" : ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
+                        "style" : style
+                    });
+            addManipulators(context, topLevelId, { (manipulatorName) : manipulator });
+            return true;
+        }
+    }
+    return false;
+}
+
+function getTwoSidedManipulatorParameters(isAlong is boolean, definition is map) returns map
+{
+    // See getReferenceEntityDraftOptions(...):  "away" corresponds to first angle.  "along" corresponds to second angle.
+    return {
+            "manipulatorName" : isAlong ? SECOND_ANGLE_MANIPULATOR : ANGLE_MANIPULATOR,
+            "angle"           : isAlong ? definition.secondAngle : definition.angle,
+            "flipped"         : isAlong ? definition.secondPullDirection : definition.pullDirection,
+            "style"           : isAlong ? ManipulatorStyleEnum.SECONDARY : ManipulatorStyleEnum.DEFAULT
+        };
+}
+
+/**
+ * @internal
+ * The manipulator change function for [draft].
+ */
+export function draftManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    if (newManipulators[ANGLE_MANIPULATOR] is map)
+    {
+        var sign = 1.0;
+        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE &&
+            definition.partingLineSides == PartingLineSides.SYMMETRIC)
+        {
+            // Symmetric manipulator needs a flip if it corresponds to an along face
+            const rawPullDirection = getPullDirection(context, definition);
+            const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, false);
+            if (manipulatorData.manipulatorFaceData.isAlong)
+            {
+                sign = -1.0;
+            }
+        }
+
+        const newAngle = sign * newManipulators[ANGLE_MANIPULATOR].angle;
+        definition.pullDirection = newAngle < 0 * degree;
+        definition.angle = abs(newAngle);
+    }
+
+    if (newManipulators[SECOND_ANGLE_MANIPULATOR] is map)
+    {
+        const newAngle = newManipulators[SECOND_ANGLE_MANIPULATOR].angle;
+        definition.secondPullDirection = newAngle < 0 * degree;
+        definition.secondAngle = abs(newAngle);
+    }
+
+    if (newManipulators[FLIP_MANIPULATOR] is map && definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+    {
+        if (newManipulators[FLIP_MANIPULATOR].flipped)
+        {
+            definition.alongPull = !definition.alongPull;
+        }
+    }
+
+    return definition;
+}
+
+////////// Editing Logic //////////
+
+/**
+ * @internal
+ * The editing logic function for [draft].
+ */
+export function draftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map)
+{
+    if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+    {
+        if (canGenerateHintFaces(oldDefinition, definition))
+        {
+            definition.hintFaces = generateHintFaces(context, definition);
+        }
+
+        if (canFlipAlongPull(oldDefinition, definition, isCreating, specifiedParameters))
+        {
+            definition = flipAlongPull(context, definition);
+        }
+
+        if (canAdjustDirectionsForSideChange(oldDefinition, definition, specifiedParameters))
+        {
+            definition = adjustDirectionsForSideChange(context, oldDefinition, definition);
+        }
+    }
+
+    return definition;
+}
+
+/*
+ * Parting line draft: determine, in advance, which face should be treated as more along the pull direction (or choose one
+ * deterministically) and store that information in the feature definition to make feature regeneration more robust.
+ * This storage of information attempts to ensure that upstream changes do not change which face is being drafted.
+ * Additionally, this storage imposes a deterministic ordering on faces which cannot be ordered by steepness (and
+ * ensures that that ordering is robust to upstream changes).
+ */
+predicate canGenerateHintFaces(oldDefinition is map, definition is map)
+{
+    oldDefinition.partingEdges != definition.partingEdges;
+}
+
+function generateHintFaces(context is Context, definition is map) returns Query
+{
+    try silent
+    {
+        const rawPullDirection = getPullDirection(context, definition);
+        var hintFacesArr = [];
+        for (var edge in evaluateQuery(context, definition.partingEdges))
+        {
+            const orderedFaceData = try silent(getOrderedFaceData(context, edge, rawPullDirection, definition.hintFaces));
+            if (orderedFaceData != undefined)
+            {
+                hintFacesArr = append(hintFacesArr, orderedFaceData[0].face);
+            }
+            else
+            {
+                // `qEdgeAdjacent(...)` evaluation is ordered by transientId
+                const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+                hintFacesArr = append(hintFacesArr, adjacentFaces[0]);
+            }
+        }
+
+        return qUnion(hintFacesArr);
+    }
+
+    return qNothing();
+}
+
+/*
+ * Parting line draft: if the user has not explicitly selected which face they want to be drafting (for ONE_SIDED
+ * drafts), try to guess which face they would prefer to draft.
+ */
+predicate canFlipAlongPull(oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map)
+{
+    specifiedParameters.partingEdges;
+    !specifiedParameters.alongPull;
+    definition.partingLineSides == PartingLineSides.ONE_SIDED;
+    isCreating;
+    oldDefinition.partingEdges != definition.partingEdges || oldDefinition.partingLineSides != definition.partingLineSides;
+}
+
+function flipAlongPull(context is Context, definition is map) returns map
+{
+    try silent
+    {
+        const rawPullDirection = getPullDirection(context, definition);
+        const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, false);
+        const manipulatorFaceData = manipulatorData.manipulatorFaceData;
+        const otherFaceData = manipulatorData.otherFaceData;
+
+        const equalSteepness = abs(abs(manipulatorFaceData.steepness) - abs(otherFaceData.steepness)) < STEEPNESS_TOLERANCE;
+        if (equalSteepness)
+        {
+            // Favor the "away" face
+            const currentAlong = abs(manipulatorFaceData.steepness) > STEEPNESS_TOLERANCE && manipulatorFaceData.steepness > 0;
+            const otherAway = abs(otherFaceData.steepness) > STEEPNESS_TOLERANCE && otherFaceData.steepness < 0;
+            if (currentAlong && otherAway)
+            {
+                definition.alongPull = !definition.alongPull;
+            }
+        }
+        else
+        {
+            const currentFaceSteeper = abs(manipulatorFaceData.steepness) > abs(otherFaceData.steepness);
+            if (!currentFaceSteeper)
+            {
+                // flip pull direction if the other face is steeper
+                definition.alongPull = !definition.alongPull;
+            }
+        }
+    }
+
+    return definition;
+}
+
+/*
+ * Parting line draft: when switching between partingLineSides modes, make sure that the transitions feel smooth
+ */
+predicate canAdjustDirectionsForSideChange(oldDefinition is map, definition is map, specifiedParameters is map)
+{
+    specifiedParameters.partingLineSides;
+    oldDefinition.partingLineSides != definition.partingLineSides;
+}
+
+function adjustDirectionsForSideChange(context is Context, oldDefinition is map, definition is map) returns map
+{
+    try silent
+    {
+        const rawPullDirection = getPullDirection(context, definition);
+
+        const oldFaceData = getDataForManipulator(context, rawPullDirection, oldDefinition, false).manipulatorFaceData;
+        const newFaceData = getDataForManipulator(context, rawPullDirection, definition, false).manipulatorFaceData;
+
+        const intoTwoSided = definition.partingLineSides == PartingLineSides.TWO_SIDED;
+        const outOfTwoSided = oldDefinition.partingLineSides == PartingLineSides.TWO_SIDED;
+
+        if (!intoTwoSided && !outOfTwoSided)
+        {
+            // When switching between ONE_SIDED and SYMMETRIC, make sure the face with the manipulator stays inwards if
+            // it was inward, or stays outward if it was outward.
+            if (oldFaceData.isAlong != newFaceData.isAlong)
+            {
+                definition.pullDirection = !definition.pullDirection;
+            }
+        }
+        else
+        {
+            // When switching into TWO_SIDED, make sure the face that had the manipulator does not change.
+            const oldFaceCorrespondsToSecondAngle = intoTwoSided && oldFaceData.isAlong;
+            // When switching out of TWO_SIDED, make sure the face that will have the manipulator does not change.
+            const newFaceCorrespondsToSecondAngle = outOfTwoSided && newFaceData.isAlong;
+
+            if (oldFaceCorrespondsToSecondAngle || newFaceCorrespondsToSecondAngle)
+            {
+                // The "along" face corresponds to secondAngle, so if the manipulator was controlling or will be
+                // controlling an "along" face, we should move that data to secondAngle.
+                definition.secondAngle = oldDefinition.angle;
+                definition.secondPullDirection = oldDefinition.pullDirection;
+                // Swap old second angle into first angle; otherwise this will just result in symmetry.
+                definition.angle = oldDefinition.secondAngle;
+                definition.pullDirection = oldDefinition.secondPullDirection;
+            }
+        }
+    }
+
+    return definition;
+}
 

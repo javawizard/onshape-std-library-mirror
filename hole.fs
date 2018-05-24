@@ -682,6 +682,12 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     {
         frontDist = max(startDistances.frontDist, 0 * meter);
     }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V831_HOLE_TOLERANT_DIST) &&
+        abs(frontDist/meter) < TOLERANCE.zeroLength)
+    {
+        frontDist = 0 * meter;
+    }
+
     const sign = holeDefinition.oppositeDirection ? 1 : -1;
     const startCSys = coordSystem(cSys.origin, cSys.xAxis, sign * cSys.zAxis);
 

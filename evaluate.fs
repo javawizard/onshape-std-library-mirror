@@ -513,6 +513,11 @@ precondition
  *      @field edge{Query}
  *      @field face{Query}
  *      @field parameter{number}
+ *      @field usingFaceOrientation{boolean}:
+ *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
+ *             normal will keep `face` to the left. If false, use the default orientation of the edge,
+ *             which is the same orientation used by [evEdgeTangentLine]. Default is `false`.
+ *          @optional
  * }}
  */
 export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
@@ -528,6 +533,11 @@ export function evFaceNormalAtEdge(context is Context, arg is map) returns Vecto
  *      @field edge{Query}
  *      @field face{Query}
  *      @field parameter{number}
+ *      @field usingFaceOrientation{boolean}:
+ *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
+ *             normal will keep `face` to the left. If false, use the default orientation of the edge,
+ *             which is the same orientation used by [evEdgeTangentLine]. Default is `false`.
+ *          @optional
  * }}
  */
 export function evFaceTangentPlaneAtEdge(context is Context, arg is map) returns Plane
@@ -537,11 +547,13 @@ precondition
     arg.edge is Query;
     arg.face is Query;
     arg.parameter is number;
+    arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
 }
 {
     var edgeTangent = evEdgeTangentLine(context, {
             "edge" : arg.edge,
-            "parameter" : arg.parameter
+            "parameter" : arg.parameter,
+            "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined
     });
     var distData = evDistance(context, {
             "side0" : arg.face,

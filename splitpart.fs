@@ -84,7 +84,9 @@ function performSplit(context is Context, id is Id, definition is map)
     if (definition.splitType == SplitType.PART)
     {
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V747_SPLIT_ALLOW_FACES))
+        {
             definition.tool = qOwnerBody(definition.tool);
+        }
         else
         {
             const sizeF = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));

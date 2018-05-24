@@ -173,6 +173,7 @@ export function hypot(a is number, b is number)
  *
  * @example `floor(1.9)` returns `1`
  * @example `floor(2.0)` returns `2`
+ * @example `floor(-3.3)` returns `-4`
  * @example `var numberOfBricks is number = floor(wallLength / brickLength);`
  */
 export function floor(value is number)
@@ -187,6 +188,7 @@ export function floor(value is number)
  *
  * @example `ceil(1.1)` returns `2`
  * @example `ceil(1.0)` returns `1`
+ * @example `ceil(-3.3)` returns `-3`
  * @example `var numberOfBricks is number = ceil(wallLength / brickLength)`
  */
 export function ceil(value is number)
@@ -195,7 +197,7 @@ export function ceil(value is number)
 }
 
 /**
- * Round a number to the nearest integer.
+ * Round a `number` to the nearest integer.
  *
  * @example `round(1.4)` returns `1`
  * @example `round(1.5)` returns `2`

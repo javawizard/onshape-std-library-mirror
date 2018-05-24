@@ -26,7 +26,7 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
     {
         annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
         definition.flatOperationType is FlatOperationType;
-        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE && AllowFlattenedGeometry.YES }
+        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE && AllowFlattenedGeometry.YES && SketchObject.YES }
         definition.faces is Query;
     }
     {
@@ -37,6 +37,18 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
+
+        for (var face in evaluateQuery(context, qEntityFilter(qCreatedBy(id), EntityType.FACE)))
+        {
+            var jointAttribute = getJointAttribute(context, face);
+            if (jointAttribute != undefined && jointAttribute.radius != undefined && jointAttribute.radius.canBeEdited)
+            {
+                removeAttributes(context, { "entities" : face, "attributePattern" : jointAttribute });
+                jointAttribute.radius.canBeEdited = false;
+                setAttribute(context, { "entities" : face, "attribute" : jointAttribute });
+            }
+        }
+
         const newEntities = qUnion([qCreatedBy(id), tracking]);
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
 

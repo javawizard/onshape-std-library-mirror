@@ -139,7 +139,7 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.EITHER), definition.profiles, transform);
         var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
         matches = concatenateArrays([capMatches, sweptMatches]);
         checkForNotJoinableSurfacesInScope(context, id, definition, matches);

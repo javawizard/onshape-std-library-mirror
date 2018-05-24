@@ -335,6 +335,7 @@ function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQ
             "depth" : depth,
             "defaultScope" : false,
             "eraseImprintedEdges" : noMerge ? false : true,
+            "allowSheets" : true,
             "booleanScope" : target};
 
     extrude(context, id, extrudeDefinition);

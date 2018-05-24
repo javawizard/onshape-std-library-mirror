@@ -7,6 +7,11 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 
 /**
+ * The world coordinate system, whose axes all other coordinate systems are defined against.
+ */
+export const WORLD_COORD_SYSTEM = coordSystem(vector(0, 0, 0) * meter, vector(1, 0, 0), vector(0, 0, 1));
+
+/**
  * A right-handed Cartesian coordinate system. Used for converting points and
  * geometry between different reference frames, or for creating planes and
  * mate connectors.

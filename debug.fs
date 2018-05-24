@@ -3,6 +3,7 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+import(path : "onshape/std/box.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
@@ -45,6 +46,9 @@ const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
  *
  * [Plane]: Displays a large square in the positive quadrant of the plane,
  * along with three arrows along the plane's x-axis, y-axis, and normal.
+ *
+ * [Box3d]: Displays the edges of the bounding box (in the given coordinate
+ * system, if provided)
  *
  * The overloads in this module define these behaviors.
  */
@@ -185,6 +189,64 @@ export function debug(context is Context, point1 is Vector, point2 is Vector)
     }
 }
 
+/**
+ * Displays the edges of a bounding box in the world coordinate system.
+ */
+export function debug(context is Context, boundingBox is Box3d)
+{
+    debug(context, boundingBox, undefined);
+}
+
+/**
+ * Displays the edges of a bounding box in the given coordinate system.
+ *
+ * @example ```
+ * const myBox = evBox3d(context, { "topology" : entities, "cSys" : myCSys });
+ * debug(context, myBox, myCSys);
+ * ```
+ */
+export function debug(context is Context, boundingBox is Box3d, cSys)
+{
+    print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.minCorner));
+    if (cSys == undefined)
+    {
+        cSys = WORLD_COORD_SYSTEM;
+        print("\n");
+    }
+    else
+    {
+        println(" in cSys: " ~ toString(cSys));
+    }
+
+    const transform = toWorld(cSys);
+    const boxId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "box";
+
+    startFeature(context, boxId, {});
+    try
+    {
+        fCuboid(context, boxId + "cube", {
+            "corner1" : boundingBox.minCorner,
+            "corner2" : boundingBox.maxCorner
+        });
+        opTransform(context, boxId + "transform", {
+                "bodies" : qCreatedBy(boxId + "cube", EntityType.BODY),
+                "transform" : transform
+        });
+        addDebugEntities(context, qCreatedBy(boxId, EntityType.EDGE));
+    }
+    abortFeature(context, boxId);
+}
+
+/**
+ * Highlights `entities` in red, without printing anything.
+ *
+ * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ */
+export function addDebugEntities(context is Context, entities is Query)
+{
+    @addDebugEntities(context, { "entities" : entities });
+}
+
 // Timers for very basic profiling
 
 /** Starts the timer associated with the string `timer` or resets it.  Use with [printTimer(string)]. */
@@ -273,10 +335,5 @@ function addDebugArrow(context is Context, from is Vector, to is Vector, radius 
         addDebugEntities(context, qCreatedBy(arrowId, EntityType.EDGE));
     }
     abortFeature(context, arrowId);
-}
-
-function addDebugEntities(context is Context, entities is Query)
-{
-    @addDebugEntities(context, { "entities" : entities });
 }
 

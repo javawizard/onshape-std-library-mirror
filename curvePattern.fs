@@ -368,7 +368,7 @@ function getSketchPoint(context is Context, id is Id, sketchIndex is number, pre
     var sketchPointTransform = transform(prevEdgeEndPointTangent, currEdgeStartPointTangent);
 
     // find the vertex that was the result of sweeping the previous sketchPoint
-    var prevEndCapPointQueries = qEntityFilter(qCapEntity(id + ("sweep" ~ (sketchIndex - 1)), false), EntityType.VERTEX);
+    var prevEndCapPointQueries = qCapEntity(id + ("sweep" ~ (sketchIndex - 1)), CapType.END, EntityType.VERTEX);
     var prevSketchPoint3D = evVertexPoint(context, { "vertex" : qIntersection([prevEndCapPointQueries, trackingQuery]) });
 
     // calculate the new sketchPoint

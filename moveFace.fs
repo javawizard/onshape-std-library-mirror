@@ -372,7 +372,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
                     }));
         if (facePlane == undefined)
         {
-            throw regenError(ErrorStringEnum.TRANSLATION_FACE_NOT_PLANAR, definition.queryParameter, face);
+            throw regenError(ErrorStringEnum.TRANSLATION_FACE_NOT_PLANAR, [definition.queryParameter], face);
         }
         if (!parallelVectors(limitPlane.normal, facePlane.normal))
         {
@@ -409,7 +409,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
             });
     if (!tolerantEquals(distanceResult.distance, 0 * meter))
     {
-        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, definition.queryParameter, face);
+        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, [definition.queryParameter], face);
     }
 
 

@@ -35,9 +35,9 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
         if (definition.bendReliefStyle == SMBendReliefStyle.RECTANGLE || definition.bendReliefStyle == SMBendReliefStyle.OBROUND)
         {
             annotation { "Name" : "Bend relief depth scale" }
-            isReal(definition.bendReliefDepthScale, CORNER_RELIEF_SCALE_BOUNDS);
+            isReal(definition.bendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
             annotation { "Name" : "Bend relief width scale" }
-            isReal(definition.bendReliefWidthScale, BEND_RELIEF_SCALE_BOUNDS);
+            isReal(definition.bendReliefWidthScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
         }
         if (definition.bendReliefStyle == SMBendReliefStyle.SIZED_RECTANGLE || definition.bendReliefStyle == SMBendReliefStyle.SIZED_OBROUND)
         {

@@ -18,7 +18,7 @@ import(path : "onshape/std/box.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
-import(path : "onshape/std/draft.fs", version : "✨");
+import(path : "onshape/std/drafttype.gen.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
@@ -268,7 +268,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.surfaceEntities, definition.transform);
             checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
@@ -363,6 +363,7 @@ function getDraftConditions(definition is map)
 function applyDraft(context is Context, draftId is Id, draftFaces is Query,
                     draftDefinition is map, referenceFace is Query, neutralPlane is Plane)
 {
+    draftDefinition.draftType = DraftType.NEUTRAL_PLANE;
     draftDefinition.tangentPropagation = false;
     draftDefinition.reFillet = false;
     draftDefinition.draftFaces = draftFaces;
