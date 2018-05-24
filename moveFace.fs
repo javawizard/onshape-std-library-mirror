@@ -1,28 +1,28 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "819.0");
-export import(path : "onshape/std/tool.fs", version : "819.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/tool.fs", version : "834.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "819.0");
+export import(path : "onshape/std/manipulator.fs", version : "834.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "819.0");
-import(path : "onshape/std/box.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/topologyUtils.fs", version : "819.0");
-import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/attributes.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/topologyUtils.fs", version : "834.0");
+import(path : "onshape/std/valueBounds.fs", version : "834.0");
 
 
 /**
@@ -372,7 +372,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
                     }));
         if (facePlane == undefined)
         {
-            throw regenError(ErrorStringEnum.TRANSLATION_FACE_NOT_PLANAR, definition.queryParameter, face);
+            throw regenError(ErrorStringEnum.TRANSLATION_FACE_NOT_PLANAR, [definition.queryParameter], face);
         }
         if (!parallelVectors(limitPlane.normal, facePlane.normal))
         {
@@ -409,7 +409,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
             });
     if (!tolerantEquals(distanceResult.distance, 0 * meter))
     {
-        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, definition.queryParameter, face);
+        throw regenError(ErrorStringEnum.MOVE_FACE_NO_INTERSECTION, [definition.queryParameter], face);
     }
 
 

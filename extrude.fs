@@ -1,30 +1,30 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "819.0");
-export import(path : "onshape/std/query.fs", version : "819.0");
-export import(path : "onshape/std/tool.fs", version : "819.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/tool.fs", version : "834.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "819.0");
+export import(path : "onshape/std/manipulator.fs", version : "834.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "819.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "819.0");
-import(path : "onshape/std/box.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/coordSystem.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-import(path : "onshape/std/draft.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/transform.fs", version : "819.0");
-import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/boolean.fs", version : "834.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/coordSystem.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/transform.fs", version : "834.0");
+import(path : "onshape/std/valueBounds.fs", version : "834.0");
 
 /**
  * Create an extrude, as used in Onshape's extrude feature.
@@ -268,7 +268,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, true), definition.surfaceEntities, definition.transform);
+            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.surfaceEntities, definition.transform);
             checkForNotJoinableSurfacesInScope(context, id, definition, matches);
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
@@ -363,6 +363,7 @@ function getDraftConditions(definition is map)
 function applyDraft(context is Context, draftId is Id, draftFaces is Query,
                     draftDefinition is map, referenceFace is Query, neutralPlane is Plane)
 {
+    draftDefinition.draftType = DraftType.NEUTRAL_PLANE;
     draftDefinition.tangentPropagation = false;
     draftDefinition.reFillet = false;
     draftDefinition.draftFaces = draftFaces;

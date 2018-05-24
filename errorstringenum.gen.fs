@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1633,8 +1633,32 @@ export enum ErrorStringEnum
     PATTERN_NO_GEOM_FROM_FEATURES,
     /* You do not have LINK permission to one or more revisions. */
     RM_NO_LINK_PERMISSION_TO_REVISION,
+    /* Select parting edges. */
+    DRAFT_SELECT_PARTING_EDGES,
+    /* Conflicting edges in parting line. */
+    DRAFT_CONFLICTING_OPPOSITION,
+    /* Select parts or surfaces to split. */
+    SPLIT_SELECT_TARGETS,
+    /* Select entity to split with. */
+    SPLIT_SELECT_TOOL,
+    /* Select faces to split. */
+    SPLIT_SELECT_FACE_TARGETS,
+    /* Select entities to split with. */
+    SPLIT_SELECT_FACE_TOOLS,
     /* Total pattern instances cannot exceed 2500. */
-    ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT
+    ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT,
+    /* Pattern instances of same pattern cannot be selected as seed. */
+    ASSEMBLY_PATTERN_RECURSIVE_SEED,
+    /* You do not have LINK permission for this document. */
+    NO_LINK_PERMISSION_TO_THIS_DOCUMENT,
+    /* Can only bridge faces if they are coplanar in folded model. */
+    SM_FLAT_OP_FACES_NOT_COPLANAR,
+    /* Sketches on flattened sheet metal are not allowed. */
+    FLATTENED_SHEET_METAL_SKETCH_PROHIBTED,
+    /* Select pull direction. */
+    DRAFT_SELECT_PULL_DIRECTION_ENTITY,
+    /* Parting edge cannot be parallel to pull direction. */
+    DRAFT_PARALLEL_PARTING_EDGE
 }
 
 

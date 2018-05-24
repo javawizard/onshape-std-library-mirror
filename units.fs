@@ -1,31 +1,76 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "819.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "819.0");
-import(path : "onshape/std/string.fs", version : "819.0");
+import(path : "onshape/std/math.fs", version : "834.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "834.0");
+import(path : "onshape/std/string.fs", version : "834.0");
 
 /**
- * A `ValueWithUnits` is a number with dimensions, such as 1 kilogram,
+ * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
  * 90 degrees, or 9.81 meters per second per second.
+ * ```
+ * const width is ValueWithUnits = 1.5 * inch;
+ * const angle is ValueWithUnits = 90 * degree;
+ * const g     is ValueWithUnits = 9.81 * meter / second / second;
+ * ```
  *
- * Values can be multiplied and divided.   The preceding values are
- * `1 * kilogram`, `90 * degree`, and `9.81 * meter / second / second`.
+ * Values with the same dimensions can be added and subtracted, even if
+ * they were created in different unit systems.
+ * ```
+ * const length       = 3 * meter + 1 * inch;
+ * const longerLength = length + 0.01 * inch;
+ * const nonsense     = 3 * meter + 3 * degree;     // Throws an error from dimension mismatch
+ * ```
  *
- * Units are always multiplied with the values, so `myLength * myOtherLength`
- * evaluates to an area `ValueWithUnits`. An expression where the units all
- * cancel (e.g. `myLength / myOtherLength`), evaluates to plain `number`.
+ * Multiplication (`*`) will multiply both the values and the units. An
+ * expression where the units all cancel evaluates to plain `number`.
+ * ```
+ * var doubleLength   = 2 * length;                 // ValueWithUnits with length units
+ * var area           = (20 * foot) * (30 * foot);  // ValueWithUnits with area units
+ * var numberOfBricks = (64 * foot) / (9 * inch);   // number with no units
+ * ```
  *
- * Values with the same units can be added and subtracted.
- * Square root works if the units appear as even powers, as
- * in `sqrt(4 * meter * meter)`.
+ * Values with units can be raised to numerical powers with the `^` operator.
+ * Base units like `inch` or `second` can be exponentiated in the same way.
+ * ```
+ * var squareArea   = (3 * meter)^2;
+ * var g            = 9.81 * meter / second^2;
+ * ```
  *
- * Equality considers the underlying value, so `25.4 * millimeter` is the
- * same as `1 * inch`. However, `PI * radian / 5` does not equal `36 * degree`
- * because of finite precision arithmetic. To compare two `ValueWithUnits`s,
- * use `tolerantEquals`.
+ * Functions in the standard library require a ValueWithUnits for arguments where
+ * units are needed. Thus, the `depth` in [opExtrude] requires a value with length
+ * units (rather than assuming meters). The argument of [sin] is a value with angle
+ * units (rather than assuming radians). The argument of [sqrt](sqrt(ValueWithUnits))
+ * can be any value whose units are even powers.
+ * ```
+ * var ladderHeight   = ladderLength * sin(75 * degree); // Has length units
+ * var pendulumPeriod = 2 * PI * sqrt(armLength / g);    // Has time units
+ * ```
+ *
+ * Equality of `ValueWithUnits` considers the underlying value, so
+ * `25.4 * millimeter` is equal to `1 * inch`. However, `PI * radian / 5`
+ * does not equal `36 * degree` because of finite precision arithmetic.
+ * To check equality of `ValueWithUnits`, you should use
+ * [tolerantEquals](tolerantEquals(ValueWithUnits, ValueWithUnits)).
+ * ```
+ * if (tolerantEquals(myLength, 0 * inch))
+ * {
+ *     ...
+ * ```
+ *
+ * Keeping correct units on variables is always best practice, in order to benefit
+ * from easy unit conversions and runtime unit checks. However, when printing, you
+ * may wish to divide out the units in order to display a value in a different system
+ * of units.
+ * ```
+ * const length = 42 * centimeter;
+ * println(length);                                 // prints "0.42 meter"
+ * println("length: " ~ toString(length));          // prints "length: 0.42 meter"
+ * println(length / inch ~ " inches");              // prints "16.535433070866137 inches"
+ * println(round(length / inch, .001) ~ " inches"); // prints "16.535 inches"
+ * ```
  */
 export type ValueWithUnits typecheck canBeValueWithUnits;
 
@@ -134,6 +179,10 @@ export const ounce = 28.349523 * gram;
 /** A constant equal to 1 pound. */
 annotation { "Name" : "Pound", "Abbreviation" : "lb" }
 export const pound = 16 * ounce;
+
+/** A constant equal to 1 second */
+annotation { "Name" : "Second", "Abbreviation" : "s" }
+export const second = { "value" : 1, "unit" : TIME_UNITS } as ValueWithUnits;
 
 /** @internal */
 export const STRING_TO_UNIT_MAP = {
@@ -487,6 +536,67 @@ export function atan2(y is ValueWithUnits, x is ValueWithUnits) returns ValueWit
 precondition y.units == x.units;
 {
     return @atan2(y.value, x.value) * radian;
+}
+
+/**
+ * Round a value down to nearest given multiple.
+ *
+ * @example `floor(125, 10)` returns `120`
+ * @example `floor(-15, 10)` returns `-20`
+ * @example `floor(3.14 * inch, 0.1 * inch)` equals `3.1 * inch`
+ */
+export function floor(value, multiple)
+precondition unitsMatch(value, multiple);
+{
+    return @floor(value / multiple) * multiple;
+}
+
+/**
+ * Round a value up to nearest given multiple.
+ *
+ * @example `ceil(125, 10)` returns `130`
+ * @example `ceil(-15, 10)` returns `-10`
+ * @example `ceil(3.14 * inch, 0.1 * inch)` equals `3.2 * inch`
+ */
+export function ceil(value, multiple)
+precondition unitsMatch(value, multiple);
+{
+    return @ceil(value / multiple) * multiple;
+}
+
+/**
+ * Round a value to nearest given multiple.
+ *
+ * @example `round(125, 10)` returns `130`
+ * @example `round(-15, 10)` returns `-10`
+ * @example `round((10 / 3) * meter, centimeter)` equals `3.33 * meter`
+ * @example `round(1 * meter, .001 * inch)` equals `39.37 * inch`
+ * @example `println("Length: " ~ toString(round(1 * inch, 0.001 * meter)));` prints `Length: 0.025 meter`
+ */
+export function round(value, multiple)
+precondition unitsMatch(value, multiple);
+{
+    return @floor((value / multiple) + 0.5) * multiple;
+}
+
+predicate unitsMatch(value, multiple)
+{
+    if (value is number)
+    {
+        annotation { 'Message' : 'Rounding multiple must be unitless if rounded value is unitless' }
+        multiple is number;
+    }
+    else if (value is ValueWithUnits)
+    {
+        annotation { 'Message' : 'Rounding multiple must have same units as rounded value' }
+        multiple is ValueWithUnits;
+        annotation { 'Message' : 'Rounding multiple must have same units as rounded value' }
+        value.unit == multiple.unit;
+    }
+    else
+    {
+        (value / multiple) is number;
+    }
 }
 
 /**

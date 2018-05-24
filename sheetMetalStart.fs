@@ -1,33 +1,33 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "819.0");
-export import(path : "onshape/std/query.fs", version : "819.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
 
-import(path : "onshape/std/attributes.fs", version : "819.0");
-import(path : "onshape/std/box.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/coordSystem.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-import(path : "onshape/std/error.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/geomOperations.fs", version : "819.0");
-import(path : "onshape/std/manipulator.fs", version : "819.0");
-import(path : "onshape/std/math.fs", version : "819.0");
-import(path : "onshape/std/modifyFillet.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
-import(path : "onshape/std/sketch.fs", version : "819.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "819.0");
-import(path : "onshape/std/string.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/tool.fs", version : "819.0");
-import(path : "onshape/std/topologyUtils.fs", version : "819.0");
-import(path : "onshape/std/valueBounds.fs", version : "819.0");
-import(path : "onshape/std/vector.fs", version : "819.0");
+import(path : "onshape/std/attributes.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/coordSystem.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+import(path : "onshape/std/error.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/geomOperations.fs", version : "834.0");
+import(path : "onshape/std/manipulator.fs", version : "834.0");
+import(path : "onshape/std/math.fs", version : "834.0");
+import(path : "onshape/std/modifyFillet.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "834.0");
+import(path : "onshape/std/sketch.fs", version : "834.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "834.0");
+import(path : "onshape/std/string.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/tool.fs", version : "834.0");
+import(path : "onshape/std/topologyUtils.fs", version : "834.0");
+import(path : "onshape/std/valueBounds.fs", version : "834.0");
+import(path : "onshape/std/vector.fs", version : "834.0");
 
 /**
  * Method of initializing sheet metal model
@@ -83,9 +83,17 @@ export const CORNER_RELIEF_SCALE_BOUNDS =
 } as RealBoundSpec;
 
 /**
- * Bend relief scale bounds
+ * Bend relief depth scale bounds
  */
-export const BEND_RELIEF_SCALE_BOUNDS =
+export const BEND_RELIEF_DEPTH_SCALE_BOUNDS =
+{
+    (unitless) : [1.0, 2.0, 5.0]
+} as RealBoundSpec;
+
+/**
+ * Bend relief width scale bounds
+ */
+export const BEND_RELIEF_WIDTH_SCALE_BOUNDS =
 {
     (unitless) : [0.0625, 1.0625, 2.0]
 } as RealBoundSpec;
@@ -241,9 +249,9 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
         {
             annotation { "Name" : "Bend relief depth scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isReal(definition.defaultBendReliefDepthScale, CORNER_RELIEF_SCALE_BOUNDS);
+            isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
             annotation { "Name" : "Bend relief width scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            isReal(definition.defaultBendReliefScale, BEND_RELIEF_SCALE_BOUNDS);
+            isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
         }
     }
     {
@@ -660,8 +668,7 @@ function convertRegion(context is Context, id is Id, definition is map)
     try
     {
         var createdQuery = qCreatedBy(extrudeId, EntityType.BODY);
-        var isStartCap = true;
-        opExtractSurface(context, id + "extract", { "faces" : qEntityFilter(qCapEntity(extrudeId, isStartCap), EntityType.FACE) });
+        opExtractSurface(context, id + "extract", { "faces" : qCapEntity(extrudeId, CapType.START, EntityType.FACE) });
         opDeleteBodies(context, id + "deleteBodies", {
                     "entities" : createdQuery
                 });

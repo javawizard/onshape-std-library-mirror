@@ -1,28 +1,28 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "819.0");
-export import(path : "onshape/std/query.fs", version : "819.0");
-export import(path : "onshape/std/tool.fs", version : "819.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/tool.fs", version : "834.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "819.0");
-import(path : "onshape/std/box.fs", version : "819.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "819.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/math.fs", version : "819.0");
-import(path : "onshape/std/primitives.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
-import(path : "onshape/std/string.fs", version : "819.0");
-import(path : "onshape/std/transform.fs", version : "819.0");
-import(path : "onshape/std/valueBounds.fs", version : "819.0");
+import(path : "onshape/std/attributes.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "834.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "834.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/math.fs", version : "834.0");
+import(path : "onshape/std/primitives.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "834.0");
+import(path : "onshape/std/string.fs", version : "834.0");
+import(path : "onshape/std/transform.fs", version : "834.0");
+import(path : "onshape/std/valueBounds.fs", version : "834.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -350,6 +350,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
 
     booleanDefinition.eraseImprintedEdges = definition.eraseImprintedEdges;
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
+    booleanDefinition.allowSheets = definition.allowSheets;
 
     if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
     {
@@ -923,7 +924,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
     const toolCount = size(evaluateQuery(context, tool));
     var tools = [];
     var allTrimmed = [];
-    var capFacesQ = qEntityFilter(qUnion([qCapEntity(id + "thicken", true), qCapEntity(id + "thicken", false)]), EntityType.FACE);
+    var capFacesQ = qCapEntity(id + "thicken", CapType.EITHER, EntityType.FACE);
     for (var index = 0; index < toolCount; index += 1)
     {
         const subId = id + unstableIdComponent(index);

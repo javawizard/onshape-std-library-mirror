@@ -1,20 +1,20 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "819.0");
-export import(path : "onshape/std/tool.fs", version : "819.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/tool.fs", version : "834.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "819.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/topologyUtils.fs", version : "819.0");
-import(path : "onshape/std/transform.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
+import(path : "onshape/std/boolean.fs", version : "834.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/topologyUtils.fs", version : "834.0");
+import(path : "onshape/std/transform.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -139,7 +139,7 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qUnion([qCapEntity(id, true), qCapEntity(id, false)]), definition.profiles, transform);
+        var capMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.EITHER), definition.profiles, transform);
         var sweptMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "SWEPT_EDGE", EntityType.EDGE, {}), definition.path, transform);
         matches = concatenateArrays([capMatches, sweptMatches]);
         checkForNotJoinableSurfacesInScope(context, id, definition, matches);

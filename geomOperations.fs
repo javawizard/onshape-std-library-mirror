@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,15 +15,19 @@ FeatureScript 819; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-/* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "819.0");
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "819.0");
+import(path : "onshape/std/context.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+
+/* opBoolean uses enumerations from TopologyMatchType */
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "834.0");
+/* opDraft uses enumerations from DraftType */
+export import(path : "onshape/std/drafttype.gen.fs", version : "834.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "819.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "834.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "819.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "834.0");
+/* opSplitPart uses enumerations from SplitOperationKeepType */
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "834.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -148,15 +152,38 @@ export function opEnclose(context is Context, id is Id, definition is map)
  * Applies a given draft angle to faces.
  * @param id : @autocomplete `id + "draft1"`
  * @param definition {{
- *      @field neutralPlane {Query} : The face defining the neutral plane.  The intersection of the drafted faces
- *          and the neutral plane remains unchanged.
+ *      @field draftType {DraftType} :
+ *              Specifies a neutral plane or reference entity draft.
+ *              @eg `DraftType.NEUTRAL_PLANE` for a neutral plane draft
+ *
+ *      @field neutralPlane {Query} : @requiredif { `draftType` is `NEUTRAL_PLANE` }
+ *              The face defining the neutral plane for a `NEUTRAL_PLANE` draft.  The intersection of the drafted faces
+ *              and the neutral plane remains unchanged.
+ *              @autocomplete `neutralPlane`
+ *      @field draftFaces {Query} : @requiredif { `draftType` is `NEUTRAL_PLANE` }
+ *              The faces to draft for a `NEUTRAL_PLANE` draft.
+ *              @autocomplete `draftFaces`
+ *
+ *      @field referenceEntityDraftOptions {array} : @requiredif { `draftType` is `REFERENCE_ENTITY` }
+ *              An array of maps of the form ("face", "references", "angle").  "face" should be a [Query] for exactly one
+ *              face.  "references" should be a [Query] for at least one edge attached to the face.  The "face" will
+ *              be drafted while the geometry of the "references" remains unchanged. "angle" is an optional [ValueWithUnits]
+ *              parameter between -89.9 and 89.9 degrees which overrides the default `angle` parameter.
+ *
  *      @field pullVec {Vector} : The 3d direction relative to which the draft is applied.
  *              @eg `evPlane(context, {"face" : neutralPlane}).normal` will draft uniformly away from the neutral plane.
- *      @field draftFaces {Query} : The faces to draft.
- *      @field angle {ValueWithUnits} : The draft angle, must be between 0 and 89 degrees.
+ *      @field angle {ValueWithUnits} : The draft angle, must be between 0 and 89.9 degrees.
  *              @eg `3 * degree`
+ *
  *      @field tangentPropagation {boolean} : @optional
- *              `true` to propagate draft across tangent faces. Default is `false`.
+ *              For a `NEUTRAL_PLANE` draft, `true` to propagate draft across tangent faces.
+ *              Default is `false`.
+ *      @field referenceEntityPropagation {boolean} : @optional
+ *              For a `REFERENCE_ENTITY` draft, `true` to collect new reference entities and faces by pulling in edges
+ *              connected to the specified reference edges.  Connected edges on the same face or on tangent connected
+ *              faces will be pulled in.
+ *              Default is `false`.
+ *
  *      @field reFillet {boolean} : @optional
  *              `true` to attempt to defillet draft faces before the draft and reapply the fillets
  *              after. Default is `false`.

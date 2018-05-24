@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -20,7 +20,8 @@ export enum EntityInferenceType
     BOTTOM_AXIS_POINT,
     ORIGIN_X,
     ORIGIN_Y,
-    ORIGIN_Z
+    ORIGIN_Z,
+    LOOP_CENTER
 }
 
 

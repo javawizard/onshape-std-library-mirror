@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -672,7 +672,14 @@ export enum FeatureScriptVersionNumber
     V816_FAST_FEATURE_PATTERN,
     V817_SM_OPTIMIZATION,
     V818_FFP_FIX,
-    V819_ERROR_STRING_ENUM_ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT
+    V819_ERROR_STRING_ENUM_ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT,
+    V828_DRAFT_ONLY_SELECTED,
+    V829_REDEFINE_BEND_RELIEF_SCALE,
+    V830_SWEPT_EDGE_ON_VERTEX,
+    V831_HOLE_TOLERANT_DIST,
+    V832_PARTING_LINE_DRAFT,
+    V833_PARTING_LINE_DRAFT_FIXES,
+    V834_PARTING_LINE_DRAFT_FLIP
 }
 
 /**
@@ -683,6 +690,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V819_ERROR_STRING_ENUM_ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V834_PARTING_LINE_DRAFT_FLIP;
 
 

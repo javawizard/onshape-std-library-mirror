@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 819; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "819.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/context.fs", version : "819.0");
-import(path : "onshape/std/coordSystem.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "819.0");
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/query.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/string.fs", version : "819.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/box.fs", version : "834.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/context.fs", version : "834.0");
+import(path : "onshape/std/coordSystem.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/query.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/string.fs", version : "834.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/units.fs", version : "834.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -513,6 +513,11 @@ precondition
  *      @field edge{Query}
  *      @field face{Query}
  *      @field parameter{number}
+ *      @field usingFaceOrientation{boolean}:
+ *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
+ *             normal will keep `face` to the left. If false, use the default orientation of the edge,
+ *             which is the same orientation used by [evEdgeTangentLine]. Default is `false`.
+ *          @optional
  * }}
  */
 export function evFaceNormalAtEdge(context is Context, arg is map) returns Vector
@@ -528,6 +533,11 @@ export function evFaceNormalAtEdge(context is Context, arg is map) returns Vecto
  *      @field edge{Query}
  *      @field face{Query}
  *      @field parameter{number}
+ *      @field usingFaceOrientation{boolean}:
+ *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
+ *             normal will keep `face` to the left. If false, use the default orientation of the edge,
+ *             which is the same orientation used by [evEdgeTangentLine]. Default is `false`.
+ *          @optional
  * }}
  */
 export function evFaceTangentPlaneAtEdge(context is Context, arg is map) returns Plane
@@ -537,11 +547,13 @@ precondition
     arg.edge is Query;
     arg.face is Query;
     arg.parameter is number;
+    arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
 }
 {
     var edgeTangent = evEdgeTangentLine(context, {
             "edge" : arg.edge,
-            "parameter" : arg.parameter
+            "parameter" : arg.parameter,
+            "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined
     });
     var distData = evDistance(context, {
             "side0" : arg.face,

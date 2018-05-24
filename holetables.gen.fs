@@ -1,8 +1,8 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "819.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "819.0");
+import(path : "onshape/std/units.fs", version : "834.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "834.0");
 
 const ANSI_drillTable = {
     "name" : "size",
@@ -5817,7 +5817,7 @@ const ISO_TappedHoleTable = {
         "M1" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5842,7 +5842,7 @@ const ISO_TappedHoleTable = {
         "M1.1" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5867,7 +5867,7 @@ const ISO_TappedHoleTable = {
         "M1.2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5892,7 +5892,7 @@ const ISO_TappedHoleTable = {
         "M1.4" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.30 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5917,7 +5917,7 @@ const ISO_TappedHoleTable = {
         "M1.6" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.35 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5942,7 +5942,7 @@ const ISO_TappedHoleTable = {
         "M1.8" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.35 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "engagement",
@@ -5967,7 +5967,7 @@ const ISO_TappedHoleTable = {
         "M2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.25 mm",
+            "default" : "0.40 mm",
             "entries" : {
                 "0.25 mm" : {
                     "name" : "engagement",
@@ -5992,7 +5992,7 @@ const ISO_TappedHoleTable = {
         "M2.2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.25 mm",
+            "default" : "0.45 mm",
             "entries" : {
                 "0.25 mm" : {
                     "name" : "engagement",
@@ -6017,7 +6017,7 @@ const ISO_TappedHoleTable = {
         "M2.5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.35 mm",
+            "default" : "0.45 mm",
             "entries" : {
                 "0.35 mm" : {
                     "name" : "engagement",
@@ -6092,7 +6092,7 @@ const ISO_TappedHoleTable = {
         "M4.5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.50 mm",
+            "default" : "0.75 mm",
             "entries" : {
                 "0.50 mm" : {
                     "name" : "engagement",
@@ -6167,7 +6167,7 @@ const ISO_TappedHoleTable = {
         "M7" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.75 mm",
+            "default" : "1.0 mm",
             "entries" : {
                 "0.75 mm" : {
                     "name" : "engagement",
@@ -6353,7 +6353,7 @@ const ISO_TappedHoleTable = {
         "M18" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.5 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "engagement",
@@ -6421,7 +6421,7 @@ const ISO_TappedHoleTable = {
         "M22" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.5 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "engagement",
@@ -6455,7 +6455,7 @@ const ISO_TappedHoleTable = {
         "M24" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.0 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "engagement",
@@ -6480,7 +6480,7 @@ const ISO_TappedHoleTable = {
         "M27" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.0 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "engagement",
@@ -6505,7 +6505,7 @@ const ISO_TappedHoleTable = {
         "M30" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.5 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "engagement",
@@ -6530,7 +6530,7 @@ const ISO_TappedHoleTable = {
         "M33" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.5 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "engagement",
@@ -6555,7 +6555,7 @@ const ISO_TappedHoleTable = {
         "M36" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "engagement",
@@ -6580,7 +6580,7 @@ const ISO_TappedHoleTable = {
         "M39" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "engagement",
@@ -6605,7 +6605,7 @@ const ISO_TappedHoleTable = {
         "M42" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.5 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "engagement",
@@ -6630,7 +6630,7 @@ const ISO_TappedHoleTable = {
         "M45" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.5 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "engagement",
@@ -6655,7 +6655,7 @@ const ISO_TappedHoleTable = {
         "M48" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "5.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "engagement",
@@ -6680,7 +6680,7 @@ const ISO_TappedHoleTable = {
         "M52" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.0 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "engagement",
@@ -6705,7 +6705,7 @@ const ISO_TappedHoleTable = {
         "M56" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.5 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "engagement",
@@ -6730,7 +6730,7 @@ const ISO_TappedHoleTable = {
         "M60" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.5 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "engagement",
@@ -6755,7 +6755,7 @@ const ISO_TappedHoleTable = {
         "M64" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "6.0 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "engagement",
@@ -6804,7 +6804,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -6879,7 +6879,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1.1" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -6954,7 +6954,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1.2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.25 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -7029,7 +7029,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1.4" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.30 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -7104,7 +7104,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1.6" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.35 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -7179,7 +7179,7 @@ const ISO_ThroughTappedScrewTable = {
         "M1.8" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.20 mm",
+            "default" : "0.35 mm",
             "entries" : {
                 "0.20 mm" : {
                     "name" : "fit",
@@ -7254,7 +7254,7 @@ const ISO_ThroughTappedScrewTable = {
         "M2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.25 mm",
+            "default" : "0.40 mm",
             "entries" : {
                 "0.25 mm" : {
                     "name" : "fit",
@@ -7329,7 +7329,7 @@ const ISO_ThroughTappedScrewTable = {
         "M2.2" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.25 mm",
+            "default" : "0.45 mm",
             "entries" : {
                 "0.25 mm" : {
                     "name" : "fit",
@@ -7404,7 +7404,7 @@ const ISO_ThroughTappedScrewTable = {
         "M2.5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.35 mm",
+            "default" : "0.45 mm",
             "entries" : {
                 "0.35 mm" : {
                     "name" : "fit",
@@ -7629,7 +7629,7 @@ const ISO_ThroughTappedScrewTable = {
         "M4.5" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.50 mm",
+            "default" : "0.75 mm",
             "entries" : {
                 "0.50 mm" : {
                     "name" : "fit",
@@ -7854,7 +7854,7 @@ const ISO_ThroughTappedScrewTable = {
         "M7" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "0.75 mm",
+            "default" : "1.0 mm",
             "entries" : {
                 "0.75 mm" : {
                     "name" : "fit",
@@ -8440,7 +8440,7 @@ const ISO_ThroughTappedScrewTable = {
         "M18" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.5 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "fit",
@@ -8658,7 +8658,7 @@ const ISO_ThroughTappedScrewTable = {
         "M22" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "1.50 mm",
+            "default" : "2.5 mm",
             "entries" : {
                 "1.50 mm" : {
                     "name" : "fit",
@@ -8767,7 +8767,7 @@ const ISO_ThroughTappedScrewTable = {
         "M24" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.0 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "fit",
@@ -8842,7 +8842,7 @@ const ISO_ThroughTappedScrewTable = {
         "M27" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.0 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "fit",
@@ -8917,7 +8917,7 @@ const ISO_ThroughTappedScrewTable = {
         "M30" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.5 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "fit",
@@ -8992,7 +8992,7 @@ const ISO_ThroughTappedScrewTable = {
         "M33" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "2.0 mm",
+            "default" : "3.5 mm",
             "entries" : {
                 "2.0 mm" : {
                     "name" : "fit",
@@ -9067,7 +9067,7 @@ const ISO_ThroughTappedScrewTable = {
         "M36" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "fit",
@@ -9142,7 +9142,7 @@ const ISO_ThroughTappedScrewTable = {
         "M39" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "fit",
@@ -9217,7 +9217,7 @@ const ISO_ThroughTappedScrewTable = {
         "M42" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.5 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "fit",
@@ -9292,7 +9292,7 @@ const ISO_ThroughTappedScrewTable = {
         "M45" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "4.5 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "fit",
@@ -9367,7 +9367,7 @@ const ISO_ThroughTappedScrewTable = {
         "M48" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "3.0 mm",
+            "default" : "5.0 mm",
             "entries" : {
                 "3.0 mm" : {
                     "name" : "fit",
@@ -9442,7 +9442,7 @@ const ISO_ThroughTappedScrewTable = {
         "M52" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.0 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "fit",
@@ -9517,7 +9517,7 @@ const ISO_ThroughTappedScrewTable = {
         "M56" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.5 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "fit",
@@ -9592,7 +9592,7 @@ const ISO_ThroughTappedScrewTable = {
         "M60" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "5.5 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "fit",
@@ -9667,7 +9667,7 @@ const ISO_ThroughTappedScrewTable = {
         "M64" : {
             "name" : "pitch",
             "displayName" : "Pitch",
-            "default" : "4.0 mm",
+            "default" : "6.0 mm",
             "entries" : {
                 "4.0 mm" : {
                     "name" : "fit",

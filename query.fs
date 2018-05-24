@@ -1,4 +1,4 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 819; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/context.fs", version : "819.0");
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/units.fs", version : "819.0");
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-import(path : "onshape/std/featureList.fs", version : "819.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/context.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/units.fs", version : "834.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+import(path : "onshape/std/featureList.fs", version : "834.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -296,6 +296,22 @@ export enum GeometryType
     EXTRUDED,
     OTHER_SURFACE,
     MESH
+}
+
+/**
+ * Specifies which cap queried entities should belong to.
+ *
+ * @seealso [qCapEntity]
+ *
+ * @value START : finds entities belonging to the start cap
+ * @value END : finds entities belonging to the end cap
+ * @value EITHER : finds entities belonging to either cap
+ */
+export enum CapType
+{
+    START,
+    END,
+    EITHER
 }
 
 /**
@@ -714,22 +730,77 @@ export function qLaminarDependency(subquery is Query) returns Query
 
 
 /**
-* A query for start/end cap entities created by featureId.
-* Cap entities are produced by extrude, revolve, sweep and loft features
-*/
-export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
+ * A query for start/end cap vertex, edge, and face entities created by `featureId`.
+ * Cap entities are produced by extrude, revolve, sweep and loft features
+ * @param featureId : @autocomplete `id + "extrude1"`
+ * @param capType : @autocomplete `CapType.END`
+ * @param entityType : @optional @autocomplete `EntityType.FACE`
+ */
+export function qCapEntity(featureId is Id, capType is CapType, entityType is EntityType) returns Query
+precondition
 {
-    return { "queryType" : QueryType.CAP_ENTITY,
-             "featureId" : featureId,
-            "startCap" : isStartCap} as Query;
+    annotation { "Message" : "qCapEntity cannot resolve bodies" }
+    entityType != EntityType.BODY;
+}
+{
+    return {
+            "queryType" : QueryType.CAP_ENTITY,
+            "featureId" : featureId,
+            "capType" : capType,
+            "entityType" : entityType
+        } as Query;
 }
 
 /**
-* @internal
-* Under development, not for general use.
-*
-* A query for looking up entities named by opNameTopology
-*/
+ * @param featureId : @autocomplete `id + "extrude1"`
+ * @param capType : @autocomplete `CapType.END`
+ */
+export function qCapEntity(featureId is Id, capType is CapType) returns Query
+{
+    return {
+            "queryType" : QueryType.CAP_ENTITY,
+            "featureId" : featureId,
+            "capType" : capType
+        } as Query;
+}
+
+/** @internal */
+annotation { "Deprecated" : "[qCapEntity] now takes a [CapType] rather than a `boolean`" }
+export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
+{
+    return qCapEntity(featureId, isStartCap ? CapType.START : CapType.END);
+}
+
+/**
+ * A query for vertex, edge, and face entities created by `featureId` that are not cap entities.
+ * Cap entities are produced by extrude, revolve, sweep and loft features
+ * @param featureId : @autocomplete `id + "extrude1"`
+ * @param entityType: @optional @autocomplete `EntityType.FACE`
+ */
+export function qNonCapEntity(featureId is Id, entityType is EntityType) returns Query
+precondition
+{
+    annotation { "Message" : "qNonCapEntity cannot resolve bodies" }
+    entityType != EntityType.BODY;
+}
+{
+    return qSubtraction(qCreatedBy(featureId, entityType), qCapEntity(featureId, CapType.EITHER));
+}
+
+/**
+ * @param featureId : @autocomplete `id + "extrude1"`
+ */
+export function qNonCapEntity(featureId is Id) returns Query
+{
+    return qSubtraction(qCreatedBy(featureId), qUnion([qCreatedBy(featureId, EntityType.BODY), qCapEntity(featureId, CapType.EITHER)]));
+}
+
+/**
+ * @internal
+ * Under development, not for general use.
+ *
+ * A query for looking up entities named by opNameTopology
+ */
 export function qNamed(name is string) returns Query
 {
     return makeQuery({"queryType" : "NAMED",

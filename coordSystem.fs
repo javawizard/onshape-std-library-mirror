@@ -1,10 +1,15 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/units.fs", version : "819.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/units.fs", version : "834.0");
+
+/**
+ * The world coordinate system, whose axes all other coordinate systems are defined against.
+ */
+export const WORLD_COORD_SYSTEM = coordSystem(vector(0, 0, 0) * meter, vector(1, 0, 0), vector(0, 0, 1));
 
 /**
  * A right-handed Cartesian coordinate system. Used for converting points and

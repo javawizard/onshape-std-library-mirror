@@ -1,20 +1,20 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "819.0");
+export import(path : "onshape/std/patternUtils.fs", version : "834.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "819.0");
+export import(path : "onshape/std/path.fs", version : "834.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "819.0");
-import(path : "onshape/std/mathUtils.fs", version : "819.0");
-import(path : "onshape/std/sketch.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
-import(path : "onshape/std/topologyUtils.fs", version : "819.0");
+import(path : "onshape/std/curveGeometry.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "834.0");
+import(path : "onshape/std/sketch.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+import(path : "onshape/std/topologyUtils.fs", version : "834.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -368,7 +368,7 @@ function getSketchPoint(context is Context, id is Id, sketchIndex is number, pre
     var sketchPointTransform = transform(prevEdgeEndPointTangent, currEdgeStartPointTangent);
 
     // find the vertex that was the result of sweeping the previous sketchPoint
-    var prevEndCapPointQueries = qEntityFilter(qCapEntity(id + ("sweep" ~ (sketchIndex - 1)), false), EntityType.VERTEX);
+    var prevEndCapPointQueries = qCapEntity(id + ("sweep" ~ (sketchIndex - 1)), CapType.END, EntityType.VERTEX);
     var prevSketchPoint3D = evVertexPoint(context, { "vertex" : qIntersection([prevEndCapPointQueries, trackingQuery]) });
 
     // calculate the new sketchPoint

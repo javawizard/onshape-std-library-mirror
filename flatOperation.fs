@@ -1,20 +1,20 @@
-FeatureScript 819; /* Automatically generated version */
+FeatureScript 834; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Under development, internal use only
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "819.0");
+export import(path : "onshape/std/query.fs", version : "834.0");
 
-import(path : "onshape/std/attributes.fs", version : "819.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "819.0");
-import(path : "onshape/std/containers.fs", version : "819.0");
-import(path : "onshape/std/evaluate.fs", version : "819.0");
-import(path : "onshape/std/feature.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "819.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "819.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "819.0");
+import(path : "onshape/std/attributes.fs", version : "834.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "834.0");
+import(path : "onshape/std/evaluate.fs", version : "834.0");
+import(path : "onshape/std/feature.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "834.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "834.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
 
 /**
  * @internal
@@ -26,7 +26,7 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
     {
         annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
         definition.flatOperationType is FlatOperationType;
-        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE && AllowFlattenedGeometry.YES }
+        annotation { "Name" : "Faces and sketch regions", "Filter" : EntityType.FACE && AllowFlattenedGeometry.YES && SketchObject.YES }
         definition.faces is Query;
     }
     {
@@ -37,6 +37,18 @@ export const SMFlatOperation = defineSheetMetalFeature(function(context is Conte
         const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
+
+        for (var face in evaluateQuery(context, qEntityFilter(qCreatedBy(id), EntityType.FACE)))
+        {
+            var jointAttribute = getJointAttribute(context, face);
+            if (jointAttribute != undefined && jointAttribute.radius != undefined && jointAttribute.radius.canBeEdited)
+            {
+                removeAttributes(context, { "entities" : face, "attributePattern" : jointAttribute });
+                jointAttribute.radius.canBeEdited = false;
+                setAttribute(context, { "entities" : face, "attribute" : jointAttribute });
+            }
+        }
+
         const newEntities = qUnion([qCreatedBy(id), tracking]);
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
 
