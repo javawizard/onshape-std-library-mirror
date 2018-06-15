@@ -328,6 +328,9 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
+    if (depth < 2 * TOLERANCE.booleanDefaultTolerance * meter) {
+        depth = (2 * TOLERANCE.booleanDefaultTolerance) * meter;
+    }
     const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
             "operationType" : NewBodyOperationType.REMOVE,
             "entities" : sketchRegionQuery,

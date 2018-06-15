@@ -47,9 +47,9 @@ export enum TransformType
 }
 
 /* Manipulator names */
-const ROTATE = "rotate";
-const OFFSET_LINE = "offsetLine";
-const TRANSLATION = "translation";
+const ROTATE = "rotateManipulator";
+const OFFSET_LINE = "offsetManipulator";
+const TRANSLATION = "translateManipulator";
 
 /* Reduce from [-2 pi, +2 pi] to [-pi, +pi] radians */
 function reduceAngle(angle is ValueWithUnits) returns ValueWithUnits

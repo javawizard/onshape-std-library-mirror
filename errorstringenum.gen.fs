@@ -1579,7 +1579,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FACE_PATTERN_FLOATING_WALL,
     /* No faces meet flattened sheet metal bodies. */
     SM_FLAT_OP_NO_INTERSECT,
-    /* Some faces don't meet flattened sheet metal bodies. */
+    /* Some faces don't meet flattened sheet metal parts. */
     SM_FLAT_OP_PARTIAL_INTERSECT,
     /* Added material can't cross edges of flattened sheet metal body. */
     SM_FLAT_OP_ADD_CROSSES_EDGE,
@@ -1587,9 +1587,9 @@ export enum ErrorStringEnum
     SM_FLAT_OP_NON_PLANAR_TOOL,
     /* Can only modify planar faces of flattened sheet metal body. */
     SM_FLAT_OP_NON_PLANAR_TARGET,
-    /* Sheet metal flat operation failed. Please open a JIRA ticket. */
+    /* Sheet metal flat operation failed. */
     SM_FLAT_OPERATION_FAILED,
-    /* Sheet metal flat operation only works on sheet metal created at V629 or later. */
+    /* Sheet metal flat operation only works on newer sheet metal parts. */
     SM_FLAT_OP_LEGACY_MODEL,
     /* Only linear edges can be used to flange. */
     SHEET_METAL_FLANGE_NON_LINEAR_EDGES,
@@ -1658,7 +1658,27 @@ export enum ErrorStringEnum
     /* Select pull direction. */
     DRAFT_SELECT_PULL_DIRECTION_ENTITY,
     /* Parting edge cannot be parallel to pull direction. */
-    DRAFT_PARALLEL_PARTING_EDGE
+    DRAFT_PARALLEL_PARTING_EDGE,
+    /* For better stability sketch plane should come from a single flattened sheet metal body. */
+    FLATTENED_SHEET_METAL_SKETCH_ONE_FACE,
+    /* Can only offset a single chain at once. */
+    SKETCH_OFFSET_CHAIN_FAIL,
+    /* Offset failed. No corresponding offset for reference curve. */
+    SKETCH_OFFSET_BASE_CURVE_CONSUMED,
+    /* Offset failed. One spline generated multiple offset curves. */
+    SKETCH_OFFSET_SPLINE_SPLIT,
+    /* Offset failed. One ellipse generated multiple offset curves. */
+    SKETCH_OFFSET_ELLIPSE_SPLIT,
+    /* No corresponding flattened part for sketch. */
+    CANNOT_FIND_FLATTENED_BODY,
+    /* Operation can be performed only on active sheet metal model. */
+    SHEET_METAL_ACTIVE_MODEL_REQUIRED,
+    /* Can only reference the flattened part the sketch is on. */
+    SKETCH_REFERENCE_WRONG_FLAT_PART,
+    /* Cannot reference 3D geometry from a sketch on flattened sheet metal. */
+    SKETCH_CANNOT_REFERENCE_3D,
+    /* Cannot join faces with different relative positions in flat pattern. */
+    SM_FLAT_OP_CANNOT_JOIN_DIFFERENT_TRANSFORMS
 }
 
 

@@ -24,7 +24,8 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  *      @field entities {Query} : The bodies to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.  Currently `CUSTOM` is not supported.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
- *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`, and a string otherwise.
+ *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
+ *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.
  *          @eg `color(1, 0, 0)` to make the part red.
  * }}
  */
@@ -39,6 +40,8 @@ precondition
         definition.value is Color;
     else if (definition.propertyType == PropertyType.MATERIAL)
         definition.value is Material;
+    else if (definition.propertyType == PropertyType.EXCLUDE_FROM_BOM)
+        definition.value is boolean;
     else
         definition.value is string;
 }

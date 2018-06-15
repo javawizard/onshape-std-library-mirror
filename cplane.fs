@@ -307,8 +307,8 @@ function lineAnglePlane(context is Context, id is Id, definition is map, entitie
         throw regenError(requiresLineAxisMessage, ["entities"]);
     if (size(entities) > 2)
         throw regenError(tooManyEntitiesMessage, ["entities"]);
-    var axis1 = try(evAxis(context, { "axis" : entities[0] }));
-    var axis2 = try(evAxis(context, { "axis" : entities[1] }));
+    var axis1 = try silent(evAxis(context, { "axis" : entities[0] }));
+    var axis2 = try silent(evAxis(context, { "axis" : entities[1] }));
 
     if (axis1 == undefined) // If the plane or point is selected first, swap.
     {
@@ -332,14 +332,14 @@ function lineAnglePlane(context is Context, id is Id, definition is map, entitie
     }
     else
     {
-        var plane = try(evPlane(context, { "face" : entities[1] }));
+        var plane = try silent(evPlane(context, { "face" : entities[1] }));
         if (plane != undefined)
         {
             secondInPlaneDirection = cross(axis1.direction, plane.normal) * meter;
         }
         else
         {
-            var point = try(evVertexPoint(context, { "vertex" : entities[1] }));
+            var point = try silent(evVertexPoint(context, { "vertex" : entities[1] }));
             if (point != undefined)
                 secondInPlaneDirection = point - axis1.origin;
         }

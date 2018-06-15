@@ -25,6 +25,14 @@ export predicate canBeBuildFunction(value)
     value is function;
 }
 
+/** @internal */
+export type TabData typecheck canBeTabData;
+
+/** @internal */
+export predicate canBeTabData(value) {
+    value is map;
+}
+
 /**
  * Feature performing an [opMergeContexts], used for including parts in one
  * Part Studio that were designed in another.

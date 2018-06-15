@@ -17,7 +17,7 @@ export const WORLD_COORD_SYSTEM = coordSystem(vector(0, 0, 0) * meter, vector(1,
  * mate connectors.
  *
  * The y-axis of a coordinate system is not stored, but it can be obtained by
- * calling `yAxis`, which simply performs a cross product.
+ * calling the [yAxis](yAxis(CoordSystem)) function, which simply performs a cross product.
  *
  * @seealso [toWorld(CoordSystem)]
  * @seealso [fromWorld(CoordSystem)]
