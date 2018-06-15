@@ -1,10 +1,10 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "834.0");
-import(path : "onshape/std/units.fs", version : "834.0");
+import(path : "onshape/std/mathUtils.fs", version : "847.0");
+import(path : "onshape/std/units.fs", version : "847.0");
 
 /**
  * The world coordinate system, whose axes all other coordinate systems are defined against.
@@ -17,7 +17,7 @@ export const WORLD_COORD_SYSTEM = coordSystem(vector(0, 0, 0) * meter, vector(1,
  * mate connectors.
  *
  * The y-axis of a coordinate system is not stored, but it can be obtained by
- * calling `yAxis`, which simply performs a cross product.
+ * calling the [yAxis](yAxis(CoordSystem)) function, which simply performs a cross product.
  *
  * @seealso [toWorld(CoordSystem)]
  * @seealso [fromWorld(CoordSystem)]

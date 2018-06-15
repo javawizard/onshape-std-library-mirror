@@ -1,25 +1,25 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "834.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "847.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "834.0");
-import(path : "onshape/std/containers.fs", version : "834.0");
-import(path : "onshape/std/coordSystem.fs", version : "834.0");
-import(path : "onshape/std/evaluate.fs", version : "834.0");
-import(path : "onshape/std/extrude.fs", version : "834.0");
-import(path : "onshape/std/feature.fs", version : "834.0");
-import(path : "onshape/std/math.fs", version : "834.0");
-import(path : "onshape/std/sketch.fs", version : "834.0");
-import(path : "onshape/std/tool.fs", version : "834.0");
-import(path : "onshape/std/units.fs", version : "834.0");
-import(path : "onshape/std/vector.fs", version : "834.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "847.0");
+import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/coordSystem.fs", version : "847.0");
+import(path : "onshape/std/evaluate.fs", version : "847.0");
+import(path : "onshape/std/extrude.fs", version : "847.0");
+import(path : "onshape/std/feature.fs", version : "847.0");
+import(path : "onshape/std/math.fs", version : "847.0");
+import(path : "onshape/std/sketch.fs", version : "847.0");
+import(path : "onshape/std/tool.fs", version : "847.0");
+import(path : "onshape/std/units.fs", version : "847.0");
+import(path : "onshape/std/vector.fs", version : "847.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "847.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -328,6 +328,9 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
+    if (depth < 2 * TOLERANCE.booleanDefaultTolerance * meter) {
+        depth = (2 * TOLERANCE.booleanDefaultTolerance) * meter;
+    }
     const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
             "operationType" : NewBodyOperationType.REMOVE,
             "entities" : sketchRegionQuery,

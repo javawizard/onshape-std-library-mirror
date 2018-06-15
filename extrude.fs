@@ -1,30 +1,55 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "834.0");
-export import(path : "onshape/std/query.fs", version : "834.0");
-export import(path : "onshape/std/tool.fs", version : "834.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "847.0");
+export import(path : "onshape/std/query.fs", version : "847.0");
+export import(path : "onshape/std/tool.fs", version : "847.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "834.0");
+export import(path : "onshape/std/manipulator.fs", version : "847.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "834.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "834.0");
-import(path : "onshape/std/box.fs", version : "834.0");
-import(path : "onshape/std/containers.fs", version : "834.0");
-import(path : "onshape/std/coordSystem.fs", version : "834.0");
-import(path : "onshape/std/curveGeometry.fs", version : "834.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "834.0");
-import(path : "onshape/std/evaluate.fs", version : "834.0");
-import(path : "onshape/std/feature.fs", version : "834.0");
-import(path : "onshape/std/mathUtils.fs", version : "834.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
-import(path : "onshape/std/transform.fs", version : "834.0");
-import(path : "onshape/std/valueBounds.fs", version : "834.0");
+import(path : "onshape/std/attributes.fs", version : "847.0");
+import(path : "onshape/std/boolean.fs", version : "847.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "847.0");
+import(path : "onshape/std/box.fs", version : "847.0");
+import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/coordSystem.fs", version : "847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "847.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "847.0");
+import(path : "onshape/std/evaluate.fs", version : "847.0");
+import(path : "onshape/std/feature.fs", version : "847.0");
+import(path : "onshape/std/mathUtils.fs", version : "847.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "847.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "847.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "847.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
+import(path : "onshape/std/transform.fs", version : "847.0");
+import(path : "onshape/std/valueBounds.fs", version : "847.0");
+
+/**
+ * The viewer being operated in
+ * @internal
+ */
+export enum OperationDomain
+{
+    MODEL,
+    FLAT
+}
+
+/**
+ * @internal
+ */
+export enum FlatOperationType
+{
+    annotation { "Name" : "Add" }
+    ADD,
+    annotation { "Name" : "Remove" }
+    REMOVE
+}
 
 /**
  * Create an extrude, as used in Onshape's extrude feature.
@@ -130,23 +155,35 @@ annotation { "Feature Type Name" : "Extrude",
 export const extrude = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
-        definition.bodyType is ToolBodyType;
+        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : OperationDomain.MODEL }
+        definition.domain is OperationDomain;
 
-        if (definition.bodyType != ToolBodyType.SURFACE)
+        if (definition.domain != OperationDomain.FLAT)
         {
-            booleanStepTypePredicate(definition);
+            annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+            definition.bodyType is ToolBodyType;
+
+            if (definition.bodyType != ToolBodyType.SURFACE)
+            {
+                booleanStepTypePredicate(definition);
+            }
+            else
+            {
+                surfaceOperationTypePredicate(definition);
+            }
         }
         else
         {
-            surfaceOperationTypePredicate(definition);
+            annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM", "Default" : FlatOperationType.REMOVE }
+            definition.flatOperationType is FlatOperationType;
         }
 
-        if (definition.bodyType != ToolBodyType.SURFACE)
+        if (definition.bodyType != ToolBodyType.SURFACE || definition.domain == OperationDomain.FLAT)
         {
             annotation { "Name" : "Faces and sketch regions to extrude",
-                         "Filter" : (EntityType.FACE && GeometryType.PLANE)
-                            && ConstructionObject.NO }
+                         "Filter" : ((AllowFlattenedGeometry.YES && SketchObject.YES && EntityType.FACE) ||
+                          (GeometryType.PLANE && AllowFlattenedGeometry.NO && EntityType.FACE)) && ConstructionObject.NO
+                          }
             definition.entities is Query;
         }
         else
@@ -156,76 +193,29 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.surfaceEntities is Query;
         }
 
-        annotation { "Name" : "End type" }
-        definition.endBound is BoundingType;
-
-        if (definition.endBound != BoundingType.SYMMETRIC)
+        if (definition.domain != OperationDomain.FLAT)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-            definition.oppositeDirection is boolean;
-        }
-
-        extrudeBoundParametersPredicate(definition);
-
-        if (definition.bodyType == ToolBodyType.SOLID)
-        {
-            annotation { "Name" : "Draft", "UIHint" : "DISPLAY_SHORT" }
-            definition.hasDraft is boolean;
-
-            if (definition.hasDraft == true)
-            {
-                annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
-                isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
-
-                annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-                definition.draftPullDirection is boolean;
-            }
-        }
-
-        if (definition.endBound != BoundingType.SYMMETRIC)
-        {
-            annotation { "Name" : "Second end position" }
-            definition.hasSecondDirection is boolean;
-
-            if (definition.hasSecondDirection)
-            {
-                annotation { "Name" : "End type", "Column Name" : "Second end type" }
-                definition.secondDirectionBound is SecondDirectionBoundingType;
-
-                annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                             "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
-                definition.secondDirectionOppositeDirection is boolean;
-
-                extrudeSecondDirectionBoundParametersPredicate(definition);
-
-                if (definition.bodyType == ToolBodyType.SOLID &&
-                    ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
-                     (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
-                {
-                    annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : "DISPLAY_SHORT" }
-                    definition.hasSecondDirectionDraft is boolean;
-
-                    if (definition.hasSecondDirectionDraft)
-                    {
-                        annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : "DISPLAY_SHORT" }
-                        isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
-
-                        annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
-                        definition.secondDirectionDraftPullDirection is boolean;
-                    }
-                }
-            }
-        }
-        if (definition.bodyType != ToolBodyType.SURFACE)
-        {
-            booleanStepScopePredicate(definition);
-        }
-        else
-        {
-            surfaceJoinStepScopePredicate(definition);
+            mainViewExtrudePredicate(definition);
         }
     }
     {
+        if (definition.domain == OperationDomain.FLAT)
+        {
+            const modelEntities = qSMFlatFilter(definition.entities, SMFlatType.NO);
+            if (size(evaluateQuery(context, modelEntities)) > 0)
+            {
+                throw regenError(ErrorStringEnum.EXTRUDE_3D_AND_FLAT, ["entities"], modelEntities);
+            }
+            try(SMFlatOp(context, id + "flatOp", { "faces" : definition.entities,
+                            "flatOperationType" : definition.flatOperationType }));
+            processSubfeatureStatus(context, id, { "subfeatureId" : id + "flatOp", "propagateErrorDisplay" : true });
+            return;
+        }
+        else if (definition.bodyType == ToolBodyType.SOLID && queryContainsFlattenedSheetMetal(context, definition.entities))
+        {
+            throw regenError(ErrorStringEnum.EXTRUDE_3D_AND_FLAT, ["entities"], qSMFlatFilter(definition.entities, SMFlatType.YES));
+        }
+
         // Handle negative inputs
         definition = adjustExtrudeDirectionForBlind(definition);
 
@@ -284,7 +274,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             hasDraft: false, hasSecondDirectionDraft: false,
             draftPullDirection : false, secondDirectionDraftPullDirection : false,
             surfaceOperationType : NewSurfaceOperationType.NEW,
-            defaultSurfaceScope : true
+            defaultSurfaceScope : true,
+            domain : OperationDomain.MODEL,
+            flatOperationType : FlatOperationType.REMOVE
     });
 
 predicate supportsDraft(definition is map)
@@ -322,6 +314,114 @@ predicate needsSplit(definition is map)
 {
     definition.endBound == BoundingType.SYMMETRIC || (hasSecondDirectionExtrude(definition) && definition.secondDirectionOppositeDirection != definition.oppositeDirection);
 }
+
+predicate mainViewExtrudePredicate(definition is map)
+{
+    annotation { "Name" : "End type" }
+    definition.endBound is BoundingType;
+
+    if (definition.endBound != BoundingType.SYMMETRIC)
+    {
+        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        definition.oppositeDirection is boolean;
+    }
+
+    extrudeBoundParametersPredicate(definition);
+
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        annotation { "Name" : "Draft", "UIHint" : "DISPLAY_SHORT" }
+        definition.hasDraft is boolean;
+
+        if (definition.hasDraft == true)
+        {
+            annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
+            isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
+
+            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            definition.draftPullDirection is boolean;
+        }
+    }
+
+    if (definition.endBound != BoundingType.SYMMETRIC)
+    {
+        annotation { "Name" : "Second end position" }
+        definition.hasSecondDirection is boolean;
+
+        if (definition.hasSecondDirection)
+        {
+            annotation { "Name" : "End type", "Column Name" : "Second end type" }
+            definition.secondDirectionBound is SecondDirectionBoundingType;
+
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                         "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+            definition.secondDirectionOppositeDirection is boolean;
+
+            extrudeSecondDirectionBoundParametersPredicate(definition);
+
+            if (definition.bodyType == ToolBodyType.SOLID &&
+                ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
+                 (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
+            {
+                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : "DISPLAY_SHORT" }
+                definition.hasSecondDirectionDraft is boolean;
+
+                if (definition.hasSecondDirectionDraft)
+                {
+                    annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : "DISPLAY_SHORT" }
+                    isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
+
+                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                    definition.secondDirectionDraftPullDirection is boolean;
+                }
+            }
+        }
+    }
+    if (definition.bodyType != ToolBodyType.SURFACE)
+    {
+        booleanStepScopePredicate(definition);
+    }
+    else
+    {
+        surfaceJoinStepScopePredicate(definition);
+    }
+}
+
+const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+    {
+        const bodyQ = qUnion([qPartsAttachedTo(definition.faces), qOwnerBody(definition.faces)]);
+        if (!areEntitiesFromSingleActiveSheetMetalModel(context, bodyQ))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_MODEL_REQUIRED);
+        }
+        const smDefinitionBodiesQ = getSheetMetalModelForPart(context, bodyQ);
+        const sheetMetalEntitiesQ = qUnion([qOwnedByBody(smDefinitionBodiesQ, EntityType.EDGE), qOwnedByBody(smDefinitionBodiesQ, EntityType.FACE), smDefinitionBodiesQ]);
+        const tracking = startTracking(context, sheetMetalEntitiesQ);
+
+        const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
+        definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
+        opSMFlatOperation(context, id, definition);
+
+        for (var face in evaluateQuery(context, qEntityFilter(qCreatedBy(id), EntityType.FACE)))
+        {
+            var jointAttribute = getJointAttribute(context, face);
+            if (jointAttribute != undefined && jointAttribute.radius != undefined && jointAttribute.radius.canBeEdited)
+            {
+                removeAttributes(context, { "entities" : face, "attributePattern" : jointAttribute });
+                jointAttribute.radius.canBeEdited = false;
+                setAttribute(context, { "entities" : face, "attribute" : jointAttribute });
+            }
+        }
+
+        const newEntities = qUnion([qCreatedBy(id), tracking]);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
+
+        try (updateSheetMetalGeometry(context, id + "smUpdate", {
+                    "entities" : toUpdate.modifiedEntities,
+                    "deletedAttributes" : toUpdate.deletedAttributes,
+                    "associatedChanges" : tracking }));
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
+    }, {});
 
 function extrudeWithDraft(context is Context, id is Id, definition is map, draftCondition is map)
 {
@@ -592,6 +692,19 @@ function upToBoundaryFlip(context is Context, definition is map) returns map
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        const hasFlatEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.YES))) > 0;
+        const hasModelEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.NO))) > 0;
+        if (hasFlatEntities && !hasModelEntities)
+        {
+            definition.domain = OperationDomain.FLAT;
+        }
+        else if (hasModelEntities && !hasFlatEntities)
+        {
+            definition.domain = OperationDomain.MODEL;
+        }
+    }
     // If this function is changed, make sure to reflect the change in sheetMetalStart::sheetMetalStartEditLogic.
 
     var retestDirectionFlip = false;

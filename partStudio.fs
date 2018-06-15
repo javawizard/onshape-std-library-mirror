@@ -1,9 +1,9 @@
-FeatureScript 834; /* Automatically generated version */
-import(path : "onshape/std/context.fs", version : "834.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "834.0");
+FeatureScript 847; /* Automatically generated version */
+import(path : "onshape/std/context.fs", version : "847.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "847.0");
 
-import(path : "onshape/std/containers.fs", version : "834.0");
-import(path : "onshape/std/units.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/units.fs", version : "847.0");
 
 /** @internal */
 export function definePartStudio(partStudio is function, defaultLengthUnit is ValueWithUnits, defaults is map) returns function

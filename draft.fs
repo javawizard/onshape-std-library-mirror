@@ -1,21 +1,21 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "847.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "834.0");
-import(path : "onshape/std/curveGeometry.fs", version : "834.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "834.0");
-import(path : "onshape/std/evaluate.fs", version : "834.0");
-import(path : "onshape/std/feature.fs", version : "834.0");
-import(path : "onshape/std/manipulator.fs", version : "834.0");
-import(path : "onshape/std/topologyUtils.fs", version : "834.0");
-import(path : "onshape/std/valueBounds.fs", version : "834.0");
-import(path : "onshape/std/vector.fs", version : "834.0");
+import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "847.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "847.0");
+import(path : "onshape/std/evaluate.fs", version : "847.0");
+import(path : "onshape/std/feature.fs", version : "847.0");
+import(path : "onshape/std/manipulator.fs", version : "847.0");
+import(path : "onshape/std/topologyUtils.fs", version : "847.0");
+import(path : "onshape/std/valueBounds.fs", version : "847.0");
+import(path : "onshape/std/vector.fs", version : "847.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -200,13 +200,21 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
 
         definition.draftType = getDraftType(definition);
 
+        var edgeToOrderedFaceData = {};
+        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+        {
+            edgeToOrderedFaceData = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
+                    definition.hintFaces, true);
+        }
+
         // add draft manipulators before getting reference entity draft options, as getting reference entity draft
         // options may fail on cases where we still want to show manipulators.
-        addDraftManipulators(context, id, rawPullDirection, definition);
+        addDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
 
         if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
         {
-            definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection, definition);
+            definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection,
+                    edgeToOrderedFaceData, definition);
         }
 
         opDraft(context, id, definition);
@@ -265,28 +273,12 @@ function getNeutralPlane(context is Context, definition is map)
 /**
  * Assemble referenceEntityDraftOptions map to pass into [opDraft].
  */
-function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, definition is map) returns array
+function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, edgeToOrderedFaceData is map,
+        definition is map) returns array
 {
     const partingEdges = evaluateQuery(context, definition.partingEdges);
     if (size(partingEdges) == 0)
         throw regenError(ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES, ["partingEdges"]);
-
-    var edgeToOrderedFaceData = {};
-    for (var edge in partingEdges)
-    {
-        try
-        {
-            edgeToOrderedFaceData[edge] = getOrderedFaceData(context, edge, rawPullDirection, definition.hintFaces);
-        }
-        catch (e)
-        {
-            var errEnum = ErrorStringEnum.DRAFT_FAILED;
-            if (e is ErrorStringEnum)
-                errEnum = e;
-
-            throw regenError(errEnum, ["partingEdges"], edge);
-        }
-    }
 
     var draftOptions = [];
     if (definition.partingLineSides == PartingLineSides.ONE_SIDED)
@@ -362,10 +354,56 @@ function getAlongAndAwayDraftAngles(definition is map) returns map
 }
 
 /**
+ * Build a mapping from each edge in `partingEdges` to an array of ordered face data for that edge.  See `getOrderedFaceData(...)`
+ * for information about the ordering and contents of ordered face data.
+ */
+function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, rawPullDirection is Vector,
+        hintFaces is Query, failOnError is boolean) returns map
+{
+    var edgeToOrderedFaceData = {};
+    var moreAlongFirst = new box(undefined);
+    const stable = isAtVersionOrLater(context, FeatureScriptVersionNumber.V847_PL_DRAFT_STABLE);
+    for (var edge in evaluateQuery(context, partingEdges))
+    {
+        if (!stable)
+            moreAlongFirst[] = undefined;
+
+        try
+        {
+            edgeToOrderedFaceData[edge] = getOrderedFaceData(context, edge, rawPullDirection, moreAlongFirst, hintFaces,
+                    stable ? edgeToOrderedFaceData : {});
+        }
+        catch (e)
+        {
+            if (failOnError)
+            {
+                var errEnum = ErrorStringEnum.DRAFT_FAILED;
+                if (e is ErrorStringEnum)
+                    errEnum = e;
+
+                throw regenError(errEnum, ["partingEdges"], edge);
+            }
+            else
+            {
+                edgeToOrderedFaceData[edge] = undefined;
+            }
+       }
+    }
+
+    return edgeToOrderedFaceData;
+}
+
+/**
  * Each adjacent face to `edge` can be along, orthogonal, or away from the draft direction from the perspective of the
- * edge in question. Return an array of information for both adjacent faces. If exactly one of the faces is found in the
- * hintFaces query, that face will be the first face in the array.  Otherwise, the face that is more along the pull
- * direction (from the perspective of the edge) will be first face in the array. Accompany this data with:
+ * edge in question. Return an array of information for both adjacent faces. Order the faces by the boolean contained in
+ * the `moreAlongFirst` box (If true, the face that is more along the pull direction will be first, if false, the face
+ * that is more away from the pull direction will be first).  If the `moreAlongFirst` box contains `undefined`, try to
+ * order the faces by matching exactly one of them to the hint faces; return this matched face first and fill the
+ * `moreAlongFirst` box based on whether the matched face is more along or more away from the pull direction.  If no
+ * hint face can be matched, simply order with the more along face first, and fill `moreAlongFirst` with true`. In cases
+ * of ambiguity (where neither face is more along or more away from the pull direction), check if an ordering can be
+ * determined from a neighboring draft using `edgeToOrderedFaceData`; fall back on trying to match exactly on of the
+ * faces with the hint faces, returning the matched face first.  Accompany this data with:
  *     `isAlong`: whether the face is along the pull direction from the perspective of the edge.
  *     `steepness`: a measure of the steepness of the face between -1 and 1.  -1 means the face is fully away from
  *                  the pull direction from the perspective of the edge. 0 means the normal of this face's plane
@@ -382,7 +420,8 @@ function getAlongAndAwayDraftAngles(definition is map) returns map
  * the face of the surface.  In cases where there is no matching hintFace and the two faces have equal steepness, throw
  * an error.
  */
-function getOrderedFaceData(context is Context, edge is Query, rawPullDirection is Vector, hintFaces is Query) returns array
+function getOrderedFaceData(context is Context, edge is Query, rawPullDirection is Vector, moreAlongFirst is box,
+        hintFaces is Query, edgeToOrderedFaceData is map) returns array
 {
     const bothFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(bothFaces) == 0 || size(bothFaces) > 2)
@@ -420,22 +459,88 @@ function getOrderedFaceData(context is Context, edge is Query, rawPullDirection 
         return [faceData[0], faceData[0]];
     }
 
-    const hintFacesMatchingEdgeFaces = evaluateQuery(context, qIntersection([qUnion(bothFaces), hintFaces]));
-    if (size(hintFacesMatchingEdgeFaces) == 1)
+    const unambiguous = abs(faceData[0].steepness - faceData[1].steepness) > STEEPNESS_TOLERANCE;
+    if (unambiguous)
     {
-        // hintFaces are faces determined to be steeper (or chosen deterministically in ambiguous cases) in `draftEditLogic(...)`.
-        // Use this information first to establish an ordering.
-        return (hintFacesMatchingEdgeFaces[0] == faceData[0].face) ? faceData : [faceData[1], faceData[0]];
-    }
-    else if (abs(faceData[0].steepness - faceData[1].steepness) > STEEPNESS_TOLERANCE)
-    {
-        // Fall back on ordering by steepness
-        return (faceData[0].steepness > faceData[1].steepness) ? faceData : [faceData[1], faceData[0]];
+        const face0MoreAlong = faceData[0].steepness > faceData[1].steepness;
+
+        if (moreAlongFirst[] == undefined)
+        {
+            // Default to ordering with the more along face first.
+            moreAlongFirst[] = true;
+
+            // Override the default by putting the hint face first, if it exists.
+            const matchingFace = getFaceMatchingHintFaces(context, qUnion(bothFaces), hintFaces);
+            if (matchingFace != undefined)
+            {
+                const face0IsHintFace = (bothFaces[0] == matchingFace);
+                moreAlongFirst[] = (face0MoreAlong == face0IsHintFace);
+            }
+        }
+
+        return (moreAlongFirst[] == face0MoreAlong) ? faceData : [faceData[1], faceData[0]];
     }
     else
     {
-        throw "Ambiguous edge with no hint face";
+        // First, try to order by neighboring drafts
+        const adjacentEdges = qVertexAdjacent(edge, EntityType.EDGE);
+        const processedEdges = qUnion(keys(edgeToOrderedFaceData));
+        const processedAdjacentEdges = evaluateQuery(context, qIntersection([adjacentEdges, processedEdges]));
+        if (size(processedAdjacentEdges) > 0)
+        {
+            const face0AndAdjacent = qSubtraction(qUnion([faceData[0].face, qEdgeAdjacent(faceData[0].face, EntityType.FACE)]), faceData[1].face);
+            const face1AndAdjacent = qSubtraction(qUnion([faceData[1].face, qEdgeAdjacent(faceData[1].face, EntityType.FACE)]), faceData[0].face);
+
+            var matchedFace = -1;
+            for (var processedAdjacentEdge in processedAdjacentEdges)
+            {
+                const neighborFirstFace = edgeToOrderedFaceData[processedAdjacentEdge][0].face;
+
+                const face0Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face0AndAdjacent]))) > 0;
+                const face1Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face1AndAdjacent]))) > 0;
+
+                if (face0Matches == face1Matches)
+                {
+                    // Neither or both sides match the neighbor.  Ambiguous.
+                    matchedFace = -1;
+                    break;
+                }
+
+                const currentMatch = face0Matches ? 0 : 1;
+                if (matchedFace != -1 && matchedFace != currentMatch)
+                {
+                    // Current match conflicts with previously found match.  Ambiguous.
+                    matchedFace = -1;
+                    break;
+                }
+                matchedFace = currentMatch;
+            }
+
+            if (matchedFace != -1)
+            {
+                return [faceData[matchedFace], faceData[1 - matchedFace]];
+            }
+        }
+
+        // Fall back on ordering by hint face
+        const matchingFace = getFaceMatchingHintFaces(context, qUnion(bothFaces), hintFaces);
+        if (matchingFace != undefined)
+        {
+            return (matchingFace == faceData[0].face) ? faceData : [faceData[1], faceData[0]];
+        }
+
+        throw "Ambiguous edge with no neighbors or hint face";
     }
+}
+
+function getFaceMatchingHintFaces(context is Context, faces is Query, hintFaces is Query)
+{
+    const matchedFaces = evaluateQuery(context, qIntersection([faces, hintFaces]));
+    if (size(matchedFaces) == 1)
+    {
+        return matchedFaces[0];
+    }
+    return undefined;
 }
 
 function getFaceTangentPlaneAndCoEdgeLineAtParameterOfEdge(context is Context, face is Query, edge is Query, parameter is number) returns map
@@ -493,11 +598,14 @@ function augmentOrderedFaceDataWithGeometryData(context is Context, edge is Quer
  *
  * `addGeometryData` may be turned off for a performance gain if geometry data is not needed.
  */
-function getDataForManipulator(context is Context, rawPullDirection is Vector, definition is map, addGeometryData is boolean) returns map
+function getDataForManipulator(context is Context, rawPullDirection is Vector, edgeToOrderedFaceData is map,
+        definition is map, addGeometryData is boolean) returns map
 {
     const edges = evaluateQuery(context, definition.partingEdges);
     const manipulatorEdge = edges[size(edges) - 1];
-    var lastOrderedFaceData = getOrderedFaceData(context, manipulatorEdge, rawPullDirection, definition.hintFaces);
+    var lastOrderedFaceData = edgeToOrderedFaceData[manipulatorEdge];
+    if (lastOrderedFaceData == undefined)
+        throw "Could not find ordered face data for manipulator edge";
 
     if (addGeometryData)
     {
@@ -534,10 +642,12 @@ function getDataForManipulator(context is Context, rawPullDirection is Vector, d
 ////////// Manipulators //////////
 
 const ANGLE_MANIPULATOR = "angleManipulator";
+const SYMMETRIC_ALONG_ANGLE_MANIPULATOR = "symmetricAlongAngleManipulator";
 const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
 const FLIP_MANIPULATOR = "flipManipulator";
 
-function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirection is Vector, definition is map)
+function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirection is Vector,
+        edgeToOrderedFaceData is map, definition is map)
 {
     if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
     {
@@ -547,7 +657,7 @@ function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirec
     {
         try silent
         {
-            const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, true);
+            const manipulatorData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceData, definition, true);
             const manipulatorFaceData = manipulatorData.manipulatorFaceData;
             const otherFaceData = manipulatorData.otherFaceData;
 
@@ -562,7 +672,13 @@ function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirec
                 const angles = getAlongAndAwayDraftAngles(definition);
                 const angle = manipulatorFaceData.isAlong ? angles.along : angles.away;
 
-                addPartingLineDraftAngularManipulator(context, topLevelId, ANGLE_MANIPULATOR, manipulatorFaceData, rawPullDirection,
+                var manipulatorName = ANGLE_MANIPULATOR;
+                if (definition.partingLineSides == PartingLineSides.SYMMETRIC && manipulatorFaceData.isAlong)
+                {
+                    manipulatorName = SYMMETRIC_ALONG_ANGLE_MANIPULATOR;
+                }
+
+                addPartingLineDraftAngularManipulator(context, topLevelId, manipulatorName, manipulatorFaceData, rawPullDirection,
                         angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT);
             }
             else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
@@ -664,20 +780,14 @@ export function draftManipulatorChange(context is Context, definition is map, ne
 {
     if (newManipulators[ANGLE_MANIPULATOR] is map)
     {
-        var sign = 1.0;
-        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE &&
-            definition.partingLineSides == PartingLineSides.SYMMETRIC)
-        {
-            // Symmetric manipulator needs a flip if it corresponds to an along face
-            const rawPullDirection = getPullDirection(context, definition);
-            const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, false);
-            if (manipulatorData.manipulatorFaceData.isAlong)
-            {
-                sign = -1.0;
-            }
-        }
+        const newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
+        definition.pullDirection = newAngle < 0 * degree;
+        definition.angle = abs(newAngle);
+    }
 
-        const newAngle = sign * newManipulators[ANGLE_MANIPULATOR].angle;
+    if (newManipulators[SYMMETRIC_ALONG_ANGLE_MANIPULATOR] is map)
+    {
+        const newAngle = -1.0 * newManipulators[SYMMETRIC_ALONG_ANGLE_MANIPULATOR].angle;
         definition.pullDirection = newAngle < 0 * degree;
         definition.angle = abs(newAngle);
     }
@@ -711,19 +821,21 @@ export function draftEditLogic(context is Context, id is Id, oldDefinition is ma
 {
     if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
     {
-        if (canGenerateHintFaces(oldDefinition, definition))
+        var edgeToOrderedFaceDataBox = new box(undefined);
+
+        if (canGenerateHintFaces(context, oldDefinition, definition))
         {
-            definition.hintFaces = generateHintFaces(context, definition);
+            definition.hintFaces = generateHintFaces(context, edgeToOrderedFaceDataBox, definition);
         }
 
-        if (canFlipAlongPull(oldDefinition, definition, isCreating, specifiedParameters))
+        if (canFlipAlongPull(context, oldDefinition, definition, specifiedParameters))
         {
-            definition = flipAlongPull(context, definition);
+            definition = flipAlongPull(context, edgeToOrderedFaceDataBox, definition);
         }
 
         if (canAdjustDirectionsForSideChange(oldDefinition, definition, specifiedParameters))
         {
-            definition = adjustDirectionsForSideChange(context, oldDefinition, definition);
+            definition = adjustDirectionsForSideChange(context, edgeToOrderedFaceDataBox, oldDefinition, definition);
         }
     }
 
@@ -737,20 +849,26 @@ export function draftEditLogic(context is Context, id is Id, oldDefinition is ma
  * Additionally, this storage imposes a deterministic ordering on faces which cannot be ordered by steepness (and
  * ensures that that ordering is robust to upstream changes).
  */
-predicate canGenerateHintFaces(oldDefinition is map, definition is map)
+predicate canGenerateHintFaces(context is Context, oldDefinition is map, definition is map)
 {
-    oldDefinition.partingEdges != definition.partingEdges;
+    // If user selects parting edges before pull direction entity, hint faces may be empty.  Make sure to generate hint
+    // faces when we go from no pull direction entity to some pull direction entity. `try silent` for old definition
+    // because oldDefinition.pullDirectionEntity is undefined when first creating the feature.
+    oldDefinition.partingEdges != definition.partingEdges ||
+    (try silent(size(evaluateQuery(context, oldDefinition.pullDirectionEntity))) == 0 && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
 }
 
-function generateHintFaces(context is Context, definition is map) returns Query
+function generateHintFaces(context is Context, edgeToOrderedFaceDataBox is box, definition is map) returns Query
 {
     try silent
     {
         const rawPullDirection = getPullDirection(context, definition);
+        edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection, definition.hintFaces, false);
+
         var hintFacesArr = [];
         for (var edge in evaluateQuery(context, definition.partingEdges))
         {
-            const orderedFaceData = try silent(getOrderedFaceData(context, edge, rawPullDirection, definition.hintFaces));
+            const orderedFaceData = edgeToOrderedFaceDataBox[][edge];
             if (orderedFaceData != undefined)
             {
                 hintFacesArr = append(hintFacesArr, orderedFaceData[0].face);
@@ -770,24 +888,28 @@ function generateHintFaces(context is Context, definition is map) returns Query
 }
 
 /*
- * Parting line draft: if the user has not explicitly selected which face they want to be drafting (for ONE_SIDED
- * drafts), try to guess which face they would prefer to draft.
+ * Parting line draft: When moving from 0 to 1 selections, try to guess which face the user would prefer to draft (for
+ * ONE_SIDED drafts).
  */
-predicate canFlipAlongPull(oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map)
+predicate canFlipAlongPull(context is Context, oldDefinition is map, definition is map, specifiedParameters is map)
 {
     specifiedParameters.partingEdges;
-    !specifiedParameters.alongPull;
-    definition.partingLineSides == PartingLineSides.ONE_SIDED;
-    isCreating;
-    oldDefinition.partingEdges != definition.partingEdges || oldDefinition.partingLineSides != definition.partingLineSides;
+    oldDefinition.partingEdges != definition.partingEdges;
+    size(evaluateQuery(context, oldDefinition.partingEdges)) == 0;
+    size(evaluateQuery(context, definition.partingEdges)) == 1;
 }
 
-function flipAlongPull(context is Context, definition is map) returns map
+function flipAlongPull(context is Context, edgeToOrderedFaceDataBox is box, definition is map) returns map
 {
     try silent
     {
         const rawPullDirection = getPullDirection(context, definition);
-        const manipulatorData = getDataForManipulator(context, rawPullDirection, definition, false);
+        if (edgeToOrderedFaceDataBox[] == undefined)
+        {
+            edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
+                    definition.hintFaces, true);
+        }
+        const manipulatorData = getDataForManipulator(context, rawPullDirection,  edgeToOrderedFaceDataBox[], definition, false);
         const manipulatorFaceData = manipulatorData.manipulatorFaceData;
         const otherFaceData = manipulatorData.otherFaceData;
 
@@ -825,14 +947,20 @@ predicate canAdjustDirectionsForSideChange(oldDefinition is map, definition is m
     oldDefinition.partingLineSides != definition.partingLineSides;
 }
 
-function adjustDirectionsForSideChange(context is Context, oldDefinition is map, definition is map) returns map
+function adjustDirectionsForSideChange(context is Context, edgeToOrderedFaceDataBox is box, oldDefinition is map, definition is map) returns map
 {
     try silent
     {
         const rawPullDirection = getPullDirection(context, definition);
 
-        const oldFaceData = getDataForManipulator(context, rawPullDirection, oldDefinition, false).manipulatorFaceData;
-        const newFaceData = getDataForManipulator(context, rawPullDirection, definition, false).manipulatorFaceData;
+        if (edgeToOrderedFaceDataBox[] == undefined)
+        {
+            edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
+                    definition.hintFaces, true);
+        }
+
+        const oldFaceData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceDataBox[], oldDefinition, false).manipulatorFaceData;
+        const newFaceData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceDataBox[], definition, false).manipulatorFaceData;
 
         const intoTwoSided = definition.partingLineSides == PartingLineSides.TWO_SIDED;
         const outOfTwoSided = oldDefinition.partingLineSides == PartingLineSides.TWO_SIDED;

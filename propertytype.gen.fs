@@ -1,4 +1,4 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -22,6 +22,7 @@ export enum PropertyType
     TITLE_1,
     TITLE_2,
     TITLE_3,
+    EXCLUDE_FROM_BOM,
     CUSTOM
 }
 

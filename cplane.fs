@@ -1,23 +1,23 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "834.0");
+export import(path : "onshape/std/query.fs", version : "847.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "834.0");
+export import(path : "onshape/std/manipulator.fs", version : "847.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "834.0");
-import(path : "onshape/std/containers.fs", version : "834.0");
-import(path : "onshape/std/evaluate.fs", version : "834.0");
-import(path : "onshape/std/feature.fs", version : "834.0");
-import(path : "onshape/std/mathUtils.fs", version : "834.0");
-import(path : "onshape/std/curveGeometry.fs", version : "834.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "834.0");
-import(path : "onshape/std/valueBounds.fs", version : "834.0");
+import(path : "onshape/std/box.fs", version : "847.0");
+import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/evaluate.fs", version : "847.0");
+import(path : "onshape/std/feature.fs", version : "847.0");
+import(path : "onshape/std/mathUtils.fs", version : "847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "847.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
+import(path : "onshape/std/valueBounds.fs", version : "847.0");
 
 /**
  * The method of defining a construction plane.
@@ -307,8 +307,8 @@ function lineAnglePlane(context is Context, id is Id, definition is map, entitie
         throw regenError(requiresLineAxisMessage, ["entities"]);
     if (size(entities) > 2)
         throw regenError(tooManyEntitiesMessage, ["entities"]);
-    var axis1 = try(evAxis(context, { "axis" : entities[0] }));
-    var axis2 = try(evAxis(context, { "axis" : entities[1] }));
+    var axis1 = try silent(evAxis(context, { "axis" : entities[0] }));
+    var axis2 = try silent(evAxis(context, { "axis" : entities[1] }));
 
     if (axis1 == undefined) // If the plane or point is selected first, swap.
     {
@@ -332,14 +332,14 @@ function lineAnglePlane(context is Context, id is Id, definition is map, entitie
     }
     else
     {
-        var plane = try(evPlane(context, { "face" : entities[1] }));
+        var plane = try silent(evPlane(context, { "face" : entities[1] }));
         if (plane != undefined)
         {
             secondInPlaneDirection = cross(axis1.direction, plane.normal) * meter;
         }
         else
         {
-            var point = try(evVertexPoint(context, { "vertex" : entities[1] }));
+            var point = try silent(evVertexPoint(context, { "vertex" : entities[1] }));
             if (point != undefined)
                 secondInPlaneDirection = point - axis1.origin;
         }

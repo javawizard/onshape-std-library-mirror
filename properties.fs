@@ -1,4 +1,4 @@
-FeatureScript 834; /* Automatically generated version */
+FeatureScript 847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,11 +6,11 @@ FeatureScript 834; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "834.0");
-import(path : "onshape/std/query.fs", version : "834.0");
-import(path : "onshape/std/units.fs", version : "834.0");
+import(path : "onshape/std/context.fs", version : "847.0");
+import(path : "onshape/std/query.fs", version : "847.0");
+import(path : "onshape/std/units.fs", version : "847.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "834.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "847.0");
 
 /**
  * Sets a property on a set of bodies.  The allowed properties are listed in [PropertyType].
@@ -24,7 +24,8 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "834.0");
  *      @field entities {Query} : The bodies to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.  Currently `CUSTOM` is not supported.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
- *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`, and a string otherwise.
+ *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
+ *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.
  *          @eg `color(1, 0, 0)` to make the part red.
  * }}
  */
@@ -39,6 +40,8 @@ precondition
         definition.value is Color;
     else if (definition.propertyType == PropertyType.MATERIAL)
         definition.value is Material;
+    else if (definition.propertyType == PropertyType.EXCLUDE_FROM_BOM)
+        definition.value is boolean;
     else
         definition.value is string;
 }
