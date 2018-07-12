@@ -1,34 +1,34 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "847.0");
-export import(path : "onshape/std/query.fs", version : "847.0");
-export import(path : "onshape/std/tool.fs", version : "847.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "860.0");
+export import(path : "onshape/std/query.fs", version : "860.0");
+export import(path : "onshape/std/tool.fs", version : "860.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "847.0");
+export import(path : "onshape/std/manipulator.fs", version : "860.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "847.0");
-import(path : "onshape/std/boolean.fs", version : "847.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "847.0");
-import(path : "onshape/std/box.fs", version : "847.0");
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/coordSystem.fs", version : "847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "847.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "847.0");
-import(path : "onshape/std/evaluate.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/mathUtils.fs", version : "847.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "847.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "847.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
-import(path : "onshape/std/transform.fs", version : "847.0");
-import(path : "onshape/std/valueBounds.fs", version : "847.0");
+import(path : "onshape/std/attributes.fs", version : "860.0");
+import(path : "onshape/std/boolean.fs", version : "860.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "860.0");
+import(path : "onshape/std/box.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/coordSystem.fs", version : "860.0");
+import(path : "onshape/std/curveGeometry.fs", version : "860.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "860.0");
+import(path : "onshape/std/evaluate.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/mathUtils.fs", version : "860.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "860.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "860.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "860.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
+import(path : "onshape/std/transform.fs", version : "860.0");
+import(path : "onshape/std/valueBounds.fs", version : "860.0");
 
 /**
  * The viewer being operated in
@@ -199,21 +199,30 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
-        if (definition.domain == OperationDomain.FLAT)
+        if (definition.bodyType == ToolBodyType.SOLID)
         {
             const modelEntities = qSMFlatFilter(definition.entities, SMFlatType.NO);
-            if (size(evaluateQuery(context, modelEntities)) > 0)
+            const containsModelEntities = (size(evaluateQuery(context, modelEntities)) > 0);
+            const containsFlattened = queryContainsFlattenedSheetMetal(context, definition.entities);
+            if (definition.domain == OperationDomain.FLAT)
             {
-                throw regenError(ErrorStringEnum.EXTRUDE_3D_AND_FLAT, ["entities"], modelEntities);
+                if (containsModelEntities)
+                {
+                    const errorString = (containsFlattened) ? ErrorStringEnum.EXTRUDE_3D_AND_FLAT :
+                                                                        ErrorStringEnum.DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D;
+                    throw regenError(errorString, ["entities"], modelEntities);
+                }
+                try(SMFlatOp(context, id + "flatOp", { "faces" : definition.entities,
+                                "flatOperationType" : definition.flatOperationType }));
+                processSubfeatureStatus(context, id, { "subfeatureId" : id + "flatOp", "propagateErrorDisplay" : true });
+                return;
             }
-            try(SMFlatOp(context, id + "flatOp", { "faces" : definition.entities,
-                            "flatOperationType" : definition.flatOperationType }));
-            processSubfeatureStatus(context, id, { "subfeatureId" : id + "flatOp", "propagateErrorDisplay" : true });
-            return;
-        }
-        else if (definition.bodyType == ToolBodyType.SOLID && queryContainsFlattenedSheetMetal(context, definition.entities))
-        {
-            throw regenError(ErrorStringEnum.EXTRUDE_3D_AND_FLAT, ["entities"], qSMFlatFilter(definition.entities, SMFlatType.YES));
+            else if (containsFlattened)
+            {
+                const errorString = (containsModelEntities) ? ErrorStringEnum.EXTRUDE_3D_AND_FLAT :
+                                                                        ErrorStringEnum.DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT;
+                throw regenError(errorString, ["entities"], qSMFlatFilter(definition.entities, SMFlatType.YES));
+            }
         }
 
         // Handle negative inputs
@@ -398,7 +407,21 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         const sheetMetalEntitiesQ = qUnion([qOwnedByBody(smDefinitionBodiesQ, EntityType.EDGE), qOwnedByBody(smDefinitionBodiesQ, EntityType.FACE), smDefinitionBodiesQ]);
         const tracking = startTracking(context, sheetMetalEntitiesQ);
 
-        const initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
+        var initialDataPerBody = [];
+        var initialData;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V860_SM_FLAT_ERRORS))
+        {
+            for (var smBody in evaluateQuery(context, smDefinitionBodiesQ))
+            {
+                initialDataPerBody = append(initialDataPerBody, {  'query' : qUnion([smBody, startTracking(context, smBody)]),
+                                                'entitiesAndAttributes' : getInitialEntitiesAndAttributes(context, smBody) });
+            }
+        }
+        else
+        {
+            initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
+        }
+
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
 
@@ -414,7 +437,12 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         }
 
         const newEntities = qUnion([qCreatedBy(id), tracking]);
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qOwnerBody(newEntities), initialData);
+        const affectedBodyQ = qOwnerBody(newEntities);
+        if (initialData == undefined) // data was collected in initialDataPerBody
+        {
+            initialData = combineInitialData(context, initialDataPerBody, affectedBodyQ);
+        }
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, affectedBodyQ, initialData);
 
         try (updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,
@@ -753,4 +781,34 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     }
     return newDefinition;
 }
+// Initial data was collected for all model definition bodies, bodiesQ - bodies affected by operation
+// combine initial data for those bodies only
+function combineInitialData(context is Context, initialDataPerBody is array, bodiesQ is Query)
+{
+    var targets = {};
+    for (var body in evaluateQuery(context, bodiesQ))
+    {
+        targets[body] = true;
+    }
+    var originalEntitiesArr = [];
+    var initialAssociationAttributesArr = [];
+    var originalEntitiesTrackingArr =[];
+    for (var bodyData in initialDataPerBody)
+    {
+        for (var body in evaluateQuery(context, bodyData.query))
+        {
+            if (targets[body] == true)
+            {
+                originalEntitiesArr = append(originalEntitiesArr, bodyData.entitiesAndAttributes.originalEntities);
+                initialAssociationAttributesArr = append(initialAssociationAttributesArr,
+                                            bodyData.entitiesAndAttributes.initialAssociationAttributes);
+                originalEntitiesTrackingArr = append(originalEntitiesTrackingArr, bodyData.entitiesAndAttributes.originalEntitiesTracking);
+            }
+        }
+    }
+    return {'originalEntities' : concatenateArrays(originalEntitiesArr),
+            'initialAssociationAttributes' : concatenateArrays(initialAssociationAttributesArr),
+            'originalEntitiesTracking' : concatenateArrays(originalEntitiesTrackingArr)};
+}
+
 

@@ -1,14 +1,14 @@
-FeatureScript 847; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/coordSystem.fs", version : "847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "847.0");
-import(path : "onshape/std/evaluate.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/manipulator.fs", version : "847.0");
-import(path : "onshape/std/math.fs", version : "847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
-import(path : "onshape/std/valueBounds.fs", version : "847.0");
-import(path : "onshape/std/vector.fs", version : "847.0");
+FeatureScript 860; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/coordSystem.fs", version : "860.0");
+import(path : "onshape/std/curveGeometry.fs", version : "860.0");
+import(path : "onshape/std/evaluate.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/manipulator.fs", version : "860.0");
+import(path : "onshape/std/math.fs", version : "860.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
+import(path : "onshape/std/valueBounds.fs", version : "860.0");
+import(path : "onshape/std/vector.fs", version : "860.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -74,6 +74,11 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         }
     }
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.side2, "side2", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+        }
         var remainingTransform = getRemainderPatternTransform(context,
             {
                 "references" : qUnion([definition.side1, definition.side2])
@@ -492,7 +497,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     {
         // This code deliberately only considers the ends of the edge but we could just as easily match to an
         // edge that passes through the specified point but doesn't end there.
-        const frames = evEdgeCurvature(context, {
+        const frames = evEdgeCurvatures(context, {
                     "edge" : edges,
                     "parameters" : [0, 1],
                     "curveLengthParameterization" : false });

@@ -1,24 +1,25 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "847.0");
-export import(path : "onshape/std/tool.fs", version : "847.0");
+export import(path : "onshape/std/query.fs", version : "860.0");
+export import(path : "onshape/std/tool.fs", version : "860.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/evaluate.fs", version : "847.0");
-import(path : "onshape/std/boolean.fs", version : "847.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
-import(path : "onshape/std/transform.fs", version : "847.0");
-import(path : "onshape/std/units.fs", version : "847.0");
-import(path : "onshape/std/valueBounds.fs", version : "847.0");
-import(path : "onshape/std/vector.fs", version : "847.0");
-import(path : "onshape/std/topologyUtils.fs", version : "847.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/evaluate.fs", version : "860.0");
+import(path : "onshape/std/boolean.fs", version : "860.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
+import(path : "onshape/std/transform.fs", version : "860.0");
+import(path : "onshape/std/units.fs", version : "860.0");
+import(path : "onshape/std/valueBounds.fs", version : "860.0");
+import(path : "onshape/std/vector.fs", version : "860.0");
+import(path : "onshape/std/topologyUtils.fs", version : "860.0");
+import(path : "onshape/std/string.fs", version : "860.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -57,7 +58,6 @@ const LOFT_INTERNAL_SECTIONS_COUNT =
 {
     (unitless) : [1, 5, 50]
 }   as IntegerBoundSpec;
-
 
 /**
  * Feature performing an [opLoft].
@@ -259,11 +259,22 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion(queriesForTransform)});
-        opLoft(context, id, definition);
+        try (opLoft(context, id, definition));
+        // it is not a subfeature, but need to remap parameter ids
+        processSubfeatureStatus(context, id, {'subfeatureId' : id,
+                                              'featureParameterMappingFunction' :
+                                                function (arrayParameterId)
+                                                {
+                                                    return mapOpLoftArrayParameters(arrayParameterId, definition.bodyType == ToolBodyType.SOLID);
+                                                }});
+        if (getFeatureError(context, id) != undefined)
+        {
+            return;
+        }
         transformResultIfNecessary(context, id, remainingTransform);
 
         const reconstructOp = function(id) {
-            opLoft(context, id, definition);
+            try silent(opLoft(context, id, definition));
             transformResultIfNecessary(context, id, remainingTransform);
         };
 
@@ -498,4 +509,34 @@ function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, d
     }
     return matches;
 }
+
+const arrayParameterMappingSheet = {
+        'profileSubqueries' : ['wireProfilesArray', 'wireProfileEntities'],
+        'guideSubqueries' : ['guidesArray', 'guideEntities']
+        };
+
+const arrayParameterMappingSolid = {
+        'profileSubqueries' : ['sheetProfilesArray', 'sheetProfileEntities'],
+        'guideSubqueries' : ['guidesArray', 'guideEntities']
+        };
+
+/*
+ *  e.g "guideSubqueries[0]." is getting mapped to "guidesArray[0].guideEntities"
+ */
+function  mapOpLoftArrayParameters(arrayParameterId is string, isSolid is boolean)
+{
+    const matched = match(arrayParameterId, "(.+)(\\[[0-9]+\\]\\.)(.*)");
+    if (!matched.hasMatch)
+    {
+        return undefined;
+    }
+    const strippedId = matched.captures[1];
+    const substitutionArray = (isSolid) ? arrayParameterMappingSolid[strippedId] : arrayParameterMappingSheet[strippedId];
+    if (substitutionArray == undefined)
+    {
+        return undefined;
+    }
+    return substitutionArray[0] ~ matched.captures[2] ~ substitutionArray[1];
+}
+
 

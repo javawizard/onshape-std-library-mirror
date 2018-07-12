@@ -1,4 +1,4 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,18 +29,18 @@ FeatureScript 847; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "847.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "847.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "847.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "847.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "847.0");
-export import(path : "onshape/std/context.fs", version : "847.0");
-export import(path : "onshape/std/query.fs", version : "847.0");
-import(path : "onshape/std/attributes.fs", version : "847.0");
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/units.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/string.fs", version : "847.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "860.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "860.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "860.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "860.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "860.0");
+export import(path : "onshape/std/context.fs", version : "860.0");
+export import(path : "onshape/std/query.fs", version : "860.0");
+import(path : "onshape/std/attributes.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/units.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/string.fs", version : "860.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -192,13 +192,12 @@ export function getSMDefinitionEntities(context is Context, selection is Query) 
             "entities" : qBodyType(selection, BodyType.SOLID),
             "attributePattern" : {} as SMAssociationAttribute
         });
-    var out = [];
+    var attributeQueries = [];
     for (var attribute in entityAssociations)
     {
-        var associatedEntities = evaluateQuery(context, qBodyType(qAttributeQuery(attribute), BodyType.SHEET));
-        out = concatenateArrays([out, associatedEntities]);
+        attributeQueries = append(attributeQueries, qAttributeQuery(attribute));
     }
-    return out;
+    return evaluateQuery(context, qBodyType(qUnion(attributeQueries), BodyType.SHEET));
 }
 
 /**

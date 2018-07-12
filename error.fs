@@ -1,15 +1,16 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "847.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "847.0");
+export import(path : "onshape/std/query.fs", version : "860.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "860.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "847.0");
-import(path : "onshape/std/containers.fs", version : "847.0");
+import(path : "onshape/std/context.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/string.fs", version : "860.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -240,6 +241,7 @@ export function reportFeatureInfo(context is Context, id is Id, customMessage is
  * @param definition {{
  *      @field subfeatureId {Id} : The Id of the subfeature.
  *      @field featureParameterMap {map} : A mapping of the field names from subfeature to feature. @optional
+ *      @field featureParameterMappingFunction {function} : A function to map field names from subfeature to feature. @optional
  *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present. @optional
  * }}
  */
@@ -255,12 +257,21 @@ export function processSubfeatureStatus(context is Context, id is Id, definition
     if (subStatus.faultyParameters != undefined)
     {
         var faultyParameters = [];
-        var featureParameterMap = definition.featureParameterMap;
-        if (featureParameterMap != undefined)
+        const featureParameterMap = definition.featureParameterMap;
+        const mappingFunction = definition.featureParameterMappingFunction;
+        if (featureParameterMap != undefined || mappingFunction != undefined)
         {
             for (var param in subStatus.faultyParameters)
             {
-                var mappedParam = featureParameterMap[param];
+                var mappedParam;
+                if (featureParameterMap != undefined)
+                {
+                    mappedParam = featureParameterMap[param];
+                }
+                if (mappedParam == undefined && mappingFunction != undefined)
+                {
+                    mappedParam = mappingFunction(param);
+                }
                 if (mappedParam != undefined)
                 {
                     faultyParameters = append(faultyParameters, mappedParam);
@@ -393,7 +404,7 @@ export function featureHasNonTrivialStatus(context is Context, id is Id) returns
 
 /**
  * @return: A string identifier for marking an error on an array parameter when using the `faultyParameters`
- * argument in any of the functions in this module.
+ * argument in any of the error reporting functions in `error.fs`.
  */
 export function faultyArrayParameterId(arrayParameter is string, itemIndex is number, innerParameter is string) returns string
 {

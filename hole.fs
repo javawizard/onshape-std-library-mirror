@@ -1,34 +1,34 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "847.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "847.0");
-import(path : "onshape/std/box.fs", version : "847.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "847.0");
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/coordSystem.fs", version : "847.0");
-import(path : "onshape/std/evaluate.fs", version : "847.0");
-import(path : "onshape/std/extrude.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/mathUtils.fs", version : "847.0");
-import(path : "onshape/std/revolve.fs", version : "847.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "847.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "847.0");
-import(path : "onshape/std/sketch.fs", version : "847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "847.0");
-import(path : "onshape/std/tool.fs", version : "847.0");
-import(path : "onshape/std/valueBounds.fs", version : "847.0");
-import(path : "onshape/std/string.fs", version : "847.0");
-import(path : "onshape/std/holetables.gen.fs", version : "847.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "847.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "847.0");
-import(path : "onshape/std/cylinderCast.fs", version : "847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "847.0");
-import(path : "onshape/std/attributes.fs", version : "847.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "847.0");
-export import(path : "onshape/std/holeUtils.fs", version : "847.0");
+import(path : "onshape/std/boolean.fs", version : "860.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "860.0");
+import(path : "onshape/std/box.fs", version : "860.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/coordSystem.fs", version : "860.0");
+import(path : "onshape/std/evaluate.fs", version : "860.0");
+import(path : "onshape/std/extrude.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/mathUtils.fs", version : "860.0");
+import(path : "onshape/std/revolve.fs", version : "860.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "860.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "860.0");
+import(path : "onshape/std/sketch.fs", version : "860.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
+import(path : "onshape/std/tool.fs", version : "860.0");
+import(path : "onshape/std/valueBounds.fs", version : "860.0");
+import(path : "onshape/std/string.fs", version : "860.0");
+import(path : "onshape/std/holetables.gen.fs", version : "860.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "860.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "860.0");
+import(path : "onshape/std/cylinderCast.fs", version : "860.0");
+import(path : "onshape/std/curveGeometry.fs", version : "860.0");
+import(path : "onshape/std/attributes.fs", version : "860.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "860.0");
+export import(path : "onshape/std/holeUtils.fs", version : "860.0");
 
 
 /**
@@ -869,10 +869,16 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
         var associations = getAttributes(context, { "entities" : holeEdge, "attributePattern" : {} as SMAssociationAttribute });
         for (var association in associations)
         {
-            const holeFaces = qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
-            if (size(evaluateQuery(context, holeFaces)) > 0)
+            // qBodyType filter has a side-effect of filtering out private bodies.
+            // We need to assign attribute to associated faces of private patches so that
+            // attribute propagates in downstream operations where the corresponding patch is not rebuilt.
+            const holeFacesQ = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V859_SM_HOLE_ATTRIBUTE)) ?
+                    qEntityFilter(qAttributeQuery(association), EntityType.FACE) :
+                    qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
+            const holeFaces =  evaluateQuery(context, holeFacesQ);
+            if (size(holeFaces) > 0)
             {
-                createAttributesForSheetMetalHole(context, id, holeEdge, holeFaces, holeDefinition, holeStyle);
+                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle);
             }
         }
     }

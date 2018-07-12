@@ -1,24 +1,24 @@
-FeatureScript 847; /* Automatically generated version */
+FeatureScript 860; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "847.0");
+export import(path : "onshape/std/tool.fs", version : "860.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "847.0");
+export import(path : "onshape/std/manipulator.fs", version : "860.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "847.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "847.0");
-import(path : "onshape/std/containers.fs", version : "847.0");
-import(path : "onshape/std/evaluate.fs", version : "847.0");
-import(path : "onshape/std/feature.fs", version : "847.0");
-import(path : "onshape/std/mathUtils.fs", version : "847.0");
-import(path : "onshape/std/topologyUtils.fs", version : "847.0");
-import(path : "onshape/std/transform.fs", version : "847.0");
-import(path : "onshape/std/valueBounds.fs", version : "847.0");
+import(path : "onshape/std/boolean.fs", version : "860.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "860.0");
+import(path : "onshape/std/evaluate.fs", version : "860.0");
+import(path : "onshape/std/feature.fs", version : "860.0");
+import(path : "onshape/std/mathUtils.fs", version : "860.0");
+import(path : "onshape/std/topologyUtils.fs", version : "860.0");
+import(path : "onshape/std/transform.fs", version : "860.0");
+import(path : "onshape/std/valueBounds.fs", version : "860.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
