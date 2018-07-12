@@ -192,13 +192,12 @@ export function getSMDefinitionEntities(context is Context, selection is Query) 
             "entities" : qBodyType(selection, BodyType.SOLID),
             "attributePattern" : {} as SMAssociationAttribute
         });
-    var out = [];
+    var attributeQueries = [];
     for (var attribute in entityAssociations)
     {
-        var associatedEntities = evaluateQuery(context, qBodyType(qAttributeQuery(attribute), BodyType.SHEET));
-        out = concatenateArrays([out, associatedEntities]);
+        attributeQueries = append(attributeQueries, qAttributeQuery(attribute));
     }
-    return out;
+    return evaluateQuery(context, qBodyType(qUnion(attributeQueries), BodyType.SHEET));
 }
 
 /**

@@ -67,6 +67,12 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
 
     }
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+        }
         // Part 1 of 2 calls for making the feature patternable via feature pattern.
         var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.vertices });
 
@@ -229,12 +235,12 @@ function getEndCondition(context is Context, definition is map, points is array,
         {
             const edgeCurvatureData = evEdgeCurvature(context, {
                     "edge" : directionEdges[0],
-                    "parameters" : [param],
+                    "parameter" : param,
                     "curveLengthParameterization" : false
                 });
 
             //Using f'' = |f'|^2 * k * n
-            var secondDerivative = magnitude * magnitude * edgeCurvatureData[0].curvature * curvatureFrameNormal(edgeCurvatureData[0]);
+            var secondDerivative = magnitude * magnitude * edgeCurvatureData.curvature * curvatureFrameNormal(edgeCurvatureData);
             return { "direction" : tangentDirection, "magnitude" : magnitude, "second" : secondDerivative};
         }
         catch

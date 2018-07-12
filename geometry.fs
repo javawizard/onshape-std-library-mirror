@@ -42,6 +42,7 @@ export import(path : "onshape/std/properties.fs", version : "✨");
 export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 export import(path : "onshape/std/instantiator.fs", version : "✨");
+export import(path : "onshape/std/tabReferences.fs", version : "✨");
 
 /* Onshape standard library features */
 export import(path : "onshape/std/boolean.fs", version : "✨");

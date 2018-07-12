@@ -138,6 +138,17 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
     //===================================================<body>=======================================================
     {
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
+            {
+                verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            }
+            else
+            {
+                verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            }
+        }
         var definitionOut = {};
         var remainingTransform;
         var revolutions;

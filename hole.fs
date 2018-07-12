@@ -869,10 +869,16 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
         var associations = getAttributes(context, { "entities" : holeEdge, "attributePattern" : {} as SMAssociationAttribute });
         for (var association in associations)
         {
-            const holeFaces = qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
-            if (size(evaluateQuery(context, holeFaces)) > 0)
+            // qBodyType filter has a side-effect of filtering out private bodies.
+            // We need to assign attribute to associated faces of private patches so that
+            // attribute propagates in downstream operations where the corresponding patch is not rebuilt.
+            const holeFacesQ = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V859_SM_HOLE_ATTRIBUTE)) ?
+                    qEntityFilter(qAttributeQuery(association), EntityType.FACE) :
+                    qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
+            const holeFaces =  evaluateQuery(context, holeFacesQ);
+            if (size(holeFaces) > 0)
             {
-                createAttributesForSheetMetalHole(context, id, holeEdge, holeFaces, holeDefinition, holeStyle);
+                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle);
             }
         }
     }

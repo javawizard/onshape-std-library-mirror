@@ -16,6 +16,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * @internal
@@ -172,6 +173,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             transformQueries = concatenateArrays([transformQueries, [definition.primaryAxisQuery, definition.secondaryAxisQuery, definition.ownerPart]]);
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qUnion(transformQueries)});
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            verifyNoSheetMetalFlatQuery(context, qUnion(transformQueries), "", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+        }
 
         const mateConnectorCoordSystem = evMateConnectorCoordSystem(context, definition);
 

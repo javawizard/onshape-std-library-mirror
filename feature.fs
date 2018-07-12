@@ -538,6 +538,21 @@ export function verifyNonemptyQuery(context is Context, definition is map,
     }
 }
 
+
+/**
+ * @internal
+ * Throws a regeneration error if query references topology of sheet metal flat pattern
+ */
+export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
+    parameterName is string, errorToReport is ErrorStringEnum)
+{
+    if (evaluateQuery(context, qSMFlatFilter(query, SMFlatType.YES)) != [])
+    {
+        throw regenError(errorToReport, [parameterName]);
+    }
+}
+
+
 /**
  * Adjust angle out of bounds angles to lie in `[0 to 2pi]` if the feature is new,
  * do a range check otherwise.

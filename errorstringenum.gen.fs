@@ -1678,7 +1678,11 @@ export enum ErrorStringEnum
     /* Cannot reference 3D geometry from a sketch on flattened sheet metal. */
     SKETCH_CANNOT_REFERENCE_3D,
     /* Cannot join faces with different relative positions in flat pattern. */
-    SM_FLAT_OP_CANNOT_JOIN_DIFFERENT_TRANSFORMS
+    SM_FLAT_OP_CANNOT_JOIN_DIFFERENT_TRANSFORMS,
+    /* Feature defined in model space can not reference sheet metal flat geometry. */
+    DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT,
+    /* Feature defined in sheet metal flat can not reference model space geometry. */
+    DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D
 }
 
 

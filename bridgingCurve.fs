@@ -74,6 +74,11 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         }
     }
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.side2, "side2", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+        }
         var remainingTransform = getRemainderPatternTransform(context,
             {
                 "references" : qUnion([definition.side1, definition.side2])
@@ -492,7 +497,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     {
         // This code deliberately only considers the ends of the edge but we could just as easily match to an
         // edge that passes through the specified point but doesn't end there.
-        const frames = evEdgeCurvature(context, {
+        const frames = evEdgeCurvatures(context, {
                     "edge" : edges,
                     "parameters" : [0, 1],
                     "curveLengthParameterization" : false });

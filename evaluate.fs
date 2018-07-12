@@ -236,16 +236,21 @@ precondition
  *      @field distance {ValueWithUnits} : The minimal or maximal distance.
  *      @field sides {array} : An array of 2 maps, containing information about where the extremum was found for each side.  Each map has a:
  *
- *          `point` ([Vector] of lengths) : represents the position that attains the minimum or maximum on that side.
+ *          `point` (Vector) : The position in world space that is closest or farthest to the other side. The `distance` field is measured between the two values of `point`.
  *
  *          `index` (integer) :  the index into the line or point array or into the query results, if a query is passed in.
  *
  *          `parameter` (number or length or array of two numbers) : If the `index` refers to an edge,
- *                  the parameter is a number between 0 and 1 (unless extend for that side was passed in).  It is in the form that
- *                  [evEdgeTangentLine] consumes (with `arcLengthParameterization` set to `false`).  If the side has `Line`(s),
- *                  the parameter is a length representing the distance along the direction.
- *                  If the `index` refers to a face, the parameter is a 2D `Vector` in the form that `evFaceTangentPlane` consumes.
- *                  If the face is a mesh, the parameter is a 2D `Vector` of 0.
+ *                  the `parameter` is a number between 0 and 1 (unless `extend` for that side was passed in).  It is in the form that
+ *                  [evEdgeTangentLine] consumes (with `arcLengthParameterization` set to `false`).
+ *
+ *                  If the `index` refers to a point, the `parameter` is 0.
+ *
+ *                  If the `index` refers to a [Line], the `parameter` is a length representing the distance along the direction.
+ *
+ *                  If the `index` refers to a face, the `parameter` is a 2D [Vector] in the form that [evFaceTangentPlane] consumes. If this face is a mesh or a plane, the parameter is a 2D [Vector] of zeroes.
+ *
+ *                  If the `index` refers to a [Plane], the `parameter` is a 2D [Vector] representing the lengths along the plane's x and y axes.
  * }}
  */
 export type DistanceResult typecheck canBeDistanceResult;
@@ -261,9 +266,9 @@ predicate canBeDistanceResult(value)
         sideResult is map;
         isNonNegativeInteger(sideResult.index); // Index into either input array or results of input query evaluation
         is3dLengthVector(sideResult.point);
-        // The parameter is either one number (for a curve) or an array of two (for a surface).  For bodies or points, the parameter is 0.
+        // The parameter is either one number (for a curve) or an array of two (for a surface) or a 2D length vector (for a plane). For bodies or points, the parameter is 0.
         // For lines, the parameter is a length representing the distance along the direction.
-        if (!(sideResult.parameter is number || isLength(sideResult.parameter)))
+        if (!(sideResult.parameter is number || isLength(sideResult.parameter) || is2dPoint(sideResult.parameter)))
         {
             sideResult.parameter is Vector;
             size(sideResult.parameter) == 2;
@@ -288,8 +293,8 @@ predicate canBeDistanceResult(value)
  *
  * @param context {Context}
  * @param arg {{
- *      @field side0 : One of the following: A query, or a point (3D Length Vector), or a [Line], or an array of points, or an array of [Line]s.
- *          @eg `qNthElement(qEverything(EntityType.FACE), 0)` or `vector(1, 2, 3) * meter` or `line(vector(1, 0, 1) * meter, vector(1, 1, 1)`
+ *      @field side0 : One of the following: A query, or a point (3D Length Vector), or a [Line], or a [Plane], or an array of points, or an array of [Line]s, or an array of [Plane]s.
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 0)` or `vector(1, 2, 3) * meter` or `line(vector(1, 0, 1) * meter, vector(1, 1, 1)` or `plane(vector(1,1,1) * meter, vector(0,0,1), vector(1,0,0))`.
  *      @field extendSide0 {boolean} : If `true` and side0 is a query, bodies will be ignored and edges and faces extended to
  *          their possibly infinite underlying surfaces.  Defaults to `false`. @optional
  *      @field side1 : Like `side0`.
@@ -309,6 +314,10 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
         if (result.sides[side].parameter is array)
         {
             result.sides[side].parameter = result.sides[side].parameter as Vector;
+
+            var argSide = arg["side" ~ side];
+            if (argSide is Plane || (argSide is array && argSide[result.sides[side].index] is Plane))
+                result.sides[side].parameter *= meter;
         }
         else
         {
@@ -348,7 +357,7 @@ precondition
  *
  * @type {{
  *      @field frame {CoordSystem} : The frame. The Z vector is the tangent, the X vector is the normal and the Y vector is the binormal
- *      @field curvature {ValueWithUnits} : The curvature.
+ *      @field curvature {ValueWithUnits} : The curvature (inverse length units).
  * }}
  */
 export type EdgeCurvatureResult typecheck canBeEdgeCurvatureResult;
@@ -358,6 +367,38 @@ predicate canBeEdgeCurvatureResult(value)
     value is map;
     value.curvature is ValueWithUnits;
     value.curvature.unit == ({ "meter" : -1 } as UnitSpec);
+}
+
+/**
+ * Return a Frenet frame along an edge, with curvature.
+ * If the curve has zero curvature at an evaluated point then the returned normal and binormal are arbitrary
+ * and only the tangent is significant.
+ *
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating the point along the curve to evaluate the frame at.
+ *      @field arcLengthParameterization :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *             For efficiency, use false if calculating the tangent only to an end point of the edge
+ *             because the result will be identical.
+ *             The parameterization is identical to that used by [evEdgeTangentLines].
+ *             Results obtained with arcLengthParameterization will have lower accuracy due to approximation.
+ *          @optional
+ *      @field face {Query} :
+ *             If present, the edge orientation used is such that walking along the edge
+ *             with "up" being the `face` normal will keep `face` to the left.
+ *             Must be adjacent to `edge`.
+ *          @optional
+ * }}
+ * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A frame could not be calculated for the specified input.
+ */
+export function evEdgeCurvature(context is Context, arg is map) returns EdgeCurvatureResult
+{
+    arg.parameters = [arg.parameter];
+    return evEdgeCurvatures(context, arg)[0];
 }
 
 /**
@@ -388,7 +429,7 @@ predicate canBeEdgeCurvatureResult(value)
  * @returns {array} : An array of [EdgeCurvatureResult]s.
  * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : A frame could not be calculated for the specified input.
  */
-export function evEdgeCurvature(context is Context, arg is map) returns array
+export function evEdgeCurvatures(context is Context, arg is map) returns array
 precondition
 {
     arg.edge is Query;
@@ -397,7 +438,7 @@ precondition
         i is number;
 }
 {
-    var results = @evEdgeCurvature(context, arg);
+    var results = @evEdgeCurvatures(context, arg);
     var resultsWithUnits = [];
     for (var result in results)
     {
@@ -502,6 +543,123 @@ precondition
     var result = @evEdgeTangentLines(context, arg);
     for (var i = 0; i < @size(result); i += 1)
         result[i] = lineFromBuiltin(result[i]);
+    return result;
+}
+
+/**
+ * The result of an [evFaceCurvature] call -- principal directions and curvatures at a point.
+ *
+ * The curvature along a particular direction (in the tangent plane) is the inverse of the radius of curvature
+ * in that direction.  This curvature is positive if the radius of curvature points away from the normal direction,
+ * negative if it points along the normal direction, or zero if there is no curvature in that direction. The
+ * principal curvatures at a point are the directions of minimal and maximal curvature along the surface at that
+ * point.
+ *
+ * @type {{
+ *      @field minCurvature {ValueWithUnits} : The smaller of the two principal curvatures (inverse length units).
+ *      @field maxCurvature {ValueWithUnits} : The larger of the two principal curvatures (inverse length units).
+ *      @field minDirection {Vector} : A 3D unit vector corresponding to `minCurvature`.
+ *      @field maxDirection {Vector} : A 3D unit vector corresponding to `maxCurvature`.
+ * }}
+ */
+export type FaceCurvatureResult typecheck canBeFaceCurvatureResult;
+
+predicate canBeFaceCurvatureResult(value)
+{
+    value is map;
+    value.minCurvature is ValueWithUnits;
+    value.minCurvature.unit == ({ "meter" : -1 } as UnitSpec);
+    value.maxCurvature is ValueWithUnits;
+    value.maxCurvature.unit == ({ "meter" : -1 } as UnitSpec);
+    is3dDirection(value.minDirection);
+    is3dDirection(value.maxDirection);
+    perpendicularVectors(value.minDirection, value.maxDirection);
+}
+
+function faceCurvatureResultFromBuiltin(builtinResult is map) returns FaceCurvatureResult
+{
+    builtinResult.minDirection = builtinResult.minDirection as Vector;
+    builtinResult.maxDirection = builtinResult.maxDirection as Vector;
+    builtinResult.minCurvature /= meter;
+    builtinResult.maxCurvature /= meter;
+    return builtinResult as FaceCurvatureResult;
+}
+
+/**
+ * Given a face, calculate and return principal curvatures at a point on that face,
+ * specified by its parameter-space coordinates.
+ *
+ * @example ```
+ *  // Ellipsoid measuring 10in x 4in x 6in
+ * fEllipsoid(context, id + "ellipsoid", {
+ *             "center" : vector(0, 0, 0) * inch,
+ *             "radius" : vector(5 * inch, 2 * inch, 3 * inch)
+ *         });
+ *
+ * const ellipseFace = qCreatedBy(id + "ellipsoid", EntityType.FACE);
+ * const topPoint = vector(0, 0, 3) * inch; // Point on top of ellipsoid
+ * const distanceResult = evDistance(context, { // Closest position to topPoint on ellipseFace
+ *             "side0" : ellipseFace,
+ *             "side1" : topPoint
+ *         });
+ * var uvCoordinatesAtTopPoint = distanceResult.sides[0].parameter;
+ *
+ * var curvatureResult = evFaceCurvature(context, {
+ *         "face" : ellipseFace,
+ *         "parameter" : uvCoordinatesAtTopPoint
+ *     });
+ * //  curvatureResult is {
+ * //      minCurvature: 3 * inch / (5 * inch)^2,
+ * //      maxCurvature: 3 * inch / (2 * inch)^2,
+ * //      minDirection: vector(1, 0, 0),
+ * //      maxDirection: vector(0, 1, 0)
+ * //  }
+ * ```
+ *
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face on which to evaluate the curvature. The face cannot be a mesh.
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameter {Vector}: a 2d unitless parameter-space vector specifying the location on the face.
+ *          The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `vector(0.5, 0.5)`
+ * }}
+ */
+export function evFaceCurvature(context is Context, arg is map) returns FaceCurvatureResult
+{
+    arg.parameters = [arg.parameter];
+    return evFaceCurvatures(context, arg)[0];
+}
+
+/**
+ * Given a face, calculate and return an array of principal curvatures at points on that face,
+ * specified by its parameter-space coordinates.
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: A single face on which to evaluate the curvatures. The face cannot be a mesh.
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations on the face.
+ *          The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
+ * }}
+ * @returns {array} : An array of [FaceCurvatureResult]s.
+ */
+export function evFaceCurvatures(context is Context, arg is map) returns array
+precondition
+{
+    arg.face is Query;
+    arg.parameters is array;
+    for (var uv in arg.parameters)
+    {
+        uv is Vector;
+        @size(uv) == 2;
+    }
+}
+{
+    var builtinResult = @evFaceCurvatures(context, arg);
+    var result = [];
+    for (var builtinResultItem in builtinResult)
+        result = append(result, faceCurvatureResultFromBuiltin(builtinResultItem));
     return result;
 }
 

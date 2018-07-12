@@ -54,6 +54,7 @@ const degeneratePointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
+const noSMInFlatReferences           = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED;
 
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
@@ -114,6 +115,11 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     }
     //============================ Body =============================
     {
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+        {
+            verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", noSMInFlatReferences);
+        }
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
             definition.angle = adjustAngle(context, definition.angle);
 
