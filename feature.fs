@@ -1,20 +1,21 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "860.0");
-export import(path : "onshape/std/error.fs", version : "860.0");
-export import(path : "onshape/std/geomOperations.fs", version : "860.0");
-export import(path : "onshape/std/query.fs", version : "860.0");
+export import(path : "onshape/std/context.fs", version : "877.0");
+export import(path : "onshape/std/error.fs", version : "877.0");
+export import(path : "onshape/std/geomOperations.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "877.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "860.0");
-import(path : "onshape/std/math.fs", version : "860.0");
-import(path : "onshape/std/string.fs", version : "860.0");
-import(path : "onshape/std/transform.fs", version : "860.0");
-import(path : "onshape/std/units.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "877.0");
+import(path : "onshape/std/math.fs", version : "877.0");
+import(path : "onshape/std/string.fs", version : "877.0");
+import(path : "onshape/std/transform.fs", version : "877.0");
+import(path : "onshape/std/units.fs", version : "877.0");
+import(path : "onshape/std/tabReferences.fs", version : "877.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -206,11 +207,13 @@ function recordParameters(context is Context, id is Id, definition is map, array
                 if (paramEntry.value is Query)
                 {
                     @recordQuery(context, id, { (parameterId) : paramEntry.value });
+                    continue;
                 }
-                else
+                if (paramEntry.value is PartStudioData || paramEntry.value is TableData || paramEntry.value is ImageData)
                 {
-                    setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
+                    continue;
                 }
+                setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
             }
         }
     }
@@ -388,8 +391,8 @@ export function evaluateQuery(context is Context, query is Query) returns array
  * Used to create a generic feature parameter that can be any featurescript
  * expression.
  *
- * Note that for non-hidden parameters, some internal validation is done to
- * only allow this parameter to be a `number` or a `ValueWithUnits`.
+ * Note that to change the user-visible default value, the "Default" annotation must be a string containing a valid parameter expression.
+ * For example, to make the default value the string `"My string"`, pass in an escaped string: `annotation{ "Default": "\\"My string\\"" }`.
  */
 export predicate isAnything(value)
 {

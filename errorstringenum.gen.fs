@@ -1,4 +1,4 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -653,7 +653,7 @@ export enum ErrorStringEnum
     SKETCH_SPLINE_POINT_TO_DELETE_NOT_FOUND,
     /* Failed to insert instance into assembly. */
     ASSEMBLY_INSERT_FAILED,
-    /* The sketch pattern could not be created. Please contact support. */
+    /* The sketch pattern could not be created. */
     SKETCH_PATTERN_UNKNOWN_FAILURE,
     /* This pattern would create too much geometry. */
     SKETCH_PATTERN_TOO_LARGE,
@@ -1682,7 +1682,11 @@ export enum ErrorStringEnum
     /* Feature defined in model space can not reference sheet metal flat geometry. */
     DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT,
     /* Feature defined in sheet metal flat can not reference model space geometry. */
-    DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D
+    DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D,
+    /* Cannot change reference to a deleted document. */
+    CANNOT_CHANGE_REFERENCE_TO_DELETED_DOCUMENT,
+    /* Could not find sketch to copy. */
+    COPIED_SKETCH_NOT_FOUND
 }
 
 

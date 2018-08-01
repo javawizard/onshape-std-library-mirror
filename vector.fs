@@ -1,21 +1,21 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "860.0");
-import(path : "onshape/std/math.fs", version : "860.0");
-import(path : "onshape/std/units.fs", version : "860.0");
-import(path : "onshape/std/matrix.fs", version : "860.0");
-import(path : "onshape/std/string.fs", version : "860.0");
+import(path : "onshape/std/containers.fs", version : "877.0");
+import(path : "onshape/std/math.fs", version : "877.0");
+import(path : "onshape/std/units.fs", version : "877.0");
+import(path : "onshape/std/matrix.fs", version : "877.0");
+import(path : "onshape/std/string.fs", version : "877.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
  *
  * Operators `+`, `-`, `*`, and `/` are overloaded for vectors,
  * and other operations such as dot product are available.
- * If a vector does not contain numbers or lengths operations
+ * If a vector does not contain numbers or lengths, operations
  * that assume number-like properties may fail.
  */
 export type Vector typecheck canBeVector;
@@ -257,6 +257,11 @@ export operator*(scalar, vector is Vector) returns Vector
     return vector;
 }
 
+export operator*(vec1 is Vector, vec2 is Vector) returns Vector
+{
+    throw "Cannot multiply two vectors. Did you mean to use dot() or cross()?";
+}
+
 export operator*(matrix is Matrix, vector is Vector) returns Vector
 precondition
 {
@@ -280,6 +285,11 @@ precondition
         result += transposed[i] * vector[i];
     }
     return result as Vector;
+}
+
+export operator*(vector is Vector, matrix is Matrix) returns Vector
+{
+    throw "Cannot right-multiply vector by matrix. Matrices must be multiplied on the left.";
 }
 
 export operator/(vector is Vector, scalar) returns Vector

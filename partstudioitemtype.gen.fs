@@ -5,15 +5,15 @@ FeatureScript 877; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies how a constraint between lines or axes (such as parallel or
- * coincident) should align the two constrained axes.
- */
-export enum DimensionAlignment
+/** @internal */
+export enum PartStudioItemType
 {
-    UNSPECIFIED,
-    ALIGNED,
-    ANTI_ALIGNED
+    SOLID,
+    SURFACE,
+    WIRE,
+    MESH,
+    SKETCH,
+    FLATTENED_SHEET_METAL
 }
 
 

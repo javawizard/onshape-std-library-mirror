@@ -1,34 +1,34 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "860.0");
-export import(path : "onshape/std/query.fs", version : "860.0");
-export import(path : "onshape/std/tool.fs", version : "860.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "877.0");
+export import(path : "onshape/std/tool.fs", version : "877.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "860.0");
+export import(path : "onshape/std/manipulator.fs", version : "877.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "860.0");
-import(path : "onshape/std/boolean.fs", version : "860.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "860.0");
-import(path : "onshape/std/box.fs", version : "860.0");
-import(path : "onshape/std/containers.fs", version : "860.0");
-import(path : "onshape/std/coordSystem.fs", version : "860.0");
-import(path : "onshape/std/curveGeometry.fs", version : "860.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "860.0");
-import(path : "onshape/std/evaluate.fs", version : "860.0");
-import(path : "onshape/std/feature.fs", version : "860.0");
-import(path : "onshape/std/mathUtils.fs", version : "860.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "860.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "860.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "860.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
-import(path : "onshape/std/transform.fs", version : "860.0");
-import(path : "onshape/std/valueBounds.fs", version : "860.0");
+import(path : "onshape/std/attributes.fs", version : "877.0");
+import(path : "onshape/std/boolean.fs", version : "877.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "877.0");
+import(path : "onshape/std/box.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "877.0");
+import(path : "onshape/std/coordSystem.fs", version : "877.0");
+import(path : "onshape/std/curveGeometry.fs", version : "877.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "877.0");
+import(path : "onshape/std/evaluate.fs", version : "877.0");
+import(path : "onshape/std/feature.fs", version : "877.0");
+import(path : "onshape/std/mathUtils.fs", version : "877.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "877.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "877.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "877.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
+import(path : "onshape/std/transform.fs", version : "877.0");
+import(path : "onshape/std/valueBounds.fs", version : "877.0");
 
 /**
  * The viewer being operated in
@@ -221,7 +221,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             {
                 const errorString = (containsModelEntities) ? ErrorStringEnum.EXTRUDE_3D_AND_FLAT :
                                                                         ErrorStringEnum.DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT;
-                throw regenError(errorString, ["entities"], qSMFlatFilter(definition.entities, SMFlatType.YES));
+                throw regenError(errorString, ["entities"]);
             }
         }
 

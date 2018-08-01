@@ -1,4 +1,4 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 860; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "860.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "860.0");
-import(path : "onshape/std/containers.fs", version : "860.0");
-import(path : "onshape/std/context.fs", version : "860.0");
-import(path : "onshape/std/coordSystem.fs", version : "860.0");
-import(path : "onshape/std/curveGeometry.fs", version : "860.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "860.0");
-import(path : "onshape/std/mathUtils.fs", version : "860.0");
-import(path : "onshape/std/query.fs", version : "860.0");
-import(path : "onshape/std/feature.fs", version : "860.0");
-import(path : "onshape/std/string.fs", version : "860.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "860.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
-import(path : "onshape/std/units.fs", version : "860.0");
+import(path : "onshape/std/box.fs", version : "877.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "877.0");
+import(path : "onshape/std/context.fs", version : "877.0");
+import(path : "onshape/std/coordSystem.fs", version : "877.0");
+import(path : "onshape/std/curveGeometry.fs", version : "877.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "877.0");
+import(path : "onshape/std/mathUtils.fs", version : "877.0");
+import(path : "onshape/std/query.fs", version : "877.0");
+import(path : "onshape/std/feature.fs", version : "877.0");
+import(path : "onshape/std/string.fs", version : "877.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "877.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
+import(path : "onshape/std/units.fs", version : "877.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -66,7 +66,7 @@ precondition
 
 /**
  * If the query finds one entity with an axis -- a line, circle,
- * plane, cylinder, cone, sphere, torus, or revolved surface -- return
+ * plane, cylinder, cone, sphere, torus, mate connector, or revolved surface -- return
  * the axis.
  * Otherwise throw an exception.
  * @param arg {{

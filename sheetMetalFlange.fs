@@ -1,28 +1,28 @@
-FeatureScript 860; /* Automatically generated version */
+FeatureScript 877; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "860.0");
-import(path : "onshape/std/boolean.fs", version : "860.0");
-import(path : "onshape/std/containers.fs", version : "860.0");
-import(path : "onshape/std/curveGeometry.fs", version : "860.0");
-import(path : "onshape/std/extrude.fs", version : "860.0");
-import(path : "onshape/std/evaluate.fs", version : "860.0");
-import(path : "onshape/std/feature.fs", version : "860.0");
-import(path : "onshape/std/math.fs", version : "860.0");
-import(path : "onshape/std/matrix.fs", version : "860.0");
-import(path : "onshape/std/query.fs", version : "860.0");
-import(path : "onshape/std/sketch.fs", version : "860.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "860.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "860.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "860.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "860.0");
-import(path : "onshape/std/topologyUtils.fs", version : "860.0");
-import(path : "onshape/std/units.fs", version : "860.0");
-import(path : "onshape/std/valueBounds.fs", version : "860.0");
-import(path : "onshape/std/vector.fs", version : "860.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "860.0");
+import(path : "onshape/std/attributes.fs", version : "877.0");
+import(path : "onshape/std/boolean.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "877.0");
+import(path : "onshape/std/curveGeometry.fs", version : "877.0");
+import(path : "onshape/std/extrude.fs", version : "877.0");
+import(path : "onshape/std/evaluate.fs", version : "877.0");
+import(path : "onshape/std/feature.fs", version : "877.0");
+import(path : "onshape/std/math.fs", version : "877.0");
+import(path : "onshape/std/matrix.fs", version : "877.0");
+import(path : "onshape/std/query.fs", version : "877.0");
+import(path : "onshape/std/sketch.fs", version : "877.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "877.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "877.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "877.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
+import(path : "onshape/std/topologyUtils.fs", version : "877.0");
+import(path : "onshape/std/units.fs", version : "877.0");
+import(path : "onshape/std/valueBounds.fs", version : "877.0");
+import(path : "onshape/std/vector.fs", version : "877.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "877.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -312,7 +312,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     {
         definition.bendRadius =  modelParams.defaultBendRadius;
     }
-    if (!specifiedParameters.offset)
+    if (isCreating && !specifiedParameters.offset)
         definition.offset = modelParams.minimalClearance;
 
     //make sure we're pointing in the direction of the limit entity
@@ -938,8 +938,7 @@ function filterSmoothEdges(context is Context, inputEdges is Query) returns arra
 {
     var evaluatedInputEdges = evaluateQuery(context, inputEdges);
     var resultingEdges = filter(evaluatedInputEdges, function(edge){
-        var convexity = try silent(evEdgeConvexity(context, {"edge" : edge}));
-        return (convexity != EdgeConvexityType.SMOOTH);
+        return (!edgeIsTwoSided(context, edge)) || (evEdgeConvexity(context, {"edge" : edge}) != EdgeConvexityType.SMOOTH);
     });
     return resultingEdges;
 }
