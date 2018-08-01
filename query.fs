@@ -519,7 +519,7 @@ export enum EdgeTopology
  * definition.axis is Query;
  * ```
  * @value ALLOWS_AXIS : Equivalent to
- *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER`
+ *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER || BodyType.MATE_CONNECTOR`
  *      and can be processed with [evAxis]
  * @value ALLOWS_DIRECTION : Equivalent to
  *      `QueryFilterCompound.ALLOWS_AXIS || GeomtryType.PLANE`

@@ -221,7 +221,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             {
                 const errorString = (containsModelEntities) ? ErrorStringEnum.EXTRUDE_3D_AND_FLAT :
                                                                         ErrorStringEnum.DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT;
-                throw regenError(errorString, ["entities"], qSMFlatFilter(definition.entities, SMFlatType.YES));
+                throw regenError(errorString, ["entities"]);
             }
         }
 

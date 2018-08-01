@@ -312,7 +312,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     {
         definition.bendRadius =  modelParams.defaultBendRadius;
     }
-    if (!specifiedParameters.offset)
+    if (isCreating && !specifiedParameters.offset)
         definition.offset = modelParams.minimalClearance;
 
     //make sure we're pointing in the direction of the limit entity
@@ -938,8 +938,7 @@ function filterSmoothEdges(context is Context, inputEdges is Query) returns arra
 {
     var evaluatedInputEdges = evaluateQuery(context, inputEdges);
     var resultingEdges = filter(evaluatedInputEdges, function(edge){
-        var convexity = try silent(evEdgeConvexity(context, {"edge" : edge}));
-        return (convexity != EdgeConvexityType.SMOOTH);
+        return (!edgeIsTwoSided(context, edge)) || (evEdgeConvexity(context, {"edge" : edge}) != EdgeConvexityType.SMOOTH);
     });
     return resultingEdges;
 }

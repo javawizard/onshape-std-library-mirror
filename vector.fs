@@ -15,7 +15,7 @@ import(path : "onshape/std/string.fs", version : "✨");
  *
  * Operators `+`, `-`, `*`, and `/` are overloaded for vectors,
  * and other operations such as dot product are available.
- * If a vector does not contain numbers or lengths operations
+ * If a vector does not contain numbers or lengths, operations
  * that assume number-like properties may fail.
  */
 export type Vector typecheck canBeVector;
@@ -257,6 +257,11 @@ export operator*(scalar, vector is Vector) returns Vector
     return vector;
 }
 
+export operator*(vec1 is Vector, vec2 is Vector) returns Vector
+{
+    throw "Cannot multiply two vectors. Did you mean to use dot() or cross()?";
+}
+
 export operator*(matrix is Matrix, vector is Vector) returns Vector
 precondition
 {
@@ -280,6 +285,11 @@ precondition
         result += transposed[i] * vector[i];
     }
     return result as Vector;
+}
+
+export operator*(vector is Vector, matrix is Matrix) returns Vector
+{
+    throw "Cannot right-multiply vector by matrix. Matrices must be multiplied on the left.";
 }
 
 export operator/(vector is Vector, scalar) returns Vector

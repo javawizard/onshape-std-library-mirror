@@ -66,7 +66,7 @@ precondition
 
 /**
  * If the query finds one entity with an axis -- a line, circle,
- * plane, cylinder, cone, sphere, torus, or revolved surface -- return
+ * plane, cylinder, cone, sphere, torus, mate connector, or revolved surface -- return
  * the axis.
  * Otherwise throw an exception.
  * @param arg {{

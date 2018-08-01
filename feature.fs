@@ -15,6 +15,7 @@ import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/tabReferences.fs", version : "✨");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -206,11 +207,13 @@ function recordParameters(context is Context, id is Id, definition is map, array
                 if (paramEntry.value is Query)
                 {
                     @recordQuery(context, id, { (parameterId) : paramEntry.value });
+                    continue;
                 }
-                else
+                if (paramEntry.value is PartStudioData || paramEntry.value is TableData || paramEntry.value is ImageData)
                 {
-                    setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
+                    continue;
                 }
+                setFeatureComputedParameter(context, id, { "name" : parameterId, "value" : paramEntry.value });
             }
         }
     }
@@ -388,8 +391,8 @@ export function evaluateQuery(context is Context, query is Query) returns array
  * Used to create a generic feature parameter that can be any featurescript
  * expression.
  *
- * Note that for non-hidden parameters, some internal validation is done to
- * only allow this parameter to be a `number` or a `ValueWithUnits`.
+ * Note that to change the user-visible default value, the "Default" annotation must be a string containing a valid parameter expression.
+ * For example, to make the default value the string `"My string"`, pass in an escaped string: `annotation{ "Default": "\\"My string\\"" }`.
  */
 export predicate isAnything(value)
 {

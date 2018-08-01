@@ -702,9 +702,19 @@ function extrudeSketchCurves(context is Context, id is Id, definition is map) re
         definition = transformExtrudeDefinitionForOpExtrude(context, id, sketchCurves, extrudeAxis.direction, definition);
 
         const extrudeId = id + "extrude";
-        opExtrude(context, extrudeId, definition);
-        cleanupVertexBoundaryPlane(context, id, definition);
-
+        try {
+            opExtrude(context, extrudeId, definition);
+            cleanupVertexBoundaryPlane(context, id, definition);
+        }
+        catch (error)
+        {
+            processSubfeatureStatus(context, id, {
+                    "subfeatureId" : extrudeId,
+                    "propagateErrorDisplay" : true,
+                    "featureParameterMap" : {"entities" : "sketchCurves"}
+                    });
+            throw error;
+        }
         return qCreatedBy(extrudeId, EntityType.BODY);
     }
     return qNothing();

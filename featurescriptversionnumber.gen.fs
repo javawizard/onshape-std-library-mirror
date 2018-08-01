@@ -689,7 +689,15 @@ export enum FeatureScriptVersionNumber
     V857_BEND_INTERVAL,
     V858_SM_FLAT_BUG_FIXES,
     V859_SM_HOLE_ATTRIBUTE,
-    V860_SM_FLAT_ERRORS
+    V860_SM_FLAT_ERRORS,
+    V870_DELETE_SKETCH_UNFOLD_FAILURE,
+    V871_MATE_CONNECTORS_AS_AXES,
+    V872_DCM_VERSION_68_2_2,
+    V873_SM_OFFSET_ORDER,
+    V874_CORNER_BY_BODY,
+    V875_MC_USE_BOTTOM_AXIS_FIX,
+    V876_PS_VERSION_31_0_154,
+    V877_SM_CORNERS
 }
 
 /**
@@ -700,6 +708,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V860_SM_FLAT_ERRORS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V877_SM_CORNERS;
 
 
