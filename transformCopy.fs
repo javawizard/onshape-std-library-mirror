@@ -309,7 +309,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             const vertices = evaluateQuery(context, qEntityFilter(selection, EntityType.VERTEX));
             const edges = evaluateQuery(context, qEntityFilter(selection, EntityType.EDGE));
             const nedges = @size(edges);
-            const faces = evaluateQuery(context, qEntityFilter(selection, EntityType.FACE));
+            const planarEntities = evaluateQuery(context, qUnion([qEntityFilter(selection, EntityType.FACE), qBodyType(selection, BodyType.MATE_CONNECTOR)]));
             var translation;
 
             if (@size(vertices) >= 2)
@@ -332,9 +332,9 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 if (validateInputs)
                     reportCoincident(context, id, translation);
             }
-            else if (distanceSpecified && @size(faces) >= 1) // A plane only provides direction
+            else if (distanceSpecified && @size(planarEntities) >= 1) // A plane or mate connector only provides direction
             {
-                translation = extractDirection(context, faces[0]);
+                translation = extractDirection(context, planarEntities[0]);
                 if (translation == undefined)
                     throw regenError(ErrorStringEnum.TRANSFORM_TRANSLATE_BY_DISTANCE_INPUT, ["transformDirection"]);
                 translation *= meter;
@@ -500,7 +500,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                         });
             }
         }
-    }, { oppositeDirection : false, scale : 1.0, uniform : true });
+    }, { "oppositeDirection" : false, "scale" : 1.0, "uniform" : true });
 
 function extractOffset(input is map, axis is string)
 {

@@ -69,7 +69,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             recordParameters(otherContext, id, definition);
 
             // remove sheet metal attributes and helper bodies
-            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal");
+            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal", undefined);
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),

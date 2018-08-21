@@ -187,7 +187,7 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
     }
     {
         // remove sheet metal attributes and helper bodies
-        clearSheetMetalData(context, id + "sheetMetal");
+        clearSheetMetalData(context, id + "sheetMetal", undefined);
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
         const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
         jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);

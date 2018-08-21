@@ -147,3 +147,16 @@ export function scaleUniformly(scale is number, point is Vector) returns Transfo
     return transform(identityMatrix(3) * scale, point * (1 - scale));
 }
 
+/**
+ * Returns a [Transform] that represents 3 independent scalings along the X, Y, and Z axes,
+ * centered around the origin.
+ */
+export function scaleNonuniformly(xScale is number, yScale is number, zScale is number) returns Transform
+{
+    var matrix = zeroMatrix(3, 3);
+    matrix[0][0] = xScale;
+    matrix[1][1] = yScale;
+    matrix[2][2] = zScale;
+    return transform(matrix, vector(0, 0, 0) * inch);
+}
+

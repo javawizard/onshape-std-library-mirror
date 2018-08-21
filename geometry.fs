@@ -34,6 +34,7 @@ export import(path : "onshape/std/containers.fs", version : "✨");
 export import(path : "onshape/std/coordSystem.fs", version : "✨");
 export import(path : "onshape/std/curveGeometry.fs", version : "✨");
 export import(path : "onshape/std/debug.fs", version : "✨");
+export import(path : "onshape/std/derive.fs", version : "✨");
 export import(path : "onshape/std/instantiator.fs", version : "✨");
 export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 export import(path : "onshape/std/mathUtils.fs", version : "✨");

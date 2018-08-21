@@ -6,7 +6,7 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * A module containing many elementary math functions.
  *
- * Some math functions (such sa [sin] and [cos]) accept a [ValueWithUnits], rather than
+ * Some math functions (such as [sin] and [cos]) accept a [ValueWithUnits], rather than
  * a [number](/FsDoc/variables.html#number), and are defined in the [units](/FsDoc/library.html#module-units.fs) module.
  * There is no `pow` function: exponentiation is done using the `^` operator.
  *

@@ -31,17 +31,18 @@ FeatureScript ✨; /* Automatically generated version */
  * optimized so that any duplicates of the same Part Studio and the same configuration are patterned instead of re-derived,
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
+
+export import(path : "onshape/std/tabReferences.fs", version : "✨");
+
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/context.fs", version : "✨");
-import(path : "onshape/std/coordSystem.fs", version : "✨");
-import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/geomOperations.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/matrix.fs", version : "✨");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/derive.fs", version : "✨");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;
@@ -139,6 +140,8 @@ precondition
  * build function.  The definition can specify the configuration, the transform, and how the result is identified.
  * @param definition {{
  *     @field configuration {map} : The configuration of the part studio. @optional
+ *     @field partQuery {query} : A query which evaluates to bodies in new context, to be instantiated for this instance.
+ *                            If absent `partQuery` of instantiator is used. When present, overrides `partQuery` of the instantiator. @optional
  *     @field transform {Transform} : The transform to be applied to the geometry. @optional
  *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
  *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
@@ -157,6 +160,7 @@ export function addInstance(instantiator is Instantiator, build is function, def
 precondition
 {
     definition.configuration == undefined || definition.configuration is map;
+    definition.partQuery == undefined || definition.partQuery is Query;
     definition.transform == undefined || definition.transform is Transform;
     definition.mateConnector == undefined || definition.mateConnector is Query;
     definition.name == undefined || definition.name is string;
@@ -211,6 +215,7 @@ precondition
 
     const instance = {
             "id" : instanceId,
+            "partQuery" : definition.partQuery,
             "transform" : definition.transform,
             "mateConnector" : definition.mateConnector,
             "identity" : definition.identity
@@ -227,7 +232,61 @@ precondition
     return qCreatedBy(instanceId, EntityType.BODY);
 }
 
-/** Creates the instances (in the provided context) that were added to the instantiator */
+/**
+ * Add an instance with the buildFunction, partQuery, and configuration of a PartStudioData value.
+ * @param definition {{
+ *     @field transform {Transform} : The transform to be applied to the geometry. @optional
+ *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
+ *     @field configurationOverride {map} : If set, the values will be merged with the configuration set in `partStudio`,
+ *                            overriding any configuration inputs with matching keys. @optional
+ *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
+ *                            If it is not specified, one is automatically generated based on order.
+ *                            If it is specified, the query returned is `qCreatedBy(id + name, EntityType.BODY)`,
+ *                            where `id` is the id that was passed into `newInstantiator`
+ *                            @optional
+ *     @field identity {Query} : If provided, specifies an entity whose identity controls the identity of the instance,
+ *                            so that queries for the instance can be robust.
+ *                            For example, if creating instances based on a layout sketch, one instance per line segment,
+ *                            the identity should be a query for the corresponding line segment.  @optional
+ * }}
+ * @return : a query that will resolve to the bodies instantiated once `instantiate` is run.
+ */
+export function addInstance(instantiator is Instantiator, partStudio is PartStudioData, definition is map) returns Query
+precondition
+{
+    definition.transform == undefined || definition.transform is Transform;
+    definition.mateConnector == undefined || definition.mateConnector is Query;
+    definition.configurationOverride == undefined || definition.configurationOverride is map;
+    definition.name == undefined || definition.name is string;
+    definition.identity == undefined || definition.identity is Query;
+}
+{
+    if (partStudio.configuration != undefined)
+    {
+        if (definition.configurationOverride != undefined)
+            definition.configuration = mergeMaps(partStudio.configuration, definition.configurationOverride);
+        else
+            definition.configuration = partStudio.configuration;
+    }
+    else
+       definition.configuration = definition.configurationOverride;
+
+    definition.partQuery = partStudio.partQuery;
+    return addInstance(instantiator, partStudio.buildFunction, definition);
+}
+
+/**
+ * Add an instance with the buildFunction, partQuery, and configuration of a PartStudioData value.
+ * @return : a query that will resolve to the bodies instantiated once `instantiate` is run.
+ */
+export function addInstance(instantiator is Instantiator, partStudio is PartStudioData) returns Query
+{
+    return addInstance(instantiator, partStudio, {});
+}
+
+/**
+ * Create the instances (in the provided context) that were added to the instantiator
+ */
 export function instantiate(context is Context, instantiator is Instantiator)
 {
     var idx = 0;
@@ -250,15 +309,35 @@ export function instantiate(context is Context, instantiator is Instantiator)
 
             const count = size(tolerantConfigurationInstances.instances);
 
-            var mateConnectorQueries = {};
+            var mateConnectorQueryArray = [];
+            var mergedParts = {};
             for (var i = 0; i < count; i += 1)
-                mateConnectorQueries[tolerantConfigurationInstances.instances[i].mateConnector] = true;
-            mateConnectorQueries[undefined] = undefined;
+            {
+                const instance = tolerantConfigurationInstances.instances[i];
+                if (instance.mateConnector != undefined)
+                    mateConnectorQueryArray = append(mateConnectorQueryArray, instance.mateConnector);
+                mergedParts[instance.partQuery] = true;
+            }
+            // If there've been an instance without partQuery specified, add the default query
+            if (mergedParts[undefined] == true)
+            {
+                mergedParts[instantiator[].partQuery] = true;
+                mergedParts[undefined] = undefined;
+            }
+
+            var partArray = [];
+            for (var query in mergedParts)
+                partArray = append(partArray, query.key);
 
             const derivedId is Id = instantiator[].id + "derived" + unstableIdComponent("derived" ~ idx);
-            mateConnectorQueries = derive(context, derivedId, build, configuration, instantiator[].partQuery, mateConnectorQueries);
+            const derivedResult = derive(context, derivedId, build, {
+                "parts" : qUnion(partArray),
+                "configuration" : configuration,
+                "mateConnectors" : mateConnectorQueryArray,
+                "queriesToTrack" : mergedParts});
+            const mateConnectorQueries = derivedResult.mateConnectors;
+            mergedParts = derivedResult.trackingResults;
 
-            const derivedQuery = qCreatedBy(derivedId, EntityType.BODY);
             for (var i = 0; i < count; i += 1)
             {
                 const instance = tolerantConfigurationInstances.instances[i];
@@ -268,7 +347,13 @@ export function instantiate(context is Context, instantiator is Instantiator)
                 if (mateConnectorTransform != undefined)
                     transform *= mateConnectorTransform;
 
-                toPattern = append(toPattern, { "id" : instance.id, "identity" : instance.identity, "entities" : derivedQuery, "transforms" : [transform], "instanceNames" : ["1"]});
+                const instanceParts = (instance.partQuery == undefined) ? instantiator[].partQuery : instance.partQuery;
+                const derivedParts = mergedParts[instanceParts];
+                if (derivedParts == undefined)
+                    throw regenError("Error tracking parts of " ~ instance.name);
+
+                toPattern = append(toPattern, { "id" : instance.id, "identity" : instance.identity, "entities" : qUnion(derivedParts),
+                                                "transforms" : [transform], "instanceNames" : ["1"]});
             }
 
             idx += 1;
@@ -326,39 +411,5 @@ function getTolerance(entry is map, tolerances is map)
     if (entry.value is number)
         return tolerances[unitless];
     return tolerances[entry.value.unit];
-}
-
-const neverKeep = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
-            qCreatedBy(makeId("Front"), EntityType.BODY),
-            qCreatedBy(makeId("Top"), EntityType.BODY),
-            qCreatedBy(makeId("Right"), EntityType.BODY)]);
-const allBodies = qEverything(EntityType.BODY);
-
-// For mateConnector, doesn't matter what the values are on input.  On output, the values are transforms
-function derive(context is Context, id is Id, buildFunction is function, configuration is map, parts is Query, mateConnector is map) returns map
-{
-    const otherContext = @convert(buildFunction(configuration), undefined);
-    if (size(evaluateQuery(otherContext, parts)) == 0)
-        throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
-
-    // Evaluate the mate connector queries
-    for (var query in mateConnector)
-        mateConnector[query.key] = fromWorld(evMateConnector(otherContext, { "mateConnector" : query.key }));
-
-    // remove sheet metal attributes and helper bodies
-    var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal");
-
-    // don't want to merge default bodies or unmodifiable bodies
-    var bodiesToKeep = qModifiableEntityFilter(qSubtraction(parts, neverKeep));
-
-    const deleteDefinition = {
-            "entities" : qSubtraction(qUnion([allBodies, smPartsQ]), bodiesToKeep)
-        };
-    opDeleteBodies(otherContext, id + "delete", deleteDefinition);
-
-    opMergeContexts(context, id + "merge", { contextFrom : otherContext });
-    processSubfeatureStatus(context, id, { "subfeatureId" : id + "merge" });
-
-    return mateConnector;
 }
 

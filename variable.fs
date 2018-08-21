@@ -57,7 +57,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
         definition.variableType is VariableType;
 
-        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE" }
+        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE", "MaxLength": 10000 }
         definition.name is string;
 
         if (definition.variableType == VariableType.LENGTH)
@@ -122,6 +122,8 @@ export const assignVariable = defineFeature(function(context is Context, id is I
  */
 export function verifyVariableName(name is string)
 {
+    if (length(name) > 10000)
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
         throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);

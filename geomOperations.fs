@@ -17,6 +17,8 @@ FeatureScript ✨; /* Automatically generated version */
  */
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/query.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
 
 /* opBoolean uses enumerations from TopologyMatchType */
 export import(path : "onshape/std/topologymatchtype.gen.fs", version : "✨");
@@ -281,6 +283,7 @@ export function opFillet(context is Context, id is Id, definition is map)
  *     vector( 1,  1,  1) * inch
  * ]
  * ```
+ *      @field parameters : An array of doubles, parameters corresponding to the points. @optional
  *      @field startDerivative {Vector} : A `Vector` with length units that specifies the derivative at the start of
  *          the resulting spline (according to the `arcLengthParameterization` set to `false`).  Ignored if spline
  *          is closed.  @optional
@@ -387,11 +390,24 @@ export function opMateConnector(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field contextFrom {Context} : The source context. It is rendered unusable by this operation.
  *              @eg `MyPartStudio::build()`
+ *       @field trackThroughMerge {array} : @optional
+ *              Array of queries to map evaluation result in contextFrom to context post-merge
  * }}
+ * @return {array} : Returns array of the same size as trackThroughMerge
+ *                   with evaluation results for each query(array of arrays of transient queries).
  */
-export function opMergeContexts(context is Context, id is Id, definition is map)
+export function opMergeContexts(context is Context, id is Id, definition is map) returns array
 {
-    return @opMergeContexts(context, id, definition);
+    const result = @opMergeContexts(context, id, definition);
+    var out = [];
+    for (var query in result)
+    {
+        var queryResult = [];
+        for (var queryItem in query)
+            queryResult = append(queryResult, qTransient(queryItem as TransientId));
+        out = append(out, queryResult);
+    }
+    return out;
 }
 
 /**

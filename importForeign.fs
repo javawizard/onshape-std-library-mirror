@@ -52,6 +52,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
 
+        annotation { "Name" : "Allow faulty parts" }
+        definition.allowFaultyParts is boolean;
+
         annotation { "UIHint" : "ALWAYS_HIDDEN" }
         definition.specifyUnits is boolean;
 
@@ -91,5 +94,5 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false });
 

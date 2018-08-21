@@ -1077,10 +1077,15 @@ export function checkNotInFeaturePattern(context is Context, references is Query
 
 /**
  * @internal
- * Used in importDerived to strip sheet metal related data off the imported context
- * returns query of all sheet metal parts (3d and flattened)
+ * Used in derive to strip sheet metal related data off the imported context
+ * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
+ * sheet metal models in partsToKeep.
  */
-export function clearSheetMetalData(context, id) returns Query
+export function clearSheetMetalData(context is Context, id is Id, partsToKeep) returns Query
+precondition
+{
+    partsToKeep == undefined || partsToKeep is Query;
+}
 {
     // All the attribute queries are evaluated immediately because this function
     // removes all SMAttributes and SMAssociationAttribute
@@ -1093,6 +1098,18 @@ export function clearSheetMetalData(context, id) returns Query
     var smModelsActiveQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL,
                                                   active : true}));
     var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+
+    const smModelsToKeep = getSmModelsToKeep(context, partsToKeep);
+    var keepingSomeModels = false;
+    if (smModelsToKeep != [])
+    {
+        const smModelsToKeepQ = qUnion(smModelsToKeep);
+        smModelsQ = qSubtraction(smModelsQ, smModelsToKeepQ);
+        smModelsEvaluated = evaluateQuery(context, smModelsQ);
+        smModelsActiveQ = qSubtraction(smModelsActiveQ, smModelsToKeepQ);
+        smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+        keepingSomeModels = true;
+    }
 
     // Solid bodies 3d and Flat and only they are associated with sheet bodies
     var associationAttributes = getAttributes(context, {"entities" : smModelsQ, "attributePattern" : {} as SMAssociationAttribute});
@@ -1125,6 +1142,7 @@ export function clearSheetMetalData(context, id) returns Query
 
     // remove all SMAttributes
     removeAttributes(context, {
+        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
         "attributePattern" : asSMAttribute({})
     });
 
@@ -1136,6 +1154,7 @@ export function clearSheetMetalData(context, id) returns Query
 
     // remove all SMAssociationAttribute
     removeAttributes(context, {
+        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
         "attributePattern" : {} as SMAssociationAttribute
     });
 
@@ -1145,6 +1164,22 @@ export function clearSheetMetalData(context, id) returns Query
     });
 
    return qUnion(smPartNBendLineQEvaluated);
+}
+
+function getSmModelsToKeep(context is Context, parts) returns array
+{
+    if (parts == undefined)
+    {
+        return [];
+    }
+    const associationAttributes = getAttributes(context, {"entities" : parts, "attributePattern" : {} as SMAssociationAttribute});
+    var out = [];
+    for (var attribute in associationAttributes)
+    {
+        const smModelQ = qAttributeFilter(qAttributeQuery(attribute), asSMAttribute({objectType : SMObjectType.MODEL}));
+        out = concatenateArrays([out, evaluateQuery(context, smModelQ)]);
+    }
+    return out;
 }
 
 /**
