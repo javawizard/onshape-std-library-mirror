@@ -1,19 +1,19 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "891.0");
 
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/manipulator.fs", version : "877.0");
-import(path : "onshape/std/math.fs", version : "877.0");
-import(path : "onshape/std/topologyUtils.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/vector.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/manipulator.fs", version : "891.0");
+import(path : "onshape/std/math.fs", version : "891.0");
+import(path : "onshape/std/topologyUtils.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/vector.fs", version : "891.0");
 
 /**
  * Feature performing an [opFitSpline]
@@ -190,7 +190,11 @@ function getEndCondition(context is Context, definition is map, points is array,
 
     const directionFaces = evaluateQuery(context, qEntityFilter(definition[directionProperty], EntityType.FACE));
     const directionEdges = evaluateQuery(context, qEntityFilter(definition[directionProperty], EntityType.EDGE));
-    if (size(directionFaces) + size(directionEdges) > 1)
+    var directionConnectors = [];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V740_PROPAGATE_PROPERTIES_IN_PATTERNS)) // prior to this version mate connectors don't filter
+        directionConnectors = evaluateQuery(context, qBodyType(definition[directionProperty], BodyType.MATE_CONNECTOR));
+
+    if (size(directionFaces) + size(directionEdges) + size(directionConnectors) > 1)
     {
         throw regenError(ErrorStringEnum.TANGENCY_ONE_EDGE, [directionProperty]);
     }
@@ -247,6 +251,15 @@ function getEndCondition(context is Context, definition is map, points is array,
         {
             throw regenError(ErrorStringEnum.FIT_SPLINE_CANNOT_EVALUATE_CURVATURE_END_CONDITION, [directionProperty]);
         }
+    }
+    else if (size(directionConnectors) == 1)
+    {
+        if (matchingCurvature)
+        {
+            throw regenError(ErrorStringEnum.FIT_SPLINE_CURVATURE_FACE, [directionProperty]);
+        }
+        const direction = extractDirection(context, directionConnectors[0]);
+        return { "direction" : direction, "magnitude" : magnitude };
     }
 
     // we don't have direction input, cannot match curvature

@@ -1,4 +1,4 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1237,7 +1237,7 @@ export enum ErrorStringEnum
     EXPORT_STL_NO_PARTS,
     /* Name is required and cannot exceed 256 characters. */
     INPUT_NAME_TOO_LONG,
-    /* File was imported but contained faults. */
+    /* Imported parts contained faults. */
     IMPORT_BODY_FAILED_CHECK,
     /* Parts were derived but contained faults. */
     DERIVED_BODIES_HAVE_FAULTS,
@@ -1686,7 +1686,9 @@ export enum ErrorStringEnum
     /* Cannot change reference to a deleted document. */
     CANNOT_CHANGE_REFERENCE_TO_DELETED_DOCUMENT,
     /* Could not find sketch to copy. */
-    COPIED_SKETCH_NOT_FOUND
+    COPIED_SKETCH_NOT_FOUND,
+    /* Variable name must be less than 10000 characters. */
+    VARIABLE_NAME_TOO_LONG
 }
 
 

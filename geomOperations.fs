@@ -1,4 +1,4 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,19 +15,21 @@ FeatureScript 877; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "877.0");
-import(path : "onshape/std/curveGeometry.fs", version : "877.0");
+import(path : "onshape/std/context.fs", version : "891.0");
+import(path : "onshape/std/curveGeometry.fs", version : "891.0");
+import(path : "onshape/std/query.fs", version : "891.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "877.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "891.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "877.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "891.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "877.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "891.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "877.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "891.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "877.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "891.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -281,6 +283,7 @@ export function opFillet(context is Context, id is Id, definition is map)
  *     vector( 1,  1,  1) * inch
  * ]
  * ```
+ *      @field parameters : An array of doubles, parameters corresponding to the points. @optional
  *      @field startDerivative {Vector} : A `Vector` with length units that specifies the derivative at the start of
  *          the resulting spline (according to the `arcLengthParameterization` set to `false`).  Ignored if spline
  *          is closed.  @optional
@@ -387,11 +390,24 @@ export function opMateConnector(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field contextFrom {Context} : The source context. It is rendered unusable by this operation.
  *              @eg `MyPartStudio::build()`
+ *       @field trackThroughMerge {array} : @optional
+ *              Array of queries to map evaluation result in contextFrom to context post-merge
  * }}
+ * @return {array} : Returns array of the same size as trackThroughMerge
+ *                   with evaluation results for each query(array of arrays of transient queries).
  */
-export function opMergeContexts(context is Context, id is Id, definition is map)
+export function opMergeContexts(context is Context, id is Id, definition is map) returns array
 {
-    return @opMergeContexts(context, id, definition);
+    const result = @opMergeContexts(context, id, definition);
+    var out = [];
+    for (var query in result)
+    {
+        var queryResult = [];
+        for (var queryItem in query)
+            queryResult = append(queryResult, qTransient(queryItem as TransientId));
+        out = append(out, queryResult);
+    }
+    return out;
 }
 
 /**

@@ -1,19 +1,19 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "891.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/string.fs", version : "877.0");
-import(path : "onshape/std/tool.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/manipulator.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/string.fs", version : "891.0");
+import(path : "onshape/std/tool.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/manipulator.fs", version : "891.0");
 
 /**
  * Specifies the type of values `assignVariable` is allowed to set.
@@ -57,7 +57,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
         definition.variableType is VariableType;
 
-        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE" }
+        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE", "MaxLength": 10000 }
         definition.name is string;
 
         if (definition.variableType == VariableType.LENGTH)
@@ -122,6 +122,8 @@ export const assignVariable = defineFeature(function(context is Context, id is I
  */
 export function verifyVariableName(name is string)
 {
+    if (length(name) > 10000)
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
         throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);

@@ -1,28 +1,28 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "877.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "877.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "877.0");
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/coordSystem.fs", version : "877.0");
-import(path : "onshape/std/curveGeometry.fs", version : "877.0");
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/math.fs", version : "877.0");
-import(path : "onshape/std/manipulator.fs", version : "877.0");
-import(path : "onshape/std/query.fs", version : "877.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "877.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "877.0");
-import(path : "onshape/std/string.fs", version : "877.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
-import(path : "onshape/std/tool.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/vector.fs", version : "877.0");
-import(path : "onshape/std/topologyUtils.fs", version : "877.0");
-import(path : "onshape/std/transform.fs", version : "877.0");
+import(path : "onshape/std/attributes.fs", version : "891.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "891.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "891.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/coordSystem.fs", version : "891.0");
+import(path : "onshape/std/curveGeometry.fs", version : "891.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/math.fs", version : "891.0");
+import(path : "onshape/std/manipulator.fs", version : "891.0");
+import(path : "onshape/std/query.fs", version : "891.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "891.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "891.0");
+import(path : "onshape/std/string.fs", version : "891.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "891.0");
+import(path : "onshape/std/tool.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/vector.fs", version : "891.0");
+import(path : "onshape/std/topologyUtils.fs", version : "891.0");
+import(path : "onshape/std/transform.fs", version : "891.0");
 
 
 
@@ -1077,10 +1077,15 @@ export function checkNotInFeaturePattern(context is Context, references is Query
 
 /**
  * @internal
- * Used in importDerived to strip sheet metal related data off the imported context
- * returns query of all sheet metal parts (3d and flattened)
+ * Used in derive to strip sheet metal related data off the imported context
+ * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
+ * sheet metal models in partsToKeep.
  */
-export function clearSheetMetalData(context, id) returns Query
+export function clearSheetMetalData(context is Context, id is Id, partsToKeep) returns Query
+precondition
+{
+    partsToKeep == undefined || partsToKeep is Query;
+}
 {
     // All the attribute queries are evaluated immediately because this function
     // removes all SMAttributes and SMAssociationAttribute
@@ -1093,6 +1098,18 @@ export function clearSheetMetalData(context, id) returns Query
     var smModelsActiveQ = qAttributeQuery(asSMAttribute({objectType : SMObjectType.MODEL,
                                                   active : true}));
     var smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+
+    const smModelsToKeep = getSmModelsToKeep(context, partsToKeep);
+    var keepingSomeModels = false;
+    if (smModelsToKeep != [])
+    {
+        const smModelsToKeepQ = qUnion(smModelsToKeep);
+        smModelsQ = qSubtraction(smModelsQ, smModelsToKeepQ);
+        smModelsEvaluated = evaluateQuery(context, smModelsQ);
+        smModelsActiveQ = qSubtraction(smModelsActiveQ, smModelsToKeepQ);
+        smModelsActiveEvaluated = evaluateQuery(context, smModelsActiveQ);
+        keepingSomeModels = true;
+    }
 
     // Solid bodies 3d and Flat and only they are associated with sheet bodies
     var associationAttributes = getAttributes(context, {"entities" : smModelsQ, "attributePattern" : {} as SMAssociationAttribute});
@@ -1125,6 +1142,7 @@ export function clearSheetMetalData(context, id) returns Query
 
     // remove all SMAttributes
     removeAttributes(context, {
+        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
         "attributePattern" : asSMAttribute({})
     });
 
@@ -1136,6 +1154,7 @@ export function clearSheetMetalData(context, id) returns Query
 
     // remove all SMAssociationAttribute
     removeAttributes(context, {
+        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
         "attributePattern" : {} as SMAssociationAttribute
     });
 
@@ -1145,6 +1164,22 @@ export function clearSheetMetalData(context, id) returns Query
     });
 
    return qUnion(smPartNBendLineQEvaluated);
+}
+
+function getSmModelsToKeep(context is Context, parts) returns array
+{
+    if (parts == undefined)
+    {
+        return [];
+    }
+    const associationAttributes = getAttributes(context, {"entities" : parts, "attributePattern" : {} as SMAssociationAttribute});
+    var out = [];
+    for (var attribute in associationAttributes)
+    {
+        const smModelQ = qAttributeFilter(qAttributeQuery(attribute), asSMAttribute({objectType : SMObjectType.MODEL}));
+        out = concatenateArrays([out, evaluateQuery(context, smModelQ)]);
+    }
+    return out;
 }
 
 /**

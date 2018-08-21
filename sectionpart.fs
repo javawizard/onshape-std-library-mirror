@@ -1,25 +1,25 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "877.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "891.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "891.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "877.0");
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/coordSystem.fs", version : "877.0");
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/extrude.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/math.fs", version : "877.0");
-import(path : "onshape/std/sketch.fs", version : "877.0");
-import(path : "onshape/std/tool.fs", version : "877.0");
-import(path : "onshape/std/units.fs", version : "877.0");
-import(path : "onshape/std/vector.fs", version : "877.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "877.0");
+import(path : "onshape/std/box.fs", version : "891.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/coordSystem.fs", version : "891.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/extrude.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/math.fs", version : "891.0");
+import(path : "onshape/std/sketch.fs", version : "891.0");
+import(path : "onshape/std/tool.fs", version : "891.0");
+import(path : "onshape/std/units.fs", version : "891.0");
+import(path : "onshape/std/vector.fs", version : "891.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "891.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -187,7 +187,7 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
     }
     {
         // remove sheet metal attributes and helper bodies
-        clearSheetMetalData(context, id + "sheetMetal");
+        clearSheetMetalData(context, id + "sheetMetal", undefined);
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
         const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
         jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);

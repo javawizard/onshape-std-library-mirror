@@ -1,11 +1,11 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/units.fs", version: "877.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/units.fs", version: "891.0");
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -52,6 +52,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
 
+        annotation { "Name" : "Allow faulty parts" }
+        definition.allowFaultyParts is boolean;
+
         annotation { "UIHint" : "ALWAYS_HIDDEN" }
         definition.specifyUnits is boolean;
 
@@ -91,5 +94,5 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false });
 

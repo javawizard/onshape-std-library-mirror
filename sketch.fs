@@ -1,4 +1,4 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -43,26 +43,26 @@ FeatureScript 877; /* Automatically generated version */
  * features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "891.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/mathUtils.fs", version : "877.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "877.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
-import(path : "onshape/std/tool.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/matrix.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/mathUtils.fs", version : "891.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "891.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "891.0");
+import(path : "onshape/std/tool.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/matrix.fs", version : "891.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "877.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "877.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "877.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "877.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "877.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "877.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "891.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "891.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "891.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "891.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "891.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "891.0");
 
 /**
  * @internal
@@ -142,7 +142,7 @@ export function newSketch(context is Context, id is Id, value is map) returns Sk
 precondition
 {
     annotation { "Name" : "Sketch plane",
-                "Filter" : (GeometryType.PLANE && AllowFlattenedGeometry.NO) || (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && GeometryType.PLANE),
+                "Filter" : (GeometryType.PLANE && AllowFlattenedGeometry.NO) || (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && GeometryType.PLANE) || BodyType.MATE_CONNECTOR,
                 "MaxNumberOfPicks" : 1 }
     value.sketchPlane is Query;
 }
@@ -156,27 +156,55 @@ precondition
 
     value.planeReference = value.sketchPlane;
     const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
-    var sketchPlane = try(evPlane(context, planeDefinition));
-    if (sketchPlane == undefined)
+    var sketchPlane = try silent(evPlane(context, planeDefinition));
+
+    var planeIsMateConnector = false;
+
+    if (sketchPlane != undefined)
     {
-        reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
-        sketchPlane = XY_PLANE;
-        value.planeReference = qNothing();
+        value.sketchPlane = sketchPlane;
     }
-    value.sketchPlane = sketchPlane;
+    else
+    {
+        var mateConnectorCSys;
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V740_PROPAGATE_PROPERTIES_IN_PATTERNS, value.asVersion))
+        {
+            mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : value.sketchPlane }));
+            if (mateConnectorCSys != undefined)
+            {
+                planeIsMateConnector = true;
+            }
+        }
+
+        if (planeIsMateConnector)
+        {
+            value.sketchPlane = plane(mateConnectorCSys);
+            value.planeReference = qNothing();
+        }
+        else
+        {
+            reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
+            value.sketchPlane = XY_PLANE;
+            value.planeReference = qNothing();
+        }
+    }
 
     if (!queryContainsFlattenedSheetMetal(context, value.planeReference))
     {
         // We can't use the usual wrapped function because the context does not have the version set here yet
-        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion))
+        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V186_PLANE_COORDINATES, value.asVersion) && !planeIsMateConnector)
             value.sketchPlane.origin = project(value.sketchPlane, vector(0, 0, 0) * meter);
 
         if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V305_UPGRADE_TEST_FAIL, value.asVersion))
         {
             // R * S = F => S = inv(R) * F => inv(S) = inv(F) * R
             var planeOriginal = (inverse(fullTransform) * remainingTransform) * value.sketchPlane;
-            planeOriginal = alignCanonically(context, planeOriginal);
-            planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
+            if (!planeIsMateConnector)
+            {
+                // If not a mate connector (which uses the mate connector's coordinate system) realign axes canonically
+                planeOriginal = alignCanonically(context, planeOriginal);
+                planeOriginal.origin = project(planeOriginal, vector(0, 0, 0) * meter);
+            }
             if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR, value.asVersion))
             {
                 value.sketchPlane = planeOriginal;
@@ -570,6 +598,7 @@ precondition
  *     vector( 0,  0) * inch
  * ]
  * ```
+ *      @field parameters : An array of doubles, parameters corresponding to the points. @optional
  *      @field construction {boolean} : `true` for a construction line @optional
  *      @field startDerivative {Vector} : A 2D `Vector` with length units that specifies the derivative at the start of
  *          the resulting spline.  Ignored if spline is closed.  @optional

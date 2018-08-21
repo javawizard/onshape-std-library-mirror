@@ -1,21 +1,21 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "877.0");
-export import(path : "onshape/std/context.fs", version : "877.0");
-export import(path : "onshape/std/manipulator.fs", version : "877.0");
+export import(path : "onshape/std/query.fs", version : "891.0");
+export import(path : "onshape/std/context.fs", version : "891.0");
+export import(path : "onshape/std/manipulator.fs", version : "891.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "877.0");
-import(path : "onshape/std/feature.fs", version : "877.0");
-import(path : "onshape/std/geomOperations.fs", version : "877.0");
-import(path : "onshape/std/mathUtils.fs", version : "877.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "877.0");
-import(path : "onshape/std/valueBounds.fs", version : "877.0");
-import(path : "onshape/std/vector.fs", version : "877.0");
+import(path : "onshape/std/evaluate.fs", version : "891.0");
+import(path : "onshape/std/feature.fs", version : "891.0");
+import(path : "onshape/std/geomOperations.fs", version : "891.0");
+import(path : "onshape/std/mathUtils.fs", version : "891.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "891.0");
+import(path : "onshape/std/valueBounds.fs", version : "891.0");
+import(path : "onshape/std/vector.fs", version : "891.0");
 
 
 /**

@@ -1,13 +1,13 @@
-FeatureScript 877; /* Automatically generated version */
+FeatureScript 891; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "877.0");
-import(path : "onshape/std/math.fs", version : "877.0");
-import(path : "onshape/std/matrix.fs", version : "877.0");
-import(path : "onshape/std/units.fs", version : "877.0");
-import(path : "onshape/std/vector.fs", version : "877.0");
+import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/math.fs", version : "891.0");
+import(path : "onshape/std/matrix.fs", version : "891.0");
+import(path : "onshape/std/units.fs", version : "891.0");
+import(path : "onshape/std/vector.fs", version : "891.0");
 
 /**
  * Type typically representing a change of position, orientation in 3D space
@@ -145,5 +145,18 @@ export function scaleUniformly(scale is number) returns Transform
 export function scaleUniformly(scale is number, point is Vector) returns Transform
 {
     return transform(identityMatrix(3) * scale, point * (1 - scale));
+}
+
+/**
+ * Returns a [Transform] that represents 3 independent scalings along the X, Y, and Z axes,
+ * centered around the origin.
+ */
+export function scaleNonuniformly(xScale is number, yScale is number, zScale is number) returns Transform
+{
+    var matrix = zeroMatrix(3, 3);
+    matrix[0][0] = xScale;
+    matrix[1][1] = yScale;
+    matrix[2][2] = zScale;
+    return transform(matrix, vector(0, 0, 0) * inch);
 }
 
