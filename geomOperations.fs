@@ -1,4 +1,4 @@
-FeatureScript 891; /* Automatically generated version */
+FeatureScript 901; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,21 +15,21 @@ FeatureScript 891; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "891.0");
-import(path : "onshape/std/curveGeometry.fs", version : "891.0");
-import(path : "onshape/std/query.fs", version : "891.0");
-import(path : "onshape/std/containers.fs", version : "891.0");
+import(path : "onshape/std/context.fs", version : "901.0");
+import(path : "onshape/std/curveGeometry.fs", version : "901.0");
+import(path : "onshape/std/query.fs", version : "901.0");
+import(path : "onshape/std/containers.fs", version : "901.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "891.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "901.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "891.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "901.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "891.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "901.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "891.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "901.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "891.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "901.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -205,7 +205,7 @@ export function opDraft(context is Context, id is Id, definition is map)
  *      @field direction {Vector} : The 3d direction in which to extrude.
  *              @eg `evOwnerSketchPlane(context, {"entity" : entities}).normal` to extrude perpendicular to the owner sketch
  *              @eg `evPlane(context, {"face" : entities}).normal` to extrude perpendicular to the first planar entity
- *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC`.
+ *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC` or `UP_TO_VERTEX`.
  *              @eg `BoundingType.BLIND`
  *      @field endDepth {ValueWithUnits} : @requiredif {`endBound` is `BLIND`.}
  *              How far from the `entities` to extrude.
@@ -218,7 +218,7 @@ export function opDraft(context is Context, id is Id, definition is map)
  *              `endDepth` is positive. `endOffset` will only have an effect if `endBound` is `UP_TO_SURFACE`,
  *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  *      @field startBound {BoundingType} : @optional
- *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
+ *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC` or `UP_TO_VERTEX`.
  *      @field isStartBoundOpposite : @requiredif {is `UP_TO_SURFACE`, `UP_TO_BODY`, or `UP_TO_NEXT`.}
  *              Whether the `startBound` extends in the opposite direction from the profile as the `endBound`. Defaults
  *              to `true` if not supplied.

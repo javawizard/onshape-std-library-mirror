@@ -1,25 +1,25 @@
-FeatureScript 891; /* Automatically generated version */
+FeatureScript 901; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "891.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "891.0");
+export import(path : "onshape/std/query.fs", version : "901.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "901.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "891.0");
-import(path : "onshape/std/containers.fs", version : "891.0");
-import(path : "onshape/std/coordSystem.fs", version : "891.0");
-import(path : "onshape/std/evaluate.fs", version : "891.0");
-import(path : "onshape/std/extrude.fs", version : "891.0");
-import(path : "onshape/std/feature.fs", version : "891.0");
-import(path : "onshape/std/math.fs", version : "891.0");
-import(path : "onshape/std/sketch.fs", version : "891.0");
-import(path : "onshape/std/tool.fs", version : "891.0");
-import(path : "onshape/std/units.fs", version : "891.0");
-import(path : "onshape/std/vector.fs", version : "891.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "891.0");
+import(path : "onshape/std/box.fs", version : "901.0");
+import(path : "onshape/std/containers.fs", version : "901.0");
+import(path : "onshape/std/coordSystem.fs", version : "901.0");
+import(path : "onshape/std/evaluate.fs", version : "901.0");
+import(path : "onshape/std/extrude.fs", version : "901.0");
+import(path : "onshape/std/feature.fs", version : "901.0");
+import(path : "onshape/std/math.fs", version : "901.0");
+import(path : "onshape/std/sketch.fs", version : "901.0");
+import(path : "onshape/std/tool.fs", version : "901.0");
+import(path : "onshape/std/units.fs", version : "901.0");
+import(path : "onshape/std/vector.fs", version : "901.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "901.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -143,7 +143,8 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         const cutPoints = [ toWorld(coordinateSystem, vector(0 * meter, boxResult.minCorner[1], boxResult.minCorner[2])),
                             toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
         const jogPointsArray = convertToPointsArray(false, cutPoints, []);
-        jogSectionCut(context, id, definition.target, sketchPlane, false, jogPointsArray, false);
+        const offsetDistancesArray = [];
+        jogSectionCut(context, id, definition.target, sketchPlane, false, jogPointsArray, offsetDistancesArray, false);
     }, {"isPartialSection" : false, "isBrokenOut" : false});
 
 /**
@@ -169,7 +170,8 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
         const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);
+        const offsetDistancesArray = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut);
     }, {"isPartialSection" : false, "isBrokenOut" : false});
 
 /**
@@ -183,14 +185,20 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
         definition.sketchPlane is Plane;
         definition.jogPoints is array;
         for (var point in definition.jogPoints)
-            is3dLengthVector(point);
+        {
+            if (point != undefined)
+            {
+                is3dLengthVector(point);
+            }
+        }
     }
     {
         // remove sheet metal attributes and helper bodies
         clearSheetMetalData(context, id + "sheetMetal", undefined);
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
         const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, definition.isBrokenOut);
+        const offsetDistancesArray = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut);
     }, { "isPartialSection" : false, "isBrokenOut" : false });
 
 /**
@@ -227,7 +235,31 @@ function convertToPointsArray(isBrokenOut is boolean, jogPoints is array, broken
     return jogPointsArray;
 }
 
-function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPointsArray is array, isBrokenOut is boolean)
+function getOffsetDistancesArray(offsetDistances is array)
+{
+    var offsetDistancesArray = [];
+    if (offsetDistances != undefined && size(offsetDistances) > 0)
+    {
+        var numberOfOffset = size(offsetDistances);
+        offsetDistancesArray = makeArray(numberOfOffset);
+        for (var i = 0; i < numberOfOffset; i = i + 1)
+        {
+            var offset = 0.0 * meter;
+            if (offsetDistances[i] != undefined && offsetDistances[i].hasOffset && offsetDistances[i].offsetDistance != undefined)
+            {
+                offset = offsetDistances[i].offsetDistance;
+                if (offsetDistances[i].offsetOppositeDirection)
+                {
+                    offset *= -1;
+                }
+            }
+            offsetDistancesArray[i] = offset;
+        }
+    }
+    return offsetDistancesArray;
+}
+
+function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPointsArray is array, offsetDistancesArray is array, isBrokenOut is boolean)
 {
     opDeleteBodies(context, id + "initialDelete", { "entities" : qSubtraction(qEverything(EntityType.BODY), target) });
 
@@ -235,7 +267,7 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
     {
         if (isBrokenOut)
         {
-            brokenOutSectionCut(context, id, target, sketchPlane, jogPointsArray);
+            brokenOutSectionCut(context, id, target, sketchPlane, jogPointsArray, offsetDistancesArray);
         }
         else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
         {
@@ -276,7 +308,7 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
 /**
  * 'jogPointsArray' is an array of array, each array contains the spline section points and the depth point
  */
-function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array)
+function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array, offsetDistancesArray is array)
 {
     const coordinateSystem = planeToCSys(sketchPlane);
     var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
@@ -296,8 +328,17 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
         var uptoPoint = jogPoints[numberOfJogPoints]; //the last point in the array is the depth point
 
         // Shift the plane and box to 'uptoPoint' if it is a broken-out section view and uptoPoint is specified
-        const dir = uptoPoint - defaultOrigin;
-        var origin = defaultOrigin + dot(dir, sketchPlane.normal) * sketchPlane.normal;
+        var offset = 0 * meter;
+        if (uptoPoint != undefined)
+        {
+            const dir = uptoPoint - defaultOrigin;
+            offset = dot(dir, sketchPlane.normal);
+        }
+        if (offsetDistancesArray != undefined && size(offsetDistancesArray) > brokenOutIndex)
+        {
+            offset += offsetDistancesArray[brokenOutIndex];
+        }
+        var origin = defaultOrigin + offset * sketchPlane.normal;
         const offsetPlane = plane(origin, sketchPlane.normal, sketchPlane.x);
 
         const isClosedSpline = tolerantEquals(jogPointsForBrokenOut[0], jogPointsForBrokenOut[numberOfJogPoints - 1]);
@@ -319,8 +360,7 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         const extrudeId = id + ("extrude" ~ brokenOutIndex);
         const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-
-        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
+        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2] + abs(offset));
         opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
     }
 }

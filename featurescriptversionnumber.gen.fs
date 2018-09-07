@@ -1,4 +1,4 @@
-FeatureScript 891; /* Automatically generated version */
+FeatureScript 901; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -701,7 +701,9 @@ export enum FeatureScriptVersionNumber
     V888_MATE_CONNECTOR_REMAP,
     V889_IMPORT_WITH_FAULTS_PARAM,
     V890_FIX_FIT_SPLINE,
-    V891_EXPOSE_REFERENCE_PARAMETER
+    V891_EXPOSE_REFERENCE_PARAMETER,
+    V900_USE_CIRCLE,
+    V901_DET_ID_FIRST
 }
 
 /**
@@ -712,6 +714,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V891_EXPOSE_REFERENCE_PARAMETER;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V901_DET_ID_FIRST;
 
 
