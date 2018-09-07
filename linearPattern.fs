@@ -118,7 +118,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         if (definition.hasSecondDir)
         {
             annotation { "Name" : "Direction", "Column Name" : "Second direction",
-                         "Filter" : QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE,
+                         "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,
                          "MaxNumberOfPicks" : 1 }
             definition.directionTwo is Query;
 

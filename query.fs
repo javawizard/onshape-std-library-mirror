@@ -337,6 +337,8 @@ export enum ConstructionObject
 /**
  * Specified whether an entity lives in the sheet metal flat view or the main view.
  *
+ * @seeAlso [qSMFlatFilter]
+ *
  * @value YES : Matches flat entities.
  * @value NO  : Matches everything else.
  */
@@ -432,6 +434,8 @@ export enum SheetMetalDefinitionEntityType
  * definition.body is Query;
  * ```
  *
+ * @seeAlso [qModifiableEntityFilter]
+ *
  * @value YES : Only allow modifiable entities
  * @value NO  : Allow both modifiable and unmodifiable entities
  */
@@ -481,6 +485,9 @@ export enum MeshGeometry
  * annotation { "Name" : "Sketch curves", "Filter" : EntityType.EDGE && SketchObject.YES }
  * definition.curves is Query;
  * ```
+ *
+ * @seeAlso [qSketchFilter]
+ *
  * @value YES : Matches only entities which are part of a sketch
  * @value NO  : Matches only entities which are not part of a sketch
  */
@@ -498,6 +505,8 @@ export enum SketchObject
  * annotation { "Name" : "Surface edges", "Filter" : EntityType.EDGE && EdgeTopology.LAMINAR }
  * definition.edges is Query;
  * ```
+ *
+ * @seeAlso [qEdgeTopologyFilter]
  *
  * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
  * @default @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).

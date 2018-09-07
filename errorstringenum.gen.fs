@@ -1688,7 +1688,13 @@ export enum ErrorStringEnum
     /* Could not find sketch to copy. */
     COPIED_SKETCH_NOT_FOUND,
     /* Variable name must be less than 10000 characters. */
-    VARIABLE_NAME_TOO_LONG
+    VARIABLE_NAME_TOO_LONG,
+    /* No instance selected for replacement. */
+    NO_INSTANCE_TO_REPLACE,
+    /* Replacement part is not specified. */
+    ASSEMBLY_REPLACE_NO_REPLACER,
+    /* Cannot replace parts in sub-assemblies */
+    CANNOT_REPLACE_IN_SUBASSEMBLIES
 }
 
 

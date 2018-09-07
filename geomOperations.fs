@@ -205,7 +205,7 @@ export function opDraft(context is Context, id is Id, definition is map)
  *      @field direction {Vector} : The 3d direction in which to extrude.
  *              @eg `evOwnerSketchPlane(context, {"entity" : entities}).normal` to extrude perpendicular to the owner sketch
  *              @eg `evPlane(context, {"face" : entities}).normal` to extrude perpendicular to the first planar entity
- *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC`.
+ *      @field endBound {BoundingType} : The type of bound at the end of the extrusion. Cannot be `SYMMETRIC` or `UP_TO_VERTEX`.
  *              @eg `BoundingType.BLIND`
  *      @field endDepth {ValueWithUnits} : @requiredif {`endBound` is `BLIND`.}
  *              How far from the `entities` to extrude.
@@ -218,7 +218,7 @@ export function opDraft(context is Context, id is Id, definition is map)
  *              `endDepth` is positive. `endOffset` will only have an effect if `endBound` is `UP_TO_SURFACE`,
  *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  *      @field startBound {BoundingType} : @optional
- *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC`.
+ *              The type of start bound. Default is for the extrude to start at `entities`. Cannot be `SYMMETRIC` or `UP_TO_VERTEX`.
  *      @field isStartBoundOpposite : @requiredif {is `UP_TO_SURFACE`, `UP_TO_BODY`, or `UP_TO_NEXT`.}
  *              Whether the `startBound` extends in the opposite direction from the profile as the `endBound`. Defaults
  *              to `true` if not supplied.
