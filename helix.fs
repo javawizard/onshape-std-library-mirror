@@ -1,23 +1,23 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "901.0");
+export import(path : "onshape/std/query.fs", version : "920.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "901.0");
+export import(path : "onshape/std/manipulator.fs", version : "920.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "901.0");
-import(path : "onshape/std/curveGeometry.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/mathUtils.fs", version : "901.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "901.0");
-import(path : "onshape/std/valueBounds.fs", version : "901.0");
-import(path : "onshape/std/containers.fs", version : "901.0");
+import(path : "onshape/std/box.fs", version : "920.0");
+import(path : "onshape/std/curveGeometry.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/mathUtils.fs", version : "920.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
+import(path : "onshape/std/valueBounds.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
 
 
 /**
@@ -341,8 +341,8 @@ export function helixManipulatorChange(context is Context, definition is map, ne
     return definition;
 }
 
-
 /**
+ * @internal
  * Preselection Logic:  Heuristics to determine the type of helix to be constructed, based on user preselection.
  */
 export function helixLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map

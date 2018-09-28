@@ -1,28 +1,28 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "901.0");
-import(path : "onshape/std/boolean.fs", version : "901.0");
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/curveGeometry.fs", version : "901.0");
-import(path : "onshape/std/extrude.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/math.fs", version : "901.0");
-import(path : "onshape/std/matrix.fs", version : "901.0");
-import(path : "onshape/std/query.fs", version : "901.0");
-import(path : "onshape/std/sketch.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "901.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "901.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "901.0");
-import(path : "onshape/std/topologyUtils.fs", version : "901.0");
-import(path : "onshape/std/units.fs", version : "901.0");
-import(path : "onshape/std/valueBounds.fs", version : "901.0");
-import(path : "onshape/std/vector.fs", version : "901.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "901.0");
+import(path : "onshape/std/attributes.fs", version : "920.0");
+import(path : "onshape/std/boolean.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/curveGeometry.fs", version : "920.0");
+import(path : "onshape/std/extrude.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/math.fs", version : "920.0");
+import(path : "onshape/std/matrix.fs", version : "920.0");
+import(path : "onshape/std/query.fs", version : "920.0");
+import(path : "onshape/std/sketch.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "920.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "920.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
+import(path : "onshape/std/topologyUtils.fs", version : "920.0");
+import(path : "onshape/std/units.fs", version : "920.0");
+import(path : "onshape/std/valueBounds.fs", version : "920.0");
+import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "920.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -153,12 +153,12 @@ precondition
     }
     else if (definition.angleControlType == SMFlangeAngleControlType.ALIGN_GEOMETRY)
     {
-        annotation { "Name" : "Parallel to", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Parallel to", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.parallelEntity is Query;
     }
     else if (definition.angleControlType == SMFlangeAngleControlType.ANGLE_FROM_DIRECTION)
     {
-        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.directionEntity is Query;
 
         annotation { "Name" : "Angle" }
@@ -242,7 +242,7 @@ precondition
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData, id);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes});
 
@@ -361,11 +361,11 @@ function trackAllFaces(context, allSurfaces, originals)
 
 function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map) returns number
 {
-    var evaluatedEdgeQuery = evaluateQuery(context, edges);
+    const originalFlangeEdges = evaluateQuery(context, edges);
 
     // add thickness, minimalClearance and defaultBendRadius to definition.
     // Flange uses thickness, minimalClearance and potentially defaultBendRadius derived from underlying sheet metal model
-    definition = mergeMaps(definition, getModelParametersFromEdge(context, evaluatedEdgeQuery[0]));
+    definition = mergeMaps(definition, getModelParametersFromEdge(context, originalFlangeEdges[0]));
     if (definition.useDefaultRadius)
     {
         definition.bendRadius = definition.defaultBendRadius;
@@ -375,7 +375,6 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     // Collect flangeData for each edge, and store a mapping from each edge to a tracking query of itself
     var edgeToFlangeData = {};
     var oldEdgeToNewEdge = {};
-    var originalFlangeEdges = evaluateQuery(context, edges);
     for (var edge in originalFlangeEdges)
     {
         edgeToFlangeData[edge] = getFlangeData(context, topLevelId, edge, definition);

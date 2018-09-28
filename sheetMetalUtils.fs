@@ -1,28 +1,28 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "901.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "901.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "901.0");
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/coordSystem.fs", version : "901.0");
-import(path : "onshape/std/curveGeometry.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/math.fs", version : "901.0");
-import(path : "onshape/std/manipulator.fs", version : "901.0");
-import(path : "onshape/std/query.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "901.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "901.0");
-import(path : "onshape/std/string.fs", version : "901.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "901.0");
-import(path : "onshape/std/tool.fs", version : "901.0");
-import(path : "onshape/std/valueBounds.fs", version : "901.0");
-import(path : "onshape/std/vector.fs", version : "901.0");
-import(path : "onshape/std/topologyUtils.fs", version : "901.0");
-import(path : "onshape/std/transform.fs", version : "901.0");
+import(path : "onshape/std/attributes.fs", version : "920.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "920.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/coordSystem.fs", version : "920.0");
+import(path : "onshape/std/curveGeometry.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/math.fs", version : "920.0");
+import(path : "onshape/std/manipulator.fs", version : "920.0");
+import(path : "onshape/std/query.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "920.0");
+import(path : "onshape/std/string.fs", version : "920.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
+import(path : "onshape/std/tool.fs", version : "920.0");
+import(path : "onshape/std/valueBounds.fs", version : "920.0");
+import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/topologyUtils.fs", version : "920.0");
+import(path : "onshape/std/transform.fs", version : "920.0");
 
 
 
@@ -792,11 +792,34 @@ export function isActiveSheetMetalPart(context is Context, partQuery is Query) r
 }
 
 /**
+ * Set a wall attribute on a face and add tangent joint attributes to the nonlaminar edges.
+ * @internal
+ */
+export function addWallAttributeToPreviouslyBendFace(context is Context, face is Query, idBase is string)
+{
+    const faceEdges = evaluateQuery(context, qEdgeAdjacent(face, EntityType.EDGE));
+    var wallAttribute = makeSMWallAttribute(idBase);
+    setAttribute(context, { "entities" : face, "attribute" : wallAttribute });
+
+    var index = 0;
+    for (var edge in faceEdges)
+    {
+        if (edgeIsTwoSided(context, edge))
+        {
+            var jointAttribute = makeSMJointAttribute(idBase ~ index);
+            jointAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
+            setAttribute(context, { "entities" : edge, "attribute" : jointAttribute });
+            index += 1;
+        }
+    }
+}
+
+/**
  * @internal
  * initialData is computed by a call to getInitialEntitiesAndAttributes at the beginning of the feature
  */
 export function assignSMAttributesToNewOrSplitEntities(context is Context, sheetMetalModels is Query,
-                                            initialData is map) returns map
+                                            initialData is map, operationId is Id) returns map
 {
     var originalOrModifiedEntitiesMap = {};
     for ( var entity in initialData.originalEntities)
@@ -885,12 +908,19 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                     {
                         var edgeQ = qEntityFilter(entity, EntityType.EDGE);
                         if (definitionAttributes[0].jointType != undefined &&
-                            definitionAttributes[0].jointType.value == SMJointType.BEND &&
-                            try silent(edgeIsTwoSided(context, edgeQ)) == true)
+                            definitionAttributes[0].jointType.value == SMJointType.BEND)
                         {
-                            const jointAttributeId = definitionAttributes[0].attribute_id ~ ".rip";
-                            const ripAttribute = createRipAttribute(context, edgeQ, jointAttributeId, SMJointStyle.EDGE, {});
-                            setAttribute(context, {"entities" : edgeQ, "attribute" : ripAttribute});
+                            if (try silent(edgeIsTwoSided(context, edgeQ)) == true)
+                            {
+                                const jointAttributeId = definitionAttributes[0].attribute_id ~ ".rip";
+                                const ripAttribute = createRipAttribute(context, edgeQ, jointAttributeId, SMJointStyle.EDGE, {});
+                                setAttribute(context, { "entities" : edgeQ, "attribute" : ripAttribute });
+                            }
+                            else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V914_SM_JOINT_TO_WALL) &&
+                                size(evaluateQuery(context, qEntityFilter(entity, EntityType.FACE))) == 1)
+                            {
+                                addWallAttributeToPreviouslyBendFace(context, qEntityFilter(entity, EntityType.FACE), toAttributeId(operationId + ("wall" ~ count)));
+                            }
                         }
                     }
                 }
@@ -1761,16 +1791,9 @@ export function removeJointAttributesFromOneSidedEdges(context is Context, sheet
     {
         //Track non-object entities (e.g. laminar edges), no need to process their attributes if tracking
         //resolves to a single entity.
-        for (var ent in evaluateQuery(context, qOwnedByBody(affectedSmBodies)))
-        {
-            if (size(getAttributes(context, {
-                    "entities" : ent,
-                    "attributePattern" : asSMAttribute({})
-                    })) == 0)
-            {
-                trackingOriginalEntities = append(trackingOriginalEntities, startTrackingIdentity(context, ent));
-            }
-        }
+        const allEntities = qOwnedByBody(affectedSmBodies);
+        const allIdentitiesWithSMAttributes = qAttributeFilter(allEntities, asSMAttribute({}));
+        trackingOriginalEntities = startTrackingIdentityBatched(context, qSubtraction(allEntities, allIdentitiesWithSMAttributes));
     }
     const initialAssociationAttributes = getAttributes(context, {
                 "entities" : qUnion(originalEntities),

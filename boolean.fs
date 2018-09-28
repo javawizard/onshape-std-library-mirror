@@ -1,28 +1,30 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "901.0");
-export import(path : "onshape/std/query.fs", version : "901.0");
-export import(path : "onshape/std/tool.fs", version : "901.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "920.0");
+export import(path : "onshape/std/query.fs", version : "920.0");
+export import(path : "onshape/std/tool.fs", version : "920.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "901.0");
-import(path : "onshape/std/box.fs", version : "901.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "901.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "901.0");
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/math.fs", version : "901.0");
-import(path : "onshape/std/primitives.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "901.0");
-import(path : "onshape/std/string.fs", version : "901.0");
-import(path : "onshape/std/transform.fs", version : "901.0");
-import(path : "onshape/std/valueBounds.fs", version : "901.0");
+import(path : "onshape/std/attributes.fs", version : "920.0");
+import(path : "onshape/std/box.fs", version : "920.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/math.fs", version : "920.0");
+import(path : "onshape/std/primitives.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "920.0");
+import(path : "onshape/std/string.fs", version : "920.0");
+import(path : "onshape/std/transform.fs", version : "920.0");
+import(path : "onshape/std/valueBounds.fs", version : "920.0");
+import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -804,7 +806,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 if (size(modifiedEntityArray) != 0 || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
                                 {
                                     const modifiedEntities = qUnion(modifiedEntityArray);
-                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel, initialData);
+                                    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel, initialData, id);
 
                                     updateSheetMetalGeometry(context, id + "smUpdate", {
                                                 "entities" : qUnion([toUpdate.modifiedEntities, modifiedEntities]),
@@ -907,29 +909,92 @@ function createOutline(context is Context, id is Id, trimmed is Query, face is Q
     return qCreatedBy(outlineId, EntityType.FACE);
 }
 
+
 /**
  * @internal
+ * returns undefined if no tools were created or a Query for tool bodies created
  */
-export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tool is Query, modelParameters is map)
+export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tools is Query, modelParameters is map)
 {
-    var thickened = thickenFaces(context, id + "thicken", modelParameters, face);
-    var planarFace = (size(evaluateQuery(context, qGeometry(face, GeometryType.PLANE))) > 0);
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V646_SM_MULTI_TOOL_FIX))
+    const toolsToCopy = new box({});
+    const faceSweptData = new box({});
+    const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, face, undefined, tools, undefined,
+                                    modelParameters, toolsToCopy, faceSweptData);
+    if (outlineBodiesQ == undefined)  //outlineBodiesQ will be qNothing if no outline bodies were created, but a toolCopy is needed.
+        return undefined;
+
+    if (toolsToCopy[] != {})
     {
-        // The intersection of the thickened body with the tool creates multiple bits and
-        // they get evaluated by the original 'thickened' query in subsequent passes through the loop.
-        // We don't want that and so we will evaluate the thickened body first
-        thickened = qUnion(evaluateQuery(context, thickened));
+        const toolsToCopyQ = qUnion(keys(toolsToCopy[]));
+        if (evaluateQuery(context, toolsToCopyQ) != [])
+        {
+            const copies = copyBodies(context, id + "copyTools", toolsToCopyQ);
+            return qUnion([outlineBodiesQ, copies]);
+        }
     }
-    const toolCount = size(evaluateQuery(context, tool));
-    var tools = [];
+    return outlineBodiesQ;
+}
+/**
+ * @internal
+ * If provided, faceBox should be a Box3d.  If provided, toolToThickenedToolBox should be a map from transient queries of
+ * `tools` to their thickened Box3ds.  If either is not provided, bounding box testing will not be executed.
+ * toolsToCopy is a boxed set of transient queries of tools whose copy can be used instead of an outline.  Because FS does not provide a set structure,
+ * this is implemented as a map from transiet queries to `true`
+ * faceSweptData is a boxed map of face transient query to a map with surface characteristics as collected in sweptAlong, it is used as an optimization when
+ * this method is called multiple times with the same set of tools.
+ * Returns undefined if no tool is necessary (tools don't intersect thickened body), or a query for outline bodies created. It might be a qNothing
+ * if all tools were added to toolsToCopy
+ */
+function createOutlineBooleanToolsForFace(context is Context, id is Id, face is Query, faceBox, tools is Query,
+        toolToThickenedToolBox, modelParameters is map,
+        toolsToCopy is box, faceSweptData is box)
+{
+    var outlines = [];
     var allTrimmed = [];
-    var capFacesQ = qCapEntity(id + "thicken", CapType.EITHER, EntityType.FACE);
-    for (var index = 0; index < toolCount; index += 1)
+    var thickened = undefined;
+    const planarFace = (size(evaluateQuery(context, qGeometry(face, GeometryType.PLANE))) > 0);
+    var capFacesQ = undefined;
+    var skippedAll = true;
+    const toolsArray = evaluateQuery(context, tools);
+    const clashInfoProvided = (faceBox != undefined && toolToThickenedToolBox != undefined);
+    const useFineClashing = isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE) && clashInfoProvided;
+    var toolsOut;
+    for (var index = 0; index < size(toolsArray); index += 1)
     {
+        const tool = toolsArray[index];
+        if (useFineClashing)
+        {
+            if (!clashBoxes(faceBox, toolToThickenedToolBox[tool]))
+            {
+                continue;
+            }
+        }
+
+        if (planarFace && canUseToolCopy(context, face, tool, faceSweptData))
+        {
+            toolsToCopy[][tool] = true;
+            toolsOut = qNothing(); // the face is counted as modified
+            continue;
+        }
+
+        // Lazy creation of thickened face only when we need it.
+        if (skippedAll)
+        {
+            thickened = thickenFaces(context, id + "thicken", modelParameters, face);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V646_SM_MULTI_TOOL_FIX))
+            {
+                // The intersection of the thickened body with the tool creates multiple bits and
+                // they get evaluated by the original 'thickened' query in subsequent passes through the loop.
+                // We don't want that and so we will evaluate the thickened body first
+                thickened = qUnion(evaluateQuery(context, thickened));
+            }
+            capFacesQ = qCapEntity(id + "thicken", CapType.EITHER, EntityType.FACE);
+            skippedAll = false;
+        }
+
         const subId = id + unstableIdComponent(index);
         var trackingCapFaces = startTracking(context, capFacesQ);
-        const trimmed = trimTool(context, subId, thickened, qNthElement(tool, index));
+        const trimmed = trimTool(context, subId, thickened, tool);
         var trimResultIsValid = false;
         if (trimmed != undefined)
         {
@@ -949,24 +1014,27 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
             const outline = createOutline(context, subId, trimmed, face, trackingCapFaces);
             if (outline != undefined)
             {
-                tools = append(tools, outline);
+                outlines = append(outlines, outline);
             }
         }
     }
-    var toDeleteArray = append(allTrimmed, thickened);
-    var toolsOut;
-    if (size(tools) > 0)
+
+    if (!skippedAll)
     {
-        toolsOut = qOwnerBody(qUnion(tools));
-        if (!planarFace)
+        var toDeleteArray = append(allTrimmed, thickened);
+        if (size(outlines) > 0)
         {
-            toDeleteArray = append(toDeleteArray, toolsOut);
-            const thin = SM_THIN_EXTENSION;
-            toolsOut = thickenFaces(context, id + "thickenTools",
-                {"frontThickness" : thin, "backThickness" : thin}, qUnion(tools));
+            toolsOut = qOwnerBody(qUnion(outlines));
+            if (!planarFace)
+            {
+                toDeleteArray = append(toDeleteArray, toolsOut);
+                const thin = SM_THIN_EXTENSION;
+                toolsOut = thickenFaces(context, id + "thickenTools",
+                    {"frontThickness" : thin, "backThickness" : thin}, qUnion(outlines));
+            }
         }
+        opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(toDeleteArray) });
     }
-    opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(toDeleteArray) });
     return toolsOut;
 }
 
@@ -1001,19 +1069,17 @@ function clashBoxes(a is Box3d, b is Box3d) returns boolean {
     return true;
 }
 
-function faceBoxClashesWithBox(context is Context, face is Query, toolBox is Box3d) returns boolean
+function getThickenedBox(context is Context, topology is Query, thickness is ValueWithUnits)
 {
-    const faceBox = evBox3d(context, {
-            "topology" : face,
-            "tight" : true
-    });
-    if (faceBox == undefined) {
-        return false;
-    }
-    else
+    const topologyBox = try(evBox3d(context, {
+                    "topology" : topology,
+                    "tight" : true
+                }));
+    if (topologyBox == undefined)
     {
-        return clashBoxes(toolBox, faceBox);
+        return undefined;
     }
+    return try(extendBox3d(topologyBox, thickness, 0));
 }
 
 function performSheetMetalBoolean(context is Context, id is Id, definition is map) returns array
@@ -1023,42 +1089,73 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     {
         throw regenError(ErrorStringEnum.REGEN_ERROR);
     }
-    // We get the faces not from the targets but from the faces of the source part that have associations
-    const definitionEntities = qUnion(getSMDefinitionEntities(context, qOwnedByBody(definition.sheetMetalPart, EntityType.FACE)));
-    const facesQ = qEntityFilter(definitionEntities, EntityType.FACE);
-    var faceArray = evaluateQuery(context, facesQ);
-    var index = 0;
-    var allToolBodies = [];
-    var modifiedFaces = [];
-    const toolBox = try(evBox3d(context, {
-                    "topology" : definition.tools,
-                    "tight" : true
-                }));
-    if (toolBox == undefined)
-    {
-        throw regenError(ErrorStringEnum.REGEN_ERROR);
-    }
     var thickness = modelParameters.frontThickness + modelParameters.backThickness;
     if (modelParameters.frontThickness > 0 && modelParameters.backThickness > 0)
     {
         thickness = thickness * 0.5;
     }
-    // Doesn't matter which box we extend. Extending the tool box reduces what we do
-    const thickenedBox = try(extendBox3d(toolBox, thickness, 0));
+    // We get the faces not from the targets but from the faces of the source part that have associations
+    const definitionEntities = qUnion(getSMDefinitionEntities(context, qOwnedByBody(definition.sheetMetalPart, EntityType.FACE)));
+    const facesQ = qEntityFilter(definitionEntities, EntityType.FACE);
+    var faceArray = evaluateQuery(context, facesQ);
+
+    // Create one bounding boxes encompassing all of the tools, and one bounding box for each tool.
+    // Doesn't matter which box we extend (face vs. tools). Extending the tool box reduces what we do.
+    const thickenedToolsBox = getThickenedBox(context, definition.tools, thickness);
+    if (thickenedToolsBox == undefined)
+    {
+        throw regenError(ErrorStringEnum.REGEN_ERROR);
+    }
+    var toolToThickenedToolBox = {};
+    // Before this version, toolToThickenedToolBox is not used, so we do not need to fill it.
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE))
+    {
+        for (var tool in evaluateQuery(context, definition.tools))
+        {
+            toolToThickenedToolBox[tool] = getThickenedBox(context, tool, thickness);
+            if (toolToThickenedToolBox[tool] == undefined)
+            {
+                throw regenError(ErrorStringEnum.REGEN_ERROR);
+            }
+        }
+    }
+
+    var index = 0;
+    var allToolBodies = [];
+    var modifiedFaces = [];
+    const toolsToCopy = new box({});
+    const faceSweptData = new box({});
+
     for (var face in faceArray)
     {
         index += 1;
-        if (!faceBoxClashesWithBox(context, face, thickenedBox))
+
+        const faceBox = evBox3d(context, {
+                "topology" : face,
+                "tight" : true
+        });
+        if (faceBox == undefined) {
+            continue;
+        }
+
+        if (!clashBoxes(faceBox, thickenedToolsBox))
         {
             continue;
         }
 
-        const toolBodies = createBooleanToolsForFace(context, id + unstableIdComponent(index), face, definition.tools, modelParameters);
+        const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), face, faceBox,
+                definition.tools, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData);
         if (toolBodies != undefined)
         {
             allToolBodies = append(allToolBodies, toolBodies);
             modifiedFaces = append(modifiedFaces, face);
         }
+    }
+    const toolsToCopyQ = qUnion(keys(toolsToCopy[]));
+    if (evaluateQuery(context, toolsToCopyQ) != [])
+    {
+        const copies = copyBodies(context, id + "copyTools", toolsToCopyQ);
+        allToolBodies = append(allToolBodies, copies);
     }
 
     if (size(allToolBodies) == 0 && isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
@@ -1099,5 +1196,107 @@ function statusIsNoOp(context is Context, id is Id) returns boolean
         info == ErrorStringEnum.BOOLEAN_UNION_NO_OP;
 }
 
+function canUseToolCopy(context is Context, face is Query, tool is Query, faceSweptData is box) returns boolean
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V918_SM_BOOLEAN_TOOLS))
+    {
+        return false;
+    }
+    var faceData = faceSweptData[][face];
+    if (faceData == undefined)
+    {
+        const facePlane = try silent(evPlane(context, {
+                "face" : face
+                }));
+        if (facePlane == undefined)
+        {
+            throw "Face is expected to be plane."; // A user should never see this exception
+        }
+        faceData = {"planeNormal" : facePlane.normal};
+        faceSweptData[][face] = faceData;
+    }
+
+
+    const collisionData = evCollision(context, {
+            "tools" : qOwnedByBody(tool, EntityType.FACE),
+            "targets" : face
+        });
+
+    if (collisionData == [])
+    {
+        //The face and the tool have passed bounding box test, so we'll attempt to compute intersection outline
+        return false;
+    }
+
+    var facesToCheck = [];
+    for (var collision in collisionData)
+    {
+        const collisionType = collision['type'];
+        if (collisionType == ClashType.TARGET_IN_TOOL)
+            return true;
+        if (collisionType == ClashType.TOOL_IN_TARGET)
+            continue;
+
+        var faceToCheckQ;
+        if (collisionType == ClashType.INTERFERE)
+        {
+            faceToCheckQ = qEntityFilter(collision.tool, EntityType.FACE); // We don't care for edge interference
+        }
+        else // some sort of Abutting, I've seen only ABUT_NO_CLASS
+        {
+            const edgeAdjacentQ = qEdgeAdjacent(qEntityFilter(collision.tool, EntityType.EDGE), EntityType.FACE);
+            const parallelToPlaneQ = qParallelPlanes(edgeAdjacentQ, faceData.planeNormal);
+            faceToCheckQ = qUnion([qEntityFilter(collision.tool, EntityType.FACE), qSubtraction(edgeAdjacentQ, parallelToPlaneQ)]);
+        }
+        const faces = evaluateQuery(context, faceToCheckQ);
+        if (faces == [])
+            continue;
+        facesToCheck = append(facesToCheck, faceToCheckQ);
+    }
+    for (var faceToCheck in evaluateQuery(context, qUnion(facesToCheck)))
+    {
+        if (!sweptAlong(context, faceToCheck, faceData.planeNormal, faceSweptData))
+            return false;
+    }
+    return true;
+}
+
+function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData is box) returns boolean
+{
+    var sweptData = faceSweptData[][face];
+    if (sweptData == undefined)
+    {
+        const surface = evSurfaceDefinition(context, {
+                "face" : face
+        });
+        sweptData = {};
+        if (surface is Plane)
+            sweptData.planeNormal = surface.normal;
+        else if (surface is Cylinder)
+            sweptData.extrudeDirection = surface.coordSystem.zAxis;
+        else if (surface.surfaceType == SurfaceType.EXTRUDED)
+            sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
+
+        faceSweptData[][face] = sweptData;
+    }
+
+    if (sweptData.planeNormal != undefined)
+        return perpendicularVectors(sweptData.planeNormal, direction);
+    else if (sweptData.extrudeDirection != undefined)
+        return parallelVectors(sweptData.extrudeDirection, direction);
+
+    return false;
+}
+
+function extrudedSurfaceDirection(context is Context, face is Query)
+{
+    //EXTRUDED surface always has a curve along u direction and linear component along v direction
+    const planes = evFaceTangentPlanes(context, {
+            "face" : face,
+            "parameters" : [ vector(0.5, 0.), vector(0.5, 1) ]
+    });
+
+    return normalize(planes[1].origin - planes[0].origin);
+}
 
 

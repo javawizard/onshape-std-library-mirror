@@ -1,21 +1,21 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "901.0");
-export import(path : "onshape/std/error.fs", version : "901.0");
-export import(path : "onshape/std/geomOperations.fs", version : "901.0");
-export import(path : "onshape/std/query.fs", version : "901.0");
+export import(path : "onshape/std/context.fs", version : "920.0");
+export import(path : "onshape/std/error.fs", version : "920.0");
+export import(path : "onshape/std/geomOperations.fs", version : "920.0");
+export import(path : "onshape/std/query.fs", version : "920.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/math.fs", version : "901.0");
-import(path : "onshape/std/string.fs", version : "901.0");
-import(path : "onshape/std/transform.fs", version : "901.0");
-import(path : "onshape/std/units.fs", version : "901.0");
-import(path : "onshape/std/tabReferences.fs", version : "901.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/math.fs", version : "920.0");
+import(path : "onshape/std/string.fs", version : "920.0");
+import(path : "onshape/std/transform.fs", version : "920.0");
+import(path : "onshape/std/units.fs", version : "920.0");
+import(path : "onshape/std/tabReferences.fs", version : "920.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -489,6 +489,27 @@ export function startTrackingIdentity(context is Context, subquery is Query) ret
     out.queryType = QueryType.TRACKING;
     return out as Query;
 }
+
+/**
+ * @internal
+ * Generate an array of identity-tracking queries for each entity of the subquery
+ */
+export function startTrackingIdentityBatched(context is Context, subquery is Query) returns array
+{
+    var out = [];
+    const lastOperationId = lastOperationId(context);
+    for (var ent in evaluateQuery(context, subquery))
+    {
+        out = append(out, {
+                        "subquery1" : [ent],
+                        "lastOperationId" : lastOperationId,
+                        "identityPreservingOnly" : true,
+                        "queryType" : QueryType.TRACKING
+                    } as Query);
+    }
+    return out;
+}
+
 /**
 * @internal
 * Used in `startTracking`

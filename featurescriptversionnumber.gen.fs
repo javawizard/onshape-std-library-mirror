@@ -1,4 +1,4 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -703,7 +703,16 @@ export enum FeatureScriptVersionNumber
     V890_FIX_FIT_SPLINE,
     V891_EXPOSE_REFERENCE_PARAMETER,
     V900_USE_CIRCLE,
-    V901_DET_ID_FIRST
+    V901_DET_ID_FIRST,
+    V912_TRACK_TRANFORMS,
+    V913_TOOL_CLASH_FINE,
+    V914_SM_JOINT_TO_WALL,
+    V915_PS_VERSION_31_0_203,
+    V916_DERIVED_VISIBILITY,
+    V917_SM_BOOLEAN_MATCH,
+    V918_SM_BOOLEAN_TOOLS,
+    V919_SPLIT_JOINT_TYPO,
+    V920_FS_ROUND_TO_PRECISION
 }
 
 /**
@@ -714,6 +723,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V901_DET_ID_FIRST;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V920_FS_ROUND_TO_PRECISION;
 
 

@@ -1,18 +1,18 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/context.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/query.fs", version : "901.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/context.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/query.fs", version : "920.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
 /**
- * Returns true if edge has two adjacent faces, false if edge is laminar
+ * Returns true if `edge` has two adjacent faces, false if `edge` is a laminar or wire edge.
  */
 export function edgeIsTwoSided(context is Context, edge is Query) returns boolean
 {
@@ -20,7 +20,7 @@ export function edgeIsTwoSided(context is Context, edge is Query) returns boolea
 }
 
 /**
- * Returns true if edge is closed, false if edge is open
+ * Returns true if `edge` is closed, false if `edge` is open
  */
 export function isClosed(context is Context, edge is Query) returns boolean
 {
@@ -97,7 +97,8 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
 }
 
 /**
- * Extract a direction from an axis or a plane
+ * Extract a direction from an axis or a plane.  Useful for processing query parameters with the
+ * [QueryFilterCompound.ALLOWS_DIRECTION](/FsDoc/library.html#QueryFilterCompound) filter.
  * @return: a 3D unit [Vector] if a direction can be extracted, otherwise `undefined`.
  */
 export function extractDirection(context is Context, entity is Query)
@@ -150,5 +151,24 @@ export function connectedComponentsOfEdges(context is Context, edges is Query)
         remainingEdges = evaluateQuery(context, qSubtraction(qUnion(remainingEdges), group));
     }
     return groups;
+}
+
+/**
+ * Group `entities` by their owner body.
+ * @return: a map from the transient query for an individual body to an array of transient queries for the individual entities
+ * which belong to that body.
+ */
+export function groupEntitiesByBody(context is Context, entities is Query) returns map
+{
+    var bodyToEntities = {};
+    for (var entity in evaluateQuery(context, entities))
+    {
+        const body = evaluateQuery(context, qOwnerBody(entity))[0];
+        if (bodyToEntities[body] != undefined)
+            bodyToEntities[body] = append(bodyToEntities[body], entity);
+        else
+            bodyToEntities[body] = [entity];
+    }
+    return bodyToEntities;
 }
 

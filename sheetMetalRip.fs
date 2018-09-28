@@ -1,4 +1,4 @@
-FeatureScript 901; /* Automatically generated version */
+FeatureScript 920; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 901; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/attributes.fs", version : "901.0");
-import(path : "onshape/std/containers.fs", version : "901.0");
-import(path : "onshape/std/error.fs", version : "901.0");
-import(path : "onshape/std/feature.fs", version : "901.0");
-import(path : "onshape/std/evaluate.fs", version : "901.0");
-import(path : "onshape/std/geomOperations.fs", version : "901.0");
-import(path : "onshape/std/mathUtils.fs", version : "901.0");
-import(path : "onshape/std/query.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "901.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "901.0");
-import(path : "onshape/std/splitpart.fs", version : "901.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "901.0");
-import(path : "onshape/std/units.fs", version : "901.0");
-import(path : "onshape/std/valueBounds.fs", version : "901.0");
+import(path : "onshape/std/attributes.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "920.0");
+import(path : "onshape/std/error.fs", version : "920.0");
+import(path : "onshape/std/feature.fs", version : "920.0");
+import(path : "onshape/std/evaluate.fs", version : "920.0");
+import(path : "onshape/std/geomOperations.fs", version : "920.0");
+import(path : "onshape/std/mathUtils.fs", version : "920.0");
+import(path : "onshape/std/query.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "920.0");
+import(path : "onshape/std/splitpart.fs", version : "920.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
+import(path : "onshape/std/units.fs", version : "920.0");
+import(path : "onshape/std/valueBounds.fs", version : "920.0");
 
 
 /**
@@ -151,7 +151,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
             "attribute" : createRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.EDGE, ripAttributes)});
         count += 1;
     }
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]), initialData);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]), initialData, id);
 
     updateSheetMetalGeometry(context, id + "smUpdate", {
                 "entities" : toUpdate.modifiedEntities,
