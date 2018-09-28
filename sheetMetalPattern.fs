@@ -278,7 +278,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     }
 
     // Assign association attributes and gather modified entities
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, initialData);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, allBodiesOfModel, initialData, id);
 
     fixJointAttributes(context, id, qEntityFilter(toUpdate.modifiedEntities, EntityType.EDGE), attributeIdCounter);
 
@@ -1222,7 +1222,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     reapplyCornerBreaks(context, topLevelId, cornerBreakTrackingAndAttribute, attributeIdCounter);
 
     // Assign association attributes and gather modified entities
-    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, initialData);
+    return assignSMAttributesToNewOrSplitEntities(context, allAffectedBodies, initialData, id);
 }
 
 /**

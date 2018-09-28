@@ -71,6 +71,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
 
 
 /**
+ * @internal
  * implements heuristics for thicken feature
  */
 export function thickenEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,

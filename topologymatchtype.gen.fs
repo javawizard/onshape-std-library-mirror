@@ -5,7 +5,12 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** See [opBoolean]. */
+/**
+ * Specifies topology matches for [opBoolean].
+ * @value COINCIDENT : Two regions are fully coincident (e.g. edges have the same curve geometry and coincident end points).
+ * @value OVERLAPING : Two regions overlap (e.g. edges have the same curve geometry, share a common segment, but ends might not coincide).
+ * @value CONTAINED_2_IN_1 : Region 2 is fully contained in region 1.
+ */
 export enum TopologyMatchType
 {
     COINCIDENT,

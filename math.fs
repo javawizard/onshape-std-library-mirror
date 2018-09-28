@@ -209,6 +209,39 @@ export function round(value is number)
 }
 
 /**
+ * Round a `number` to a given number of decimal places.
+ *
+ * @example `roundToPrecision(0.12345, 3)` returns `0.123`
+ * @example `roundToPrecision(9.9995, 3)` returns `10`
+ * @example `roundToPrecision(123.45, -1)` returns `120`
+ *
+ * For positive values of precision, this method is more accuate than [round(value, multiple)](round(?, ?)).
+ * For instance, `print(roundToPrecision(0.45682, 4))` prints `0.4568`, but `round(0.45682, 0.0001)` prints
+ * `0.45680000000000004`. This is because the floating point representation of `0.0001` is slightly imprecise,
+ * and that imprecision is compounded inside the call to `round`. The floating point value of `4`, on the other
+ * hand, is precise, so the result of `roundToPrecision` will be the closest possible floating-point
+ * representation of `0.4568`. Thus, `print` and other functions using string conversion (`~`) will not print
+ * extraneous digits.
+ */
+export function roundToPrecision(value is number, precision is number)
+precondition
+{
+    isInteger(precision);
+}
+{
+    if (precision >= 0)
+    {
+        const multiple = 10 ^ precision;
+        return @floor((multiple * value) + 0.5) / multiple;
+    }
+    else
+    {
+        const multiple = 10 ^ (-precision);
+        return @floor((value / multiple) + 0.5) * multiple;
+    }
+}
+
+/**
  * @internal
  * Round a number to the nearest integer only for possible roundoff errors
  */

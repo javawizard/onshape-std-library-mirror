@@ -223,7 +223,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, initialData);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, smBodiesQ, initialData, id);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes,
                                            "associatedChanges" : originalEdges});

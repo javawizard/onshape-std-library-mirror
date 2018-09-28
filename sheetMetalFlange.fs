@@ -153,12 +153,12 @@ precondition
     }
     else if (definition.angleControlType == SMFlangeAngleControlType.ALIGN_GEOMETRY)
     {
-        annotation { "Name" : "Parallel to", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Parallel to", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.parallelEntity is Query;
     }
     else if (definition.angleControlType == SMFlangeAngleControlType.ANGLE_FROM_DIRECTION)
     {
-        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.directionEntity is Query;
 
         annotation { "Name" : "Angle" }
@@ -242,7 +242,7 @@ precondition
     }
 
     // Add association attributes where needed and compute deleted attributes
-    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData);
+    var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData, id);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
                                            "deletedAttributes" : toUpdate.deletedAttributes});
 
@@ -361,11 +361,11 @@ function trackAllFaces(context, allSurfaces, originals)
 
 function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map) returns number
 {
-    var evaluatedEdgeQuery = evaluateQuery(context, edges);
+    const originalFlangeEdges = evaluateQuery(context, edges);
 
     // add thickness, minimalClearance and defaultBendRadius to definition.
     // Flange uses thickness, minimalClearance and potentially defaultBendRadius derived from underlying sheet metal model
-    definition = mergeMaps(definition, getModelParametersFromEdge(context, evaluatedEdgeQuery[0]));
+    definition = mergeMaps(definition, getModelParametersFromEdge(context, originalFlangeEdges[0]));
     if (definition.useDefaultRadius)
     {
         definition.bendRadius = definition.defaultBendRadius;
@@ -375,7 +375,6 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     // Collect flangeData for each edge, and store a mapping from each edge to a tracking query of itself
     var edgeToFlangeData = {};
     var oldEdgeToNewEdge = {};
-    var originalFlangeEdges = evaluateQuery(context, edges);
     for (var edge in originalFlangeEdges)
     {
         edgeToFlangeData[edge] = getFlangeData(context, topLevelId, edge, definition);

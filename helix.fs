@@ -341,8 +341,8 @@ export function helixManipulatorChange(context is Context, definition is map, ne
     return definition;
 }
 
-
 /**
+ * @internal
  * Preselection Logic:  Heuristics to determine the type of helix to be constructed, based on user preselection.
  */
 export function helixLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map

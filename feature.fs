@@ -489,6 +489,27 @@ export function startTrackingIdentity(context is Context, subquery is Query) ret
     out.queryType = QueryType.TRACKING;
     return out as Query;
 }
+
+/**
+ * @internal
+ * Generate an array of identity-tracking queries for each entity of the subquery
+ */
+export function startTrackingIdentityBatched(context is Context, subquery is Query) returns array
+{
+    var out = [];
+    const lastOperationId = lastOperationId(context);
+    for (var ent in evaluateQuery(context, subquery))
+    {
+        out = append(out, {
+                        "subquery1" : [ent],
+                        "lastOperationId" : lastOperationId,
+                        "identityPreservingOnly" : true,
+                        "queryType" : QueryType.TRACKING
+                    } as Query);
+    }
+    return out;
+}
+
 /**
 * @internal
 * Used in `startTracking`

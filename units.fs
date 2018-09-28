@@ -69,7 +69,7 @@ import(path : "onshape/std/string.fs", version : "✨");
  * println(length);                                 // prints "0.42 meter"
  * println("length: " ~ toString(length));          // prints "length: 0.42 meter"
  * println(length / inch ~ " inches");              // prints "16.535433070866137 inches"
- * println(round(length / inch, .001) ~ " inches"); // prints "16.535 inches"
+ * println(roundToPrecision(length / inch, 3) ~ " inches"); // prints "16.535 inches"
  * ```
  */
 export type ValueWithUnits typecheck canBeValueWithUnits;
@@ -571,7 +571,9 @@ precondition unitsMatch(value, multiple);
  * @example `round(-15, 10)` returns `-10`
  * @example `round((10 / 3) * meter, centimeter)` equals `3.33 * meter`
  * @example `round(1 * meter, .001 * inch)` equals `39.37 * inch`
- * @example `println("Length: " ~ toString(round(1 * inch, 0.001 * meter)));` prints `Length: 0.025 meter`
+ *
+ * For small values of `multiple`, [roundToPrecision] is preferred to reduce
+ * floating point errors.
  */
 export function round(value, multiple)
 precondition unitsMatch(value, multiple);

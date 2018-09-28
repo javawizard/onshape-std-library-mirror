@@ -151,7 +151,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
             "attribute" : createRipAttribute(context, e, toAttributeId(id + count ), SMJointStyle.EDGE, ripAttributes)});
         count += 1;
     }
-    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]), initialData);
+    const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModel]), initialData, id);
 
     updateSheetMetalGeometry(context, id + "smUpdate", {
                 "entities" : toUpdate.modifiedEntities,

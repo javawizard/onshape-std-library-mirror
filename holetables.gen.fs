@@ -5266,6 +5266,4203 @@ const ANSI_ThroughTappedScrewTable = {
     }
 };
 
+const DIN_drillTable = {
+    "name" : "size",
+    "displayName" : "Drill size",
+    "default" : "5",
+    "entries" : {
+        "0.05" : {"holeDiameter" : "0.05 mm", "tapDrillDiameter" : "0.05 mm"},
+        "0.1" : {"holeDiameter" : "0.1 mm", "tapDrillDiameter" : "0.1 mm"},
+        "0.2" : {"holeDiameter" : "0.2 mm", "tapDrillDiameter" : "0.2 mm"},
+        "0.3" : {"holeDiameter" : "0.3 mm", "tapDrillDiameter" : "0.3 mm"},
+        "0.4" : {"holeDiameter" : "0.4 mm", "tapDrillDiameter" : "0.4 mm"},
+        "0.5" : {"holeDiameter" : "0.5 mm", "tapDrillDiameter" : "0.5 mm"},
+        "0.6" : {"holeDiameter" : "0.6 mm", "tapDrillDiameter" : "0.6 mm"},
+        "0.7" : {"holeDiameter" : "0.7 mm", "tapDrillDiameter" : "0.7 mm"},
+        "0.8" : {"holeDiameter" : "0.8 mm", "tapDrillDiameter" : "0.8 mm"},
+        "0.9" : {"holeDiameter" : "0.9 mm", "tapDrillDiameter" : "0.9 mm"},
+        "1" : {"holeDiameter" : "1 mm", "tapDrillDiameter" : "1 mm"},
+        "1.1" : {"holeDiameter" : "1.1 mm", "tapDrillDiameter" : "1.1 mm"},
+        "1.2" : {"holeDiameter" : "1.2 mm", "tapDrillDiameter" : "1.2 mm"},
+        "1.3" : {"holeDiameter" : "1.3 mm", "tapDrillDiameter" : "1.3 mm"},
+        "1.4" : {"holeDiameter" : "1.4 mm", "tapDrillDiameter" : "1.4 mm"},
+        "1.5" : {"holeDiameter" : "1.5 mm", "tapDrillDiameter" : "1.5 mm"},
+        "1.6" : {"holeDiameter" : "1.6 mm", "tapDrillDiameter" : "1.6 mm"},
+        "1.7" : {"holeDiameter" : "1.7 mm", "tapDrillDiameter" : "1.7 mm"},
+        "1.8" : {"holeDiameter" : "1.8 mm", "tapDrillDiameter" : "1.8 mm"},
+        "1.9" : {"holeDiameter" : "1.9 mm", "tapDrillDiameter" : "1.9 mm"},
+        "2" : {"holeDiameter" : "2 mm", "tapDrillDiameter" : "2 mm"},
+        "2.1" : {"holeDiameter" : "2.1 mm", "tapDrillDiameter" : "2.1 mm"},
+        "2.2" : {"holeDiameter" : "2.2 mm", "tapDrillDiameter" : "2.2 mm"},
+        "2.3" : {"holeDiameter" : "2.3 mm", "tapDrillDiameter" : "2.3 mm"},
+        "2.4" : {"holeDiameter" : "2.4 mm", "tapDrillDiameter" : "2.4 mm"},
+        "2.5" : {"holeDiameter" : "2.5 mm", "tapDrillDiameter" : "2.5 mm"},
+        "2.6" : {"holeDiameter" : "2.6 mm", "tapDrillDiameter" : "2.6 mm"},
+        "2.7" : {"holeDiameter" : "2.7 mm", "tapDrillDiameter" : "2.7 mm"},
+        "2.8" : {"holeDiameter" : "2.8 mm", "tapDrillDiameter" : "2.8 mm"},
+        "2.9" : {"holeDiameter" : "2.9 mm", "tapDrillDiameter" : "2.9 mm"},
+        "3" : {"holeDiameter" : "3 mm", "tapDrillDiameter" : "3 mm"},
+        "3.1" : {"holeDiameter" : "3.1 mm", "tapDrillDiameter" : "3.1 mm"},
+        "3.2" : {"holeDiameter" : "3.2 mm", "tapDrillDiameter" : "3.2 mm"},
+        "3.3" : {"holeDiameter" : "3.3 mm", "tapDrillDiameter" : "3.3 mm"},
+        "3.4" : {"holeDiameter" : "3.4 mm", "tapDrillDiameter" : "3.4 mm"},
+        "3.5" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm"},
+        "3.6" : {"holeDiameter" : "3.6 mm", "tapDrillDiameter" : "3.6 mm"},
+        "3.7" : {"holeDiameter" : "3.7 mm", "tapDrillDiameter" : "3.7 mm"},
+        "3.8" : {"holeDiameter" : "3.8 mm", "tapDrillDiameter" : "3.8 mm"},
+        "3.9" : {"holeDiameter" : "3.9 mm", "tapDrillDiameter" : "3.9 mm"},
+        "4" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm"},
+        "4.1" : {"holeDiameter" : "4.1 mm", "tapDrillDiameter" : "4.1 mm"},
+        "4.2" : {"holeDiameter" : "4.2 mm", "tapDrillDiameter" : "4.2 mm"},
+        "4.3" : {"holeDiameter" : "4.3 mm", "tapDrillDiameter" : "4.3 mm"},
+        "4.4" : {"holeDiameter" : "4.4 mm", "tapDrillDiameter" : "4.4 mm"},
+        "4.5" : {"holeDiameter" : "4.5 mm", "tapDrillDiameter" : "4.5 mm"},
+        "4.6" : {"holeDiameter" : "4.6 mm", "tapDrillDiameter" : "4.6 mm"},
+        "4.7" : {"holeDiameter" : "4.7 mm", "tapDrillDiameter" : "4.7 mm"},
+        "4.8" : {"holeDiameter" : "4.8 mm", "tapDrillDiameter" : "4.8 mm"},
+        "4.9" : {"holeDiameter" : "4.9 mm", "tapDrillDiameter" : "4.9 mm"},
+        "5" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm"},
+        "5.1" : {"holeDiameter" : "5.1 mm", "tapDrillDiameter" : "5.1 mm"},
+        "5.2" : {"holeDiameter" : "5.2 mm", "tapDrillDiameter" : "5.2 mm"},
+        "5.3" : {"holeDiameter" : "5.3 mm", "tapDrillDiameter" : "5.3 mm"},
+        "5.4" : {"holeDiameter" : "5.4 mm", "tapDrillDiameter" : "5.4 mm"},
+        "5.5" : {"holeDiameter" : "5.5 mm", "tapDrillDiameter" : "5.5 mm"},
+        "5.6" : {"holeDiameter" : "5.6 mm", "tapDrillDiameter" : "5.6 mm"},
+        "5.7" : {"holeDiameter" : "5.7 mm", "tapDrillDiameter" : "5.7 mm"},
+        "5.8" : {"holeDiameter" : "5.8 mm", "tapDrillDiameter" : "5.8 mm"},
+        "5.9" : {"holeDiameter" : "5.9 mm", "tapDrillDiameter" : "5.9 mm"},
+        "6" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm"},
+        "6.1" : {"holeDiameter" : "6.1 mm", "tapDrillDiameter" : "6.1 mm"},
+        "6.2" : {"holeDiameter" : "6.2 mm", "tapDrillDiameter" : "6.2 mm"},
+        "6.3" : {"holeDiameter" : "6.3 mm", "tapDrillDiameter" : "6.3 mm"},
+        "6.4" : {"holeDiameter" : "6.4 mm", "tapDrillDiameter" : "6.4 mm"},
+        "6.5" : {"holeDiameter" : "6.5 mm", "tapDrillDiameter" : "6.5 mm"},
+        "6.6" : {"holeDiameter" : "6.6 mm", "tapDrillDiameter" : "6.6 mm"},
+        "6.7" : {"holeDiameter" : "6.7 mm", "tapDrillDiameter" : "6.7 mm"},
+        "6.8" : {"holeDiameter" : "6.8 mm", "tapDrillDiameter" : "6.8 mm"},
+        "6.9" : {"holeDiameter" : "6.9 mm", "tapDrillDiameter" : "6.9 mm"},
+        "7" : {"holeDiameter" : "7 mm", "tapDrillDiameter" : "7 mm"},
+        "7.1" : {"holeDiameter" : "7.1 mm", "tapDrillDiameter" : "7.1 mm"},
+        "7.2" : {"holeDiameter" : "7.2 mm", "tapDrillDiameter" : "7.2 mm"},
+        "7.3" : {"holeDiameter" : "7.3 mm", "tapDrillDiameter" : "7.3 mm"},
+        "7.4" : {"holeDiameter" : "7.4 mm", "tapDrillDiameter" : "7.4 mm"},
+        "7.5" : {"holeDiameter" : "7.5 mm", "tapDrillDiameter" : "7.5 mm"},
+        "7.6" : {"holeDiameter" : "7.6 mm", "tapDrillDiameter" : "7.6 mm"},
+        "7.7" : {"holeDiameter" : "7.7 mm", "tapDrillDiameter" : "7.7 mm"},
+        "7.8" : {"holeDiameter" : "7.8 mm", "tapDrillDiameter" : "7.8 mm"},
+        "7.9" : {"holeDiameter" : "7.9 mm", "tapDrillDiameter" : "7.9 mm"},
+        "8" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm"},
+        "8.1" : {"holeDiameter" : "8.1 mm", "tapDrillDiameter" : "8.1 mm"},
+        "8.2" : {"holeDiameter" : "8.2 mm", "tapDrillDiameter" : "8.2 mm"},
+        "8.3" : {"holeDiameter" : "8.3 mm", "tapDrillDiameter" : "8.3 mm"},
+        "8.4" : {"holeDiameter" : "8.4 mm", "tapDrillDiameter" : "8.4 mm"},
+        "8.5" : {"holeDiameter" : "8.5 mm", "tapDrillDiameter" : "8.5 mm"},
+        "8.6" : {"holeDiameter" : "8.6 mm", "tapDrillDiameter" : "8.6 mm"},
+        "8.7" : {"holeDiameter" : "8.7 mm", "tapDrillDiameter" : "8.7 mm"},
+        "8.8" : {"holeDiameter" : "8.8 mm", "tapDrillDiameter" : "8.8 mm"},
+        "8.9" : {"holeDiameter" : "8.9 mm", "tapDrillDiameter" : "8.9 mm"},
+        "9" : {"holeDiameter" : "9 mm", "tapDrillDiameter" : "9 mm"},
+        "9.1" : {"holeDiameter" : "9.1 mm", "tapDrillDiameter" : "9.1 mm"},
+        "9.2" : {"holeDiameter" : "9.2 mm", "tapDrillDiameter" : "9.2 mm"},
+        "9.3" : {"holeDiameter" : "9.3 mm", "tapDrillDiameter" : "9.3 mm"},
+        "9.4" : {"holeDiameter" : "9.4 mm", "tapDrillDiameter" : "9.4 mm"},
+        "9.5" : {"holeDiameter" : "9.5 mm", "tapDrillDiameter" : "9.5 mm"},
+        "9.6" : {"holeDiameter" : "9.6 mm", "tapDrillDiameter" : "9.6 mm"},
+        "9.7" : {"holeDiameter" : "9.7 mm", "tapDrillDiameter" : "9.7 mm"},
+        "9.8" : {"holeDiameter" : "9.8 mm", "tapDrillDiameter" : "9.8 mm"},
+        "9.9" : {"holeDiameter" : "9.9 mm", "tapDrillDiameter" : "9.9 mm"},
+        "10" : {"holeDiameter" : "10 mm", "tapDrillDiameter" : "10 mm"},
+        "10.5" : {"holeDiameter" : "10.5 mm", "tapDrillDiameter" : "10.5 mm"},
+        "11" : {"holeDiameter" : "11 mm", "tapDrillDiameter" : "11 mm"},
+        "11.5" : {"holeDiameter" : "11.5 mm", "tapDrillDiameter" : "11.5 mm"},
+        "12" : {"holeDiameter" : "12 mm", "tapDrillDiameter" : "12 mm"},
+        "12.5" : {"holeDiameter" : "12.5 mm", "tapDrillDiameter" : "12.5 mm"},
+        "13" : {"holeDiameter" : "13 mm", "tapDrillDiameter" : "13 mm"},
+        "13.5" : {"holeDiameter" : "13.5 mm", "tapDrillDiameter" : "13.5 mm"},
+        "14" : {"holeDiameter" : "14 mm", "tapDrillDiameter" : "14 mm"},
+        "14.5" : {"holeDiameter" : "14.5 mm", "tapDrillDiameter" : "14.5 mm"},
+        "15" : {"holeDiameter" : "15 mm", "tapDrillDiameter" : "15 mm"},
+        "15.5" : {"holeDiameter" : "15.5 mm", "tapDrillDiameter" : "15.5 mm"},
+        "16" : {"holeDiameter" : "16 mm", "tapDrillDiameter" : "16 mm"},
+        "16.5" : {"holeDiameter" : "16.5 mm", "tapDrillDiameter" : "16.5 mm"},
+        "17" : {"holeDiameter" : "17 mm", "tapDrillDiameter" : "17 mm"},
+        "17.5" : {"holeDiameter" : "17.5 mm", "tapDrillDiameter" : "17.5 mm"},
+        "18" : {"holeDiameter" : "18 mm", "tapDrillDiameter" : "18 mm"},
+        "18.5" : {"holeDiameter" : "18.5 mm", "tapDrillDiameter" : "18.5 mm"},
+        "19" : {"holeDiameter" : "19 mm", "tapDrillDiameter" : "19 mm"},
+        "19.5" : {"holeDiameter" : "19.5 mm", "tapDrillDiameter" : "19.5 mm"},
+        "20" : {"holeDiameter" : "20 mm", "tapDrillDiameter" : "20 mm"},
+        "20.5" : {"holeDiameter" : "20.5 mm", "tapDrillDiameter" : "20.5 mm"},
+        "21" : {"holeDiameter" : "21 mm", "tapDrillDiameter" : "21 mm"},
+        "21.5" : {"holeDiameter" : "21.5 mm", "tapDrillDiameter" : "21.5 mm"},
+        "22" : {"holeDiameter" : "22 mm", "tapDrillDiameter" : "22 mm"},
+        "22.5" : {"holeDiameter" : "22.5 mm", "tapDrillDiameter" : "22.5 mm"},
+        "23" : {"holeDiameter" : "23 mm", "tapDrillDiameter" : "23 mm"},
+        "23.5" : {"holeDiameter" : "23.5 mm", "tapDrillDiameter" : "23.5 mm"},
+        "24" : {"holeDiameter" : "24 mm", "tapDrillDiameter" : "24 mm"},
+        "24.5" : {"holeDiameter" : "24.5 mm", "tapDrillDiameter" : "24.5 mm"},
+        "25" : {"holeDiameter" : "25 mm", "tapDrillDiameter" : "25 mm"},
+        "25.5" : {"holeDiameter" : "25.5 mm", "tapDrillDiameter" : "25.5 mm"},
+        "26" : {"holeDiameter" : "26 mm", "tapDrillDiameter" : "26 mm"},
+        "26.5" : {"holeDiameter" : "26.5 mm", "tapDrillDiameter" : "26.5 mm"},
+        "27" : {"holeDiameter" : "27 mm", "tapDrillDiameter" : "27 mm"},
+        "27.5" : {"holeDiameter" : "27.5 mm", "tapDrillDiameter" : "27.5 mm"},
+        "28" : {"holeDiameter" : "28 mm", "tapDrillDiameter" : "28 mm"},
+        "28.5" : {"holeDiameter" : "28.5 mm", "tapDrillDiameter" : "28.5 mm"},
+        "29" : {"holeDiameter" : "29 mm", "tapDrillDiameter" : "29 mm"},
+        "29.5" : {"holeDiameter" : "29.5 mm", "tapDrillDiameter" : "29.5 mm"},
+        "30" : {"holeDiameter" : "30 mm", "tapDrillDiameter" : "30 mm"},
+        "30.5" : {"holeDiameter" : "30.5 mm", "tapDrillDiameter" : "30.5 mm"},
+        "31" : {"holeDiameter" : "31 mm", "tapDrillDiameter" : "31 mm"},
+        "31.5" : {"holeDiameter" : "31.5 mm", "tapDrillDiameter" : "31.5 mm"},
+        "32" : {"holeDiameter" : "32 mm", "tapDrillDiameter" : "32 mm"},
+        "32.5" : {"holeDiameter" : "32.5 mm", "tapDrillDiameter" : "32.5 mm"},
+        "33" : {"holeDiameter" : "33 mm", "tapDrillDiameter" : "33 mm"},
+        "33.5" : {"holeDiameter" : "33.5 mm", "tapDrillDiameter" : "33.5 mm"},
+        "34" : {"holeDiameter" : "34 mm", "tapDrillDiameter" : "34 mm"},
+        "34.5" : {"holeDiameter" : "34.5 mm", "tapDrillDiameter" : "34.5 mm"},
+        "35" : {"holeDiameter" : "35 mm", "tapDrillDiameter" : "35 mm"},
+        "35.5" : {"holeDiameter" : "35.5 mm", "tapDrillDiameter" : "35.5 mm"},
+        "36" : {"holeDiameter" : "36 mm", "tapDrillDiameter" : "36 mm"},
+        "36.5" : {"holeDiameter" : "36.5 mm", "tapDrillDiameter" : "36.5 mm"},
+        "37" : {"holeDiameter" : "37 mm", "tapDrillDiameter" : "37 mm"},
+        "37.5" : {"holeDiameter" : "37.5 mm", "tapDrillDiameter" : "37.5 mm"},
+        "38" : {"holeDiameter" : "38 mm", "tapDrillDiameter" : "38 mm"}
+    }
+};
+
+const DIN_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M5",
+    "entries" : {
+        "M1" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M1.1" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M1.2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M1.4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M1.6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M1.8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M2.2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M2.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M4.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M7" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M12" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M14" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M18" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M20" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M22" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M24" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M27" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M30" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M33" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M36" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M39" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M42" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M45" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M48" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M52" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M56" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M60" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M64" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"}
+            }
+        },
+        "M68" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Normal",
+            "entries" : {
+                "Close" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree"}
+            }
+        }
+    }
+};
+
+const DIN_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M5",
+    "entries" : {
+        "M1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.8 mm", "tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.75 mm", "tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                    }
+                }
+            }
+        },
+        "M1.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.9 mm", "tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.85 mm", "tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                    }
+                }
+            }
+        },
+        "M1.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1 mm", "tapDrillDiameter" : "1 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.95 mm", "tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                    }
+                }
+            }
+        },
+        "M1.4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.30 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.2 mm", "tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                    }
+                },
+                "0.30 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.1 mm", "tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                    }
+                }
+            }
+        },
+        "M1.6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.4 mm", "tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                    }
+                },
+                "0.35 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.25 mm", "tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                    }
+                }
+            }
+        },
+        "M1.8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.6 mm", "tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                    }
+                },
+                "0.35 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.45 mm", "tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                    }
+                }
+            }
+        },
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.75 mm", "tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                    }
+                },
+                "0.40 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.6 mm", "tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                    }
+                }
+            }
+        },
+        "M2.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.95 mm", "tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                    }
+                },
+                "0.45 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "1.75 mm", "tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                    }
+                }
+            }
+        },
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.35 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.15 mm", "tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                    }
+                },
+                "0.45 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.05 mm", "tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.35 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.65 mm", "tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                    }
+                },
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.5 mm", "tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                    }
+                },
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.3 mm", "tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M4.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.75 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                    }
+                },
+                "0.75 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.7 mm", "tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4.5 mm", "tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                    }
+                },
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4.2 mm", "tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5.2 mm", "tapDrillDiameter" : "5.2 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                    }
+                },
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M7" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.0 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6.2 mm", "tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                    }
+                },
+                "1.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "7.2 mm", "tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                    }
+                },
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "7 mm", "tapDrillDiameter" : "7 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                    }
+                },
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6.8 mm", "tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "9 mm", "tapDrillDiameter" : "9 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                    }
+                },
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8.8 mm", "tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8.5 mm", "tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                    }
+                }
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "10.8 mm", "tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "10.5 mm", "tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                    }
+                },
+                "1.75 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "10.2 mm", "tapDrillDiameter" : "10.2 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                    }
+                }
+            }
+        },
+        "M14" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "12.8 mm", "tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "12.5 mm", "tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "12 mm", "tapDrillDiameter" : "12 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                    }
+                }
+            }
+        },
+        "M16" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "14.5 mm", "tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "14 mm", "tapDrillDiameter" : "14 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                    }
+                }
+            }
+        },
+        "M18" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "16.5 mm", "tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                    }
+                },
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "16 mm", "tapDrillDiameter" : "16 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                    }
+                },
+                "2.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "15.5 mm", "tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                    }
+                }
+            }
+        },
+        "M20" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "18.5 mm", "tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "18 mm", "tapDrillDiameter" : "18 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                    }
+                },
+                "2.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "17.5 mm", "tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                    }
+                }
+            }
+        },
+        "M22" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "20.5 mm", "tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                    }
+                },
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "20 mm", "tapDrillDiameter" : "20 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                    }
+                },
+                "2.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "19.5 mm", "tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                    }
+                }
+            }
+        },
+        "M24" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "22 mm", "tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                    }
+                },
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "21 mm", "tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                    }
+                }
+            }
+        },
+        "M27" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "25 mm", "tapDrillDiameter" : "25 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                    }
+                },
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "24 mm", "tapDrillDiameter" : "24 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                    }
+                }
+            }
+        },
+        "M30" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "28 mm", "tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                    }
+                },
+                "3.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "26.5 mm", "tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                    }
+                }
+            }
+        },
+        "M33" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "31 mm", "tapDrillDiameter" : "31 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                    }
+                },
+                "3.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "29.5 mm", "tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                    }
+                }
+            }
+        },
+        "M36" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "33 mm", "tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                    }
+                },
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "32 mm", "tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                    }
+                }
+            }
+        },
+        "M39" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "36 mm", "tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                    }
+                },
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "35 mm", "tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                    }
+                }
+            }
+        },
+        "M42" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "39 mm", "tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                    }
+                },
+                "4.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "37.5 mm", "tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                    }
+                }
+            }
+        },
+        "M45" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "42 mm", "tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                    }
+                },
+                "4.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "40.5 mm", "tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                    }
+                }
+            }
+        },
+        "M48" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "45 mm", "tapDrillDiameter" : "45 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                    }
+                },
+                "5.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "43 mm", "tapDrillDiameter" : "43 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                    }
+                }
+            }
+        },
+        "M52" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "48 mm", "tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                    }
+                },
+                "5.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "47 mm", "tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                    }
+                }
+            }
+        },
+        "M56" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "52 mm", "tapDrillDiameter" : "52 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                    }
+                },
+                "5.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "50.5 mm", "tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                    }
+                }
+            }
+        },
+        "M60" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "56 mm", "tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                    }
+                },
+                "5.5 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "54.5 mm", "tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                    }
+                }
+            }
+        },
+        "M64" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "60 mm", "tapDrillDiameter" : "60 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                    }
+                },
+                "6.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "58 mm", "tapDrillDiameter" : "58 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                    }
+                }
+            }
+        },
+        "M68" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "6.0 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "62 mm", "tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const DIN_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M5",
+    "entries" : {
+        "M1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.8 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.75 mm", "cBoreDiameter" : "2.2 mm", "cBoreDepth" : "1.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M1.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.9 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.85 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.1 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M1.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.95 mm", "cBoreDiameter" : "2.5 mm", "cBoreDepth" : "1.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.2 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M1.4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.30 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.2 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.30 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.1 mm", "cBoreDiameter" : "3 mm", "cBoreDepth" : "1.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M1.6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.4 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.35 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "1.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.25 mm", "cBoreDiameter" : "3.5 mm", "cBoreDepth" : "2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M1.8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.35 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.45 mm", "cBoreDiameter" : "3.8 mm", "cBoreDepth" : "2.2 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "1.8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.40 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.6 mm", "cBoreDiameter" : "4.4 mm", "cBoreDepth" : "2.4 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M2.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.95 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.45 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "1.75 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.2 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.35 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.15 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.45 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "2.9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.05 mm", "cBoreDiameter" : "5.5 mm", "cBoreDepth" : "2.9 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "3.1 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "2.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.35 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.65 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.2 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "cBoreDiameter" : "6.5 mm", "cBoreDepth" : "3.4 mm", "cSinkDiameter" : "6.94 mm", "holeDiameter" : "3.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.3 mm", "cBoreDiameter" : "8 mm", "cBoreDepth" : "4.4 mm", "cSinkDiameter" : "9.18 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.75 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.75 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "4.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.7 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "4.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                },
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.2 mm", "cBoreDiameter" : "10 mm", "cBoreDepth" : "5.4 mm", "cSinkDiameter" : "11.47 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.2 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.2 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.2 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "6.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "cBoreDiameter" : "11 mm", "cBoreDepth" : "6.4 mm", "cSinkDiameter" : "13.71 mm", "holeDiameter" : "7 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M7" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.0 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.2 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "7.6 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "7 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "0.75 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7.2 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "8.4 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "9 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.8 mm", "cBoreDiameter" : "15 mm", "cBoreDepth" : "8.6 mm", "cSinkDiameter" : "18.25 mm", "holeDiameter" : "10 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "9 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.8 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "10.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "11 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8.5 mm", "cBoreDiameter" : "18 mm", "cBoreDepth" : "10.6 mm", "cSinkDiameter" : "22.73 mm", "holeDiameter" : "12 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "10 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.8 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.5 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.75 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.2 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.2 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "13.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10.2 mm", "cBoreDiameter" : "20 mm", "cBoreDepth" : "12.6 mm", "cSinkDiameter" : "27.21 mm", "holeDiameter" : "14.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "12 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M14" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.8 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        }
+                    }
+                },
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12.5 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "15.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "12 mm", "cBoreDiameter" : "24 mm", "cBoreDepth" : "14.6 mm", "cSinkDiameter" : "31.19 mm", "holeDiameter" : "16.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "14 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M16" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14.5 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "17.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "14 mm", "cBoreDiameter" : "26 mm", "cBoreDepth" : "16.6 mm", "cSinkDiameter" : "33.99 mm", "holeDiameter" : "18.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "16 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M18" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "16 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "19 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "20 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "15.5 mm", "cBoreDiameter" : "30 mm", "cBoreDepth" : "18.6 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "18 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M20" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "18 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "21 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "22 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "17.5 mm", "cBoreDiameter" : "33 mm", "cBoreDepth" : "20.6 mm", "cSinkDiameter" : "40.71 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "20 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M22" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "20 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        }
+                    }
+                },
+                "2.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "23 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "24 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "19.5 mm", "cBoreDiameter" : "36 mm", "cBoreDepth" : "22.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "22 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M24" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "22 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        }
+                    }
+                },
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "25 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "26 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "21 mm", "cBoreDiameter" : "40 mm", "cBoreDepth" : "24.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "24 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M27" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "25 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        }
+                    }
+                },
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "28 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "30 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "24 mm", "cBoreDiameter" : "46 mm", "cBoreDepth" : "27.8 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "32 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "27 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M30" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "28 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        }
+                    }
+                },
+                "3.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "26.5 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M33" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "31 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        }
+                    }
+                },
+                "3.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "34 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "36 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "29.5 mm", "cBoreDiameter" : "54 mm", "cBoreDepth" : "34 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "38 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "33 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M36" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "33 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        }
+                    }
+                },
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "37 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "39 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "32 mm", "cBoreDiameter" : "58 mm", "cBoreDepth" : "37 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "36 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M39" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "36 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        }
+                    }
+                },
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "40 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "42 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "35 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "39 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M42" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "39 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        }
+                    }
+                },
+                "4.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "43 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "45 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "37.5 mm", "cBoreDiameter" : "69 mm", "cBoreDepth" : "43 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "42 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M45" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "42 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        }
+                    }
+                },
+                "4.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "46 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "48 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "40.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "45 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M48" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "45 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        }
+                    }
+                },
+                "5.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "50 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "52 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "43 mm", "cBoreDiameter" : "78 mm", "cBoreDepth" : "49 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "48 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M52" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "48 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        }
+                    }
+                },
+                "5.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "54 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "56 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "47 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "52 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M56" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "52 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        }
+                    }
+                },
+                "5.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "58 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "50.5 mm", "cBoreDiameter" : "93 mm", "cBoreDepth" : "57 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "56 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M60" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "56 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        }
+                    }
+                },
+                "5.5 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "62 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "54.5 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "60 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M64" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "60 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        }
+                    }
+                },
+                "6.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "66 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "58 mm", "cBoreDiameter" : "107 mm", "cBoreDepth" : "65 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "64 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M68" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "6.0 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "default" : "Normal",
+                    "entries" : {
+                        "Close" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "70 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
+                            }
+                        },
+                        "Normal" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "74 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
+                            }
+                        },
+                        "Loose" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "62 mm", "cBoreDiameter" : "-1 mm", "cBoreDepth" : "0 mm", "cSinkDiameter" : "-1 mm", "holeDiameter" : "78 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "68 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const ISO_drillTable = {
     "name" : "size",
     "displayName" : "Drill size",
@@ -9805,6 +14002,17 @@ const ISO_ThroughScrewTable = {
     }
 };
 
+const DIN_ThroughScrewTable = {
+    "name" : "type",
+    "displayName" : "Hole type",
+    "default" : "Clearance",
+    "entries" : {
+        "Clearance" : DIN_ClearanceHoleTable,
+        "Tapped" : DIN_TappedHoleTable,
+        "Drilled" : DIN_drillTable
+    }
+};
+
 /** @internal */
 export const tappedOrClearanceHoleTable = {
     "name" : "standard",
@@ -9812,7 +14020,8 @@ export const tappedOrClearanceHoleTable = {
     "entries" : {
         "Custom" : {},
         "ANSI" : ANSI_ThroughScrewTable,
-        "ISO" : ISO_ThroughScrewTable
+        "ISO" : ISO_ThroughScrewTable,
+        "DIN" : DIN_ThroughScrewTable
     }
 };
 
@@ -9836,6 +14045,16 @@ const ISO_BlindInLastHoleTable = {
     }
 };
 
+const DIN_BlindInLastHoleTable = {
+    "name" : "type",
+    "displayName" : "Hole type",
+    "default" : "Clearance & tapped",
+    "entries" : {
+        "Clearance & tapped" : DIN_ThroughTappedScrewTable,
+        "Drilled" : DIN_drillTable
+    }
+};
+
 /** @internal */
 export const blindInLastHoleTable = {
     "name" : "standard",
@@ -9843,7 +14062,8 @@ export const blindInLastHoleTable = {
     "entries" : {
         "Custom" : {},
         "ANSI" : ANSI_BlindInLastHoleTable,
-        "ISO" : ISO_BlindInLastHoleTable
+        "ISO" : ISO_BlindInLastHoleTable,
+        "DIN" : DIN_BlindInLastHoleTable
     }
 };
 

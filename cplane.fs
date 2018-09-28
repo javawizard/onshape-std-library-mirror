@@ -579,6 +579,7 @@ export function cplaneManipulatorChange(context is Context, cplaneDefinition is 
 }
 
 /**
+ * @internal
  * Heuristics to determine the type of plane to be constructed, based on user preselection.
  */
 export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map

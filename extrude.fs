@@ -442,7 +442,7 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         {
             initialData = combineInitialData(context, initialDataPerBody, affectedBodyQ);
         }
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, affectedBodyQ, initialData);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, affectedBodyQ, initialData, id);
 
         try (updateSheetMetalGeometry(context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,

@@ -927,7 +927,7 @@ const offsetSheetMetalFaces2 = defineSheetMetalFeature(function(context is Conte
         }
         addRipsForNewEdges(context, id, modifiedEdges);
         modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModels]), initialData);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModels]), initialData, id);
 
         try(updateSheetMetalGeometry(context, id + "smUpdate", {
                         "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
@@ -1049,7 +1049,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
             modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
         }
 
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]), initialData);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]), initialData, id);
 
 
         try(updateSheetMetalGeometry(context, id + "smUpdate", {
@@ -1170,6 +1170,7 @@ precondition
 }
 
 /**
+ * @internal
  * Editing logic. Fills in translation direction. Fills in offset distance as minimal clearance.
  */
 export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map

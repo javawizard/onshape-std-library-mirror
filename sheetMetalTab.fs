@@ -84,7 +84,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
                     "entities" : qCreatedBy(id + "extract", EntityType.BODY)
                 });
 
-        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalBodiesQuery, initialData);
+        const toUpdate = assignSMAttributesToNewOrSplitEntities(context, sheetMetalBodiesQuery, initialData, id);
 
         updateSheetMetalGeometry(context, id, {
                     "entities" : qUnion([toUpdate.modifiedEntities, unionEntityPersistantQuery]),

@@ -98,7 +98,8 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 
- /**
+/**
+ * @internal
  * implements heuristics for mirror feature
  */
 export function mirrorEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
