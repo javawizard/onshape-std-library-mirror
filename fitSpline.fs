@@ -1,19 +1,19 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "920.0");
+export import(path : "onshape/std/query.fs", version : "937.0");
 
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/manipulator.fs", version : "920.0");
-import(path : "onshape/std/math.fs", version : "920.0");
-import(path : "onshape/std/topologyUtils.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/manipulator.fs", version : "937.0");
+import(path : "onshape/std/math.fs", version : "937.0");
+import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/vector.fs", version : "937.0");
 
 /**
  * Feature performing an [opFitSpline]
@@ -210,6 +210,9 @@ function getEndCondition(context is Context, definition is map, points is array,
     }
     else if (size(directionEdges) == 1)
     {
+        // After V934, we will use fast parameterization ("arcLengthParameterization" : false), since this is what is returned from evDistance.
+        const useArcLengthParam = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V934_FIT_SPLINE_PARAM);
+
         var param = 0.0;
         var tangentDirection = undefined;
         try silent
@@ -221,7 +224,8 @@ function getEndCondition(context is Context, definition is map, points is array,
             param = result.sides[0].parameter;
             tangentDirection = evEdgeTangentLine(context, {
                             "edge" : directionEdges[0],
-                            "parameter" : param
+                            "parameter" : param,
+                            "arcLengthParameterization" : useArcLengthParam
                 }).direction;
 
             //creates better looking curves given the centripetal parameterization (and creates same geometry for legacy features)
@@ -240,7 +244,7 @@ function getEndCondition(context is Context, definition is map, points is array,
             const edgeCurvatureData = evEdgeCurvature(context, {
                     "edge" : directionEdges[0],
                     "parameter" : param,
-                    "curveLengthParameterization" : false
+                    "arcLengthParameterization" : useArcLengthParam
                 });
 
             //Using f'' = |f'|^2 * k * n

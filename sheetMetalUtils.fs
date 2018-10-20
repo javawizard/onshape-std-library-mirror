@@ -1,28 +1,28 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "920.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "920.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/coordSystem.fs", version : "920.0");
-import(path : "onshape/std/curveGeometry.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/math.fs", version : "920.0");
-import(path : "onshape/std/manipulator.fs", version : "920.0");
-import(path : "onshape/std/query.fs", version : "920.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "920.0");
-import(path : "onshape/std/string.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
-import(path : "onshape/std/tool.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
-import(path : "onshape/std/topologyUtils.fs", version : "920.0");
-import(path : "onshape/std/transform.fs", version : "920.0");
+import(path : "onshape/std/attributes.fs", version : "937.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/coordSystem.fs", version : "937.0");
+import(path : "onshape/std/curveGeometry.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/math.fs", version : "937.0");
+import(path : "onshape/std/manipulator.fs", version : "937.0");
+import(path : "onshape/std/query.fs", version : "937.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "937.0");
+import(path : "onshape/std/string.fs", version : "937.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
+import(path : "onshape/std/tool.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/vector.fs", version : "937.0");
+import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/transform.fs", version : "937.0");
 
 
 
@@ -401,7 +401,54 @@ function cylinderCanBeBend(context is Context, face is Query) returns boolean
 }
 
 /**
- * Compute angle between face normals at edge mid point.
+ * Calculate the largest angle between face normals of an edge that is the result of the intersection between two cylinders
+ * with the same radius.
+ */
+function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edge is Query, faces is array, cylinders is array) returns ValueWithUnits
+{
+    const ellipse = evCurveDefinition(context, {
+                "edge" : edge
+            });
+    const majorPoints = [
+            ellipse.coordSystem.origin - (ellipse.coordSystem.xAxis * ellipse.majorRadius),
+            ellipse.coordSystem.origin + (ellipse.coordSystem.xAxis * ellipse.majorRadius)
+        ];
+
+    if ((evaluateQuery(context, qContainsPoint(edge, majorPoints[0])) != []) || (evaluateQuery(context, qContainsPoint(edge, majorPoints[1])) != []))
+    {
+        // If the range of the ellipse captures either of the major points, we can use the analytical solution
+        return angleBetween(cylinders[0].coordSystem.zAxis, cylinders[1].coordSystem.zAxis);
+    }
+    else
+    {
+        // Otherwise the point on the ellipse furthest from the center will have the largest angle
+        const distanceResult = evDistance(context, {
+                    "side0" : ellipse.coordSystem.origin,
+                    "side1" : edge,
+                    "maximum" : true
+                });
+        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : distanceResult.sides[1].parameter });
+        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : distanceResult.sides[1].parameter });
+        return angleBetween(normal0, normal1);
+    }
+}
+
+/**
+ * Calculate angle between face normals at edge midpoint
+ */
+function edgeAngleAtMidpoint(context is Context, edge is Query, faces is array) returns ValueWithUnits
+{
+    var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : 0.5 });
+    var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : 0.5 });
+    return angleBetween(normal0, normal1);
+}
+
+/**
+ * @internal
+ * Compute angle between face normals at edge.  For most edges, use edge midpoint.  For special case of intersecting
+ * cylinders, find the maximal angle.
+ *
+ * TODO: For correctness (especially in sheet metal rip push-back), this should always calculate maximum edge angle.
  */
 export function edgeAngle(context is Context, edge is Query) returns ValueWithUnits
 {
@@ -410,11 +457,54 @@ export function edgeAngle(context is Context, edge is Query) returns ValueWithUn
     {
         throw "Expects 2-sided edge";
     }
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V684_SM_SWEPT_SUPPORT))
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V929_SM_ALIGN_UNROLLED))
     {
-        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : 0.5 });
-        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : 0.5 });
-        return angleBetween(normal0, normal1);
+        const edgeIsLinear = evaluateQuery(context, qGeometry(edge, GeometryType.LINE)) != [];
+        if (edgeIsLinear)
+        {
+            // Edge angle will be the same all the way along the edge (as long as both faces are developable surfaces).
+            return edgeAngleAtMidpoint(context, edge, faces);
+        }
+        // Edge is not linear, so at least one of faces is not planar.  If one of the faces is planar, and the other face
+        // is swept along the normal of that plane, the edge angle is the same all the way along the edge.
+        const planarFaces = evaluateQuery(context, qGeometry(qUnion(faces), GeometryType.PLANE));
+        if (planarFaces != [])
+        {
+            const planarFace = planarFaces[0];
+            const nonPlanarFace = (planarFace == faces[0]) ? faces[1] : faces[0];
+            const planeNormal = evPlane(context, { "face" : planarFace }).normal;
+            // In either case we return the edge angle at midpoint, but in the case where the non-planar face is not swept
+            // along the normal of the planar face, there may be a solution with a larger angle.
+            if (!sweptAlong(context, nonPlanarFace, planeNormal))
+            {
+                // TODO: handle more cases
+                @report("sheetMetalUtils.fs::edgeAngle(...): planar face intersecting face which is not swept along its normal.");
+            }
+            return edgeAngleAtMidpoint(context, edge, faces);
+        }
+        const cylindricalFaces = evaluateQuery(context, qGeometry(qUnion(faces), GeometryType.CYLINDER));
+        if (size(cylindricalFaces) == 2)
+        {
+            const cylinder0 = evSurfaceDefinition(context, { "face" : faces[0] });
+            const cylinder1 = evSurfaceDefinition(context, { "face" : faces[1] });
+            if (tolerantEquals(cylinder0.radius, cylinder1.radius))
+            {
+                return edgeAngleBetweenIntersectingEquivalentCylinders(context, edge, faces, [cylinder0, cylinder1]);
+            }
+            else
+            {
+                // TODO: handle more cases
+                @report("sheetMetalUtils.fs::edgeAngle(...): two intersecting cylindrical surfaces have different radii.");
+                return edgeAngleAtMidpoint(context, edge, faces);
+            }
+        }
+        // TODO: handle more cases
+        @report("sheetMetalUtils.fs::edgeAngle(...): neither face is planar and " ~ size(cylindricalFaces) ~ " face(s) is (are) cylindrical.");
+        return edgeAngleAtMidpoint(context, edge, faces);
+    }
+    else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V684_SM_SWEPT_SUPPORT))
+    {
+        return edgeAngleAtMidpoint(context, edge, faces);
     }
     else
     {
@@ -652,7 +742,7 @@ export const SM_BEND_RADIUS_BOUNDS =
  */
 export const SM_THICKNESS_BOUNDS =
 {
-    (meter)      : [1e-5, 0.0016, 500],
+    (meter)      : [2e-5, 0.0016, 500],
     (centimeter) : 0.16,
     (millimeter) : 1.6,
     (inch)       : 0.0625,
@@ -665,7 +755,7 @@ export const SM_THICKNESS_BOUNDS =
  */
 export const SM_RELIEF_SIZE_BOUNDS =
 {
-    (meter)      : [1e-5, 0.005 , 500],
+    (meter)      : [2e-5, 0.005 , 500],
     (centimeter) : 0.5,
     (millimeter) : 5,
     (inch)       : 0.25,

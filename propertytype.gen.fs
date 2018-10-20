@@ -1,4 +1,4 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,7 +7,7 @@ FeatureScript 920; /* Automatically generated version */
 
 /**
  * Defines the type of property that is being applied to a part.
- * @value CUSTOM : Not yet supported
+ * @value CUSTOM : Requires a custom property id to specify fully.
  */
 export enum PropertyType
 {

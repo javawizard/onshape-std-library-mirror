@@ -1,4 +1,4 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1693,14 +1693,26 @@ export enum ErrorStringEnum
     NO_INSTANCE_TO_REPLACE,
     /* Replacement part is not specified. */
     ASSEMBLY_REPLACE_NO_REPLACER,
-    /* Cannot replace parts in sub-assemblies */
+    /* Cannot replace sub-assemblies */
     CANNOT_REPLACE_IN_SUBASSEMBLIES,
     /* Could not meet tangency constraints at highlighted points. */
     FILL_SURFACE_G1_FAIL,
     /* All configuration parameters were not specified */
     ALL_CONFIGURATION_PARAMETERS_NOT_SPECIFIED,
     /* Replace operation should be initiated by selecting pattern seed. */
-    ASSEMBLY_REPLACE_INVALID_SEED_INSTANCE
+    ASSEMBLY_REPLACE_INVALID_SEED_INSTANCE,
+    /* Only instances of solid, not flattened parts may be replaced. */
+    ASSEMBLY_REPLACE_INVALID_SEED_TYPE,
+    /* Cannot replace suppressed instances. */
+    ASSEMBLY_REPLACE_SUPPRESSED_FORBIDDEN,
+    /* Name contains invalid characters. New display state not saved. */
+    DISPLAY_STATES_INVALID_NAME,
+    /* Name is already in use. New display state not saved. */
+    DISPLAY_STATES_DUPLICATE_NAME,
+    /* Update had no effect. The display state already reflects the current state of the assembly.  */
+    DISPLAY_STATES_UPDATE_HAD_NO_EFFECT,
+    /* Application of the display state had no effect.  */
+    DISPLAY_STATES_APPLY_HAD_NO_EFFECT
 }
 
 

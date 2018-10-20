@@ -1,18 +1,18 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/manipulator.fs", version : "920.0");
-import(path : "onshape/std/query.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/curveGeometry.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/manipulator.fs", version : "937.0");
+import(path : "onshape/std/query.fs", version : "937.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/vector.fs", version : "937.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.

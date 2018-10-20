@@ -1,14 +1,14 @@
-FeatureScript 920; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/coordSystem.fs", version : "920.0");
-import(path : "onshape/std/curveGeometry.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/manipulator.fs", version : "920.0");
-import(path : "onshape/std/math.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
+FeatureScript 937; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/coordSystem.fs", version : "937.0");
+import(path : "onshape/std/curveGeometry.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/manipulator.fs", version : "937.0");
+import(path : "onshape/std/math.fs", version : "937.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/vector.fs", version : "937.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -499,8 +499,8 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
         // edge that passes through the specified point but doesn't end there.
         const frames = evEdgeCurvatures(context, {
                     "edge" : edges,
-                    "parameters" : [0, 1],
-                    "curveLengthParameterization" : false });
+                    "parameters" : [0, 1]
+                });
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
         {
             frame = findClosestEndFrame(point, frames[0], frames[1]);

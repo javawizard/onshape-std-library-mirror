@@ -1,4 +1,4 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -37,32 +37,35 @@ FeatureScript 920; /* Automatically generated version */
  * are almost always unnecessary, since you already have the ability to place
  * the entities precisely where you intend them to be.
  *
- * Finally, the sketch is solved and added to the context by calling [skSolve],
- * which results in the new wire bodies and sketch regions being added to the
- * context. These new entities can be queried for and used in operations and
- * features.
+ * Finally, the sketch is solved and added to the context by calling [skSolve].
+ * As a result of [skSolve], all edges of the sketch will become `WIRE` bodies in the
+ * context. Any regions enclosed in the sketch will become `SURFACE` bodies in
+ * the context. Any vertices which are not edge endpoints (such as points created
+ * by [skPoint] or the center point of [skCircle]) will become `POINT` bodies
+ * in the context. These newly created bodies can be queried for and used in
+ * all subsequent operations and features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "920.0");
+export import(path : "onshape/std/query.fs", version : "937.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/mathUtils.fs", version : "920.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
-import(path : "onshape/std/tool.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/matrix.fs", version : "920.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/mathUtils.fs", version : "937.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "937.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
+import(path : "onshape/std/tool.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/matrix.fs", version : "937.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "920.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "920.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "920.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "920.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "920.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "920.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "937.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "937.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "937.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "937.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "937.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "937.0");
 
 /**
  * @internal

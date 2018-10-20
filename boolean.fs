@@ -1,30 +1,29 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "920.0");
-export import(path : "onshape/std/query.fs", version : "920.0");
-export import(path : "onshape/std/tool.fs", version : "920.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
+export import(path : "onshape/std/query.fs", version : "937.0");
+export import(path : "onshape/std/tool.fs", version : "937.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "920.0");
-import(path : "onshape/std/box.fs", version : "920.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "920.0");
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/math.fs", version : "920.0");
-import(path : "onshape/std/primitives.fs", version : "920.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "920.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "920.0");
-import(path : "onshape/std/string.fs", version : "920.0");
-import(path : "onshape/std/transform.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
+import(path : "onshape/std/attributes.fs", version : "937.0");
+import(path : "onshape/std/box.fs", version : "937.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/math.fs", version : "937.0");
+import(path : "onshape/std/primitives.fs", version : "937.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
+import(path : "onshape/std/string.fs", version : "937.0");
+import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/transform.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1260,43 +1259,4 @@ function canUseToolCopy(context is Context, face is Query, tool is Query, faceSw
     }
     return true;
 }
-
-function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData is box) returns boolean
-{
-    var sweptData = faceSweptData[][face];
-    if (sweptData == undefined)
-    {
-        const surface = evSurfaceDefinition(context, {
-                "face" : face
-        });
-        sweptData = {};
-        if (surface is Plane)
-            sweptData.planeNormal = surface.normal;
-        else if (surface is Cylinder)
-            sweptData.extrudeDirection = surface.coordSystem.zAxis;
-        else if (surface.surfaceType == SurfaceType.EXTRUDED)
-            sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
-
-        faceSweptData[][face] = sweptData;
-    }
-
-    if (sweptData.planeNormal != undefined)
-        return perpendicularVectors(sweptData.planeNormal, direction);
-    else if (sweptData.extrudeDirection != undefined)
-        return parallelVectors(sweptData.extrudeDirection, direction);
-
-    return false;
-}
-
-function extrudedSurfaceDirection(context is Context, face is Query)
-{
-    //EXTRUDED surface always has a curve along u direction and linear component along v direction
-    const planes = evFaceTangentPlanes(context, {
-            "face" : face,
-            "parameters" : [ vector(0.5, 0.), vector(0.5, 1) ]
-    });
-
-    return normalize(planes[1].origin - planes[0].origin);
-}
-
 

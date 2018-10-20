@@ -1,19 +1,19 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "920.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "920.0");
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/evaluate.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/math.fs", version : "920.0");
-import(path : "onshape/std/string.fs", version : "920.0");
-import(path : "onshape/std/topologyUtils.fs", version : "920.0");
-import(path : "onshape/std/transform.fs", version : "920.0");
-import(path : "onshape/std/valueBounds.fs", version : "920.0");
-import(path : "onshape/std/vector.fs", version : "920.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/evaluate.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/math.fs", version : "937.0");
+import(path : "onshape/std/string.fs", version : "937.0");
+import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/transform.fs", version : "937.0");
+import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/vector.fs", version : "937.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile

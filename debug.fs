@@ -1,19 +1,19 @@
-FeatureScript 920; /* Automatically generated version */
+FeatureScript 937; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "920.0");
-import(path : "onshape/std/containers.fs", version : "920.0");
-import(path : "onshape/std/coordSystem.fs", version : "920.0");
-import(path : "onshape/std/curveGeometry.fs", version : "920.0");
-import(path : "onshape/std/feature.fs", version : "920.0");
-import(path : "onshape/std/mathUtils.fs", version : "920.0");
-import(path : "onshape/std/primitives.fs", version : "920.0");
-import(path : "onshape/std/sketch.fs", version : "920.0");
-import(path : "onshape/std/string.fs", version : "920.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "920.0");
-import(path : "onshape/std/units.fs", version : "920.0");
+import(path : "onshape/std/box.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "937.0");
+import(path : "onshape/std/coordSystem.fs", version : "937.0");
+import(path : "onshape/std/curveGeometry.fs", version : "937.0");
+import(path : "onshape/std/feature.fs", version : "937.0");
+import(path : "onshape/std/mathUtils.fs", version : "937.0");
+import(path : "onshape/std/primitives.fs", version : "937.0");
+import(path : "onshape/std/sketch.fs", version : "937.0");
+import(path : "onshape/std/string.fs", version : "937.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
+import(path : "onshape/std/units.fs", version : "937.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
@@ -207,7 +207,7 @@ export function debug(context is Context, boundingBox is Box3d)
  */
 export function debug(context is Context, boundingBox is Box3d, cSys)
 {
-    print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.minCorner));
+    print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.maxCorner));
     if (cSys == undefined)
     {
         cSys = WORLD_COORD_SYSTEM;
