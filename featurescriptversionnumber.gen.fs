@@ -712,7 +712,16 @@ export enum FeatureScriptVersionNumber
     V917_SM_BOOLEAN_MATCH,
     V918_SM_BOOLEAN_TOOLS,
     V919_SPLIT_JOINT_TYPO,
-    V920_FS_ROUND_TO_PRECISION
+    V920_FS_ROUND_TO_PRECISION,
+    V929_SM_ALIGN_UNROLLED,
+    V930_SUBQUERY_STABILIZATION,
+    V931_MESH_BOOLEAN,
+    V932_SPLIT_PART_BOX,
+    V933_SM_MOVE_FACE_NO_MERGE,
+    V934_FIT_SPLINE_PARAM,
+    V935_FILL_TRACKING_FIXES,
+    V936_CUSTOM_PROPERTY_DOC_FIX,
+    V937_SM_RADIUS_BOUNDS_FIX
 }
 
 /**
@@ -723,6 +732,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V920_FS_ROUND_TO_PRECISION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V937_SM_RADIUS_BOUNDS_FIX;
 
 

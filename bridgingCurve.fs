@@ -499,8 +499,8 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
         // edge that passes through the specified point but doesn't end there.
         const frames = evEdgeCurvatures(context, {
                     "edge" : edges,
-                    "parameters" : [0, 1],
-                    "curveLengthParameterization" : false });
+                    "parameters" : [0, 1]
+                });
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
         {
             frame = findClosestEndFrame(point, frames[0], frames[1]);

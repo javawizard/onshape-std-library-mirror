@@ -210,6 +210,9 @@ function getEndCondition(context is Context, definition is map, points is array,
     }
     else if (size(directionEdges) == 1)
     {
+        // After V934, we will use fast parameterization ("arcLengthParameterization" : false), since this is what is returned from evDistance.
+        const useArcLengthParam = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V934_FIT_SPLINE_PARAM);
+
         var param = 0.0;
         var tangentDirection = undefined;
         try silent
@@ -221,7 +224,8 @@ function getEndCondition(context is Context, definition is map, points is array,
             param = result.sides[0].parameter;
             tangentDirection = evEdgeTangentLine(context, {
                             "edge" : directionEdges[0],
-                            "parameter" : param
+                            "parameter" : param,
+                            "arcLengthParameterization" : useArcLengthParam
                 }).direction;
 
             //creates better looking curves given the centripetal parameterization (and creates same geometry for legacy features)
@@ -240,7 +244,7 @@ function getEndCondition(context is Context, definition is map, points is array,
             const edgeCurvatureData = evEdgeCurvature(context, {
                     "edge" : directionEdges[0],
                     "parameter" : param,
-                    "curveLengthParameterization" : false
+                    "arcLengthParameterization" : useArcLengthParam
                 });
 
             //Using f'' = |f'|^2 * k * n

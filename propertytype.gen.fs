@@ -7,7 +7,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 /**
  * Defines the type of property that is being applied to a part.
- * @value CUSTOM : Not yet supported
+ * @value CUSTOM : Requires a custom property id to specify fully.
  */
 export enum PropertyType
 {

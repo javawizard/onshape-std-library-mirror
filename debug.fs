@@ -207,7 +207,7 @@ export function debug(context is Context, boundingBox is Box3d)
  */
 export function debug(context is Context, boundingBox is Box3d, cSys)
 {
-    print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.minCorner));
+    print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.maxCorner));
     if (cSys == undefined)
     {
         cSys = WORLD_COORD_SYSTEM;

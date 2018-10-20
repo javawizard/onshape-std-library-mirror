@@ -8,6 +8,8 @@ import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -170,5 +172,64 @@ export function groupEntitiesByBody(context is Context, entities is Query) retur
             bodyToEntities[body] = [entity];
     }
     return bodyToEntities;
+}
+
+/**
+ * Check whether a face is swept along a specified direction.
+ */
+export function sweptAlong(context is Context, face is Query, direction is Vector) returns boolean
+{
+    return sweptAlong(context, face, direction, undefined);
+}
+
+/**
+ * @internal
+ * [sweptAlong] with additional caching in the `faceSweptData`. `faceSweptData` should be a box of a map, or undefined
+ * if no caching is desired.
+ */
+export function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData) returns boolean
+{
+    var sweptData = undefined;
+    if (faceSweptData != undefined)
+    {
+        sweptData = faceSweptData[][face];
+    }
+
+    if (sweptData == undefined)
+    {
+        const surface = evSurfaceDefinition(context, {
+                "face" : face
+        });
+        sweptData = {};
+        if (surface is Plane)
+            sweptData.planeNormal = surface.normal;
+        else if (surface is Cylinder)
+            sweptData.extrudeDirection = surface.coordSystem.zAxis;
+        else if (surface.surfaceType == SurfaceType.EXTRUDED)
+            sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
+
+        if (faceSweptData != undefined)
+        {
+            faceSweptData[][face] = sweptData;
+        }
+    }
+
+    if (sweptData.planeNormal != undefined)
+        return perpendicularVectors(sweptData.planeNormal, direction);
+    else if (sweptData.extrudeDirection != undefined)
+        return parallelVectors(sweptData.extrudeDirection, direction);
+
+    return false;
+}
+
+function extrudedSurfaceDirection(context is Context, face is Query)
+{
+    //EXTRUDED surface always has a curve along u direction and linear component along v direction
+    const planes = evFaceTangentPlanes(context, {
+            "face" : face,
+            "parameters" : [ vector(0.5, 0.), vector(0.5, 1) ]
+    });
+
+    return normalize(planes[1].origin - planes[0].origin);
 }
 

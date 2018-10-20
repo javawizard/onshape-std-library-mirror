@@ -8,6 +8,7 @@ FeatureScript ✨; /* Automatically generated version */
  */
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 
 export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
@@ -22,10 +23,16 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  * will override the custom feature's part number for all configurations.
  * @param definition {{
  *      @field entities {Query} : The bodies to apply the property to.
- *      @field propertyType {PropertyType} : The property to set.  Currently `CUSTOM` is not supported.
+ *      @field propertyType {PropertyType} : The property to set.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
+ *      @field customPropertyId {string} : @optional
+ *          If `propertyType` is `CUSTOM`, this is the id of the custom property.  The property id is
+ *          available from the Properties page in the company settings.  Note that this call performs no
+ *          checks as to whether the custom property value is valid, so invalid property values may be
+ *          recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
- *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.
+ *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.  The value should be a string
+ *          for a `CUSTOM` property even if the property is of a non-string type.
  *          @eg `color(1, 0, 0)` to make the part red.
  * }}
  */
@@ -34,7 +41,6 @@ precondition
 {
     definition.entities is Query; // Bodies only for now
     definition.propertyType is PropertyType;
-    definition.propertyType != PropertyType.CUSTOM; // Not yet implemented
 
     if (definition.propertyType == PropertyType.APPEARANCE)
         definition.value is Color;
@@ -44,6 +50,13 @@ precondition
         definition.value is boolean;
     else
         definition.value is string;
+
+    if (definition.propertyType == PropertyType.CUSTOM)
+    {
+        definition.customPropertyId is string;
+        annotation { 'Message' : 'customPropertyId must be 24 hexadecimal digits' }
+        match(definition.customPropertyId, "[0-9a-fA-F]{24}").hasMatch; // mongo id
+    }
 }
 {
     @setProperty(context, definition);

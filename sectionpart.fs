@@ -24,6 +24,11 @@ import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
 
+// ATTENTION DEVELOPERS:
+// If you version a fix to functionality used in section view
+// Bump SBTAppElementViewVersionNumber and change BTPartStudioRenderingAgent.getSectionVersion()
+// to return new FS version For new views
+
 //Given a plane definition and a input part query will return a list of bodies that one needs to delete so that
 //the only bodies that remain are the ones split by the plane, unless none are split by the plane, in which case
 //the only bodies that remain are the ones behind the plane. Used by drawings to render a section view
@@ -31,8 +36,11 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 {
     var allBodies = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
 
+    const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
     // The bbox of the body in plane coordinate system with positive z being in front of the plane
-    const boxResult = evBox3d(context, { 'topology' : partToSection, 'cSys' : planeToCSys(plane) });
+    const boxResult = evBox3d(context, { 'topology' : partToSection,
+                                         'cSys' : planeToCSys(plane),
+                                         'tight' : useTightBox });
 
     // Body is fully behind the plane. Retain only the input body. no splitting needed
     if (boxResult.maxCorner[2] < TOLERANCE.zeroLength * meter)
@@ -71,9 +79,24 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
 
     const splitPartId = id + "splitPart";
     opSplitPart(context, splitPartId, splitPartDefinition);
+    const splitPartResultQ = qSplitBy(splitPartId, EntityType.BODY, true);
+    //Split plane might miss the body because the box was not sufficiently accurate
+    //check body location by midBox z coordinate
+    if (!useTightBox && evaluateQuery(context, splitPartResultQ) == [])
+    {
+        var midBox = 0.5 * (boxResult.minCorner[2] + boxResult.maxCorner[0]);
+        if (midBox < TOLERANCE.zeroLength * meter)
+        {
+            return qSubtraction(allBodies, partToSection);
+        }
+        else
+        {
+            return allBodies;
+        }
+    }
 
     // Split was success. Retain everything behind the plane
-    return qSubtraction(allBodies, qSplitBy(splitPartId, EntityType.BODY, true));
+    return qSubtraction(allBodies, splitPartResultQ);
 }
 
 //Section Part Feature
@@ -128,7 +151,10 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         const coordinateSystem = planeToCSys(sketchPlane);
 
         // The bbox of the bodies in sketchPlane coordinate system with positive x being in front of the plane
-        var boxResult = evBox3d(context, { 'topology' : definition.target, 'cSys' : coordinateSystem });
+        const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
+        var boxResult = evBox3d(context, { 'topology' : definition.target,
+                                           'cSys' : coordinateSystem,
+                                           'tight' : useTightBox });
 
         // Boolean remove will complain if we don't hit anything
         if (boxResult.maxCorner[0] < -TOLERANCE.zeroLength * meter)
@@ -273,7 +299,10 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
         {
             const jogPoints = jogPointsArray[0];
             const coordinateSystem = planeToCSys(sketchPlane);
-            var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
+            const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
+            var boxResult = evBox3d(context, { 'topology' : target,
+                                               'cSys' : coordinateSystem,
+                                               'tight' : useTightBox });
             boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
             // Shift the plane and box to the box's min corner
             var origin = toWorld(coordinateSystem, boxResult.minCorner);
@@ -311,7 +340,10 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
 function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array, offsetDistancesArray is array)
 {
     const coordinateSystem = planeToCSys(sketchPlane);
-    var boxResult = evBox3d(context, { 'topology' : target, 'cSys' : coordinateSystem });
+    const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
+    var boxResult = evBox3d(context, { 'topology' : target,
+                                       'cSys' : coordinateSystem,
+                                       'tight' : useTightBox });
     boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
     // Shift the plane and box to the box's min corner
     var defaultOrigin = toWorld(coordinateSystem, boxResult.minCorner);
@@ -329,6 +361,10 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         // Shift the plane and box to 'uptoPoint' if it is a broken-out section view and uptoPoint is specified
         var offset = 0 * meter;
+        if (uptoPoint == undefined) // set the max corner of the bbox as the default upto point
+        {
+            uptoPoint = toWorld(coordinateSystem, boxResult.maxCorner);
+        }
         if (uptoPoint != undefined)
         {
             const dir = uptoPoint - defaultOrigin;

@@ -21,10 +21,9 @@ import(path : "onshape/std/primitives.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
-import(path : "onshape/std/vector.fs", version : "✨");
-import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1260,43 +1259,4 @@ function canUseToolCopy(context is Context, face is Query, tool is Query, faceSw
     }
     return true;
 }
-
-function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData is box) returns boolean
-{
-    var sweptData = faceSweptData[][face];
-    if (sweptData == undefined)
-    {
-        const surface = evSurfaceDefinition(context, {
-                "face" : face
-        });
-        sweptData = {};
-        if (surface is Plane)
-            sweptData.planeNormal = surface.normal;
-        else if (surface is Cylinder)
-            sweptData.extrudeDirection = surface.coordSystem.zAxis;
-        else if (surface.surfaceType == SurfaceType.EXTRUDED)
-            sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
-
-        faceSweptData[][face] = sweptData;
-    }
-
-    if (sweptData.planeNormal != undefined)
-        return perpendicularVectors(sweptData.planeNormal, direction);
-    else if (sweptData.extrudeDirection != undefined)
-        return parallelVectors(sweptData.extrudeDirection, direction);
-
-    return false;
-}
-
-function extrudedSurfaceDirection(context is Context, face is Query)
-{
-    //EXTRUDED surface always has a curve along u direction and linear component along v direction
-    const planes = evFaceTangentPlanes(context, {
-            "face" : face,
-            "parameters" : [ vector(0.5, 0.), vector(0.5, 1) ]
-    });
-
-    return normalize(planes[1].origin - planes[0].origin);
-}
-
 

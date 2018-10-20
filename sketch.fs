@@ -37,10 +37,13 @@ FeatureScript ✨; /* Automatically generated version */
  * are almost always unnecessary, since you already have the ability to place
  * the entities precisely where you intend them to be.
  *
- * Finally, the sketch is solved and added to the context by calling [skSolve],
- * which results in the new wire bodies and sketch regions being added to the
- * context. These new entities can be queried for and used in operations and
- * features.
+ * Finally, the sketch is solved and added to the context by calling [skSolve].
+ * As a result of [skSolve], all edges of the sketch will become `WIRE` bodies in the
+ * context. Any regions enclosed in the sketch will become `SURFACE` bodies in
+ * the context. Any vertices which are not edge endpoints (such as points created
+ * by [skPoint] or the center point of [skCircle]) will become `POINT` bodies
+ * in the context. These newly created bodies can be queried for and used in
+ * all subsequent operations and features.
  */
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "✨");
