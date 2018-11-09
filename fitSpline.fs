@@ -1,19 +1,19 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "937.0");
+export import(path : "onshape/std/query.fs", version : "951.0");
 
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/manipulator.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/manipulator.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
 
 /**
  * Feature performing an [opFitSpline]
@@ -219,7 +219,8 @@ function getEndCondition(context is Context, definition is map, points is array,
         {
             var result = evDistance(context, {
                     "side0" : directionEdges[0],
-                    "side1" : points[pointIndex]
+                    "side1" : points[pointIndex],
+                    "arcLengthParameterization" : false
                 });
             param = result.sides[0].parameter;
             tangentDirection = evEdgeTangentLine(context, {

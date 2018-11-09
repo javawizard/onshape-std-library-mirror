@@ -1,4 +1,4 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -46,26 +46,26 @@ FeatureScript 937; /* Automatically generated version */
  * all subsequent operations and features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "937.0");
+export import(path : "onshape/std/query.fs", version : "951.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/mathUtils.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/tool.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
-import(path : "onshape/std/matrix.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/mathUtils.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/tool.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/matrix.fs", version : "951.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "937.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "937.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "937.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "937.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "937.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "937.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "951.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "951.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "951.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "951.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "951.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "951.0");
 
 /**
  * @internal
@@ -426,8 +426,9 @@ precondition
  * @param ellipseId : @autocomplete `"ellipse1"`
  * @param value {{
  *      @field center {Vector} : @eg `vector(0, 0) * inch`
- *      @field majorRadius {Vector} : @eg `2 * inch`
- *      @field minorRadius {Vector} : @eg `1 * inch`
+ *      @field majorRadius {ValueWithUnits} : @eg `2 * inch`
+ *      @field minorRadius {ValueWithUnits} : @eg `1 * inch`
+ *      @field majorAxis {Vector} : @optional A unitless 2D direction, specifying the orientation of the major axis
  *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  * @return {{
@@ -438,7 +439,7 @@ export function skEllipse(sketch is Sketch, ellipseId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.majorAxis is undefined || is2dDirection(value.majorAxis) || is2dPoint(value.majorAxis);
     value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
     value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
@@ -486,7 +487,7 @@ precondition
  *      @field center {Vector} :
  *              @eg `vector(0, 0) * inch`
  *      @field majorAxis {Vector} : The direction, in sketch coordinates, in which the major axis of the ellipse lies.
- *              @eg `vector(1, 0) * inch`
+ *              @eg `normalize(vector(1, 1))`
  *      @field minorRadius {ValueWithUnits} : A non-negative value with length units.
  *              @eg `1 * inch`
  *      @field majorRadius {ValueWithUnits} : A non-negative value with length units. Does not need to be greater than
@@ -507,7 +508,7 @@ export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.majorAxis is undefined || is2dDirection(value.majorAxis) || is2dPoint(value.majorAxis);
     value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
     value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.startParameter is undefined || value.startParameter is number;

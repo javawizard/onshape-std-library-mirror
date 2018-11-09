@@ -1,29 +1,29 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
-export import(path : "onshape/std/query.fs", version : "937.0");
-export import(path : "onshape/std/tool.fs", version : "937.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "951.0");
+export import(path : "onshape/std/query.fs", version : "951.0");
+export import(path : "onshape/std/tool.fs", version : "951.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/box.fs", version : "937.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/primitives.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
-import(path : "onshape/std/string.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/transform.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/box.fs", version : "951.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/primitives.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
+import(path : "onshape/std/string.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/transform.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1037,8 +1037,27 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, face is 
     return toolsOut;
 }
 
-function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query) returns boolean
+function performOneSheetMetalSurfaceBoolean(context is Context, topLevelId is Id, id is Id, definition is map, handleErrors is boolean)
 {
+    try(opBoolean(context, id, definition));
+    if (handleErrors)
+    {
+        if (id != topLevelId)
+        {
+            processSubfeatureStatus(context, topLevelId, {"subfeatureId" : id, "propagateErrorDisplay" : true});
+        }
+        const error = getFeatureError(context, topLevelId);
+        if (error != undefined)
+        {
+            throw error;
+        }
+    }
+}
+
+function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query)
+{
+    const handleErrors = isAtVersionOrLater(context, FeatureScriptVersionNumber.V951_FAIL_SURFACE_BOOLEAN);
+
     definition.allowSheets = true;
     definition.targets = targets;
     definition.keepTools = false;
@@ -1046,15 +1065,14 @@ function performSheetMetalSurfaceBoolean(context is Context, id is Id, definitio
     if (size(sheetTools) > 0)
     {
         definition.tools = qUnion(sheetTools);
-        try(opBoolean(context, id, definition));
+        performOneSheetMetalSurfaceBoolean(context, id, id, definition, handleErrors);
     }
     const solidTools = evaluateQuery(context, qBodyType(tools, BodyType.SOLID));
     if (size(solidTools) > 0)
     {
         definition.tools = qUnion(solidTools);
-        try(opBoolean(context, id + "solid", definition));
+        performOneSheetMetalSurfaceBoolean(context, id, id + "solid", definition, handleErrors);
     }
-    return true;
 }
 
 function clashBoxes(a is Box3d, b is Box3d) returns boolean {
@@ -1195,30 +1213,26 @@ function statusIsNoOp(context is Context, id is Id) returns boolean
         info == ErrorStringEnum.BOOLEAN_UNION_NO_OP;
 }
 
-function canUseToolCopy(context is Context, face is Query, tool is Query, faceSweptData is box) returns boolean
+function canUseToolCopy(context is Context, smFace is Query, tool is Query, faceSweptData is box) returns boolean
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V918_SM_BOOLEAN_TOOLS))
     {
         return false;
     }
-    var faceData = faceSweptData[][face];
-    if (faceData == undefined)
+    const faceData = getFaceSweptData(context, smFace, faceSweptData);
+    const isPlanarFace = (faceData.planeNormal != undefined);
+    if (!isPlanarFace)
     {
-        const facePlane = try silent(evPlane(context, {
-                "face" : face
-                }));
-        if (facePlane == undefined)
-        {
-            throw "Face is expected to be plane."; // A user should never see this exception
-        }
-        faceData = {"planeNormal" : facePlane.normal};
-        faceSweptData[][face] = faceData;
+        throw "Face is expected to be plane."; // A user should never see this exception
     }
 
-
+    //BEL-105231. Starting V948 we check that tool clashes with definition face and both associated model faces.
+    const collideWithModelFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER);
+    const targetFaces = (collideWithModelFaces) ? addAssociatedFaces(context, smFace) : [smFace];
+    const targetQ = qUnion(targetFaces);
     const collisionData = evCollision(context, {
             "tools" : qOwnedByBody(tool, EntityType.FACE),
-            "targets" : face
+            "targets" : targetQ
         });
 
     if (collisionData == [])
@@ -1227,12 +1241,30 @@ function canUseToolCopy(context is Context, face is Query, tool is Query, faceSw
         return false;
     }
 
+    // facesToCheck collects intersecting faces in tools that either INTERFERE or ABUT target faces or are adjacent to abutting edges
     var facesToCheck = [];
+    // intersectingFacesToTargetFaces collects target faces with which intersecting tool faces collide,
+    // key is transient id of an intersecting tool face, value is a map of target face transient id to true ( used in lieu of set)
+    var intersectingFacesToTargetFaces = {};
     for (var collision in collisionData)
     {
+        // collision.target is either one of targetFaces or an edge adjacent to them - recover corresponding target face.
+        const targetFaceAdjacentToEdgeInCollisionQ = qIntersection([qEdgeAdjacent(qEntityFilter(collision.target, EntityType.EDGE), EntityType.FACE), targetQ]);
+        const targetFaceQ = qUnion([qEntityFilter(collision.target, EntityType.FACE), targetFaceAdjacentToEdgeInCollisionQ]);
+        const targetFaces = evaluateQuery(context, targetFaceQ);
+        if (size(targetFaces) != 1)
+        {
+            return false;
+        }
+
         const collisionType = collision['type'];
         if (collisionType == ClashType.TARGET_IN_TOOL)
-            return true;
+        {
+            if (collideWithModelFaces) // having more target faces we have to keep checking
+                continue;
+            else
+                return true;
+        }
         if (collisionType == ClashType.TOOL_IN_TARGET)
             continue;
 
@@ -1247,16 +1279,43 @@ function canUseToolCopy(context is Context, face is Query, tool is Query, faceSw
             const parallelToPlaneQ = qParallelPlanes(edgeAdjacentQ, faceData.planeNormal);
             faceToCheckQ = qUnion([qEntityFilter(collision.tool, EntityType.FACE), qSubtraction(edgeAdjacentQ, parallelToPlaneQ)]);
         }
-        const faces = evaluateQuery(context, faceToCheckQ);
-        if (faces == [])
+        const toolFaces = evaluateQuery(context, faceToCheckQ);
+        if (toolFaces == [])
             continue;
         facesToCheck = append(facesToCheck, faceToCheckQ);
+        for (var toolFace in toolFaces)
+        {
+            if (intersectingFacesToTargetFaces[toolFace] == undefined)
+            {
+                intersectingFacesToTargetFaces[toolFace] = {targetFaces[0] : true};
+            }
+            else
+            {
+                intersectingFacesToTargetFaces[toolFace][targetFaces[0]] = true;
+            }
+        }
     }
+    // faceToCheck has to collide with all target faces and be orthogonal to smFace plane
     for (var faceToCheck in evaluateQuery(context, qUnion(facesToCheck)))
     {
+        for (var targetFace in targetFaces)
+        {
+            if (intersectingFacesToTargetFaces[faceToCheck][targetFace] != true)
+            {
+                return false;
+            }
+        }
         if (!sweptAlong(context, faceToCheck, faceData.planeNormal, faceSweptData))
+        {
             return false;
+        }
     }
     return true;
+}
+
+function addAssociatedFaces(context is Context, face is Query) returns array
+{
+    const associatedFacesQ = getSMCorrespondingInPart(context, face, EntityType.FACE);
+    return append(evaluateQuery(context, associatedFacesQ), face);
 }
 

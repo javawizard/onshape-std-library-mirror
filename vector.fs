@@ -1,14 +1,14 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/units.fs", version : "937.0");
-import(path : "onshape/std/matrix.fs", version : "937.0");
-import(path : "onshape/std/string.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/units.fs", version : "951.0");
+import(path : "onshape/std/matrix.fs", version : "951.0");
+import(path : "onshape/std/string.fs", version : "951.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -96,6 +96,17 @@ export predicate is2dPointVector(value)
    value is array;
    for (var point in value)
         is2dPoint(point);
+}
+
+/**
+ * True for a unitless 2D `Vector` that is normalized (i.e. has length `1`)
+ * @ex `vector(0, 1)`
+ */
+export predicate is2dDirection(value)
+{
+    isUnitlessVector(value);
+    @size(value) == 2;
+    abs(squaredNorm(value) - 1) < TOLERANCE.zeroAngle;
 }
 
 /**

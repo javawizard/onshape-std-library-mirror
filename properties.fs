@@ -1,4 +1,4 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,12 +6,12 @@ FeatureScript 937; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "937.0");
-import(path : "onshape/std/query.fs", version : "937.0");
-import(path : "onshape/std/string.fs", version : "937.0");
-import(path : "onshape/std/units.fs", version : "937.0");
+import(path : "onshape/std/context.fs", version : "951.0");
+import(path : "onshape/std/query.fs", version : "951.0");
+import(path : "onshape/std/string.fs", version : "951.0");
+import(path : "onshape/std/units.fs", version : "951.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "937.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "951.0");
 
 /**
  * Sets a property on a set of bodies.  The allowed properties are listed in [PropertyType].
@@ -25,11 +25,11 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "937.0");
  *      @field entities {Query} : The bodies to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
- *      @field customPropertyId {string} : @optional
- *          If `propertyType` is `CUSTOM`, this is the id of the custom property.  The property id is
- *          available from the Properties page in the company settings.  Note that this call performs no
- *          checks as to whether the custom property value is valid, so invalid property values may be
- *          recorded.
+ *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
+ *          The id of the custom property.  The property id is available from your
+ *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          Note that this call performs no checks as to whether the custom property value is valid, so
+ *          invalid property values may be recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
  *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.  The value should be a string
  *          for a `CUSTOM` property even if the property is of a non-string type.

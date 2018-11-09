@@ -1,20 +1,20 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "937.0");
-export import(path : "onshape/std/query.fs", version : "937.0");
-export import(path : "onshape/std/units.fs", version : "937.0");
+export import(path : "onshape/std/context.fs", version : "951.0");
+export import(path : "onshape/std/query.fs", version : "951.0");
+export import(path : "onshape/std/units.fs", version : "951.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/mathUtils.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/box.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/mathUtils.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -482,7 +482,13 @@ function computeDistanceHeuristic(context is Context, pathGeometry, referenceGeo
     var boundingBox  = evBox3d(context, { "topology" : referenceGeometry, "tight" : true });
     var center = box3dCenter(boundingBox);
 
-    var distanceResult = evDistance(context, { "side0" : pathGeometry, "side1" : center});
+    // Before V947 we were assuming that evDistance returned arc length parameters when it was not
+    const arcLengthForEvDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V947_EVDISTANCE_ARCLENGTH);
+    var distanceResult = evDistance(context, {
+                "side0" : pathGeometry,
+                "side1" : center,
+                "arcLengthParameterization" : arcLengthForEvDistance
+            });
 
     var pathDistanceInformation = {
                 "distance" : distanceResult.distance,

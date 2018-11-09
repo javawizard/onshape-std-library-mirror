@@ -1,24 +1,24 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/boolean.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/curveGeometry.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/holeAttribute.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/patternCommon.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/transform.fs", version : "937.0");
-import(path : "onshape/std/units.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/boolean.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/holeAttribute.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/patternCommon.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/transform.fs", version : "951.0");
+import(path : "onshape/std/units.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
 
 /**
  * @internal
@@ -941,7 +941,8 @@ function getEdgeWithinThickness(context is Context, args is map)
 
             var distanceResult = evDistance(context, {
                     "side0" : args.instanceEdge,
-                    "side1" : edgeAndLine.edge
+                    "side1" : edgeAndLine.edge,
+                    "arcLengthParameterization" : false
             });
             if (distanceResult.distance < TOLERANCE.zeroLength * meter)
             {

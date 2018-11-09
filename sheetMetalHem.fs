@@ -1,22 +1,26 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
-import(path : "onshape/std/sketch.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "951.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/context.fs", version : "951.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/error.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/query.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
+import(path : "onshape/std/sketch.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
 
 /**
  * Specifies the type of alignment of the hem
@@ -42,10 +46,10 @@ export enum SMHemAlignment
  */
 export enum SMHemType
 {
-    annotation { "Name" : "Rolled" }
-    ROLLED,
     annotation { "Name" : "Straight" }
     STRAIGHT,
+    annotation { "Name" : "Rolled" }
+    ROLLED,
     annotation { "Name" : "Tear drop" }
     TEAR_DROP
 }
@@ -56,7 +60,7 @@ export enum SMHemType
  */
 export const SM_HEM_ANGLE_BOUNDS =
 {
-    (degree) : [0.1, 270, 359.9]
+    (degree) : [180, 270, 359.9]
 } as AngleBoundSpec;
 
 /**
@@ -108,32 +112,28 @@ export const sheetMetalHem = defineSheetMetalFeature(function(context is Context
         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
         definition.oppositeDirection is boolean;
 
-        if (definition.hemType == SMHemType.ROLLED || definition.hemType == SMHemType.TEAR_DROP)
+        if (definition.hemType == SMHemType.STRAIGHT)
+        {
+            annotation { "Name" : "Flattened", "Default" : true, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            definition.useMinimalGapForStraight is boolean;
+        }
+
+        if (definition.hemType == SMHemType.ROLLED || definition.hemType == SMHemType.TEAR_DROP
+            || (definition.hemType == SMHemType.STRAIGHT && !definition.useMinimalGapForStraight))
         {
             annotation { "Name" : "Inner radius" }
             isLength(definition.innerRadius, SM_HEM_INNER_RADIUS_BOUNDS);
         }
 
-        if (definition.hemType == SMHemType.STRAIGHT || definition.hemType == SMHemType.TEAR_DROP)
+        if (definition.hemType == SMHemType.TEAR_DROP)
         {
-            // TODO: Ask UX if REMEMBER_PREVIOUS_VALUE is appropriate when sharing this variable between tip gap and straight gap
             annotation { "Name" : "Use minimal gap", "Default" : true, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
-            definition.useMinimalGap is boolean;
+            definition.useMinimalGapForTipGap is boolean;
 
-            if (!definition.useMinimalGap)
+            if (!definition.useMinimalGapForTipGap)
             {
-                // innerDiameter and tipGap are both presented as "Gap", but are kept separately so that innerDiameter can be
-                // kept in sync with innerRadius. See hemEditLogic.
-                if (definition.hemType == SMHemType.STRAIGHT)
-                {
-                    annotation { "Name" : "Gap" }
-                    isLength(definition.innerDiameter, SM_HEM_GAP_BOUNDS);
-                }
-                else if (definition.hemType == SMHemType.TEAR_DROP)
-                {
-                    annotation { "Name" : "Gap" }
-                    isLength(definition.tipGap, SM_HEM_INNER_RADIUS_BOUNDS);
-                }
+                annotation { "Name" : "Gap" }
+                isLength(definition.tipGap, SM_HEM_INNER_RADIUS_BOUNDS);
             }
         }
 
@@ -210,7 +210,6 @@ export const sheetMetalHem = defineSheetMetalFeature(function(context is Context
                     "entities" : toUpdate.modifiedEntities,
                     "deletedAttributes" : toUpdate.deletedAttributes
                 });
-
     }, {});
 
 /**
@@ -224,36 +223,54 @@ function addHemsToSheetBody(context is Context, topLevelId is Id, edges is Query
     const robustBodyQuery = qUnion([body, startTracking(context, body)]);
 
     edges = changeUnderlyingSheetForAlignment(context, topLevelId, bodyId + "alignment", edges, modelParameters, definition);
+    const edgeArray = evaluateQuery(context, edges);
 
     var edgeToHemData = {};
-    for (var edge in evaluateQuery(context, edges))
+    for (var edge in edgeArray)
     {
         edgeToHemData[edge] = getHemData(context, edge);
     }
 
     var edgeIndex = 0;
+    for (var edge in edgeArray)
+    {
+        var sketchId = bodyId + "sketch" + unstableIdComponent("edge" ~ edgeIndex);
+        edgeIndex += 1;
+        setExternalDisambiguation(context, sketchId, edge);
+
+        const sketchHemProfileReturn = sketchHemProfile(context, sketchId, edgeToHemData[edge], modelParameters, definition);
+        edgeToHemData[edge] = augmentHemDataWithSketchInformation(edgeToHemData[edge], sketchId, sketchHemProfileReturn);
+    }
+
+    edgeIndex = 0;
     var matches = [];
     var bodiesToBoolean = [];
+    const sharedVertexToBoundingPlane = new box({});
     for (var edge in evaluateQuery(context, edges))
     {
+        // TODO: Investiage whether this disambiguation is useful, and successfully disambiguates the planes
         var edgeId = bodyId + unstableIdComponent("edge" ~ edgeIndex);
         edgeIndex += 1;
         setExternalDisambiguation(context, edgeId, edge);
 
-        const sketchId = edgeId + "sketch";
-        const coincidentVertexTracking = sketchHemProfile(context, sketchId, edgeToHemData[edge], modelParameters, definition);
+        const hemData = edgeToHemData[edge];
 
         const planeId = edgeId + "plane";
-        const boundingPlanes = constructHemBoundingPlanes(context, planeId, edgeToHemData[edge]);
+        const boundingPlanes = constructHemBoundingPlanes(context, planeId, edge, edgeToHemData, definition,
+                modelParameters, sharedVertexToBoundingPlane);
 
         const hemSheetId = edgeId + "hemSheet";
-        constructHemSheet(context, hemSheetId, sketchId, boundingPlanes, edgeToHemData[edge]);
+        const bodies = constructHemSheet(context, hemSheetId, hemData.profileSketchId, hemData.arcEdge, boundingPlanes, edgeToHemData[edge]);
 
-        const coincidentVertexResult = evaluateQuery(context, coincidentVertexTracking);
+        const coincidentVertexResult = evaluateQuery(context, hemData.coincidentVertexTracking);
         if (size(coincidentVertexResult) != 1)
             throw "Hem extrusion did not result in expected edge"; // TODO: Maybe replace with generic ErrorStringEnum? This should not be hit, but if it is we should translate it.
         const coincidentEdge = coincidentVertexResult[0];
-        annotateHemSheet(context, topLevelId, coincidentEdge, qCreatedBy(hemSheetId, EntityType.BODY), attributeIdCounter);
+        const arcEndResult = evaluateQuery(context, hemData.arcEndTracking);
+        if (size(arcEndResult) != 1)
+            throw "Hem extrusion did not result in expected edge";
+        const arcEndEdge = arcEndResult[0];
+        annotateHemSheet(context, topLevelId, coincidentEdge, arcEndEdge, qCreatedBy(hemSheetId, EntityType.BODY), attributeIdCounter);
 
         matches = append(matches, {
                     "topology1" : edge,
@@ -262,7 +279,7 @@ function addHemsToSheetBody(context is Context, topLevelId is Id, edges is Query
                 });
 
         bodiesToBoolean = append(bodiesToBoolean, qCreatedBy(hemSheetId, EntityType.BODY));
-        bodiesToDelete[] = append(bodiesToDelete[], qUnion([qCreatedBy(sketchId, EntityType.BODY), qCreatedBy(planeId, EntityType.BODY)]));
+        bodiesToDelete[] = append(bodiesToDelete[], qUnion([qCreatedBy(hemData.profileSketchId, EntityType.BODY), qCreatedBy(planeId, EntityType.BODY)]));
     }
 
     const booleanId = bodyId + "boolean";
@@ -285,31 +302,17 @@ function addHemsToSheetBody(context is Context, topLevelId is Id, edges is Query
     }
 }
 
-function getInnerRadius(modelParameters is map, definition is map) returns ValueWithUnits
-{
-    if (definition.hemType == SMHemType.ROLLED || definition.hemType == SMHemType.TEAR_DROP)
-    {
-        return definition.innerRadius;
-    }
-    else if (definition.hemType == SMHemType.STRAIGHT)
-    {
-        var innerDiameter = definition.useMinimalGap ? modelParameters.minimalClearance : definition.innerDiameter;
-        return innerDiameter / 2;
-    }
-    else
-    {
-        // This cannot be hit by a UI user.
-        throwHemTypeError(definition.hemType);
-    }
-}
+// ---------- Hem data ----------
 
 /**
  * @return {{
- *      @field adjacentFace {Query} : the face adjacent to the given edge
- *      @field edgeTangentLineAtStart {Line}  : the tangent line at the start of the edge (with edge orientation determined by face)
- *      @field edgeTangentLineAtCenter {Line} : the tangent line at the center of the edge (with edge orientation determined by face)
- *      @field edgeTangentLineAtEnd {Line}    : the tangent line at the end of the edge (with edge orientation determined by face)
+ *      @field edgeDirection {Vector} : the direction of the edge (with edge orientation determined by the adjacent face)
+ *      @field edgeStartPosition {Line}  : the position of the start of the edge (with edge orientation determined by the adjacent face)
+ *      @field edgeCenterPosition {Line} : the position of the center of the edge (with edge orientation determined by the adjacent face)
+ *      @field edgeEndPosition {Line}    : the position of the end of the edge (with edge orientation determined by the adjacent face)
  *      @field outFromFace {Vector} : the direction that is tangent to the face and pointing directly away from the face, evaluated at the center of the edge.
+ *      @field startVertex {Query} : the start vertex of the edge (with edge orientation determined by the adjacent face)
+ *      @field endVertex {Query}   : the end vertex of the edge (with edge orientation determined by the adjacent face)
  * }}
  */
 function getHemData(context is Context, edge is Query) returns map
@@ -324,7 +327,10 @@ function getHemData(context is Context, edge is Query) returns map
                 "parameters" : [0, 0.5, 1],
                 "face" : face
             });
+    const edgeTangentLineAtStart = edgeTangentLines[0];
     const edgeTangentLineAtCenter = edgeTangentLines[1];
+    const edgeTangentLineAtEnd = edgeTangentLines[2];
+
     const faceTangentPlaneAtCenter = evFaceTangentPlaneAtEdge(context, {
                 "edge" : edge,
                 "face" : face,
@@ -333,14 +339,38 @@ function getHemData(context is Context, edge is Query) returns map
             });
     const outFromFace = cross(edgeTangentLineAtCenter.direction, faceTangentPlaneAtCenter.normal);
 
+    const bothVertices = qVertexAdjacent(edge, EntityType.VERTEX);
+    const startResult = evaluateQuery(context, qClosestTo(bothVertices, edgeTangentLineAtStart.origin));
+    if (size(startResult) != 1)
+        throw "Unexpected number of vertices";
+    const startVertex = startResult[0];
+    const endResult = evaluateQuery(context, qClosestTo(bothVertices, edgeTangentLineAtEnd.origin));
+    if (size(endResult) != 1)
+        throw "Unexpected number of vertices";
+    const endVertex = endResult[0];
+
     return {
-            "adjacentFace" : face,
-            "edgeTangentLineAtStart" : edgeTangentLines[0],
-            "edgeTangentLineAtCenter" : edgeTangentLineAtCenter,
-            "edgeTangentLineAtEnd" : edgeTangentLines[2],
-            "outFromFace" : outFromFace
+            "edgeDirection" : edgeTangentLineAtCenter.direction,
+            "edgeStartPosition" : edgeTangentLineAtStart.origin,
+            "edgeCenterPosition" : edgeTangentLineAtCenter.origin,
+            "edgeEndPosition" : edgeTangentLineAtEnd.origin,
+            "outFromFace" : outFromFace,
+            "startVertex" : startVertex,
+            "endVertex" : endVertex
         };
 }
+
+/**
+ * Adds the profile sketch id and data returned from sketchHemProfile(...) into the given hemData.
+ */
+function augmentHemDataWithSketchInformation(hemData is map, profileSketchId is Id, sketchHemProfileReturn is map) returns map
+{
+    hemData.profileSketchId = profileSketchId;
+    hemData = mergeMaps(hemData, sketchHemProfileReturn);
+    return hemData;
+}
+
+// ---------- Hem alignment ----------
 
 function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id, id is Id, hemEdges is Query, modelParameters is map,
         definition is map) returns Query
@@ -374,6 +404,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     const edgeChangeId = id + "edgeChange";
     try
     {
+        // TODO: Try to do this more precisely for rolled surfaces if possible, using a detached fillet.
         sheetMetalEdgeChangeCall(context, edgeChangeId, hemEdges, {
                     "edgeChangeOptions" : edgeChangeOptions
                 });
@@ -387,51 +418,53 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     return resultEdges;
 }
 
+// ---------- Hem sketch ----------
+
 /**
  * Sketch the hem profile for a given edge. `hemData` should be in the format outputted by `getHemData`.
- * Return a tracking query for the point on the sketch that is coincident with the hem edge.
+ * @returns {{
+ *     @field coincidentVertexTracking {Query} : a tracking query for the point on the sketch that is coincident with the hem edge.
+ *     @field arcEndTracking {Query} : a tracking query for the end of the initial arc.
+ *     @field arcEndLine {Vector} : a line whose origin is the position of the end of the initial arc, and whose direction is the tangent line at the end of the initial arc.
+ *     @field arcEdge {Query} : the arc of the hem profile.
+ * }}
  */
-function sketchHemProfile(context is Context, id is Id, hemData is map, modelParameters is map, definition is map) returns Query
+function sketchHemProfile(context is Context, id is Id, hemData is map, modelParameters is map, definition is map) returns map
 {
     // Construct the sketch such that the origin is at the center of the edge, +X is tangent to the face and pointing away from the face,
     // and +Y is the direction of back thickness of the sheet (a.k.a. the anti-normal of the face).
-    const sketchPlane = plane(hemData.edgeTangentLineAtCenter.origin, hemData.edgeTangentLineAtCenter.direction, hemData.outFromFace);
+    const sketchPlane = plane(hemData.edgeCenterPosition, hemData.edgeDirection, hemData.outFromFace);
     const sketch = newSketchOnPlane(context, id, {
                 "sketchPlane" : sketchPlane
             });
     // Opposite direction should wrap around the front of the sheet.  Non-opposite direction should wrap around the back of the sheet.
-    const wrapAroundFront = definition.oppositeDirection;
+    const wrapAroundFront = getWrapAroundFront(definition);
 
     const innerRadius = getInnerRadius(modelParameters, definition);
 
-    var coincidentPointId;
+    var arcInfo;
     if (definition.hemType == SMHemType.ROLLED)
     {
-        const arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, definition.angle);
-        coincidentPointId = arcInfo.arcStartId;
+        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, definition.angle);
     }
     else if (definition.hemType == SMHemType.TEAR_DROP)
     {
-        const tipGap = definition.useMinimalGap ? modelParameters.minimalClearance : definition.tipGap;
+        const tipGap = definition.useMinimalGapForTipGap ? modelParameters.minimalClearance : definition.tipGap;
 
         if (definition.length < 2 * (innerRadius + modelParameters.frontThickness + modelParameters.backThickness) + (TOLERANCE.zeroLength * meter))
             throw "hem too short for teardrop"; // TODO: Error message
         if (tipGap > 2 * innerRadius - TOLERANCE.zeroLength * meter)
             throw "Tip gap too large for teardrop"; // TODO: Error message
 
-        const arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
+        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
         const lineInfo = sketchHorizontalLineAfterInitialArc(sketch, modelParameters, definition.length, arcInfo.arcEnd, innerRadius);
         const helperCapInfo = sketchTearDropHelperCap(sketch, modelParameters, lineInfo.lineEnd);
         applyTearDropConstraints(sketch, wrapAroundFront, modelParameters, arcInfo, lineInfo, helperCapInfo, definition.length, innerRadius, tipGap);
-
-        coincidentPointId = arcInfo.arcStartId;
     }
     else if (definition.hemType == SMHemType.STRAIGHT)
     {
-        const arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
+        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
         sketchHorizontalLineAfterInitialArc(sketch, modelParameters, definition.length, arcInfo.arcEnd, innerRadius);
-
-        coincidentPointId = arcInfo.arcStartId;
     }
     else
     {
@@ -440,7 +473,23 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
     }
     skSolve(sketch);
 
-    return startTracking(context, sketchEntityQuery(id, EntityType.VERTEX, coincidentPointId));
+    const arcEdge = sketchEntityQuery(id, EntityType.EDGE, arcInfo.arcId);
+    var arcEndLine = evEdgeTangentLine(context, {
+            "edge" : arcEdge,
+            "parameter" : arcInfo.arcEndParameter
+        });
+    if (arcInfo.arcEndParameter == 0)
+    {
+        // Flip the arc end line direction if it is facing into the arc rather than out of the arc
+        arcEndLine.direction *= -1;
+    }
+
+    return {
+            "coincidentVertexTracking" : startTracking(context, id, arcInfo.arcStartId),
+            "arcEndTracking" : startTracking(context, id, arcInfo.arcEndId),
+            "arcEndLine" : arcEndLine,
+            "arcEdge" : arcEdge
+        };
 }
 
 /**
@@ -473,6 +522,7 @@ function sketchInitialArc(sketch is Sketch, wrapAroundFront is boolean, modelPar
             // point attached to the hem edge), may actually be the "end" internally.
             "arcStartId" : arcId ~ "." ~ (wrapAroundFront ? "end" : "start"),
             "arcEndId" : arcId ~ "." ~ (wrapAroundFront ? "start" : "end"),
+            "arcEndParameter" : wrapAroundFront ? 0 : 1,
             "arcEnd" : arcEnd
         };
 }
@@ -610,54 +660,337 @@ function applyTearDropConstraints(sketch is Sketch, wrapAroundFront is boolean, 
             });
 }
 
+// ---------- Extrusion, and bounding entities for extrusion ----------
+
 /**
  * Construct bounding planes for the extremes of the hem. `hemData` should be in the format outputted by `getHemData`.
  * @return {{
  *      @field startBoundingPlane {Query} : a construction plane to bound the hem at the start vertex
  *      @field endBoundingPlane {Query} : a construction plane to bound the hem at the end vertex
+ *      @field startBoundingPlaneForArc {Query} : a construction plane to bound the arc portion of the hem at the start vertex
+ *      @field endBoundingPlaneForArc {Query} : a construction plane to bound the arc portion of the hem at the end vertex
+ * }}
  */
-function constructHemBoundingPlanes(context is Context, id is Id, hemData is map) returns map
+function constructHemBoundingPlanes(context is Context, id is Id, edge is Query, edgeToHemData is map,
+        definition is map, modelParameters is map, sharedVertexToBoundingPlane is box) returns map
 {
-    // TODO: MITER!
-    const startPlaneId = id + "start";
-    opPlane(context, startPlaneId, {
-                "plane" : plane(hemData.edgeTangentLineAtStart.origin, hemData.edgeTangentLineAtStart.direction)
-            });
-    const endPlaneId = id + "end";
-    opPlane(context, endPlaneId, {
-                "plane" : plane(hemData.edgeTangentLineAtEnd.origin, hemData.edgeTangentLineAtEnd.direction)
-            });
+    const startBoundingPlanesReturn = constructHemBoundingPlanesForSide(context, id + "start", edge, true, edgeToHemData,
+        definition, modelParameters, sharedVertexToBoundingPlane);
+
+    const endBoundingPlanesReturn = constructHemBoundingPlanesForSide(context, id + "end", edge, false, edgeToHemData,
+        definition, modelParameters, sharedVertexToBoundingPlane);
 
     return {
-            "startBoundingPlane" : qCreatedBy(startPlaneId, EntityType.FACE),
-            "endBoundingPlane" : qCreatedBy(endPlaneId, EntityType.FACE)
+            "startBoundingPlane" : startBoundingPlanesReturn.boundingPlane,
+            "endBoundingPlane" : endBoundingPlanesReturn.boundingPlane,
+            "startBoundingPlaneForArc" : startBoundingPlanesReturn.boundingPlaneForArc,
+            "endBoundingPlaneForArc" : endBoundingPlanesReturn.boundingPlaneForArc
         };
 }
 
 /**
- * Extrude the hem profile to become the hem sheet. Return the edge at which the hem sheet will attach to the master sheet body.
+ * Construct the hem bounding planes for the start or end of an edge
+ * @return {{
+ *      @field boundingPlane {Query} : a construction plane to bound the hem at the given side
+ *      @field boundingPlaneForArc {Query} : a construction plane to bound the arc portion of the hem at the given side
+ * }}
  */
-function constructHemSheet(context is Context, id is Id, sketchId is Id, boundingPlanes is map, hemData is map) returns Query
+function constructHemBoundingPlanesForSide(context is Context, id is Id, edge is Query, isStart is boolean, edgeToHemData is map,
+        definition is map, modelParameters is map, sharedVertexToBoundingPlane is box) returns map
 {
-    opExtrude(context, id, {
-                "entities" : qConstructionFilter(qCreatedBy(sketchId, EntityType.EDGE), ConstructionObject.NO),
-                "direction" : hemData.edgeTangentLineAtCenter.direction,
-                "startBound" : BoundingType.UP_TO_SURFACE,
-                "startBoundEntity" : boundingPlanes.startBoundingPlane,
-                "endBound" : BoundingType.UP_TO_SURFACE,
-                "endBoundEntity" : boundingPlanes.endBoundingPlane
-            });
-    return qClosestTo(qNonCapEntity(id, EntityType.EDGE), hemData.edgeTangentLineAtCenter.origin);
+    const boundingPlaneReturn = constructHemBoundingPlaneAtVertex(context, id + "boundingPlane", edge, isStart, edgeToHemData,
+            definition, modelParameters, sharedVertexToBoundingPlane);
+
+    var boundingPlaneForArc;
+    if (boundingPlaneReturn.useBoundingPlaneForArcPlane)
+    {
+        boundingPlaneForArc = boundingPlaneReturn.planeQuery;
+    }
+    else
+    {
+        boundingPlaneForArc = constructHemBoundingPlaneForArc(context, id + "arcBoundingPlane", isStart, boundingPlaneReturn.planeDefinition,
+                edgeToHemData[edge], definition, modelParameters);
+    }
+
+    return {
+            "boundingPlane" : boundingPlaneReturn.planeQuery,
+            "boundingPlaneForArc" : boundingPlaneForArc
+        };
 }
+
+/**
+ * Construct a bounding plane for the given `edge`, at the given vertex (as defined by `isStart`)
+ * @returns {{
+ *      @field planeDefinition {Plane}: the definition of the bounding plane for the given vertex
+ *      @field planeQuery {Plane} : a query for the bounding plane for the given vertex
+ *      @field useBoundingPlaneForArcPlane {boolean} : whether the constructed bounding plane is suitable for use as the arc bounding plane
+ * }}
+ */
+function constructHemBoundingPlaneAtVertex(context is Context, id is Id, edge is Query, isStart is boolean, edgeToHemData is map,
+        definition is map, modelParameters is map, sharedVertexToBoundingPlane is box) returns map
+{
+    const defineHemBoundingPlaneReturn = defineHemBoundingPlaneAtVertex(context, edge, isStart, edgeToHemData, definition,
+            modelParameters, sharedVertexToBoundingPlane);
+
+    // Push back the plane by the appropriate amount
+    var adjustedBoundingPlane = defineHemBoundingPlaneReturn.boundingPlane;
+    adjustedBoundingPlane.origin += (adjustedBoundingPlane.normal * ((isStart ? 1.0 : -1.0) * defineHemBoundingPlaneReturn.pushBack));
+
+    // Optimization: for ROLLED hems, we will not have a use for this plane unless we also need to use it as the arc plane.
+    const skipPlaneCreation = (definition.hemType == SMHemType.ROLLED) && !defineHemBoundingPlaneReturn.useBoundingPlaneForArcPlane;
+
+    var planeQuery;
+    if (!skipPlaneCreation)
+    {
+        const planeId = id + "plane";
+        opPlane(context, planeId, {
+                    "plane" : adjustedBoundingPlane
+                });
+        planeQuery = qCreatedBy(planeId, EntityType.FACE);
+    }
+    else
+    {
+        planeQuery = qNothing();
+    }
+
+    return {
+            "planeDefinition" : adjustedBoundingPlane,
+            "planeQuery" : planeQuery,
+            "useBoundingPlaneForArcPlane" : defineHemBoundingPlaneReturn.useBoundingPlaneForArcPlane
+        };
+}
+
+/**
+ * Find the definition of the bounding plane for the given `edge`, at the given vertex (as defined by `isStart`)
+ * @returns {{
+ *      @field boundingPlane {Plane}: the definition of the bounding plane to use at the given vertex
+ *      @field pushBack {ValueWithUnits} : the adjustment that needs to be made to the bounding plane before construction
+ *      @field useBoundingPlaneForArcPlane {boolean} : whether the constructed bounding plane is suitable for use as the arc bounding plane.
+ *                                                     If we are not mitering, the same plane should be suitable. If we are mitering, the
+ *                                                     arc portion of the hem needs to be treated differently than the rest of the hem.
+ * }}
+ */
+function defineHemBoundingPlaneAtVertex(context is Context, edge is Query, isStart is boolean, edgeToHemData is map, definition is map,
+        modelParameters is map, sharedVertexToBoundingPlane is box) returns map
+{
+    const hemData = edgeToHemData[edge];
+    const vertexInQuestion = isStart ? hemData.startVertex : hemData.endVertex;
+
+    // ----- First check if we already have the bounding plane for this vertex -----
+    if (sharedVertexToBoundingPlane[][vertexInQuestion] != undefined)
+    {
+        // We have already constructed a bounding plane for this vertex when processing its neighbor.
+        return {
+                "boundingPlane" : sharedVertexToBoundingPlane[][vertexInQuestion].boundingPlane,
+                "pushBack" : sharedVertexToBoundingPlane[][vertexInQuestion].pushBack,
+                "useBoundingPlaneForArcPlane" : false
+            };
+    }
+
+    // ----- Next, check if there is a neighbor to account for -----
+    const tangentLineInQuestion = line(isStart ? hemData.edgeStartPosition : hemData.edgeEndPosition, hemData.edgeDirection);
+
+    const otherHemEdges = qSubtraction(qUnion(keys(edgeToHemData)), edge);
+    const edgesOfVertexInQuestion = qVertexAdjacent(vertexInQuestion, EntityType.EDGE);
+    const neighboringHemEdges = evaluateQuery(context, qIntersection([otherHemEdges, edgesOfVertexInQuestion]));
+    if (neighboringHemEdges == [])
+    {
+        // There is no neighboring hem, construct a simple bounding plane.
+        return {
+                "boundingPlane" : plane(tangentLineInQuestion.origin, tangentLineInQuestion.direction),
+                "pushBack" : 0 * meter,
+                "useBoundingPlaneForArcPlane" : true
+            };
+    }
+
+    // ----- There is a neighbor, do the appropriate work to form a miter plane -----
+    if (size(neighboringHemEdges) != 1)
+    {
+        throw "Should not have found multiple neighbor hem edges";
+    }
+    const neighboringHemData = edgeToHemData[neighboringHemEdges[0]];
+
+    var miterPlaneDefinition = defineHemMiterPlaneAtVertex(isStart, vertexInQuestion, tangentLineInQuestion, hemData,
+            neighboringHemData, definition, modelParameters, sharedVertexToBoundingPlane);
+    miterPlaneDefinition.useBoundingPlaneForArcPlane = false;
+    return miterPlaneDefinition;
+}
+
+/**
+ * Helper for creating a miter plane in defineHemBoundingPlaneAtVertex.
+ * @returns {{
+ *      @field boundingPlane {Plane}: the definition of the bounding plane to use at the given vertex
+ *      @field pushBack {ValueWithUnits} : the adjustment that needs to be made to the bounding plane before construction
+ * }}
+ */
+function defineHemMiterPlaneAtVertex(isStart is boolean, vertexInQuestion is Query, tangentLineInQuestion is Line, hemData is map,
+        neighboringHemData is map, definition is map, modelParameters is map, sharedVertexToBoundingPlane is box) returns map
+{
+    // Because we are using coEdge normals, the neighboring vertex will be at the end if isStart, or the start if !isStart.
+    const neighboringVertexIsStart = !isStart;
+    const neighboringTangentLineInQuestion = line(neighboringVertexIsStart ? neighboringHemData.edgeStartPosition : neighboringHemData.edgeEndPosition, neighboringHemData.edgeDirection);
+
+    const bisector = normalize(tangentLineInQuestion.direction + neighboringTangentLineInQuestion.direction);
+
+    // TODO: Handle outward case
+    var boundingPlane = plane(tangentLineInQuestion.origin, bisector);
+
+    // Hems should be `minimalClearance` distance apart from each other
+    var pushBack = 0.5 * modelParameters.minimalClearance;
+
+    // If some thickness extends outside the hem, push back an addition distance so that the closest approach of the material is still `minimalClearance` apart.
+    const wrapAroundFront = getWrapAroundFront(definition);
+    const relevantThickness = wrapAroundFront ? modelParameters.backThickness : modelParameters.frontThickness;
+    if (!tolerantEquals(relevantThickness, 0 * meter))
+    {
+        const hemPlaneNormal = cross(tangentLineInQuestion.direction, hemData.arcEndLine.direction);
+        const neighboringHemPlaneNormal = cross(neighboringTangentLineInQuestion.direction, neighboringHemData.arcEndLine.direction);
+        const angleBetweenNormals = angleBetween(hemPlaneNormal, neighboringHemPlaneNormal);
+        const angleBetweenHemPlanes = (180 * degree) - angleBetweenNormals;
+
+        pushBack += (modelParameters.frontThickness + modelParameters.backThickness) * cos(0.5 * angleBetweenHemPlanes);
+    }
+
+    const returnMap = {
+            "boundingPlane" : boundingPlane,
+            "pushBack" : pushBack
+        };
+
+    // Store the shared plane information in the box for later use
+    sharedVertexToBoundingPlane[][vertexInQuestion] = returnMap;
+
+    return returnMap;
+}
+
+/**
+ * Construct a bounding plane for the start or end of the arc portion of the hem specified by `hemData`.  `hemBoundingPlane`
+ * should be the result of `constructHemBoundingPlaneAtVertex(...)`.  Returns a [Query] for the constructed bounding plane.
+ */
+function constructHemBoundingPlaneForArc(context is Context, id is Id, isStart is boolean, hemBoundingPlane is Plane,
+        hemData is map, definition is map, modelParameters is map) returns Query
+{
+    const arcEndPosition = hemData.arcEndLine.origin;
+    const edgeDirection = hemData.edgeDirection;
+
+    if (tolerantEquals(hemBoundingPlane.normal, edgeDirection))
+    {
+        throw "Plane already exists, should have been skipped";
+    }
+
+    // Create a helix whose axis is the center of the arc, which curls up from the vertex of the hem edge to the pushed
+    // back vertex of the arc end edge.
+
+    // Intersection of arc end line and hem bounding plane will be the location of the vertex on the arc end edge.
+    const lineAlongArcEndEdge = line(arcEndPosition, edgeDirection);
+    const intersectionResult = intersection(hemBoundingPlane, lineAlongArcEndEdge);
+    if (intersectionResult.dim != 0)
+        throw "Expected arc end line and bounding plane to intersect at a point";
+
+    // Vertex position of the start of the helix
+    const vertexPosition = isStart ? hemData.edgeStartPosition : hemData.edgeEndPosition;
+
+    const hemCircle = evCurveDefinition(context, {
+                "edge" : hemData.arcEdge
+            });
+    const hemCircleCenter = hemCircle.coordSystem.origin;
+
+    // Project the center of the hem arc and the arc end position onto the plane at the vertex of the hem edge.
+    const edgeEndPlane = plane(vertexPosition, edgeDirection);
+    const projectedCenter = project(edgeEndPlane, hemCircleCenter);
+    const projectedIntersection = project(edgeEndPlane, intersectionResult.intersection);
+
+    // Measure the total angle that the arc covers by measuring the angle between the start and end of the arc (relying
+    // on the assumption that the arc covers more than 180 degrees).
+    const projectedCenterToVertex = normalize(vertexPosition - projectedCenter);
+    const projectedCenterToProjectedIntersection = normalize(projectedIntersection - projectedCenter);
+
+    const arcAngle = (360 * degree) - angleBetween(projectedCenterToVertex, projectedCenterToProjectedIntersection);
+    const arcPercentOfCircle = arcAngle / (360 * degree);
+
+    // Project the vector from the start of the helix axis to the end of the helix onto the helix axis.  This is the total
+    // height of the helix.  Use this to find the helical pitch (a.k.a. the height of one turn).
+    const projectedCenterToIntersection = intersectionResult.intersection - projectedCenter;
+
+    const lengthAlongEdgeToIntersection = dot((isStart ? 1.0 : -1.0) * edgeDirection, projectedCenterToIntersection);
+    const heightOfOneTurn = lengthAlongEdgeToIntersection / arcPercentOfCircle;
+
+    const wrapAroundFront = getWrapAroundFront(definition);
+    opHelix(context, id + "helix1", {
+                "direction" : (isStart ? 1.0 : -1.0) * edgeDirection,
+                "axisStart" : projectedCenter,
+                "startPoint" : vertexPosition,
+                "interval" : [0, arcPercentOfCircle],
+                "clockwise" : isStart != wrapAroundFront,
+                "helicalPitch" : heightOfOneTurn,
+                "spiralPitch" : 0 * inch
+            });
+
+    // TODO: actually use the helix correctly
+    const helixPoints = evEdgeTangentLines(context, {
+                "edge" : qCreatedBy(id + "helix1", EntityType.EDGE),
+                "parameters" : [0, 0.5, 1]
+            });
+    const boundingPlaneNormal = cross(normalize(helixPoints[2].origin - helixPoints[1].origin), normalize(helixPoints[1].origin - helixPoints[0].origin));
+    const boundingPlaneForArc = plane(helixPoints[0].origin, boundingPlaneNormal);
+
+    const planeId = id + "plane";
+    opPlane(context, planeId, {
+                "plane" : boundingPlaneForArc
+            });
+    return qCreatedBy(planeId, EntityType.FACE);
+}
+
+/**
+ * Extrude the hem profile to become the hem sheet. Return the edge at which the hem sheet will attach to the master sheet body.
+ * @return {{
+ *      @field arcSheet {Query} : a query for the arc sheet
+ *      @field otherSheet {Query} : a query for the sheet representing the rest of the hem
+ * }}
+ */
+function constructHemSheet(context is Context, id is Id, sketchId is Id, arcEdge is Query, boundingPlanes is map, hemData is map) returns map
+{
+    const arcExtrudeId = id + "extrudeArc";
+    opExtrude(context, id + "arc", {
+                "entities" : arcEdge,
+                "direction" : hemData.edgeDirection,
+                "startBound" : BoundingType.UP_TO_SURFACE,
+                "startBoundEntity" : boundingPlanes.startBoundingPlaneForArc,
+                "endBound" : BoundingType.UP_TO_SURFACE,
+                "endBoundEntity" : boundingPlanes.endBoundingPlaneForArc
+            });
+
+    // Extrude the rest of the hem besides the initial arc.  This may be nothing for a ROLLED hem, or a planar section for
+    // a STRAIGHT or TEAR_DROP hem.
+    const otherExtrudeId = id + "extrudeOther";
+    const sketchEdges = qConstructionFilter(qCreatedBy(sketchId, EntityType.EDGE), ConstructionObject.NO);
+    const otherSketchEdges = qSubtraction(sketchEdges, arcEdge);
+    if (evaluateQuery(context, otherSketchEdges) != [])
+    {
+        opExtrude(context, otherExtrudeId, {
+                    "entities" : otherSketchEdges,
+                    "direction" : hemData.edgeDirection,
+                    "startBound" : BoundingType.UP_TO_SURFACE,
+                    "startBoundEntity" : boundingPlanes.startBoundingPlane,
+                    "endBound" : BoundingType.UP_TO_SURFACE,
+                    "endBoundEntity" : boundingPlanes.endBoundingPlane
+                });
+    }
+    return {
+            "arcSheet" : qCreatedBy(arcExtrudeId, EntityType.BODY),
+            "otherSheet" : qCreatedBy(otherExtrudeId, EntityType.BODY)
+        };
+}
+
+// ---------- Sheet annotation ----------
 
 /**
  * Add the appropriate sheet metal attributes to the hem sheet. `coincidentEdge` is the edge at which the hem sheet will attach to the master
  * sheet body.
  */
-function annotateHemSheet(context is Context, topLevelId is Id, coincidentEdge is Query, hemSheetBody is Query, attributeIdCounter is box)
+function annotateHemSheet(context is Context, topLevelId is Id, coincidentEdge is Query, arcEndEdge is Query, hemSheetBodies is Query, attributeIdCounter is box)
 {
     // Each face created by the extrude needs a unique wall id
-    for (var face in evaluateQuery(context, qOwnedByBody(hemSheetBody, EntityType.FACE)))
+    for (var face in evaluateQuery(context, qOwnedByBody(hemSheetBodies, EntityType.FACE)))
     {
         setAttribute(context, {
                     "entities" : face,
@@ -667,28 +1000,52 @@ function annotateHemSheet(context is Context, topLevelId is Id, coincidentEdge i
     }
 
     // The edge that will attach to the master sheet needs a tangent joint
-    // TODO: Use dummy joints to hide tangents from the table
-    var tangentAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
-    tangentAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
+    // TODO: Make new BEND_HEM attribute or similar to get hem into the table as bend, with bend line
+    var coincidentTangentAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
+    coincidentTangentAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
     setAttribute(context, {
                 "entities" : coincidentEdge,
-                "attribute" : tangentAttribute
+                "attribute" : coincidentTangentAttribute
             });
     attributeIdCounter[] += 1;
 
-    // Each two sided edge within the hem needs a tangent joint
-    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(hemSheetBody, EntityType.EDGE), EdgeTopology.TWO_SIDED)))
+    if (size(evaluateQuery(context, hemSheetBodies)) == 2)
     {
-        var tangentAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
-        tangentAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
+        // If we ended up with a second sheet (representing the hem surface excluding the initial arc), we need to
+        // add a tangent joint where the initial arc connects to the
+        var arcToOtherAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
+        arcToOtherAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
+
         setAttribute(context, {
-                    "entities" : edge,
-                    "attribute" : tangentAttribute
+                    "entities" : arcEndEdge,
+                    "attribute" : arcToOtherAttribute
                 });
         attributeIdCounter[] += 1;
     }
+}
 
-    // TODO: Add appropriate rips once mitering code is written
+// ---------- Utilities ----------
+
+function getWrapAroundFront(definition is map)
+{
+    return definition.oppositeDirection;
+}
+
+function getInnerRadius(modelParameters is map, definition is map) returns ValueWithUnits
+{
+    if (definition.hemType == SMHemType.ROLLED || definition.hemType == SMHemType.TEAR_DROP)
+    {
+        return definition.innerRadius;
+    }
+    else if (definition.hemType == SMHemType.STRAIGHT)
+    {
+        return definition.useMinimalGapForStraight ? modelParameters.minimalClearance : definition.innerRadius;
+    }
+    else
+    {
+        // This cannot be hit by a UI user.
+        throwHemTypeError(definition.hemType);
+    }
 }
 
 function throwHemTypeError(hemType is SMHemType)
@@ -696,25 +1053,16 @@ function throwHemTypeError(hemType is SMHemType)
     throw "Unrecognized hem type: " ~ hemType;
 }
 
+// ---------- Editing Logic ----------
+
 /**
  * @internal
  * Editing logic for the hem feature.
  */
 export function hemEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map) returns map
 {
-    // Keep innerRadius and innerDiameter in sync
-    // TODO: Speak with UX about whether this is useful or "too smart"
-    if (oldDefinition.innerRadius != definition.innerRadius && specifiedParameters.innerRadius)
-    {
-        definition.innerDiameter = 2 * definition.innerRadius;
-    }
-    if (oldDefinition.innerDiameter != definition.innerDiameter && specifiedParameters.innerDiameter)
-    {
-        definition.innerRadius = definition.innerDiameter / 2;
-    }
-
-    // Lock tipGap to match innerRadius until the user specifies a tip gap
-    if (isCreating && oldDefinition.innerRadius != definition.innerRadius && specifiedParameters.innerRadius && !specifiedParameters.tipGap)
+    // Lock tipGap to match innerRadius until the user first opens that part of the dialog.  That way the first time they open it, it is a valid number
+    if (isCreating && oldDefinition.innerRadius != definition.innerRadius && specifiedParameters.innerRadius && !specifiedParameters.useMinimalGapForTipGap)
     {
         definition.tipGap = definition.innerRadius;
     }

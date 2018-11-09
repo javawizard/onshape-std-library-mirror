@@ -1,28 +1,28 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "937.0");
-export import(path : "onshape/std/tool.fs", version : "937.0");
+export import(path : "onshape/std/query.fs", version : "951.0");
+export import(path : "onshape/std/tool.fs", version : "951.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "937.0");
+export import(path : "onshape/std/manipulator.fs", version : "951.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/box.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/curveGeometry.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/mathUtils.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/box.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/mathUtils.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
 
 
 /**
@@ -320,7 +320,8 @@ function getOffsetToEntity(context is Context, face is Query, definition is map,
                     "side0" : face,
                     "side1" : definition.limitQuery,
                     "extendSide0" : true,
-                    "extendSide1" : size(limitPlaneEntity) == 1
+                    "extendSide1" : size(limitPlaneEntity) == 1,
+                    "arcLengthParameterization" : false
                 }));
 
     if (distanceResult == undefined)
@@ -815,7 +816,8 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                                 {
                                     const offsetDistance = evDistance(context, {
                                               "side0" : partFace,
-                                              "side1" : smEdge
+                                              "side1" : smEdge,
+                                              "arcLengthParameterization" : false
                                            });
                                     edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                                               "face" : adjacentFaceSMFace[0],
@@ -1415,7 +1417,8 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
         {
             const offsetDistance = evDistance(context, {
                         "side0" : partFace,
-                        "side1" : smEdge
+                        "side1" : smEdge,
+                        "arcLengthParameterization" : false
                     });
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                         "face" : adjacentFaceSMFace[0],

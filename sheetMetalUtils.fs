@@ -1,28 +1,28 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "937.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/coordSystem.fs", version : "937.0");
-import(path : "onshape/std/curveGeometry.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/manipulator.fs", version : "937.0");
-import(path : "onshape/std/query.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "937.0");
-import(path : "onshape/std/string.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/tool.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/transform.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "951.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/coordSystem.fs", version : "951.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/manipulator.fs", version : "951.0");
+import(path : "onshape/std/query.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "951.0");
+import(path : "onshape/std/string.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/tool.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/transform.fs", version : "951.0");
 
 
 
@@ -425,10 +425,13 @@ function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edg
         const distanceResult = evDistance(context, {
                     "side0" : ellipse.coordSystem.origin,
                     "side1" : edge,
-                    "maximum" : true
+                    "maximum" : true,
+                    "arcLengthParameterization" : false
                 });
-        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : distanceResult.sides[1].parameter });
-        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : distanceResult.sides[1].parameter });
+        // Before V947, we were accidentally sending non-arclength parameters into arc length calculation of evFaceNormalAtEdge
+        const arcLengthForFaceNormal = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V947_EVDISTANCE_ARCLENGTH);
+        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : distanceResult.sides[1].parameter, "arcLengthParameterization" : arcLengthForFaceNormal });
+        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : distanceResult.sides[1].parameter, "arcLengthParameterization" : arcLengthForFaceNormal });
         return angleBetween(normal0, normal1);
     }
 }
@@ -1696,6 +1699,10 @@ export function getSMCorrespondingInPart(context is Context, selection is Query,
     }
 
     var corresponding = qEntityFilter(qUnion(out), entityType);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER))
+    {
+        return qSMFlatFilter(corresponding, SMFlatType.NO);
+    }
     return qSubtraction(corresponding, qCorrespondingInFlat(corresponding));
 }
 

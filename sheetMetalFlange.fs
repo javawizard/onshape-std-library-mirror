@@ -1,28 +1,28 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "937.0");
-import(path : "onshape/std/boolean.fs", version : "937.0");
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/curveGeometry.fs", version : "937.0");
-import(path : "onshape/std/extrude.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/math.fs", version : "937.0");
-import(path : "onshape/std/matrix.fs", version : "937.0");
-import(path : "onshape/std/query.fs", version : "937.0");
-import(path : "onshape/std/sketch.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "937.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "937.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
-import(path : "onshape/std/units.fs", version : "937.0");
-import(path : "onshape/std/valueBounds.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "937.0");
+import(path : "onshape/std/attributes.fs", version : "951.0");
+import(path : "onshape/std/boolean.fs", version : "951.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/extrude.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/math.fs", version : "951.0");
+import(path : "onshape/std/matrix.fs", version : "951.0");
+import(path : "onshape/std/query.fs", version : "951.0");
+import(path : "onshape/std/sketch.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
+import(path : "onshape/std/units.fs", version : "951.0");
+import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "951.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -875,7 +875,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         }
         var lineFromBentEdge = line(vertexPoint + flangeData.direction * offset, flangeEdgeMidPt[0].direction);
         var updatedProjection = project(lineFromBentEdge, intersectionData.intersection);
-        var offsetFromBend = evDistance(context, {"side0" : updatedProjection, "side1": project(sidePlane, updatedProjection)}).distance;
+        var offsetFromBend = norm(project(sidePlane, updatedProjection) - updatedProjection);
         //offset with max between bend clearance and default offset clearance
         var delta = abs(offsetFromClearance) > abs(offsetFromBend) ? offsetFromClearance : offsetFromBend;
         return computeBaseFromShiftedPlane(context, delta, sidePlane, edgeLine);

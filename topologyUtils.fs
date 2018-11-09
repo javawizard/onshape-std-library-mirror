@@ -1,15 +1,15 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "937.0");
-import(path : "onshape/std/context.fs", version : "937.0");
-import(path : "onshape/std/evaluate.fs", version : "937.0");
-import(path : "onshape/std/feature.fs", version : "937.0");
-import(path : "onshape/std/query.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/vector.fs", version : "937.0");
+import(path : "onshape/std/containers.fs", version : "951.0");
+import(path : "onshape/std/context.fs", version : "951.0");
+import(path : "onshape/std/evaluate.fs", version : "951.0");
+import(path : "onshape/std/feature.fs", version : "951.0");
+import(path : "onshape/std/query.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/vector.fs", version : "951.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -189,6 +189,22 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
  */
 export function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData) returns boolean
 {
+    var sweptData = getFaceSweptData(context, face, faceSweptData);
+    if (sweptData.planeNormal != undefined)
+        return perpendicularVectors(sweptData.planeNormal, direction);
+    else if (sweptData.extrudeDirection != undefined)
+        return parallelVectors(sweptData.extrudeDirection, direction);
+
+    return false;
+}
+
+/**
+ * @internal
+ * Compute face sweptData as used in [sweptAlong] with additional caching in the `faceSweptData`. `faceSweptData` should be a box of a map, or undefined
+ * if no caching is desired.
+ */
+export function getFaceSweptData(context is Context, face is Query, faceSweptData) returns map
+{
     var sweptData = undefined;
     if (faceSweptData != undefined)
     {
@@ -213,13 +229,7 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
             faceSweptData[][face] = sweptData;
         }
     }
-
-    if (sweptData.planeNormal != undefined)
-        return perpendicularVectors(sweptData.planeNormal, direction);
-    else if (sweptData.extrudeDirection != undefined)
-        return parallelVectors(sweptData.extrudeDirection, direction);
-
-    return false;
+    return sweptData;
 }
 
 function extrudedSurfaceDirection(context is Context, face is Query)

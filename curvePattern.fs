@@ -1,20 +1,20 @@
-FeatureScript 937; /* Automatically generated version */
+FeatureScript 951; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "937.0");
+export import(path : "onshape/std/patternUtils.fs", version : "951.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "937.0");
+export import(path : "onshape/std/path.fs", version : "951.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "937.0");
-import(path : "onshape/std/mathUtils.fs", version : "937.0");
-import(path : "onshape/std/sketch.fs", version : "937.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "937.0");
-import(path : "onshape/std/topologyUtils.fs", version : "937.0");
+import(path : "onshape/std/curveGeometry.fs", version : "951.0");
+import(path : "onshape/std/mathUtils.fs", version : "951.0");
+import(path : "onshape/std/sketch.fs", version : "951.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
+import(path : "onshape/std/topologyUtils.fs", version : "951.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -339,7 +339,11 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
     for (var i = 0; i < size(tangentLines); i += 1)
     {
         // Find the closest point on the swept edge that touches parameter i of the Path
-        var distanceResult = evDistance(context, { "side0" : sweepFaces[tangentEdgeIndices[i]] , "side1" : tangentLines[i].origin});
+        var distanceResult = evDistance(context, {
+                    "side0" : sweepFaces[tangentEdgeIndices[i]] ,
+                    "side1" : tangentLines[i].origin,
+                    "arcLengthParameterization" : false
+                });
         var parameter = distanceResult.sides[0].parameter;
         // Evaluate the tangent plane of the sweep at parameter i of the Path
         var tangentPlane = evFaceTangentPlane(context, { "face" : sweepFaces[tangentEdgeIndices[i]], "parameter" : parameter });
