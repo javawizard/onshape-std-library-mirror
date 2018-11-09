@@ -219,7 +219,8 @@ function getEndCondition(context is Context, definition is map, points is array,
         {
             var result = evDistance(context, {
                     "side0" : directionEdges[0],
-                    "side1" : points[pointIndex]
+                    "side1" : points[pointIndex],
+                    "arcLengthParameterization" : false
                 });
             param = result.sides[0].parameter;
             tangentDirection = evEdgeTangentLine(context, {

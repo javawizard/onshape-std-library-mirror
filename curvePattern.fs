@@ -339,7 +339,11 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
     for (var i = 0; i < size(tangentLines); i += 1)
     {
         // Find the closest point on the swept edge that touches parameter i of the Path
-        var distanceResult = evDistance(context, { "side0" : sweepFaces[tangentEdgeIndices[i]] , "side1" : tangentLines[i].origin});
+        var distanceResult = evDistance(context, {
+                    "side0" : sweepFaces[tangentEdgeIndices[i]] ,
+                    "side1" : tangentLines[i].origin,
+                    "arcLengthParameterization" : false
+                });
         var parameter = distanceResult.sides[0].parameter;
         // Evaluate the tangent plane of the sweep at parameter i of the Path
         var tangentPlane = evFaceTangentPlane(context, { "face" : sweepFaces[tangentEdgeIndices[i]], "parameter" : parameter });

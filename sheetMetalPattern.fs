@@ -941,7 +941,8 @@ function getEdgeWithinThickness(context is Context, args is map)
 
             var distanceResult = evDistance(context, {
                     "side0" : args.instanceEdge,
-                    "side1" : edgeAndLine.edge
+                    "side1" : edgeAndLine.edge,
+                    "arcLengthParameterization" : false
             });
             if (distanceResult.distance < TOLERANCE.zeroLength * meter)
             {

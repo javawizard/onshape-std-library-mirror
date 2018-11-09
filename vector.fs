@@ -99,6 +99,17 @@ export predicate is2dPointVector(value)
 }
 
 /**
+ * True for a unitless 2D `Vector` that is normalized (i.e. has length `1`)
+ * @ex `vector(0, 1)`
+ */
+export predicate is2dDirection(value)
+{
+    isUnitlessVector(value);
+    @size(value) == 2;
+    abs(squaredNorm(value) - 1) < TOLERANCE.zeroAngle;
+}
+
+/**
  * True for a 3D `Vector` where all members are values with length units.
  * @ex `vector(0, 1.5, 30) * inch`
  */

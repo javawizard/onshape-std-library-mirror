@@ -482,7 +482,13 @@ function computeDistanceHeuristic(context is Context, pathGeometry, referenceGeo
     var boundingBox  = evBox3d(context, { "topology" : referenceGeometry, "tight" : true });
     var center = box3dCenter(boundingBox);
 
-    var distanceResult = evDistance(context, { "side0" : pathGeometry, "side1" : center});
+    // Before V947 we were assuming that evDistance returned arc length parameters when it was not
+    const arcLengthForEvDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V947_EVDISTANCE_ARCLENGTH);
+    var distanceResult = evDistance(context, {
+                "side0" : pathGeometry,
+                "side1" : center,
+                "arcLengthParameterization" : arcLengthForEvDistance
+            });
 
     var pathDistanceInformation = {
                 "distance" : distanceResult.distance,

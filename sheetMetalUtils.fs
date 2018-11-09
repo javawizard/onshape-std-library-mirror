@@ -425,10 +425,13 @@ function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edg
         const distanceResult = evDistance(context, {
                     "side0" : ellipse.coordSystem.origin,
                     "side1" : edge,
-                    "maximum" : true
+                    "maximum" : true,
+                    "arcLengthParameterization" : false
                 });
-        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : distanceResult.sides[1].parameter });
-        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : distanceResult.sides[1].parameter });
+        // Before V947, we were accidentally sending non-arclength parameters into arc length calculation of evFaceNormalAtEdge
+        const arcLengthForFaceNormal = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V947_EVDISTANCE_ARCLENGTH);
+        var normal0 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[0], "parameter" : distanceResult.sides[1].parameter, "arcLengthParameterization" : arcLengthForFaceNormal });
+        var normal1 = evFaceNormalAtEdge(context, { "edge" : edge, "face" : faces[1], "parameter" : distanceResult.sides[1].parameter, "arcLengthParameterization" : arcLengthForFaceNormal });
         return angleBetween(normal0, normal1);
     }
 }
@@ -1696,6 +1699,10 @@ export function getSMCorrespondingInPart(context is Context, selection is Query,
     }
 
     var corresponding = qEntityFilter(qUnion(out), entityType);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER))
+    {
+        return qSMFlatFilter(corresponding, SMFlatType.NO);
+    }
     return qSubtraction(corresponding, qCorrespondingInFlat(corresponding));
 }
 

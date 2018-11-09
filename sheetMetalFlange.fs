@@ -875,7 +875,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         }
         var lineFromBentEdge = line(vertexPoint + flangeData.direction * offset, flangeEdgeMidPt[0].direction);
         var updatedProjection = project(lineFromBentEdge, intersectionData.intersection);
-        var offsetFromBend = evDistance(context, {"side0" : updatedProjection, "side1": project(sidePlane, updatedProjection)}).distance;
+        var offsetFromBend = norm(project(sidePlane, updatedProjection) - updatedProjection);
         //offset with max between bend clearance and default offset clearance
         var delta = abs(offsetFromClearance) > abs(offsetFromBend) ? offsetFromClearance : offsetFromBend;
         return computeBaseFromShiftedPlane(context, delta, sidePlane, edgeLine);

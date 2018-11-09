@@ -189,6 +189,22 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
  */
 export function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData) returns boolean
 {
+    var sweptData = getFaceSweptData(context, face, faceSweptData);
+    if (sweptData.planeNormal != undefined)
+        return perpendicularVectors(sweptData.planeNormal, direction);
+    else if (sweptData.extrudeDirection != undefined)
+        return parallelVectors(sweptData.extrudeDirection, direction);
+
+    return false;
+}
+
+/**
+ * @internal
+ * Compute face sweptData as used in [sweptAlong] with additional caching in the `faceSweptData`. `faceSweptData` should be a box of a map, or undefined
+ * if no caching is desired.
+ */
+export function getFaceSweptData(context is Context, face is Query, faceSweptData) returns map
+{
     var sweptData = undefined;
     if (faceSweptData != undefined)
     {
@@ -213,13 +229,7 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
             faceSweptData[][face] = sweptData;
         }
     }
-
-    if (sweptData.planeNormal != undefined)
-        return perpendicularVectors(sweptData.planeNormal, direction);
-    else if (sweptData.extrudeDirection != undefined)
-        return parallelVectors(sweptData.extrudeDirection, direction);
-
-    return false;
+    return sweptData;
 }
 
 function extrudedSurfaceDirection(context is Context, face is Query)

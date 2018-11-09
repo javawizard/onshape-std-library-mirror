@@ -267,7 +267,8 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                 param = evDistance(context, {
                                     "side0" : qEntityFilter(definition.entities, EntityType.VERTEX),
                                     "side1" : qEntityFilter(definition.entities, EntityType.EDGE),
-                                    "extendSide1" : true
+                                    "extendSide1" : true,
+                                    "arcLengthParameterization" : false
                                 }).sides[1].parameter;
             }
             catch (error)

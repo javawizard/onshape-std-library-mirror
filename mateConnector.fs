@@ -27,19 +27,55 @@ export const NORMAL_PARAMETER_BOUNDS =
     (unitless) : [-1.0, 0, 1]
 } as RealBoundSpec;
 
-// IB: are all the undefined comparisons necessary in the precondition?  Can they be turned into defaults?
 /**
  * Feature performing an [opMateConnector].
+ *
+ * The parameters below are designed for interactive use in the feature dialog. In FeatureScript, it is preferred to
+ * calculate the resulting coordinate system directly, and pass this coordinate system to `opMateConnector`.
+ *
+ * @param id : @autocomplete `id + "mateConnector1"`
+ * @param definition {{
+ *      @field originQuery {Query} : The entity on which to place the mate connector
+ *          @ex `qFarthestAlong(qCreatedBy(id + "extrude1", EntityType.VERTEX), vector(1, 1, 1))`
+ *      @field entityInferenceType {EntityInferenceType} : A method of producing the coordinate system
+ *          @eg `EntityInferenceType.POINT` to place on a vertex, with the world coordinate system
+ *          @ex `EntityInferenceType.MID_POINT` to place at the midpoint of an edge, with the Z axis along the edge
+ *      @field secondaryOriginQuery {query} : @optional Additional entity to inference with, used in some inference types.
+ *      @field originType {OriginCreationType} : @optional @ex `OriginCreationType.BETWEEN_ENTITIES` to place mate connector
+ *          origin on the midpoint between the speicified origin and the location of `originAdditionalQuery`. Default
+ *          is `OriginCreationType.ON_ENTITY`.
+ *      @field originAdditionalQuery {Query} : @requiredIf {`originType` is `OriginCreationType.BETWEEN_ENTITIES`}
+ *      @field flipPrimary {boolean} : @optional @ex `true` to flip the resulting Z axis
+ *      @field secondaryAxisType {MateConnectorAxisType} : @optional Changes which axis (perpendicular to Z) will point along the
+ *          secondary direction. Default is `MateConnectorAxisType.PLUS_X`
+ *      @field realign {boolean} : @optional `true` to change direction of axes
+ *      @field primaryAxisQuery {Query} : @requiredIf {`realign` is `true`} Entity with axis to define the resulting Z direction
+ *      @field secondaryAxisQuery {Query} : @requiredIf {`realign` is `true`} Entity with axis to define the secondary axis (set by `secondaryAxisType`)
+ *      @field transform {boolean} : @optional Whether to change the origin position with `translationX`, `translationY`, and `translationZ`.
+ *          The X/Y/Z directions of this translation are affected by `primaryAxisQuery` and `secondaryAxisQuery` and `secondaryAxisType`, but not by
+ *          `rotationType` and `rotation`
+ *      @field translationX {ValueWithUnits} : @requiredIf {`transform` is `true`} Distance to move the resulting origin along resulting X direction.
+ *      @field translationY {ValueWithUnits} : @requiredIf {`transform` is `true`} Distance to move the resulting origin along resulting Y direction
+ *      @field translationZ {ValueWithUnits} : @requiredIf {`transform` is `true`} Distance to move the resulting origin along resulting Z direction
+ *      @field rotationType {RotationType} : @optional Axis to rotate around (does not change origin position)
+ *      @field rotation {ValueWithUnits} : @optional Angle to rotate
+ *      @field requireOwnerPart {boolean} : @optional Whether to error if owner part is not provided. Default is `true`. If `false`, the mate connector
+ *          may be an independent body with no owner part.
+ *      @field ownerPart {Query} : @requiredIf {`requireOwnerPart` is not `false`} Part on which to attach the resulting mate connector
+ *          @autocomplete `ownerPart`
+ *      @field specifyNormal {boolean} : @optional @ex `true` override the Z direction with the known vector `(definition.nx, definition.ny, definition.nz)`.
+ *          Used internally when the mate connector is placed on a mesh.
+ *      @field nx {number} : @requiredIf {`specifyNormal` is `true`}
+ *      @field ny {number} : @requiredIf {`specifyNormal` is `true`}
+ *      @field nz {number} : @requiredIf {`specifyNormal` is `true`}
+ * }}
  */
 annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        if (definition.originType != undefined)
-        {
-            annotation { "Name" : "Origin type" }
-            definition.originType is OriginCreationType;
-        }
+        annotation { "Name" : "Origin type" }
+        definition.originType is OriginCreationType;
 
         annotation { "Name" : "Origin entity",
                      "Filter" : (EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO),
@@ -55,103 +91,67 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            if (definition.originAdditionalQuery != undefined)
-            {
-                annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : "UNCONFIGURABLE" }
-                definition.originAdditionalQuery is Query;
-            }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : "UNCONFIGURABLE" }
+            definition.originAdditionalQuery is Query;
         }
 
-        if (definition.flipPrimary != undefined)
+        annotation { "Name" : "Flip primary axis", "UIHint" : "ALWAYS_HIDDEN" }
+        definition.flipPrimary is boolean;
+
+        annotation { "Name" : "Secondary axis type", "UIHint" : "ALWAYS_HIDDEN", "Default" : MateConnectorAxisType.PLUS_X }
+        definition.secondaryAxisType is MateConnectorAxisType;
+
+        annotation { "Name" : "Realign" }
+        definition.realign is boolean;
+
+        if (definition.realign)
         {
-            annotation { "Name" : "Flip primary axis", "UIHint" : "ALWAYS_HIDDEN" }
-            definition.flipPrimary is boolean;
+            annotation { "Name" : "Primary axis entity",
+                         "Filter" : EntityType.FACE || EntityType.EDGE,
+                         "MaxNumberOfPicks" : 1 }
+            definition.primaryAxisQuery is Query;
+
+            annotation { "Name" : "Secondary axis entity",
+                         "Filter" : EntityType.FACE || EntityType.EDGE,
+                         "MaxNumberOfPicks" : 1 }
+            definition.secondaryAxisQuery is Query;
         }
 
-        if (definition.secondaryAxisType != undefined)
+        annotation { "Name" : "Move" }
+        definition.transform is boolean;
+
+        if (definition.transform)
         {
-            annotation { "Name" : "Secondary axis type", "UIHint" : "ALWAYS_HIDDEN", "Default" : MateConnectorAxisType.PLUS_X }
-            definition.secondaryAxisType is MateConnectorAxisType;
+            annotation { "Name" : "X translation" }
+            isLength(definition.translationX, ZERO_DEFAULT_LENGTH_BOUNDS);
+
+            annotation { "Name" : "Y translation" }
+            isLength(definition.translationY, ZERO_DEFAULT_LENGTH_BOUNDS);
+
+            annotation { "Name" : "Z translation" }
+            isLength(definition.translationZ, ZERO_DEFAULT_LENGTH_BOUNDS);
+
+            annotation { "Name" : "Rotation axis", "Default" : RotationType.ABOUT_Z }
+            definition.rotationType is RotationType;
+
+            annotation { "Name" : "Rotation angle" }
+            isAngle(definition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
         }
 
-        if (definition.realign != undefined)
-        {
-            annotation { "Name" : "Realign" }
-            definition.realign is boolean;
-        }
+        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : true }
+        definition.requireOwnerPart is boolean;
 
-        if (definition.realign == true)
-        {
-            if (definition.primaryAxisQuery != undefined)
-            {
-                annotation { "Name" : "Primary axis entity",
-                             "Filter" : EntityType.FACE || EntityType.EDGE,
-                             "MaxNumberOfPicks" : 1 }
-                definition.primaryAxisQuery is Query;
-            }
-
-            if (definition.secondaryAxisQuery != undefined)
-            {
-                annotation { "Name" : "Secondary axis entity",
-                             "Filter" : EntityType.FACE || EntityType.EDGE,
-                             "MaxNumberOfPicks" : 1 }
-                definition.secondaryAxisQuery is Query;
-            }
-        }
-
-        if (definition.transform != undefined)
-        {
-            annotation { "Name" : "Move" }
-            definition.transform is boolean;
-        }
-
-        if (definition.transform == true)
-        {
-            if (definition.translationX != undefined)
-            {
-                annotation { "Name" : "X translation" }
-                isLength(definition.translationX, ZERO_DEFAULT_LENGTH_BOUNDS);
-            }
-
-            if (definition.translationY != undefined)
-            {
-                annotation { "Name" : "Y translation" }
-                isLength(definition.translationY, ZERO_DEFAULT_LENGTH_BOUNDS);
-            }
-
-            if (definition.translationZ != undefined)
-            {
-                annotation { "Name" : "Z translation" }
-                isLength(definition.translationZ, ZERO_DEFAULT_LENGTH_BOUNDS);
-            }
-
-            if (definition.rotationType != undefined)
-            {
-                annotation { "Name" : "Rotation axis", "Default" : RotationType.ABOUT_Z }
-                definition.rotationType is RotationType;
-            }
-
-            if (definition.rotation != undefined)
-            {
-                annotation { "Name" : "Rotation angle" }
-                isAngle(definition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
-            }
-        }
-
-        if (definition.ownerPart != undefined)
+        if (definition.requireOwnerPart)
         {
             // The mate connector owner part should be the one in the part list, thus it should be modifiable
             annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
             definition.ownerPart is Query;
         }
 
-        if (definition.specifyNormal != undefined)
-        {
-            annotation { "Name" : "Specify normal", "UIHint" : "ALWAYS_HIDDEN" }
-            definition.specifyNormal is boolean;
-        }
+        annotation { "Name" : "Specify normal", "UIHint" : "ALWAYS_HIDDEN" }
+        definition.specifyNormal is boolean;
 
-        if (definition.specifyNormal == true)
+        if (definition.specifyNormal)
         {
             annotation { "Name" : "Normal x", "UIHint" : "ALWAYS_HIDDEN" }
             isReal(definition.nx, NORMAL_PARAMETER_BOUNDS);
@@ -162,14 +162,12 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
     }
     {
-
-        if (definition.rotation != undefined)
-            definition.rotation = adjustAngle(context, definition.rotation);
+        definition.rotation = adjustAngle(context, definition.rotation);
 
         var transformQueries = [definition.originQuery];
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
             transformQueries = append(transformQueries, definition.originAdditionalQuery);
-        if (definition.realign == true)
+        if (definition.realign)
             transformQueries = concatenateArrays([transformQueries, [definition.primaryAxisQuery, definition.secondaryAxisQuery, definition.ownerPart]]);
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qUnion(transformQueries)});
@@ -201,13 +199,33 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.ownerPart = findOwnerPart(context, definition, possiblePartOwners);
         }
 
-        if (definition.ownerPart == undefined || @size(evaluateQuery(context, definition.ownerPart)) == 0)
+        if (definition.requireOwnerPart && evaluateQuery(context, definition.ownerPart) == [])
             throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
         transformResultIfNecessary(context, id, remainingTransform);
+    }, {
+        "originType" : OriginCreationType.ON_ENTITY,
+        "originAdditionalQuery" : qNothing(),
+        "secondaryOriginQuery" : qNothing(),
+        "flipPrimary" : false,
+        "secondaryAxisType" : MateConnectorAxisType.PLUS_X,
+        "realign" : false,
+        "primaryAxisQuery" : qNothing(),
+        "secondaryAxisQuery" : qNothing(),
+        "transform" : false,
+        "translationX" : 0 * meter,
+        "translationY" : 0 * meter,
+        "translationZ" : 0 * meter,
+        "rotationType" : RotationType.ABOUT_Z,
+        "rotation" : 0 * radian,
+        "requireOwnerPart" : true,
+        "ownerPart" : qNothing(),
+        "specifyNormal" : false,
+        "nx" : 0.0,
+        "ny" : 0.0,
+        "nz" : 0.0
     });
-
 
 /** @internal */
 export function connectorEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,

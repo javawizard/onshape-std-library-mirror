@@ -242,7 +242,7 @@ precondition
  *
  *          `parameter` (number or length or array of two numbers) : If the `index` refers to an edge,
  *                  the `parameter` is a number between 0 and 1 (unless `extend` for that side was passed in).  It is in the form that
- *                  [evEdgeTangentLine] consumes (with `arcLengthParameterization` set to `false`).
+ *                  [evEdgeTangentLine] and [evEdgeCurvature] consume (with `arcLengthParameterization` set to the same value that was passed into [evDistance]).
  *
  *                  If the `index` refers to a point, the `parameter` is 0.
  *
@@ -302,6 +302,13 @@ predicate canBeDistanceResult(value)
  *      @field extendSide1 {boolean} : Like `extendSide0`. @optional
  *      @field maximum {boolean} : If `true`, compute the maximum instead of the minimum.  Defaults to `false`.
  *          Not allowed to be `true` if a line is passed in in either side or if either `extend` is true. @optional
+ *      @field arcLengthParameterization {boolean} :
+ *             If true (default), the parameter returned for edges measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-calculate parameterization.
+ *             This field only controls the parameter returned for edges.  It does not control the
+ *             parameter returned for points, [Line]s, faces, or [Plane]s.
+ *          @optional
  * }}
  */
 export function evDistance(context is Context, arg is map) returns DistanceResult
@@ -378,12 +385,10 @@ predicate canBeEdgeCurvatureResult(value)
  *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
  *      @field parameter {number}:
  *             A number in the range 0..1 indicating the point along the curve to evaluate the frame at.
- *      @field arcLengthParameterization :
+ *      @field arcLengthParameterization {boolean} :
  *             If true (default), the parameter measures distance
  *             along the edge, so `0.5` is the midpoint.
  *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
  *             The parameterization is identical to that used by [evEdgeTangentLines].
  *             Results obtained with arcLengthParameterization will have lower accuracy due to approximation.
  *          @optional
@@ -411,12 +416,10 @@ export function evEdgeCurvature(context is Context, arg is map) returns EdgeCurv
  *      @field parameters {array}:
  *             An array of numbers in the range 0..1 indicating points along
  *             the curve to evaluate frames at.
- *      @field arcLengthParameterization :
+ *      @field arcLengthParameterization {boolean} :
  *             If true (default), the parameter measures distance
  *             along the edge, so `0.5` is the midpoint.
  *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
  *             The parameterization is identical to that used by [evEdgeTangentLines].
  *             Results obtained with arcLengthParameterization will have lower accuracy due to approximation.
  *          @optional
@@ -484,12 +487,10 @@ export function curvatureFrameBinormal(curvatureResult is EdgeCurvatureResult) r
  *      @field parameter {number}:
  *             A number in the range 0..1 indicating a point along
  *             the curve to evaluate the tangent at.
- *      @field arcLengthParameterization :
+ *      @field arcLengthParameterization {boolean} :
  *             If true (default), the parameter measures distance
  *             along the edge, so `0.5` is the midpoint.
  *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
  *          @optional
  *      @field face {Query} :
  *             If present, the edge orientation used is such that walking along the edge
@@ -512,12 +513,10 @@ export function evEdgeTangentLine(context is Context, arg is map) returns Line
  *      @field parameters {array}:
  *             An array of numbers in the range 0..1 indicating points along
  *             the curve to evaluate tangents at.
- *      @field arcLengthParameterization :
+ *      @field arcLengthParameterization {boolean} :
  *             If true (default), the parameter measures distance
  *             along the edge, so `0.5` is the midpoint.
  *             If false, use an arbitrary but faster-to-evaluate parameterization.
- *             For efficiency, use false if calculating the tangent only to an end point of the edge
- *             because the result will be identical.
  *          @optional
  *      @field face {Query} :
  *             If present, the edge orientation used is such that walking along the edge
@@ -670,7 +669,14 @@ precondition
  * @param arg {{
  *      @field edge{Query}
  *      @field face{Query}
- *      @field parameter{number}
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating a point along
+ *             the edge to evaluate the tangent at.
+ *      @field arcLengthParameterization {boolean} :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *          @optional
  *      @field usingFaceOrientation{boolean}:
  *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
  *             normal will keep `face` to the left. If false, use the default orientation of the edge,
@@ -690,7 +696,14 @@ export function evFaceNormalAtEdge(context is Context, arg is map) returns Vecto
  * @param arg {{
  *      @field edge{Query}
  *      @field face{Query}
- *      @field parameter{number}
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating a point along
+ *             the edge to evaluate the tangent at.
+ *      @field arcLengthParameterization {boolean} :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+  *          @optional
  *      @field usingFaceOrientation{boolean}:
  *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
  *             normal will keep `face` to the left. If false, use the default orientation of the edge,
@@ -705,13 +718,15 @@ precondition
     arg.edge is Query;
     arg.face is Query;
     arg.parameter is number;
+    arg.arcLengthParameterization is undefined || arg.arcLengthParameterization is boolean;
     arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
 }
 {
     var edgeTangent = evEdgeTangentLine(context, {
             "edge" : arg.edge,
             "parameter" : arg.parameter,
-            "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined
+            "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined,
+            "arcLengthParameterization" : arg.arcLengthParameterization
     });
     var distData = evDistance(context, {
             "side0" : arg.face,

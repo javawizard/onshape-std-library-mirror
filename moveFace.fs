@@ -320,7 +320,8 @@ function getOffsetToEntity(context is Context, face is Query, definition is map,
                     "side0" : face,
                     "side1" : definition.limitQuery,
                     "extendSide0" : true,
-                    "extendSide1" : size(limitPlaneEntity) == 1
+                    "extendSide1" : size(limitPlaneEntity) == 1,
+                    "arcLengthParameterization" : false
                 }));
 
     if (distanceResult == undefined)
@@ -815,7 +816,8 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                                 {
                                     const offsetDistance = evDistance(context, {
                                               "side0" : partFace,
-                                              "side1" : smEdge
+                                              "side1" : smEdge,
+                                              "arcLengthParameterization" : false
                                            });
                                     edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                                               "face" : adjacentFaceSMFace[0],
@@ -1415,7 +1417,8 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
         {
             const offsetDistance = evDistance(context, {
                         "side0" : partFace,
-                        "side1" : smEdge
+                        "side1" : smEdge,
+                        "arcLengthParameterization" : false
                     });
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                         "face" : adjacentFaceSMFace[0],

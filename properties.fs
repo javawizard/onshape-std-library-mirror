@@ -25,11 +25,11 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  *      @field entities {Query} : The bodies to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
- *      @field customPropertyId {string} : @optional
- *          If `propertyType` is `CUSTOM`, this is the id of the custom property.  The property id is
- *          available from the Properties page in the company settings.  Note that this call performs no
- *          checks as to whether the custom property value is valid, so invalid property values may be
- *          recorded.
+ *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
+ *          The id of the custom property.  The property id is available from your
+ *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          Note that this call performs no checks as to whether the custom property value is valid, so
+ *          invalid property values may be recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
  *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.  The value should be a string
  *          for a `CUSTOM` property even if the property is of a non-string type.

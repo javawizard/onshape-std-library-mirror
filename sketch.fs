@@ -426,8 +426,9 @@ precondition
  * @param ellipseId : @autocomplete `"ellipse1"`
  * @param value {{
  *      @field center {Vector} : @eg `vector(0, 0) * inch`
- *      @field majorRadius {Vector} : @eg `2 * inch`
- *      @field minorRadius {Vector} : @eg `1 * inch`
+ *      @field majorRadius {ValueWithUnits} : @eg `2 * inch`
+ *      @field minorRadius {ValueWithUnits} : @eg `1 * inch`
+ *      @field majorAxis {Vector} : @optional A unitless 2D direction, specifying the orientation of the major axis
  *      @field construction {boolean} : `true` for a construction line @optional
  * }}
  * @return {{
@@ -438,7 +439,7 @@ export function skEllipse(sketch is Sketch, ellipseId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.majorAxis is undefined || is2dDirection(value.majorAxis) || is2dPoint(value.majorAxis);
     value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
     value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.construction is undefined || value.construction is boolean;
@@ -486,7 +487,7 @@ precondition
  *      @field center {Vector} :
  *              @eg `vector(0, 0) * inch`
  *      @field majorAxis {Vector} : The direction, in sketch coordinates, in which the major axis of the ellipse lies.
- *              @eg `vector(1, 0) * inch`
+ *              @eg `normalize(vector(1, 1))`
  *      @field minorRadius {ValueWithUnits} : A non-negative value with length units.
  *              @eg `1 * inch`
  *      @field majorRadius {ValueWithUnits} : A non-negative value with length units. Does not need to be greater than
@@ -507,7 +508,7 @@ export function skEllipticalArc(sketch is Sketch, arcId is string, value is map)
 precondition
 {
     value.center is undefined || is2dPoint(value.center);
-    value.majorAxis is undefined || is2dPoint(value.majorAxis);
+    value.majorAxis is undefined || is2dDirection(value.majorAxis) || is2dPoint(value.majorAxis);
     value.minorRadius is undefined || isLength(value.minorRadius, SKETCH_RADIUS_BOUNDS);
     value.majorRadius is undefined || isLength(value.majorRadius, SKETCH_RADIUS_BOUNDS);
     value.startParameter is undefined || value.startParameter is number;

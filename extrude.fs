@@ -347,7 +347,7 @@ predicate mainViewExtrudePredicate(definition is map)
             annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
             isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
             definition.draftPullDirection is boolean;
         }
     }
@@ -380,7 +380,7 @@ predicate mainViewExtrudePredicate(definition is map)
                     annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : "DISPLAY_SHORT" }
                     isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
 
-                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
                     definition.secondDirectionDraftPullDirection is boolean;
                 }
             }
