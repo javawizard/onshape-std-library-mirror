@@ -1383,6 +1383,7 @@ function addBendAttribute(context is Context, edge is Query, flangeData is map, 
     var attributeId = toAttributeId(topLevelId + index);
     var bendAttribute = makeSMJointAttribute(attributeId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+    bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     bendAttribute.radius = {
         "value" : definition.bendRadius,
         "canBeEdited" : true

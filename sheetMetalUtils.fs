@@ -81,7 +81,8 @@ export function setCylindricalBendAttribute(context is Context, face is Query, f
             "face" : face
     });
     var bendAttribute = makeSMJointAttribute(attributeId);
-    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited" : false };
+    bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     const angleVal = cylinderAngle(context, face);
     bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
 
@@ -1369,6 +1370,7 @@ export function createBendAttribute(context is Context, id is Id, edge is Query,
 {
     var bendAttribute = makeSMJointAttribute(bendId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+    bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     bendAttribute.radius = {
         "value" : bendRadius,
         "canBeEdited" : true

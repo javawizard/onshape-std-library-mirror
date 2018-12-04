@@ -451,7 +451,8 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     var startPointData = computeCSys(context, location, definition);
     var startPointCSys = startPointData.startPointCSys;
 
-    const holeId = id + ("hole-" ~ holeNumber);
+    const useUnstableComponent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
+    const holeId = (useUnstableComponent) ? id + unstableIdComponent("hole-" ~ holeNumber) : id + ("hole-" ~ holeNumber);
 
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }], "resultBack" : [{ "distance" : 0 * meter }] };
     if (calculateStartPoint(context, definition))
@@ -475,6 +476,10 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
                     "firstBodyCastDiameter" : firstBodyCastDiameter,
                     "scope" : definition.scope,
                     "needBack" : false });
+    }
+    if (useUnstableComponent)
+    {
+        setExternalDisambiguation(context, holeId, location);
     }
     var cutHoleResult = cutHole(context, holeId, definition, startDistances, startPointCSys);
     if (cutHoleResult.success)
@@ -701,11 +706,15 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     var cboreTrackingSpecs = [];
     var csinkTrackingSpecs = [];
     var holeStyle = HoleStyle.SIMPLE;
+
+    //Using common start prefix ensures intersection edge reference stability towards hole type  change.
+    const useCommonPrefix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
+    const commonStartPrefix = "start";
     if (isCBore)
     {
         holeStyle = HoleStyle.C_BORE;
         cboreTrackingSpecs = sketchCBore(context, {
-                    "prefix" : "cbore_start",
+                    "prefix" : (useCommonPrefix) ? commonStartPrefix : "cbore_start",
                     "sketch" : sketch,
                     "startDepth" : startDepth,
                     "endDepth" : frontDist + holeDefinition.cBoreDepth,
@@ -723,7 +732,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             cSinkStartDepth += holeDefinition.cBoreDepth;
 
         csinkTrackingSpecs = sketchCSink(context, {
-                    "prefix" : "csink_start",
+                    "prefix" : (useCommonPrefix) ? commonStartPrefix : "csink_start",
                     "sketch" : sketch,
                     "isPositive" : true,
                     "startDepth" : cSinkStartDepth,

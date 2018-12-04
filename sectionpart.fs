@@ -170,8 +170,8 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
                             toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
         const jogPointsArray = convertToPointsArray(false, cutPoints, []);
         const offsetDistancesArray = [];
-        jogSectionCut(context, id, definition.target, sketchPlane, false, jogPointsArray, offsetDistancesArray, false);
-    }, {"isPartialSection" : false, "isBrokenOut" : false});
+        jogSectionCut(context, id, definition.target, sketchPlane, false, jogPointsArray, offsetDistancesArray, false, false, []);
+    }, {"isPartialSection" : false, "isBrokenOut" : false, "isCropView" : false});
 
 /**
  * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
@@ -181,7 +181,13 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
  *      @field sketchPlane {Plane} :  Plane that the jog line will be drawn in and extruded normal to. Everything
  *                                    on the positive x side of the jog line will be removed.
  *      @field jogPoints {array} : Points that the cutting line goes through in world coordinates.
- * }}
+ *      @field isPartialSection {boolean} : Whether or not it is a partial section cut.
+ *      @field isBrokenOut {boolean} : Whether or not it is a broken-out section cut.
+ *      @field isCropView {boolean} : Whether or not it is a crop section cut.
+ *      @field brokenOutPointNumbers {array} : Array of the number of spline points of each broken-out section cut.
+ *      @field brokenOutEndConditions {array} : Array of end conditions of each broken-out section cut.
+ *      @field offsetPoints {array} : Array of points for offsetting the section lines.
+* }}
  */
 export const jogSectionPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -190,15 +196,27 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         definition.sketchPlane is Plane;
         definition.jogPoints is array;
         for (var point in definition.jogPoints)
-             is3dLengthVector(point);
+        {
+            if (point != undefined)
+            {
+                is3dLengthVector(point);
+            }
+        }
+        definition.isPartialSection is boolean;
+        definition.isBrokenOut is boolean;
+        definition.isCropView is boolean;
+        definition.brokenOutPointNumbers is array;
+        definition.brokenOutEndConditions is array;
+        definition.offsetPoints is array;
     }
     {
         const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
-        const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
+        const jogPointsArray = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
         const offsetDistancesArray = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut);
-    }, {"isPartialSection" : false, "isBrokenOut" : false});
+        const offsetPoints = definition.offsetPoints != undefined ? definition.offsetPoints : [];
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut, definition.isCropView, offsetPoints);
+    }, {isPartialSection : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
 
 /**
  * @internal
@@ -217,15 +235,22 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
                 is3dLengthVector(point);
             }
         }
+        definition.isPartialSection is boolean;
+        definition.isBrokenOut is boolean;
+        definition.isCropView is boolean;
+        definition.brokenOutPointNumbers is array;
+        definition.brokenOutEndConditions is array;
+        definition.offsetPoints is array;
     }
     {
         // remove sheet metal attributes and helper bodies
         clearSheetMetalData(context, id + "sheetMetal", undefined);
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
-        const jogPointsArray = convertToPointsArray(definition.isBrokenOut, definition.jogPoints, brokenOutPointNumbers);
+        const jogPointsArray = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
         const offsetDistancesArray = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
-        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut);
-    }, { "isPartialSection" : false, "isBrokenOut" : false });
+        jogSectionCut(context, id, definition.target, definition.sketchPlane, definition.isPartialSection, jogPointsArray, offsetDistancesArray, definition.isBrokenOut,
+                definition.isCropView, definition.offsetPoints);
+    }, { isPartialSection : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
 
 /**
  * Collect the spline points and the depth point from each broken-out section and convert it into an array of array
@@ -233,10 +258,10 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
  * Format of 'jogPoints': [pointsForBrokenOut1, depthPoint1, pointsForBrokenOut2, depthPoint2, ...]
  * 'brokenOutPointNumbers' tells us how many points each broken-out section has: [size(pointsForBrokenOut1), size(pointsForBrokenOut2), ...]
  */
-function convertToPointsArray(isBrokenOut is boolean, jogPoints is array, brokenOutPointNumbers is array)
+function convertToPointsArray(isBrokenOutOrCropView is boolean, jogPoints is array, brokenOutPointNumbers is array)
 {
     var jogPointsArray;
-    if (isBrokenOut && brokenOutPointNumbers != undefined && size(brokenOutPointNumbers) > 0)
+    if (isBrokenOutOrCropView && brokenOutPointNumbers != undefined && size(brokenOutPointNumbers) > 0)
     {
         var jogPointIndex = 0;
         var numberOfBrokenOut = size(brokenOutPointNumbers);
@@ -244,8 +269,8 @@ function convertToPointsArray(isBrokenOut is boolean, jogPoints is array, broken
         for (var i = 0; i < numberOfBrokenOut; i = i + 1)
         {
             const numberOfJogPoints = brokenOutPointNumbers[i];
-            var points = makeArray(numberOfJogPoints+1); // need to add an additional one for the depth point
-            for (var j = 0; j < numberOfJogPoints+1; j = j + 1)
+            var points = makeArray(numberOfJogPoints + 1); // need to add an additional one for the depth point
+            for (var j = 0; j < numberOfJogPoints + 1; j = j + 1)
             {
                 points[j] = jogPoints[jogPointIndex];
                 jogPointIndex = jogPointIndex + 1;
@@ -261,20 +286,20 @@ function convertToPointsArray(isBrokenOut is boolean, jogPoints is array, broken
     return jogPointsArray;
 }
 
-function getOffsetDistancesArray(offsetDistances is array)
+function getOffsetDistancesArray(endConditions is array)
 {
     var offsetDistancesArray = [];
-    if (offsetDistances != undefined && size(offsetDistances) > 0)
+    if (endConditions != undefined && size(endConditions) > 0)
     {
-        var numberOfOffset = size(offsetDistances);
+        var numberOfOffset = size(endConditions);
         offsetDistancesArray = makeArray(numberOfOffset);
         for (var i = 0; i < numberOfOffset; i = i + 1)
         {
-            var offset = 0.0 * meter;
-            if (offsetDistances[i] != undefined && offsetDistances[i].hasOffset && offsetDistances[i].offsetDistance != undefined)
+            var offset = undefined;
+            if (endConditions[i] != undefined && endConditions[i].hasOffset && endConditions[i].offsetDistance != undefined)
             {
-                offset = offsetDistances[i].offsetDistance;
-                if (offsetDistances[i].offsetOppositeDirection)
+                offset = endConditions[i].offsetDistance;
+                if (endConditions[i].offsetOppositeDirection)
                 {
                     offset *= -1;
                 }
@@ -285,15 +310,15 @@ function getOffsetDistancesArray(offsetDistances is array)
     return offsetDistancesArray;
 }
 
-function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPointsArray is array, offsetDistancesArray is array, isBrokenOut is boolean)
+function jogSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, isPartialSection is boolean, jogPointsArray is array, offsetDistancesArray is array, isBrokenOut is boolean, isCropView is boolean, offsetPoints is array)
 {
     opDeleteBodies(context, id + "initialDelete", { "entities" : qSubtraction(qEverything(EntityType.BODY), target) });
 
     try
     {
-        if (isBrokenOut)
+        if (isBrokenOut || isCropView)
         {
-            brokenOutSectionCut(context, id, target, sketchPlane, jogPointsArray, offsetDistancesArray);
+            brokenOutSectionCut(context, id, target, sketchPlane, jogPointsArray, offsetDistancesArray, isCropView);
         }
         else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
         {
@@ -316,15 +341,45 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
                 projectedPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
             }
             checkJogDirection(projectedPoints);
-            const polygon = isPartialSection ? createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane)
-                : createJogPolygon(projectedPoints, boxResult, offsetPlane);
+            // check if this is a section cut with offset
+            var isOffsetCut = false;
+            var offsetDistance = 0.0 * meter;
+            const hasOffsetDistance = offsetDistancesArray != undefined && size(offsetDistancesArray) == 1 && offsetDistancesArray[0] != undefined;
+            const offsetPoint = offsetPoints != undefined && size(offsetPoints) > 0 ? offsetPoints[0] : undefined;
+            if (numberOfPoints == 2 && (hasOffsetDistance || offsetPoint != undefined))
+            {
+                isOffsetCut = true;
+                if (hasOffsetDistance)
+                {
+                    offsetDistance = offsetDistancesArray[0];
+                }
+                // adjust the offset distance if the offset point is specified
+                if (offsetPoint != undefined)
+                {
+                    const projectedOffsetPoint = worldToPlane(offsetPlane, offsetPoint);
+                    offsetDistance += (projectedOffsetPoint[0] - projectedPoints[0][0]);
+                }
+            }
+
+            var polygon;
+            if (isOffsetCut)
+            {
+                polygon = createJogPolygonForOffsetCut(projectedPoints, boxResult, offsetPlane, offsetDistance);
+            }
+            else if (isPartialSection)
+            {
+                polygon = createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane);
+            }
+            else
+            {
+                polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
+            }
             const sketchId = id + "sketch";
 
             sketchPolyline(context, sketchId, polygon, offsetPlane);
             const extrudeId = id + "extrude";
             const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-
-            extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2]);
+            extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut);
             opDeleteBodies(context, id + "deleteSketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
         }
     }
@@ -337,7 +392,7 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
 /**
  * 'jogPointsArray' is an array of array, each array contains the spline section points and the depth point
  */
-function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array, offsetDistancesArray is array)
+function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, jogPointsArray is array, offsetDistancesArray is array, isCropView is boolean)
 {
     const coordinateSystem = planeToCSys(sketchPlane);
     const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
@@ -361,7 +416,12 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         // Shift the plane and box to 'uptoPoint' if it is a broken-out section view and uptoPoint is specified
         var offset = 0 * meter;
-        if (uptoPoint == undefined) // set the max corner of the bbox as the default upto point
+        if (isCropView) // for crop view, there is no depth, always from minCorner to maxCorner
+        {
+            uptoPoint = toWorld(coordinateSystem, boxResult.minCorner);
+        }
+
+        if (uptoPoint == undefined)
         {
             uptoPoint = toWorld(coordinateSystem, boxResult.maxCorner);
         }
@@ -370,10 +430,11 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
             const dir = uptoPoint - defaultOrigin;
             offset = dot(dir, sketchPlane.normal);
         }
-        if (offsetDistancesArray != undefined && size(offsetDistancesArray) > brokenOutIndex)
+        if (offsetDistancesArray != undefined && size(offsetDistancesArray) > brokenOutIndex && offsetDistancesArray[brokenOutIndex] != undefined && !isCropView)
         {
             offset += offsetDistancesArray[brokenOutIndex];
         }
+        var extrudeDistance = isCropView ? boxResult.maxCorner[2] - boxResult.minCorner[2] : boxResult.maxCorner[2] + abs(offset);
         var origin = defaultOrigin + offset * sketchPlane.normal;
         const offsetPlane = plane(origin, sketchPlane.normal, sketchPlane.x);
 
@@ -396,19 +457,20 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         const extrudeId = id + ("extrude" ~ brokenOutIndex);
         const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-        extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2] + abs(offset));
+        extrudeCut(context, extrudeId, target, sketchRegionQuery, extrudeDistance, isCropView);
         opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
     }
 }
 
-function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits)
+function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth is ValueWithUnits, isIntersect is boolean)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
-    if (depth < 2 * TOLERANCE.booleanDefaultTolerance * meter) {
+    if (depth < 2 * TOLERANCE.booleanDefaultTolerance * meter)
+    {
         depth = (2 * TOLERANCE.booleanDefaultTolerance) * meter;
     }
     const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
-            "operationType" : NewBodyOperationType.REMOVE,
+            "operationType" : isIntersect ? NewBodyOperationType.INTERSECT : NewBodyOperationType.REMOVE,
             "entities" : sketchRegionQuery,
             "endBound" : BoundingType.BLIND,
             "depth" : depth,
@@ -445,6 +507,18 @@ function checkJogDirection(pointsInPlane is array)
     {
         throw regenError(ErrorStringEnum.SELF_INTERSECTING_CURVE_SELECTED);
     }
+}
+
+function createJogPolygonForOffsetCut(points is array, boundingBox is Box3d, sketchPlane is Plane, offsetDistance is ValueWithUnits) returns array
+{
+    var polygonVertices = concatenateArrays([points, makeArray(3)]);
+
+    const pointCount = size(points);
+    polygonVertices[pointCount] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
+    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
+    polygonVertices[pointCount + 2] = polygonVertices[0];
+
+    return polygonVertices;
 }
 
 function createJogPolygon(points is array, boundingBox is Box3d, sketchPlane is Plane) returns array

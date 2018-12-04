@@ -29,13 +29,15 @@ FeatureScript ✨; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "✨");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "✨");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "✨");
 export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/smbendtype.gen.fs", version : "✨");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "✨");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "✨");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "✨");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "✨");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "✨");
+
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
@@ -90,11 +92,16 @@ export predicate canBeSMAttribute (value)
     {
         if (value.jointType.value == SMJointType.BEND)
         {
+            value.bendType == undefined || value.bendType.value is SMBendType;
             value.radius == undefined || isLength(value.radius.value);
+            value.angle == undefined || isAngle(value.angle.value);
+            // This parameter does not follow the `value`/`canBeEdited` pattern.  It is just a raw boolean.
             value.unfolded == undefined || value.unfolded is boolean;
         }
         else if (value.jointType.value == SMJointType.RIP)
         {
+            value.jointStyle == undefined || value.jointStyle.value is SMJointStyle;
+            value.angle == undefined || isAngle(value.angle.value);
             value.minimalClearance == undefined || isLength(value.minimalClearance.value);
         }
     }

@@ -159,6 +159,10 @@ precondition
         "parameterIdInFeature" : "jointType",
         "canBeEdited" : true
     };
+    bendAttribute.bendType = {
+            "value" : SMBendType.STANDARD,
+            "canBeEdited" : false
+    };
     bendAttribute.radius = {
             "value" : radius,
             "canBeEdited" : true,

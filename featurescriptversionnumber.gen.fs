@@ -728,7 +728,10 @@ export enum FeatureScriptVersionNumber
     V948_BOOLEAN_TOOLS_STRICTER,
     V949_BLOCK_EXCESSIVE_MERGE,
     V950_PARTIAL_BEND_CUT,
-    V951_FAIL_SURFACE_BOOLEAN
+    V951_FAIL_SURFACE_BOOLEAN,
+    V959_SKETCH_FAIL_SPLIT_VERTEX,
+    V960_HOLE_IDENTITY,
+    V961_HEM_AS_BEND
 }
 
 /**
@@ -739,6 +742,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V951_FAIL_SURFACE_BOOLEAN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V961_HEM_AS_BEND;
 
 

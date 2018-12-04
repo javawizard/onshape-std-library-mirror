@@ -808,7 +808,7 @@ export function qNonCapEntity(featureId is Id) returns Query
  * @internal
  * Under development, not for general use.
  *
- * A query for looking up entities named by opNameTopology
+ * A query for looking up entities named by opNameEntity
  */
 export function qNamed(name is string) returns Query
 {
