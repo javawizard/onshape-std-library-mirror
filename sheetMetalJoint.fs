@@ -1,23 +1,23 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "951.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "951.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "961.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "961.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/valueBounds.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/attributes.fs", version : "951.0");
-import(path : "onshape/std/evaluate.fs", version : "951.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
-import(path : "onshape/std/math.fs", version : "951.0");
-import(path : "onshape/std/modifyFillet.fs", version : "951.0");
-import(path : "onshape/std/string.fs", version : "951.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/valueBounds.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/attributes.fs", version : "961.0");
+import(path : "onshape/std/evaluate.fs", version : "961.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "961.0");
+import(path : "onshape/std/math.fs", version : "961.0");
+import(path : "onshape/std/modifyFillet.fs", version : "961.0");
+import(path : "onshape/std/string.fs", version : "961.0");
 
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
@@ -158,6 +158,10 @@ precondition
         "controllingFeatureId" : toAttributeId(id),
         "parameterIdInFeature" : "jointType",
         "canBeEdited" : true
+    };
+    bendAttribute.bendType = {
+            "value" : SMBendType.STANDARD,
+            "canBeEdited" : false
     };
     bendAttribute.radius = {
             "value" : radius,

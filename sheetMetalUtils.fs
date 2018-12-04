@@ -1,28 +1,28 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "951.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "951.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/coordSystem.fs", version : "951.0");
-import(path : "onshape/std/curveGeometry.fs", version : "951.0");
-import(path : "onshape/std/evaluate.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/math.fs", version : "951.0");
-import(path : "onshape/std/manipulator.fs", version : "951.0");
-import(path : "onshape/std/query.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "951.0");
-import(path : "onshape/std/string.fs", version : "951.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
-import(path : "onshape/std/tool.fs", version : "951.0");
-import(path : "onshape/std/valueBounds.fs", version : "951.0");
-import(path : "onshape/std/vector.fs", version : "951.0");
-import(path : "onshape/std/topologyUtils.fs", version : "951.0");
-import(path : "onshape/std/transform.fs", version : "951.0");
+import(path : "onshape/std/attributes.fs", version : "961.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "961.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/coordSystem.fs", version : "961.0");
+import(path : "onshape/std/curveGeometry.fs", version : "961.0");
+import(path : "onshape/std/evaluate.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/math.fs", version : "961.0");
+import(path : "onshape/std/manipulator.fs", version : "961.0");
+import(path : "onshape/std/query.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "961.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "961.0");
+import(path : "onshape/std/string.fs", version : "961.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "961.0");
+import(path : "onshape/std/tool.fs", version : "961.0");
+import(path : "onshape/std/valueBounds.fs", version : "961.0");
+import(path : "onshape/std/vector.fs", version : "961.0");
+import(path : "onshape/std/topologyUtils.fs", version : "961.0");
+import(path : "onshape/std/transform.fs", version : "961.0");
 
 
 
@@ -81,7 +81,8 @@ export function setCylindricalBendAttribute(context is Context, face is Query, f
             "face" : face
     });
     var bendAttribute = makeSMJointAttribute(attributeId);
-    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": false };
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited" : false };
+    bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     const angleVal = cylinderAngle(context, face);
     bendAttribute.angle = {"value" : angleVal, "canBeEdited" : false};
 
@@ -1369,6 +1370,7 @@ export function createBendAttribute(context is Context, id is Id, edge is Query,
 {
     var bendAttribute = makeSMJointAttribute(bendId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+    bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     bendAttribute.radius = {
         "value" : bendRadius,
         "canBeEdited" : true

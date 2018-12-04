@@ -1,4 +1,4 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,18 +29,20 @@ FeatureScript 951; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "951.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "951.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "951.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "951.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "951.0");
-export import(path : "onshape/std/context.fs", version : "951.0");
-export import(path : "onshape/std/query.fs", version : "951.0");
-import(path : "onshape/std/attributes.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/units.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/string.fs", version : "951.0");
+export import(path : "onshape/std/context.fs", version : "961.0");
+export import(path : "onshape/std/query.fs", version : "961.0");
+export import(path : "onshape/std/smbendtype.gen.fs", version : "961.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "961.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "961.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "961.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "961.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "961.0");
+
+import(path : "onshape/std/attributes.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/units.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/string.fs", version : "961.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -90,11 +92,16 @@ export predicate canBeSMAttribute (value)
     {
         if (value.jointType.value == SMJointType.BEND)
         {
+            value.bendType == undefined || value.bendType.value is SMBendType;
             value.radius == undefined || isLength(value.radius.value);
+            value.angle == undefined || isAngle(value.angle.value);
+            // This parameter does not follow the `value`/`canBeEdited` pattern.  It is just a raw boolean.
             value.unfolded == undefined || value.unfolded is boolean;
         }
         else if (value.jointType.value == SMJointType.RIP)
         {
+            value.jointStyle == undefined || value.jointStyle.value is SMJointStyle;
+            value.angle == undefined || isAngle(value.angle.value);
             value.minimalClearance == undefined || isLength(value.minimalClearance.value);
         }
     }

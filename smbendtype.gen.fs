@@ -3,17 +3,15 @@ FeatureScript 961; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+/* Automatically generated file -- DO NOT EDIT */
+
 /**
- * Defines whether each hole should have a countersink, a counterbore, or neither.
+ * @internal.
  */
-export enum HoleStyle
+export enum SMBendType
 {
-    annotation { "Name" : "Simple" }
-    SIMPLE,
-    annotation { "Name" : "Counterbore" }
-    C_BORE,
-    annotation { "Name" : "Countersink" }
-    C_SINK
+    STANDARD,
+    HEM
 }
 
 

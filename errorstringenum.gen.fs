@@ -1,4 +1,4 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1711,10 +1711,12 @@ export enum ErrorStringEnum
     DISPLAY_STATES_DUPLICATE_NAME,
     /* No upgrade available. To update DB with new standard library code, first enable BTWebCapability.UPGRADE_STANDARD_LIBRARY */
     WORKSPACE_UPGRADE_NONE_ENABLE_CAPABILITY,
-    /* Update had no effect. The display state already reflects the current state of the assembly.  */
+    /* Update had no effect. The display state already reflects the current state of the assembly. */
     DISPLAY_STATES_UPDATE_HAD_NO_EFFECT,
-    /* Application of the display state had no effect.  */
-    DISPLAY_STATES_APPLY_HAD_NO_EFFECT
+    /* Application of the display state had no effect. */
+    DISPLAY_STATES_APPLY_HAD_NO_EFFECT,
+    /* Failed to resolve display state. */
+    DISPLAY_STATES_DOES_NOT_EXIST
 }
 
 

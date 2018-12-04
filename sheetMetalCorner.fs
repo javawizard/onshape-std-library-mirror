@@ -1,20 +1,20 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "951.0");
+export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "961.0");
 
-import(path : "onshape/std/attributes.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/evaluate.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "951.0");
-import(path : "onshape/std/valueBounds.fs", version : "951.0");
+import(path : "onshape/std/attributes.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/evaluate.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "961.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "961.0");
+import(path : "onshape/std/valueBounds.fs", version : "961.0");
 
 /**
  * Corner feature is used to override default sheet metal model corner relief style or dimensions for an individual corner

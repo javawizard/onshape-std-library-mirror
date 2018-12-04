@@ -1,34 +1,34 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "951.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
-import(path : "onshape/std/box.fs", version : "951.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/coordSystem.fs", version : "951.0");
-import(path : "onshape/std/evaluate.fs", version : "951.0");
-import(path : "onshape/std/extrude.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/mathUtils.fs", version : "951.0");
-import(path : "onshape/std/revolve.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
-import(path : "onshape/std/sketch.fs", version : "951.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
-import(path : "onshape/std/tool.fs", version : "951.0");
-import(path : "onshape/std/valueBounds.fs", version : "951.0");
-import(path : "onshape/std/string.fs", version : "951.0");
-import(path : "onshape/std/holetables.gen.fs", version : "951.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "951.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "951.0");
-import(path : "onshape/std/cylinderCast.fs", version : "951.0");
-import(path : "onshape/std/curveGeometry.fs", version : "951.0");
-import(path : "onshape/std/attributes.fs", version : "951.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "951.0");
-export import(path : "onshape/std/holeUtils.fs", version : "951.0");
+import(path : "onshape/std/boolean.fs", version : "961.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "961.0");
+import(path : "onshape/std/box.fs", version : "961.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/coordSystem.fs", version : "961.0");
+import(path : "onshape/std/evaluate.fs", version : "961.0");
+import(path : "onshape/std/extrude.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/mathUtils.fs", version : "961.0");
+import(path : "onshape/std/revolve.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "961.0");
+import(path : "onshape/std/sketch.fs", version : "961.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "961.0");
+import(path : "onshape/std/tool.fs", version : "961.0");
+import(path : "onshape/std/valueBounds.fs", version : "961.0");
+import(path : "onshape/std/string.fs", version : "961.0");
+import(path : "onshape/std/holetables.gen.fs", version : "961.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "961.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "961.0");
+import(path : "onshape/std/cylinderCast.fs", version : "961.0");
+import(path : "onshape/std/curveGeometry.fs", version : "961.0");
+import(path : "onshape/std/attributes.fs", version : "961.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "961.0");
+export import(path : "onshape/std/holeUtils.fs", version : "961.0");
 
 
 /**
@@ -451,7 +451,8 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     var startPointData = computeCSys(context, location, definition);
     var startPointCSys = startPointData.startPointCSys;
 
-    const holeId = id + ("hole-" ~ holeNumber);
+    const useUnstableComponent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
+    const holeId = (useUnstableComponent) ? id + unstableIdComponent("hole-" ~ holeNumber) : id + ("hole-" ~ holeNumber);
 
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }], "resultBack" : [{ "distance" : 0 * meter }] };
     if (calculateStartPoint(context, definition))
@@ -475,6 +476,10 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
                     "firstBodyCastDiameter" : firstBodyCastDiameter,
                     "scope" : definition.scope,
                     "needBack" : false });
+    }
+    if (useUnstableComponent)
+    {
+        setExternalDisambiguation(context, holeId, location);
     }
     var cutHoleResult = cutHole(context, holeId, definition, startDistances, startPointCSys);
     if (cutHoleResult.success)
@@ -701,11 +706,15 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     var cboreTrackingSpecs = [];
     var csinkTrackingSpecs = [];
     var holeStyle = HoleStyle.SIMPLE;
+
+    //Using common start prefix ensures intersection edge reference stability towards hole type  change.
+    const useCommonPrefix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
+    const commonStartPrefix = "start";
     if (isCBore)
     {
         holeStyle = HoleStyle.C_BORE;
         cboreTrackingSpecs = sketchCBore(context, {
-                    "prefix" : "cbore_start",
+                    "prefix" : (useCommonPrefix) ? commonStartPrefix : "cbore_start",
                     "sketch" : sketch,
                     "startDepth" : startDepth,
                     "endDepth" : frontDist + holeDefinition.cBoreDepth,
@@ -723,7 +732,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
             cSinkStartDepth += holeDefinition.cBoreDepth;
 
         csinkTrackingSpecs = sketchCSink(context, {
-                    "prefix" : "csink_start",
+                    "prefix" : (useCommonPrefix) ? commonStartPrefix : "csink_start",
                     "sketch" : sketch,
                     "isPositive" : true,
                     "startDepth" : cSinkStartDepth,

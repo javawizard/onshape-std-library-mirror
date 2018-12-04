@@ -1,26 +1,26 @@
-FeatureScript 951; /* Automatically generated version */
+FeatureScript 961; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "951.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "951.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "951.0");
-import(path : "onshape/std/containers.fs", version : "951.0");
-import(path : "onshape/std/context.fs", version : "951.0");
-import(path : "onshape/std/curveGeometry.fs", version : "951.0");
-import(path : "onshape/std/error.fs", version : "951.0");
-import(path : "onshape/std/evaluate.fs", version : "951.0");
-import(path : "onshape/std/feature.fs", version : "951.0");
-import(path : "onshape/std/math.fs", version : "951.0");
-import(path : "onshape/std/query.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "951.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "951.0");
-import(path : "onshape/std/sketch.fs", version : "951.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "951.0");
-import(path : "onshape/std/topologyUtils.fs", version : "951.0");
-import(path : "onshape/std/valueBounds.fs", version : "951.0");
-import(path : "onshape/std/vector.fs", version : "951.0");
+import(path : "onshape/std/attributes.fs", version : "961.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "961.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "961.0");
+import(path : "onshape/std/context.fs", version : "961.0");
+import(path : "onshape/std/curveGeometry.fs", version : "961.0");
+import(path : "onshape/std/error.fs", version : "961.0");
+import(path : "onshape/std/evaluate.fs", version : "961.0");
+import(path : "onshape/std/feature.fs", version : "961.0");
+import(path : "onshape/std/math.fs", version : "961.0");
+import(path : "onshape/std/query.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "961.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "961.0");
+import(path : "onshape/std/sketch.fs", version : "961.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "961.0");
+import(path : "onshape/std/topologyUtils.fs", version : "961.0");
+import(path : "onshape/std/valueBounds.fs", version : "961.0");
+import(path : "onshape/std/vector.fs", version : "961.0");
 
 /**
  * Specifies the type of alignment of the hem
@@ -260,21 +260,16 @@ function addHemsToSheetBody(context is Context, topLevelId is Id, edges is Query
                 modelParameters, sharedVertexToBoundingPlane);
 
         const hemSheetId = edgeId + "hemSheet";
-        const bodies = constructHemSheet(context, hemSheetId, hemData.profileSketchId, hemData.arcEdge, boundingPlanes, edgeToHemData[edge]);
+        const sheetMap = constructHemSheet(context, hemSheetId, hemData.profileSketchId, hemData.arcEdge, boundingPlanes, edgeToHemData[edge]);
+
+        annotateHemSheet(context, topLevelId, sheetMap.arcSheet, sheetMap.otherSheet, attributeIdCounter, hemData, modelParameters, definition);
 
         const coincidentVertexResult = evaluateQuery(context, hemData.coincidentVertexTracking);
         if (size(coincidentVertexResult) != 1)
-            throw "Hem extrusion did not result in expected edge"; // TODO: Maybe replace with generic ErrorStringEnum? This should not be hit, but if it is we should translate it.
-        const coincidentEdge = coincidentVertexResult[0];
-        const arcEndResult = evaluateQuery(context, hemData.arcEndTracking);
-        if (size(arcEndResult) != 1)
-            throw "Hem extrusion did not result in expected edge";
-        const arcEndEdge = arcEndResult[0];
-        annotateHemSheet(context, topLevelId, coincidentEdge, arcEndEdge, qCreatedBy(hemSheetId, EntityType.BODY), attributeIdCounter);
-
+            throw "Hem extrusion did not result in expected edge"; // TODO: generic ErrorStringEnum
         matches = append(matches, {
                     "topology1" : edge,
-                    "topology2" : coincidentEdge,
+                    "topology2" : coincidentVertexResult[0],
                     "matchType" : TopologyMatchType.COINCIDENT
                 });
 
@@ -424,9 +419,9 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
  * Sketch the hem profile for a given edge. `hemData` should be in the format outputted by `getHemData`.
  * @returns {{
  *     @field coincidentVertexTracking {Query} : a tracking query for the point on the sketch that is coincident with the hem edge.
- *     @field arcEndTracking {Query} : a tracking query for the end of the initial arc.
- *     @field arcEndLine {Vector} : a line whose origin is the position of the end of the initial arc, and whose direction is the tangent line at the end of the initial arc.
  *     @field arcEdge {Query} : the arc of the hem profile.
+ *     @field arcAngle {ValueWithUnits} : the central angle of the initial arc.
+ *     @field arcEndLine {Vector} : a line whose origin is the position of the end of the initial arc, and whose direction is the tangent line at the end of the initial arc.
  * }}
  */
 function sketchHemProfile(context is Context, id is Id, hemData is map, modelParameters is map, definition is map) returns map
@@ -443,9 +438,11 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
     const innerRadius = getInnerRadius(modelParameters, definition);
 
     var arcInfo;
+    var arcAngle;
     if (definition.hemType == SMHemType.ROLLED)
     {
-        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, definition.angle);
+        arcAngle = definition.angle;
+        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
     }
     else if (definition.hemType == SMHemType.TEAR_DROP)
     {
@@ -463,7 +460,8 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
     }
     else if (definition.hemType == SMHemType.STRAIGHT)
     {
-        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
+        arcAngle = 180 * degree;
+        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
         sketchHorizontalLineAfterInitialArc(sketch, modelParameters, definition.length, arcInfo.arcEnd, innerRadius);
     }
     else
@@ -484,11 +482,26 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
         arcEndLine.direction *= -1;
     }
 
+    if (arcAngle == undefined)
+    {
+        if (definition.hemType != SMHemType.TEAR_DROP)
+        {
+            throw "arcAngle should have been set"; // User will not hit this
+        }
+        // Must evaluate arc angle for tear drop after the solve since tear drop relies on constraints for positioning.
+        const arcLength = evLength(context, { "entities" : arcEdge });
+        const arcRadius = evCurveDefinition(context, { "edge" : arcEdge }).radius;
+        // arc percent of circle = arc length / (2 * pi * r)
+        // arc angle = 2 * pi * arc percent of circle
+        // arc angle = arc length / r
+        arcAngle = (arcLength / arcRadius) * radian;
+    }
+
     return {
             "coincidentVertexTracking" : startTracking(context, id, arcInfo.arcStartId),
-            "arcEndTracking" : startTracking(context, id, arcInfo.arcEndId),
-            "arcEndLine" : arcEndLine,
-            "arcEdge" : arcEdge
+            "arcEdge" : arcEdge,
+            "arcAngle" : arcAngle,
+            "arcEndLine" : arcEndLine
         };
 }
 
@@ -894,24 +907,16 @@ function constructHemBoundingPlaneForArc(context is Context, id is Id, isStart i
             });
     const hemCircleCenter = hemCircle.coordSystem.origin;
 
-    // Project the center of the hem arc and the arc end position onto the plane at the vertex of the hem edge.
+    // Project the center of the hem arc onto the plane at the vertex of the hem edge.
     const edgeEndPlane = plane(vertexPosition, edgeDirection);
     const projectedCenter = project(edgeEndPlane, hemCircleCenter);
-    const projectedIntersection = project(edgeEndPlane, intersectionResult.intersection);
-
-    // Measure the total angle that the arc covers by measuring the angle between the start and end of the arc (relying
-    // on the assumption that the arc covers more than 180 degrees).
-    const projectedCenterToVertex = normalize(vertexPosition - projectedCenter);
-    const projectedCenterToProjectedIntersection = normalize(projectedIntersection - projectedCenter);
-
-    const arcAngle = (360 * degree) - angleBetween(projectedCenterToVertex, projectedCenterToProjectedIntersection);
-    const arcPercentOfCircle = arcAngle / (360 * degree);
 
     // Project the vector from the start of the helix axis to the end of the helix onto the helix axis.  This is the total
     // height of the helix.  Use this to find the helical pitch (a.k.a. the height of one turn).
     const projectedCenterToIntersection = intersectionResult.intersection - projectedCenter;
-
     const lengthAlongEdgeToIntersection = dot((isStart ? 1.0 : -1.0) * edgeDirection, projectedCenterToIntersection);
+
+    const arcPercentOfCircle = hemData.arcAngle / (360 * degree);
     const heightOfOneTurn = lengthAlongEdgeToIntersection / arcPercentOfCircle;
 
     const wrapAroundFront = getWrapAroundFront(definition);
@@ -950,7 +955,7 @@ function constructHemBoundingPlaneForArc(context is Context, id is Id, isStart i
 function constructHemSheet(context is Context, id is Id, sketchId is Id, arcEdge is Query, boundingPlanes is map, hemData is map) returns map
 {
     const arcExtrudeId = id + "extrudeArc";
-    opExtrude(context, id + "arc", {
+    opExtrude(context, arcExtrudeId, {
                 "entities" : arcEdge,
                 "direction" : hemData.edgeDirection,
                 "startBound" : BoundingType.UP_TO_SURFACE,
@@ -987,40 +992,44 @@ function constructHemSheet(context is Context, id is Id, sketchId is Id, arcEdge
  * Add the appropriate sheet metal attributes to the hem sheet. `coincidentEdge` is the edge at which the hem sheet will attach to the master
  * sheet body.
  */
-function annotateHemSheet(context is Context, topLevelId is Id, coincidentEdge is Query, arcEndEdge is Query, hemSheetBodies is Query, attributeIdCounter is box)
+function annotateHemSheet(context is Context, topLevelId is Id, arcSheet is Query, otherSheet is Query, attributeIdCounter is box,
+        hemData is map, modelParameters is map, definition is map)
 {
-    // Each face created by the extrude needs a unique wall id
-    for (var face in evaluateQuery(context, qOwnedByBody(hemSheetBodies, EntityType.FACE)))
+    // Face of arc sheet needs bend attribute
+    var bendAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited" : false };
+    bendAttribute.bendType = { "value" : SMBendType.HEM, "canBeEdited" : false };
+    bendAttribute.radius = { "value" : getInnerRadius(modelParameters, definition), "canBeEdited" : false };
+    bendAttribute.angle = { "value" :  hemData.arcAngle, "canBeEdited" : false};
+    setAttribute(context, {
+                "entities" : qOwnedByBody(arcSheet, EntityType.FACE),
+                "attribute" : bendAttribute
+            });
+    attributeIdCounter[] += 1;
+
+    if (definition.hemType == SMHemType.STRAIGHT || definition.hemType == SMHemType.TEAR_DROP)
     {
+        const otherFaces = evaluateQuery(context, qOwnedByBody(otherSheet, EntityType.FACE));
+        if (size(otherFaces) != 1)
+        {
+            throw "Expected straight or tear drop hem to have one other face"; // TODO: generic ErrorStringEnum
+        }
         setAttribute(context, {
-                    "entities" : face,
+                    "entities" : otherFaces[0],
                     "attribute" : makeSMWallAttribute(toAttributeId(topLevelId + attributeIdCounter[]))
                 });
         attributeIdCounter[] += 1;
     }
-
-    // The edge that will attach to the master sheet needs a tangent joint
-    // TODO: Make new BEND_HEM attribute or similar to get hem into the table as bend, with bend line
-    var coincidentTangentAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
-    coincidentTangentAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
-    setAttribute(context, {
-                "entities" : coincidentEdge,
-                "attribute" : coincidentTangentAttribute
-            });
-    attributeIdCounter[] += 1;
-
-    if (size(evaluateQuery(context, hemSheetBodies)) == 2)
+    else if (definition.hemType == SMHemType.ROLLED)
     {
-        // If we ended up with a second sheet (representing the hem surface excluding the initial arc), we need to
-        // add a tangent joint where the initial arc connects to the
-        var arcToOtherAttribute = makeSMJointAttribute(toAttributeId(topLevelId + attributeIdCounter[]));
-        arcToOtherAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
-
-        setAttribute(context, {
-                    "entities" : arcEndEdge,
-                    "attribute" : arcToOtherAttribute
-                });
-        attributeIdCounter[] += 1;
+        if (evaluateQuery(context, qOwnedByBody(otherSheet, EntityType.FACE)) != [])
+        {
+            throw "Did not expect rolled to have additional sheet"; // TODO: generic ErrorStringEnum
+        }
+    }
+    else
+    {
+        throwHemTypeError(definition.hemType);
     }
 }
 
