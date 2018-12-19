@@ -390,7 +390,7 @@ precondition @size(axis) == 3;
 }
 
 /**
- * Returns the scalar triple product, a dot b cross c, of
+ * Returns the scalar triple product, a dot (b cross c), of
  * three 3-dimensional vectors.
  */
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
@@ -401,8 +401,7 @@ precondition
     @size(vector3) == 3;
 }
 {
-    const v2Crossv3 = cross(vector2, vector3);
-    return dot(vector1, v2Crossv3);
+    return dot(vector1, cross(vector2, vector3));
 }
 
 export function toString(value is Vector) returns string

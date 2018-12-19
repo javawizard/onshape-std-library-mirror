@@ -11,6 +11,8 @@ FeatureScript ✨; /* Automatically generated version */
 
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 
 /**
  * A three-dimensional bounding box.
@@ -47,6 +49,66 @@ export function box3d(minCorner is Vector, maxCorner is Vector) returns Box3d
         }
     }
     return { 'minCorner' : minCorner, 'maxCorner' : maxCorner } as Box3d;
+}
+
+/**
+ * Construct a bounding box containing all points in pointArray
+ * @param pointArray {array}
+ */
+export function box3d(pointArray is array) returns Box3d
+precondition
+{
+    size(pointArray) > 0;
+    for (var point in pointArray)
+    {
+        is3dLengthVector(point);
+    }
+}
+{
+    var minPoint = pointArray[0];
+    var maxPoint = minPoint;
+    for (var i = 1; i < size(pointArray); i += 1)
+    {
+        for (var j = 0; j < 3; j += 1)
+        {
+            const pointCoord = pointArray[i][j];
+            if (minPoint[j] > pointCoord)
+            {
+                minPoint[j] = pointCoord;
+            }
+            else if (maxPoint[j] < pointCoord)
+            {
+                maxPoint[j] = pointCoord;
+            }
+        }
+    }
+    return box3d(minPoint, maxPoint);
+}
+
+/**
+ * Return a box aligned with transformed coordinate system containing the input box
+ * @param boxIn {Box3d}
+ * @param transformation {Transform}
+ */
+export function transformBox3d(boxIn is Box3d, transformation is Transform) returns Box3d
+{
+    var transformedPoints = [];
+    var coords = makeArray(3, undefined);
+    for (var i = 0; i < 3; i += 1)
+    {
+        coords[i] =  [boxIn.minCorner[i], boxIn.maxCorner[i]];
+    }
+    for (var x in coords[0])
+    {
+        for (var y in coords[1])
+        {
+            for (var z in coords[2])
+            {
+                transformedPoints = append(transformedPoints, transformation * vector(x, y, z));
+            }
+        }
+    }
+    return box3d(transformedPoints);
 }
 
 /**
