@@ -1,11 +1,11 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "961.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "961.0");
-import(path : "onshape/std/string.fs", version : "961.0");
+import(path : "onshape/std/math.fs", version : "975.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "975.0");
+import(path : "onshape/std/string.fs", version : "975.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,

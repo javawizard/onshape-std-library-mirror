@@ -1,14 +1,14 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "961.0");
-import(path : "onshape/std/math.fs", version : "961.0");
-import(path : "onshape/std/units.fs", version : "961.0");
-import(path : "onshape/std/matrix.fs", version : "961.0");
-import(path : "onshape/std/string.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "975.0");
+import(path : "onshape/std/math.fs", version : "975.0");
+import(path : "onshape/std/units.fs", version : "975.0");
+import(path : "onshape/std/matrix.fs", version : "975.0");
+import(path : "onshape/std/string.fs", version : "975.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -390,7 +390,7 @@ precondition @size(axis) == 3;
 }
 
 /**
- * Returns the scalar triple product, a dot b cross c, of
+ * Returns the scalar triple product, a dot (b cross c), of
  * three 3-dimensional vectors.
  */
 export function scalarTripleProduct(vector1 is Vector, vector2 is Vector, vector3 is Vector)
@@ -401,8 +401,7 @@ precondition
     @size(vector3) == 3;
 }
 {
-    const v2Crossv3 = cross(vector2, vector3);
-    return dot(vector1, v2Crossv3);
+    return dot(vector1, cross(vector2, vector3));
 }
 
 export function toString(value is Vector) returns string

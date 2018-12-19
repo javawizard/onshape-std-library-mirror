@@ -1,4 +1,4 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1716,7 +1716,11 @@ export enum ErrorStringEnum
     /* Application of the display state had no effect. */
     DISPLAY_STATES_APPLY_HAD_NO_EFFECT,
     /* Failed to resolve display state. */
-    DISPLAY_STATES_DOES_NOT_EXIST
+    DISPLAY_STATES_DOES_NOT_EXIST,
+    /* Loft path curves must be tangent. */
+    LOFT_SPINE_NONTANGENT_PATH,
+    /* Selected path edges are not tangent in highlighted vertices; tangent approximation is used. */
+    LOFT_SPINE_APPROXIMATED
 }
 
 

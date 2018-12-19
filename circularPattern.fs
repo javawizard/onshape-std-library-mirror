@@ -1,16 +1,16 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "961.0");
-export import(path : "onshape/std/tool.fs", version : "961.0");
-export import(path : "onshape/std/patternUtils.fs", version : "961.0");
+export import(path : "onshape/std/query.fs", version : "975.0");
+export import(path : "onshape/std/tool.fs", version : "975.0");
+export import(path : "onshape/std/patternUtils.fs", version : "975.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "961.0");
-import(path : "onshape/std/math.fs", version : "961.0");
+import(path : "onshape/std/curveGeometry.fs", version : "975.0");
+import(path : "onshape/std/math.fs", version : "975.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs

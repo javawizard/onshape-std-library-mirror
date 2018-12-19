@@ -1,4 +1,4 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -731,7 +731,11 @@ export enum FeatureScriptVersionNumber
     V951_FAIL_SURFACE_BOOLEAN,
     V959_SKETCH_FAIL_SPLIT_VERTEX,
     V960_HOLE_IDENTITY,
-    V961_HEM_AS_BEND
+    V961_HEM_AS_BEND,
+    V972_PS_VERSION_31_0_249,
+    V973_TOLERANT_LOFT,
+    V974_ERROR_AFTER_SPLIT,
+    V975_BEND_LINE_EXTENTS
 }
 
 /**
@@ -742,6 +746,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V961_HEM_AS_BEND;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V975_BEND_LINE_EXTENTS;
 
 

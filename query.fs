@@ -1,4 +1,4 @@
-FeatureScript 961; /* Automatically generated version */
+FeatureScript 975; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 961; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "961.0");
-import(path : "onshape/std/context.fs", version : "961.0");
-import(path : "onshape/std/mathUtils.fs", version : "961.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "961.0");
-import(path : "onshape/std/units.fs", version : "961.0");
-import(path : "onshape/std/curveGeometry.fs", version : "961.0");
-import(path : "onshape/std/featureList.fs", version : "961.0");
+import(path : "onshape/std/containers.fs", version : "975.0");
+import(path : "onshape/std/context.fs", version : "975.0");
+import(path : "onshape/std/mathUtils.fs", version : "975.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "975.0");
+import(path : "onshape/std/units.fs", version : "975.0");
+import(path : "onshape/std/curveGeometry.fs", version : "975.0");
+import(path : "onshape/std/featureList.fs", version : "975.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
