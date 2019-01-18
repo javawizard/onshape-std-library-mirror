@@ -735,7 +735,17 @@ export enum FeatureScriptVersionNumber
     V972_PS_VERSION_31_0_249,
     V973_TOLERANT_LOFT,
     V974_ERROR_AFTER_SPLIT,
-    V975_BEND_LINE_EXTENTS
+    V975_BEND_LINE_EXTENTS,
+    V984_DCM_VERSION_69_1_0,
+    V985_BEND_SMOOTHING,
+    V986_STRICT_INTERSECT,
+    V987_DERIP_SIGNED_DISTANCE,
+    V988_FIX_HELIX_START,
+    V989_ENCLOSE_DONT_DELETE_SKETCHES,
+    V990_REFERENCE_PARAMETER_IN_INSTANCE,
+    V991_ROLL_SURFACE_BUMP,
+    V992_FLANGE_END_FIX,
+    V993_CLAMP_BASE_CONTEXT_VERSION
 }
 
 /**
@@ -746,6 +756,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V975_BEND_LINE_EXTENTS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V993_CLAMP_BASE_CONTEXT_VERSION;
 
 

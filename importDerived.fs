@@ -62,6 +62,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         const otherContext = @convert(definition.buildFunction(), undefined);
         if (otherContext != undefined)
         {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V993_CLAMP_BASE_CONTEXT_VERSION))
+            {
+                @clampContextVersion(context, {"loadedContext" : otherContext});
+            }
+
             if (size(evaluateQuery(otherContext, definition.parts)) == 0)
                 throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
 

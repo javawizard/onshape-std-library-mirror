@@ -38,6 +38,10 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
             {
                 evaluatedTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V647_ENCLOSE_DELETE_MODIFIABLE_TOOLS) ?
                     qModifiableEntityFilter(evaluatedTools) : evaluatedTools;
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V989_ENCLOSE_DONT_DELETE_SKETCHES))
+                {
+                    evaluatedTools = qSketchFilter(evaluatedTools, SketchObject.NO);
+                }
                 opDeleteBodies(context, id + "delete",
                     { "entities" : evaluatedTools
                 });

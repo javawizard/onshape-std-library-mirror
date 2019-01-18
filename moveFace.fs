@@ -1408,6 +1408,7 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
 {
     var partFaces = getSMCorrespondingInPart(context, smEdge, EntityType.FACE);
     var edgeChangeOptions = [];
+    const useSignedDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V987_DERIP_SIGNED_DISTANCE);
     for (var partFace in evaluateQuery(context, partFaces))
     {
         const adjacentFaceQuery = qEdgeAdjacent(partFace, EntityType.FACE);
@@ -1420,9 +1421,19 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
                         "side1" : smEdge,
                         "arcLengthParameterization" : false
                     });
+
+            var signedDistance = -offsetDistance.distance;
+            if (useSignedDistance)
+            {
+                const faceTangent = evFaceTangentPlane(context, {
+                        "face" : partFace,
+                        "parameter" : offsetDistance.sides[0].parameter
+                });
+                signedDistance = dot(faceTangent.normal, offsetDistance.sides[0].point - offsetDistance.sides[1].point);
+            }
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                         "face" : adjacentFaceSMFace[0],
-                        "offset" : -offsetDistance.distance });
+                        "offset" : signedDistance });
         }
     }
     return edgeChangeOptions;

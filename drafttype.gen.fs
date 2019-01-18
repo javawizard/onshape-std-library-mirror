@@ -8,7 +8,7 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * Specifies the type of draft to execute.
  *
- * @value NEUTRAL_PLANE : Draft faces relative to a nuetral plane.
+ * @value NEUTRAL_PLANE : Draft faces relative to a neutral plane.
  * @value REFERENCE_ENTITY : Draft faces holding a specific reference entity constant for each face.
  */
 export enum DraftType

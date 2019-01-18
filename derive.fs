@@ -43,6 +43,13 @@ const allBodies = qEverything(EntityType.BODY);
 export function derive(context is Context, id is Id, buildFunction is function, options is map) returns map
 {
     const otherContext = @convert(buildFunction(options.configuration), undefined);
+
+    if (otherContext != undefined &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V993_CLAMP_BASE_CONTEXT_VERSION))
+    {
+        @clampContextVersion(context, {"loadedContext" : otherContext});
+    }
+
     if (size(evaluateQuery(otherContext, options.parts)) == 0)
     {
         const noPartsError = (options.noPartsError != undefined) ? options.noPartsError : ErrorStringEnum.IMPORT_DERIVED_NO_PARTS;

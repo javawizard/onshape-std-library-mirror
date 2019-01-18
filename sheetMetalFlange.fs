@@ -1152,8 +1152,14 @@ function getAngleForAngledMiter(definition is map) returns ValueWithUnits
         return miterAngle - 90 * degree;
 }
 
-function representInVectors(vector1 is Vector, vector2 is Vector, inVector is Vector)
+function representInVectors(context is Context, vector1 is Vector, vector2 is Vector, inVector is Vector)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V992_FLANGE_END_FIX) &&
+        parallelVectors(vector1, vector2))
+    {
+         return undefined;
+    }
+
     var matrixM is Matrix = [[squaredNorm(vector1), dot(vector2, vector1)],
                              [dot(vector1, vector2), squaredNorm(vector2)]] as Matrix;
     var rhs = vector(dot(inVector, vector1), dot(inVector, vector2));
@@ -1166,8 +1172,8 @@ function isInProblemHalfSpace(context is Context, flangeDir is Vector, position 
 {
     if (edgeY == undefined || sideEdge == undefined)
         return false;
-    var components = representInVectors(getVectorForEdge(context, edgeY, position), getVectorForEdge(context, sideEdge, position), flangeDir);
-    return (components[0] > TOLERANCE.zeroLength);
+    var components = representInVectors(context, getVectorForEdge(context, edgeY, position), getVectorForEdge(context, sideEdge, position), flangeDir);
+    return (components != undefined && components[0] > TOLERANCE.zeroLength);
 }
 
 // make sure to move base when the two adjacent flanges have adjacent faces that are drafted so that the two flaps
@@ -1310,18 +1316,22 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     {
         if (edgeY != undefined)
         {
-            var components = representInVectors(getVectorForEdge(context, edgeY, position), getVectorForEdge(context, sideEdge, position), flangeData.direction);
             if (alignFlippedFlange)
             {
                 needsBaseUpdate = true;
             }
-            if (components[0] > TOLERANCE.zeroLength)
+            const components = representInVectors(context, getVectorForEdge(context, edgeY, position),
+                                                           getVectorForEdge(context, sideEdge, position), flangeData.direction);
+            if (components != undefined)
             {
-                needsBaseUpdate = true;
-                needsTrimChanges = true;
-                if (components[1] > -TOLERANCE.zeroLength)
+                if (components[0] > TOLERANCE.zeroLength)
                 {
-                    needsSideDirUpdate = true;
+                    needsBaseUpdate = true;
+                    needsTrimChanges = true;
+                    if (components[1] > -TOLERANCE.zeroLength)
+                    {
+                        needsSideDirUpdate = true;
+                    }
                 }
             }
         }
