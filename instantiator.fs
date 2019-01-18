@@ -1,4 +1,4 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,17 +32,17 @@ FeatureScript 975; /* Automatically generated version */
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "975.0");
+export import(path : "onshape/std/tabReferences.fs", version : "993.0");
 
-import(path : "onshape/std/containers.fs", version : "975.0");
-import(path : "onshape/std/context.fs", version : "975.0");
-import(path : "onshape/std/feature.fs", version : "975.0");
-import(path : "onshape/std/geomOperations.fs", version : "975.0");
-import(path : "onshape/std/math.fs", version : "975.0");
-import(path : "onshape/std/matrix.fs", version : "975.0");
-import(path : "onshape/std/transform.fs", version : "975.0");
-import(path : "onshape/std/units.fs", version : "975.0");
-import(path : "onshape/std/derive.fs", version : "975.0");
+import(path : "onshape/std/containers.fs", version : "993.0");
+import(path : "onshape/std/context.fs", version : "993.0");
+import(path : "onshape/std/feature.fs", version : "993.0");
+import(path : "onshape/std/geomOperations.fs", version : "993.0");
+import(path : "onshape/std/math.fs", version : "993.0");
+import(path : "onshape/std/matrix.fs", version : "993.0");
+import(path : "onshape/std/transform.fs", version : "993.0");
+import(path : "onshape/std/units.fs", version : "993.0");
+import(path : "onshape/std/derive.fs", version : "993.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;

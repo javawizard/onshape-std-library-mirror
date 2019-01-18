@@ -1,13 +1,13 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "975.0");
+export import(path : "onshape/std/query.fs", version : "993.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "975.0");
+import(path : "onshape/std/feature.fs", version : "993.0");
 
 /**
  * Feature performing an [opEnclose].
@@ -38,6 +38,10 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
             {
                 evaluatedTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V647_ENCLOSE_DELETE_MODIFIABLE_TOOLS) ?
                     qModifiableEntityFilter(evaluatedTools) : evaluatedTools;
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V989_ENCLOSE_DONT_DELETE_SKETCHES))
+                {
+                    evaluatedTools = qSketchFilter(evaluatedTools, SketchObject.NO);
+                }
                 opDeleteBodies(context, id + "delete",
                     { "entities" : evaluatedTools
                 });

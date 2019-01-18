@@ -1,7 +1,7 @@
-FeatureScript 975; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "975.0");
+FeatureScript 993; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "993.0");
 
-import(path : "onshape/std/query.fs", version : "975.0");
+import(path : "onshape/std/query.fs", version : "993.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -70,5 +70,21 @@ export type TableData typecheck canBeTableData;
 export predicate canBeTableData(value) {
     value is map;
     value.csvData is array || value.csvData == undefined;
+}
+
+/**
+ * @internal
+ * The value of a CAD import reference parameter, which can be used by a Part Studio import feature.
+ * The data is not accessible outside of an import operation.
+ *
+ * Full documentation can be found [here](/FsDoc/imports.html#cadimport).
+ *
+ */
+export type CADImportData typecheck canBeCADImportData;
+
+/** @internal */
+export predicate canBeCADImportData(value)
+{
+    value is map;
 }
 

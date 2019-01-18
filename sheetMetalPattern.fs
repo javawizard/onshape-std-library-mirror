@@ -1,24 +1,24 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "975.0");
-import(path : "onshape/std/boolean.fs", version : "975.0");
-import(path : "onshape/std/containers.fs", version : "975.0");
-import(path : "onshape/std/curveGeometry.fs", version : "975.0");
-import(path : "onshape/std/evaluate.fs", version : "975.0");
-import(path : "onshape/std/feature.fs", version : "975.0");
-import(path : "onshape/std/holeAttribute.fs", version : "975.0");
-import(path : "onshape/std/math.fs", version : "975.0");
-import(path : "onshape/std/patternCommon.fs", version : "975.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "975.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "975.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "975.0");
-import(path : "onshape/std/topologyUtils.fs", version : "975.0");
-import(path : "onshape/std/transform.fs", version : "975.0");
-import(path : "onshape/std/units.fs", version : "975.0");
-import(path : "onshape/std/vector.fs", version : "975.0");
+import(path : "onshape/std/attributes.fs", version : "993.0");
+import(path : "onshape/std/boolean.fs", version : "993.0");
+import(path : "onshape/std/containers.fs", version : "993.0");
+import(path : "onshape/std/curveGeometry.fs", version : "993.0");
+import(path : "onshape/std/evaluate.fs", version : "993.0");
+import(path : "onshape/std/feature.fs", version : "993.0");
+import(path : "onshape/std/holeAttribute.fs", version : "993.0");
+import(path : "onshape/std/math.fs", version : "993.0");
+import(path : "onshape/std/patternCommon.fs", version : "993.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "993.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
+import(path : "onshape/std/topologyUtils.fs", version : "993.0");
+import(path : "onshape/std/transform.fs", version : "993.0");
+import(path : "onshape/std/units.fs", version : "993.0");
+import(path : "onshape/std/vector.fs", version : "993.0");
 
 /**
  * @internal

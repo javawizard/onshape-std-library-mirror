@@ -5,15 +5,11 @@ FeatureScript 993; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * @internal.
- */
-export enum SMObjectType
+/** Specifies a surface type for the [RollSurface] parameter of [opRoll]. */
+export enum RollSurfaceType
 {
-    MODEL,
-    WALL,
-    JOINT,
-    CORNER
+    CYLINDER,
+    PLANE
 }
 
 

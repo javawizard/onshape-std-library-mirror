@@ -1,4 +1,4 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1720,7 +1720,31 @@ export enum ErrorStringEnum
     /* Loft path curves must be tangent. */
     LOFT_SPINE_NONTANGENT_PATH,
     /* Selected path edges are not tangent in highlighted vertices; tangent approximation is used. */
-    LOFT_SPINE_APPROXIMATED
+    LOFT_SPINE_APPROXIMATED,
+    /* Both part number and revision must be specified. */
+    REST_ASSEMBLY_REVISION_PART_NUMBER_BLANK,
+    /* Failed to find specified revision. */
+    REST_ASSEMBLY_REVISION_NOT_FOUND,
+    /* Roll failed. */
+    ROLL_FAILED,
+    /* Failed to align roll surfaces. */
+    ROLL_CANNOT_ADJUST,
+    /* Entities do not lie on source roll surface. */
+    ROLL_MISMATCHED_SOURCE,
+    /* Roll surface invalid. */
+    INVALID_ROLL_SURFACE,
+    /* Roll must be to or from a plane. */
+    ROLL_NOT_TO_OR_FROM_PLANE,
+    /* Failed to find element specified in toReference. */
+    FAILED_TO_FIND_ELEMENT_FOR_TO_STATE,
+    /* Failed to find version specified in toReference. */
+    FAILED_TO_FIND_VERSION_FOR_TO_STATE,
+    /* Revision id not specified in toReference. */
+    MISSING_REVISION_ID_FOR_TO_STATE,
+    /* Version id not specified in toReference. */
+    MISSING_VERSION_ID_FOR_TO_STATE,
+    /* Invalid document id specified in toReference. */
+    INVALID_DOCUMENT_ID_FOR_TO_STATE
 }
 
 

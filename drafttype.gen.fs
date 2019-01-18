@@ -1,4 +1,4 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,7 +8,7 @@ FeatureScript 975; /* Automatically generated version */
 /**
  * Specifies the type of draft to execute.
  *
- * @value NEUTRAL_PLANE : Draft faces relative to a nuetral plane.
+ * @value NEUTRAL_PLANE : Draft faces relative to a neutral plane.
  * @value REFERENCE_ENTITY : Draft faces holding a specific reference entity constant for each face.
  */
 export enum DraftType

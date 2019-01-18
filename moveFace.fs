@@ -1,28 +1,28 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "975.0");
-export import(path : "onshape/std/tool.fs", version : "975.0");
+export import(path : "onshape/std/query.fs", version : "993.0");
+export import(path : "onshape/std/tool.fs", version : "993.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "975.0");
+export import(path : "onshape/std/manipulator.fs", version : "993.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "975.0");
-import(path : "onshape/std/box.fs", version : "975.0");
-import(path : "onshape/std/containers.fs", version : "975.0");
-import(path : "onshape/std/curveGeometry.fs", version : "975.0");
-import(path : "onshape/std/evaluate.fs", version : "975.0");
-import(path : "onshape/std/feature.fs", version : "975.0");
-import(path : "onshape/std/mathUtils.fs", version : "975.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "975.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "975.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "975.0");
-import(path : "onshape/std/topologyUtils.fs", version : "975.0");
-import(path : "onshape/std/valueBounds.fs", version : "975.0");
+import(path : "onshape/std/attributes.fs", version : "993.0");
+import(path : "onshape/std/box.fs", version : "993.0");
+import(path : "onshape/std/containers.fs", version : "993.0");
+import(path : "onshape/std/curveGeometry.fs", version : "993.0");
+import(path : "onshape/std/evaluate.fs", version : "993.0");
+import(path : "onshape/std/feature.fs", version : "993.0");
+import(path : "onshape/std/mathUtils.fs", version : "993.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "993.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
+import(path : "onshape/std/topologyUtils.fs", version : "993.0");
+import(path : "onshape/std/valueBounds.fs", version : "993.0");
 
 
 /**
@@ -1408,6 +1408,7 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
 {
     var partFaces = getSMCorrespondingInPart(context, smEdge, EntityType.FACE);
     var edgeChangeOptions = [];
+    const useSignedDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V987_DERIP_SIGNED_DISTANCE);
     for (var partFace in evaluateQuery(context, partFaces))
     {
         const adjacentFaceQuery = qEdgeAdjacent(partFace, EntityType.FACE);
@@ -1420,9 +1421,19 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
                         "side1" : smEdge,
                         "arcLengthParameterization" : false
                     });
+
+            var signedDistance = -offsetDistance.distance;
+            if (useSignedDistance)
+            {
+                const faceTangent = evFaceTangentPlane(context, {
+                        "face" : partFace,
+                        "parameter" : offsetDistance.sides[0].parameter
+                });
+                signedDistance = dot(faceTangent.normal, offsetDistance.sides[0].point - offsetDistance.sides[1].point);
+            }
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,
                         "face" : adjacentFaceSMFace[0],
-                        "offset" : -offsetDistance.distance });
+                        "offset" : signedDistance });
         }
     }
     return edgeChangeOptions;

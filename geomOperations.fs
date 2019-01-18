@@ -1,4 +1,4 @@
-FeatureScript 975; /* Automatically generated version */
+FeatureScript 993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,21 +15,21 @@ FeatureScript 975; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/context.fs", version : "975.0");
-import(path : "onshape/std/curveGeometry.fs", version : "975.0");
-import(path : "onshape/std/query.fs", version : "975.0");
-import(path : "onshape/std/containers.fs", version : "975.0");
+import(path : "onshape/std/containers.fs", version : "993.0");
+import(path : "onshape/std/context.fs", version : "993.0");
+import(path : "onshape/std/curveGeometry.fs", version : "993.0");
+import(path : "onshape/std/query.fs", version : "993.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "975.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "993.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "975.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "993.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "975.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "993.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "975.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "993.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "975.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "993.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -824,5 +824,26 @@ export function opNameEntity(context is Context, id is Id, definition is map)
 export function opFillSurface(context is Context, id is Id, definition is map)
 {
     return @opFillSurface(context, id, definition);
+}
+
+/**
+ * Rolls or unrolls faces from one surface onto another.  The location and orientation of the rolled faces on the destination
+ * surface is controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [RollSurface]s.
+ * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies representing
+ * the rolled or unrolled faces.  Faces that are topologically connected will remain topologically connected in the result
+ * body. This operation currently supports rolling from a plane onto a cylinder, and unrolling from a cylinder onto a plane.
+ * @param definition {{
+ *      @field entities {Query} : Faces to roll from `source` to `destination`.
+ *      @field source {RollSurface}      : The surface to roll from. All `entities` must lie on this surface.
+ *      @field destination {RollSurface} : The surface to roll onto.
+ *      @field orientWithDestination {boolean} : @optional If true (default), the normals of the resulting surface will point
+ *                                               in the same direction as the `destination`. If false, the normals of the
+ *                                               resulting surface will point in the opposite direction.  For the purpose
+ *                                               of this parameter, the normals of a [Cylinder] are always pointing outwards.
+ * }}
+ */
+export function opRoll(context is Context, id is Id, definition is map)
+{
+    return @opRoll(context, id, definition);
 }
 
