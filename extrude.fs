@@ -339,7 +339,7 @@ predicate mainViewExtrudePredicate(definition is map)
 
     if (definition.bodyType == ToolBodyType.SOLID)
     {
-        annotation { "Name" : "Draft", "UIHint" : "DISPLAY_SHORT" }
+        annotation { "Name" : "Draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasDraft is boolean;
 
         if (definition.hasDraft == true)

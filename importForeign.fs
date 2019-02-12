@@ -6,6 +6,8 @@ FeatureScript ✨; /* Automatically generated version */
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/units.fs", version: "✨");
+import(path : "onshape/std/tabReferences.fs", version : "✨");
+
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
  * imported tab.
@@ -46,8 +48,19 @@ annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Foreign Id", "UIHint" : "ALWAYS_HIDDEN" }
-        definition.foreignId is ForeignId;
+        annotation { "Name" : "Depends on blob", "UIHint" : "ALWAYS_HIDDEN", "Default" : false }
+        definition.dependsOnBlob is boolean;
+
+        if (definition.dependsOnBlob)
+        {
+            annotation { "Name" : "Blob Data", "UIHint" : "ALWAYS_HIDDEN" }
+            definition.blobData is CADImportData;
+        }
+        else
+        {
+            annotation { "Name" : "Foreign Id", "UIHint" : "ALWAYS_HIDDEN" }
+            definition.foreignId is ForeignId;
+        }
 
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
@@ -85,6 +98,16 @@ export const importForeign = defineFeature(function(context is Context, id is Id
             definition.scale = 1.0;
         }
         definition.isModifiable = !definition.isInContext;
+        if (definition.dependsOnBlob)
+        {
+            definition.foreignId = undefined;
+            definition.processedDataId = definition.blobData.processedDataId;
+        }
+        else
+        {
+            definition.processedDataId = undefined;
+        }
+
         opImportForeign(context, id, definition);
 
         if (!definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V487_IMPORT_FILTER_POINT_BODIES))
@@ -94,5 +117,5 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false });
 

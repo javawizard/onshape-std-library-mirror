@@ -122,7 +122,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
         definition.endBound == SMExtrudeBoundingType.UP_TO_BODY ||
         definition.endBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
-        annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : "DISPLAY_SHORT" }
+        annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasOffset is boolean;
 
         if (definition.hasOffset)
@@ -174,7 +174,8 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
             "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
-            "MaxNumberOfPicks" : 1 }
+            "MaxNumberOfPicks" : 1,
+            "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.secondDirectionBoundEntityVertex is Query;
     }
 
@@ -187,7 +188,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
         definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_BODY ||
         definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
     {
-        annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : "DISPLAY_SHORT" }
+        annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasSecondDirectionOffset is boolean;
 
         if (definition.hasSecondDirectionOffset)

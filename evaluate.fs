@@ -879,11 +879,11 @@ precondition
 }
 
 /**
- * If the face is a plane, return a [Plane] value for the given face.
+ * If the face is a planar face or a mate connector, return the [Plane] it represents.
  * @param arg {{
  *      @field face{Query}
  * }}
- * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not a planar face.
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : The first resolved entity was not a planar face or mate connector.
  */
 export function evPlane(context is Context, arg is map) returns Plane
 precondition

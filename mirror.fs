@@ -53,7 +53,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
             definition.instanceFunction is FeatureList;
         }
 
-        annotation { "Name" : "Mirror plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Mirror plane", "Filter" : QueryFilterCompound.ALLOWS_PLANE, "MaxNumberOfPicks" : 1 }
         definition.mirrorPlane is Query;
 
         if (definition.patternType == MirrorType.PART)
@@ -74,8 +74,19 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         else
             remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities, definition.mirrorPlane])});
 
-        definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
-        var planeResult = try(evPlane(context, { "face" : definition.mirrorPlane}));
+        const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : definition.mirrorPlane }));
+
+        var planeResult;
+        if (mateConnectorCSys != undefined)
+        {
+            planeResult = plane(mateConnectorCSys);
+        }
+        else
+        {
+            definition.mirrorPlane = qGeometry(definition.mirrorPlane, GeometryType.PLANE);
+            planeResult = try(evPlane(context, { "face" : definition.mirrorPlane}));
+        }
+
         if (planeResult != undefined && isFeaturePattern(definition.patternType))
             planeResult = inverse(remainingTransform) * planeResult; // we don't want to transform the mirror plane
 

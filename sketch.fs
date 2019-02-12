@@ -134,6 +134,7 @@ export function isIdForSketch(context is Context, id is Id)
  *
  * To make a sketch in the coordinate system of an arbitrary [Plane], use `newSketchOnPlane`.
  *
+ * @param id : @autocomplete `id + "sketch1"`
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
  *              @eg `qCreatedBy(makeId("Top"), EntityType.FACE)` to sketch on default "Top" plane.
@@ -157,39 +158,32 @@ precondition
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
 
-    value.planeReference = value.sketchPlane;
+    const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : value.sketchPlane }));
+    var planeIsMateConnector = mateConnectorCSys != undefined;
+
+    value.planeReference = planeIsMateConnector ? qNothing() : value.sketchPlane;
     const planeDefinition = { "face" : value.sketchPlane, "asVersion" : value.asVersion };
-    var sketchPlane = try silent(evPlane(context, planeDefinition));
+    value.sketchPlane = try silent(evPlane(context, planeDefinition));
 
-    var planeIsMateConnector = false;
-
-    if (sketchPlane != undefined)
+    // After V1004_MATE_CONNECTOR_AS_PLANE, value.sketchPlane should already be set by evPlane for both planes and mate connectors.
+    const allowMateConnectors = @isAtVersionOrLater(context, FeatureScriptVersionNumber.V740_PROPAGATE_PROPERTIES_IN_PATTERNS, value.asVersion);
+    if (allowMateConnectors)
     {
-        value.sketchPlane = sketchPlane;
+        if (value.sketchPlane == undefined && planeIsMateConnector)
+        {
+            value.sketchPlane = plane(mateConnectorCSys);
+        }
     }
     else
     {
-        var mateConnectorCSys;
-        if (@isAtVersionOrLater(context, FeatureScriptVersionNumber.V740_PROPAGATE_PROPERTIES_IN_PATTERNS, value.asVersion))
-        {
-            mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : value.sketchPlane }));
-            if (mateConnectorCSys != undefined)
-            {
-                planeIsMateConnector = true;
-            }
-        }
+        planeIsMateConnector = false;
+    }
 
-        if (planeIsMateConnector)
-        {
-            value.sketchPlane = plane(mateConnectorCSys);
-            value.planeReference = qNothing();
-        }
-        else
-        {
-            reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
-            value.sketchPlane = XY_PLANE;
-            value.planeReference = qNothing();
-        }
+    if (value.sketchPlane == undefined)
+    {
+        reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
+        value.sketchPlane = XY_PLANE;
+        value.planeReference = qNothing();
     }
 
     if (!queryContainsFlattenedSheetMetal(context, value.planeReference))
@@ -227,6 +221,7 @@ precondition
  * Create a new sketch on a custom plane, specified by a [Plane] object.  The sketch coordinate system
  * will match the coordinate system of the plane.
  *
+ * @param id : @autocomplete `id + "sketch1"`
  * @param value {{
  *      @field sketchPlane {Plane} :
  *              @eg `plane(vector(0, 0, 0) * inch, vector(0, 0, 1))` to sketch on the world XY plane.
@@ -248,6 +243,8 @@ precondition
  *
  * Even if there are no constraints, a sketch must be solved before its
  * entities are created.
+ *
+ * @param sketch : @autocomplete `sketch1`
  */
 export function skSolve(sketch is Sketch)
 {
@@ -317,7 +314,7 @@ precondition
  * @param sketch : @autocomplete `sketch1`
  * @param textId : @autocomplete `"text1"`
  * @param value {{
- *      @field text {string}: A string of text to write. May contain newlines.
+ *      @field text {string}: A string of text to write. May contain newlines (encoded as `\\n`).
  *          @autocomplete `"Example Text"`
  *
  *      @field fontName {string}: A font name, with extension ".ttf" or ".otf".
@@ -340,6 +337,16 @@ precondition
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *
  *      @field construction {boolean} : `true` for a construction line @optional
+ *      @field firstCorner {Vector}  : @optional One corner of the rectangle into which the text will be placed. Text
+ *                                     will start at the left of the rectangle and extend to the right, overflowing the
+ *                                     right if necessary.  The first line of text will fill the height of the rectangle,
+ *                                     with subsequent lines below the rectangle (or above if mirrored vertically).
+ *                                     @eg `vector(0, 0) * inch`
+ *      @field secondCorner {Vector} : @optional The other corner of the rectangle into which the text will be placed. Text
+ *                                     will start at the left of the rectangle and extend to the right, overflowing the
+ *                                     right if necessary.  The first line of text will fill the height of the rectangle,
+ *                                     with subsequent lines below the rectangle (or above if mirrored vertically).
+ *                                     @eg `vector(1, 1) * inch`
  *      @field mirrorHorizontal {boolean} : `true` for flipping text horizontally @optional
  *      @field mirrorVertical {boolean} : `true` for flipping text vertically @optional
  * }}
@@ -354,6 +361,8 @@ precondition
     value.fontName is string;
     value.text is string;
     value.construction is undefined || value.construction is boolean;
+    value.firstCorner is undefined || is2dPoint(value.firstCorner);
+    value.secondCorner is undefined || is2dPoint(value.secondCorner);
     value.mirrorHorizontal is undefined || value.mirrorHorizontal is boolean;
     value.mirrorVertical is undefined || value.mirrorVertical is boolean;
 }

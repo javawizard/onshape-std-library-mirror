@@ -375,6 +375,11 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
                     const projectedOffsetPoint = worldToPlane(offsetPlane, offsetPoint);
                     offsetDistance += (projectedOffsetPoint[0] - projectedPoints[0][0]);
                 }
+                // we do not allow negative offset. If it happens, we treat it as a regular section cut
+                if (offsetDistance < 0)
+                {
+                    isOffsetCut = false;
+                }
             }
 
             var polygon;
@@ -529,11 +534,11 @@ function checkJogDirection(pointsInPlane is array)
 
 function createJogPolygonForOffsetCut(points is array, boundingBox is Box3d, sketchPlane is Plane, offsetDistance is ValueWithUnits) returns array
 {
-    var polygonVertices = concatenateArrays([points, makeArray(3)]);
+    var polygonVertices = concatenateArrays([makeArray(1), points, makeArray(2)]);
 
     const pointCount = size(points);
-    polygonVertices[pointCount] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
-    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
+    polygonVertices[0] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
+    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
     polygonVertices[pointCount + 2] = polygonVertices[0];
 
     return polygonVertices;

@@ -533,11 +533,15 @@ export enum EdgeTopology
  * @value ALLOWS_DIRECTION : Equivalent to
  *      `QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE`
  *      and can be processed with [extractDirection]
+ * @value ALLOWS_PLANE : Equivalent to
+ *      `GeometryType.PLANE || BodyType.MATE_CONNECTOR`
+ *      and can be processed with [evPlane]
  */
 export enum QueryFilterCompound
 {
     ALLOWS_AXIS,
-    ALLOWS_DIRECTION
+    ALLOWS_DIRECTION,
+    ALLOWS_PLANE
 }
 
 /**
@@ -1280,7 +1284,7 @@ export function qHoleFaces(subquery is Query) returns Query
 /**
  * A query for all fully enclosed, 2D regions created by a sketch.
  *
- * @param featureId : The feature id of the [Sketch] being queried.
+ * @param featureId : The feature id of the [Sketch] being queried. @autocomplete `id + "sketch1"`
  * @param filterInnerLoops : Specifies whether to exclude sketch regions fully
  *      contained in other sketch regions.  A region whose border has a vertex
  *      or edge on the outside boundary is not considered "contained."
@@ -1292,6 +1296,9 @@ export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) retu
     return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : filterInnerLoops } as Query;
 }
 
+/**
+ * @param featureId : @autocomplete `id + "sketch1"`
+ */
 export function qSketchRegion(featureId is Id) returns Query
 {
     return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : false } as Query;
@@ -1523,7 +1530,7 @@ precondition
  * sketch id created multiple sketch entities, will return all the wire
  * bodies.
  *
- * @param operationId : Id of the sketch feature.
+ * @param operationId : Id of the sketch feature. @autocomplete `id + "sketch1"`
  * @param entityType :
  *          @ex `EntityType.EDGE` to match the edges on the wire bodies.
  *          @eg `EntityType.BODY` to match the bodies themselves.

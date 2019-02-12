@@ -547,6 +547,12 @@ export function skipOrderDisambiguation(context is Context, id is Id)
     @skipOrderDisambiguation(context, id);
 }
 
+/** @internal */
+export function isInFeaturePattern(context is Context)
+{
+    return @isInFeaturePattern(context);
+}
+
 /**
  * @internal
  * Throws a regeneration error if the parameter specified is not a query for at least one
@@ -599,4 +605,13 @@ precondition
     return angle;
 }
 
-
+/**
+ * @internal
+ * A feature that does nothing
+ */
+export const dummyFeature = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+    }
+    {
+    });

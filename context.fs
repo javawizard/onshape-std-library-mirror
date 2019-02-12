@@ -43,7 +43,7 @@ export function newContext() returns Context
 
 /**
  * @internal
- * Returns `false` if the active feature of `context` is running at a version
+ * Returns `true` if the active feature of `context` is running at a version
  * number at least as new as `introduced`.
  */
 export function isAtVersionOrLater(context is Context, introduced is FeatureScriptVersionNumber) returns boolean

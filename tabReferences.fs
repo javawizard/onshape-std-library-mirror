@@ -73,11 +73,10 @@ export predicate canBeTableData(value) {
 }
 
 /**
- * @internal
  * The value of a CAD import reference parameter, which can be used by a Part Studio import feature.
  * The data is not accessible outside of an import operation.
  *
- * Full documentation can be found [here](/FsDoc/imports.html#cadimport).
+ * Full documentation and example can be found [here](/FsDoc/imports.html#cad-import).
  *
  */
 export type CADImportData typecheck canBeCADImportData;

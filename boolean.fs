@@ -784,8 +784,11 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModel);
                                 const trackedSheets = trackModelBySheet(context, sheetMetalModel);
 
-                                definition.targets = sheetMetalModel;
                                 const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
+
+                                const useRobustForTargets = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1009_SM_BOOLEAN_TRACK);
+                                definition.targets = useRobustForTargets ? robustSMModel : sheetMetalModel;
+
                                 const modifiedFaceArray = performSheetMetalBoolean(context, id, definition);
 
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V748_SM_FAIL_SHEET_DELETION)

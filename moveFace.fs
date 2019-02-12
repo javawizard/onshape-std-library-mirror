@@ -146,7 +146,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
             if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY)
             {
-                annotation { "Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+                annotation { "Name" : "Offset distance", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
                 definition.hasOffset is boolean;
 
                 if (definition.hasOffset)

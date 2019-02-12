@@ -157,7 +157,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     precondition
     {
         annotation { "Name" : "Entities to transform or copy",
-                     "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES}
+                     "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
+                     "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }

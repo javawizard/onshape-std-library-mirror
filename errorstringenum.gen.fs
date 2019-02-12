@@ -1709,7 +1709,7 @@ export enum ErrorStringEnum
     DISPLAY_STATES_INVALID_NAME,
     /* Name is already in use. New display state not saved. */
     DISPLAY_STATES_DUPLICATE_NAME,
-    /* No upgrade available. To update DB with new standard library code, first enable BTWebCapability.UPGRADE_STANDARD_LIBRARY */
+    /* No upgrade available. To update DB with new standard library code, first enable BTWebCapability.UPGRADE_FS_STANDARD_LIBRARY_VERSION */
     WORKSPACE_UPGRADE_NONE_ENABLE_CAPABILITY,
     /* Update had no effect. The display state already reflects the current state of the assembly. */
     DISPLAY_STATES_UPDATE_HAD_NO_EFFECT,
@@ -1744,7 +1744,25 @@ export enum ErrorStringEnum
     /* Version id not specified in toReference. */
     MISSING_VERSION_ID_FOR_TO_STATE,
     /* Invalid document id specified in toReference. */
-    INVALID_DOCUMENT_ID_FOR_TO_STATE
+    INVALID_DOCUMENT_ID_FOR_TO_STATE,
+    /* System failed to resolve part instance display data. If the problem persists, please contact support. */
+    ASSEMBLY_CONTAINS_MISSING_PART_DATA,
+    /* Select edges to hem. */
+    SHEET_METAL_HEM_NO_EDGES,
+    /* Only linear edges can be used to hem. */
+    SHEET_METAL_HEM_NON_LINEAR_EDGES,
+    /* Hem cannot not be created with selected alignment. */
+    SHEET_METAL_HEM_FAIL_ALIGNMENT,
+    /* Hem cannot be created. Increase total length. */
+    SHEET_METAL_HEM_TOO_SHORT,
+    /* Hem cannot be created. Decrease gap. */
+    SHEET_METAL_HEM_TEAR_DROP_GAP_TOO_LARGE,
+    /* Cannot create hem on an edge that is a joint, fillet, chamfer, or internal to the sheet metal model. */
+    SHEET_METAL_HEM_INTERNAL,
+    /* Hem cannot be created. */
+    SHEET_METAL_HEM_FAILED,
+    /* An invalid configuration was specified. */
+    INVALID_CONFIGURATION_SPECIFIED
 }
 
 

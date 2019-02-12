@@ -97,7 +97,8 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
 
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
-            annotation { "Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS }
+            annotation { "Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS,
+                         "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
             definition.entities is Query;
         }
         else

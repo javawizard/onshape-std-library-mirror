@@ -1512,7 +1512,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
     var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(adjacentFaces) != 1)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
     }
     const adjacentFace = adjacentFaces[0];
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
@@ -1741,7 +1741,7 @@ function getModelParametersFromEdge(context is Context, edge is Query) returns m
     var adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
     }
     return getModelParameters(context, qOwnerBody(adjacentFace));
 }

@@ -1184,7 +1184,7 @@ export function checkNotInFeaturePattern(context is Context, references is Query
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V675_MORE_TAB_FIXES))
     {
-        if (@isInFeaturePattern(context))
+        if (isInFeaturePattern(context))
         {
             throw regenError(error);
         }

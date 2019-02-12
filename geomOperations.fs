@@ -332,7 +332,7 @@ export function opHelix(context is Context, id is Id, definition is map)
  * Brings foreign geometry into the context. This function is used for importing uploaded parts.
  * @param id : @autocomplete `id + "importForeign1"`
  * @param definition {{
- *      @field foreignId {string} : The foreign data id (`dataId` from an imported blob tab).
+ *      @field blobData {CADImportData} : Reference to a blob element hosting uploaded CAD data.
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
  *      @field yAxisIsUp {boolean} : If true, the y axis in the import maps to the z axis and z maps to -y.
  *              If false (default), the coordinates are unchanged. @optional

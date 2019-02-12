@@ -95,12 +95,6 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.originAdditionalQuery is Query;
         }
 
-        annotation { "Name" : "Flip primary axis", "UIHint" : "ALWAYS_HIDDEN" }
-        definition.flipPrimary is boolean;
-
-        annotation { "Name" : "Secondary axis type", "UIHint" : "ALWAYS_HIDDEN", "Default" : MateConnectorAxisType.PLUS_X }
-        definition.secondaryAxisType is MateConnectorAxisType;
-
         annotation { "Name" : "Realign" }
         definition.realign is boolean;
 
@@ -160,8 +154,26 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Normal z", "UIHint" : "ALWAYS_HIDDEN" }
             isReal(definition.nz, NORMAL_PARAMETER_BOUNDS);
         }
+
+        annotation { "Name" : "Flip primary axis", "UIHint" : [ "OPPOSITE_DIRECTION", "FIRST_IN_ROW" ] }
+        definition.flipPrimary is boolean;
+
+        annotation { "Name" : "Reorient secondary axis", "UIHint" : "MATE_CONNECTOR_AXIS_TYPE", "Default" : MateConnectorAxisType.PLUS_X }
+        definition.secondaryAxisType is MateConnectorAxisType;
+
+        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : false }
+        definition.isForSubFeature is boolean;
     }
     {
+        if (definition.isForSubFeature && isInFeaturePattern(context))
+        {
+            // Mate conectors subfeatures do not behave as expected in many feature patterns, and, being subfeatures, they cannot be easily
+            // excluded from these patterns. A better default behavior is to always treat them as static (non-patterned) by not recreating them here.
+            // Eventually, getRemainderPatternTransform should track and consider the subFeature's dependencies when determining the references
+            // of the parent feature.
+            return;
+        }
+
         definition.rotation = adjustAngle(context, definition.rotation);
 
         var transformQueries = [definition.originQuery];
@@ -224,7 +236,8 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         "specifyNormal" : false,
         "nx" : 0.0,
         "ny" : 0.0,
-        "nz" : 0.0
+        "nz" : 0.0,
+        "isForSubFeature" : false
     });
 
 /** @internal */

@@ -63,7 +63,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR }
+            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
+                "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
             definition.entities is Query;
         }
         else if (definition.patternType == PatternType.FACE)

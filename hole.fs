@@ -156,7 +156,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
 
         annotation { "Name" : "Sketch points to place holes",
-                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
@@ -412,6 +412,16 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
 
 function computeCSys(context is Context, location is Query, definition is map) returns map
 {
+    const sign = definition.oppositeDirection ? 1 : -1;
+
+    var mateConnectorCSys = try silent(evMateConnector(context, {
+        "mateConnector" : location
+    }));
+    if (mateConnectorCSys != undefined)
+    {
+        mateConnectorCSys.zAxis *= sign;
+        return { "point" : mateConnectorCSys.origin, "startPointCSys" : mateConnectorCSys };
+    }
     const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
     var startPointCSys;
     var point is Vector = evVertexPoint(context, { "vertex" : location });
@@ -440,7 +450,6 @@ function computeCSys(context is Context, location is Query, definition is map) r
         point = startPointCSys.origin;
     }
 
-    const sign = definition.oppositeDirection ? 1 : -1;
     startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
 
     return { "point" : point, "startPointCSys" : startPointCSys };

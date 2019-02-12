@@ -77,7 +77,8 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities",
-                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR }
+                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR,
+                    "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.entities is Query;
 
         annotation { "Name" : "Plane type" }
@@ -153,8 +154,19 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                 throw regenError(requiresPointPlaneMessage, ["entities"]);
             if (numEntities > 2)
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            definition.plane = evPlane(context, { "face" : qEntityFilter(definition.entities, EntityType.FACE) });
-            definition.plane.origin = evVertexPoint(context, { "vertex" : qEntityFilter(definition.entities, EntityType.VERTEX) });
+
+            var planes = qEntityFilter(definition.entities, EntityType.FACE);
+            var vertices = qEntityFilter(definition.entities, EntityType.VERTEX);
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE))
+            {
+                const mateConnectors = qBodyType(definition.entities, BodyType.MATE_CONNECTOR);
+                planes = qUnion([planes, mateConnectors]);
+                vertices = qSubtraction(vertices, mateConnectors);
+            }
+
+            definition.plane = evPlane(context, { "face" : planes });
+            definition.plane.origin = evVertexPoint(context, { "vertex" : vertices });
         }
 
         if (definition.cplaneType == CPlaneType.LINE_ANGLE)
@@ -210,10 +222,20 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.cplaneType == CPlaneType.MID_PLANE)
         {
+            var vertices = qEntityFilter(definition.entities, EntityType.VERTEX);
+            var edges = qEntityFilter(definition.entities, EntityType.EDGE);
+            var planes = qEntityFilter(definition.entities, EntityType.FACE);
 
-            const vertexQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.VERTEX));
-            const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
-            const faceQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE))
+            {
+                const mateConnectors = qBodyType(definition.entities, BodyType.MATE_CONNECTOR);
+                vertices = qSubtraction(vertices, mateConnectors);
+                planes = qUnion([planes, mateConnectors]);
+            }
+
+            const vertexQueries = evaluateQuery(context, vertices);
+            const edgeQueries = evaluateQuery(context, edges);
+            const planeQueries = evaluateQuery(context, planes);
 
             // attempt from two points
             if (@size(vertexQueries) == 2)
@@ -237,7 +259,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             }
 
             // attempt from 2 planes
-            else if (@size(faceQueries) == 2)
+            else if (@size(planeQueries) == 2)
 
             {
                 // Check for extra entities, not faces
@@ -372,17 +394,21 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     var planeBounds = [definition.width, definition.height];
     if (planeType == CPlaneType.OFFSET)
     {
-        var isConstruction = false;
+        const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
+        // If after V1004, and this offset plane is not based on a face, return the default plane bounds
+        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        {
+            return planeBounds;
+        }
+
         const cSys = planeToCSys(definition.plane);
         var bounds = evBox3d(context, { 'topology' : definition.entities, 'cSys' : cSys, 'tight' : false });
 
-        if (planeType == CPlaneType.OFFSET)
+        var isConstruction = false;
+        var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(definition.entities, ConstructionObject.NO));
+        if (@size(constructionFilteredEntities) == 0)
         {
-            var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(definition.entities, ConstructionObject.NO));
-            if (@size(constructionFilteredEntities) == 0)
-            {
-                isConstruction = true;
-            }
+            isConstruction = true;
         }
 
         planeBounds = getExpandedPlaneBounds(bounds, isConstruction);
@@ -405,6 +431,13 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     }
     else if (planeType == CPlaneType.PLANE_POINT)
     {
+        const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
+        // If after V1004, and this point-plane is not based on a face, return the default plane bounds
+        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        {
+            return planeBounds;
+        }
+
         const cSys = planeToCSys(definition.plane);
         var bounds = evBox3d(context, { 'topology' :  qEntityFilter(definition.entities, EntityType.FACE), 'cSys' : cSys, 'tight' : false });
 
@@ -419,7 +452,6 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     }
     else if (planeType == CPlaneType.MID_PLANE)
     {
-        var isConstruction = false;
         var faceFilteredEntities = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE));
         // If this mid plane is not based on a face, return the default plane bounds
         if (@size(faceFilteredEntities) == 0)
@@ -435,6 +467,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
             return planeBounds;
         }
 
+        var isConstruction = false;
         var constructionFilteredEntities = evaluateQuery(context, qConstructionFilter(definition.entities, ConstructionObject.NO));
         if (@size(constructionFilteredEntities) == 0)
         {
@@ -590,12 +623,14 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     const entities = definition.entities;
 
+    const mateConnectorQ is Query = qBodyType(definition.entities, BodyType.MATE_CONNECTOR);
+
     const total is number = size(evaluateQuery(context, entities));
-    const vertices is number = size(evaluateQuery(context, qEntityFilter(entities, EntityType.VERTEX)));
+    const vertices is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.VERTEX), mateConnectorQ)));
     const lines is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.LINE)));
-    const planes is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.PLANE)));
+    const planes is number = size(evaluateQuery(context, qUnion([qGeometry(entities, GeometryType.PLANE), mateConnectorQ])));
     const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
-                    qGeometry(entities, GeometryType.LINE))));
+                                                                      qGeometry(entities, GeometryType.LINE))));
 
     if (total == 1)
     {

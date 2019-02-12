@@ -9,11 +9,15 @@ FeatureScript ✨; /* Automatically generated version */
  * List of available UI Hints, which control how a parameter input is displayed in the feature dialog.
  *
  * @example ```
- * annotation { "Name" : "Flip", "UIHint" : "OPPOSITE_DIRECTION" }
+ * annotation { "Name" : "Flip", "UIHint" : UIHint.OPPOSITE_DIRECTION }
  * definition.isFlipped is boolean;
  * ```
  *
- * Multiple `UIHint`s can be specified in an array.
+ * Multiple `UIHint`s can be specified in an array
+ * (e.g. `[ UIHint.OPPOSITE_DIRECTION, UIHint.REMEMBER_PREVIOUS_VALUE ]`).
+ *
+ * Raw strings (e.g. "OPPOSITE_DIRECTION") may be used in place of the enum access (e.g. UIHint.OPPOSITE_DIRECTION)
+ * for the same result.
  *
  * `OPPOSITE_DIRECTION` and `ALWAYS_HIDDEN` behaviors are considered stable. Other `UIHint`s can be used,
  * but their behaviors may change in future versions of Onshape.
@@ -49,6 +53,10 @@ FeatureScript ✨; /* Automatically generated version */
  *      (but when editing, a parameter with INITIAL_FOCUS_ON_EDIT takes precedence).
  * @value DISPLAY_CURRENT_VALUE_ONLY : For Onshape internal use.
  * @value READ_ONLY : Prevent changes to the parameter from the feature dialog.  A read-only parameter can be modified by the editing logic function.
+ * @value PREVENT_CREATING_NEW_MATE_CONNECTORS : For a query parameter allowing BodyType.MATE_CONNECTOR, only allow preexisting mate connectors,
+ *      and don't provide a button to allow creating new mate connectors specificaly for this parameter.
+ * @value FIRST_IN_ROW : Guarantee that, regardless of other layout requirements, this parameter will always be the first parameter in
+ *      its displayed row.
  */
 export enum UIHint
 {
@@ -72,7 +80,9 @@ export enum UIHint
     INITIAL_FOCUS_ON_EDIT,
     INITIAL_FOCUS,
     DISPLAY_CURRENT_VALUE_ONLY,
-    READ_ONLY
+    READ_ONLY,
+    PREVENT_CREATING_NEW_MATE_CONNECTORS,
+    FIRST_IN_ROW
 }
 
 

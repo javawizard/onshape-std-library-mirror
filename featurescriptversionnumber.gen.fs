@@ -745,7 +745,18 @@ export enum FeatureScriptVersionNumber
     V990_REFERENCE_PARAMETER_IN_INSTANCE,
     V991_ROLL_SURFACE_BUMP,
     V992_FLANGE_END_FIX,
-    V993_CLAMP_BASE_CONTEXT_VERSION
+    V993_CLAMP_BASE_CONTEXT_VERSION,
+    V1000_FEATURESCRIPT_V1K,
+    V1001_COMPARE_ORIGINALS,
+    V1002_UNHIDE_MATE_CONNECTOR_FLIP_PARAMETERS,
+    V1003_DUMMY_FEATURE,
+    V1004_MATE_CONNECTOR_AS_PLANE,
+    V1005_INTERNAL_HEM,
+    V1006_CPLANE_MATE_CONNECTOR,
+    V1007_RENAME_AXIS_PARAM,
+    V1008_SKIP_MATE_CONNECTOR_PATTERNS,
+    V1009_SM_BOOLEAN_TRACK,
+    V1010_SECTION_PART_NO_NEGATIVE_DEPTH
 }
 
 /**
@@ -756,6 +767,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V993_CLAMP_BASE_CONTEXT_VERSION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1010_SECTION_PART_NO_NEGATIVE_DEPTH;
 
 
