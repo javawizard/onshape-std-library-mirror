@@ -1,25 +1,25 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "993.0");
-export import(path : "onshape/std/tool.fs", version : "993.0");
+export import(path : "onshape/std/query.fs", version : "1010.0");
+export import(path : "onshape/std/tool.fs", version : "1010.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/boolean.fs", version : "993.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/transform.fs", version : "993.0");
-import(path : "onshape/std/units.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
-import(path : "onshape/std/vector.fs", version : "993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "993.0");
-import(path : "onshape/std/string.fs", version : "993.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/boolean.fs", version : "1010.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/transform.fs", version : "1010.0");
+import(path : "onshape/std/units.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/vector.fs", version : "1010.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1010.0");
+import(path : "onshape/std/string.fs", version : "1010.0");
 
 /**
  * Specifies an end condition for one side of a loft.

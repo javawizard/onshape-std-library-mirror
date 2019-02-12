@@ -1,29 +1,29 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "993.0");
-export import(path : "onshape/std/query.fs", version : "993.0");
-export import(path : "onshape/std/tool.fs", version : "993.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1010.0");
+export import(path : "onshape/std/query.fs", version : "1010.0");
+export import(path : "onshape/std/tool.fs", version : "1010.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "993.0");
-import(path : "onshape/std/box.fs", version : "993.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "993.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/math.fs", version : "993.0");
-import(path : "onshape/std/primitives.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
-import(path : "onshape/std/string.fs", version : "993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "993.0");
-import(path : "onshape/std/transform.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
+import(path : "onshape/std/attributes.fs", version : "1010.0");
+import(path : "onshape/std/box.fs", version : "1010.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/math.fs", version : "1010.0");
+import(path : "onshape/std/primitives.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
+import(path : "onshape/std/string.fs", version : "1010.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1010.0");
+import(path : "onshape/std/transform.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -784,8 +784,11 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModel);
                                 const trackedSheets = trackModelBySheet(context, sheetMetalModel);
 
-                                definition.targets = sheetMetalModel;
                                 const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
+
+                                const useRobustForTargets = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1009_SM_BOOLEAN_TRACK);
+                                definition.targets = useRobustForTargets ? robustSMModel : sheetMetalModel;
+
                                 const modifiedFaceArray = performSheetMetalBoolean(context, id, definition);
 
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V748_SM_FAIL_SHEET_DELETION)

@@ -1,34 +1,34 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "993.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "993.0");
-import(path : "onshape/std/box.fs", version : "993.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/coordSystem.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/extrude.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/mathUtils.fs", version : "993.0");
-import(path : "onshape/std/revolve.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
-import(path : "onshape/std/sketch.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/tool.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
-import(path : "onshape/std/string.fs", version : "993.0");
-import(path : "onshape/std/holetables.gen.fs", version : "993.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "993.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "993.0");
-import(path : "onshape/std/cylinderCast.fs", version : "993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-import(path : "onshape/std/attributes.fs", version : "993.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "993.0");
-export import(path : "onshape/std/holeUtils.fs", version : "993.0");
+import(path : "onshape/std/boolean.fs", version : "1010.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/box.fs", version : "1010.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/coordSystem.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/extrude.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/mathUtils.fs", version : "1010.0");
+import(path : "onshape/std/revolve.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
+import(path : "onshape/std/sketch.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/tool.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/string.fs", version : "1010.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1010.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1010.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1010.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+import(path : "onshape/std/attributes.fs", version : "1010.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1010.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1010.0");
 
 
 /**
@@ -156,7 +156,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
 
         annotation { "Name" : "Sketch points to place holes",
-                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES }
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
@@ -412,6 +412,16 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
 
 function computeCSys(context is Context, location is Query, definition is map) returns map
 {
+    const sign = definition.oppositeDirection ? 1 : -1;
+
+    var mateConnectorCSys = try silent(evMateConnector(context, {
+        "mateConnector" : location
+    }));
+    if (mateConnectorCSys != undefined)
+    {
+        mateConnectorCSys.zAxis *= sign;
+        return { "point" : mateConnectorCSys.origin, "startPointCSys" : mateConnectorCSys };
+    }
     const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
     var startPointCSys;
     var point is Vector = evVertexPoint(context, { "vertex" : location });
@@ -440,7 +450,6 @@ function computeCSys(context is Context, location is Query, definition is map) r
         point = startPointCSys.origin;
     }
 
-    const sign = definition.oppositeDirection ? 1 : -1;
     startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
 
     return { "point" : point, "startPointCSys" : startPointCSys };

@@ -1,18 +1,18 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "993.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1010.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/manipulator.fs", version : "993.0");
-import(path : "onshape/std/query.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
-import(path : "onshape/std/vector.fs", version : "993.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/manipulator.fs", version : "1010.0");
+import(path : "onshape/std/query.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/vector.fs", version : "1010.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -122,7 +122,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
         definition.endBound == SMExtrudeBoundingType.UP_TO_BODY ||
         definition.endBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
-        annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : "DISPLAY_SHORT" }
+        annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasOffset is boolean;
 
         if (definition.hasOffset)
@@ -174,7 +174,8 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
             "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
-            "MaxNumberOfPicks" : 1 }
+            "MaxNumberOfPicks" : 1,
+            "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.secondDirectionBoundEntityVertex is Query;
     }
 
@@ -187,7 +188,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
         definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_BODY ||
         definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
     {
-        annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : "DISPLAY_SHORT" }
+        annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasSecondDirectionOffset is boolean;
 
         if (definition.hasSecondDirectionOffset)

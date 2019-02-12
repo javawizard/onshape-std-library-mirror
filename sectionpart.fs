@@ -1,25 +1,25 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "993.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
+export import(path : "onshape/std/query.fs", version : "1010.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/coordSystem.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/extrude.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/math.fs", version : "993.0");
-import(path : "onshape/std/sketch.fs", version : "993.0");
-import(path : "onshape/std/tool.fs", version : "993.0");
-import(path : "onshape/std/units.fs", version : "993.0");
-import(path : "onshape/std/vector.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
+import(path : "onshape/std/box.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/coordSystem.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/extrude.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/math.fs", version : "1010.0");
+import(path : "onshape/std/sketch.fs", version : "1010.0");
+import(path : "onshape/std/tool.fs", version : "1010.0");
+import(path : "onshape/std/units.fs", version : "1010.0");
+import(path : "onshape/std/vector.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -375,6 +375,11 @@ function jogSectionCut(context is Context, id is Id, target is Query, sketchPlan
                     const projectedOffsetPoint = worldToPlane(offsetPlane, offsetPoint);
                     offsetDistance += (projectedOffsetPoint[0] - projectedPoints[0][0]);
                 }
+                // we do not allow negative offset. If it happens, we treat it as a regular section cut
+                if (offsetDistance < 0)
+                {
+                    isOffsetCut = false;
+                }
             }
 
             var polygon;
@@ -529,11 +534,11 @@ function checkJogDirection(pointsInPlane is array)
 
 function createJogPolygonForOffsetCut(points is array, boundingBox is Box3d, sketchPlane is Plane, offsetDistance is ValueWithUnits) returns array
 {
-    var polygonVertices = concatenateArrays([points, makeArray(3)]);
+    var polygonVertices = concatenateArrays([makeArray(1), points, makeArray(2)]);
 
     const pointCount = size(points);
-    polygonVertices[pointCount] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
-    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
+    polygonVertices[0] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
+    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
     polygonVertices[pointCount + 2] = polygonVertices[0];
 
     return polygonVertices;

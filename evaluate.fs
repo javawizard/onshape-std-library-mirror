@@ -1,4 +1,4 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 993; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "993.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/context.fs", version : "993.0");
-import(path : "onshape/std/coordSystem.fs", version : "993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "993.0");
-import(path : "onshape/std/mathUtils.fs", version : "993.0");
-import(path : "onshape/std/query.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/string.fs", version : "993.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/units.fs", version : "993.0");
+import(path : "onshape/std/box.fs", version : "1010.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/context.fs", version : "1010.0");
+import(path : "onshape/std/coordSystem.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1010.0");
+import(path : "onshape/std/mathUtils.fs", version : "1010.0");
+import(path : "onshape/std/query.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/string.fs", version : "1010.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/units.fs", version : "1010.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -879,11 +879,11 @@ precondition
 }
 
 /**
- * If the face is a plane, return a [Plane] value for the given face.
+ * If the face is a planar face or a mate connector, return the [Plane] it represents.
  * @param arg {{
  *      @field face{Query}
  * }}
- * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not a planar face.
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : The first resolved entity was not a planar face or mate connector.
  */
 export function evPlane(context is Context, arg is map) returns Plane
 precondition

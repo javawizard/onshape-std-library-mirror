@@ -1,28 +1,28 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "993.0");
-export import(path : "onshape/std/query.fs", version : "993.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1010.0");
+export import(path : "onshape/std/query.fs", version : "1010.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "993.0");
-export import(path : "onshape/std/tool.fs", version : "993.0");
+export import(path : "onshape/std/manipulator.fs", version : "1010.0");
+export import(path : "onshape/std/tool.fs", version : "1010.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/coordSystem.fs", version : "993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/mathUtils.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/tool.fs", version : "993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
+import(path : "onshape/std/box.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/coordSystem.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/mathUtils.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/tool.fs", version : "1010.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -157,7 +157,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     precondition
     {
         annotation { "Name" : "Entities to transform or copy",
-                     "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES}
+                     "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
+                     "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }

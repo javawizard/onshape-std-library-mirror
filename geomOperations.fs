@@ -1,4 +1,4 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,21 +15,21 @@ FeatureScript 993; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/context.fs", version : "993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-import(path : "onshape/std/query.fs", version : "993.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/context.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+import(path : "onshape/std/query.fs", version : "1010.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "993.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1010.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "993.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1010.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "993.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1010.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "993.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1010.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "993.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1010.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -332,7 +332,7 @@ export function opHelix(context is Context, id is Id, definition is map)
  * Brings foreign geometry into the context. This function is used for importing uploaded parts.
  * @param id : @autocomplete `id + "importForeign1"`
  * @param definition {{
- *      @field foreignId {string} : The foreign data id (`dataId` from an imported blob tab).
+ *      @field blobData {CADImportData} : Reference to a blob element hosting uploaded CAD data.
  *      @field flatten {boolean} : Whether to flatten assemblies; defaults to false. @optional
  *      @field yAxisIsUp {boolean} : If true, the y axis in the import maps to the z axis and z maps to -y.
  *              If false (default), the coordinates are unchanged. @optional

@@ -1,28 +1,28 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "993.0");
-import(path : "onshape/std/boolean.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "993.0");
-import(path : "onshape/std/extrude.fs", version : "993.0");
-import(path : "onshape/std/evaluate.fs", version : "993.0");
-import(path : "onshape/std/feature.fs", version : "993.0");
-import(path : "onshape/std/math.fs", version : "993.0");
-import(path : "onshape/std/matrix.fs", version : "993.0");
-import(path : "onshape/std/query.fs", version : "993.0");
-import(path : "onshape/std/sketch.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "993.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "993.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "993.0");
-import(path : "onshape/std/units.fs", version : "993.0");
-import(path : "onshape/std/valueBounds.fs", version : "993.0");
-import(path : "onshape/std/vector.fs", version : "993.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "993.0");
+import(path : "onshape/std/attributes.fs", version : "1010.0");
+import(path : "onshape/std/boolean.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
+import(path : "onshape/std/extrude.fs", version : "1010.0");
+import(path : "onshape/std/evaluate.fs", version : "1010.0");
+import(path : "onshape/std/feature.fs", version : "1010.0");
+import(path : "onshape/std/math.fs", version : "1010.0");
+import(path : "onshape/std/matrix.fs", version : "1010.0");
+import(path : "onshape/std/query.fs", version : "1010.0");
+import(path : "onshape/std/sketch.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1010.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1010.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1010.0");
+import(path : "onshape/std/units.fs", version : "1010.0");
+import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/vector.fs", version : "1010.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1010.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -1512,7 +1512,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
     var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
     if (size(adjacentFaces) != 1)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
     }
     const adjacentFace = adjacentFaces[0];
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
@@ -1741,7 +1741,7 @@ function getModelParametersFromEdge(context is Context, edge is Query) returns m
     var adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
     }
     return getModelParameters(context, qOwnerBody(adjacentFace));
 }

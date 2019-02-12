@@ -1,11 +1,11 @@
-FeatureScript 993; /* Automatically generated version */
+FeatureScript 1010; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "993.0");
-import(path : "onshape/std/containers.fs", version : "993.0");
-import(path : "onshape/std/string.fs", version : "993.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1010.0");
+import(path : "onshape/std/string.fs", version : "1010.0");
 
 //====================== Context ========================
 
@@ -43,7 +43,7 @@ export function newContext() returns Context
 
 /**
  * @internal
- * Returns `false` if the active feature of `context` is running at a version
+ * Returns `true` if the active feature of `context` is running at a version
  * number at least as new as `introduced`.
  */
 export function isAtVersionOrLater(context is Context, introduced is FeatureScriptVersionNumber) returns boolean
