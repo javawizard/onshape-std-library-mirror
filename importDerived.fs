@@ -1,17 +1,17 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1010.0");
+export import(path : "onshape/std/query.fs", version : "1024.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1010.0");
-import(path : "onshape/std/feature.fs", version : "1010.0");
-import(path : "onshape/std/tool.fs", version : "1010.0");
-import(path : "onshape/std/transform.fs", version : "1010.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
+import(path : "onshape/std/containers.fs", version : "1024.0");
+import(path : "onshape/std/feature.fs", version : "1024.0");
+import(path : "onshape/std/tool.fs", version : "1024.0");
+import(path : "onshape/std/transform.fs", version : "1024.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1024.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -73,8 +73,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             // Record the parts query in the old context -- the record will be merged into the new context
             recordParameters(otherContext, id, definition);
 
+            const otherContextId is Id = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1018_DERIVED) ?
+                                                    makeId(id[0] ~ "_inBase") : id;
+
             // remove sheet metal attributes and helper bodies
-            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal", undefined);
+            var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", undefined);
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -93,7 +96,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const deleteDefinition = {
                 "entities" : qSubtraction(qUnion([allBodies, smPartsQ]) , bodiesToKeep)
             };
-            opDeleteBodies(otherContext, id + "delete", deleteDefinition);
+            opDeleteBodies(otherContext, otherContextId + "delete", deleteDefinition);
 
             var mergeDefinition = definition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;

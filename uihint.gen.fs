@@ -1,4 +1,4 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -57,6 +57,8 @@ FeatureScript 1010; /* Automatically generated version */
  *      and don't provide a button to allow creating new mate connectors specificaly for this parameter.
  * @value FIRST_IN_ROW : Guarantee that, regardless of other layout requirements, this parameter will always be the first parameter in
  *      its displayed row.
+ * @value ALLOW_QUERY_ORDER : Enable reordering of queries in a query parameter.
+ * @value PREVENT_ARRAY_REORDER : Disable reordering of items in an array parameter.
  */
 export enum UIHint
 {
@@ -82,7 +84,9 @@ export enum UIHint
     DISPLAY_CURRENT_VALUE_ONLY,
     READ_ONLY,
     PREVENT_CREATING_NEW_MATE_CONNECTORS,
-    FIRST_IN_ROW
+    FIRST_IN_ROW,
+    ALLOW_QUERY_ORDER,
+    PREVENT_ARRAY_REORDER
 }
 
 

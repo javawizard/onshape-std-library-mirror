@@ -1,4 +1,4 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -756,7 +756,17 @@ export enum FeatureScriptVersionNumber
     V1007_RENAME_AXIS_PARAM,
     V1008_SKIP_MATE_CONNECTOR_PATTERNS,
     V1009_SM_BOOLEAN_TRACK,
-    V1010_SECTION_PART_NO_NEGATIVE_DEPTH
+    V1010_SECTION_PART_NO_NEGATIVE_DEPTH,
+    V1015_SUBSTUTUTION_EVAL,
+    V1016_EXPECTED_VECTOR_SIZE,
+    V1017_SUBTRACT_COMPLEMENT,
+    V1018_DERIVED,
+    V1019_PS_VERSION_31_1_188,
+    V1020_SURFACE_BOOLEAN,
+    V1021_HOLE_MATE_CONNECTOR_CSYS,
+    V1022_FIX_MASS_PROPS,
+    V1023_FIX_HOLE_NAME,
+    V1024_UPDATE_DOCS
 }
 
 /**
@@ -767,6 +777,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1010_SECTION_PART_NO_NEGATIVE_DEPTH;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1024_UPDATE_DOCS;
 
 

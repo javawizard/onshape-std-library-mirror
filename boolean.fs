@@ -1,29 +1,29 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1010.0");
-export import(path : "onshape/std/query.fs", version : "1010.0");
-export import(path : "onshape/std/tool.fs", version : "1010.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/query.fs", version : "1024.0");
+export import(path : "onshape/std/tool.fs", version : "1024.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1010.0");
-import(path : "onshape/std/box.fs", version : "1010.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1010.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1010.0");
-import(path : "onshape/std/containers.fs", version : "1010.0");
-import(path : "onshape/std/evaluate.fs", version : "1010.0");
-import(path : "onshape/std/feature.fs", version : "1010.0");
-import(path : "onshape/std/math.fs", version : "1010.0");
-import(path : "onshape/std/primitives.fs", version : "1010.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1010.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1010.0");
-import(path : "onshape/std/string.fs", version : "1010.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1010.0");
-import(path : "onshape/std/transform.fs", version : "1010.0");
-import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/attributes.fs", version : "1024.0");
+import(path : "onshape/std/box.fs", version : "1024.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1024.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1024.0");
+import(path : "onshape/std/evaluate.fs", version : "1024.0");
+import(path : "onshape/std/feature.fs", version : "1024.0");
+import(path : "onshape/std/math.fs", version : "1024.0");
+import(path : "onshape/std/primitives.fs", version : "1024.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1024.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1024.0");
+import(path : "onshape/std/string.fs", version : "1024.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1024.0");
+import(path : "onshape/std/transform.fs", version : "1024.0");
+import(path : "onshape/std/valueBounds.fs", version : "1024.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -138,9 +138,11 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         }
         else
         {
+            //Between versions 179 and 1017 SUBTRACT_COMPLEMENT processing was handled on FS side
             var isSubtractComplement = false;
             if (definition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
-                isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS))
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS) &&
+                !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1017_SUBTRACT_COMPLEMENT))
             {
                 isSubtractComplement = true;
                 definition.tools = constructToolsComplement(context, id, definition);

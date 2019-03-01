@@ -1,11 +1,11 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "1010.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1010.0");
-import(path : "onshape/std/string.fs", version : "1010.0");
+import(path : "onshape/std/math.fs", version : "1024.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1024.0");
+import(path : "onshape/std/string.fs", version : "1024.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -117,6 +117,12 @@ export const TIME_UNITS = { "second" : 1 } as UnitSpec;
 export const CURRENT_UNITS = { "ampere" : 1 } as UnitSpec;
 /** @internal */
 export const DENSITY_UNITS = { "kilogram" : 1, "meter" : -3 } as UnitSpec;
+/** @internal */
+export const AREA_UNITS = { "meter" : 2 } as UnitSpec;
+/** @internal */
+export const VOLUME_UNITS = { "meter" : 3 } as UnitSpec;
+/** @internal */
+export const INERTIA_UNITS = { "kilogram" : 1, "meter" : 2 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
 /**
@@ -308,30 +314,18 @@ export operator*(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
  */
 export operator*(lhs is ValueWithUnits, rhs is ValueWithUnits) // May return ValueWithUnits or number
 {
-    var newUnit = lhs.unit;
-    for (var unit in rhs.unit)
-    {
-        if (lhs.unit[unit.key] == undefined)
-        {
-            newUnit[unit.key] = unit.value;
-        }
-        else
-        {
-            const sum = lhs.unit[unit.key] + unit.value;
-            if (sum == 0)
-                newUnit[unit.key] = undefined;
-            else
-                newUnit[unit.key] = sum;
-        }
-    }
+    var newUnit = unitProduct(lhs.unit, rhs.unit);
 
-    if (@size(newUnit) == 0)
+    if (newUnit == unitless)
         return lhs.value * rhs.value;
 
     return { "value" : lhs.value * rhs.value, "unit" : newUnit } as ValueWithUnits;
 }
 
-function reciprocal(val is ValueWithUnits) returns ValueWithUnits
+/**
+ * Inverts a value, including units.
+ */
+export function reciprocal(val is ValueWithUnits) returns ValueWithUnits
 {
     for (var unit in val.unit)
     {
@@ -703,3 +697,32 @@ export function stringToUnit(unitStr is string) returns ValueWithUnits
     throw "Unexpected unit:" ~ unitStr;
 }
 
+/** @internal
+ *
+ * Given two values with units, return the units of their product. If the result
+ * is unitless, returns the unitless constant.
+ */
+export function unitProduct(unit1 is UnitSpec, unit2 is UnitSpec)
+{
+    var newUnit = unit1;
+    for (var unit in unit2)
+    {
+        if (unit1[unit.key] == undefined)
+        {
+            newUnit[unit.key] = unit.value;
+        }
+        else
+        {
+            const sum = unit1[unit.key] + unit.value;
+            if (sum == 0)
+                newUnit[unit.key] = undefined;
+            else
+                newUnit[unit.key] = sum;
+        }
+    }
+
+    if (@size(newUnit) == 0)
+        return unitless;
+
+    return newUnit;
+}

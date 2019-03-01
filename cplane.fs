@@ -1,23 +1,23 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1010.0");
+export import(path : "onshape/std/query.fs", version : "1024.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1010.0");
+export import(path : "onshape/std/manipulator.fs", version : "1024.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1010.0");
-import(path : "onshape/std/containers.fs", version : "1010.0");
-import(path : "onshape/std/evaluate.fs", version : "1010.0");
-import(path : "onshape/std/feature.fs", version : "1010.0");
-import(path : "onshape/std/mathUtils.fs", version : "1010.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
-import(path : "onshape/std/valueBounds.fs", version : "1010.0");
+import(path : "onshape/std/box.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1024.0");
+import(path : "onshape/std/evaluate.fs", version : "1024.0");
+import(path : "onshape/std/feature.fs", version : "1024.0");
+import(path : "onshape/std/mathUtils.fs", version : "1024.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
+import(path : "onshape/std/valueBounds.fs", version : "1024.0");
 
 /**
  * The method of defining a construction plane.
@@ -623,7 +623,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     const entities = definition.entities;
 
-    const mateConnectorQ is Query = qBodyType(definition.entities, BodyType.MATE_CONNECTOR);
+    const mateConnectorQ is Query = qBodyType(entities, BodyType.MATE_CONNECTOR);
 
     const total is number = size(evaluateQuery(context, entities));
     const vertices is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.VERTEX), mateConnectorQ)));
@@ -631,6 +631,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
     const planes is number = size(evaluateQuery(context, qUnion([qGeometry(entities, GeometryType.PLANE), mateConnectorQ])));
     const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
                                                                       qGeometry(entities, GeometryType.LINE))));
+    const mateConnectors is number = size(evaluateQuery(context, mateConnectorQ));
 
     if (total == 1)
     {
@@ -641,7 +642,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
         else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
             definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
-    if (total == 2)
+    else if (total == 2)
     {
         if (planes == 1 && vertices == 1)
             definition.cplaneType = CPlaneType.PLANE_POINT;
@@ -654,8 +655,11 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
         else if (lines >= 1 && (lines + vertices + planes) == 2)
             definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
-    if (total == 3 && vertices == 3)
-        definition.cplaneType = CPlaneType.THREE_POINT;
+    else if (total == 3)
+    {
+        if ((vertices + mateConnectors) == 3)
+            definition.cplaneType = CPlaneType.THREE_POINT;
+    }
 
     return definition;
 }

@@ -1,8 +1,8 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "1010.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1010.0");
+import(path : "onshape/std/units.fs", version : "1024.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1024.0");
 
 const ANSI_drillTable = {
     "name" : "size",
@@ -15036,6 +15036,1040 @@ const PEM_Metric_DSO_ThroughTappedScrewTable = {
     }
 };
 
+const PEM_Metric_FH4_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M4",
+    "entries" : {
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH4_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3 mm", "tapDrillDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH4_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3 mm", "holeDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "holeDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHL_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M3.5",
+    "entries" : {
+        "M2.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "2.5 mm"}
+            }
+        },
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3 mm"}
+            }
+        },
+        "M3.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3.5 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHL_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.5 mm", "tapDrillDiameter" : "2.5 mm", "majorDiameter" : "2.5 mm"}
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3 mm", "tapDrillDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHL_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "holeDiameter" : "2.5 mm", "majorDiameter" : "2.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3 mm", "holeDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "holeDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "holeDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHX_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M6",
+    "entries" : {
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5.2 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6.2 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHX_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5.2 mm", "tapDrillDiameter" : "5.2 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6.2 mm", "tapDrillDiameter" : "6.2 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FHX_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.2 mm", "holeDiameter" : "5.2 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.2 mm", "holeDiameter" : "6.2 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Pin_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "4",
+    "entries" : {
+        "3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3.5 mm"}
+            }
+        },
+        "4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4.1 mm"}
+            }
+        },
+        "5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5.5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Pin_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                    }
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.1",
+            "entries" : {
+                "4.1" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4.1 mm", "tapDrillDiameter" : "4.1 mm", "majorDiameter" : "4.1 mm"}
+                    }
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5.5 mm", "tapDrillDiameter" : "5.5 mm", "majorDiameter" : "5.5 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Pin_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "holeDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.1",
+            "entries" : {
+                "4.1" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.1 mm", "holeDiameter" : "4.1 mm", "majorDiameter" : "4.1 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.5 mm", "holeDiameter" : "5.5 mm", "majorDiameter" : "5.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Stud_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M4",
+    "entries" : {
+        "M2.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "2.5 mm"}
+            }
+        },
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3 mm"}
+            }
+        },
+        "M3.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3.5 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "8 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Stud_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "2.5 mm", "tapDrillDiameter" : "2.5 mm", "majorDiameter" : "2.5 mm"}
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3 mm", "tapDrillDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_FH_Stud_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "2.5 mm", "holeDiameter" : "2.5 mm", "majorDiameter" : "2.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3 mm", "holeDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "holeDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "holeDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8 mm", "holeDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const PEM_Metric_H_ClearanceHoleTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -15181,6 +16215,248 @@ const PEM_Metric_H_ThroughTappedScrewTable = {
                             "default" : "75%",
                             "entries" : {
                                 "75%" : {"tapDrillDiameter" : "12.7 mm", "holeDiameter" : "12.7 mm", "majorDiameter" : "10 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_SGPC_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M4",
+    "entries" : {
+        "M2.5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4 mm"}
+            }
+        },
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4.5 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5.5 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6.5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "7.5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_SGPC_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "majorDiameter" : "2.5 mm"}
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4.5 mm", "tapDrillDiameter" : "4.5 mm", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5.5 mm", "tapDrillDiameter" : "5.5 mm", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6.5 mm", "tapDrillDiameter" : "6.5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "7.5 mm", "tapDrillDiameter" : "7.5 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_SGPC_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "holeDiameter" : "4 mm", "majorDiameter" : "2.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "holeDiameter" : "4.5 mm", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.5 mm", "holeDiameter" : "5.5 mm", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.5 mm", "holeDiameter" : "6.5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "7.5 mm", "holeDiameter" : "7.5 mm", "majorDiameter" : "6 mm"}
                             }
                         }
                     }
@@ -16567,6 +17843,1017 @@ const PEM_Metric_SRT_ThroughTappedScrewTable = {
                             "default" : "75%",
                             "entries" : {
                                 "75%" : {"tapDrillDiameter" : "10.49 mm", "holeDiameter" : "10.49 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HF109_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "8 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HF109_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HF109_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8 mm", "holeDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFE_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M6",
+    "entries" : {
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "8 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFE_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFE_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8 mm", "holeDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M6",
+    "entries" : {
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "8 mm"}
+            }
+        },
+        "M10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "10 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "10 mm", "tapDrillDiameter" : "10 mm", "majorDiameter" : "10 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8 mm", "holeDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "10 mm", "holeDiameter" : "10 mm", "majorDiameter" : "10 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFLH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M6",
+    "entries" : {
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "8 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFLH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6 mm", "tapDrillDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "8 mm", "tapDrillDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_Stud_HFLH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6 mm", "holeDiameter" : "6 mm", "majorDiameter" : "6 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "8 mm", "holeDiameter" : "8 mm", "majorDiameter" : "8 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_TFH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M4",
+    "entries" : {
+        "M3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_TFH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3 mm", "tapDrillDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4 mm", "tapDrillDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5 mm", "tapDrillDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_TFH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3 mm", "holeDiameter" : "3 mm", "majorDiameter" : "3 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4 mm", "holeDiameter" : "4 mm", "majorDiameter" : "4 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5 mm", "holeDiameter" : "5 mm", "majorDiameter" : "5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_TPS_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "6",
+    "entries" : {
+        "3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3.5 mm"}
+            }
+        },
+        "4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "4.5 mm"}
+            }
+        },
+        "5" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "5.5 mm"}
+            }
+        },
+        "6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "6.5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_TPS_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                    }
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5",
+            "entries" : {
+                "4.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "4.5 mm", "tapDrillDiameter" : "4.5 mm", "majorDiameter" : "4.5 mm"}
+                    }
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "5.5 mm", "tapDrillDiameter" : "5.5 mm", "majorDiameter" : "5.5 mm"}
+                    }
+                }
+            }
+        },
+        "6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.5",
+            "entries" : {
+                "6.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "6.5 mm", "tapDrillDiameter" : "6.5 mm", "majorDiameter" : "6.5 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_TPS_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "holeDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5",
+            "entries" : {
+                "4.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "4.5 mm", "holeDiameter" : "4.5 mm", "majorDiameter" : "4.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "5.5 mm", "holeDiameter" : "5.5 mm", "majorDiameter" : "5.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.5",
+            "entries" : {
+                "6.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "6.5 mm", "holeDiameter" : "6.5 mm", "majorDiameter" : "6.5 mm"}
                             }
                         }
                     }
@@ -18138,6 +20425,1612 @@ const PEM_Unified_DSO_ThroughTappedScrewTable = {
     }
 };
 
+const PEM_Unified_FH4_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "#6",
+    "entries" : {
+        "#4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.111 in"}
+            }
+        },
+        "#6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "#8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.163 in"}
+            }
+        },
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.249 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH4_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.111 in", "tapDrillDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.163 in", "tapDrillDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.249 in", "tapDrillDiameter" : "0.249 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH4_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.111 in", "holeDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.163 in", "holeDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.249 in", "holeDiameter" : "0.249 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FHL_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "#6",
+    "entries" : {
+        "#2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.085 in"}
+            }
+        },
+        "#4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.111 in"}
+            }
+        },
+        "#6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "#8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.163 in"}
+            }
+        },
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_FHL_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.085 in", "tapDrillDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.111 in", "tapDrillDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.163 in", "tapDrillDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FHL_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.085 in", "holeDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.111 in", "holeDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.163 in", "holeDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Pin_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "0.120",
+    "entries" : {
+        "0.073" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.085 in"}
+            }
+        },
+        "0.084" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.099 in"}
+            }
+        },
+        "0.094" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.111 in"}
+            }
+        },
+        "0.103" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.118 in"}
+            }
+        },
+        "0.106" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.125 in"}
+            }
+        },
+        "0.116" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "0.120" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "0.137" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.157 in"}
+            }
+        },
+        "0.141" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.163 in"}
+            }
+        },
+        "0.160" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        },
+        "0.167" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        },
+        "0.173" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.197 in"}
+            }
+        },
+        "0.207" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.236 in"}
+            }
+        },
+        "0.215" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.250 in"}
+            }
+        },
+        "0.223" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.250 in"}
+            }
+        },
+        "0.273" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        },
+        "0.281" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Pin_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.073" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.085",
+            "entries" : {
+                "0.085" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.085 in", "tapDrillDiameter" : "0.085 in", "majorDiameter" : "0.085 in"}
+                    }
+                }
+            }
+        },
+        "0.084" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.099",
+            "entries" : {
+                "0.099" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.099 in", "tapDrillDiameter" : "0.099 in", "majorDiameter" : "0.099 in"}
+                    }
+                }
+            }
+        },
+        "0.094" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.111",
+            "entries" : {
+                "0.111" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.111 in", "tapDrillDiameter" : "0.111 in", "majorDiameter" : "0.111 in"}
+                    }
+                }
+            }
+        },
+        "0.103" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.118",
+            "entries" : {
+                "0.118" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.118 in", "tapDrillDiameter" : "0.118 in", "majorDiameter" : "0.118 in"}
+                    }
+                }
+            }
+        },
+        "0.106" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.125",
+            "entries" : {
+                "0.125" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.125 in", "tapDrillDiameter" : "0.125 in", "majorDiameter" : "0.125 in"}
+                    }
+                }
+            }
+        },
+        "0.116" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.137 in"}
+                    }
+                }
+            }
+        },
+        "0.120" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.137 in"}
+                    }
+                }
+            }
+        },
+        "0.137" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.157",
+            "entries" : {
+                "0.157" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.157 in", "tapDrillDiameter" : "0.157 in", "majorDiameter" : "0.157 in"}
+                    }
+                }
+            }
+        },
+        "0.141" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.163",
+            "entries" : {
+                "0.163" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.163 in", "tapDrillDiameter" : "0.163 in", "majorDiameter" : "0.163 in"}
+                    }
+                }
+            }
+        },
+        "0.160" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.189 in"}
+                    }
+                }
+            }
+        },
+        "0.167" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.189 in"}
+                    }
+                }
+            }
+        },
+        "0.173" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.197",
+            "entries" : {
+                "0.197" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.197 in", "tapDrillDiameter" : "0.197 in", "majorDiameter" : "0.197 in"}
+                    }
+                }
+            }
+        },
+        "0.207" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.236",
+            "entries" : {
+                "0.236" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.236 in", "tapDrillDiameter" : "0.236 in", "majorDiameter" : "0.236 in"}
+                    }
+                }
+            }
+        },
+        "0.215" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.250 in", "tapDrillDiameter" : "0.250 in", "majorDiameter" : "0.250 in"}
+                    }
+                }
+            }
+        },
+        "0.223" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.250 in", "tapDrillDiameter" : "0.250 in", "majorDiameter" : "0.250 in"}
+                    }
+                }
+            }
+        },
+        "0.273" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.312 in"}
+                    }
+                }
+            }
+        },
+        "0.281" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.312 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Pin_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.073" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.085",
+            "entries" : {
+                "0.085" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.085 in", "holeDiameter" : "0.085 in", "majorDiameter" : "0.085 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.084" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.099",
+            "entries" : {
+                "0.099" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.099 in", "holeDiameter" : "0.099 in", "majorDiameter" : "0.099 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.094" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.111",
+            "entries" : {
+                "0.111" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.111 in", "holeDiameter" : "0.111 in", "majorDiameter" : "0.111 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.103" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.118",
+            "entries" : {
+                "0.118" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.118 in", "holeDiameter" : "0.118 in", "majorDiameter" : "0.118 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.106" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.125",
+            "entries" : {
+                "0.125" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.125 in", "holeDiameter" : "0.125 in", "majorDiameter" : "0.125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.116" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.137 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.120" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.137 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.137" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.157",
+            "entries" : {
+                "0.157" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.157 in", "holeDiameter" : "0.157 in", "majorDiameter" : "0.157 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.141" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.163",
+            "entries" : {
+                "0.163" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.163 in", "holeDiameter" : "0.163 in", "majorDiameter" : "0.163 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.160" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.189 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.167" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.189 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.173" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.197",
+            "entries" : {
+                "0.197" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.197 in", "holeDiameter" : "0.197 in", "majorDiameter" : "0.197 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.207" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.236",
+            "entries" : {
+                "0.236" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.236 in", "holeDiameter" : "0.236 in", "majorDiameter" : "0.236 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.215" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.250 in", "holeDiameter" : "0.250 in", "majorDiameter" : "0.250 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.223" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.250 in", "holeDiameter" : "0.250 in", "majorDiameter" : "0.250 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.273" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.312 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.281" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.312 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Stud_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "#6",
+    "entries" : {
+        "#2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.085 in"}
+            }
+        },
+        "#4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.111 in"}
+            }
+        },
+        "#6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "#8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.163 in"}
+            }
+        },
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.249 in"}
+            }
+        },
+        "5/16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.311 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Stud_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.085 in", "tapDrillDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.111 in", "tapDrillDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.163 in", "tapDrillDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                },
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.249 in", "tapDrillDiameter" : "0.249 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.311 in", "tapDrillDiameter" : "0.311 in", "majorDiameter" : "0.3125 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_FH_Stud_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.085 in", "holeDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.111 in", "holeDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.163 in", "holeDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                },
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.249 in", "holeDiameter" : "0.249 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.311 in", "holeDiameter" : "0.311 in", "majorDiameter" : "0.3125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const PEM_Unified_H_ClearanceHoleTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18283,6 +22176,292 @@ const PEM_Unified_H_ThroughTappedScrewTable = {
                             "default" : "75%",
                             "entries" : {
                                 "75%" : {"tapDrillDiameter" : "0.500 in", "holeDiameter" : "0.500 in", "majorDiameter" : "0.375 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_SGPC_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "#6",
+    "entries" : {
+        "#2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.145 in"}
+            }
+        },
+        "#4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.171 in"}
+            }
+        },
+        "#6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.196 in"}
+            }
+        },
+        "#8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.223 in"}
+            }
+        },
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.249 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.309 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_SGPC_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.145 in", "tapDrillDiameter" : "0.145 in", "majorDiameter" : "0.086 in"}
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.171 in", "tapDrillDiameter" : "0.171 in", "majorDiameter" : "0.112 in"}
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.196 in", "tapDrillDiameter" : "0.196 in", "majorDiameter" : "0.138 in"}
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.223 in", "tapDrillDiameter" : "0.223 in", "majorDiameter" : "0.164 in"}
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.249 in", "tapDrillDiameter" : "0.249 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.309 in", "tapDrillDiameter" : "0.309 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_SGPC_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.145 in", "holeDiameter" : "0.145 in", "majorDiameter" : "0.086 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.171 in", "holeDiameter" : "0.171 in", "majorDiameter" : "0.112 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.196 in", "holeDiameter" : "0.196 in", "majorDiameter" : "0.138 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.223 in", "holeDiameter" : "0.223 in", "majorDiameter" : "0.164 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.249 in", "holeDiameter" : "0.249 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.309 in", "holeDiameter" : "0.309 in", "majorDiameter" : "0.25 in"}
                             }
                         }
                     }
@@ -19898,6 +24077,1084 @@ const PEM_Unified_SRT_ThroughTappedScrewTable = {
     }
 };
 
+const PEM_Unified_Stud_HFE_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "1/4",
+    "entries" : {
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.19 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.25 in"}
+            }
+        },
+        "5/16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFE_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.19 in", "tapDrillDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.25 in", "tapDrillDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFE_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.19 in", "holeDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.25 in", "holeDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFG8_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "1/4",
+    "entries" : {
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.19 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.25 in"}
+            }
+        },
+        "5/16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFG8_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.19 in", "tapDrillDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.25 in", "tapDrillDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFG8_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.19 in", "holeDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.25 in", "holeDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "1/4",
+    "entries" : {
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.19 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.25 in"}
+            }
+        },
+        "5/16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        },
+        "3/8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.375 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.19 in", "tapDrillDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.25 in", "tapDrillDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                    }
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.375 in", "tapDrillDiameter" : "0.375 in", "majorDiameter" : "0.375 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.19 in", "holeDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.25 in", "holeDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.375 in", "holeDiameter" : "0.375 in", "majorDiameter" : "0.375 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFLH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "1/4",
+    "entries" : {
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.19 in"}
+            }
+        },
+        "1/4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.25 in"}
+            }
+        },
+        "5/16" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.312 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFLH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.19 in", "tapDrillDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.25 in", "tapDrillDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.312 in", "tapDrillDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_Stud_HFLH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.19 in", "holeDiameter" : "0.19 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.25 in", "holeDiameter" : "0.25 in", "majorDiameter" : "0.25 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.312 in", "holeDiameter" : "0.312 in", "majorDiameter" : "0.3125 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_TFH_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "#6",
+    "entries" : {
+        "#2" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.085 in"}
+            }
+        },
+        "#4" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.111 in"}
+            }
+        },
+        "#6" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.137 in"}
+            }
+        },
+        "#8" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.163 in"}
+            }
+        },
+        "#10" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.189 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_TFH_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.085 in", "tapDrillDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.111 in", "tapDrillDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.137 in", "tapDrillDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.163 in", "tapDrillDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                },
+                "32 tpi" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.189 in", "tapDrillDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_TFH_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.085 in", "holeDiameter" : "0.085 in", "majorDiameter" : "0.086 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.111 in", "holeDiameter" : "0.111 in", "majorDiameter" : "0.112 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.137 in", "holeDiameter" : "0.137 in", "majorDiameter" : "0.138 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.163 in", "holeDiameter" : "0.163 in", "majorDiameter" : "0.164 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                },
+                "32 tpi" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.189 in", "holeDiameter" : "0.189 in", "majorDiameter" : "0.19 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_TPS_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "0.125",
+    "entries" : {
+        "0.125" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.144 in"}
+            }
+        },
+        "0.185" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.205 in"}
+            }
+        },
+        "0.25" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "0.272 in"}
+            }
+        }
+    }
+};
+
+const PEM_Unified_TPS_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.125" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.144",
+            "entries" : {
+                "0.144" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.144 in", "tapDrillDiameter" : "0.144 in", "majorDiameter" : "0.144 in"}
+                    }
+                }
+            }
+        },
+        "0.185" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.205",
+            "entries" : {
+                "0.205" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.205 in", "tapDrillDiameter" : "0.205 in", "majorDiameter" : "0.205 in"}
+                    }
+                }
+            }
+        },
+        "0.25" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.272",
+            "entries" : {
+                "0.272" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "0.272 in", "tapDrillDiameter" : "0.272 in", "majorDiameter" : "0.272 in"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Unified_TPS_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.125" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.144",
+            "entries" : {
+                "0.144" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.144 in", "holeDiameter" : "0.144 in", "majorDiameter" : "0.144 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.185" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.205",
+            "entries" : {
+                "0.205" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.205 in", "holeDiameter" : "0.205 in", "majorDiameter" : "0.205 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "0.25" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.272",
+            "entries" : {
+                "0.272" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "0.272 in", "holeDiameter" : "0.272 in", "majorDiameter" : "0.272 in"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const PEM_Unified_TSO_ClearanceHoleTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20231,6 +25488,45 @@ const PEM_MetricStandoffs_ThroughScrewTable = {
     }
 };
 
+const PEM_UnifiedStuds_ThroughScrewTable = {
+    "name" : "type",
+    "displayName" : "Fastener type",
+    "default" : "FH™/FHS™/FHA™ flush-head studs",
+    "entries" : {
+        "FH™/FHS™/FHA™ flush-head studs" : PEM_Unified_FH_Stud_ClearanceHoleTable,
+        "FH4™/FHP™ flush-head studs for stainless steel sheets" : PEM_Unified_FH4_ClearanceHoleTable,
+        "FHL™/FHLS™ flush, low-displacement head studs" : PEM_Unified_FHL_ClearanceHoleTable,
+        "TFH™/TFHS™ non-flush studs" : PEM_Unified_TFH_ClearanceHoleTable,
+        "HFH™/HFHS™/HFHB™ heavy-duty studs" : PEM_Unified_Stud_HFH_ClearanceHoleTable,
+        "HFE™/THFE™ heavy-duty studs for thin sheets" : PEM_Unified_Stud_HFE_ClearanceHoleTable,
+        "HFG8™ heavy-duty, high tensile strength studs" : PEM_Unified_Stud_HFG8_ClearanceHoleTable,
+        "HFLH™ hard panel studs" : PEM_Unified_Stud_HFLH_ClearanceHoleTable,
+        "SGPC™ swaging collar studs" : PEM_Unified_SGPC_ClearanceHoleTable,
+        "FH™/FHS™/FHA™ flush-head pins" : PEM_Unified_FH_Pin_ClearanceHoleTable,
+        "TPS™/TP4™ flush-head pilot pins" : PEM_Unified_TPS_ClearanceHoleTable
+    }
+};
+
+const PEM_MetricStuds_ThroughScrewTable = {
+    "name" : "type",
+    "displayName" : "Fastener type",
+    "default" : "FH™/FHS™/FHA™ flush-head studs",
+    "entries" : {
+        "FH™/FHS™/FHA™ flush-head studs" : PEM_Metric_FH_Stud_ClearanceHoleTable,
+        "FH4™/FHP™ flush-head studs for stainless steel sheets" : PEM_Metric_FH4_ClearanceHoleTable,
+        "FHL™/FHLS™ flush, low-displacement head studs" : PEM_Metric_FHL_ClearanceHoleTable,
+        "TFH™/TFHS™ non-flush studs" : PEM_Metric_TFH_ClearanceHoleTable,
+        "HFH™/HFHS™/HFHB™ heavy-duty studs" : PEM_Metric_Stud_HFH_ClearanceHoleTable,
+        "HFE™/THFE™ heavy-duty studs for thin sheets" : PEM_Metric_Stud_HFE_ClearanceHoleTable,
+        "HF109™ heavy-duty, high tensile strength studs" : PEM_Metric_Stud_HF109_ClearanceHoleTable,
+        "HFLH™ hard panel studs" : PEM_Metric_Stud_HFLH_ClearanceHoleTable,
+        "SGPC™ swaging collar studs" : PEM_Metric_SGPC_ClearanceHoleTable,
+        "FHX™ flush-head studs with X-Press™ thread" : PEM_Metric_FHX_ClearanceHoleTable,
+        "FH™/FHS™/FHA™ flush-head pins" : PEM_Metric_FH_Pin_ClearanceHoleTable,
+        "TPS™/TP4™ flush-head pilot pins" : PEM_Metric_TPS_ClearanceHoleTable
+    }
+};
+
 /** @internal */
 export const tappedOrClearanceHoleTable = {
     "name" : "standard",
@@ -20259,7 +25555,8 @@ const PEM_Metric_HoleTable = {
     "default" : "Self-clinching nuts",
     "entries" : {
         "Self-clinching nuts" : PEM_MetricClinchNuts_ThroughScrewTable,
-        "Self-clinching standoffs" : PEM_MetricStandoffs_ThroughScrewTable
+        "Self-clinching standoffs" : PEM_MetricStandoffs_ThroughScrewTable,
+        "Self-clinching studs & pins" : PEM_MetricStuds_ThroughScrewTable
     }
 };
 
@@ -20269,7 +25566,8 @@ const PEM_Unified_HoleTable = {
     "default" : "Self-clinching nuts",
     "entries" : {
         "Self-clinching nuts" : PEM_UnifiedClinchNuts_ThroughScrewTable,
-        "Self-clinching standoffs" : PEM_UnifiedStandoffs_ThroughScrewTable
+        "Self-clinching standoffs" : PEM_UnifiedStandoffs_ThroughScrewTable,
+        "Self-clinching studs & pins" : PEM_UnifiedStuds_ThroughScrewTable
     }
 };
 

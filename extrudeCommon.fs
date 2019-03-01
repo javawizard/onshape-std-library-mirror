@@ -1,18 +1,18 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1010.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1024.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
-import(path : "onshape/std/evaluate.fs", version : "1010.0");
-import(path : "onshape/std/feature.fs", version : "1010.0");
-import(path : "onshape/std/manipulator.fs", version : "1010.0");
-import(path : "onshape/std/query.fs", version : "1010.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
-import(path : "onshape/std/valueBounds.fs", version : "1010.0");
-import(path : "onshape/std/vector.fs", version : "1010.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
+import(path : "onshape/std/evaluate.fs", version : "1024.0");
+import(path : "onshape/std/feature.fs", version : "1024.0");
+import(path : "onshape/std/manipulator.fs", version : "1024.0");
+import(path : "onshape/std/query.fs", version : "1024.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
+import(path : "onshape/std/valueBounds.fs", version : "1024.0");
+import(path : "onshape/std/vector.fs", version : "1024.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -108,7 +108,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
         annotation {"Name" : "Up to vertex or mate connector",
-            "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
             "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityVertex is Query;
     }
@@ -173,7 +173,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
-            "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
             "MaxNumberOfPicks" : 1,
             "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.secondDirectionBoundEntityVertex is Query;

@@ -1,4 +1,4 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -142,7 +142,7 @@ export enum ErrorStringEnum
     TRANSFORM_FAILED,
     /* Could not shell part with selections. */
     SHELL_FAILED,
-    /* Cannot blend smooth edges. */
+    /* Could not blend smooth edges. */
     EDGEBLEND_SMOOTH,
     /* Could not blend edges. */
     EDGEBLEND_FAILED,
@@ -631,11 +631,11 @@ export enum ErrorStringEnum
     /* You cannot pierce the sketch with a plane. */
     SKETCH_CANNOT_PIERCE_WITH_PLANE,
     WITH_SUPPORT_CODE,
-    /* Cannot fillet smooth edges. */
+    /* Could not fillet smooth edges. */
     FILLET_FAIL_SMOOTH,
     /* Failed to fillet selections. */
     FILLET_FAILED,
-    /* Cannot chamfer smooth edges. */
+    /* Could not chamfer smooth edges. */
     CHAMFER_FAIL_SMOOTH,
     /* Failed to chamfer selections. */
     CHAMFER_FAILED,
@@ -1762,7 +1762,11 @@ export enum ErrorStringEnum
     /* Hem cannot be created. */
     SHEET_METAL_HEM_FAILED,
     /* An invalid configuration was specified. */
-    INVALID_CONFIGURATION_SPECIFIED
+    INVALID_CONFIGURATION_SPECIFIED,
+    /* Could not blend selections on some parts. */
+    EDGEBLEND_PARTIAL,
+    /* Could not chamfer selections on some parts. */
+    CHAMFER_PARTIAL_FAIL
 }
 
 

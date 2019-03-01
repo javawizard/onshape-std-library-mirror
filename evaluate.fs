@@ -1,4 +1,4 @@
-FeatureScript 1010; /* Automatically generated version */
+FeatureScript 1024; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,30 +9,30 @@ FeatureScript 1010; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "1010.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1010.0");
-import(path : "onshape/std/containers.fs", version : "1010.0");
-import(path : "onshape/std/context.fs", version : "1010.0");
-import(path : "onshape/std/coordSystem.fs", version : "1010.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1010.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1010.0");
-import(path : "onshape/std/mathUtils.fs", version : "1010.0");
-import(path : "onshape/std/query.fs", version : "1010.0");
-import(path : "onshape/std/feature.fs", version : "1010.0");
-import(path : "onshape/std/string.fs", version : "1010.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1010.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1010.0");
-import(path : "onshape/std/units.fs", version : "1010.0");
+import(path : "onshape/std/box.fs", version : "1024.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1024.0");
+import(path : "onshape/std/context.fs", version : "1024.0");
+import(path : "onshape/std/coordSystem.fs", version : "1024.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1024.0");
+import(path : "onshape/std/mathUtils.fs", version : "1024.0");
+import(path : "onshape/std/query.fs", version : "1024.0");
+import(path : "onshape/std/feature.fs", version : "1024.0");
+import(path : "onshape/std/string.fs", version : "1024.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1024.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
+import(path : "onshape/std/units.fs", version : "1024.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
  * equivalent to the center of mass for a constant density object.
  * Warning: This is an approximate value and it is not recommended to use this
- * for modelling purposes that will be negatively affected in case the
+ * for modeling purposes that will be negatively affected in case the
  * approximation changes. Consider using the center of a bounding box
  * instead.
  * @param arg {{
- *      @field entities : The entities to take the center of mass of.
+ *      @field entities {Query} : The entities to take the center of mass of.
  * }}
  */
 export function evApproximateCentroid(context is Context, arg is map) returns Vector
@@ -44,6 +44,103 @@ precondition
     var centroid = @evApproximateCentroid(context, { "entities" : arg.entities });
 
     return vector(centroid) * meter;
+}
+
+/**
+ * The result of an [evApproximateMassProperties] call.
+ *
+ * @type {{
+ *      @field mass {ValueWithUnits} : The total mass.
+ *      @field centroid {Vector} : The center of mass with respect to the given reference frame, or with respect to the origin if a reference frame is not specified.
+ *      @field inertia {MatrixWithUnits} : The 3D inertia tensor, with units of mass * length ^ 2. Evaluated with respect to the reference frame, or with respect to the centroid if a reference frame is not specified.
+ *      @field volume {ValueWithUnits} : Total volume. Only returned for solid bodies.
+ *      @field area {ValueWithUnits} : Total area. Only returned for faces.
+ *      @field length {ValueWithUnits} : Total length. Only returned for edges.
+ *      @field count {number} : Total count. Only returned for vertices.
+ * }}
+ */
+export type MassProperties typecheck canBeMassProperties;
+
+/** @internal */
+export predicate canBeMassProperties(value)
+{
+    value is map;
+    value.mass is ValueWithUnits && value.mass.unit == MASS_UNITS;
+    value.volume == undefined || (value.volume is ValueWithUnits && value.volume.unit == VOLUME_UNITS);
+    value.area == undefined || (value.area is ValueWithUnits && value.area.unit == AREA_UNITS);
+    value.length == undefined || (value.length is ValueWithUnits && value.length.unit == LENGTH_UNITS);
+    value.count == undefined || value.count is number;
+    value.centroid is Vector && value.centroid[0].unit == LENGTH_UNITS;
+    value.inertia is MatrixWithUnits && value.inertia.unit == INERTIA_UNITS;
+}
+
+/**
+ * Calculates approximate mass properties of an entity or group of entities.
+ * Returns mass, centroid, inertia tensor, and volume/area/length/count for
+ * bodies/faces/edges/vertices, respectively.
+ * Warning: These are approximate values and it is not recommended to
+ * use them for modeling purposes that will be negatively affected in
+ * case the approximation changes.
+ * @param arg {{
+ *      @field entities {Query} : The entities of which to compute mass properties. Only entities of the highest dimensionality will be considered.
+ *      @field density {ValueWithUnits} : The density of the entities, with appropriate units.
+ *          @eg `1 * kilogram / meter ^ 3` could be the density of 3D solid bodies
+ *          @eg `1 * kilogram / meter ^ 2` could be the density of 2D faces or sheet bodies
+ *          @eg `1 * kilogram / meter` could be the density of 1D edges or wire bodies
+ *          @eg `1 * kilogram` could be the mass of each 0D vertex or point body
+ *      @field referenceFrame {CoordSystem} : Optional coordinate system. Defaults to the centroid with world axes for the inertia tensor, and world coordinates for the centroid. @optional
+ * }}
+ */
+export function evApproximateMassProperties(context is Context, arg is map) returns MassProperties
+precondition
+{
+    arg.entities is Query;
+    arg.density is ValueWithUnits;
+    arg.referenceFrame == undefined || arg.referenceFrame is CoordSystem;
+}
+{
+    var massProperties = @evApproximateMassProperties(context, { "entities" : arg.entities, "referenceFrame" : arg.referenceFrame });
+    var density = arg.density;
+    var highestDimension = massProperties.highestDimension;
+
+    if (highestDimension == 0)
+    {
+        if (density.unit != MASS_UNITS)
+            throw "Density for a 0-dimensional entity must have units of mass.";
+    }
+    else
+    {
+        if ((density * meter ^ highestDimension).unit != MASS_UNITS)
+            throw "Density for a " ~ highestDimension ~ "-dimensional entity must have units of mass / length^" ~ highestDimension ~ ".";
+    }
+
+    var result = {};
+
+    if (highestDimension == 3)
+    {
+        result.volume = massProperties.volume * meter ^ 3;
+        result.mass = density * result.volume;
+    }
+    else if (highestDimension == 2)
+    {
+        result.area = massProperties.area * meter ^ 2;
+        result.mass = density * result.area;
+    }
+    else if (highestDimension == 1)
+    {
+        result.length = massProperties.length * meter;
+        result.mass = density * result.length;
+    }
+    else if (highestDimension == 0)
+    {
+        result.count = massProperties.count;
+        result.mass = density * result.count;
+    }
+
+    result.centroid = vector(massProperties.centroid) * meter;
+    result.inertia = (massProperties.inertia as Matrix) * meter ^ (highestDimension + 2) * density;
+
+    return result as MassProperties;
 }
 
 /**

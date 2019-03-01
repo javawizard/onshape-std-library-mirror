@@ -1,7 +1,7 @@
-FeatureScript 1010; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "1010.0");
+FeatureScript 1024; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "1024.0");
 
-import(path : "onshape/std/query.fs", version : "1010.0");
+import(path : "onshape/std/query.fs", version : "1024.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -70,6 +70,22 @@ export type TableData typecheck canBeTableData;
 export predicate canBeTableData(value) {
     value is map;
     value.csvData is array || value.csvData == undefined;
+}
+
+/**
+ * The value of a JSON reference parameter, containing the file's data.
+ *
+ * @type {{
+ *      @field jsonData : A value that represents the top-level entity of the imported JSON file: this is a map if
+ *          the JSON entity is an object, an array if the JSON entity is an array, and likewise for the standard JSON
+ *          types. Note that JSON `null` values are imported as `undefined`.
+ * }}
+ */
+export type JSONData typecheck canBeJSONData;
+
+/** @internal */
+export predicate canBeJSONData(value) {
+    value is map;
 }
 
 /**
