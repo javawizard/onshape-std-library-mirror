@@ -623,7 +623,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     const entities = definition.entities;
 
-    const mateConnectorQ is Query = qBodyType(definition.entities, BodyType.MATE_CONNECTOR);
+    const mateConnectorQ is Query = qBodyType(entities, BodyType.MATE_CONNECTOR);
 
     const total is number = size(evaluateQuery(context, entities));
     const vertices is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.VERTEX), mateConnectorQ)));
@@ -631,6 +631,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
     const planes is number = size(evaluateQuery(context, qUnion([qGeometry(entities, GeometryType.PLANE), mateConnectorQ])));
     const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
                                                                       qGeometry(entities, GeometryType.LINE))));
+    const mateConnectors is number = size(evaluateQuery(context, mateConnectorQ));
 
     if (total == 1)
     {
@@ -641,7 +642,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
         else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
             definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
-    if (total == 2)
+    else if (total == 2)
     {
         if (planes == 1 && vertices == 1)
             definition.cplaneType = CPlaneType.PLANE_POINT;
@@ -654,8 +655,11 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
         else if (lines >= 1 && (lines + vertices + planes) == 2)
             definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
-    if (total == 3 && vertices == 3)
-        definition.cplaneType = CPlaneType.THREE_POINT;
+    else if (total == 3)
+    {
+        if ((vertices + mateConnectors) == 3)
+            definition.cplaneType = CPlaneType.THREE_POINT;
+    }
 
     return definition;
 }

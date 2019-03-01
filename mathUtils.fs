@@ -6,10 +6,11 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * This module imports the `math`, `matrix`, `transform`, and `vector` modules.
  * It is designed to be imported instead of the `geometry` module in Feature
- * Studios where only math (not higher level modelling functionality) is needed.
+ * Studios where only math (not higher-level modeling functionality) is needed.
  */
 export import(path : "onshape/std/math.fs", version : "✨");
 export import(path : "onshape/std/matrix.fs", version : "✨");
+export import(path : "onshape/std/matrixWithUnits.fs", version : "✨");
 export import(path : "onshape/std/transform.fs", version : "✨");
 export import(path : "onshape/std/vector.fs", version : "✨");
 

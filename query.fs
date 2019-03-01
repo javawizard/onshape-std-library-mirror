@@ -536,12 +536,16 @@ export enum EdgeTopology
  * @value ALLOWS_PLANE : Equivalent to
  *      `GeometryType.PLANE || BodyType.MATE_CONNECTOR`
  *      and can be processed with [evPlane]
+ * @value ALLOWS_VERTEX : Equivalent to
+ *      `EntityType.VERTEX || BodyType.MATE_CONNECTOR`
+ *      and can be processed with [evVertexPoint]
  */
 export enum QueryFilterCompound
 {
     ALLOWS_AXIS,
     ALLOWS_DIRECTION,
-    ALLOWS_PLANE
+    ALLOWS_PLANE,
+    ALLOWS_VERTEX
 }
 
 /**
@@ -1129,16 +1133,24 @@ export function qParallelPlanes(subquery is Query, referencePlane is Plane) retu
  * @param allowAntiparallel : Whether to also return entities that are antiparallel.
  */
 export function qParallelPlanes(subquery is Query, normal is Vector, allowAntiparallel is boolean) returns Query
+precondition
 {
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
+    @size(normal) == 3;
+}
+{
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normalize(normal), "allowAntiparallel" : allowAntiparallel } as Query;
 }
 
 /**
  * A query for all planar faces that are parallel to the given direction vector (i.e., the plane normal is perpendicular to `direction`).
  */
 export function qPlanesParallelToDirection(subquery is Query, direction is Vector) returns Query
+precondition
 {
-    return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : direction } as Query;
+    @size(direction) == 3;
+}
+{
+    return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : normalize(direction) } as Query;
 }
 
 /**
@@ -1149,8 +1161,12 @@ export function qPlanesParallelToDirection(subquery is Query, direction is Vecto
  *    if it is an extruded face, the extrude direction is parallel to `direction`
  */
 export function qFacesParallelToDirection(subquery is Query, direction is Vector) returns Query
+precondition
 {
-    return { "queryType" : QueryType.FACE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : direction } as Query;
+    @size(direction) == 3;
+}
+{
+    return { "queryType" : QueryType.FACE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : normalize(direction) } as Query;
 }
 
 /**
@@ -1158,8 +1174,12 @@ export function qFacesParallelToDirection(subquery is Query, direction is Vector
  * @param normal : The normal vector to reference when checking for parallelism.
  */
 export function qParallelPlanes(subquery is Query, normal is Vector) returns Query
+precondition
 {
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : true } as Query;
+    @size(normal) == 3;
+}
+{
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normalize(normal), "allowAntiparallel" : true } as Query;
 }
 
 // ======================= Tangency Queries ===================================
@@ -1445,8 +1465,12 @@ precondition
  *  @param direction : A vector for the direction to find the entity farthest away.
  */
 export function qFarthestAlong(subquery is Query, direction is Vector)
+precondition
 {
-    return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : subquery, "direction" : stripUnits(direction) } as Query;
+    @size(direction) == 3;
+}
+{
+    return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : subquery, "direction" : normalize(direction) } as Query;
 }
 
 /**

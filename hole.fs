@@ -414,21 +414,32 @@ function computeCSys(context is Context, location is Query, definition is map) r
 {
     const sign = definition.oppositeDirection ? 1 : -1;
 
+    var point;
+    var locationPlane;
     var mateConnectorCSys = try silent(evMateConnector(context, {
         "mateConnector" : location
     }));
     if (mateConnectorCSys != undefined)
     {
-        mateConnectorCSys.zAxis *= sign;
-        return { "point" : mateConnectorCSys.origin, "startPointCSys" : mateConnectorCSys };
-    }
-    const sketchPlane = evOwnerSketchPlane(context, { "entity" : location });
-    var startPointCSys;
-    var point is Vector = evVertexPoint(context, { "vertex" : location });
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1021_HOLE_MATE_CONNECTOR_CSYS))
+        {
+            mateConnectorCSys.zAxis *= sign;
+            return { "point" : mateConnectorCSys.origin, "startPointCSys" : mateConnectorCSys };
+        }
 
+        locationPlane = plane(mateConnectorCSys);
+        point = mateConnectorCSys.origin;
+    }
+    else
+    {
+        locationPlane = evOwnerSketchPlane(context, { "entity" : location });
+        point = evVertexPoint(context, { "vertex" : location });
+    }
+
+    var startPointCSys;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V364_HOLE_FIX_FEATURE_MIRROR))
     {
-        var ray = line(point, sketchPlane.normal);
+        var ray = line(point, locationPlane.normal);
         if (definition.transform != undefined)
         {
             ray = definition.transform * ray;
@@ -437,7 +448,7 @@ function computeCSys(context is Context, location is Query, definition is map) r
     }
     else
     {
-        startPointCSys = planeToCSys(sketchPlane);
+        startPointCSys = planeToCSys(locationPlane);
         if (definition.transform != undefined)
         {
             point = definition.transform * point;

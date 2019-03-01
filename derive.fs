@@ -69,9 +69,11 @@ export function derive(context is Context, id is Id, buildFunction is function, 
             out.mateConnectors[query] = fromWorld(evMateConnector(otherContext, { "mateConnector" : query }));
         }
     }
+    const otherContextId is Id = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1018_DERIVED) ?
+                                                    makeId(id[0] ~ "_inBase") : id;
 
     // remove sheet metal attributes and helper bodies
-    var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined);
+    var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined);
 
     var bodiesToKeep = qSubtraction(options.parts, neverKeep) ;
     // don't want to merge default bodies or unmodifiable bodies
@@ -80,7 +82,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
 
     const toDelete = qSubtraction(qUnion([allBodies, smPartsQ]), bodiesToKeep);
 
-    opDeleteBodies(otherContext, id + "delete", { "entities" : toDelete });
+    opDeleteBodies(otherContext, otherContextId + "delete", { "entities" : toDelete });
     var queriesToTrack;
     if (options.queriesToTrack != undefined)
     {

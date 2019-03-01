@@ -73,8 +73,11 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             // Record the parts query in the old context -- the record will be merged into the new context
             recordParameters(otherContext, id, definition);
 
+            const otherContextId is Id = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1018_DERIVED) ?
+                                                    makeId(id[0] ~ "_inBase") : id;
+
             // remove sheet metal attributes and helper bodies
-            var smPartsQ = clearSheetMetalData(otherContext, id + "sheetMetal", undefined);
+            var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", undefined);
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
@@ -93,7 +96,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const deleteDefinition = {
                 "entities" : qSubtraction(qUnion([allBodies, smPartsQ]) , bodiesToKeep)
             };
-            opDeleteBodies(otherContext, id + "delete", deleteDefinition);
+            opDeleteBodies(otherContext, otherContextId + "delete", deleteDefinition);
 
             var mergeDefinition = definition; // to pass such general parameters as asVersion
             mergeDefinition.contextFrom = otherContext;

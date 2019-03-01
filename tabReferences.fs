@@ -73,6 +73,22 @@ export predicate canBeTableData(value) {
 }
 
 /**
+ * The value of a JSON reference parameter, containing the file's data.
+ *
+ * @type {{
+ *      @field jsonData : A value that represents the top-level entity of the imported JSON file: this is a map if
+ *          the JSON entity is an object, an array if the JSON entity is an array, and likewise for the standard JSON
+ *          types. Note that JSON `null` values are imported as `undefined`.
+ * }}
+ */
+export type JSONData typecheck canBeJSONData;
+
+/** @internal */
+export predicate canBeJSONData(value) {
+    value is map;
+}
+
+/**
  * The value of a CAD import reference parameter, which can be used by a Part Studio import feature.
  * The data is not accessible outside of an import operation.
  *

@@ -265,7 +265,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         if (definition.transformType == TransformType.SCALE_UNIFORMLY)
         {
             annotation { "Name" : "Point or mate connector",
-                         "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+                         "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
                          "MaxNumberOfPicks" : 1 }
             definition.scalePoint is Query;
         }

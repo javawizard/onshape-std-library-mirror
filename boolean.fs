@@ -138,9 +138,11 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         }
         else
         {
+            //Between versions 179 and 1017 SUBTRACT_COMPLEMENT processing was handled on FS side
             var isSubtractComplement = false;
             if (definition.operationType == BooleanOperationType.SUBTRACT_COMPLEMENT &&
-                isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS))
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V179_SUBTRACT_COMPLEMENT_HANDLED_IN_FS) &&
+                !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1017_SUBTRACT_COMPLEMENT))
             {
                 isSubtractComplement = true;
                 definition.tools = constructToolsComplement(context, id, definition);

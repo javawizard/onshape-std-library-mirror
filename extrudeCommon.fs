@@ -108,7 +108,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
         annotation {"Name" : "Up to vertex or mate connector",
-            "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
             "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityVertex is Query;
     }
@@ -173,7 +173,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
-            "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
             "MaxNumberOfPicks" : 1,
             "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
         definition.secondDirectionBoundEntityVertex is Query;
