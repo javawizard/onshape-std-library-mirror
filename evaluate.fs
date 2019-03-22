@@ -435,6 +435,80 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
 
 // =========== end of evDistance stuff ===========
 
+
+/**
+ * Map containing the results of one collision between a ray and an entity.
+ *
+ * @type {{
+ *      @field entity {Query} : A query for the entity hit by the ray.
+ *      @field entityType {EntityType} : The type of the entity.
+ *      @field parameter : Parameters for where the ray hit the entity. A unitless 2-vector for a face, a number for an edge, else undefined.
+ *      @field intersection {Vector} : Intersection point.
+ *      @field distance {ValueWithUnits} : Distance of the intersection point from the ray origin.
+ * }}
+ */
+export type RaycastResult typecheck canBeRaycastResult;
+
+/** @internal */
+export predicate canBeRaycastResult(value)
+{
+    value is map;
+    value.entity is Query;
+    value.entityType is EntityType;
+    if (value.entityType == EntityType.FACE)
+        isUnitlessVector(value.parameter) && size(value.parameter) == 2;
+    if (value.entityType == EntityType.EDGE)
+        value.parameter is number;
+    is3dLengthVector(value.intersection);
+    value.distance is ValueWithUnits && value.distance.unit == LENGTH_UNITS;
+}
+
+/**
+ * Detect intersections between a ray and the given entities.
+ * @param arg {{
+ *      @field entities{Query} : A query for target entities. If bodies are provided, the result will contain intersections for individual entities owned by the body.
+ *      @field ray{Line} : The ray to intersect the entities. Because the passed-in `Line` is interpreted as a ray, collisions with entities "behind" the ray origin are not detected.
+ *          @eg `line(vector(0, 0, 0) * inch, vector(1, 0, 0))` specifies the positive x-axis
+ *      @field closest{boolean} : Get only the closest intersection with any of the entities. Defaults to `true`.
+ *          @autocomplete `true`
+ *          @optional
+ * }}
+ * @returns {array} : An array of [RaycastResult]s for each intersection in front of the ray, ordered from closest to farthest.
+ */
+export function evRaycast(context is Context, arg is map) returns array
+precondition
+{
+    arg.entities is Query;
+    arg.ray is Line;
+    arg.closest == undefined || arg.closest is boolean;
+}
+{
+    var data = @evRaycast(context, { "entities" : arg.entities, "ray" : arg.ray, "closest" : arg.closest });
+    var results = [];
+
+    for (var i = 0; i < size(data); i += 1)
+    {
+        var result = {};
+
+        result.entity = qTransient(data[i].entity as TransientId);
+        result.intersection = (data[i].intersection as Vector) * meter;
+        result.distance = data[i].distance * meter;
+        result.entityType = data[i].entityType as EntityType;
+        if (result.entityType == EntityType.FACE)
+        {
+            result.parameter = data[i].parameter as Vector;
+        }
+        else if (result.entityType == EntityType.EDGE)
+        {
+            result.parameter = data[i].parameter;
+        }
+
+        results = append(results, result as RaycastResult);
+    }
+
+    return results;
+}
+
 /**
  * Return the convexity type of the given edge,
  * `CONVEX`, `CONCAVE`, `SMOOTH`, or `VARIABLE`.

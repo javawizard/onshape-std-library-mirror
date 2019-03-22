@@ -591,6 +591,7 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
     }
 
     var nCreatedEdges = size(createdEdges);
+    const filterMatchesByOverlap = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1031_BODY_NET_IN_LOFT);
 
     var matches = makeArray(nCreatedEdges);
     var nMatches = 0;
@@ -614,8 +615,15 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
                 {
                     siblingEdges = filterByOwnerBody(context, siblingEdges, definition.booleanSurfaceScope);
                 }
-                var edges = evaluateQuery(context, siblingEdges);
-                if (size(edges) == 1)
+                if (filterMatchesByOverlap)
+                {
+                    siblingEdges = filterOverlappingEdges(context, createdEdges[i], siblingEdges, identityTransform());
+                }
+                const edges = evaluateQuery(context, siblingEdges);
+                const nEdges = size(edges);
+                const nBodies = size(evaluateQuery(context, qOwnerBody(siblingEdges)));
+                if (nEdges == 1 ||
+                    (nEdges > 0 && nBodies == 1 && filterMatchesByOverlap))
                 {
                     matchedEdge = edges[0];
                 }

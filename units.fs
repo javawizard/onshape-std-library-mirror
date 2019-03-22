@@ -358,13 +358,16 @@ precondition lhs.unit == rhs.unit;
     return lhs;
 }
 
-export operator^(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
+export operator^(lhs is ValueWithUnits, rhs is number)
 precondition
 {
     for (var unit in lhs.unit)
         (unit.value * rhs) % 1 == 0;
 }
 {
+    if (rhs == 0)
+        return 1;
+
     lhs.value = lhs.value ^ rhs;
     for (var unit in lhs.unit)
     {

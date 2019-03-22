@@ -766,7 +766,13 @@ export enum FeatureScriptVersionNumber
     V1021_HOLE_MATE_CONNECTOR_CSYS,
     V1022_FIX_MASS_PROPS,
     V1023_FIX_HOLE_NAME,
-    V1024_UPDATE_DOCS
+    V1024_UPDATE_DOCS,
+    V1031_BODY_NET_IN_LOFT,
+    V1032_MESH_SCALING_IN_TRANSLATOR,
+    V1033_BODY_NET_IN_FILL,
+    V1034_EVRAYCAST_FIX,
+    V1035_SURFACE_MATCH,
+    V1036_IMPORT_NAMES_AND_COLORS
 }
 
 /**
@@ -777,6 +783,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1024_UPDATE_DOCS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1036_IMPORT_NAMES_AND_COLORS;
 
 

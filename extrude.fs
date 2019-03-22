@@ -113,7 +113,7 @@ export enum FlatOperationType
  *      @field secondDirectionBound {SecondDirectionBoundingType}: @optional
  *              The bounding type of the second direction. Can be different from the bounding type of the first direction.
  *      @field secondDirectionOppositeDirection {boolean} : @optional
- *              @ex `true` will flip the second end direction to align with the plane/face's normal.
+ *              @ex `true` will flip the second end direction to align opposite the plane/face's normal.
  *
  *      @field secondDirectionDepth {ValueWithUnits}: @requiredif {`secondDirectionBound` is `BLIND`}
  *              A length specifying the second direction's extrude depth.
@@ -272,7 +272,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             joinSurfaceBodies(context, id, matches, false, reconstructOp);
         }
 
-        cleanupVertexBoundaryPlane(context, id, definition);
+        cleanupTemporaryBoundaryPlanes(context, id, definition);
 
     }, { endBound : BoundingType.BLIND, oppositeDirection : false,
             bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
@@ -810,5 +810,4 @@ function combineInitialData(context is Context, initialDataPerBody is array, bod
             'initialAssociationAttributes' : concatenateArrays(initialAssociationAttributesArr),
             'originalEntitiesTracking' : concatenateArrays(originalEntitiesTrackingArr)};
 }
-
 

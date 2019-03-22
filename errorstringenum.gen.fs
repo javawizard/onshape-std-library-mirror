@@ -1766,7 +1766,13 @@ export enum ErrorStringEnum
     /* Could not blend selections on some parts. */
     EDGEBLEND_PARTIAL,
     /* Could not chamfer selections on some parts. */
-    CHAMFER_PARTIAL_FAIL
+    CHAMFER_PARTIAL_FAIL,
+    /* Cannot handle inconsistent extent of guides or profiles. Use Trim guides or Trim profiles option. */
+    LOFT_INCONSISTENT_EXTENT,
+    /* Trim profiles option can be applied only to open profiles with two or more guides. Ignored. */
+    LOFT_CANT_TRIM_PROFILES_INFO,
+    /* Trim guides option can be applied only to non-periodic guides with two or more profiles. Ignored. */
+    LOFT_CANT_TRIM_GUIDES_INFO
 }
 
 

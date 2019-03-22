@@ -72,29 +72,7 @@ annotation { "Feature Type Name" : "Linear pattern", "Filter Selector" : "allpar
 export const linearPattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Pattern type" }
-        definition.patternType is PatternType;
-
-        if (definition.patternType == PatternType.PART)
-        {
-            booleanStepTypePredicate(definition);
-
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
-                "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
-            definition.entities is Query;
-        }
-        else if (definition.patternType == PatternType.FACE)
-        {
-            annotation { "Name" : "Faces to pattern",
-                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-            definition.faces is Query;
-        }
-        else if (definition.patternType == PatternType.FEATURE)
-        {
-            annotation { "Name" : "Features to pattern" }
-            definition.instanceFunction is FeatureList;
-        }
+        patternTypePredicate(definition);
 
         annotation { "Name" : "Direction",
                      "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,

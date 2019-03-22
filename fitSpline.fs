@@ -176,7 +176,6 @@ function getEndCondition(context is Context, definition is map, points is array,
     const directionProperty = isStart ? "startDirection" : "endDirection";
     const magnitudeProperty = isStart ? "startMagnitude" : "endMagnitude";
     const matchingCurvature = isStart ? definition.matchStartCurvature : definition.matchEndCurvature;
-    const magnitudeOppositeDirection = isStart ? "oppositeDirectionStart" : "oppositeDirectionEnd";
 
     // Index of either the first or the last point.
     const pointIndex = isStart ? 0 : size(points) - 1;
@@ -365,21 +364,19 @@ export function fitSplineManipulatorChange(context is Context, definition is map
             });
 
     const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
-    const sqrtDistance = getSumSqrtDistances(points);
-    const startCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, true);
-    const endCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, false);
+    const oppositeDirectionStart = definition.oppositeDirectionStart ? -1 : 1;
+    const oppositeDirectionEnd = definition.oppositeDirectionEnd ? -1 : 1;
 
     if (startManipulator != undefined)
     {
-        definition.startMagnitude = startManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan;
+        definition.startMagnitude = startManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan * oppositeDirectionStart;
     }
 
     if (endManipulator != undefined)
     {
-        definition.endMagnitude = endManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan;
+        definition.endMagnitude = endManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan * oppositeDirectionEnd;
     }
 
     return definition;
 }
-
 

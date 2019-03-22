@@ -73,8 +73,11 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         if (definition.specifyUnits)
         {
-            annotation { "Name" : "Unit" }
+            annotation { "Name" : "Unit", "Default" : LengthUnitNames.Meter }
             definition.unit is LengthUnitNames;
+
+            annotation { "Name" : "Original unit", "UIHint" : "ALWAYS_HIDDEN", "Default" : LengthUnitNames.Meter}
+            definition.originalUnit is LengthUnitNames;
         }
 
         annotation {"Name" : "Flatten assembly", "UIHint" : "ALWAYS_HIDDEN"}
@@ -89,14 +92,17 @@ export const importForeign = defineFeature(function(context is Context, id is Id
     {
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qNothing()});
-        if (definition.specifyUnits)
-        {
-            definition.scale = stringToUnit(definition.unit as string).value;
-        }
-        else
-        {
+       if (definition.specifyUnits)
+       {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1032_MESH_SCALING_IN_TRANSLATOR))
+                definition.scale = stringToUnit(definition.unit as string).value / stringToUnit(definition.originalUnit as string).value;
+            else
+                definition.scale = stringToUnit(definition.unit as string).value;
+       }
+       else
+       {
             definition.scale = 1.0;
-        }
+       }
         definition.isModifiable = !definition.isInContext;
         if (definition.dependsOnBlob)
         {
@@ -117,5 +123,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false });
+
+
 

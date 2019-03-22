@@ -7,6 +7,7 @@ export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "✨");
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -193,8 +194,18 @@ function applyCornerBreaks(context is Context, id is Id, entityArray is array, d
         var hasExistingAttribute = (existingAttribute != undefined);
         if (hasExistingAttribute && (existingAttribute.cornerStyle != undefined))
         {
-            errorEntities = append(errorEntities, currEntity);
-            continue;
+            var cornerData = evCornerType(context, { "vertex" : currVertex });
+            if (cornerData.cornerType == SMCornerType.NOT_A_CORNER
+                || cornerData.cornerType == SMCornerType.BEND_END)
+            {
+                removeAttributes(context, { "entities" : currVertex, "attributePattern" : existingAttribute });
+                hasExistingAttribute = false;
+            }
+            else
+            {
+                errorEntities = append(errorEntities, currEntity);
+                continue;
+            }
         }
 
         // Error for input that duplicates existing corner breaks

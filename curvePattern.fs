@@ -56,29 +56,7 @@ annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allpart
 export const curvePattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Pattern type" }
-        definition.patternType is PatternType;
-
-        if (definition.patternType == PatternType.PART)
-        {
-            booleanStepTypePredicate(definition);
-
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
-                "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
-            definition.entities is Query;
-        }
-        else if (definition.patternType == PatternType.FACE)
-        {
-            annotation { "Name" : "Faces to pattern",
-                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-            definition.faces is Query;
-        }
-        else if (definition.patternType == PatternType.FEATURE)
-        {
-            annotation { "Name" : "Features to pattern" }
-            definition.instanceFunction is FeatureList;
-        }
+        patternTypePredicate(definition);
 
         annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
         definition.edges is Query;

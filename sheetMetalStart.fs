@@ -704,7 +704,7 @@ function extrudeSketchCurves(context is Context, id is Id, definition is map) re
         const extrudeId = id + "extrude";
         try {
             opExtrude(context, extrudeId, definition);
-            cleanupVertexBoundaryPlane(context, id, definition);
+            cleanupTemporaryBoundaryPlanes(context, id, definition);
         }
         catch (error)
         {

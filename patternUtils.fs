@@ -23,6 +23,40 @@ export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
 
 /**
  * @internal
+ * Predicate which is used by the 3 types of pattern features to specify the pattern type,
+ * and further selection of the thing to operate on based on the pattern type chosen.
+ *
+ * @param definition : @autocomplete `definition`
+ */
+export predicate patternTypePredicate(definition is map)
+{
+    annotation { "Name" : "Pattern type" }
+    definition.patternType is PatternType;
+
+    if (definition.patternType == PatternType.PART)
+    {
+        booleanStepTypePredicate(definition);
+
+        annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
+            "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+        definition.entities is Query;
+    }
+    else if (definition.patternType == PatternType.FACE)
+    {
+        annotation { "Name" : "Faces to pattern",
+                     "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
+                     "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+        definition.faces is Query;
+    }
+    else if (definition.patternType == PatternType.FEATURE)
+    {
+        annotation { "Name" : "Features to pattern" }
+        definition.instanceFunction is FeatureList;
+    }
+}
+
+/**
+ * @internal
  * Preprocess the entities and instance function for pattern
  */
 export function adjustPatternDefinitionEntities(context is Context, definition is map, isMirror is boolean) returns map

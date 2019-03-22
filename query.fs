@@ -1533,12 +1533,16 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
 
 /**
  * Given the id of a split feature, get entities of a given `EntityType` on
- * either the front body or the back body after the split.
+ * the front or the back side of the split.
+ * For a split by face or part, the front denotes the body in the direction
+ * of the split tool's surface normal, and the back denotes the body opposite
+ * the normal.
+ * For a split by isocline, the front denotes non-steep faces and edges,
+ * and the back denotes steep entities.
  * @param featureId : @eg `id + "split1"`
  * @param backBody {boolean} :
- *          @eg `false` indicates the body in front (i.e. in the direction of
- *              the split tool's surface normal).
- *          @eg `true` indicates the body in back.
+ *          @eg `false` indicates the entities in the front.
+ *          @eg `true` indicates the entities in the back.
  */
 export function qSplitBy(featureId is Id, entityType, backBody is boolean)
 precondition

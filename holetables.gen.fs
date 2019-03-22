@@ -18863,6 +18863,72 @@ const PEM_Metric_TPS_ThroughTappedScrewTable = {
     }
 };
 
+const PEM_Metric_TPXS_ClearanceHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "3",
+    "entries" : {
+        "3" : {
+            "name" : "fit",
+            "displayName" : "Fit",
+            "default" : "Clearance",
+            "entries" : {
+                "Clearance" : {"holeDiameter" : "3.5 mm"}
+            }
+        }
+    }
+};
+
+const PEM_Metric_TPXS_TappedHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "engagement",
+                    "displayName" : "% diametric engagement",
+                    "default" : "75%",
+                    "entries" : {
+                        "75%" : {"holeDiameter" : "3.5 mm", "tapDrillDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                    }
+                }
+            }
+        }
+    }
+};
+
+const PEM_Metric_TPXS_ThroughTappedScrewTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                    "name" : "fit",
+                    "displayName" : "Fit",
+                    "entries" : {
+                        "Clearance" : {
+                            "name" : "engagement",
+                            "displayName" : "% diametric engagement",
+                            "default" : "75%",
+                            "entries" : {
+                                "75%" : {"tapDrillDiameter" : "3.5 mm", "holeDiameter" : "3.5 mm", "majorDiameter" : "3.5 mm"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const PEM_Metric_TSO_ClearanceHoleTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -25523,7 +25589,8 @@ const PEM_MetricStuds_ThroughScrewTable = {
         "SGPC™ swaging collar studs" : PEM_Metric_SGPC_ClearanceHoleTable,
         "FHX™ flush-head studs with X-Press™ thread" : PEM_Metric_FHX_ClearanceHoleTable,
         "FH™/FHS™/FHA™ flush-head pins" : PEM_Metric_FH_Pin_ClearanceHoleTable,
-        "TPS™/TP4™ flush-head pilot pins" : PEM_Metric_TPS_ClearanceHoleTable
+        "TPS™/TP4™ flush-head pilot pins" : PEM_Metric_TPS_ClearanceHoleTable,
+        "TPXS™ self-clinching pilot pins" : PEM_Metric_TPXS_ClearanceHoleTable
     }
 };
 

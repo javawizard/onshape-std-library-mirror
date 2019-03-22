@@ -91,11 +91,10 @@ export function isValueIn(value, container is map) returns boolean
  */
 export function mapArray(arr is array, mapFunction is function) returns array
 {
-    const size = @size(arr);
-    for (var i = 0; i < size; i = i + 1) {
-        arr[i] = mapFunction(arr[i]);
-    }
-    return arr;
+    var result = @resize(arr, 0); // keep type tag
+    for (var element in arr)
+        result = @resize(result, @size(result) + 1, mapFunction(element)); // inlined append
+    return result;
 }
 
 /**
@@ -139,29 +138,8 @@ export function append(arr is array, newValue) returns array
  *      `[1, 2, undefined, [3]]`
  */
 export function concatenateArrays(arr is array) returns array
-precondition
 {
-    for (var a in arr)
-        a is array;
-}
-{
-    var totalSize = 0;
-
-    for (var a in arr)
-        totalSize += @size(a);
-
-    var out = makeArray(totalSize);
-
-    var i = 0;
-    for (var a in arr)
-    {
-        for (var j = 0; j < @size(a); j += 1)
-        {
-            out[i] = a[j];
-            i += 1;
-        }
-    }
-    return out;
+    return @concatenateArrays(arr);
 }
 
 /**
@@ -187,13 +165,7 @@ export function mergeMaps(defaults is map, m is map) returns map
  */
 export function reverse(arr is array) returns array
 {
-    var size = @size(arr);
-    var out = makeArray(size);
-    for (var i = 0; i < size; i += 1)
-    {
-        out[i] = arr[size - 1 - i];
-    }
-    return out;
+    return @reverse(arr);
 }
 
 /**
@@ -283,15 +255,13 @@ export function sort(entities is array, compareFunction is function)
  * @param filterFunction : A function which takes one argument (a member
  *          of the input array) and returns a `boolean`.
  */
-export function filter(entities is array, filterFunction is function)
+export function filter(arr is array, filterFunction is function)
 {
-    var result = [];
-    for (var entity in entities)
+    var result = @resize(arr, 0); // keep type tag
+    for (var element in arr)
     {
-        if (filterFunction(entity))
-        {
-            result = append(result, entity);
-        }
+        if (filterFunction(element))
+            result = @resize(result, @size(result) + 1, element); // inlined append
     }
     return result;
 }
@@ -305,12 +275,10 @@ export function filter(entities is array, filterFunction is function)
  */
 export function keys(container is map) returns array
 {
-    var arr = [];
+    var result = [];
     for (var entry in container)
-    {
-        arr = append(arr, entry.key);
-    }
-    return arr;
+        result = @resize(result, @size(result) + 1, entry.key); // inlined append
+    return result;
 }
 
 /**
@@ -321,12 +289,10 @@ export function keys(container is map) returns array
  */
 export function values(container is map) returns array
 {
-    var arr = [];
+    var result = [];
     for (var entry in container)
-    {
-        arr = append(arr, entry.value);
-    }
-    return arr;
+        result = @resize(result, @size(result) + 1, entry.value); // inlined append
+    return result;
 }
 
 /**
@@ -334,11 +300,9 @@ export function values(container is map) returns array
  */
 export function subArray(input is array, startIndex is number, endIndex is number) returns array
 {
-    var output = [];
+    var result = @resize(input, 0); // keep type tag
     for (var i = startIndex; i < endIndex; i += 1)
-    {
-        output = append(output, input[i]);
-    }
-    return output;
+        result = @resize(result, @size(result) + 1, input[i]); // inlined append
+    return result;
 }
 
