@@ -1,25 +1,59 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "1024.0");
+export import(path: "onshape/std/patternCommon.fs", version : "1036.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "1024.0");
-export import(path : "onshape/std/containers.fs", version : "1024.0");
-export import(path : "onshape/std/evaluate.fs", version : "1024.0");
-export import(path : "onshape/std/feature.fs", version : "1024.0");
-export import(path : "onshape/std/featureList.fs", version : "1024.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1024.0");
+export import(path : "onshape/std/boolean.fs", version : "1036.0");
+export import(path : "onshape/std/containers.fs", version : "1036.0");
+export import(path : "onshape/std/evaluate.fs", version : "1036.0");
+export import(path : "onshape/std/feature.fs", version : "1036.0");
+export import(path : "onshape/std/featureList.fs", version : "1036.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1036.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "1024.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "1024.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1024.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1024.0");
+import(path : "onshape/std/mathUtils.fs", version : "1036.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "1036.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
+
+/**
+ * @internal
+ * Predicate which is used by the 3 types of pattern features to specify the pattern type,
+ * and further selection of the thing to operate on based on the pattern type chosen.
+ *
+ * @param definition : @autocomplete `definition`
+ */
+export predicate patternTypePredicate(definition is map)
+{
+    annotation { "Name" : "Pattern type" }
+    definition.patternType is PatternType;
+
+    if (definition.patternType == PatternType.PART)
+    {
+        booleanStepTypePredicate(definition);
+
+        annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
+            "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+        definition.entities is Query;
+    }
+    else if (definition.patternType == PatternType.FACE)
+    {
+        annotation { "Name" : "Faces to pattern",
+                     "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
+                     "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+        definition.faces is Query;
+    }
+    else if (definition.patternType == PatternType.FEATURE)
+    {
+        annotation { "Name" : "Features to pattern" }
+        definition.instanceFunction is FeatureList;
+    }
+}
 
 /**
  * @internal

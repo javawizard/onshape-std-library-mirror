@@ -1,16 +1,16 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1024.0");
-export import(path : "onshape/std/tool.fs", version : "1024.0");
-export import(path : "onshape/std/patternUtils.fs", version : "1024.0");
+export import(path : "onshape/std/query.fs", version : "1036.0");
+export import(path : "onshape/std/tool.fs", version : "1036.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1036.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
-import(path : "onshape/std/math.fs", version : "1024.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
+import(path : "onshape/std/math.fs", version : "1036.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -60,29 +60,7 @@ annotation { "Feature Type Name" : "Circular pattern", "Filter Selector" : "allp
 export const circularPattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Pattern type" }
-        definition.patternType is PatternType;
-
-        if (definition.patternType == PatternType.PART)
-        {
-            booleanStepTypePredicate(definition);
-
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
-                "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
-            definition.entities is Query;
-        }
-        else if (definition.patternType == PatternType.FACE)
-        {
-            annotation { "Name" : "Faces to pattern",
-                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-            definition.faces is Query;
-        }
-        else if (definition.patternType == PatternType.FEATURE)
-        {
-            annotation { "Name" : "Features to pattern" }
-            definition.instanceFunction is FeatureList;
-        }
+        patternTypePredicate(definition);
 
         annotation { "Name" : "Axis of pattern", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
         definition.axis is Query;

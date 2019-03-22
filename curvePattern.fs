@@ -1,20 +1,20 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "1024.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1036.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "1024.0");
+export import(path : "onshape/std/path.fs", version : "1036.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
-import(path : "onshape/std/mathUtils.fs", version : "1024.0");
-import(path : "onshape/std/sketch.fs", version : "1024.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1024.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
+import(path : "onshape/std/mathUtils.fs", version : "1036.0");
+import(path : "onshape/std/sketch.fs", version : "1036.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -56,29 +56,7 @@ annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allpart
 export const curvePattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Pattern type" }
-        definition.patternType is PatternType;
-
-        if (definition.patternType == PatternType.PART)
-        {
-            booleanStepTypePredicate(definition);
-
-            annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
-                "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
-            definition.entities is Query;
-        }
-        else if (definition.patternType == PatternType.FACE)
-        {
-            annotation { "Name" : "Faces to pattern",
-                         "UIHint" : ["ALLOW_FEATURE_SELECTION", "SHOW_CREATE_SELECTION"],
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
-            definition.faces is Query;
-        }
-        else if (definition.patternType == PatternType.FEATURE)
-        {
-            annotation { "Name" : "Features to pattern" }
-            definition.instanceFunction is FeatureList;
-        }
+        patternTypePredicate(definition);
 
         annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
         definition.edges is Query;

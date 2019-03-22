@@ -1,4 +1,4 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,21 +15,23 @@ FeatureScript 1024; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1024.0");
-import(path : "onshape/std/context.fs", version : "1024.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
-import(path : "onshape/std/query.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1036.0");
+import(path : "onshape/std/context.fs", version : "1036.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
+import(path : "onshape/std/query.fs", version : "1036.0");
+import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/vector.fs", version : "1036.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1036.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1036.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1036.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1036.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1036.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -353,7 +355,11 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
- *      @field bodyType {ToolBodyType} : Whether this is a solid (default) or a surface loft. @optional
+ *      @field bodyType {ToolBodyType} : If true (default) create solid body. If false, create surface body. @optional
+ *      @field trimGuidesByProfiles {boolean} : If false (default) use full length of guides. If true restrict resulting surface by the first and last profile.
+                                                Meaningful only for non-periodic surface loft. @optional
+        @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.
+                                                Meaningful only for surface loft with open profiles. @optional
  *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
  *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
  *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
@@ -627,6 +633,71 @@ export function opSplitPart(context is Context, id is Id, definition is map)
 export function opSplitFace(context is Context, id is Id, definition is map)
 {
     return @opSplitFace(context, id, definition);
+}
+
+/**
+ * Map containing the results of splitting faces by their isoclines. Some faces may have been split, others
+ * may have been left intact.
+ *
+ * @type {{
+ *      @field steepFaces {array} : An array of steep faces.
+ *      @field nonSteepFaces {array} : An array of non-steep faces.
+ * }}
+ */
+export type SplitByIsoclineResult typecheck canBeSplitByIsoclineResult;
+
+/** @internal */
+export predicate canBeSplitByIsoclineResult(value)
+{
+    value is map;
+    value.steepFaces is array;
+    value.nonSteepFaces is array;
+}
+
+/**
+ * Split the given `faces` by isocline edges.
+ * Each isocline follows a path along a face with a constant `angle` in the (-90, 90) degree range (e.g., lines of
+ * latitude on a sphere). This `angle` is the face tangent plane's angle with respect to the `direction` with its sign
+ * determined by the dot product of `direction` and the face normal, and is analogous to the angle used in draft
+ * analysis. Depending on the face geometry, there may be zero, one, or multiple isoclines on each face.
+ * The isocline edges are created as new edges which split the provided `faces`. The resulting faces are either steep
+ * (i.e., the angle is less than the input `angle`) or non-steep. To instead leave the original faces intact, you can
+ * first extract the faces with opExtractSurface(), and create isoclines on the resulting surfaces.
+ * The isocline edges can be queried for with [qCreatedBy]. The split orientation is consistent such that the
+ * non-steep faces are always in "front" of the split, and can be reliably queried for with [qSplitBy]:
+ * @example ```
+ * const isoclineEdges = qCreatedBy(id + "splitByIsocline1", EntityType.EDGE);
+ * const steepFaces = qSplitBy(id + "splitByIsocline1", EntityType.FACE, true);
+ * const nonSteepFaces = qSplitBy(id + "splitByIsocline1", EntityType.FACE, false);
+ * ```
+ * Note that [qSplitBy] will return only those faces that were split, while [opSplitByIsocline]'s return value will
+ * include the intact faces as well.
+ * @param id : @autocomplete `id + "splitByIsocline1"`
+ * @param definition {{
+ *      @field faces {Query} : The faces on which to imprint isoclines.
+ *      @field direction {Vector} : A reference direction.
+ *      @field angle {ValueWithUnits} : The isocline angle with respect to the direction in the (-90, 90) degree range.
+ * }}
+ */
+export function opSplitByIsocline(context is Context, id is Id, definition is map) returns SplitByIsoclineResult
+{
+    const data = @opSplitByIsocline(context, id, definition);
+
+    var steepFaces = [];
+    for (var transientId in data.steepFaces)
+    {
+        steepFaces = append(steepFaces, qTransient(transientId as TransientId));
+    }
+    var nonSteepFaces = [];
+    for (var transientId in data.nonSteepFaces)
+    {
+        nonSteepFaces = append(nonSteepFaces, qTransient(transientId as TransientId));
+    }
+
+    return {
+        "steepFaces": steepFaces,
+        "nonSteepFaces": nonSteepFaces
+    } as SplitByIsoclineResult;
 }
 
 /**

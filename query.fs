@@ -1,4 +1,4 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1024; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1024.0");
-import(path : "onshape/std/context.fs", version : "1024.0");
-import(path : "onshape/std/mathUtils.fs", version : "1024.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
-import(path : "onshape/std/units.fs", version : "1024.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
-import(path : "onshape/std/featureList.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1036.0");
+import(path : "onshape/std/context.fs", version : "1036.0");
+import(path : "onshape/std/mathUtils.fs", version : "1036.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
+import(path : "onshape/std/units.fs", version : "1036.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
+import(path : "onshape/std/featureList.fs", version : "1036.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1533,12 +1533,16 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
 
 /**
  * Given the id of a split feature, get entities of a given `EntityType` on
- * either the front body or the back body after the split.
+ * the front or the back side of the split.
+ * For a split by face or part, the front denotes the body in the direction
+ * of the split tool's surface normal, and the back denotes the body opposite
+ * the normal.
+ * For a split by isocline, the front denotes non-steep faces and edges,
+ * and the back denotes steep entities.
  * @param featureId : @eg `id + "split1"`
  * @param backBody {boolean} :
- *          @eg `false` indicates the body in front (i.e. in the direction of
- *              the split tool's surface normal).
- *          @eg `true` indicates the body in back.
+ *          @eg `false` indicates the entities in the front.
+ *          @eg `true` indicates the entities in the back.
  */
 export function qSplitBy(featureId is Id, entityType, backBody is boolean)
 precondition

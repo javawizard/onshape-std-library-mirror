@@ -1,11 +1,11 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "1024.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1024.0");
-import(path : "onshape/std/string.fs", version : "1024.0");
+import(path : "onshape/std/math.fs", version : "1036.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1036.0");
+import(path : "onshape/std/string.fs", version : "1036.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -358,13 +358,16 @@ precondition lhs.unit == rhs.unit;
     return lhs;
 }
 
-export operator^(lhs is ValueWithUnits, rhs is number) returns ValueWithUnits
+export operator^(lhs is ValueWithUnits, rhs is number)
 precondition
 {
     for (var unit in lhs.unit)
         (unit.value * rhs) % 1 == 0;
 }
 {
+    if (rhs == 0)
+        return 1;
+
     lhs.value = lhs.value ^ rhs;
     for (var unit in lhs.unit)
     {

@@ -1,17 +1,18 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1024.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1036.0");
 
-import(path : "onshape/std/attributes.fs", version : "1024.0");
-import(path : "onshape/std/containers.fs", version : "1024.0");
-import(path : "onshape/std/feature.fs", version : "1024.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1024.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1024.0");
-import(path : "onshape/std/units.fs", version : "1024.0");
-import(path : "onshape/std/valueBounds.fs", version : "1024.0");
+import(path : "onshape/std/attributes.fs", version : "1036.0");
+import(path : "onshape/std/containers.fs", version : "1036.0");
+import(path : "onshape/std/evaluate.fs", version : "1036.0");
+import(path : "onshape/std/feature.fs", version : "1036.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
+import(path : "onshape/std/units.fs", version : "1036.0");
+import(path : "onshape/std/valueBounds.fs", version : "1036.0");
 
 /**
  *  @internal
@@ -193,8 +194,18 @@ function applyCornerBreaks(context is Context, id is Id, entityArray is array, d
         var hasExistingAttribute = (existingAttribute != undefined);
         if (hasExistingAttribute && (existingAttribute.cornerStyle != undefined))
         {
-            errorEntities = append(errorEntities, currEntity);
-            continue;
+            var cornerData = evCornerType(context, { "vertex" : currVertex });
+            if (cornerData.cornerType == SMCornerType.NOT_A_CORNER
+                || cornerData.cornerType == SMCornerType.BEND_END)
+            {
+                removeAttributes(context, { "entities" : currVertex, "attributePattern" : existingAttribute });
+                hasExistingAttribute = false;
+            }
+            else
+            {
+                errorEntities = append(errorEntities, currEntity);
+                continue;
+            }
         }
 
         // Error for input that duplicates existing corner breaks

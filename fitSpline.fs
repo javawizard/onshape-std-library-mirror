@@ -1,19 +1,19 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1024.0");
+export import(path : "onshape/std/query.fs", version : "1036.0");
 
-import(path : "onshape/std/containers.fs", version : "1024.0");
-import(path : "onshape/std/evaluate.fs", version : "1024.0");
-import(path : "onshape/std/feature.fs", version : "1024.0");
-import(path : "onshape/std/manipulator.fs", version : "1024.0");
-import(path : "onshape/std/math.fs", version : "1024.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1024.0");
-import(path : "onshape/std/valueBounds.fs", version : "1024.0");
-import(path : "onshape/std/vector.fs", version : "1024.0");
+import(path : "onshape/std/containers.fs", version : "1036.0");
+import(path : "onshape/std/evaluate.fs", version : "1036.0");
+import(path : "onshape/std/feature.fs", version : "1036.0");
+import(path : "onshape/std/manipulator.fs", version : "1036.0");
+import(path : "onshape/std/math.fs", version : "1036.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
+import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/vector.fs", version : "1036.0");
 
 /**
  * Feature performing an [opFitSpline]
@@ -176,7 +176,6 @@ function getEndCondition(context is Context, definition is map, points is array,
     const directionProperty = isStart ? "startDirection" : "endDirection";
     const magnitudeProperty = isStart ? "startMagnitude" : "endMagnitude";
     const matchingCurvature = isStart ? definition.matchStartCurvature : definition.matchEndCurvature;
-    const magnitudeOppositeDirection = isStart ? "oppositeDirectionStart" : "oppositeDirectionEnd";
 
     // Index of either the first or the last point.
     const pointIndex = isStart ? 0 : size(points) - 1;
@@ -365,21 +364,19 @@ export function fitSplineManipulatorChange(context is Context, definition is map
             });
 
     const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
-    const sqrtDistance = getSumSqrtDistances(points);
-    const startCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, true);
-    const endCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, false);
+    const oppositeDirectionStart = definition.oppositeDirectionStart ? -1 : 1;
+    const oppositeDirectionEnd = definition.oppositeDirectionEnd ? -1 : 1;
 
     if (startManipulator != undefined)
     {
-        definition.startMagnitude = startManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan;
+        definition.startMagnitude = startManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan * oppositeDirectionStart;
     }
 
     if (endManipulator != undefined)
     {
-        definition.endMagnitude = endManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan;
+        definition.endMagnitude = endManipulator.offset * MANIPULATOR_SCALE_FACTOR / totalSpan * oppositeDirectionEnd;
     }
 
     return definition;
 }
-
 

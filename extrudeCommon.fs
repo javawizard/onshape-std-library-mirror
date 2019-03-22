@@ -1,18 +1,20 @@
-FeatureScript 1024; /* Automatically generated version */
+FeatureScript 1036; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1024.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1036.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1024.0");
-import(path : "onshape/std/evaluate.fs", version : "1024.0");
-import(path : "onshape/std/feature.fs", version : "1024.0");
-import(path : "onshape/std/manipulator.fs", version : "1024.0");
-import(path : "onshape/std/query.fs", version : "1024.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1024.0");
-import(path : "onshape/std/valueBounds.fs", version : "1024.0");
-import(path : "onshape/std/vector.fs", version : "1024.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
+import(path : "onshape/std/evaluate.fs", version : "1036.0");
+import(path : "onshape/std/feature.fs", version : "1036.0");
+import(path : "onshape/std/manipulator.fs", version : "1036.0");
+import(path : "onshape/std/query.fs", version : "1036.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
+import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/coordSystem.fs", version : "1036.0");
+import(path : "onshape/std/containers.fs", version : "1036.0");
 
 /**
  * Similar to `BoundingType`, but made for the second direction of an `extrude`.
@@ -92,7 +94,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face",
-            "Filter" : EntityType.FACE && SketchObject.NO,
+            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityFace is Query;
     }
@@ -156,7 +158,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face", "Column Name" : "Second up to face",
-            "Filter" : EntityType.FACE && SketchObject.NO,
+            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityFace is Query;
     }
@@ -174,8 +176,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
             "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
-            "MaxNumberOfPicks" : 1,
-            "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+            "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityVertex is Query;
     }
 
@@ -296,10 +297,24 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
 
     // Determine the bounds
 
+    // All temporary planes are given the same id for history tracking. The UP_TO_VERTEX case used to be the only one
+    // that created a temporary plane, so that's where the id comes from. Now the mate connector case of UP_TO_SURFACE
+    // also creates a temporary plane.
+    const tempPlaneId = id + "vertexPlane";
+
     if (isFirstDirectionOfType(definition, BoundingType.UP_TO_SURFACE))
     {
         verifyNonemptyQuery(context, definition, "endBoundEntityFace", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_SURFACE);
-        definition.endBoundEntity = definition.endBoundEntityFace;
+        const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : definition.endBoundEntityFace }));
+        if (mateConnectorCSys != undefined)
+        {
+            definition.mateConnectorPlaneId = tempPlaneId;
+            definition.endBoundEntity = createMateConnectorBoundaryPlane(context, definition.mateConnectorPlaneId, mateConnectorCSys);
+        }
+        else
+        {
+            definition.endBoundEntity = definition.endBoundEntityFace;
+        }
     }
     else if (isFirstDirectionOfType(definition, BoundingType.UP_TO_BODY))
     {
@@ -309,7 +324,7 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
     else if (isFirstDirectionOfType(definition, BoundingType.UP_TO_VERTEX))
     {
         verifyNonemptyQuery(context, definition, "endBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
-        definition.vertexPlaneId = id + "vertexPlane";
+        definition.vertexPlaneId = tempPlaneId;
         definition.endBoundEntity = createVertexBoundaryPlane(context, definition.vertexPlaneId,
                 definition.endBoundEntityVertex, definition.direction);
         definition.endBound = BoundingType.UP_TO_SURFACE;
@@ -346,10 +361,23 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
     {
         // Check the second direction
 
+        // See tempPlaneId above for more info.
+        const secondTempPlaneId = id + "secondVertexPlane";
+
         if (isSecondDirectionOfType(definition, BoundingType.UP_TO_SURFACE))
         {
             verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityFace", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_SURFACE);
-            definition.secondDirectionBoundEntity = definition.secondDirectionBoundEntityFace;
+            const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : definition.secondDirectionBoundEntityFace }));
+            if (mateConnectorCSys != undefined)
+            {
+                definition.secondMateConnectorPlaneId = secondTempPlaneId;
+                definition.secondDirectionBoundEntity = createMateConnectorBoundaryPlane(context,
+                        definition.secondMateConnectorPlaneId, mateConnectorCSys);
+            }
+            else
+            {
+                definition.secondDirectionBoundEntity = definition.secondDirectionBoundEntityFace;
+            }
         }
         else if (isSecondDirectionOfType(definition, BoundingType.UP_TO_BODY))
         {
@@ -359,7 +387,7 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
         else if (isSecondDirectionOfType(definition, BoundingType.UP_TO_VERTEX))
         {
             verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
-            definition.secondVertexPlaneId = id + "secondVertexPlane";
+            definition.secondVertexPlaneId = secondTempPlaneId;
             definition.secondDirectionBoundEntity = createVertexBoundaryPlane(context, definition.secondVertexPlaneId,
                     definition.secondDirectionBoundEntityVertex, definition.direction);
             definition.secondDirectionBound = SecondDirectionBoundingType.UP_TO_SURFACE;
@@ -389,30 +417,68 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
     return definition;
 }
 
-function createVertexBoundaryPlane(context is Context, id is Id, vertex is Query, direction is Vector)
+function createVertexBoundaryPlane(context is Context, id is Id, vertex is Query, direction is Vector) returns Query
 {
     const vertexPoint = evVertexPoint(context, { "vertex" : vertex });
     opPlane(context, id, { "plane" : plane(vertexPoint, direction) });
     return qCreatedBy(id, EntityType.FACE);
 }
 
+function createMateConnectorBoundaryPlane(context is Context, id is Id, mateConnectorCSys is CoordSystem) returns Query
+{
+    opPlane(context, id, { "plane" : plane(mateConnectorCSys) });
+    return qCreatedBy(id, EntityType.FACE);
+}
+
 /**
  * @internal
- * Clean up boundary planes created by `transformExtrudeDefinitionForOpExtrude` for `UP_TO_VERTEX` extrudes.  Should be
- * called after the [opExtrude] is executed.
+ * Clean up boundary planes created by `transformExtrudeDefinitionForOpExtrude` for `UP_TO_VERTEX` and
+ * mate connector `UP_TO_SURFACE` extrudes.  Should be called after the [opExtrude] is executed.
  */
-export function cleanupVertexBoundaryPlane(context is Context, id is Id, definition is map)
+export function cleanupTemporaryBoundaryPlanes(context is Context, id is Id, definition is map)
 {
+    var tempBodies = [];
+    const batchDelete = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1031_BODY_NET_IN_LOFT);
+
     if (definition.vertexPlaneId != undefined)
     {
-        opDeleteBodies(context, id + "deleteVertexPlane", {
-            "entities" : qCreatedBy(definition.vertexPlaneId, EntityType.BODY)});
+        const tempBody = qCreatedBy(definition.vertexPlaneId, EntityType.BODY);
+        if (batchDelete)
+        {
+            tempBodies = append(tempBodies, tempBody);
+        }
+        else
+        {
+            opDeleteBodies(context, id + "deleteVertexPlane", { "entities" : tempBody });
+        }
     }
 
     if (definition.secondVertexPlaneId != undefined)
     {
-        opDeleteBodies(context, id + "deleteSecondVertexPlane", {
-            "entities" : qCreatedBy(definition.secondVertexPlaneId, EntityType.BODY)});
+        const tempBody = qCreatedBy(definition.secondVertexPlaneId, EntityType.BODY);
+        if (batchDelete)
+        {
+            tempBodies = append(tempBodies, tempBody);
+        }
+        else
+        {
+            opDeleteBodies(context, id + "deleteSecondVertexPlane", { "entities" : tempBody });
+        }
+    }
+
+    if (definition.mateConnectorPlaneId != undefined)
+    {
+        tempBodies = append(tempBodies, qCreatedBy(definition.mateConnectorPlaneId, EntityType.BODY));
+    }
+
+    if (definition.secondMateConnectorPlaneId != undefined)
+    {
+        tempBodies = append(tempBodies, qCreatedBy(definition.secondMateConnectorPlaneId, EntityType.BODY));
+    }
+
+    if (tempBodies != [])
+    {
+        opDeleteBodies(context, id + "deleteTempExtrudePlanes", { "entities" : qUnion(tempBodies) });
     }
 }
 
