@@ -1,4 +1,4 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 1036; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "1036.0");
-import(path : "onshape/std/coordSystem.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/mathUtils.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "1036.0");
+import(path : "onshape/std/context.fs", version : "1053.0");
+import(path : "onshape/std/coordSystem.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/mathUtils.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "1053.0");
 
 //===================================== Plane ======================================
 
@@ -104,13 +104,38 @@ export function yAxis(plane is Plane) returns Vector
 }
 
 /**
- * Check that two [Plane]s are the same up to tolerance, including the origin and local coordinate system.
+ * Check that two [Plane]s are the same up to tolerance, including checking that they have the same the origin and local coordinate system.
+ *
+ * To check if two [Plane]s are equivalent (rather than equal), use [coplanarPlanes].
  */
 export predicate tolerantEquals(plane1 is Plane, plane2 is Plane)
 {
     tolerantEquals(plane1.origin, plane2.origin);
     tolerantEquals(plane1.normal, plane2.normal);
     tolerantEquals(plane1.x, plane2.x);
+}
+
+/**
+ * Returns `true` if the two planes are coplanar.
+ */
+export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
+{
+    const point1 = project(plane1, vector(0, 0, 0) * meter);
+    const point2 = project(plane2, vector(0, 0, 0) * meter);
+    return tolerantEquals(point1, point2) && parallelVectors(plane1.normal, plane2.normal);
+}
+
+/** @internal */
+export function versionedCoplanarPlanes(context is Context, plane1 is Plane, plane2 is Plane) returns boolean
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1044_COPLANAR_PLANES))
+    {
+        return coplanarPlanes(plane1, plane2);
+    }
+    // Old behavior: use an incorrect check for plane normal parallel
+    const point1 = project(plane1, vector(0, 0, 0) * meter);
+    const point2 = project(plane2, vector(0, 0, 0) * meter);
+    return tolerantEquals(point1, point2) && abs(dot(plane1.normal, plane2.normal)) > 1 - TOLERANCE.zeroAngle;
 }
 
 /**
@@ -299,7 +324,7 @@ export predicate canBeLinePlaneIntersection(value)
 
 /**
  * Returns a `LinePlaneIntersection` representing the intersection between
- * `line` and [Plane].
+ * `line` and `plane`.
  */
 export function intersection(plane is Plane, line is Line) returns LinePlaneIntersection
 {
@@ -313,16 +338,6 @@ export function intersection(plane is Plane, line is Line) returns LinePlaneInte
     }
     const t = dot(plane.origin - line.origin, plane.normal) / dotPr;
     return { 'dim' : 0, 'intersection' : line.origin + t * line.direction } as LinePlaneIntersection;
-}
-
-/**
- * Returns true if the two planes are coplanar.
- */
-export function coplanarPlanes(plane1 is Plane, plane2 is Plane) returns boolean
-{
-    const point1 = project(plane1, vector(0, 0, 0) * meter);
-    const point2 = project(plane2, vector(0, 0, 0) * meter);
-    return tolerantEquals(point1, point2) && abs(dot(plane1.normal, plane2.normal)) > 1 - TOLERANCE.zeroAngle;
 }
 
 /**

@@ -1,4 +1,4 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 1036; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/error.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/geomOperations.fs", version : "1036.0");
-import(path : "onshape/std/mathUtils.fs", version : "1036.0");
-import(path : "onshape/std/query.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/splitpart.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/error.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/geomOperations.fs", version : "1053.0");
+import(path : "onshape/std/mathUtils.fs", version : "1053.0");
+import(path : "onshape/std/query.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/splitpart.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 
 /**
@@ -90,8 +90,8 @@ function getSplitEdgesAndFaces(context is Context, id is Id, vertices is Query) 
         var vertex2 = getCornerVertex(context, userVertices[1]);
 
         // Need this to check that all vertices lie on the same wall in the smModel.
-        var facesFrom1 = qVertexAdjacent(vertex1, EntityType.FACE);
-        var facesFrom2 = qVertexAdjacent(vertex2, EntityType.FACE);
+        var facesFrom1 = qAdjacent(vertex1, AdjacencyType.VERTEX, EntityType.FACE);
+        var facesFrom2 = qAdjacent(vertex2, AdjacencyType.VERTEX, EntityType.FACE);
         var sharedFace = qIntersection([facesFrom1, facesFrom2]);
         if (size(evaluateQuery(context, sharedFace)) != 1)
         {

@@ -1,21 +1,21 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1036.0");
-export import(path : "onshape/std/error.fs", version : "1036.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1036.0");
-export import(path : "onshape/std/query.fs", version : "1036.0");
+export import(path : "onshape/std/context.fs", version : "1053.0");
+export import(path : "onshape/std/error.fs", version : "1053.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1053.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/math.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
-import(path : "onshape/std/transform.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/tabReferences.fs", version : "1036.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/math.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
+import(path : "onshape/std/transform.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/tabReferences.fs", version : "1053.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -44,8 +44,8 @@ export function defineFeature(feature is function, defaults is map) returns func
             var started = false;
             try
             {
-                //TODO: definition = @convert(definition, CurrentVersion);
-                definition = mergeMaps(defaults, definition);
+                // TODO: definition = @convert(definition, CurrentVersion);
+                definition = mergeDefaultsAndCleanFailed(context, definition, defaults);
                 var visible = definition; /* visible to feature */
                 definition.lock = true;
                 visible.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
@@ -568,7 +568,6 @@ export function verifyNonemptyQuery(context is Context, definition is map,
     }
 }
 
-
 /**
  * @internal
  * Throws a regeneration error if query references topology of sheet metal flat pattern
@@ -607,6 +606,61 @@ precondition
 
 /**
  * @internal
+ * Parameters set to invalid expressions are temporarily set to undefined with this type tag. That value
+ * is never seen inside feature code, since it is replaced with an ordinary `undefined` in
+ * cleanUpFailedParameters(). A feature default will not override a failed parameter.
+ */
+export type FailedParameter typecheck canBeFailedParameter;
+
+/** @internal */
+export predicate canBeFailedParameter(value) {
+    value is undefined;
+}
+
+const FAILED_PARAMETER = undefined as FailedParameter;
+
+function cleanUpFailedParameters(definition is map) returns map
+{
+    for (var paramEntry in definition)
+    {
+        if (paramEntry.value == FAILED_PARAMETER)
+        {
+            definition[paramEntry.key] = undefined;
+        }
+        else if (isArrayParameter(paramEntry.value))
+        {
+            const size = @size(paramEntry.value);
+            for (var i = 0; i < size; i += 1)
+            {
+                definition[paramEntry.key][i] = cleanUpFailedParameters(paramEntry.value[i]);
+            }
+        }
+    }
+    return definition;
+}
+
+function mergeDefaultsAndCleanFailed(context is Context, definition is map, defaults is map)
+{
+    // Holdback not yet applied, so check asVersion
+    const isNewVersion = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1046_FAILED_PARAMETERS);
+    const isHeldBack = definition.asVersion != undefined && !isAtVersionOrLater(definition.asVersion, FeatureScriptVersionNumber.V1046_FAILED_PARAMETERS);
+    if (isNewVersion && !isHeldBack)
+    {
+        // New: Failed parameters do not get replaced by defaults
+        definition = mergeMaps(defaults, definition);
+        definition = cleanUpFailedParameters(definition);
+    }
+    else
+    {
+        // Old: Clean up failed parameters immediately to preserve legacy behavior
+        definition = cleanUpFailedParameters(definition);
+        definition = mergeMaps(defaults, definition);
+    }
+    return definition;
+}
+
+/**
+ * @internal
  * A feature that does nothing
  */
 export const dummyFeature = defineFeature(function(context is Context, id is Id, definition is map)
@@ -615,3 +669,4 @@ export const dummyFeature = defineFeature(function(context is Context, id is Id,
     }
     {
     });
+

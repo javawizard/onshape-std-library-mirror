@@ -1,4 +1,4 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,20 +29,20 @@ FeatureScript 1036; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/context.fs", version : "1036.0");
-export import(path : "onshape/std/query.fs", version : "1036.0");
-export import(path : "onshape/std/smbendtype.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "1036.0");
+export import(path : "onshape/std/context.fs", version : "1053.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
+export import(path : "onshape/std/smbendtype.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "1053.0");
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -195,10 +195,8 @@ export function replaceSMAttribute(context is Context, existingAttribute is SMAt
  */
 export function getSMDefinitionEntities(context is Context, selection is Query) returns array
 {
-    var entityAssociations = getAttributes(context, {
-            "entities" : qBodyType(selection, BodyType.SOLID),
-            "attributePattern" : {} as SMAssociationAttribute
-        });
+    const entityAssociations = getSMAssociationAttributes(context, qBodyType(selection, BodyType.SOLID));
+
     var attributeQueries = [];
     for (var attribute in entityAssociations)
     {
@@ -313,12 +311,12 @@ export function getCornerAttribute(context is Context, cornerVertex is Query)
 
 /**
  * Used by sheet metal features to maintain correspondence between master sheet body entities and
- * solid body entities.
+ * folded and flat solid body entities.
  */
 export type SMAssociationAttribute typecheck canBeSMAssociationAttribute;
 
 /**
- * Association attribute stores attributeId. The association is established by assigning same attribute to
+ * Association attribute stores `attributeId`. The association is established by assigning the same attribute to
  * associated entities. Every entity in sheet metal master sheet body has a distinct association attribute.
  */
 export predicate canBeSMAssociationAttribute (value)
@@ -328,7 +326,7 @@ export predicate canBeSMAssociationAttribute (value)
 }
 
 /**
- * create an association attribute
+ * Create an association attribute with the given `attributeId`.
  */
 export function makeSMAssociationAttribute(attributeId is string) returns SMAssociationAttribute
 {
@@ -338,7 +336,7 @@ export function makeSMAssociationAttribute(attributeId is string) returns SMAsso
 /**
  * Assign new association attributes to entities using their transient queries to generate attribute ids.
  */
-export function assignSmAssociationAttributes(context is Context, entities is Query)
+export function assignSMAssociationAttributes(context is Context, entities is Query)
 {
     for (var ent in evaluateQuery(context, entities))
     {
@@ -347,6 +345,29 @@ export function assignSmAssociationAttributes(context is Context, entities is Qu
                 "attribute" : makeSMAssociationAttribute(toString(ent))
         });
     }
+}
+
+/** @internal Fixed for correct capitalization */
+annotation { "Deprecated" : "Use [assignSMAssociationAttributes]" }
+export function assignSmAssociationAttributes(context is Context, entities is Query)
+{
+    assignSMAssociationAttributes(context, entities);
+}
+
+/**
+ * An attribute pattern for finding attributes which are [SMAssociationAttribute]s.
+ */
+export const smAssociationAttributePattern = {} as SMAssociationAttribute;
+
+/**
+ * Get all of the association attributes for a given set of `entities`.
+ */
+export function getSMAssociationAttributes(context is Context, entities is Query)
+{
+    return getAttributes(context, {
+                "entities" : entities,
+                "attributePattern" : smAssociationAttributePattern
+            });
 }
 
 /**

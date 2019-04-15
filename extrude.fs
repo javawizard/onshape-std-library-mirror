@@ -1,34 +1,34 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1036.0");
-export import(path : "onshape/std/query.fs", version : "1036.0");
-export import(path : "onshape/std/tool.fs", version : "1036.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1053.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
+export import(path : "onshape/std/tool.fs", version : "1053.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1036.0");
+export import(path : "onshape/std/manipulator.fs", version : "1053.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/boolean.fs", version : "1036.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1036.0");
-import(path : "onshape/std/box.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/coordSystem.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/mathUtils.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/transform.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/boolean.fs", version : "1053.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1053.0");
+import(path : "onshape/std/box.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/coordSystem.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/mathUtils.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/transform.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 /**
  * The viewer being operated in
@@ -425,16 +425,7 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
 
-        for (var face in evaluateQuery(context, qEntityFilter(qCreatedBy(id), EntityType.FACE)))
-        {
-            var jointAttribute = getJointAttribute(context, face);
-            if (jointAttribute != undefined && jointAttribute.radius != undefined && jointAttribute.radius.canBeEdited)
-            {
-                removeAttributes(context, { "entities" : face, "attributePattern" : jointAttribute });
-                jointAttribute.radius.canBeEdited = false;
-                setAttribute(context, { "entities" : face, "attribute" : jointAttribute });
-            }
-        }
+        makeFaceJointsUneditable(context, qCreatedBy(id, EntityType.FACE));
 
         const newEntities = qUnion([qCreatedBy(id), tracking]);
         const affectedBodyQ = qOwnerBody(newEntities);
@@ -781,6 +772,45 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     }
     return newDefinition;
 }
+
+// -------------------- Utilities for SMFlatOp --------------------
+
+// Find any faces in `faces` which are joints, and make sure their radius and jointType are uneditable
+function makeFaceJointsUneditable(context is Context, faces is Query)
+{
+    const jointTypeNotEditable = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1045_SHEET_BOOLEAN_ALIGN_FACE);
+    const faceJoints = qAttributeFilter(faces, asSMAttribute({ 'objectType' : SMObjectType.JOINT }));
+    for (var face in evaluateQuery(context, faceJoints))
+    {
+        const oldJointAttribute = getJointAttribute(context, face);
+        if (oldJointAttribute == undefined)
+        {
+            if (jointTypeNotEditable)
+                throw "qAttributeFilter failed";
+            else
+                continue;
+        }
+
+        var newJointAttribute = oldJointAttribute;
+        if (oldJointAttribute.radius != undefined && oldJointAttribute.radius.canBeEdited)
+        {
+            // Joints that are faces cannot have their radius changed
+            newJointAttribute.radius.canBeEdited = false;
+        }
+        if (jointTypeNotEditable && oldJointAttribute.jointType.canBeEdited)
+        {
+            // Joints that are faces cannot have their joint type changed
+            newJointAttribute.jointType.canBeEdited = false;
+        }
+
+        if (newJointAttribute != oldJointAttribute)
+        {
+            removeAttributes(context, { "entities" : face, "attributePattern" : oldJointAttribute });
+            setAttribute(context, { "entities" : face, "attribute" : newJointAttribute });
+        }
+    }
+}
+
 // Initial data was collected for all model definition bodies, bodiesQ - bodies affected by operation
 // combine initial data for those bodies only
 function combineInitialData(context is Context, initialDataPerBody is array, bodiesQ is Query)

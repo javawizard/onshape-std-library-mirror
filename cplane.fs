@@ -1,23 +1,23 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1036.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1036.0");
+export import(path : "onshape/std/manipulator.fs", version : "1053.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/mathUtils.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/box.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/mathUtils.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 /**
  * The method of defining a construction plane.
@@ -637,7 +637,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
     {
         if (planes == 1)
             definition.cplaneType = CPlaneType.OFFSET;
-        else if ((lines + curves) == 1 && size(evaluateQuery(context, qVertexAdjacent(entities, EntityType.VERTEX))) == 2)
+        else if ((lines + curves) == 1 && size(evaluateQuery(context, qAdjacent(entities, AdjacencyType.VERTEX, EntityType.VERTEX))) == 2)
             definition.cplaneType = CPlaneType.MID_PLANE;
         else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
             definition.cplaneType = CPlaneType.LINE_ANGLE;

@@ -1,24 +1,24 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/boolean.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1036.0");
-import(path : "onshape/std/math.fs", version : "1036.0");
-import(path : "onshape/std/patternCommon.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
-import(path : "onshape/std/transform.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/boolean.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1053.0");
+import(path : "onshape/std/math.fs", version : "1053.0");
+import(path : "onshape/std/patternCommon.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
+import(path : "onshape/std/transform.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/vector.fs", version : "1053.0");
 
 /**
  * @internal
@@ -116,7 +116,7 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
 
     // Allow the user to select definition edges and vertices that lie on a definition face, but ignore them internally.
     // They will be successfully patterned by the wall pattern of the definition face.
-    const definitionFaceEdges = qEdgeAdjacent(definitionFacesQ, EntityType.EDGE);
+    const definitionFaceEdges = qAdjacent(definitionFacesQ, AdjacencyType.EDGE, EntityType.EDGE);
     const originalDefinitionEdges = qEntityFilter(qUnion(definitionEntities), EntityType.EDGE);
     const definitionEdgesQ = qSubtraction(originalDefinitionEdges, definitionFaceEdges);
     const definitionEdges = evaluateQuery(context, definitionEdgesQ);
@@ -125,14 +125,14 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const twoSidedEdges = evaluateQuery(context, qEdgeTopologyFilter(definitionEdgesQ, EdgeTopology.TWO_SIDED));
     if (size(twoSidedEdges) > 0)
     {
-        var errorEntities = getSelectedFacesForSMDefinitionEntities(context, qUnion(twoSidedEdges), definition);
+        var errorEntities = getSelectionsForSMDefinitionEntities(context, qUnion(twoSidedEdges), definition.entities);
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
         throw regenError(ErrorStringEnum.SHEET_METAL_FACE_PATTERN_NO_JOINT, ["entities"]);
     }
 
     // Vertices (fillets/chamfers/reliefs) cannot be face patterned by themselves
-    const definitionFaceVertices = qVertexAdjacent(definitionFacesQ, EntityType.VERTEX);
-    const definitionEdgeVertices = qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX);
+    const definitionFaceVertices = qAdjacent(definitionFacesQ, AdjacencyType.VERTEX, EntityType.VERTEX);
+    const definitionEdgeVertices = qAdjacent(definitionEdgesQ, AdjacencyType.VERTEX, EntityType.VERTEX);
     const allAbsorbedVertices = qUnion([definitionFaceVertices, definitionEdgeVertices]);
     const originalDefinitionVertices = qEntityFilter(qUnion(definitionEntities), EntityType.VERTEX);
     const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
@@ -142,7 +142,7 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
         (!definition.filterVertices && size(definitionVertices) > 0))
     {
         //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
-        var errorEntities = getSelectedFacesForSMDefinitionEntities(context, qUnion(definitionVertices), definition);
+        var errorEntities = getSelectionsForSMDefinitionEntities(context, qUnion(definitionVertices), definition.entities);
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
         throw regenError(ErrorStringEnum.SHEET_METAL_FACE_PATTERN_NO_VERTEX, ["entities"]);
     }
@@ -213,8 +213,8 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     // Collect attributes preset on the underlying sheet bodies of the seeds
     const facesAndSurrounding = qUnion([
                 faces,                                    // Faces
-                qEdgeAdjacent(faces, EntityType.EDGE),    // Edges
-                qVertexAdjacent(faces, EntityType.VERTEX) // Vertices
+                qAdjacent(faces, AdjacencyType.EDGE, EntityType.EDGE),    // Edges
+                qAdjacent(faces, AdjacencyType.VERTEX, EntityType.VERTEX) // Vertices
             ]);
 
     const smTrackingAndAttributeByType = createSMTrackingAndAttributeByType(context, facesAndSurrounding);
@@ -313,9 +313,9 @@ function checkMirrorBodiesWillBuild(context is Context, topLevelId is Id, faces 
     for (var seed in evaluateQuery(context, parallelSeeds))
     {
         const seedPlane = evPlane(context, { "face" : seed });
-        if (coplanarPlanes(definition.mirrorPlaneCalculated, seedPlane))
+        if (versionedCoplanarPlanes(context, definition.mirrorPlaneCalculated, seedPlane))
         {
-            setErrorEntities(context, topLevelId, { "entities" : qUnion([seed, qEdgeAdjacent(seed, EntityType.EDGE)]) });
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([seed, qAdjacent(seed, AdjacencyType.EDGE, EntityType.EDGE)]) });
             throw regenError(ErrorStringEnum.BOOLEAN_INVALID, ["entities"]);
         }
     }
@@ -525,7 +525,7 @@ function mapToNewWallId(context is Context, oldWallId is string, body is Query, 
     {
         for (var wallId in surroundingWallIds)
         {
-            // Take the first matched wall id. This is deterministic from the evaluation of qVertexAdjacent
+            // Take the first matched wall id. This is deterministic from the evaluation of qAdjacent
             if (oldWallIdToNewWallIdsByBody[oldWallId][body][wallId] != undefined)
             {
                 return wallId;
@@ -559,7 +559,7 @@ function adjustCornerBreaks(context is Context, vertex is Query, originalCornerB
     if (originalCornerBreaks != undefined)
     {
         var body = evaluateQuery(context, qOwnerBody(vertex))[0];
-        const surroundingWalls = evaluateQuery(context, qVertexAdjacent(vertex, EntityType.FACE));
+        const surroundingWalls = evaluateQuery(context, qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.FACE));
         const surroundingWallIds = mapArray(surroundingWalls, function(wall) {
                     return getWallAttribute(context, wall).attributeId;
                 });
@@ -836,7 +836,7 @@ function adjustTargetAlignment(context is Context, topLevelId is Id, id is Id,
             continue;
         for (var instanceEdge in evaluateQuery(context, jointData.tracking))
         {
-            var instanceFaceQ = qEdgeAdjacent(instanceEdge, EntityType.FACE);
+            var instanceFaceQ = qAdjacent(instanceEdge, AdjacencyType.EDGE, EntityType.FACE);
             if (size(evaluateQuery(context, instanceFaceQ)) != 1)
                 continue;
             var edgeWithinThickness = getEdgeWithinThickness(context, {
@@ -851,7 +851,7 @@ function adjustTargetAlignment(context is Context, topLevelId is Id, id is Id,
                 {
                     edgeLimitOptions = append(edgeLimitOptions, {
                             "edge" : edgeWithinThickness.edge,
-                            "face" : qEdgeAdjacent(edgeWithinThickness.edge, EntityType.FACE),
+                            "face" : qAdjacent(edgeWithinThickness.edge, AdjacencyType.EDGE, EntityType.FACE),
                             "offset" : edgeWithinThickness.offset
                     });
                 }
@@ -963,7 +963,7 @@ function getEdgeWithinThickness(context is Context, args is map)
                 continue;
             }
 
-            var adjacentFaceQ = qEdgeAdjacent(edgeAndLine.edge, EntityType.FACE);
+            var adjacentFaceQ = qAdjacent(edgeAndLine.edge, AdjacencyType.EDGE, EntityType.FACE);
             var normal = evFaceNormalAtEdge(context, {
                         "edge" : edgeAndLine.edge,
                         "face" : adjacentFaceQ,
@@ -1076,14 +1076,14 @@ function putLaminarLineEdgesToBuckets(context is Context, smBodies is Query) ret
 function collectLimitingDataForRipsAtRisk(context is Context, faces is Query, bodiesOfSelection is Query) returns array
 {
     var limitingDataArr = [];
-    const allEdgesQ = qEdgeAdjacent(faces, EntityType.EDGE);
+    const allEdgesQ = qAdjacent(faces, AdjacencyType.EDGE, EntityType.EDGE);
     for (var edge in evaluateQuery(context, allEdgesQ))
     {
         var attributes = getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT);
         if (size(attributes) != 1 || attributes[0].jointType == undefined ||
             attributes[0].jointType.value != SMJointType.RIP)   //process only RIPs
             continue;
-        var facesIn = evaluateQuery(context, qIntersection([qEdgeAdjacent(edge, EntityType.FACE), faces]));
+        var facesIn = evaluateQuery(context, qIntersection([qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), faces]));
         if (size(facesIn) != 1)  //RIP is at risk if only one bounding wall is included in the set
             continue;
         var limitingFace = getRipSideFace(context, edge, bodiesOfSelection, facesIn[0]);
@@ -1111,7 +1111,7 @@ function adjustForLostRips(context is Context, topLevelId is Id, id is Id, limit
         {
             edgeLimitOptions = append(edgeLimitOptions, {
                     "edge" : edges[0],
-                    "face" : qEdgeAdjacent(edges[0], EntityType.FACE),
+                    "face" : qAdjacent(edges[0], AdjacencyType.EDGE, EntityType.FACE),
                     "replaceFace" : data.limitingFace
             });
         }
@@ -1155,10 +1155,7 @@ function adjustForLostRips(context is Context, topLevelId is Id, id is Id, limit
 
 function getRipSideFace(context is Context, ripEdge is Query, inBodies is Query, nextToWall is Query)
 {
-    var edgeAssociationAttributes = getAttributes(context, {
-            "entities" : ripEdge,
-            "attributePattern" : {} as SMAssociationAttribute
-    });
+    var edgeAssociationAttributes = getSMAssociationAttributes(context, ripEdge);
     if (size(edgeAssociationAttributes) != 1)
         return undefined;
     var associatedFacesQ = qEntityFilter(qAttributeQuery(edgeAssociationAttributes[0]), EntityType.FACE);
@@ -1172,15 +1169,12 @@ function getRipSideFace(context is Context, ripEdge is Query, inBodies is Query,
     if (nCandidates != 2)
         return undefined;
 
-    var wallAssociationAttributes = getAttributes(context, {
-            "entities" : nextToWall,
-            "attributePattern" : {} as SMAssociationAttribute
-    });
+    var wallAssociationAttributes = getSMAssociationAttributes(context, nextToWall);
     if (size(wallAssociationAttributes) != 1)
         return undefined;
     var associatedWallFacesQ = qEntityFilter(qAttributeQuery(wallAssociationAttributes[0]), EntityType.FACE);
 
-    var adjacentWallQ = qEdgeAdjacent(candidateFaces[0], EntityType.FACE);
+    var adjacentWallQ = qAdjacent(candidateFaces[0], AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, qIntersection([associatedWallFacesQ, adjacentWallQ]))) == 0)
         return candidateFaces[1];
     else
@@ -1204,7 +1198,7 @@ function sheetMetalEdgePattern(context is Context, topLevelId is Id, id is Id, d
     // opPattern of edges may change body identity.  Make sure this query is robust.
     allAffectedBodies = qUnion([allAffectedBodies, startTracking(context, allAffectedBodies)]);
     const initialData = getInitialEntitiesAndAttributes(context, allAffectedBodies);
-    const cornerBreakTrackingAndAttribute = createCornerBreakTrackingAndAttribute(context, qVertexAdjacent(definitionEdgesQ, EntityType.VERTEX));
+    const cornerBreakTrackingAndAttribute = createCornerBreakTrackingAndAttribute(context, qAdjacent(definitionEdgesQ, AdjacencyType.VERTEX, EntityType.VERTEX));
 
     var definitionForPatternOp = definition;
     definitionForPatternOp.entities = definitionEdgesQ;
@@ -1286,7 +1280,7 @@ function reapplyCornerBreaks(context is Context, topLevelId is Id, cornerBreakTr
                 continue;
             }
 
-            const adjacentWalls = evaluateQuery(context, qVertexAdjacent(vertex, EntityType.FACE));
+            const adjacentWalls = evaluateQuery(context, qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.FACE));
             if (size(adjacentWalls) != 1)
             {
                 // If the vertex touches more than one wall, it is ambiguous and we should skip it.
@@ -1359,24 +1353,6 @@ function groupEntitiesByModelAttribute(context is Context, entities is array) re
             modelIdToModelAndEntities[modelId].entities = append(modelIdToModelAndEntities[modelId].entities, entity);
     }
     return modelIdToModelAndEntities;
-}
-
-/**
- * Map a group of sheet metal definition entities back to the original faces selected by the user.
- */
-function getSelectedFacesForSMDefinitionEntities(context is Context, smDefinitionEntities is Query, definition is map)
-{
-    var associationAttributes = getAttributes(context, {
-                "entities" : smDefinitionEntities,
-                "attributePattern" : {} as SMAssociationAttribute
-            });
-    var associatedFaces = [];
-    for (var attribute in associationAttributes)
-    {
-        var associatedFacesQ = qEntityFilter(qAttributeQuery(attribute), EntityType.FACE);
-        associatedFaces = append(associatedFaces, associatedFacesQ);
-    }
-    return qIntersection([qUnion(associatedFaces), definition.entities]);
 }
 
 /**

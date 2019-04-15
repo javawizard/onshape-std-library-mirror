@@ -5,13 +5,11 @@ FeatureScript 1053; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * @internal.
- */
-export enum SMBendType
+/** @internal */
+export enum BooleanAccuracy
 {
-    STANDARD,
-    HEM
+    DEFAULT,
+    HIGH
 }
 
 

@@ -1,18 +1,18 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1036.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1053.0");
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 /**
  *  @internal
@@ -110,7 +110,7 @@ function getWallIds(context is Context, entityArray is array, definitionVertices
         var entity = entityArray[i];
         var definitionVertex = definitionVertices[i];
 
-        var adjacentFaceAssociations = getSMDefinitionEntities(context, qVertexAdjacent(entity, EntityType.FACE));
+        var adjacentFaceAssociations = getSMDefinitionEntities(context, qAdjacent(entity, AdjacencyType.VERTEX, EntityType.FACE));
 
         var associatedWallQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.FACE);
         var associatedEdgesQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.EDGE);
@@ -119,8 +119,8 @@ function getWallIds(context is Context, entityArray is array, definitionVertices
             // If the selected entity is vertex adjacent to a completely unrelated piece of sheet metal, such as the
             // topology created by a move face up-to with no offset, make sure to filter out the topology unrelated to
             // the corner in question
-            associatedWallQ = qIntersection([associatedWallQ, qVertexAdjacent(definitionVertex, EntityType.FACE)]);
-            associatedEdgesQ = qIntersection([associatedEdgesQ, qVertexAdjacent(definitionVertex, EntityType.EDGE)]);
+            associatedWallQ = qIntersection([associatedWallQ, qAdjacent(definitionVertex, AdjacencyType.VERTEX, EntityType.FACE)]);
+            associatedEdgesQ = qIntersection([associatedEdgesQ, qAdjacent(definitionVertex, AdjacencyType.VERTEX, EntityType.EDGE)]);
         }
         var associatedWall = evaluateQuery(context, associatedWallQ);
         var associatedEdges = evaluateQuery(context, associatedEdgesQ);

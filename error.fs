@@ -1,16 +1,16 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1036.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "1036.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "1053.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
+import(path : "onshape/std/context.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -242,7 +242,7 @@ export function reportFeatureInfo(context is Context, id is Id, customMessage is
  *      @field subfeatureId {Id} : The Id of the subfeature.
  *      @field featureParameterMap {map} : A mapping of the field names from subfeature to feature. @optional
  *      @field featureParameterMappingFunction {function} : A function to map field names from subfeature to feature. @optional
- *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present. @optional
+ *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present.  Default is false. @optional
  * }}
  */
 export function processSubfeatureStatus(context is Context, id is Id, definition is map) returns boolean

@@ -1,20 +1,20 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "1036.0");
+export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "1053.0");
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 /**
  * Corner feature is used to override default sheet metal model corner relief style or dimensions for an individual corner
@@ -79,7 +79,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
 
         if (definition.cornerStyle != SMCornerReliefStyle.SIMPLE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED))
         {
-            var facesQ = qVertexAdjacent(qUnion(cornerInfo.allVertices), EntityType.FACE);
+            var facesQ = qAdjacent(qUnion(cornerInfo.allVertices), AdjacencyType.VERTEX, EntityType.FACE);
             var rolledQ = qSubtraction(facesQ, qGeometry(facesQ, GeometryType.PLANE));
             if (size(evaluateQuery(context, rolledQ)) > 0)
             {

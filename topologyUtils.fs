@@ -1,15 +1,15 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/context.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/query.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/context.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/query.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/vector.fs", version : "1053.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -18,7 +18,7 @@ const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere 
  */
 export function edgeIsTwoSided(context is Context, edge is Query) returns boolean
 {
-    return size(evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE))) == 2;
+    return size(evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE))) == 2;
 }
 
 /**
@@ -26,7 +26,7 @@ export function edgeIsTwoSided(context is Context, edge is Query) returns boolea
  */
 export function isClosed(context is Context, edge is Query) returns boolean
 {
-    return size(evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX))) < 2;
+    return size(evaluateQuery(context, qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX))) < 2;
 }
 
 /**
@@ -117,42 +117,59 @@ export function extractDirection(context is Context, entity is Query)
 }
 
 /**
- * Find connected components in the topological graph of provided edges. Each component is a chain of topologically
- * connected edges, and each component is disjoint with (does not connect topologically with) any other component.
+ * Find connected components in the topological graph of provided entities. Each component is a group of topologically
+ * connected entities, and each component is disjoint with (does not connect topologically with) any other component.
+ * Connectivity is tested using [qAdjacent] with the specified `adjacencyType`.
  *
- * Returns an array of components. Each component is an array of individual queries. The queries in any group will respect the
- * query evaluation order of the supplied `edges` [Query]. The components themselves will also be ordered by query evaluation
- * order, sorted by the first edge in each component.
+ * Returns an array of components. Each component is an array of individual queries. The queries in any component will respect the
+ * query evaluation order of the supplied `entities` [Query]. The components themselves will also be ordered by query evaluation
+ * order, sorted by the first entity in each component.
  *
- * Unlike [constructPath], this function operates on topological connections (underlying connections by a vertex). Distinct
- * bodies are not topologically connected, so even if two edges on distinct bodies are geometrically related by having a
- * vertex in the same location, the edges connected to these similar vertices will fall into different components.
- * Notice that wire edges representing sketch curves are not topologically connected, this method cannot be used for them.
+ * Unlike [constructPath], this function operates on topological connections (underlying connections by a vertex or edge). Distinct
+ * bodies are not topologically connected, so even if two entities on distinct bodies are geometrically related by having a
+ * coincident vertex or edge, the entities connected to these coincident vertices or edges will fall into different components.
+ * Sketch edges are each represented as a distinct wire body, and are not topologically connected, so this method cannot be used for them.
  */
-export function connectedComponentsOfEdges(context is Context, edges is Query)
+export function connectedComponents(context is Context, entities is Query, adjacencyType is AdjacencyType) returns array
+precondition
 {
-    var remainingEdges = evaluateQuery(context, qEntityFilter(edges, EntityType.EDGE));
+    annotation { "Message" : "Bodies do not share edges or vertices with any other entities" }
+    evaluateQuery(context, qEntityFilter(entities, EntityType.BODY)) == [];
 
+    // Vertices are not edge-adjacent to any other entities, so they would always fall into their own group. Instead, disallow this.
+    annotation { "Message" : "Entities cannot have AdjacencyType.EDGE with vertices, use AdjacencyType.VERTEX instead" }
+    adjacencyType != AdjacencyType.EDGE || evaluateQuery(context, qEntityFilter(entities, EntityType.VERTEX)) == [];
+}
+{
     var groups = [];
-    while (remainingEdges != [])
+    var remainingEntities = evaluateQuery(context, entities);
+    while (remainingEntities != [])
     {
-        var group = remainingEdges[0];
-        var prevAdded = [remainingEdges[0]];
+        var group = [remainingEntities[0]];
+        var prevAdded = [remainingEntities[0]];
 
         while (size(prevAdded) > 0)
         {
-            var adjacentEdges = qVertexAdjacent(qUnion(prevAdded), EntityType.EDGE);
-            var edgesToAdd = qIntersection([qUnion(remainingEdges), adjacentEdges]);
-            prevAdded = evaluateQuery(context, qSubtraction(edgesToAdd, group));
+            var adjacentEntities = qAdjacent(qUnion(prevAdded), adjacencyType);
+            var edgesToAdd = qIntersection([qUnion(remainingEntities), adjacentEntities]);
+            prevAdded = evaluateQuery(context, qSubtraction(edgesToAdd, qUnion(group)));
 
-            group = qUnion([group, edgesToAdd]);
+            group = append(group, qUnion(prevAdded));
         }
         // Intersect the group with the initial edge set to sort by initial query evaluation order
-        groups = append(groups, evaluateQuery(context, qIntersection([edges, group])));
-        // Subtraction respects evaluation ordering of the first parameter, so remainingEdges stays ordered
-        remainingEdges = evaluateQuery(context, qSubtraction(qUnion(remainingEdges), group));
+        groups = append(groups, evaluateQuery(context, qIntersection([entities, qUnion(group)])));
+        // Subtraction respects evaluation ordering of the first parameter, so remainingEntities stays ordered
+        remainingEntities = evaluateQuery(context, qSubtraction(qUnion(remainingEntities), qUnion(group)));
     }
     return groups;
+}
+
+/** @internal */
+annotation { "Deprecated" : "[connectedComponentsOfEdges] has been replaced by [connectedComponents] with `AdjacencyType.VERTEX`" }
+export function connectedComponentsOfEdges(context is Context, edges is Query) returns array
+{
+    var edgesFiltered = qEntityFilter(edges, EntityType.EDGE);
+    return connectedComponents(context, edgesFiltered, EntityType.VERTEX);
 }
 
 /**

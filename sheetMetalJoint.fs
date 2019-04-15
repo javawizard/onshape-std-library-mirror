@@ -1,23 +1,23 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "1036.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1036.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "1053.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1053.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/math.fs", version : "1036.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/math.fs", version : "1053.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
 
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
@@ -43,7 +43,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
             if (!definition.useDefaultRadius)
             {
                 annotation { "Name" : "Bend radius" }
-                isLength(definition.radius, BLEND_BOUNDS);
+                isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
             }
         }
 
@@ -143,7 +143,7 @@ precondition
         bendAttribute = existingAttribute;
     }
 
-    const planarFacesQ = qGeometry(qEdgeAdjacent(jointEdge, EntityType.FACE), GeometryType.PLANE);
+    const planarFacesQ = qGeometry(qAdjacent(jointEdge, AdjacencyType.EDGE, EntityType.FACE), GeometryType.PLANE);
     if (size(evaluateQuery(context, planarFacesQ)) != 2)
     {
         // If walls are non-planar bend angle depends on the radius and needs to be re-computed

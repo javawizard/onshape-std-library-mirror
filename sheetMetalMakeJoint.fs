@@ -1,26 +1,26 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1036.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "1036.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1053.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "1053.0");
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/boolean.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/error.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1036.0");
-import(path : "onshape/std/geomOperations.fs", version : "1036.0");
-import(path : "onshape/std/query.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
-import(path : "onshape/std/units.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/boolean.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/error.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1053.0");
+import(path : "onshape/std/geomOperations.fs", version : "1053.0");
+import(path : "onshape/std/query.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
+import(path : "onshape/std/units.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
 
 /**
 * MakeJointType is a subset of SMJointType to restrict options visible in sheetMetalMakeJoint
@@ -56,7 +56,7 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
             if (!definition.useDefaultRadius)
             {
                 annotation { "Name" : "Bend radius" }
-                isLength(definition.radius, BLEND_BOUNDS);
+                isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
             }
         }
 
@@ -103,7 +103,7 @@ export function makeJointEditLogic(context is Context, id is Id, oldDefinition i
     if (size(evaluatedEdgeQuery) == 0)
         return definition;
 
-    var adjacentFace = qEdgeAdjacent(evaluatedEdgeQuery[0], EntityType.FACE);
+    var adjacentFace = qAdjacent(evaluatedEdgeQuery[0], AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) == 0)
     {
         return definition;
@@ -131,7 +131,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     //For selected edges, we need to get to the wall they're on.
     for (var edge in edges)
     {
-        var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        var adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) != 1)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_RIP_FAIL_INTERNAL_EDGE, ["entities"]);
@@ -157,7 +157,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     //make sure the two faces are not currently sharing edges
-    var commonEdges = evaluateQuery(context, qIntersection([qEdgeAdjacent(faces[0], EntityType.FACE), faces[1]]));
+    var commonEdges = evaluateQuery(context, qIntersection([qAdjacent(faces[0], AdjacencyType.EDGE, EntityType.FACE), faces[1]]));
     if (size(commonEdges) != 0)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_JOINT_FAIL_ADJACENT_FACES, ["entities"]);

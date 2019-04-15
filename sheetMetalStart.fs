@@ -1,33 +1,33 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "1036.0");
-export import(path : "onshape/std/query.fs", version : "1036.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1053.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
 
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/box.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/coordSystem.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/error.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/geomOperations.fs", version : "1036.0");
-import(path : "onshape/std/manipulator.fs", version : "1036.0");
-import(path : "onshape/std/math.fs", version : "1036.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/sketch.fs", version : "1036.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1036.0");
-import(path : "onshape/std/string.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/tool.fs", version : "1036.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
-import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/box.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/coordSystem.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/error.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/geomOperations.fs", version : "1053.0");
+import(path : "onshape/std/manipulator.fs", version : "1053.0");
+import(path : "onshape/std/math.fs", version : "1053.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/sketch.fs", version : "1053.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1053.0");
+import(path : "onshape/std/string.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/tool.fs", version : "1053.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
+import(path : "onshape/std/vector.fs", version : "1053.0");
 
 /**
  * Method of initializing sheet metal model
@@ -336,27 +336,24 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
 
 function convertExistingPart(context is Context, id is Id, definition is map)
 {
-    if (size(evaluateQuery(context, definition.partToConvert)) < 1)
+    if (evaluateQuery(context, definition.partToConvert) == [])
     {
         throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["partToConvert"]);
     }
 
-    var associationAttributes = getAttributes(context, {
-            "entities" : definition.partToConvert,
-            "attributePattern" : {} as SMAssociationAttribute
-        });
-    if (size(associationAttributes) != 0)
+    var associationAttributes = getSMAssociationAttributes(context, definition.partToConvert);
+    if (associationAttributes != [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INPUT_BODY_SHOULD_NOT_BE_SHEET_METAL, ["partToConvert"]);
     }
 
     var facesOnUnknownBodies = evaluateQuery(context, qSubtraction(qOwnerBody(definition.facesToExclude), definition.partToConvert));
-    if (size(facesOnUnknownBodies) > 0)
+    if (facesOnUnknownBodies != [])
     {
         reportFeatureWarning(context, id, ErrorStringEnum.FACES_NOT_OWNED_BY_PARTS);
     }
     var edgesOnUnknownBodies = evaluateQuery(context, qSubtraction(qOwnerBody(definition.bends), definition.partToConvert));
-    if (size(edgesOnUnknownBodies) > 0)
+    if (edgesOnUnknownBodies != [])
     {
         reportFeatureWarning(context, id, ErrorStringEnum.EDGES_NOT_OWNED_BY_PARTS);
     }
@@ -477,7 +474,7 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
         {
             for (var edge in edges)
             {
-                var adjacentWalls = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), definition.facesToExclude);
+                var adjacentWalls = qSubtraction(qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), definition.facesToExclude);
                 if (size(evaluateQuery(context, adjacentWalls)) == 0)
                 {
                     continue;
@@ -914,11 +911,8 @@ precondition
 {
 }
 {
-    var associationAttributes = getAttributes(context, {
-            "entities" : definition.bodies,
-            "attributePattern" : {} as SMAssociationAttribute
-        });
-    if (size(associationAttributes) != 0)
+    var associationAttributes = getSMAssociationAttributes(context, definition.bodies);
+    if (associationAttributes != [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INPUT_BODY_SHOULD_NOT_BE_SHEET_METAL, ["bodies"]);
     }
@@ -1019,7 +1013,7 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
         var cylSurface = evSurfaceDefinition(context, {
                 "face" : cylFaces[i]
             });
-        var boundingFaces = evaluateQuery(context, qEdgeAdjacent(cylFaces[i], EntityType.FACE));
+        var boundingFaces = evaluateQuery(context, qAdjacent(cylFaces[i], AdjacencyType.EDGE, EntityType.FACE));
         if (size(boundingFaces) != 2)
         {
             continue;
@@ -1032,8 +1026,8 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
                         "modifyFilletType" : ModifyFilletType.REMOVE_FILLET
                     });
 
-            var edges = evaluateQuery(context, qIntersection([qEdgeAdjacent(boundingFaces[0], EntityType.EDGE),
-                        qEdgeAdjacent(boundingFaces[1], EntityType.EDGE)]));
+            var edges = evaluateQuery(context, qIntersection([qAdjacent(boundingFaces[0], AdjacencyType.EDGE, EntityType.EDGE),
+                        qAdjacent(boundingFaces[1], AdjacencyType.EDGE, EntityType.EDGE)]));
             for (var edge in edges)
             {
                 var convexity = evEdgeConvexity(context, { "edge" : edge });

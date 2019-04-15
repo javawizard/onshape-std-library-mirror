@@ -1,27 +1,27 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1036.0");
-export import(path : "onshape/std/tool.fs", version : "1036.0");
+export import(path : "onshape/std/query.fs", version : "1053.0");
+export import(path : "onshape/std/tool.fs", version : "1053.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1036.0");
-import(path : "onshape/std/boolean.fs", version : "1036.0");
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/evaluate.fs", version : "1036.0");
-import(path : "onshape/std/feature.fs", version : "1036.0");
-import(path : "onshape/std/math.fs", version : "1036.0");
-import(path : "onshape/std/moveFace.fs", version : "1036.0");
-import(path : "onshape/std/transform.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1036.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1036.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1036.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
-import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/attributes.fs", version : "1053.0");
+import(path : "onshape/std/boolean.fs", version : "1053.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/evaluate.fs", version : "1053.0");
+import(path : "onshape/std/feature.fs", version : "1053.0");
+import(path : "onshape/std/math.fs", version : "1053.0");
+import(path : "onshape/std/moveFace.fs", version : "1053.0");
+import(path : "onshape/std/transform.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
+import(path : "onshape/std/vector.fs", version : "1053.0");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
@@ -97,8 +97,8 @@ function applyTab(context is Context, id is Id, definition is map, tabQuery is Q
     const evaluatedTabFaces = evaluateQuery(context, tabQuery);
     const separatedSubtractQueries = separateSheetMetalQueries(context, definition.booleanSubtractScope);
 
-    const tabTuples = groupByCoincidentPlanes(makeTopologyTuples(context, evaluatedTabFaces));
-    const wallTuples = groupByCoincidentPlanes(makeTopologyTuples(context, unionEntities));
+    const tabTuples = groupByCoincidentPlanes(context, makeTopologyTuples(context, evaluatedTabFaces));
+    const wallTuples = groupByCoincidentPlanes(context, makeTopologyTuples(context, unionEntities));
     const pairedTuples = matchParallelWalls(tabTuples, wallTuples);
     var oneSuccess = false;
     for (var i = 0; i < size(pairedTuples); i += 1)
@@ -260,7 +260,7 @@ function groupByParallelPlanes(tuples is array) returns array
  * Takes in an array of maps with a .plane property and returns an array of arrays with parallel planes
  * grouped into arrays with coincident planes.
  */
-function groupByCoincidentPlanes(tuples is array) returns array
+function groupByCoincidentPlanes(context is Context, tuples is array) returns array
 {
     const parallel = groupByParallelPlanes(tuples);
     var out = [];
@@ -274,7 +274,7 @@ function groupByCoincidentPlanes(tuples is array) returns array
             var k = j + 1;
             for ( ; k < n; k += 1)
             {
-                if (coplanarPlanes(grouping[j].plane, grouping[k].plane))
+                if (versionedCoplanarPlanes(context, grouping[j].plane, grouping[k].plane))
                 {
                     continue;
                 }
@@ -489,7 +489,7 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
     const unionPartFaces = getSMCorrespondingInPart(context, coincidentGrouping.walls, EntityType.FACE);
     reportBooleanIssues(context, id + "union", qCreatedBy(id + "thicken", EntityType.BODY), unionPartFaces);
 
-    const corresponding = getCorrespondingJointEntitiesInPart(context, qEdgeAdjacent(coincidentGrouping.walls, EntityType.EDGE));
+    const corresponding = getCorrespondingJointEntitiesInPart(context, qAdjacent(coincidentGrouping.walls, AdjacencyType.EDGE, EntityType.EDGE));
     const deripCandidates = identifyEdgesForDeripping(context, id + "identify", qCreatedBy(id + "thicken", EntityType.BODY), corresponding);
 
     if (!deripEdges(context, id + "derip", qUnion(deripCandidates)))
@@ -608,7 +608,7 @@ function filterSimilarSMFaces(context is Context, faces is Query) returns Query
         return qNothing();
     for (var definitionFace in definitionFaceArray)
     {
-        const attributes = getAttributes(context, { "entities" : definitionFace, "attributePattern" : {} as SMAssociationAttribute });
+        const attributes = getSMAssociationAttributes(context, definitionFace);
         if (size(attributes) != 1)
         {
             throw regenError(ErrorStringEnum.REGEN_ERROR);
@@ -647,10 +647,7 @@ export function sheetMetalTabEditingLogic(context is Context, id is Id, oldDefin
         }
         createTools(context, id + "extractHeuristic", definition.tabFaces);
         const wallQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.WALL }));
-        var entityAssociations = try silent(getAttributes(context, {
-                    "entities" : wallQuery,
-                    "attributePattern" : {} as SMAssociationAttribute
-                }));
+        var entityAssociations = try silent(getSMAssociationAttributes(context, wallQuery));
         var allSMWalls = [];
         if (entityAssociations != undefined && size(entityAssociations) > 0)
         {

@@ -1,4 +1,4 @@
-FeatureScript 1036; /* Automatically generated version */
+FeatureScript 1053; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,23 +15,29 @@ FeatureScript 1036; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1036.0");
-import(path : "onshape/std/context.fs", version : "1036.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1036.0");
-import(path : "onshape/std/query.fs", version : "1036.0");
-import(path : "onshape/std/valueBounds.fs", version : "1036.0");
-import(path : "onshape/std/vector.fs", version : "1036.0");
+import(path : "onshape/std/containers.fs", version : "1053.0");
+import(path : "onshape/std/context.fs", version : "1053.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
+import(path : "onshape/std/query.fs", version : "1053.0");
+import(path : "onshape/std/valueBounds.fs", version : "1053.0");
+import(path : "onshape/std/vector.fs", version : "1053.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1036.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1053.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1036.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1053.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1036.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1053.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1036.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1053.0");
+/* opExtrude uses enumerations from BoundingType */
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1053.0");
+/* opFillet uses enumerations from FilletCrossSection */
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1053.0");
+/* opFillSurface uses enumerations from GeometricContinuity */
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1053.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1036.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1053.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -670,7 +676,7 @@ export predicate canBeSplitByIsoclineResult(value)
  * const steepFaces = qSplitBy(id + "splitByIsocline1", EntityType.FACE, true);
  * const nonSteepFaces = qSplitBy(id + "splitByIsocline1", EntityType.FACE, false);
  * ```
- * Note that [qSplitBy] will return only those faces that were split, while [opSplitByIsocline]'s return value will
+ * Note that [qSplitBy] will return only those faces that were split, while the returned [SplitByIsoclineResult] will
  * include the intact faces as well.
  * @param id : @autocomplete `id + "splitByIsocline1"`
  * @param definition {{
@@ -698,6 +704,70 @@ export function opSplitByIsocline(context is Context, id is Id, definition is ma
         "steepFaces": steepFaces,
         "nonSteepFaces": nonSteepFaces
     } as SplitByIsoclineResult;
+}
+
+/**
+ * Map containing the results of splitting bodies by their shadow curves. Some faces may have been split, others
+ * may have been left intact.
+ *
+ * @type {{
+ *      @field visibleFaces {array} : An array of visible faces.
+ *      @field invisibleFaces {array} : An array of invisible faces.
+ * }}
+ */
+export type SplitBySelfShadowResult typecheck canBeSplitBySelfShadowResult;
+
+/** @internal */
+export predicate canBeSplitBySelfShadowResult(value)
+{
+    value is map;
+    value.visibleFaces is array;
+    value.invisibleFaces is array;
+}
+
+/**
+ * Splits the faces of the given `bodies` into visible and invisible regions with respect to
+ * the given `viewDirection`, creating shadow curves as necessary. A shadow curve represents
+ * the transition of one face from visible to invisible. Depending on the geometry, there may
+ * be zero, one, or more shadow curves per face.
+ * The shadow curve edges are created as new edges which split the faces of the provided
+ * `bodies`. Each of the resulting faces is wholly visible or wholly invisible. Edge-on faces
+ * are considered invisible.
+ * The shadow curve edges can be queried for with [qCreatedBy]. The split orientation is
+ * consistent such that the visible faces are always in "front" of the split, and can be
+ * reliably queried for with [qSplitBy]:
+ * @example ```
+ * const shadowEdges = qCreatedBy(id + "splitBySelfShadow1", EntityType.EDGE);
+ * const invisibleFaces = qSplitBy(id + "splitBySelfShadow1", EntityType.FACE, true);
+ * const visibleFaces = qSplitBy(id + "splitBySelfShadow1", EntityType.FACE, false);
+ * ```
+ * Note that [qSplitBy] will return only those faces that were split, while the returned
+ * [SplitBySelfShadowResult] will include the intact faces as well.
+ * @param id : @autocomplete `id + "splitBySelfShadow1"`
+ * @param definition {{
+ *      @field bodies {Query} : The bodies which cast shadows and on which to imprint shadow curves.
+ *      @field viewDirection {Vector} : The viewing direction.
+ * }}
+ */
+export function opSplitBySelfShadow(context is Context, id is Id, definition is map) returns SplitBySelfShadowResult
+{
+    const data = @opSplitBySelfShadow(context, id, definition);
+
+    var visibleFaces = [];
+    for (var transientId in data.visibleFaces)
+    {
+        visibleFaces = append(visibleFaces, qTransient(transientId as TransientId));
+    }
+    var invisibleFaces = [];
+    for (var transientId in data.invisibleFaces)
+    {
+        invisibleFaces = append(invisibleFaces, qTransient(transientId as TransientId));
+    }
+
+    return {
+        "visibleFaces": visibleFaces,
+        "invisibleFaces": invisibleFaces
+    } as SplitBySelfShadowResult;
 }
 
 /**
