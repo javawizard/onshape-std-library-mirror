@@ -110,9 +110,10 @@ annotation { "Feature Type Name" : "Flange",
 export const sheetMetalFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
+    // This should match sheetMetalHem
     annotation { "Name" : "Edges or side faces to flange",
-                 "Filter" : (SheetMetalDefinitionEntityType.EDGE && (GeometryType.LINE || GeometryType.PLANE))
-                            && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
+                 "Filter" : ModifiableEntityOnly.YES && SheetMetalDefinitionEntityType.EDGE
+                    && ((GeometryType.LINE && AllowFlattenedGeometry.YES) || (GeometryType.PLANE && AllowFlattenedGeometry.NO)) }
     definition.edges is Query;
 
     annotation {"Name" : "Flange alignment", "UIHint" : "SHOW_LABEL"}
@@ -181,41 +182,25 @@ precondition
     if (!definition.useDefaultRadius)
     {
         annotation { "Name" : "Bend radius" }
-        isLength(definition.bendRadius, BLEND_BOUNDS);
+        isLength(definition.bendRadius, SM_BEND_RADIUS_BOUNDS);
     }
 }
 {
     // this is not necessary but helps with correct error reporting in feature pattern
     checkNotInFeaturePattern(context, definition.edges, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
-    if (size(evaluateQuery(context, definition.edges)) == 0)
-    {
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NO_EDGES, ["edges"]);
-    }
-
-    var edges = qUnion(getSMDefinitionEntities(context, definition.edges));
-    var nonLineEdgeQ = qSubtraction(qEntityFilter(edges, EntityType.EDGE), qGeometry(edges, GeometryType.LINE));
-    if (size(evaluateQuery(context, nonLineEdgeQ)) != 0)
-    {
-        setErrorEntities(context, id, {"entities" : nonLineEdgeQ});
-        edges = qGeometry(edges, GeometryType.LINE);
-        if (size(evaluateQuery(context, edges)) != 0)
-        {
-            reportFeatureWarning(context, id , ErrorStringEnum.SHEET_METAL_FLANGE_NON_LINEAR_EDGES);
-        }
-        else
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NON_LINEAR_EDGES, ["edges"]);
-        }
-    }
-    var evaluatedEdgeQuery = evaluateQuery(context, edges);
-    if (size(evaluatedEdgeQuery) == 0)
-    {
-        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_EDGE_NEEDED, ["edges"]);
-    }
+    const edgesArr = getSMDefinitionEdgesForFlangeTypeFeature(context, id, {
+                "edges" : definition.edges,
+                "errorForNoEdges" : ErrorStringEnum.SHEET_METAL_FLANGE_NO_EDGES,
+                "errorForInternal" : ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL,
+                "errorForNonLinearEdges" : ErrorStringEnum.SHEET_METAL_FLANGE_NON_LINEAR_EDGES,
+                "errorForEdgesNextToCylinderBend" : ErrorStringEnum.SHEET_METAL_FLANGE_NEXT_TO_CYLINDER_BEND,
+                "improveConsistency" : isAtVersionOrLater(context, FeatureScriptVersionNumber.V1048_FLANGE_AND_HEM_EDGES)
+            });
+    const edges = qUnion(edgesArr);
 
     removeCornerBreaksAtEdgeVertices(context, edges);
-    var edgeMaps = groupEdgesByBodyOrModel(context, evaluatedEdgeQuery);
+    var edgeMaps = groupEdgesByBodyOrModel(context, edgesArr);
     var modelToEdgeMap = edgeMaps.modelToEdgeMap;
     if (size(modelToEdgeMap) > 1 && definition.useDefaultRadius)
         throw regenError(ErrorStringEnum.SHEET_METAL_MULTI_SM_DEFAULT_RADIUS, ["useDefaultRadius"]);
@@ -342,23 +327,6 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     return definition;
 }
 
-function trackAllFaces(context, allSurfaces, originals)
-{
-    var newSurfaces = qSubtraction(allSurfaces, originals);
-    var trackedFaces = [];
-    var trackedFacesNew = [];
-    for (var face in evaluateQuery(context, qOwnedByBody(newSurfaces, EntityType.FACE)))
-    {
-        trackedFacesNew = append(trackedFacesNew, qUnion([face, startTracking(context, face)]));
-    }
-    trackedFaces = concatenateArrays([trackedFaces, trackedFacesNew]);
-    for (var face in evaluateQuery(context, qOwnedByBody(originals, EntityType.FACE)))
-    {
-        trackedFaces = append(trackedFaces, qUnion([face, startTracking(context, face)]));
-    }
-    return {"allFaces" : trackedFaces, "newFaces" : trackedFacesNew};
-}
-
 function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map) returns number
 {
     const originalFlangeEdges = evaluateQuery(context, edges);
@@ -406,7 +374,6 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     for (var edge in evaluateQuery(context,edges))
     {
         var ownerBody = qOwnerBody(edge);
-        surfaceBodies = append(surfaceBodies, ownerBody);
         originalEntities = append(originalEntities, qSubtraction(qOwnedByBody(ownerBody), modifiedEntities));
         var indexedId = topLevelId + unstableIdComponent(objectCounter);
         if (definition.useExternalDisambiguation)
@@ -439,80 +406,21 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     }
 
     var originalBodies = qOwnerBody(qUnion(originalEntities));
-    const nOriginalBodies = size(evaluateQuery(context, originalBodies));
     var indexedId = topLevelId + unstableIdComponent(objectCounter);
+    var attributeIdCounter = new box(objectCounter);
 
-    var allSurfaces = qUnion(surfaceBodies);
-    var trackedFaces = trackAllFaces(context, allSurfaces, originalBodies);
-    var booleanId = indexedId + ("flange_boolean");
-    try
-    {
-        opBoolean(context, booleanId, {
-            "allowSheets" : true,
-            "tools" : allSurfaces,
-            "operationType" : BooleanOperationType.UNION,
-            "makeSolid" : false,
-            "eraseImprintedEdges" : false
-        });
-    }
-    catch
-    {
-        // Error display
-        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : booleanId, "propagateErrorDisplay" : true});
-        setErrorEntities(context, topLevelId, { "entities" : qSubtraction(allSurfaces, originalBodies) });
-        //cleanup of all new surfaces should happen in abortFeature
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, ["edges"]);
-    }
+     mergeSheetMetal(context, indexedId + ("flange_boolean"), {
+                        "topLevelId" : topLevelId,
+                        "surfacesToAdd" :  qUnion(surfaceBodies),
+                        "originalSurfaces" : originalBodies,
+                        "trackingBendEdges" : trackingBendEdges,
+                        "bendRadius" : definition.bendRadius,
+                        "attributeIdCounter" : attributeIdCounter,
+                        "error" : ErrorStringEnum.SHEET_METAL_FLANGE_FAIL,
+                        "errorParameters" : ["edges"],
+                        "legacyId" : (definition.useExternalDisambiguation) ? topLevelId : indexedId } );
 
-    // we could check for no-op info here but it won't catch cases where some flanges could be joined and others couldnt
-    // also check if boolean created an extra body trying to avoid non-manifold geometry
-    if (size(evaluateQuery(context, allSurfaces)) != nOriginalBodies || size(evaluateQuery(context, qCreatedBy(booleanId, EntityType.BODY))) > 0)
-    {
-        setErrorEntities(context, (definition.useExternalDisambiguation) ? topLevelId : indexedId, { "entities" : allSurfaces });
-        //cleanup of all new surfaces should happen in abortFeature
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, ["edges"]);
-    }
-
-    //check that none got split
-    for (var trackedFace in trackedFaces.allFaces)
-    {
-        var evaluatedFaces = evaluateQuery(context, qEntityFilter(trackedFace, EntityType.FACE));
-        if (size(evaluatedFaces) > 1)
-        {
-            var newFaces = qEntityFilter(qUnion(trackedFaces.newFaces), EntityType.FACE);
-            var newEdges = qEdgeAdjacent(qUnion(trackedFaces.newFaces), EntityType.EDGE);
-            setErrorEntities(context, topLevelId, { "entities" : qUnion([newFaces, newEdges])});
-            throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["edges"]);
-        }
-    }
-
-    for (var bendEdge in trackingBendEdges)
-    {
-        var bendAttribute = createBendAttribute(context, topLevelId, bendEdge,
-                                                toAttributeId(topLevelId + objectCounter), definition.bendRadius, false);
-        if (bendAttribute != undefined)
-        {
-            setAttribute(context, {"entities" : bendEdge, "attribute" : bendAttribute});
-            objectCounter += 1;
-        }
-    }
-
-    //add rips to new interior edges
-    for (var entity in evaluateQuery(context, qOwnedByBody(allSurfaces, EntityType.EDGE)))
-    {
-        var attributes = getAttributes(context, {"entities" : entity, "attributePattern" : asSMAttribute({})});
-        if (size(attributes) == 0)
-        {
-            var jointAttribute = makeNewJointAttributeIfNeeded(context, entity,  toAttributeId(topLevelId + objectCounter));
-            if (jointAttribute != undefined)
-            {
-                setAttribute(context, {"entities" : entity, "attribute" : jointAttribute});
-                objectCounter += 1;
-            }
-        }
-    }
-
-    return objectCounter;
+    return attributeIdCounter[];
 }
 
 /**
@@ -549,7 +457,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
         if (size(newEdge) == 0)
         {
             const errorFace = edgeToFlangeData[e].adjacentFace;
-            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qEdgeAdjacent(errorFace, EntityType.EDGE)]) });
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qAdjacent(errorFace, AdjacencyType.EDGE, EntityType.EDGE)]) });
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
         // checking for multiples happens in updateEdgeToFlangeDataAfterAlignmentChange(...)
@@ -714,7 +622,7 @@ function changeUnderlyingSheetUnbatched(context is Context, topLevelId is Id, id
 
 function failDueToAlignmentIssue(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean, edges is Query)
 {
-    setErrorEntities(context, (useExternalDisambiguation) ? topLevelId : id, { "entities" : qEdgeAdjacent(edges, EntityType.FACE) });
+    setErrorEntities(context, (useExternalDisambiguation) ? topLevelId : id, { "entities" : qAdjacent(edges, AdjacencyType.EDGE, EntityType.FACE) });
     throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
 }
 
@@ -726,10 +634,10 @@ function failDueToAlignmentIssue(context is Context, topLevelId is Id, edges is 
 function trackCornerVertices(context is Context, edges is Query) returns array
 {
     var originalCornerVertices = [];
-    var vertices = evaluateQuery(context, qVertexAdjacent(edges, EntityType.VERTEX));
+    var vertices = evaluateQuery(context, qAdjacent(edges, AdjacencyType.VERTEX, EntityType.VERTEX));
     for (var v in vertices)
     {
-        var adjacentEdges = evaluateQuery(context, qVertexAdjacent(v, EntityType.EDGE));
+        var adjacentEdges = evaluateQuery(context, qAdjacent(v, AdjacencyType.VERTEX, EntityType.EDGE));
         if (size(adjacentEdges) == 2)
         {
             //if both edges are being flanged, skip (it's a miter)
@@ -895,13 +803,13 @@ function computeBaseFromShiftedPlane(context is Context, delta is ValueWithUnits
 
 function getOrderedEdgeVertices(context is Context, edge is Query) returns map
 {
-    var edgeVertices = evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX));
+    var edgeVertices = evaluateQuery(context, qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX));
     if (size(edgeVertices) != 2)
         throw "Edge to flange has wrong number of vertices";
 
     var p0 = evVertexPoint(context, {"vertex" : edgeVertices[0]});
 
-    const adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
+    const adjacentFace = qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
         throw "Edge to flange is not laminar";
@@ -945,7 +853,7 @@ function filterSmoothEdges(context is Context, inputEdges is Query) returns arra
 function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeToFlangeData is map)
 {
     var vertexToUse = vertex;
-    var vertexEdges = qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge);
+    var vertexEdges = qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge);
     var vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
     if (size(vertexEdgesArray) == 1 && edgeToFlangeData[vertexEdgesArray[0]] != undefined)
     {
@@ -958,14 +866,14 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     vertexEdges = qUnion(vertexEdgesArray);
     var flangeAdjacentFace = edgeToFlangeData[edge].adjacentFace;
     //sideEdge(edgeX) will be the edge shared by vertexEdgesExcludingEdge and flangeAdjacentFace
-    var edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
+    var edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
 
     //sideFace is adjacent to flangeAdjacentFace, and edgeX
-    var sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);
+    var sideFace =  qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
 
     //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
     // e.g. if the edgeY is a bendEdge of a flange with angled miter.
-    var edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
+    var edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
 
     var failIfNotLines = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     var lineX;
@@ -992,9 +900,9 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
 
         lineX = line1;
 
-        if (line1 != undefined && line2 != undefined && tolerantCoLinear(line1, line2, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V649_FLANGE_LOOSEN_EDGE_Y)))
+        if (line1 != undefined && line2 != undefined && tolerantCollinear(line1, line2, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V649_FLANGE_LOOSEN_EDGE_Y)))
         {
-            edgeY = qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), qSubtraction(qVertexAdjacent(edgeY, EntityType.EDGE), edgeX)]);
+            edgeY = qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), qSubtraction(qAdjacent(edgeY, AdjacencyType.VERTEX, EntityType.EDGE), edgeX)]);
         }
     }
     else
@@ -1009,8 +917,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
             }
             return undefined;
         }
-        vertexToUse = qSubtraction(qVertexAdjacent(edgeX, EntityType.VERTEX), vertex);
-        vertexEdges = qSubtraction(qVertexAdjacent(vertexToUse, EntityType.EDGE), edgeX);
+        vertexToUse = qSubtraction(qAdjacent(edgeX, AdjacencyType.VERTEX, EntityType.VERTEX), vertex);
+        vertexEdges = qSubtraction(qAdjacent(vertexToUse, AdjacencyType.VERTEX, EntityType.EDGE), edgeX);
         vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
         if (size(vertexEdgesArray) == 1)
         {
@@ -1018,14 +926,14 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         }
         vertexEdges = qUnion(vertexEdgesArray);
         //find Edge among vertexEdges also adjacent to adjacentFace
-        edgeX = qIntersection([vertexEdges, qEdgeAdjacent(flangeAdjacentFace, EntityType.EDGE)]);
+        edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
         //check for sanity that the newly found edgeX is collinear with the one we found initially
         var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
                             try silent(evLine(context, {"edge" : edgeX})) : evLine(context, {"edge" : edgeX});
-        if (lineNewX == undefined || !tolerantCoLinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
+        if (lineNewX == undefined || !tolerantCollinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
             return undefined;
-        sideFace =  qSubtraction(qEdgeAdjacent(edgeX, EntityType.FACE), flangeAdjacentFace);
-        edgeY = qSubtraction(qIntersection([qEdgeAdjacent(sideFace, EntityType.EDGE), vertexEdges]), edgeX);
+        sideFace =  qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
+        edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
         lineX = lineNewX;
     }
 
@@ -1215,7 +1123,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
             var computeMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V569_FLANGE_NEXT_TO_RIP);
             if (!computeMiter)
             {
-               var vertexEdges = evaluateQuery(context, qSubtraction(qVertexAdjacent(vertex, EntityType.EDGE), edge));
+               var vertexEdges = evaluateQuery(context, qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge));
                computeMiter = (size(vertexEdges) == 1);
             }
             if (computeMiter)
@@ -1509,7 +1417,7 @@ function getOffsetsForSideEdgesForBlind(flangeSideDirections is array, flangeDir
 // If this is changed, make sure to also check if updateFlangeDataAfterAlignmentChange needs changes
 function getFlangeData(context is Context, topLevelId is Id, edge is Query, definition is map) returns map
 {
-    var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    var adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
     if (size(adjacentFaces) != 1)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
@@ -1738,7 +1646,7 @@ function createFlangeSurfaceReturnBendEdge(context is Context, topLevelId is Id,
 
 function getModelParametersFromEdge(context is Context, edge is Query) returns map
 {
-    var adjacentFace = qEdgeAdjacent(edge, EntityType.FACE);
+    var adjacentFace = qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
@@ -1753,9 +1661,10 @@ function tolerantParallel(direction0 is Vector, direction1 is Vector, stricter i
     return squaredNorm(cross(direction0, direction1)) < limit;
 }
 
-function tolerantCoLinear(line0 is Line, line1 is Line, stricter is boolean) returns boolean
+function tolerantCollinear(line0 is Line, line1 is Line, stricter is boolean) returns boolean
 {
-    if (tolerantParallel(line0.direction, line1.direction, stricter)) {
+    if (tolerantParallel(line0.direction, line1.direction, stricter))
+    {
         var v = line1.origin - line0.origin;
         v = v - line0.direction * dot(v, line0.direction);
         var lengthTolerance = TOLERANCE.zeroLength * meter;
@@ -1965,7 +1874,7 @@ const calculateMatchedExtensionDistance = function(context is Context, currEdge 
 
         var parentFlangeData = args.edgeToFlangeData[parentEdge];
         var samePlane = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT)) ?
-                        coplanarPlanes(parentFlangeData.wallPlane, currFlangeData.wallPlane) :
+                        versionedCoplanarPlanes(context, parentFlangeData.wallPlane, currFlangeData.wallPlane) :
                         tolerantEquals(parentFlangeData.wallPlane, currFlangeData.wallPlane);
 
         if (samePlane)
@@ -2052,7 +1961,7 @@ function collectEdgeToExtensionDistance(context is Context, topLevelId is Id, ed
 function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query, calculation is function, args is map)
 {
     var edgeToData = {};
-    var edgeGroups = connectedComponentsOfEdges(context, edges);
+    var edgeGroups = connectedComponents(context, edges, AdjacencyType.VERTEX);
     for (var group in edgeGroups)
     {
         var queue = [{"edge" : group[0]}];
@@ -2074,7 +1983,7 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
                     edgeToData[currEdge] = result.data;
 
                     // add adjacent unprocessed edges to the queue
-                    var adjacentEdges = qVertexAdjacent(currEdge, EntityType.EDGE);
+                    var adjacentEdges = qAdjacent(currEdge, AdjacencyType.VERTEX, EntityType.EDGE);
                     var edgesToProcess = qSubtraction(qIntersection([adjacentEdges, qUnion(group)]), qUnion(keys(edgeToData)));
                     for (var edgeToProcess in evaluateQuery(context, edgesToProcess))
                     {

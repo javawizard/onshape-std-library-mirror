@@ -391,7 +391,7 @@ function inferVertex(context is Context, edge is Query, otherSide is Query) retu
     var inferred = qNothing();
     if (size(evaluateQuery(context, otherVertex)) == 1)
     {
-        const edgeVertices = qVertexAdjacent(edge, EntityType.VERTEX);
+        const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
         inferred = qClosestTo(edgeVertices, evVertexPoint(context, {
                         "vertex" : otherVertex
                     }));
@@ -399,8 +399,8 @@ function inferVertex(context is Context, edge is Query, otherSide is Query) retu
     else if (size(evaluateQuery(context, otherEdge)) == 1)
     {
         // In this case we want to get the vertex closest to one of the vertices of the other edge
-        const edgeVertices = qVertexAdjacent(edge, EntityType.VERTEX);
-        const otherEdgeVertices = qVertexAdjacent(otherEdge, EntityType.VERTEX);
+        const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
+        const otherEdgeVertices = qAdjacent(otherEdge, AdjacencyType.VERTEX, EntityType.VERTEX);
         var bestDistance = -2 * meter;
         for (var vertex in evaluateQuery(context, otherEdgeVertices))
         {
@@ -484,7 +484,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     if (edgeCount != 1 && match != BridgingCurveMatchType.POSITION)
     {
         // Try to get the edge from the vertex
-        edges = qVertexAdjacent(points, EntityType.EDGE);
+        edges = qAdjacent(points, AdjacencyType.VERTEX, EntityType.EDGE);
         edgeCount = size(evaluateQuery(context, edges));
         if (edgeCount != 1)
         {

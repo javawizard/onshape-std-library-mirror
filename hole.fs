@@ -895,7 +895,7 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
 {
     for (var holeEdge in holeEdges)
     {
-        var associations = getAttributes(context, { "entities" : holeEdge, "attributePattern" : {} as SMAssociationAttribute });
+        var associations = getSMAssociationAttributes(context, holeEdge);
         for (var association in associations)
         {
             // qBodyType filter has a side-effect of filtering out private bodies.
@@ -1235,6 +1235,10 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
     }
 }
 
+/*
+ * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
+ * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
+ */
 function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleStyle, holeFaceType is HoleSectionFaceType) returns HoleAttribute
 {
     // make the base hole attribute

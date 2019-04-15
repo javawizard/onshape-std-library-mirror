@@ -43,7 +43,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
             if (!definition.useDefaultRadius)
             {
                 annotation { "Name" : "Bend radius" }
-                isLength(definition.radius, BLEND_BOUNDS);
+                isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
             }
         }
 
@@ -143,7 +143,7 @@ precondition
         bendAttribute = existingAttribute;
     }
 
-    const planarFacesQ = qGeometry(qEdgeAdjacent(jointEdge, EntityType.FACE), GeometryType.PLANE);
+    const planarFacesQ = qGeometry(qAdjacent(jointEdge, AdjacencyType.EDGE, EntityType.FACE), GeometryType.PLANE);
     if (size(evaluateQuery(context, planarFacesQ)) != 2)
     {
         // If walls are non-planar bend angle depends on the radius and needs to be re-computed

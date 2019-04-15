@@ -50,12 +50,24 @@ export function lineFromBuiltin(definition is map) returns Line
 }
 
 /**
- * Check that two [Line]s are the same up to tolerance, including the origin.
+ * Check that two [Line]s are the same up to tolerance, including checking that they have the same origin.
+ *
+ * To check if two [Line]s are equivalent (rather than equal), use [collinearLines].
  */
 export predicate tolerantEquals(line1 is Line, line2 is Line)
 {
     tolerantEquals(line1.origin, line2.origin);
     tolerantEquals(line1.direction, line2.direction);
+}
+
+/**
+ * Returns `true` if the two lines are collinear.
+ */
+export function collinearLines(line1 is Line, line2 is Line) returns boolean
+{
+    const point1 = project(line1, vector(0, 0, 0) * meter);
+    const point2 = project(line2, vector(0, 0, 0) * meter);
+    return tolerantEquals(point1, point2) && parallelVectors(line1.direction, line2.direction);
 }
 
 export operator*(transform is Transform, lineRhs is Line) returns Line

@@ -423,7 +423,7 @@ function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, raw
 function getOrderedFaceData(context is Context, edge is Query, rawPullDirection is Vector, moreAlongFirst is box,
         hintFaces is Query, edgeToOrderedFaceData is map) returns array
 {
-    const bothFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    const bothFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
     if (size(bothFaces) == 0 || size(bothFaces) > 2)
     {
         // Should never be hit by UI user
@@ -483,13 +483,13 @@ function getOrderedFaceData(context is Context, edge is Query, rawPullDirection 
     else
     {
         // First, try to order by neighboring drafts
-        const adjacentEdges = qVertexAdjacent(edge, EntityType.EDGE);
+        const adjacentEdges = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.EDGE);
         const processedEdges = qUnion(keys(edgeToOrderedFaceData));
         const processedAdjacentEdges = evaluateQuery(context, qIntersection([adjacentEdges, processedEdges]));
         if (size(processedAdjacentEdges) > 0)
         {
-            const face0AndAdjacent = qSubtraction(qUnion([faceData[0].face, qEdgeAdjacent(faceData[0].face, EntityType.FACE)]), faceData[1].face);
-            const face1AndAdjacent = qSubtraction(qUnion([faceData[1].face, qEdgeAdjacent(faceData[1].face, EntityType.FACE)]), faceData[0].face);
+            const face0AndAdjacent = qSubtraction(qUnion([faceData[0].face, qAdjacent(faceData[0].face, AdjacencyType.EDGE, EntityType.FACE)]), faceData[1].face);
+            const face1AndAdjacent = qSubtraction(qUnion([faceData[1].face, qAdjacent(faceData[1].face, AdjacencyType.EDGE, EntityType.FACE)]), faceData[0].face);
 
             var matchedFace = -1;
             for (var processedAdjacentEdge in processedAdjacentEdges)
@@ -875,8 +875,8 @@ function generateHintFaces(context is Context, edgeToOrderedFaceDataBox is box, 
             }
             else
             {
-                // `qEdgeAdjacent(...)` evaluation is ordered by transientId
-                const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+                // `qAdjacent(...)` evaluation is ordered by transientId
+                const adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
                 hintFacesArr = append(hintFacesArr, adjacentFaces[0]);
             }
         }

@@ -336,27 +336,24 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
 
 function convertExistingPart(context is Context, id is Id, definition is map)
 {
-    if (size(evaluateQuery(context, definition.partToConvert)) < 1)
+    if (evaluateQuery(context, definition.partToConvert) == [])
     {
         throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["partToConvert"]);
     }
 
-    var associationAttributes = getAttributes(context, {
-            "entities" : definition.partToConvert,
-            "attributePattern" : {} as SMAssociationAttribute
-        });
-    if (size(associationAttributes) != 0)
+    var associationAttributes = getSMAssociationAttributes(context, definition.partToConvert);
+    if (associationAttributes != [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INPUT_BODY_SHOULD_NOT_BE_SHEET_METAL, ["partToConvert"]);
     }
 
     var facesOnUnknownBodies = evaluateQuery(context, qSubtraction(qOwnerBody(definition.facesToExclude), definition.partToConvert));
-    if (size(facesOnUnknownBodies) > 0)
+    if (facesOnUnknownBodies != [])
     {
         reportFeatureWarning(context, id, ErrorStringEnum.FACES_NOT_OWNED_BY_PARTS);
     }
     var edgesOnUnknownBodies = evaluateQuery(context, qSubtraction(qOwnerBody(definition.bends), definition.partToConvert));
-    if (size(edgesOnUnknownBodies) > 0)
+    if (edgesOnUnknownBodies != [])
     {
         reportFeatureWarning(context, id, ErrorStringEnum.EDGES_NOT_OWNED_BY_PARTS);
     }
@@ -477,7 +474,7 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
         {
             for (var edge in edges)
             {
-                var adjacentWalls = qSubtraction(qEdgeAdjacent(edge, EntityType.FACE), definition.facesToExclude);
+                var adjacentWalls = qSubtraction(qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), definition.facesToExclude);
                 if (size(evaluateQuery(context, adjacentWalls)) == 0)
                 {
                     continue;
@@ -914,11 +911,8 @@ precondition
 {
 }
 {
-    var associationAttributes = getAttributes(context, {
-            "entities" : definition.bodies,
-            "attributePattern" : {} as SMAssociationAttribute
-        });
-    if (size(associationAttributes) != 0)
+    var associationAttributes = getSMAssociationAttributes(context, definition.bodies);
+    if (associationAttributes != [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INPUT_BODY_SHOULD_NOT_BE_SHEET_METAL, ["bodies"]);
     }
@@ -1019,7 +1013,7 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
         var cylSurface = evSurfaceDefinition(context, {
                 "face" : cylFaces[i]
             });
-        var boundingFaces = evaluateQuery(context, qEdgeAdjacent(cylFaces[i], EntityType.FACE));
+        var boundingFaces = evaluateQuery(context, qAdjacent(cylFaces[i], AdjacencyType.EDGE, EntityType.FACE));
         if (size(boundingFaces) != 2)
         {
             continue;
@@ -1032,8 +1026,8 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
                         "modifyFilletType" : ModifyFilletType.REMOVE_FILLET
                     });
 
-            var edges = evaluateQuery(context, qIntersection([qEdgeAdjacent(boundingFaces[0], EntityType.EDGE),
-                        qEdgeAdjacent(boundingFaces[1], EntityType.EDGE)]));
+            var edges = evaluateQuery(context, qIntersection([qAdjacent(boundingFaces[0], AdjacencyType.EDGE, EntityType.EDGE),
+                        qAdjacent(boundingFaces[1], AdjacencyType.EDGE, EntityType.EDGE)]));
             for (var edge in edges)
             {
                 var convexity = evEdgeConvexity(context, { "edge" : edge });

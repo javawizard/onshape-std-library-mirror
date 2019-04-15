@@ -574,13 +574,13 @@ function createEdgeLimitOption(context is Context, id is Id, definition is map, 
     if (size(evaluateQuery(context, smEdge)) == 1)
     {
         var faceToExtend;
-        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(smEdge, EntityType.FACE));
+        const adjacentFaces = evaluateQuery(context, qAdjacent(smEdge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) == 2)
         {
             // If there are two faces adjacent to the edge, then there is a rip that needs to be removed.
             // In this case, the face that will be modified when the sheet metal edge is moved needs to be specified
             // In edgeLimitOption since opExtendSheetBody cannot infer it.
-            const adjacentFaceQuery = qEdgeAdjacent(faceToMove, EntityType.FACE);
+            const adjacentFaceQuery = qAdjacent(faceToMove, AdjacencyType.EDGE, EntityType.FACE);
             // Find that sheet metal face that needs to be modified in order to move faceToMove.
             const adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
             if (size(adjacentFaceSMFace) == 1)
@@ -594,7 +594,7 @@ function createEdgeLimitOption(context is Context, id is Id, definition is map, 
             }
             // In the case of a rip, keep track of the sheet metal part faces for later user. If the other one is not
             // Already being moved, the underlying edge will need to be adjusted to keep it in place.
-            const attributes = getAttributes(context, { "entities" : smEdge, "attributePattern" : {} as SMAssociationAttribute });
+            const attributes = getSMAssociationAttributes(context, smEdge);
             if (size(attributes) != 1)
             {
                 throw regenError(ErrorStringEnum.REGEN_ERROR);
@@ -705,7 +705,7 @@ function createToolBodies(context is Context, id is Id, entities is Query, defin
         index += 1;
     }
     operationInfo.sheetMetalModels = qUnion(evaluateQuery(context, qUnion(operationInfo.sheetMetalModels)));
-    operationInfo.modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces, operationInfo.edgesToExtend])), EntityType.FACE);
+    operationInfo.modifiedFaces = qAdjacent(qUnion(concatenateArrays([operationInfo.alignedSMFaces, operationInfo.antiAlignedSMFaces, operationInfo.edgesToExtend])), AdjacencyType.EDGE, EntityType.FACE);
 
     return operationInfo;
 }
@@ -716,7 +716,7 @@ function getAssociatedAxis(context is Context, definition) returns Query
     if (definition.outputType == MoveFaceOutputType.MOVE)
     {
         const axisSMEntities = qUnion(getSMDefinitionEntities(context, definition.axis, EntityType.EDGE));
-        const moveFaceSMEntities = qEdgeAdjacent(qUnion(getSMDefinitionEntities(context, definition.moveFaces, EntityType.FACE)), EntityType.EDGE);
+        const moveFaceSMEntities = qAdjacent(qUnion(getSMDefinitionEntities(context, definition.moveFaces, EntityType.FACE)), AdjacencyType.EDGE, EntityType.EDGE);
         const axisCandidates = evaluateQuery(context, qIntersection([axisSMEntities, moveFaceSMEntities]));
         if (size(axisCandidates) != 1)
         {
@@ -798,14 +798,26 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                     throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_MOVE_BEND_EDGE, ["moveFaces"], evaluatedFace);
                 }
 
+                // Check that the entity is not an end face of a cylindrical bend. (That it's not a linear edge adjacent to a cylindrical bend)
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1051_SM_MOVE_FACE_BEND_ERROR)
+                    && try silent(evLine(context, { "edge" : smEdge })) != undefined)
+                {
+                    const adjacentCylinderFaces = qGeometry(qAdjacent(smEdge, AdjacencyType.EDGE, EntityType.FACE), GeometryType.CYLINDER);
+                    const adjacentJointAttribute = try silent(getJointAttribute(context, adjacentCylinderFaces));
+                    if (adjacentJointAttribute != undefined && adjacentJointAttribute.jointType != undefined && adjacentJointAttribute.jointType.value == SMJointType.BEND)
+                    {
+                        throw regenError(ErrorStringEnum.SHEET_METAL_MOVE_FACE_NEXT_TO_CYLINDER_BEND, ["moveFaces"], evaluatedFace);
+                    }
+                }
+
                 var faceToExtend;
-                const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(smEdge, EntityType.FACE));
+                const adjacentFaces = evaluateQuery(context, qAdjacent(smEdge, AdjacencyType.EDGE, EntityType.FACE));
                 if (size(adjacentFaces) == 2)
                 {
                     var partFaces = getSMCorrespondingInPart(context, smEdge, EntityType.FACE);
                     for (var partFace in evaluateQuery(context, partFaces))
                     {
-                        const adjacentFaceQuery = qEdgeAdjacent(partFace, EntityType.FACE);
+                        const adjacentFaceQuery = qAdjacent(partFace, AdjacencyType.EDGE, EntityType.FACE);
                         // Find that sheet metal face that needs to be modified in order to move faceToMove.
                         const adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
                         if (size(adjacentFaceSMFace) == 1)
@@ -859,14 +871,14 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 smEdges = append(smEdges, smEdge);
             }
         }
-        var modifiedFaces = qEdgeAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), EntityType.FACE);
+        var modifiedFaces = qAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), AdjacencyType.EDGE, EntityType.FACE);
         var sheetMetalModels = qUnion(evaluateQuery(context, qOwnerBody(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])))));
 
         const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModels);
         const trackingSMModel = startTracking(context, sheetMetalModels);
         const allFaces = qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces]));
         var edgesToTrack = qUnion(smEdges);
-        const allAdjacentEdges = qEdgeAdjacent(qEdgeAdjacent(edgesToTrack, EntityType.FACE), EntityType.EDGE);
+        const allAdjacentEdges = qAdjacent(qAdjacent(edgesToTrack, AdjacencyType.EDGE, EntityType.FACE), AdjacencyType.EDGE, EntityType.EDGE);
         // Rolled sheet metal has interior edges with no attributes, make sure to preserve those.
         edgesToTrack = [];
         for (var edge in evaluateQuery(context, allAdjacentEdges))
@@ -885,15 +897,16 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const mergeFaces = !neverMergeFaces &&
                             (definition.moveFaceType != MoveFaceType.ROTATE) &&
                             isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
+        const alwaysUpdateAngles = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1047_MOVE_FACE_JOINTS);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
             if (size(evaluateQuery(context, allFaces)) > 0)
             {
                 opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : mergeFaces }));
             }
-            if (definition.moveFaceType == MoveFaceType.ROTATE)
+            if (!alwaysUpdateAngles && definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                updateJointAngle(context, id, qEdgeAdjacent(allFaces, EntityType.EDGE));
+                updateJointAngle(context, id, qAdjacent(allFaces, AdjacencyType.EDGE, EntityType.EDGE));
             }
         }
         else
@@ -907,6 +920,12 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
             {
                 opOffsetFace(context, id + "offset" + unstableIdComponent(2), { "moveFaces" : qUnion(antiAlignedSMFaces), "offsetDistance" : -definition.offsetDistance, "mergeFaces" : mergeFaces, "reFillet" : reFillet });
             }
+        }
+        if (alwaysUpdateAngles)
+        {
+            const robustAllFaces = qUnion([allFaces, trackingFaces]);
+            updateJointAngle(context, id, qUnion([qAdjacent(robustAllFaces, AdjacencyType.EDGE, EntityType.EDGE),
+                                                    qAdjacent(robustAllFaces, AdjacencyType.EDGE, EntityType.FACE)]));
         }
         if (size(edgeChangeOptions) > 0)
         {
@@ -934,10 +953,10 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         if (neverMergeFaces)
         {   // any edge adjacent to the moving faces might be a new 2 sided edge
             // tracking edges would not necessarily pick it up, add adjacent edges explicitly
-            modifiedEdges = qUnion([modifiedEdges, qEdgeAdjacent(trackingFaces, EntityType.EDGE)]);
+            modifiedEdges = qUnion([modifiedEdges, qAdjacent(trackingFaces, AdjacencyType.EDGE, EntityType.EDGE)]);
         }
         addRipsForNewEdges(context, id, modifiedEdges);
-        modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
+        modifiedFaces = qUnion([modifiedFaces, qAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), AdjacencyType.EDGE, EntityType.FACE)]);
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModels]), initialData, id);
 
         try(updateSheetMetalGeometry(context, id + "smUpdate", {
@@ -969,7 +988,7 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
         var edgesToTrack = qUnion(smEdges);
         if (newly2SidedAsRips)
         {
-            const allAdjacentEdges = qEdgeAdjacent(qEdgeAdjacent(edgesToTrack, EntityType.FACE), EntityType.EDGE);
+            const allAdjacentEdges = qAdjacent(qAdjacent(edgesToTrack, AdjacencyType.EDGE, EntityType.FACE), AdjacencyType.EDGE, EntityType.EDGE);
             // Rolled sheet metal has interior edges with no attributes, make sure to preserve those.
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM))
             {
@@ -1000,7 +1019,7 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
             }
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                updateJointAngle(context, id, qEdgeAdjacent(allFaces, EntityType.EDGE));
+                updateJointAngle(context, id, qAdjacent(allFaces, AdjacencyType.EDGE, EntityType.EDGE));
             }
         }
         else
@@ -1042,7 +1061,7 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
             {
                 for (var edge in evaluateQuery(context, modifiedEdges))
                 {
-                    const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+                    const adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
                     if (size(adjacentFaces) != 1)
                     {
                         throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL, ["moveFaces"], edge);
@@ -1057,7 +1076,7 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V704_MOVE_FACE_ROLLED_SM) && definition.reFillet)
         {
             // With the addition of rolled sheet metal, the faces next to cylindrical faces also need to be rebuilt if reFillet is true.
-            modifiedFaces = qUnion([modifiedFaces, qEdgeAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), EntityType.FACE)]);
+            modifiedFaces = qUnion([modifiedFaces, qAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), AdjacencyType.EDGE, EntityType.FACE)]);
         }
 
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]), initialData, id);
@@ -1223,6 +1242,7 @@ export function moveFaceEditingLogic(context is Context, id is Id, oldDefinition
 
 function addRipsForNewEdges(context is Context, id is Id, edges is Query)
 {
+    const checkWalls = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1047_MOVE_FACE_JOINTS);
     var index = 0;
     for (var edge in evaluateQuery(context, edges))
     {
@@ -1231,12 +1251,19 @@ function addRipsForNewEdges(context is Context, id is Id, edges is Query)
         {
             continue;
         }
-        var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        var adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) == 2)
         {
-            const jointAttributeId = toAttributeId(id + "joint" + index);
-            const ripAttribute = createRipAttribute(context, edge, jointAttributeId, SMJointStyle.EDGE, {});
-            setAttribute(context, {"entities" : edge, "attribute" : ripAttribute});
+            const betweenTwoWalls = (checkWalls) ? (size(getSmObjectTypeAttributes(context, qUnion(adjacentFaces), SMObjectType.WALL)) == 2) : true;
+            if (betweenTwoWalls)
+            {
+                const jointAttributeId = toAttributeId(id + "joint" + index);
+                var ripAttribute = createRipAttribute(context, edge, jointAttributeId, SMJointStyle.EDGE, {});
+                if (ripAttribute != undefined)
+                {
+                    setAttribute(context, {"entities" : edge, "attribute" : ripAttribute});
+                }
+            }
         }
         index += 1;
     }
@@ -1361,7 +1388,7 @@ export function deripEdgesLegacy(context is Context, id is Id, edges is Query) r
     var facesToMove = [];
     for (var edge in evaluateQuery(context, edges))
     {
-        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        const adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) != 2)
         {
             continue;
@@ -1373,7 +1400,7 @@ export function deripEdgesLegacy(context is Context, id is Id, edges is Query) r
             return false;
         }
 
-        const attributes = getAttributes(context, { "entities" : edge, "attributePattern" : {} as SMAssociationAttribute });
+        const attributes = getSMAssociationAttributes(context, edge);
         if (size(attributes) != 1)
         {
             return false;
@@ -1411,7 +1438,7 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
     const useSignedDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V987_DERIP_SIGNED_DISTANCE);
     for (var partFace in evaluateQuery(context, partFaces))
     {
-        const adjacentFaceQuery = qEdgeAdjacent(partFace, EntityType.FACE);
+        const adjacentFaceQuery = qAdjacent(partFace, AdjacencyType.EDGE, EntityType.FACE);
         // Find that sheet metal face that needs to be modified in order to move smEdge.
         const adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
         if (size(adjacentFaceSMFace) == 1)
@@ -1453,7 +1480,7 @@ export function deripEdges(context is Context, id is Id, edges is Query) returns
     var allEdges = [];
     for (var edge in evaluateQuery(context, edges))
     {
-        const adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        const adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) != 2)
         {
             continue;

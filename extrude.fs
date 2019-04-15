@@ -425,16 +425,7 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
         opSMFlatOperation(context, id, definition);
 
-        for (var face in evaluateQuery(context, qEntityFilter(qCreatedBy(id), EntityType.FACE)))
-        {
-            var jointAttribute = getJointAttribute(context, face);
-            if (jointAttribute != undefined && jointAttribute.radius != undefined && jointAttribute.radius.canBeEdited)
-            {
-                removeAttributes(context, { "entities" : face, "attributePattern" : jointAttribute });
-                jointAttribute.radius.canBeEdited = false;
-                setAttribute(context, { "entities" : face, "attribute" : jointAttribute });
-            }
-        }
+        makeFaceJointsUneditable(context, qCreatedBy(id, EntityType.FACE));
 
         const newEntities = qUnion([qCreatedBy(id), tracking]);
         const affectedBodyQ = qOwnerBody(newEntities);
@@ -781,6 +772,45 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     }
     return newDefinition;
 }
+
+// -------------------- Utilities for SMFlatOp --------------------
+
+// Find any faces in `faces` which are joints, and make sure their radius and jointType are uneditable
+function makeFaceJointsUneditable(context is Context, faces is Query)
+{
+    const jointTypeNotEditable = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1045_SHEET_BOOLEAN_ALIGN_FACE);
+    const faceJoints = qAttributeFilter(faces, asSMAttribute({ 'objectType' : SMObjectType.JOINT }));
+    for (var face in evaluateQuery(context, faceJoints))
+    {
+        const oldJointAttribute = getJointAttribute(context, face);
+        if (oldJointAttribute == undefined)
+        {
+            if (jointTypeNotEditable)
+                throw "qAttributeFilter failed";
+            else
+                continue;
+        }
+
+        var newJointAttribute = oldJointAttribute;
+        if (oldJointAttribute.radius != undefined && oldJointAttribute.radius.canBeEdited)
+        {
+            // Joints that are faces cannot have their radius changed
+            newJointAttribute.radius.canBeEdited = false;
+        }
+        if (jointTypeNotEditable && oldJointAttribute.jointType.canBeEdited)
+        {
+            // Joints that are faces cannot have their joint type changed
+            newJointAttribute.jointType.canBeEdited = false;
+        }
+
+        if (newJointAttribute != oldJointAttribute)
+        {
+            removeAttributes(context, { "entities" : face, "attributePattern" : oldJointAttribute });
+            setAttribute(context, { "entities" : face, "attribute" : newJointAttribute });
+        }
+    }
+}
+
 // Initial data was collected for all model definition bodies, bodiesQ - bodies affected by operation
 // combine initial data for those bodies only
 function combineInitialData(context is Context, initialDataPerBody is array, bodiesQ is Query)

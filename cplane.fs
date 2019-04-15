@@ -637,7 +637,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
     {
         if (planes == 1)
             definition.cplaneType = CPlaneType.OFFSET;
-        else if ((lines + curves) == 1 && size(evaluateQuery(context, qVertexAdjacent(entities, EntityType.VERTEX))) == 2)
+        else if ((lines + curves) == 1 && size(evaluateQuery(context, qAdjacent(entities, AdjacencyType.VERTEX, EntityType.VERTEX))) == 2)
             definition.cplaneType = CPlaneType.MID_PLANE;
         else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
             definition.cplaneType = CPlaneType.LINE_ANGLE;

@@ -275,7 +275,7 @@ function findManipulationEntity(context is Context, definition is map) returns Q
         var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
         if (@size(evaluateQuery(context, qEntityFilter(operativeEntity, EntityType.FACE))) != 0)
         {
-            operativeEntity = evaluateQuery(context, qEdgeAdjacent(operativeEntity, EntityType.EDGE))[0];
+            operativeEntity = evaluateQuery(context, qAdjacent(operativeEntity, AdjacencyType.EDGE, EntityType.EDGE))[0];
         }
         return operativeEntity;
     }
@@ -288,7 +288,7 @@ function findManipulationEntity(context is Context, definition is map) returns Q
  */
 function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint is Vector)
 {
-    const faces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+    const faces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
     if (size(faces) < 2)
         return undefined;
 

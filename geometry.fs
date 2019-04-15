@@ -13,42 +13,10 @@ FeatureScript ✨; /* Automatically generated version */
  * access to all functions, types, enums, and constants defined in
  * the Onshape Standard Library.
  */
-/* Feature basics */
-export import(path : "onshape/std/context.fs", version : "✨");
-export import(path : "onshape/std/defaultFeatures.fs", version : "✨");
-export import(path : "onshape/std/feature.fs", version : "✨");
-export import(path : "onshape/std/featureList.fs", version : "✨");
-export import(path : "onshape/std/partStudio.fs", version : "✨");
-
-export import(path : "onshape/std/evaluate.fs", version : "✨");
-export import(path : "onshape/std/query.fs", version : "✨");
-export import(path : "onshape/std/uihint.gen.fs", version : "✨");
-
-export import(path : "onshape/std/units.fs", version : "✨");
-export import(path : "onshape/std/valueBounds.fs", version : "✨");
-
-/* Math, string, vector, matrix, and support functions */
-export import(path : "onshape/std/attributes.fs", version : "✨");
-export import(path : "onshape/std/box.fs", version : "✨");
-export import(path : "onshape/std/containers.fs", version : "✨");
-export import(path : "onshape/std/coordSystem.fs", version : "✨");
-export import(path : "onshape/std/curveGeometry.fs", version : "✨");
-export import(path : "onshape/std/debug.fs", version : "✨");
-export import(path : "onshape/std/derive.fs", version : "✨");
-export import(path : "onshape/std/instantiator.fs", version : "✨");
-export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
-export import(path : "onshape/std/mathUtils.fs", version : "✨");
-export import(path : "onshape/std/properties.fs", version : "✨");
-export import(path : "onshape/std/rollSurface.fs", version : "✨");
-export import(path : "onshape/std/string.fs", version : "✨");
-export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
-export import(path : "onshape/std/topologyUtils.fs", version : "✨");
-export import(path : "onshape/std/tabReferences.fs", version : "✨");
+/* Common Onshape standard library functions */
+export import(path : "onshape/std/common.fs", version : "✨");
 
 /* Onshape standard library features */
-export import(path : "onshape/std/boolean.fs", version : "✨");
-export import(path : "onshape/std/booleanHeuristics.fs", version : "✨");
 export import(path : "onshape/std/bridgingCurve.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
 export import(path : "onshape/std/cplane.fs", version : "✨");
@@ -75,7 +43,6 @@ export import(path : "onshape/std/moveFace.fs", version : "✨");
 export import(path : "onshape/std/nameEntity.fs", version : "✨");
 export import(path : "onshape/std/offsetSurface.fs", version : "✨");
 export import(path : "onshape/std/pattern.fs", version : "✨");
-export import(path : "onshape/std/primitives.fs", version : "✨");
 export import(path : "onshape/std/projectCurves.fs", version : "✨");
 export import(path : "onshape/std/replaceFace.fs", version : "✨");
 export import(path : "onshape/std/revolve.fs", version : "✨");
@@ -92,11 +59,9 @@ export import(path : "onshape/std/sheetMetalStart.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalTab.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalUnfold.fs", version : "✨");
 export import(path : "onshape/std/shell.fs", version : "✨");
-export import(path : "onshape/std/sketch.fs", version : "✨");
 export import(path : "onshape/std/sectionpart.fs", version : "✨");
 export import(path : "onshape/std/splitpart.fs", version : "✨");
 export import(path : "onshape/std/sweep.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
-export import(path : "onshape/std/variable.fs", version : "✨");
 

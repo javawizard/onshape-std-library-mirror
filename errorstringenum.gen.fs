@@ -1141,13 +1141,13 @@ export enum ErrorStringEnum
     PARTING_OUT_TARGET_READONLY,
     /* Model bend radius cannot be used for selections from multiple sheet metal models. */
     SHEET_METAL_MULTI_SM_DEFAULT_RADIUS,
-    /* Flange cannot not be created with selected alignment. */
+    /* Cannot create flange with selected alignment. */
     SHEET_METAL_FLANGE_FAIL_ALIGNMENT,
-    /* Flange cannot be created up to selected entity. */
+    /* Cannot create flange up to selected entity. */
     SHEET_METAL_FLANGE_FAIL_UP_TO,
     /* Cannot resolve limit entity for flange end condition. */
     SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY,
-    /* Flange cannot be created. */
+    /* Cannot create flange. */
     SHEET_METAL_FLANGE_FAIL,
     /* Flange direction is opposite of limit entity. */
     SHEET_METAL_FLANGE_FAIL_LIMIT_OPP_FLANGE,
@@ -1263,7 +1263,7 @@ export enum ErrorStringEnum
     ILLEGAL_MODIFICATION,
     /* Value cannot be applied. */
     ASSEMBLY_MATE_VALUE_SET_FAILED,
-    /* Selected offset is too large; decrease the value. */
+    /* Selected offset is too large, decrease the value. */
     EXTRUDE_OFFSET_TOO_DEEP,
     /* Faces of bends cannot be moved. */
     SHEET_METAL_CANNOT_MOVE_BEND_EDGE,
@@ -1462,7 +1462,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FLANGE_FAIL_PARALLEL_PLANE,
     /* Flange edge and alignment direction cannot be parallel. */
     SHEET_METAL_FLANGE_FAIL_PARALLEL_DIRECTION,
-    /* Cannot create a flange with a 0 degree bend angle. */
+    /* Cannot create flange with a 0 degree bend angle. */
     SHEET_METAL_FLANGE_FAIL_NO_BEND,
     /* Select an entity to align to. */
     SHEET_METAL_FLANGE_NO_PARALLEL_ENTITY,
@@ -1719,7 +1719,7 @@ export enum ErrorStringEnum
     DISPLAY_STATES_DOES_NOT_EXIST,
     /* Loft path curves must be tangent. */
     LOFT_SPINE_NONTANGENT_PATH,
-    /* Selected path edges are not tangent in highlighted vertices; tangent approximation is used. */
+    /* Selected path edges are not tangent in highlighted vertices, tangent approximation is used. */
     LOFT_SPINE_APPROXIMATED,
     /* Both part number and revision must be specified. */
     REST_ASSEMBLY_REVISION_PART_NUMBER_BLANK,
@@ -1751,15 +1751,15 @@ export enum ErrorStringEnum
     SHEET_METAL_HEM_NO_EDGES,
     /* Only linear edges can be used to hem. */
     SHEET_METAL_HEM_NON_LINEAR_EDGES,
-    /* Hem cannot not be created with selected alignment. */
+    /* Cannot create hem with selected alignment. */
     SHEET_METAL_HEM_FAIL_ALIGNMENT,
-    /* Hem cannot be created. Increase total length. */
+    /* Cannot create hem, increase total length. */
     SHEET_METAL_HEM_TOO_SHORT,
-    /* Hem cannot be created. Decrease gap. */
+    /* Cannot create hem, decrease gap. */
     SHEET_METAL_HEM_TEAR_DROP_GAP_TOO_LARGE,
     /* Cannot create hem on an edge that is a joint, fillet, chamfer, or internal to the sheet metal model. */
     SHEET_METAL_HEM_INTERNAL,
-    /* Hem cannot be created. */
+    /* Cannot create hem. */
     SHEET_METAL_HEM_FAILED,
     /* An invalid configuration was specified. */
     INVALID_CONFIGURATION_SPECIFIED,
@@ -1772,7 +1772,15 @@ export enum ErrorStringEnum
     /* Trim profiles option can be applied only to open profiles with two or more guides. Ignored. */
     LOFT_CANT_TRIM_PROFILES_INFO,
     /* Trim guides option can be applied only to non-periodic guides with two or more profiles. Ignored. */
-    LOFT_CANT_TRIM_GUIDES_INFO
+    LOFT_CANT_TRIM_GUIDES_INFO,
+    /* Failed to insert non-geometric item into assembly. */
+    NON_GEOMETRIC_ITEM_INSERTION_FAILED,
+    /* Cannot create flange on a bend. */
+    SHEET_METAL_FLANGE_NEXT_TO_CYLINDER_BEND,
+    /* Cannot create hem on a bend. */
+    SHEET_METAL_HEM_NEXT_TO_CYLINDER_BEND,
+    /* Cannot move the end face of a bend. */
+    SHEET_METAL_MOVE_FACE_NEXT_TO_CYLINDER_BEND
 }
 
 

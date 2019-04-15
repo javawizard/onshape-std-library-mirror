@@ -793,6 +793,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 }
                                 const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModel);
                                 const trackedSheets = trackModelBySheet(context, sheetMetalModel);
+                                const trackedTwoSidedEdges = trackTwoSidedEdges(context, sheetMetalModel);
 
                                 const robustSMModel = qUnion([startTracking(context, sheetMetalModel), sheetMetalModel]);
 
@@ -812,10 +813,16 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
                                 {
                                     const modifiedEdgeArray = removeJointAttributesFromOneSidedEdges(context, robustSMModel);
-                                    modifiedEntityArray = concatenateArrays([modifiedFaceArray, modifiedEdgeArray]);
+                                    modifiedEntityArray = concatenateArrays([modifiedEntityArray, modifiedEdgeArray]);
                                 }
 
-                                if (size(modifiedEntityArray) != 0 || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
+                                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1050_HEM_REATED_FIXES))
+                                {
+                                    const newlyLaminarEdges = evaluateQuery(context, qEdgeTopologyFilter(trackedTwoSidedEdges, EdgeTopology.LAMINAR));
+                                    modifiedEntityArray = concatenateArrays([modifiedEntityArray, newlyLaminarEdges]);
+                                }
+
+                                if (modifiedEntityArray != [] || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V630_SM_BOOLEAN_NOOP_HANDLING))
                                 {
                                     const modifiedEntities = qUnion(modifiedEntityArray);
                                     const toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMModel, initialData, id);
@@ -869,11 +876,24 @@ function trackModelBySheet(context is Context, sheetMetalModel is Query) returns
             { return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]); });
 }
 
+function trackTwoSidedEdges(context is Context, sheetMetalModel is Query) returns Query
+{
+    const twoSidedEdges = qEdgeTopologyFilter(qOwnedByBody(sheetMetalModel, EntityType.EDGE), EdgeTopology.TWO_SIDED);
+    return qUnion([qUnion(evaluateQuery(context, twoSidedEdges)), startTracking(context, twoSidedEdges)]);
+}
+
 function eachSheetStillExists(context is Context, sheetTracking is array) returns boolean
 {
+    const checkForWalls = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1050_HEM_REATED_FIXES);
+    const wallAttributePattern = asSMAttribute({"objectType" : SMObjectType.WALL});
     for (var sheet in sheetTracking)
     {
-        if (size(evaluateQuery(context, sheet)) == 0)
+        if (evaluateQuery(context, sheet) == [])
+        {
+            return false;
+        }
+        const wallQ = qAttributeFilter(qOwnedByBody(sheet, EntityType.FACE), wallAttributePattern);
+        if (checkForWalls && evaluateQuery(context, wallQ) == [])
         {
             return false;
         }
@@ -946,6 +966,10 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
     }
     return outlineBodiesQ;
 }
+
+//No longer used - turned out to not be sufficiently thin
+const SM_THIN_EXTENSION_LEGACY = 1.e-4 * meter;
+
 /**
  * @internal
  * If provided, faceBox should be a Box3d.  If provided, toolToThickenedToolBox should be a map from transient queries of
@@ -1033,6 +1057,11 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, face is 
 
     if (!skippedAll)
     {
+        var thin = SM_THIN_EXTENSION_LEGACY;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1050_HEM_REATED_FIXES))
+        {
+            thin = min(thin, 0.2 * modelParameters.minimalClearance);
+        }
         var toDeleteArray = append(allTrimmed, thickened);
         if (size(outlines) > 0)
         {
@@ -1040,7 +1069,6 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, face is 
             if (!planarFace)
             {
                 toDeleteArray = append(toDeleteArray, toolsOut);
-                const thin = SM_THIN_EXTENSION;
                 toolsOut = thickenFaces(context, id + "thickenTools",
                     {"frontThickness" : thin, "backThickness" : thin}, qUnion(outlines));
             }
@@ -1262,7 +1290,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
     for (var collision in collisionData)
     {
         // collision.target is either one of targetFaces or an edge adjacent to them - recover corresponding target face.
-        const targetFaceAdjacentToEdgeInCollisionQ = qIntersection([qEdgeAdjacent(qEntityFilter(collision.target, EntityType.EDGE), EntityType.FACE), targetQ]);
+        const targetFaceAdjacentToEdgeInCollisionQ = qIntersection([qAdjacent(qEntityFilter(collision.target, EntityType.EDGE), AdjacencyType.EDGE, EntityType.FACE), targetQ]);
         const targetFaceQ = qUnion([qEntityFilter(collision.target, EntityType.FACE), targetFaceAdjacentToEdgeInCollisionQ]);
         const targetFaces = evaluateQuery(context, targetFaceQ);
         if (size(targetFaces) != 1)
@@ -1288,7 +1316,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
         }
         else // some sort of Abutting, I've seen only ABUT_NO_CLASS
         {
-            const edgeAdjacentQ = qEdgeAdjacent(qEntityFilter(collision.tool, EntityType.EDGE), EntityType.FACE);
+            const edgeAdjacentQ = qAdjacent(qEntityFilter(collision.tool, EntityType.EDGE), AdjacencyType.EDGE, EntityType.FACE);
             const parallelToPlaneQ = qParallelPlanes(edgeAdjacentQ, faceData.planeNormal);
             faceToCheckQ = qUnion([qEntityFilter(collision.tool, EntityType.FACE), qSubtraction(edgeAdjacentQ, parallelToPlaneQ)]);
         }

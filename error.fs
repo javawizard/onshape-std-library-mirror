@@ -242,7 +242,7 @@ export function reportFeatureInfo(context is Context, id is Id, customMessage is
  *      @field subfeatureId {Id} : The Id of the subfeature.
  *      @field featureParameterMap {map} : A mapping of the field names from subfeature to feature. @optional
  *      @field featureParameterMappingFunction {function} : A function to map field names from subfeature to feature. @optional
- *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present. @optional
+ *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present.  Default is false. @optional
  * }}
  */
 export function processSubfeatureStatus(context is Context, id is Id, definition is map) returns boolean

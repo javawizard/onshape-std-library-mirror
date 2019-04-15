@@ -51,6 +51,18 @@ export function isAtVersionOrLater(context is Context, introduced is FeatureScri
     return @isAtVersionOrLater(context, introduced);
 }
 
+export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber, versionToCompareAgainst is FeatureScriptVersionNumber) returns boolean
+{
+    // Enum sort order within maps is based on the ordinal
+    const mapOfVersions = { (versionToCheck) : true, (versionToCompareAgainst) : true };
+    var firstKey;
+    for (var entry in mapOfVersions)
+    {
+        firstKey = entry.key;
+        return firstKey == versionToCompareAgainst;
+    }
+}
+
 /**
  * @internal
  * Returns version at which the active feature of `context` is running

@@ -262,6 +262,20 @@ export enum EntityType
 }
 
 /**
+ * Specifies the adjacency type of queried entities.
+ *
+ * @seealso [qAdjacent]
+ *
+ * @value VERTEX : Entities share at least a vertex
+ * @value EDGE : Entities share at least an edge
+ */
+export enum AdjacencyType
+{
+    VERTEX,
+    EDGE
+}
+
+/**
  * Specifies the geometric type of queried entities.
  *
  * @seealso [qGeometry]
@@ -959,12 +973,39 @@ export function qSourceMesh(query is Query) returns Query
 }
 
 /**
- * A query for all entities of specified `EntityType` that share a vertex with
- * any entities that match the input query.
- * @ex `qVertexAdjacent(vertex, EntityType.EDGE)` matches all edges adjacent to the given vertex.
- * @ex `qVertexAdjacent(face, EntityType.VERTEX)` matches all vertices adjacent to the given face.
- * @param entityType : The type of the resulting entities. @eg `EntityType.VERTEX`
+ * A query for entities that are adjacent to the given `seed` entities.
+ *
+ * @param seed: One or more entities whose adjacent neighbors are queried. The result does not include the original `seed` entities
+ *              (unless they are adjacent to other `seed` entities)
+ * @param adjacencyType:
+ *        @eg `AdjacencyType.VERTEX` will return entities that share at least a vertex with the `seed` entities.
+ *        @eg `AdjacencyType.EDGE` will return entities that share at least an edge with the `seed` entities. For example,
+ *                `qAdjacent(whiteSquareOnChessBoard, AdjacencyType.EDGE)` would return all four surrounding black squares,
+ *                but not the four diagonal white squares.
+ * @param entityType: The type of resulting entities @optional
  */
+export function qAdjacent(seed is Query, adjacencyType is AdjacencyType, entityType is EntityType) returns Query
+precondition
+{
+    entityType != EntityType.BODY;
+    annotation { "Message" : "Entities cannot have AdjacencyType.EDGE with vertices, use AdjacencyType.VERTEX instead" }
+    !(adjacencyType == AdjacencyType.EDGE && entityType == EntityType.VERTEX);
+}
+{
+    return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : seed, "entityType" : entityType } as Query;
+}
+
+export function qAdjacent(query is Query, adjacencyType is AdjacencyType)
+{
+    return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : query } as Query;
+}
+
+const adjacencyTypeToQueryType = {
+    AdjacencyType.VERTEX : QueryType.VERTEX_ADJACENT,
+    AdjacencyType.EDGE : QueryType.EDGE_ADJACENT
+};
+
+annotation { "Deprecated" : "Use `qAdjacent` with `AdjacencyType.VERTEX`" }
 export function qVertexAdjacent(query is Query, entityType is EntityType) returns Query
 precondition
 {
@@ -974,20 +1015,7 @@ precondition
     return { "queryType" : QueryType.VERTEX_ADJACENT, "query" : query, "entityType" : entityType } as Query;
 }
 
-/**
- * A query for all entities of specified `EntityType` that share an edge with
- * any entities that match the input query.
- * @ex `qEdgeAdjacent(edge, EntityType.FACE)` matches all faces adjacent to the given edge.
- * @ex `qEdgeAdjacent(face, EntityType.EDGE)` matches all edges adjacent to the given face.
- *
- * More complicated queries are also possible.  For instance to match edges that bound a set `faces` on a solid body:
- * ```
- * const adjacentFaces = qSubtraction(qEdgeAdjacent(faces, EntityType.FACE), faces);
- * const boundary = qIntersection([qEdgeAdjacent(faces, EntityType.EDGE),
- *                                 qEdgeAdjacent(adjacentFaces, EntityType.EDGE)]);
- * ```
- * @param entityType : The type of the resulting entities. @eg `EntityType.EDGE`
- */
+annotation { "Deprecated" : "Use `qAdjacent` with `AdjacencyType.EDGE`" }
 export function qEdgeAdjacent(query is Query, entityType is EntityType) returns Query
 precondition
 {
@@ -1381,7 +1409,7 @@ export function qMatching(subquery is Query) returns Query
 }
 
 /** @internal */
-annotation { "Deprecated" : "Prefer `qMatching`" }
+annotation { "Deprecated" : "Use `qMatching`" }
 export function qMatchingFaces(subquery is Query) returns Query
 {
     return qMatching(subquery);
@@ -1664,7 +1692,7 @@ precondition
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.
 
 /** @internal */
-annotation { "Deprecated" : "Prefer `makeQuery`" }
+annotation { "Deprecated" : "Use `makeQuery`" }
 export function query(operationId is Id, queryType is string, entityType, value is map) returns Query
 precondition
 {
@@ -1675,7 +1703,7 @@ precondition
 }
 
 /** @internal */
-annotation { "Deprecated" : "Prefer `makeQuery`" }
+annotation { "Deprecated" : "Use `makeQuery`" }
 export function query(value is map) returns Query
 {
     return makeQuery(value);

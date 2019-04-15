@@ -79,7 +79,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
 
         if (definition.cornerStyle != SMCornerReliefStyle.SIMPLE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED))
         {
-            var facesQ = qVertexAdjacent(qUnion(cornerInfo.allVertices), EntityType.FACE);
+            var facesQ = qAdjacent(qUnion(cornerInfo.allVertices), AdjacencyType.VERTEX, EntityType.FACE);
             var rolledQ = qSubtraction(facesQ, qGeometry(facesQ, GeometryType.PLANE));
             if (size(evaluateQuery(context, rolledQ)) > 0)
             {

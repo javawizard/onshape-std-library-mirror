@@ -772,7 +772,17 @@ export enum FeatureScriptVersionNumber
     V1033_BODY_NET_IN_FILL,
     V1034_EVRAYCAST_FIX,
     V1035_SURFACE_MATCH,
-    V1036_IMPORT_NAMES_AND_COLORS
+    V1036_IMPORT_NAMES_AND_COLORS,
+    V1044_COPLANAR_PLANES,
+    V1045_SHEET_BOOLEAN_ALIGN_FACE,
+    V1046_FAILED_PARAMETERS,
+    V1047_MOVE_FACE_JOINTS,
+    V1048_FLANGE_AND_HEM_EDGES,
+    V1049_COMMON_FS,
+    V1050_HEM_REATED_FIXES,
+    V1051_SM_MOVE_FACE_BEND_ERROR,
+    V1052_HEM_BUMP,
+    V1053_HEM_RELEASE
 }
 
 /**
@@ -783,6 +793,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1036_IMPORT_NAMES_AND_COLORS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1053_HEM_RELEASE;
 
 

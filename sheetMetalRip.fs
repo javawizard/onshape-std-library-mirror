@@ -90,8 +90,8 @@ function getSplitEdgesAndFaces(context is Context, id is Id, vertices is Query) 
         var vertex2 = getCornerVertex(context, userVertices[1]);
 
         // Need this to check that all vertices lie on the same wall in the smModel.
-        var facesFrom1 = qVertexAdjacent(vertex1, EntityType.FACE);
-        var facesFrom2 = qVertexAdjacent(vertex2, EntityType.FACE);
+        var facesFrom1 = qAdjacent(vertex1, AdjacencyType.VERTEX, EntityType.FACE);
+        var facesFrom2 = qAdjacent(vertex2, AdjacencyType.VERTEX, EntityType.FACE);
         var sharedFace = qIntersection([facesFrom1, facesFrom2]);
         if (size(evaluateQuery(context, sharedFace)) != 1)
         {

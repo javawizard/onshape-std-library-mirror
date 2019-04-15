@@ -333,7 +333,7 @@ export function createProfileConditions(context is Context, endCondition is Loft
     else if (endCondition == LoftEndDerivativeType.MATCH_TANGENT ||
              endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
     {
-        const adjacentFaceQuery = qEdgeAdjacent(profileQuery, EntityType.FACE);
+        const adjacentFaceQuery = qAdjacent(profileQuery, AdjacencyType.EDGE, EntityType.FACE);
         if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
         {
             throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_FACE_FOR_START_CLAMP : ErrorStringEnum.LOFT_NO_FACE_FOR_END_CLAMP);
@@ -341,7 +341,7 @@ export function createProfileConditions(context is Context, endCondition is Loft
         const derivativeInfo = { "profileIndex" : profileIndex,
                                  "magnitude" : magnitude,
                                  "matchCurvature" : endCondition == LoftEndDerivativeType.MATCH_CURVATURE,
-                                 "adjacentFaces" : qEdgeAdjacent(profileQuery, EntityType.FACE)};
+                                 "adjacentFaces" : qAdjacent(profileQuery, AdjacencyType.EDGE, EntityType.FACE)};
         return derivativeInfo;
     }
 }
@@ -420,10 +420,10 @@ function edgeMatchesChain(context is Context, edge is Query, edges is array) ret
 {
     var parameters;
     var testSetQ;
-    if (size(evaluateQuery(context, qVertexAdjacent(edge, EntityType.VERTEX))) == 2)
+    if (size(evaluateQuery(context, qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX))) == 2)
     {
         parameters = [0., 1.];
-        testSetQ = qVertexAdjacent(qUnion(edges), EntityType.VERTEX);
+        testSetQ = qAdjacent(qUnion(edges), AdjacencyType.VERTEX, EntityType.VERTEX);
     }
     else // closed edge
     {
@@ -460,12 +460,12 @@ function replaceSketchFaceWithWireEdges(context is Context, query is Query) retu
         {
             // Check that the set of edges we replace with a dependency matches dependency geometry
             // BEL-111916
-            const faceEdgesQ = qEdgeAdjacent(sketchFaces, EntityType.EDGE);
+            const faceEdgesQ = qAdjacent(sketchFaces, AdjacencyType.EDGE, EntityType.EDGE);
             var dependencyToEdges = {};
             var edgesToUse = [];
             for (var edge in evaluateQuery(context, faceEdgesQ))
             {
-                const adjacentSelectedFaceQ = qIntersection([qEdgeAdjacent(edge, EntityType.FACE), sketchFaces]);
+                const adjacentSelectedFaceQ = qIntersection([qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), sketchFaces]);
                 //consider only boundary edges of selected faceSet
                 if (size(evaluateQuery(context, adjacentSelectedFaceQ)) != 1)
                 {
@@ -495,7 +495,7 @@ function replaceSketchFaceWithWireEdges(context is Context, query is Query) retu
             }
             return qDependency(qUnion(edgesToUse));
         }
-        return qDependency(qEdgeAdjacent(sketchFaces, EntityType.EDGE));
+        return qDependency(qAdjacent(sketchFaces, AdjacencyType.EDGE, EntityType.EDGE));
     }
 }
 
@@ -561,7 +561,7 @@ function collectGuideDerivatives(context is Context, definition is map) returns 
         var parameter = definition.guidesArray[index];
         if (parameter.guideDerivativeType != LoftGuideDerivativeType.DEFAULT)
         {
-            const adjacentFaceQuery = qEdgeAdjacent(parameter.guideEntities, EntityType.FACE);
+            const adjacentFaceQuery = qAdjacent(parameter.guideEntities, AdjacencyType.EDGE, EntityType.FACE);
             if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
             {
                 throw regenError(ErrorStringEnum.LOFT_NO_FACE_FOR_GUIDE_CLAMP);

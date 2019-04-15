@@ -56,7 +56,7 @@ export const sheetMetalMakeJoint = defineSheetMetalFeature(function(context is C
             if (!definition.useDefaultRadius)
             {
                 annotation { "Name" : "Bend radius" }
-                isLength(definition.radius, BLEND_BOUNDS);
+                isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
             }
         }
 
@@ -103,7 +103,7 @@ export function makeJointEditLogic(context is Context, id is Id, oldDefinition i
     if (size(evaluatedEdgeQuery) == 0)
         return definition;
 
-    var adjacentFace = qEdgeAdjacent(evaluatedEdgeQuery[0], EntityType.FACE);
+    var adjacentFace = qAdjacent(evaluatedEdgeQuery[0], AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) == 0)
     {
         return definition;
@@ -131,7 +131,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     //For selected edges, we need to get to the wall they're on.
     for (var edge in edges)
     {
-        var adjacentFaces = evaluateQuery(context, qEdgeAdjacent(edge, EntityType.FACE));
+        var adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
         if (size(adjacentFaces) != 1)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_RIP_FAIL_INTERNAL_EDGE, ["entities"]);
@@ -157,7 +157,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     //make sure the two faces are not currently sharing edges
-    var commonEdges = evaluateQuery(context, qIntersection([qEdgeAdjacent(faces[0], EntityType.FACE), faces[1]]));
+    var commonEdges = evaluateQuery(context, qIntersection([qAdjacent(faces[0], AdjacencyType.EDGE, EntityType.FACE), faces[1]]));
     if (size(commonEdges) != 0)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_JOINT_FAIL_ADJACENT_FACES, ["entities"]);
