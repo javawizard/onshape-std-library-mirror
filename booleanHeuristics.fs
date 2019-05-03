@@ -1,52 +1,72 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1053.0");
-export import(path : "onshape/std/query.fs", version : "1053.0");
-export import(path : "onshape/std/tool.fs", version : "1053.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/query.fs", version : "1063.0");
+export import(path : "onshape/std/tool.fs", version : "1063.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1053.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1053.0");
-import(path : "onshape/std/containers.fs", version : "1053.0");
-import(path : "onshape/std/evaluate.fs", version : "1053.0");
-import(path : "onshape/std/feature.fs", version : "1053.0");
-import(path : "onshape/std/primitives.fs", version : "1053.0");
-import(path : "onshape/std/transform.fs", version : "1053.0");
-import(path : "onshape/std/valueBounds.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
+import(path : "onshape/std/box.fs", version : "1063.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1063.0");
+import(path : "onshape/std/evaluate.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1063.0");
+import(path : "onshape/std/primitives.fs", version : "1063.0");
+import(path : "onshape/std/transform.fs", version : "1063.0");
+import(path : "onshape/std/valueBounds.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1063.0");
 
+
+/**
+ * @internal
+ * Analyzes boolean step parameters to determine which of them should be initialized by further edit logic.
+ */
+export function booleanStepEditLogicAnalysis(context is Context, oldDefinition is map, definition is map,
+    specifiedParameters is map) returns map
+{
+    // If user has touched the "Merge will all" checkbox, or changed the scope manually, no further changes should be made
+    if (specifiedParameters.defaultScope || specifiedParameters.booleanScope)
+    {
+        return { "canDefineOperation" : false, "canDefineScope" : false };
+    }
+
+    var canDefineOperation = (specifiedParameters.operationType != true);
+    if (!canDefineOperation && definition.operationType == NewBodyOperationType.NEW)
+    {
+        return { "canDefineOperation" : false, "canDefineScope" : false };
+    }
+    var canDefineScope = true;
+    if (definition.booleanScope is Query)
+    {
+        var scopeValue = evaluateQuery(context, definition.booleanScope);
+        // Something is in the scope from previous heuristics
+        if (!canDefineOperation && scopeValue != [])
+        {
+            canDefineScope = false;
+        }
+    }
+    return { "canDefineOperation" : canDefineOperation, "canDefineScope" : canDefineScope };
+}
 
 /** @internal */
 export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query, toolBodiesOp is function) returns map
 {
-    if (specifiedParameters.defaultScope || specifiedParameters.booleanScope)
+    var logicMap = booleanStepEditLogicAnalysis(context, oldDefinition, definition, specifiedParameters);
+    if (!logicMap.canDefineOperation && !logicMap.canDefineScope)
     {
         return definition;
     }
-    var scopeOnly = (specifiedParameters.operationType == true);
-    if (!scopeOnly && (specifiedParameters.oppositeDirection == true) &&
+    // If this feature has a direction flipper, and the user is currently flipping it, the operation type should not be changed
+    if (logicMap.canDefineOperation && (specifiedParameters.oppositeDirection == true) &&
         definition.oppositeDirection != oldDefinition.oppositeDirection)
     {
-        scopeOnly = true;
+        logicMap.canDefineOperation = false;
     }
-    if (scopeOnly && definition.operationType == NewBodyOperationType.NEW)
-    {
-        return definition;
-    }
-    if (definition.booleanScope is Query)
-    {
-        var scopeValue = evaluateQuery(context, definition.booleanScope);
-        // Something is in the scope from previous heuristics
-        if (scopeOnly && size(scopeValue) > 0)
-        {
-            return definition;
-        }
-    }
+
     var newOpDefinition = definition;
     newOpDefinition.operationType = NewBodyOperationType.NEW;
     var heuristicsId = id  + "heuristics";
@@ -55,7 +75,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
     {
         toolBodiesOp(context, heuristicsId + "op", newOpDefinition);
         newOpDefinition = autoSelectionForBooleanStep(context, heuristicsId, newOpDefinition, hiddenBodies);
-        if (scopeOnly)
+        if (!logicMap.canDefineOperation)
         {
             newOpDefinition.operationType = definition.operationType;
         }
@@ -79,7 +99,7 @@ export function canSetBooleanFlip (oldDefinition is map, definition is map, spec
         return false;
     }
     var existingTypeIsNegative = (oldDefinition.operationType == NewBodyOperationType.REMOVE ||
-                    definition.operationType == NewBodyOperationType.INTERSECT);
+                    oldDefinition.operationType == NewBodyOperationType.INTERSECT);
     var newTypeIsNegative = (definition.operationType == NewBodyOperationType.REMOVE ||
                     definition.operationType == NewBodyOperationType.INTERSECT);
     return existingTypeIsNegative != newTypeIsNegative;

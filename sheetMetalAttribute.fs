@@ -1,4 +1,4 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -29,20 +29,20 @@ FeatureScript 1053; /* Automatically generated version */
  * sheet metal bodies using the [ActiveSheetMetal.NO](ActiveSheetMetal) filter. Any other query can
  * be filtered for non-sheet-metal geometry using [separateSheetMetalQueries].
  */
-export import(path : "onshape/std/context.fs", version : "1053.0");
-export import(path : "onshape/std/query.fs", version : "1053.0");
-export import(path : "onshape/std/smbendtype.gen.fs", version : "1053.0");
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1053.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1053.0");
-export import(path : "onshape/std/smjointtype.gen.fs", version : "1053.0");
-export import(path : "onshape/std/smobjecttype.gen.fs", version : "1053.0");
-export import(path : "onshape/std/smreliefstyle.gen.fs", version : "1053.0");
+export import(path : "onshape/std/context.fs", version : "1063.0");
+export import(path : "onshape/std/query.fs", version : "1063.0");
+export import(path : "onshape/std/smbendtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "1063.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1063.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/smobjecttype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/smreliefstyle.gen.fs", version : "1063.0");
 
-import(path : "onshape/std/attributes.fs", version : "1053.0");
-import(path : "onshape/std/containers.fs", version : "1053.0");
-import(path : "onshape/std/units.fs", version : "1053.0");
-import(path : "onshape/std/feature.fs", version : "1053.0");
-import(path : "onshape/std/string.fs", version : "1053.0");
+import(path : "onshape/std/attributes.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1063.0");
+import(path : "onshape/std/units.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1063.0");
+import(path : "onshape/std/string.fs", version : "1063.0");
 
 /**
  * Sheet metal object definition attribute type.
@@ -195,6 +195,35 @@ export function replaceSMAttribute(context is Context, existingAttribute is SMAt
  */
 export function getSMDefinitionEntities(context is Context, selection is Query) returns array
 {
+    // Before this version, this overload always assumed we were inside sheet metal scope.
+    const assumeInsideScope = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1062_GET_SM_ENTS);
+    if (assumeInsideScope || isInSheetMetalFeature(context))
+    {
+        return getSMDefinitionEntitiesInsideSheetMetalFeature(context, selection, undefined);
+    }
+    else
+    {
+        return getSMDefinitionEntitiesOutsideSheetMetalFeature(context, selection, undefined);
+    }
+}
+
+export function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
+{
+    // Before this version, this overload always assumed we were outside sheet metal scope.
+    const assumeOutsideScope = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1062_GET_SM_ENTS);
+    if (assumeOutsideScope || !isInSheetMetalFeature(context))
+    {
+        return getSMDefinitionEntitiesOutsideSheetMetalFeature(context, selection, entityType);
+    }
+    else
+    {
+        return getSMDefinitionEntitiesInsideSheetMetalFeature(context, selection, entityType);
+    }
+}
+
+// If entityType is undefined, disregard it.
+function getSMDefinitionEntitiesInsideSheetMetalFeature(context is Context, selection is Query, entityType) returns array
+{
     const entityAssociations = getSMAssociationAttributes(context, qBodyType(selection, BodyType.SOLID));
 
     var attributeQueries = [];
@@ -202,7 +231,46 @@ export function getSMDefinitionEntities(context is Context, selection is Query) 
     {
         attributeQueries = append(attributeQueries, qAttributeQuery(attribute));
     }
-    return evaluateQuery(context, qBodyType(qUnion(attributeQueries), BodyType.SHEET));
+    var associatedEntities = qUnion(attributeQueries);
+    if (entityType != undefined)
+    {
+        associatedEntities = qEntityFilter(associatedEntities, entityType);
+    }
+    return evaluateQuery(context, qBodyType(associatedEntities, BodyType.SHEET));
+}
+
+// If entityType is undefined, disregard it.
+function getSMDefinitionEntitiesOutsideSheetMetalFeature(context is Context, selection is Query, entityType) returns array
+{
+    const entityAssociations = try silent(getSMAssociationAttributes(context, qBodyType(selection, BodyType.SOLID)));
+    if (entityAssociations == undefined)
+    {
+        return [];
+    }
+
+    const allSheets = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
+    const allSMDefinitionEntitiesOfType = (entityType != undefined) ? qOwnedByBody(allSheets, entityType) : qOwnedByBody(allSheets);
+
+    const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
+    const useSpecificOwnerBody = isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR);
+
+    var allSheetsConsideredActive;
+    if (!useSpecificOwnerBody)
+    {
+        allSheetsConsideredActive = try silent(isSheetMetalModelActive(context, allSheets));
+    }
+
+    var out = [];
+    for (var attribute in entityAssociations)
+    {
+        const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), allSMDefinitionEntitiesOfType]));
+        const ownerBody = qOwnerBody(qUnion(associatedEntities));
+        if (returnInactive || useSpecificOwnerBody ? try silent(isSheetMetalModelActive(context, ownerBody)) == true : allSheetsConsideredActive == true)
+        {
+            out = append(out, associatedEntities);
+        }
+    }
+    return concatenateArrays(out);
 }
 
 /**

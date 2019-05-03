@@ -1,29 +1,29 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1053.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1053.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1053.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1053.0");
-import(path : "onshape/std/containers.fs", version : "1053.0");
-import(path : "onshape/std/coordSystem.fs", version : "1053.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
-import(path : "onshape/std/evaluate.fs", version : "1053.0");
-import(path : "onshape/std/feature.fs", version : "1053.0");
-import(path : "onshape/std/math.fs", version : "1053.0");
-import(path : "onshape/std/manipulator.fs", version : "1053.0");
-import(path : "onshape/std/query.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1053.0");
-import(path : "onshape/std/string.fs", version : "1053.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
-import(path : "onshape/std/tool.fs", version : "1053.0");
-import(path : "onshape/std/valueBounds.fs", version : "1053.0");
-import(path : "onshape/std/vector.fs", version : "1053.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
-import(path : "onshape/std/transform.fs", version : "1053.0");
+import(path : "onshape/std/attributes.fs", version : "1063.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1063.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1063.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1063.0");
+import(path : "onshape/std/coordSystem.fs", version : "1063.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
+import(path : "onshape/std/evaluate.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1063.0");
+import(path : "onshape/std/math.fs", version : "1063.0");
+import(path : "onshape/std/manipulator.fs", version : "1063.0");
+import(path : "onshape/std/query.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1063.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1063.0");
+import(path : "onshape/std/string.fs", version : "1063.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
+import(path : "onshape/std/tool.fs", version : "1063.0");
+import(path : "onshape/std/valueBounds.fs", version : "1063.0");
+import(path : "onshape/std/vector.fs", version : "1063.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1063.0");
+import(path : "onshape/std/transform.fs", version : "1063.0");
 
 
 
@@ -811,6 +811,8 @@ export const SM_RELIEF_SIZE_BOUNDS =
  * for non-sm cases and a query is returned for them.
  * The sheet metal results will usually be iterated through and so are returned as a map with
  * the keys being the sheet metal ID and the values being the parts associated with that model.
+ *
+ * @seealso [separateSheetMetalQueries]
  */
 export function partitionSheetMetalParts(context is Context, allParts is Query)
 {
@@ -881,8 +883,7 @@ export function queryContainsActiveSheetMetal(context is Context, query is Query
  */
 export function queryContainsNonSheetMetal(context is Context, query is Query) returns boolean
 {
-    var nonSheetMetal = separateSheetMetalQueries(context, query).nonSheetMetalQueries;
-    return size(evaluateQuery(context, nonSheetMetal)) > 0;
+    return evaluateQuery(context, qActiveSheetMetalFilter(query, ActiveSheetMetal.NO)) != [];
 }
 
 /**
@@ -1183,6 +1184,7 @@ export function getModelParameters(context is Context, model is Query) returns m
 /**
  * Separates queries which are part of an active sheet metal model (either in the folded model or
  * the flat pattern).
+ * @seealso [partitionSheetMetalParts]
  *
  * @return {{
  *      @field sheetMetalQueries {Query} : `targets` which are part of an active sheet metal model
@@ -1191,20 +1193,11 @@ export function getModelParameters(context is Context, model is Query) returns m
  */
 export function separateSheetMetalQueries(context is Context, targets is Query) returns map
 {
-    var sheetMetalEntities = [];
-    var nonSheetMetalEntities = [];
-    for (var entity in evaluateQuery(context, targets))
-    {
-        if (queryContainsActiveSheetMetal(context, entity))
-        {
-            sheetMetalEntities = append(sheetMetalEntities, entity);
-        }
-        else
-        {
-            nonSheetMetalEntities = append(nonSheetMetalEntities, entity);
-        }
-    }
-    return { "sheetMetalQueries" : qUnion(sheetMetalEntities), "nonSheetMetalQueries" : qUnion(nonSheetMetalEntities) };
+    return {
+            // Return a union of transient queries for legacy purposes
+            "sheetMetalQueries" : qUnion(evaluateQuery(context, qActiveSheetMetalFilter(targets, ActiveSheetMetal.YES))),
+            "nonSheetMetalQueries" : qUnion(evaluateQuery(context, qActiveSheetMetalFilter(targets, ActiveSheetMetal.NO)))
+        };
 }
 
 /**
@@ -1651,35 +1644,6 @@ function adjustCornerBreakAttributes(context is Context, id is Id, vertexToTrack
     }
 }
 
-
-
-/**
- * A function for getting associated sheet metal entities outside of a sheet metal feature.
- */
-export function getSMDefinitionEntities(context is Context, selection is Query, entityType is EntityType) returns array
-{
-    var entityAssociations = try silent(getSMAssociationAttributes(context, qBodyType(selection, BodyType.SOLID)));
-    var out = [];
-    if (entityAssociations != undefined)
-    {
-        for (var attribute in entityAssociations)
-        {
-            const modelQuery = qAttributeQuery(asSMAttribute({ "objectType" : SMObjectType.MODEL }));
-            const associatedEntities = evaluateQuery(context, qIntersection([qAttributeQuery(attribute), qOwnedByBody(modelQuery, entityType)]));
-            const ownerBody = qOwnerBody(qUnion(associatedEntities));
-            const isActive = try silent(isAtVersionOrLater(context, FeatureScriptVersionNumber.V522_MOVE_FACE_NONPLANAR) ?
-                    isSheetMetalModelActive(context, ownerBody) : isSheetMetalModelActive(context, modelQuery));
-            const returnInactive = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V495_MOVE_FACE_ROTATION_AXIS);
-            if ((isActive != undefined && isActive) || returnInactive)
-            {
-
-                out = concatenateArrays([out, associatedEntities]);
-            }
-        }
-    }
-    return out;
-}
-
 /**
  * Returns an array of sm models associated with selection in a way that works outside of sheet metal features.
  */
@@ -1720,7 +1684,7 @@ export function getSMCorrespondingInPart(context is Context, selection is Query,
     var corresponding = qEntityFilter(qUnion(out), entityType);
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER))
     {
-        return qSMFlatFilter(corresponding, SMFlatType.NO);
+        return qSheetMetalFlatFilter(corresponding, SMFlatType.NO);
     }
     return qSubtraction(corresponding, qCorrespondingInFlat(corresponding));
 }

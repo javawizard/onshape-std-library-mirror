@@ -1,34 +1,34 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1053.0");
-export import(path : "onshape/std/query.fs", version : "1053.0");
-export import(path : "onshape/std/tool.fs", version : "1053.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1063.0");
+export import(path : "onshape/std/query.fs", version : "1063.0");
+export import(path : "onshape/std/tool.fs", version : "1063.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1053.0");
+export import(path : "onshape/std/manipulator.fs", version : "1063.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1053.0");
-import(path : "onshape/std/boolean.fs", version : "1053.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1053.0");
-import(path : "onshape/std/box.fs", version : "1053.0");
-import(path : "onshape/std/containers.fs", version : "1053.0");
-import(path : "onshape/std/coordSystem.fs", version : "1053.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1053.0");
-import(path : "onshape/std/evaluate.fs", version : "1053.0");
-import(path : "onshape/std/feature.fs", version : "1053.0");
-import(path : "onshape/std/mathUtils.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
-import(path : "onshape/std/transform.fs", version : "1053.0");
-import(path : "onshape/std/valueBounds.fs", version : "1053.0");
+import(path : "onshape/std/attributes.fs", version : "1063.0");
+import(path : "onshape/std/boolean.fs", version : "1063.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1063.0");
+import(path : "onshape/std/box.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1063.0");
+import(path : "onshape/std/coordSystem.fs", version : "1063.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1063.0");
+import(path : "onshape/std/evaluate.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1063.0");
+import(path : "onshape/std/mathUtils.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1063.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
+import(path : "onshape/std/transform.fs", version : "1063.0");
+import(path : "onshape/std/valueBounds.fs", version : "1063.0");
 
 /**
  * The viewer being operated in
@@ -201,7 +201,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
     {
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const modelEntities = qSMFlatFilter(definition.entities, SMFlatType.NO);
+            const modelEntities = qSheetMetalFlatFilter(definition.entities, SMFlatType.NO);
             const containsModelEntities = (size(evaluateQuery(context, modelEntities)) > 0);
             const containsFlattened = queryContainsFlattenedSheetMetal(context, definition.entities);
             if (definition.domain == OperationDomain.FLAT)
@@ -713,8 +713,8 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 {
     if (definition.bodyType == ToolBodyType.SOLID)
     {
-        const hasFlatEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.YES))) > 0;
-        const hasModelEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.NO))) > 0;
+        const hasFlatEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.YES))) > 0;
+        const hasModelEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.NO))) > 0;
         if (hasFlatEntities && !hasModelEntities)
         {
             definition.domain = OperationDomain.FLAT;

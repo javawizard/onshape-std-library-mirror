@@ -1,4 +1,4 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1780,7 +1780,15 @@ export enum ErrorStringEnum
     /* Cannot create hem on a bend. */
     SHEET_METAL_HEM_NEXT_TO_CYLINDER_BEND,
     /* Cannot move the end face of a bend. */
-    SHEET_METAL_MOVE_FACE_NEXT_TO_CYLINDER_BEND
+    SHEET_METAL_MOVE_FACE_NEXT_TO_CYLINDER_BEND,
+    /* Failed to solve. */
+    ASSEMBLY_UNKNOWN_SOLVE_ERROR,
+    /* Failed to resolve all instances. */
+    ASSEMBLY_FEATURE_FAILED_TO_RESOLVE_ALL_INSTANCES,
+    /* Sheet metal model cannot be built with a detached bend. */
+    SHEET_METAL_ORPHANED_BEND,
+    /* Context assembly reference is not valid. */
+    ASSEMBLY_CONTEXT_INVALID_REFERENCE
 }
 
 

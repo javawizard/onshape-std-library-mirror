@@ -1,4 +1,4 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -782,7 +782,13 @@ export enum FeatureScriptVersionNumber
     V1050_HEM_REATED_FIXES,
     V1051_SM_MOVE_FACE_BEND_ERROR,
     V1052_HEM_BUMP,
-    V1053_HEM_RELEASE
+    V1053_HEM_RELEASE,
+    V1058_PS_VERSION_31_1_232,
+    V1059_SM_ALIGMENT,
+    V1060_SET_CHAMFERS_SEPARATELY,
+    V1061_DISAMBIGUATE_COPY,
+    V1062_GET_SM_ENTS,
+    V1063_ORPHANED_BEND
 }
 
 /**
@@ -793,6 +799,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1053_HEM_RELEASE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1063_ORPHANED_BEND;
 
 

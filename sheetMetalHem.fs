@@ -1,31 +1,31 @@
-FeatureScript 1053; /* Automatically generated version */
+FeatureScript 1063; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1053.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1053.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1053.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1053.0");
-import(path : "onshape/std/containers.fs", version : "1053.0");
-import(path : "onshape/std/context.fs", version : "1053.0");
-import(path : "onshape/std/coordSystem.fs", version : "1053.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1053.0");
-import(path : "onshape/std/error.fs", version : "1053.0");
-import(path : "onshape/std/evaluate.fs", version : "1053.0");
-import(path : "onshape/std/feature.fs", version : "1053.0");
-import(path : "onshape/std/math.fs", version : "1053.0");
-import(path : "onshape/std/query.fs", version : "1053.0");
-import(path : "onshape/std/rollSurface.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1053.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1053.0");
-import(path : "onshape/std/sketch.fs", version : "1053.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1053.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1053.0");
-import(path : "onshape/std/transform.fs", version : "1053.0");
-import(path : "onshape/std/uihint.gen.fs", version : "1053.0");
-import(path : "onshape/std/valueBounds.fs", version : "1053.0");
-import(path : "onshape/std/vector.fs", version : "1053.0");
+import(path : "onshape/std/attributes.fs", version : "1063.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1063.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1063.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1063.0");
+import(path : "onshape/std/context.fs", version : "1063.0");
+import(path : "onshape/std/coordSystem.fs", version : "1063.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
+import(path : "onshape/std/error.fs", version : "1063.0");
+import(path : "onshape/std/evaluate.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1063.0");
+import(path : "onshape/std/math.fs", version : "1063.0");
+import(path : "onshape/std/query.fs", version : "1063.0");
+import(path : "onshape/std/rollSurface.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1063.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1063.0");
+import(path : "onshape/std/sketch.fs", version : "1063.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1063.0");
+import(path : "onshape/std/transform.fs", version : "1063.0");
+import(path : "onshape/std/uihint.gen.fs", version : "1063.0");
+import(path : "onshape/std/valueBounds.fs", version : "1063.0");
+import(path : "onshape/std/vector.fs", version : "1063.0");
 
 /**
  * @internal
@@ -2103,7 +2103,7 @@ function qAssociatedInSolidFolded(context is Context, entity is Query) returns Q
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_HEM_FAILED);
     }
-    return qSMFlatFilter(qBodyType(qAttributeQuery(associationAttribute[0]), BodyType.SOLID), SMFlatType.NO);
+    return qSheetMetalFlatFilter(qBodyType(qAttributeQuery(associationAttribute[0]), BodyType.SOLID), SMFlatType.NO);
 }
 
 function getWrapAroundFront(definition is map) returns boolean
