@@ -2103,7 +2103,7 @@ function qAssociatedInSolidFolded(context is Context, entity is Query) returns Q
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_HEM_FAILED);
     }
-    return qSMFlatFilter(qBodyType(qAttributeQuery(associationAttribute[0]), BodyType.SOLID), SMFlatType.NO);
+    return qSheetMetalFlatFilter(qBodyType(qAttributeQuery(associationAttribute[0]), BodyType.SOLID), SMFlatType.NO);
 }
 
 function getWrapAroundFront(definition is map) returns boolean

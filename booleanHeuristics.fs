@@ -20,33 +20,53 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 
 
-/** @internal */
-export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    specifiedParameters is map, hiddenBodies is Query, toolBodiesOp is function) returns map
+/**
+ * @internal
+ * Analyzes boolean step parameters to determine which of them should be initialized by further edit logic.
+ */
+export function booleanStepEditLogicAnalysis(context is Context, oldDefinition is map, definition is map,
+    specifiedParameters is map) returns map
 {
+    // If user has touched the "Merge will all" checkbox, or changed the scope manually, no further changes should be made
     if (specifiedParameters.defaultScope || specifiedParameters.booleanScope)
     {
-        return definition;
+        return { "canDefineOperation" : false, "canDefineScope" : false };
     }
-    var scopeOnly = (specifiedParameters.operationType == true);
-    if (!scopeOnly && (specifiedParameters.oppositeDirection == true) &&
-        definition.oppositeDirection != oldDefinition.oppositeDirection)
+
+    var canDefineOperation = (specifiedParameters.operationType != true);
+    if (!canDefineOperation && definition.operationType == NewBodyOperationType.NEW)
     {
-        scopeOnly = true;
+        return { "canDefineOperation" : false, "canDefineScope" : false };
     }
-    if (scopeOnly && definition.operationType == NewBodyOperationType.NEW)
-    {
-        return definition;
-    }
+    var canDefineScope = true;
     if (definition.booleanScope is Query)
     {
         var scopeValue = evaluateQuery(context, definition.booleanScope);
         // Something is in the scope from previous heuristics
-        if (scopeOnly && size(scopeValue) > 0)
+        if (!canDefineOperation && scopeValue != [])
         {
-            return definition;
+            canDefineScope = false;
         }
     }
+    return { "canDefineOperation" : canDefineOperation, "canDefineScope" : canDefineScope };
+}
+
+/** @internal */
+export function booleanStepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    specifiedParameters is map, hiddenBodies is Query, toolBodiesOp is function) returns map
+{
+    var logicMap = booleanStepEditLogicAnalysis(context, oldDefinition, definition, specifiedParameters);
+    if (!logicMap.canDefineOperation && !logicMap.canDefineScope)
+    {
+        return definition;
+    }
+    // If this feature has a direction flipper, and the user is currently flipping it, the operation type should not be changed
+    if (logicMap.canDefineOperation && (specifiedParameters.oppositeDirection == true) &&
+        definition.oppositeDirection != oldDefinition.oppositeDirection)
+    {
+        logicMap.canDefineOperation = false;
+    }
+
     var newOpDefinition = definition;
     newOpDefinition.operationType = NewBodyOperationType.NEW;
     var heuristicsId = id  + "heuristics";
@@ -55,7 +75,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
     {
         toolBodiesOp(context, heuristicsId + "op", newOpDefinition);
         newOpDefinition = autoSelectionForBooleanStep(context, heuristicsId, newOpDefinition, hiddenBodies);
-        if (scopeOnly)
+        if (!logicMap.canDefineOperation)
         {
             newOpDefinition.operationType = definition.operationType;
         }
@@ -79,7 +99,7 @@ export function canSetBooleanFlip (oldDefinition is map, definition is map, spec
         return false;
     }
     var existingTypeIsNegative = (oldDefinition.operationType == NewBodyOperationType.REMOVE ||
-                    definition.operationType == NewBodyOperationType.INTERSECT);
+                    oldDefinition.operationType == NewBodyOperationType.INTERSECT);
     var newTypeIsNegative = (definition.operationType == NewBodyOperationType.REMOVE ||
                     definition.operationType == NewBodyOperationType.INTERSECT);
     return existingTypeIsNegative != newTypeIsNegative;

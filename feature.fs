@@ -575,7 +575,7 @@ export function verifyNonemptyQuery(context is Context, definition is map,
 export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     parameterName is string, errorToReport is ErrorStringEnum)
 {
-    if (evaluateQuery(context, qSMFlatFilter(query, SMFlatType.YES)) != [])
+    if (evaluateQuery(context, qSheetMetalFlatFilter(query, SMFlatType.YES)) != [])
     {
         throw regenError(errorToReport, [parameterName]);
     }

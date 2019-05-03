@@ -495,7 +495,7 @@ const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
  */
 export function addExtrudeManipulator(context is Context, id is Id, definition is map, entities is Query, extrudeAxis is Line)
 {
-    if (evaluateQuery(context, qSMFlatFilter(entities, SMFlatType.YES)) != [])
+    if (evaluateQuery(context, qSheetMetalFlatFilter(entities, SMFlatType.YES)) != [])
     {
         return;
     }

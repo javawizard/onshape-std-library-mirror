@@ -201,7 +201,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
     {
         if (definition.bodyType == ToolBodyType.SOLID)
         {
-            const modelEntities = qSMFlatFilter(definition.entities, SMFlatType.NO);
+            const modelEntities = qSheetMetalFlatFilter(definition.entities, SMFlatType.NO);
             const containsModelEntities = (size(evaluateQuery(context, modelEntities)) > 0);
             const containsFlattened = queryContainsFlattenedSheetMetal(context, definition.entities);
             if (definition.domain == OperationDomain.FLAT)
@@ -713,8 +713,8 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 {
     if (definition.bodyType == ToolBodyType.SOLID)
     {
-        const hasFlatEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.YES))) > 0;
-        const hasModelEntities = size(evaluateQuery(context, qSMFlatFilter(definition.entities, SMFlatType.NO))) > 0;
+        const hasFlatEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.YES))) > 0;
+        const hasModelEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.NO))) > 0;
         if (hasFlatEntities && !hasModelEntities)
         {
             definition.domain = OperationDomain.FLAT;

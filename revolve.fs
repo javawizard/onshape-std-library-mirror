@@ -227,7 +227,7 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
         && !enableTwoDirectionManipulator(context, revolveDefinition))
         return;
 
-    const entities = qSMFlatFilter(getEntitiesToUse(context, revolveDefinition), SMFlatType.NO);
+    const entities = qSheetMetalFlatFilter(getEntitiesToUse(context, revolveDefinition), SMFlatType.NO);
 
     //Compute manipulator parameters
     var revolvePoint;

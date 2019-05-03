@@ -69,23 +69,42 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW });
 
-
 /**
  * @internal
- * implements heuristics for thicken feature
+ * Implements heuristics for thicken feature.
  */
 export function thickenEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    specifiedParameters is map, hiddenBodies is Query) returns map
+    specifiedParameters is map) returns map
 {
+    if (specifiedParameters.thickness2)
+    {
+        return definition;
+    }
+
     // If flip has not been specified and there is no second direction we can adjust flip based on boolean operation
-    if (!specifiedParameters.oppositeDirection && definition.thickness2 > 0)
+    if (!specifiedParameters.oppositeDirection)
     {
         if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
         {
             definition.oppositeDirection = !definition.oppositeDirection;
         }
     }
-    return booleanStepEditLogic(context, id, oldDefinition, definition,
-                                specifiedParameters, hiddenBodies, thicken);
+
+    const logicMap = booleanStepEditLogicAnalysis(context, oldDefinition, definition, specifiedParameters);
+    if (!logicMap.canDefineOperation && !logicMap.canDefineScope)
+    {
+        return definition;
+    }
+    const facesOfSolids = qBodyType(qEntityFilter(definition.entities, EntityType.FACE), BodyType.SOLID);
+    const booleanScope = evaluateQuery(context, qOwnerBody(facesOfSolids));
+    if (logicMap.canDefineOperation && booleanScope != [])
+    {
+        definition.operationType = (definition.oppositeDirection) ? NewBodyOperationType.REMOVE : NewBodyOperationType.ADD;
+    }
+    if (logicMap.canDefineScope)
+    {
+        definition.booleanScope = qUnion(booleanScope);
+    }
+    return definition;
 }
 

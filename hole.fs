@@ -192,16 +192,19 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             if (definition.holeDiameter > definition.cSinkDiameter + TOLERANCE.zeroLength * meter)
                 throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, ["holeDiameter", "cSinkDiameter"]);
 
-            // tipDepth is a local used for error checking
-            var tipDepth = definition.holeDepth;
-            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V252_HOLE_FEATURE_FIX_ERROR_CHECK) && !definition.useTipDepth)
+            if (definition.endStyle != HoleEndStyle.THROUGH)
             {
-                // Account for measuring hole depth to the shoulder of the drill
-                tipDepth = tipDepth + (definition.holeDiameter / 2) / tan(definition.tipAngle / 2);
+                // tipDepth is a local used for error checking
+                var tipDepth = definition.holeDepth;
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V252_HOLE_FEATURE_FIX_ERROR_CHECK) && !definition.useTipDepth)
+                {
+                    // Account for measuring hole depth to the shoulder of the drill
+                    tipDepth = tipDepth + (definition.holeDiameter / 2) / tan(definition.tipAngle / 2);
+                }
+                const cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle / 2);
+                if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth - TOLERANCE.zeroLength * meter)
+                    throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
             }
-            const cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle / 2);
-            if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth - TOLERANCE.zeroLength * meter)
-                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
         }
 
         if (definition.tapDrillDiameter == undefined)

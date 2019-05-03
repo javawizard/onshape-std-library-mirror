@@ -118,7 +118,10 @@ export predicate canBeQuery(value)
  * @value TRACKING                   : Used in [startTracking]
  * @value CAP_ENTITY                 : Used in [qCapEntity]
  * @value SOURCE_MESH                : Used in [qSourceMesh]
+ * @value ACTIVE_SM_FILTER           : Used in [qActiveSheetMetalFilter]
  * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
+ * @value PARTS_ATTACHED_TO          : Used in [qPartsAttachedTo]
+ * @value SM_FLAT_FILTER             : Used in [qSheetMetalFlatFilter]
  * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
@@ -128,7 +131,7 @@ export predicate canBeQuery(value)
  * @value TANGENT_CONNECTED_EDGES    : Used in [qTangentConnectedEdges]
  * @value LOOP_EDGES                 : Used in [qLoopEdges]
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
- * @value PARTS_ATTACHED_TO          : Used in [qPartsAttachedTo]
+
  ******************************************************************************/
 export enum QueryType
 {
@@ -142,9 +145,11 @@ export enum QueryType
     SKETCH_REGION,
     TRANSIENT,
     ATTRIBUTE_FILTER,
+    //Sheet metal
+    ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,
-    SM_FLAT_FILTER,
     PARTS_ATTACHED_TO,
+    SM_FLAT_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -349,12 +354,12 @@ export enum ConstructionObject
 }
 
 /**
- * Specified whether an entity lives in the sheet metal flat view or the main view.
+ * Specifies whether an entity appears in the sheet metal flat view, or the main view.
  *
- * @seeAlso [qSMFlatFilter]
+ * @seealso [qSheetMetalFlatFilter]
  *
- * @value YES : Matches flat entities.
- * @value NO  : Matches everything else.
+ * @value YES : Matches entities which belong to a flattened sheet metal part.
+ * @value NO  : Matches entities which do not belong to a flattened sheet metal part.
  */
 export enum SMFlatType
 {
@@ -1089,19 +1094,39 @@ export function qConstructionFilter(subquery is Query, constructionFilter is Con
 }
 
 /**
- * A query for all sheet metal flat entities or everything else.
+ * A query for all entities belonging to an active sheet metal part, or all entities not belonging to an active sheet
+ * metal part, matching a subquery.
+ *
+ * @seealso [ActiveSheetMetal]
  */
-export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType) returns Query
+export function qActiveSheetMetalFilter(subquery is Query, activeSheetMetal is ActiveSheetMetal)
 {
-    return {"queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.ACTIVE_SM_FILTER, "activeSheetMetal" : activeSheetMetal, "subquery" : subquery } as Query;
 }
 
 /**
-* A query for parts to which subquery entities are attached (e.g. sheet metal bend line entities are attached to flat pattern)
-*/
+ * A query for all entities belonging to a flattened sheet metal part, or all entities not belonging to a flattened sheet metal
+ * part, matching a subquery.
+ * @seealso [SMFlatType]
+ */
+export function qSheetMetalFlatFilter(subquery is Query, filterFlat is SMFlatType) returns Query
+{
+    return { "queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : subquery } as Query;
+}
+
+annotation { "Deprecated" : "Use [qSheetMetalFlatFilter]" }
+export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType) returns Query
+{
+    return qSheetMetalFlatFilter(subquery, filterFlat);
+}
+
+/**
+ * A query for parts to which subquery entities are attached (e.g. sheet metal bend line entities are attached to a
+ * flattened sheet metal part)
+ */
 export function qPartsAttachedTo(subquery is Query) returns Query
 {
-    return {"queryType" : QueryType.PARTS_ATTACHED_TO, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.PARTS_ATTACHED_TO, "subquery" : subquery } as Query;
 }
 
 /**

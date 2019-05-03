@@ -72,6 +72,16 @@ export function getCurrentVersion(context is Context) returns FeatureScriptVersi
     return @getCurrentVersion(context) as FeatureScriptVersionNumber;
 }
 
+/**
+ * @internal
+ * Returns `true` if the active feature of `context` is a sheet metal feature, or is a subfeature of a sheet metal feature
+ */
+export function isInSheetMetalFeature(context is Context)
+{
+    return @isInSheetMetalFeature(context);
+}
+
+
 //====================== Id ========================
 
 /**
