@@ -482,12 +482,7 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
 */
 export function startTrackingIdentity(context is Context, subquery is Query) returns Query
 {
-    var out = {};
-    out.subquery1 = evaluateQuery(context, subquery);
-    out.lastOperationId = lastOperationId(context);
-    out.identityPreservingOnly = true;
-    out.queryType = QueryType.TRACKING;
-    return out as Query;
+    return startTrackingIdentityFromOp(evaluateQuery(context, subquery), lastOperationId(context));
 }
 
 /**
@@ -500,14 +495,45 @@ export function startTrackingIdentityBatched(context is Context, subquery is Que
     const lastOperationId = lastOperationId(context);
     for (var ent in evaluateQuery(context, subquery))
     {
-        out = append(out, {
-                        "subquery1" : [ent],
-                        "lastOperationId" : lastOperationId,
-                        "identityPreservingOnly" : true,
-                        "queryType" : QueryType.TRACKING
-                    } as Query);
+        out = append(out, startTrackingIdentityFromOp([ent], lastOperationId));
     }
     return out;
+}
+
+/**
+* Generates query robust to identity-preserving changes
+*/
+export function makeRobustQuery(context is Context, subquery is Query) returns Query
+{
+    return qUnion(append(evaluateQuery(context, subquery), startTrackingIdentity(context, subquery)));
+}
+
+/**
+* Generates array of robust queries for each entity of the subquery
+*/
+export function makeRobustQueriesBatched(context is Context, subquery is Query) returns array
+{
+    var out = [];
+    const lastOperationId = lastOperationId(context);
+    for (var ent in evaluateQuery(context, subquery))
+    {
+        out = append(out, qUnion([ent, startTrackingIdentityFromOp([ent], lastOperationId)]));
+    }
+    return out;
+}
+
+/**
+* @internal
+* Used in `startTrackingIdentity`
+*/
+function startTrackingIdentityFromOp(subqueries is array, operationId is Id) returns Query
+{
+    return {
+        "subquery1" : subqueries,
+        "lastOperationId" : operationId,
+        "identityPreservingOnly" : true,
+        "queryType" : QueryType.TRACKING
+        } as Query;
 }
 
 /**

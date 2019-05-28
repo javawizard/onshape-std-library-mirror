@@ -77,7 +77,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         definition.mergeRibs is boolean;
     }
     {
-        const profiles = evaluateQuery(context, definition.profiles);
+        const useRobustProfilesQ = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY);
+        const profiles = (useRobustProfilesQ) ? makeRobustQueriesBatched(context, definition.profiles) : evaluateQuery(context, definition.profiles);
         const numberOfRibs = size(profiles);
         if (profiles == [])
         {

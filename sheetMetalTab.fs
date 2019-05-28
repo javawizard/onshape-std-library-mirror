@@ -56,7 +56,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         const unionEntityQuery = qUnion(unionEntities);
         const sheetMetalBodies = evaluateQuery(context, qOwnerBody(unionEntityQuery));
 
-        const subtractBodies = getOwnerSMModel(context, definition.booleanSubtractScope);
+        var subtractBodies = getOwnerSMModel(context, definition.booleanSubtractScope);
         var sheetMetalBodiesQuery = qUnion(concatenateArrays([subtractBodies, sheetMetalBodies]));
         const initialData = getInitialEntitiesAndAttributes(context, sheetMetalBodiesQuery);
         sheetMetalBodiesQuery = qUnion([startTracking(context, sheetMetalBodiesQuery), sheetMetalBodiesQuery]);
@@ -94,7 +94,9 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
 
 function applyTab(context is Context, id is Id, definition is map, tabQuery is Query, unionEntities is array, rootId is Id) returns boolean
 {
-    const evaluatedTabFaces = evaluateQuery(context, tabQuery);
+    const evaluatedTabFaces = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY)) ?
+                                makeRobustQueriesBatched(context, tabQuery) : evaluateQuery(context, tabQuery);
+
     const separatedSubtractQueries = separateSheetMetalQueries(context, definition.booleanSubtractScope);
 
     const tabTuples = groupByCoincidentPlanes(context, makeTopologyTuples(context, evaluatedTabFaces));

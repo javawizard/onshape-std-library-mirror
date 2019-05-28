@@ -90,19 +90,27 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         definition.isInContext is boolean;
     }
     {
+        if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))
+        {
+            // In-context subfeatures have no external references that can be patterned, so correct behavior is to never
+            // pattern the subfeatures, and only pattern features that depend on them.
+            // In-context entities are unmodifiable, so this subfeature would fail anyway, but to prevent extra work and
+            // notices we just return early here.
+            return;
+        }
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qNothing()});
-       if (definition.specifyUnits)
-       {
+        if (definition.specifyUnits)
+        {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1032_MESH_SCALING_IN_TRANSLATOR))
                 definition.scale = stringToUnit(definition.unit as string).value / stringToUnit(definition.originalUnit as string).value;
             else
                 definition.scale = stringToUnit(definition.unit as string).value;
-       }
-       else
-       {
+        }
+        else
+        {
             definition.scale = 1.0;
-       }
+        }
         definition.isModifiable = !definition.isInContext;
         if (definition.dependsOnBlob)
         {

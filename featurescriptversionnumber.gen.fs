@@ -788,7 +788,12 @@ export enum FeatureScriptVersionNumber
     V1060_SET_CHAMFERS_SEPARATELY,
     V1061_DISAMBIGUATE_COPY,
     V1062_GET_SM_ENTS,
-    V1063_ORPHANED_BEND
+    V1063_ORPHANED_BEND,
+    V1073_REFINE_SKETCH_INTERSECTIONS,
+    V1074_SKIP_IN_CONTEXT_PATTERN,
+    V1075_DEDUPLICATE_CREATE,
+    V1076_TRANSIENT_QUERY,
+    V1077_ERROR_STRING
 }
 
 /**
@@ -799,6 +804,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1063_ORPHANED_BEND;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1077_ERROR_STRING;
 
 

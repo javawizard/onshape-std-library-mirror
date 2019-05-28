@@ -871,7 +871,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 smEdges = append(smEdges, smEdge);
             }
         }
-        var modifiedFaces = qAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), AdjacencyType.EDGE, EntityType.FACE);
+
         var sheetMetalModels = qUnion(evaluateQuery(context, qOwnerBody(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])))));
 
         const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModels);
@@ -894,6 +894,13 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const trackingFaces = startTracking(context, allFaces);
         const associateChanges = qUnion([trackingFaces, modifiedEdges]);
         const neverMergeFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V933_SM_MOVE_FACE_NO_MERGE); //BEL-103002
+        const stricterTransientQuery = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY); //BEL-114203
+        var modifiedFaces;
+        if (stricterTransientQuery)  // base modifiedFaces off tracking queries
+            modifiedFaces = qAdjacent(associateChanges, AdjacencyType.EDGE, EntityType.FACE);
+        else
+            modifiedFaces = qAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), AdjacencyType.EDGE, EntityType.FACE);
+
         const mergeFaces = !neverMergeFaces &&
                             (definition.moveFaceType != MoveFaceType.ROTATE) &&
                             isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
@@ -906,7 +913,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
             }
             if (!alwaysUpdateAngles && definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                updateJointAngle(context, id, qAdjacent(allFaces, AdjacencyType.EDGE, EntityType.EDGE));
+                updateJointAngle(context, id, qAdjacent((stricterTransientQuery) ? trackingFaces : allFaces, AdjacencyType.EDGE, EntityType.EDGE));
             }
         }
         else

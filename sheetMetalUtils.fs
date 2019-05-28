@@ -1665,7 +1665,11 @@ export function getOwnerSMModel(context is Context, selection is Query) returns 
             }
         }
     }
-    return out;
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY))
+        return evaluateQuery(context, qUnion(out));
+    else
+        return out;
 }
 
 /**
