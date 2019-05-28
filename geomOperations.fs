@@ -1,4 +1,4 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,29 +15,29 @@ FeatureScript 1063; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1063.0");
-import(path : "onshape/std/context.fs", version : "1063.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
-import(path : "onshape/std/query.fs", version : "1063.0");
-import(path : "onshape/std/valueBounds.fs", version : "1063.0");
-import(path : "onshape/std/vector.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1077.0");
+import(path : "onshape/std/context.fs", version : "1077.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
+import(path : "onshape/std/query.fs", version : "1077.0");
+import(path : "onshape/std/valueBounds.fs", version : "1077.0");
+import(path : "onshape/std/vector.fs", version : "1077.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1077.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1077.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1077.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1077.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1077.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1063.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1077.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1063.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1077.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1077.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -72,17 +72,32 @@ export function opBoolean(context is Context, id is Id, definition is map)
 }
 
 /**
- * Either adds or removes material from the flat.
- * @internal
- * @param id : @autocomplete `id + "flatOp"`
+ * Generates a wire body given a [BSplineCurve] definition.
+ * The spline must have dimension of 3 and be G1-continuous.
+ * @param id : @autocomplete `id + "bSplineCurve1"`
  * @param definition {{
- *      @field faces {Query} : Faces to add or remove.
- *      @field operationType {BooleanOperationType} : The boolean operation to perform. Must be union or subtraction.
+ *      @field bSplineCurve {BSplineCurve} : The definition of the spline.
  * }}
  */
-export function opSMFlatOperation(context is Context, id is Id, definition is map)
+export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
 {
-    return @opSMFlatOperation(context, id, definition);
+    return @opCreateBSplineCurve(context, id, definition.bSplineCurve);
+}
+
+/**
+ * @internal
+ * Generates surfaces representing the outlines of parts or surfaces projected onto a surface
+ * @param id : @autocomplete `id + "createOutline1"`
+ * @param definition {{
+ *      @field tools {Query} : The tool parts or surfaces
+ *      @field target {Query} : The face whose surface will be used to create outline.
+ *                              Currently only planes, cylinders or extruded surfaces are supported.
+ *      @field offsetFaces {Query} : Faces in tools which are offsets of target face. @optional
+ * }}
+ */
+export function opCreateOutline(context is Context, id is Id, definition is map)
+{
+    return @opCreateOutline(context, id, definition);
 }
 
 /**
@@ -205,6 +220,81 @@ export function opDraft(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
+ * @param id : @autocomplete `id + "changeEdge1"`
+ * @param definition {{
+ *    @field edgeChangeOptions {array} : An array of maps of the form ("edge", "face", "offset", "transformList", "replaceFace").
+ *                                      Edge and face are required and are the edge and face being modified.
+ *                                      The other parameters are optional. If offset is a length parameter, the edge will
+ *                                      be offset. If transform list is an array of transforms, they will be applied to the edge.
+ *                                      If replaceFace is a face, the edge will be moved to that face.
+ * }}
+ */
+export function opEdgeChange(context is Context, id is Id, definition is map)
+{
+    return @opEdgeChange(context, id, definition);
+}
+
+/**
+ * @internal
+ * Extends the perimeter of a sheet body, moves sheet edges by distance or up to surface
+ * @param id : @autocomplete `id + "extendBody1"`
+ * @param definition {{
+ *    @field extendMethod {ExtendSheetBoundingType} : @autocomplete `ExtendSheetBoundingType.EXTEND_BY_DISTANCE`
+ *    @field entities {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} Bodies or edges to extend.
+ *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
+ *                                       @autocomplete `0.1 * inch`
+ *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Entity to extend up to. Can be a face [Query], a [Plane] or a [Cylinder].
+ *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
+ *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
+ *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
+ *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend", "helpPoint"). Both offset and limitEntity are optional
+ *                                      and will override the other offset and limitEntity parameters for the specified edge.
+ *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
+ * }}
+ */
+export function opExtendSheetBody(context is Context, id is Id, definition is map)
+{
+    return @opExtendSheetBody(context, id, definition);
+}
+
+/**
+ * @internal
+ * This function takes a list of faces and creates one or more surfaces from those faces.
+ * The source faces and body are not affected.
+ * @param id : @autocomplete `id + "extractSurface1"`
+ * @param definition {{
+ *    @field faces {Query} : List of faces to be converted. If `tangentPropagation` is `true`, these are the seed faces.
+ *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
+ *    @field offset {ValueWithUnits} : Offset extracted surface faces by this distance along normal @optional
+ *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset. Default `true`. @optional
+ *    @field redundancyType {ExtractSurfaceRedundancyType} : @optional
+ *              Controls the culling of redundant geometry on the result body, such as tangent edges and vertices.
+ *              `ALLOW_REDUNDANCY` does not delete any redundant geometry. `REMOVE_ADDED_REDUNDANCY` removes redundancy
+ *              created by this operation.  `REMOVE_ALL_REDUNDANCY` removes all redundant edges and vertices.
+ *              `REMOVE_ADDED_REDUNDANCY` is the default.
+ * }}
+ */
+export function opExtractSurface(context is Context, id is Id, definition is map)
+{
+    @opExtractSurface(context, id, definition);
+}
+
+/**
+ * Generates wire bodies from the supplied edges.
+ * If the edges are disjoint multiple wires will be returned.
+ * If the edges overlap or cross, or more than two meet at a point, the function will fail.
+ * @param id : @autocomplete `id + "opExtractWires1"`
+ * @param definition {{
+ *      @field edges {Query} : The edges to be extracted.
+ * }}
+ */
+export function opExtractWires(context is Context, id is Id, definition is map)
+{
+    return @opExtractWires(context, id, definition);
+}
+
+/**
  * Extrudes one or more edges or faces in a given direction with one or two end conditions.
  * Faces get extruded into solid bodies and edges get extruded into sheet bodies.
  * @param id : @autocomplete `id + "extrude1"`
@@ -273,6 +363,23 @@ export function opExtrude(context is Context, id is Id, definition is map)
 export function opFillet(context is Context, id is Id, definition is map)
 {
     return @opFillet(context, id, definition);
+}
+
+/**
+ * Generates a surface body from supplied boundary and internal constraints. The boundaries are defined as
+ * edge queries for each continuity constraint. The internal constraints may be defined as a set of support vertices.
+ * @param id : @autocomplete `id + "opFillSurface1"`
+ * @param definition {{
+ *      @field edgesG0 {Query} : The edges with position constraints.
+ *      @field edgesG1 {Query} : The edges with tangency constraints.
+ *      @field edgesG2 {Query} : The edges with curvature constraints.
+ *      @field guideVertices {Query} : The vertices the resulting surface is expected to interpolate.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
+ * }}
+ */
+export function opFillSurface(context is Context, id is Id, definition is map)
+{
+    return @opFillSurface(context, id, definition);
 }
 
 /**
@@ -458,6 +565,24 @@ export function opMoveFace(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
+ * Under development, not for general use.
+ *
+ * Assigns name to the entity. This will allow using qNamed() to query the entity.
+ * When historical queries are generated, qNamed() will be used as a shortcut.
+ * If definition.entity resolves to multiple entities, the operation completes with a warning status.
+ * @param id : @autocomplete `id + "nameEntity1"`
+ * @param definition {{
+ *      @field entity {Query} : The entity to be named.
+ *      @field entityName {string} : The name, should be unique in the part studio.
+ * }}
+*/
+export function opNameEntity(context is Context, id is Id, definition is map)
+{
+    return @opNameEntity(context, id, definition);
+}
+
+/**
  * This is a direct editing operation that offsets one or more faces.
  * @param id : @autocomplete `id + "offsetFace1"`
  * @param definition {{
@@ -589,6 +714,27 @@ export function opRevolve(context is Context, id is Id, definition is map)
 }
 
 /**
+ * Rolls or unrolls faces from one surface onto another.  The location and orientation of the rolled faces on the destination
+ * surface is controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [RollSurface]s.
+ * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies representing
+ * the rolled or unrolled faces.  Faces that are topologically connected will remain topologically connected in the result
+ * body. This operation currently supports rolling from a plane onto a cylinder, and unrolling from a cylinder onto a plane.
+ * @param definition {{
+ *      @field entities {Query} : Faces to roll from `source` to `destination`.
+ *      @field source {RollSurface}      : The surface to roll from. All `entities` must lie on this surface.
+ *      @field destination {RollSurface} : The surface to roll onto.
+ *      @field orientWithDestination {boolean} : @optional If true (default), the normals of the resulting surface will point
+ *                                               in the same direction as the `destination`. If false, the normals of the
+ *                                               resulting surface will point in the opposite direction.  For the purpose
+ *                                               of this parameter, the normals of a [Cylinder] are always pointing outwards.
+ * }}
+ */
+export function opRoll(context is Context, id is Id, definition is map)
+{
+    return @opRoll(context, id, definition);
+}
+
+/**
  * Create a shell of a solid body with uniform thickness. The bodies that are passed
  * in are hollowed, omitting the walls on the `face` entities passed in.
  * @param id : @autocomplete `id + "shell1"`
@@ -601,6 +747,20 @@ export function opRevolve(context is Context, id is Id, definition is map)
 export function opShell(context is Context, id is Id, definition is map)
 {
     return @opShell(context, id, definition);
+}
+
+/**
+ * Either adds or removes material from the flat.
+ * @internal
+ * @param id : @autocomplete `id + "flatOp"`
+ * @param definition {{
+ *      @field faces {Query} : Faces to add or remove.
+ *      @field operationType {BooleanOperationType} : The boolean operation to perform. Must be union or subtraction.
+ * }}
+ */
+export function opSMFlatOperation(context is Context, id is Id, definition is map)
+{
+    return @opSMFlatOperation(context, id, definition);
 }
 
 /**
@@ -826,165 +986,4 @@ export function opTransform(context is Context, id is Id, definition is map)
     return @opTransform(context, id, definition);
 }
 
-/**
- * @internal
- * Extends the perimeter of a sheet body, moves sheet edges by distance or up to surface
- * @param id : @autocomplete `id + "extendBody1"`
- * @param definition {{
- *    @field extendMethod {ExtendSheetBoundingType} : @autocomplete `ExtendSheetBoundingType.EXTEND_BY_DISTANCE`
- *    @field entities {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} Bodies or edges to extend.
- *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
- *                                       @autocomplete `0.1 * inch`
- *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Entity to extend up to. Can be a face [Query], a [Plane] or a [Cylinder].
- *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
- *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
- *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
- *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend", "helpPoint"). Both offset and limitEntity are optional
- *                                      and will override the other offset and limitEntity parameters for the specified edge.
- *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
- * }}
- */
-export function opExtendSheetBody(context is Context, id is Id, definition is map)
-{
-    return @opExtendSheetBody(context, id, definition);
-}
-
-/**
- * @internal
- * @param id : @autocomplete `id + "changeEdge1"`
- * @param definition {{
- *    @field edgeChangeOptions {array} : An array of maps of the form ("edge", "face", "offset", "transformList", "replaceFace").
- *                                      Edge and face are required and are the edge and face being modified.
- *                                      The other parameters are optional. If offset is a length parameter, the edge will
- *                                      be offset. If transform list is an array of transforms, they will be applied to the edge.
- *                                      If replaceFace is a face, the edge will be moved to that face.
- * }}
- */
-export function opEdgeChange(context is Context, id is Id, definition is map)
-{
-    return @opEdgeChange(context, id, definition);
-}
-
-/**
- * @internal
- * This function takes a list of faces and creates one or more surfaces from those faces.
- * The source faces and body are not affected.
- * @param id : @autocomplete `id + "extractSurface1"`
- * @param definition {{
- *    @field faces {Query} : List of faces to be converted. If `tangentPropagation` is `true`, these are the seed faces.
- *    @field tangentPropagation {boolean} : Whether additional faces should be added to the selection by tangent propagation @optional
- *    @field offset {ValueWithUnits} : Offset extracted surface faces by this distance along normal @optional
- *    @field useFacesAroundToTrimOffset {boolean} : Use surrounding faces extensions to trim offset. Default `true`. @optional
- *    @field redundancyType {ExtractSurfaceRedundancyType} : @optional
- *              Controls the culling of redundant geometry on the result body, such as tangent edges and vertices.
- *              `ALLOW_REDUNDANCY` does not delete any redundant geometry. `REMOVE_ADDED_REDUNDANCY` removes redundancy
- *              created by this operation.  `REMOVE_ALL_REDUNDANCY` removes all redundant edges and vertices.
- *              `REMOVE_ADDED_REDUNDANCY` is the default.
- * }}
- */
-export function opExtractSurface(context is Context, id is Id, definition is map)
-{
-    @opExtractSurface(context, id, definition);
-}
-
-/**
- * @internal
- * Generates surfaces representing the outlines of parts or surfaces projected onto a surface
- * @param id : @autocomplete `id + "createOutline1"`
- * @param definition {{
- *      @field tools {Query} : The tool parts or surfaces
- *      @field target {Query} : The face whose surface will be used to create outline.
- *                              Currently only planes, cylinders or extruded surfaces are supported.
- *      @field offsetFaces {Query} : Faces in tools which are offsets of target face. @optional
- * }}
- */
-export function opCreateOutline(context is Context, id is Id, definition is map)
-{
-    return @opCreateOutline(context, id, definition);
-}
-
-
-/**
- * Generates a wire body given a [BSplineCurve] definition.
- * The spline must have dimension of 3 and be G1-continuous.
- * @param id : @autocomplete `id + "bSplineCurve1"`
- * @param definition {{
- *      @field bSplineCurve {BSplineCurve} : The definition of the spline.
- * }}
- */
-export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
-{
-    return @opCreateBSplineCurve(context, id, definition.bSplineCurve);
-}
-
-/**
- * Generates wire bodies from the supplied edges.
- * If the edges are disjoint multiple wires will be returned.
- * If the edges overlap or cross, or more than two meet at a point, the function will fail.
- * @param id : @autocomplete `id + "opExtractWires1"`
- * @param definition {{
- *      @field edges {Query} : The edges to be extracted.
- * }}
- */
-export function opExtractWires(context is Context, id is Id, definition is map)
-{
-    return @opExtractWires(context, id, definition);
-}
-
-/**
- * @internal
- * Under development, not for general use.
- *
- * Assigns name to the entity. This will allow using qNamed() to query the entity.
- * When historical queries are generated, qNamed() will be used as a shortcut.
- * If definition.entity resolves to multiple entities, the operation completes with a warning status.
- * @param id : @autocomplete `id + "nameEntity1"`
- * @param definition {{
- *      @field entity {Query} : The entity to be named.
- *      @field entityName {string} : The name, should be unique in the part studio.
- * }}
-*/
-export function opNameEntity(context is Context, id is Id, definition is map)
-{
-    return @opNameEntity(context, id, definition);
-}
-
-
-/**
- * Generates a surface body from supplied boundary and internal constraints. The boundaries are defined as
- * edge queries for each continuity constraint. The internal constraints may be defined as a set of support vertices.
- * @param id : @autocomplete `id + "opFillSurface1"`
- * @param definition {{
- *      @field edgesG0 {Query} : The edges with position constraints.
- *      @field edgesG1 {Query} : The edges with tangency constraints.
- *      @field edgesG2 {Query} : The edges with curvature constraints.
- *      @field guideVertices {Query} : The vertices the resulting surface is expected to interpolate.
- *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
- * }}
- */
-export function opFillSurface(context is Context, id is Id, definition is map)
-{
-    return @opFillSurface(context, id, definition);
-}
-
-/**
- * Rolls or unrolls faces from one surface onto another.  The location and orientation of the rolled faces on the destination
- * surface is controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [RollSurface]s.
- * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies representing
- * the rolled or unrolled faces.  Faces that are topologically connected will remain topologically connected in the result
- * body. This operation currently supports rolling from a plane onto a cylinder, and unrolling from a cylinder onto a plane.
- * @param definition {{
- *      @field entities {Query} : Faces to roll from `source` to `destination`.
- *      @field source {RollSurface}      : The surface to roll from. All `entities` must lie on this surface.
- *      @field destination {RollSurface} : The surface to roll onto.
- *      @field orientWithDestination {boolean} : @optional If true (default), the normals of the resulting surface will point
- *                                               in the same direction as the `destination`. If false, the normals of the
- *                                               resulting surface will point in the opposite direction.  For the purpose
- *                                               of this parameter, the normals of a [Cylinder] are always pointing outwards.
- * }}
- */
-export function opRoll(context is Context, id is Id, definition is map)
-{
-    return @opRoll(context, id, definition);
-}
-
+// NOTE: For documentation readability, new operations in this file should be sorted alphabetically

@@ -1,21 +1,21 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1063.0");
-export import(path : "onshape/std/error.fs", version : "1063.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1063.0");
-export import(path : "onshape/std/query.fs", version : "1063.0");
+export import(path : "onshape/std/context.fs", version : "1077.0");
+export import(path : "onshape/std/error.fs", version : "1077.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1077.0");
+export import(path : "onshape/std/query.fs", version : "1077.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1063.0");
-import(path : "onshape/std/math.fs", version : "1063.0");
-import(path : "onshape/std/string.fs", version : "1063.0");
-import(path : "onshape/std/transform.fs", version : "1063.0");
-import(path : "onshape/std/units.fs", version : "1063.0");
-import(path : "onshape/std/tabReferences.fs", version : "1063.0");
+import(path : "onshape/std/containers.fs", version : "1077.0");
+import(path : "onshape/std/math.fs", version : "1077.0");
+import(path : "onshape/std/string.fs", version : "1077.0");
+import(path : "onshape/std/transform.fs", version : "1077.0");
+import(path : "onshape/std/units.fs", version : "1077.0");
+import(path : "onshape/std/tabReferences.fs", version : "1077.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -482,12 +482,7 @@ export function startTracking(context is Context, sketchId is Id, sketchEntityId
 */
 export function startTrackingIdentity(context is Context, subquery is Query) returns Query
 {
-    var out = {};
-    out.subquery1 = evaluateQuery(context, subquery);
-    out.lastOperationId = lastOperationId(context);
-    out.identityPreservingOnly = true;
-    out.queryType = QueryType.TRACKING;
-    return out as Query;
+    return startTrackingIdentityFromOp(evaluateQuery(context, subquery), lastOperationId(context));
 }
 
 /**
@@ -500,14 +495,45 @@ export function startTrackingIdentityBatched(context is Context, subquery is Que
     const lastOperationId = lastOperationId(context);
     for (var ent in evaluateQuery(context, subquery))
     {
-        out = append(out, {
-                        "subquery1" : [ent],
-                        "lastOperationId" : lastOperationId,
-                        "identityPreservingOnly" : true,
-                        "queryType" : QueryType.TRACKING
-                    } as Query);
+        out = append(out, startTrackingIdentityFromOp([ent], lastOperationId));
     }
     return out;
+}
+
+/**
+* Generates query robust to identity-preserving changes
+*/
+export function makeRobustQuery(context is Context, subquery is Query) returns Query
+{
+    return qUnion(append(evaluateQuery(context, subquery), startTrackingIdentity(context, subquery)));
+}
+
+/**
+* Generates array of robust queries for each entity of the subquery
+*/
+export function makeRobustQueriesBatched(context is Context, subquery is Query) returns array
+{
+    var out = [];
+    const lastOperationId = lastOperationId(context);
+    for (var ent in evaluateQuery(context, subquery))
+    {
+        out = append(out, qUnion([ent, startTrackingIdentityFromOp([ent], lastOperationId)]));
+    }
+    return out;
+}
+
+/**
+* @internal
+* Used in `startTrackingIdentity`
+*/
+function startTrackingIdentityFromOp(subqueries is array, operationId is Id) returns Query
+{
+    return {
+        "subquery1" : subqueries,
+        "lastOperationId" : operationId,
+        "identityPreservingOnly" : true,
+        "queryType" : QueryType.TRACKING
+        } as Query;
 }
 
 /**

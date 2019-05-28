@@ -1,28 +1,28 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1063.0");
-export import(path : "onshape/std/tool.fs", version : "1063.0");
+export import(path : "onshape/std/query.fs", version : "1077.0");
+export import(path : "onshape/std/tool.fs", version : "1077.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1063.0");
+export import(path : "onshape/std/manipulator.fs", version : "1077.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1063.0");
-import(path : "onshape/std/box.fs", version : "1063.0");
-import(path : "onshape/std/containers.fs", version : "1063.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
-import(path : "onshape/std/evaluate.fs", version : "1063.0");
-import(path : "onshape/std/feature.fs", version : "1063.0");
-import(path : "onshape/std/mathUtils.fs", version : "1063.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1063.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1063.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1063.0");
-import(path : "onshape/std/valueBounds.fs", version : "1063.0");
+import(path : "onshape/std/attributes.fs", version : "1077.0");
+import(path : "onshape/std/box.fs", version : "1077.0");
+import(path : "onshape/std/containers.fs", version : "1077.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
+import(path : "onshape/std/evaluate.fs", version : "1077.0");
+import(path : "onshape/std/feature.fs", version : "1077.0");
+import(path : "onshape/std/mathUtils.fs", version : "1077.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1077.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1077.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1077.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1077.0");
+import(path : "onshape/std/valueBounds.fs", version : "1077.0");
 
 
 /**
@@ -871,7 +871,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 smEdges = append(smEdges, smEdge);
             }
         }
-        var modifiedFaces = qAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), AdjacencyType.EDGE, EntityType.FACE);
+
         var sheetMetalModels = qUnion(evaluateQuery(context, qOwnerBody(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])))));
 
         const initialData = getInitialEntitiesAndAttributes(context, sheetMetalModels);
@@ -894,6 +894,13 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const trackingFaces = startTracking(context, allFaces);
         const associateChanges = qUnion([trackingFaces, modifiedEdges]);
         const neverMergeFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V933_SM_MOVE_FACE_NO_MERGE); //BEL-103002
+        const stricterTransientQuery = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY); //BEL-114203
+        var modifiedFaces;
+        if (stricterTransientQuery)  // base modifiedFaces off tracking queries
+            modifiedFaces = qAdjacent(associateChanges, AdjacencyType.EDGE, EntityType.FACE);
+        else
+            modifiedFaces = qAdjacent(qUnion(concatenateArrays([alignedSMFaces, antiAlignedSMFaces, smEdges])), AdjacencyType.EDGE, EntityType.FACE);
+
         const mergeFaces = !neverMergeFaces &&
                             (definition.moveFaceType != MoveFaceType.ROTATE) &&
                             isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
@@ -906,7 +913,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
             }
             if (!alwaysUpdateAngles && definition.moveFaceType == MoveFaceType.ROTATE)
             {
-                updateJointAngle(context, id, qAdjacent(allFaces, AdjacencyType.EDGE, EntityType.EDGE));
+                updateJointAngle(context, id, qAdjacent((stricterTransientQuery) ? trackingFaces : allFaces, AdjacencyType.EDGE, EntityType.EDGE));
             }
         }
         else

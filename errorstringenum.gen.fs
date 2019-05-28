@@ -1,4 +1,4 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1788,7 +1788,13 @@ export enum ErrorStringEnum
     /* Sheet metal model cannot be built with a detached bend. */
     SHEET_METAL_ORPHANED_BEND,
     /* Context assembly reference is not valid. */
-    ASSEMBLY_CONTEXT_INVALID_REFERENCE
+    ASSEMBLY_CONTEXT_INVALID_REFERENCE,
+    /* Failed to process one or more references. */
+    ASSEMBLY_FEATURE_QUERY_DATA_MISSING,
+    /* Document is not owned by company. */
+    NON_GEOMETRIC_ITEMS_DOCUMENT_NOT_OWNED_BY_COMPANY,
+    /* Failed to find specified item for document owner. */
+    NON_GEOMETRIC_ITEM_NO_ITEM_FOUND_FOR_DOCUMENT_OWNER
 }
 
 

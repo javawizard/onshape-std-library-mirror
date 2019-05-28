@@ -1,19 +1,19 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/rollsurfacetype.gen.fs", version : "1063.0");
+export import(path : "onshape/std/rollsurfacetype.gen.fs", version : "1077.0");
 
-import(path : "onshape/std/context.fs", version : "1063.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
-import(path : "onshape/std/error.fs", version : "1063.0");
-import(path : "onshape/std/evaluate.fs", version : "1063.0");
-import(path : "onshape/std/math.fs", version : "1063.0");
-import(path : "onshape/std/query.fs", version : "1063.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
-import(path : "onshape/std/units.fs", version : "1063.0");
-import(path : "onshape/std/vector.fs", version : "1063.0");
+import(path : "onshape/std/context.fs", version : "1077.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
+import(path : "onshape/std/error.fs", version : "1077.0");
+import(path : "onshape/std/evaluate.fs", version : "1077.0");
+import(path : "onshape/std/math.fs", version : "1077.0");
+import(path : "onshape/std/query.fs", version : "1077.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1077.0");
+import(path : "onshape/std/units.fs", version : "1077.0");
+import(path : "onshape/std/vector.fs", version : "1077.0");
 
 /**
  * Represents the `source` or `destination` surface for [opRoll].

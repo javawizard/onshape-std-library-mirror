@@ -1,10 +1,10 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "1063.0");
-import(path : "onshape/std/units.fs", version : "1063.0");
+import(path : "onshape/std/mathUtils.fs", version : "1077.0");
+import(path : "onshape/std/units.fs", version : "1077.0");
 
 /**
  * The world coordinate system, whose axes all other coordinate systems are defined against.
@@ -81,7 +81,8 @@ export predicate tolerantEquals(cSys1 is CoordSystem, cSys2 is CoordSystem)
 
 /**
  * Convert a specified point from a specified coordinate system into world space.
- * @param cSys
+ * @ex `toWorld(cSys, vector(0, 0, 0))` equals `cSys.origin`
+ *
  * @param pointInCSys : A 3D vector, measured with respect to the `cSys` provided.
  * @returns {Vector} : A 3D vector in world space.
  */
@@ -96,10 +97,13 @@ precondition
 }
 
 /**
- * Returns a [Transform] which will move geometry from a specified coordinate system into world
- * space.
+ * Returns a [Transform] which will transform coordinates measured in `cSys` into
+ * world coordinates.
+ * @ex `toWorld(cSys) * vector(0, 0, 0)` equals `cSys.origin`
  *
- * @seealso [opTransform]
+ * When used in operations which place or move parts (like [opTransform], [opPattern],
+ * or [addInstance]), this transform will (somewhat counterintuitively) move parts from
+ * the world origin and orientation to the `cSys` origin and orientation.
  */
 export function toWorld(cSys is CoordSystem) returns Transform
 {
@@ -109,8 +113,10 @@ export function toWorld(cSys is CoordSystem) returns Transform
 
 /**
  * Convert a specified point from world space into a specified coordinate system.
- * @param cSys
+ * @ex `fromWorld(cSys, cSys.origin)` equals `vector(0, 0, 0)`
+ *
  * @param worldPoint : A 3D vector, measured in world space.
+ * @returns {Vector} : A 3D vector measured in `cSys`
  */
 export function fromWorld(cSys is CoordSystem, worldPoint is Vector) returns Vector
 precondition
@@ -123,10 +129,13 @@ precondition
 }
 
 /**
- * Returns a [Transform] which will move geometry from world space into a
- * specified coordinate system.
+ * Returns a [Transform] which will transform coordinates measured in world space into
+ * `cSys` coordinates.
+ * @ex `fromWorld(cSys) * cSys.origin` equals `vector(0, 0, 0)`
  *
- * @seealso [opTransform]
+ * When used in operations which place or move parts (like [opTransform], [opPattern],
+ * or [addInstance]), this transform will (somewhat counterintuitively) move parts from
+ * the `cSys` origin and orientation to the world origin and orientation.
  */
 export function fromWorld(cSys is CoordSystem) returns Transform
 {

@@ -1,19 +1,19 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "1063.0");
-import(path : "onshape/std/containers.fs", version : "1063.0");
-import(path : "onshape/std/coordSystem.fs", version : "1063.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1063.0");
-import(path : "onshape/std/feature.fs", version : "1063.0");
-import(path : "onshape/std/mathUtils.fs", version : "1063.0");
-import(path : "onshape/std/primitives.fs", version : "1063.0");
-import(path : "onshape/std/sketch.fs", version : "1063.0");
-import(path : "onshape/std/string.fs", version : "1063.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1063.0");
-import(path : "onshape/std/units.fs", version : "1063.0");
+import(path : "onshape/std/box.fs", version : "1077.0");
+import(path : "onshape/std/containers.fs", version : "1077.0");
+import(path : "onshape/std/coordSystem.fs", version : "1077.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
+import(path : "onshape/std/feature.fs", version : "1077.0");
+import(path : "onshape/std/mathUtils.fs", version : "1077.0");
+import(path : "onshape/std/primitives.fs", version : "1077.0");
+import(path : "onshape/std/sketch.fs", version : "1077.0");
+import(path : "onshape/std/string.fs", version : "1077.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1077.0");
+import(path : "onshape/std/units.fs", version : "1077.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
@@ -100,14 +100,62 @@ export function debug(context is Context, value is Query)
         const count = size(evaluateQuery(context, qEntityFilter(qUnion(entities), entityType.value)));
         if (count == 0)
             continue;
-        const entityString = { EntityType.VERTEX : "vertices",
-                    EntityType.EDGE : "edges",
-                    EntityType.FACE : "faces",
-                    EntityType.BODY : "bodies" }[entityType.value];
-        print((first ? "" : ", ") ~ count ~ " " ~ entityString);
+
+        print(first ? "" : ", ");
         first = false;
+
+        var entityString;
+        if (count == 1)
+        {
+            entityString = { EntityType.VERTEX : "vertex",
+                             EntityType.EDGE : "edge",
+                             EntityType.FACE : "face",
+                             EntityType.BODY : "body" }[entityType.value];
+        }
+        else
+        {
+            entityString = { EntityType.VERTEX : "vertices",
+                             EntityType.EDGE : "edges",
+                             EntityType.FACE : "faces",
+                             EntityType.BODY : "bodies" }[entityType.value];
+        }
+        print(count ~ " " ~ entityString);
+
+        if (entityType.value == EntityType.BODY)
+        {
+            print(" (");
+            var firstBodyType = true;
+            for (var bodyType in BodyType)
+            {
+                const bodyCount = size(evaluateQuery(context, qBodyType(qEntityFilter(qUnion(entities), EntityType.BODY), bodyType.value)));
+                if (bodyCount == 0)
+                    continue;
+
+                print(firstBodyType ? "" : ", ");
+                firstBodyType = false;
+
+                var bodyString = { BodyType.SOLID : "solid",
+                                   BodyType.SHEET : "sheet",
+                                   BodyType.WIRE : "wire",
+                                   BodyType.POINT : "point",
+                                   BodyType.MATE_CONNECTOR : "mate connector"}[bodyType.value];
+                print(bodyCount ~ " " ~ bodyString);
+            }
+            print(")");
+        }
+        else if (entityType.value == EntityType.VERTEX)
+        {
+            const mcVertexCount = size(evaluateQuery(context, qBodyType(qEntityFilter(qUnion(entities), EntityType.VERTEX), BodyType.MATE_CONNECTOR)));
+            if (mcVertexCount > 0)
+            {
+                print(" (" ~ mcVertexCount ~ " ");
+                print(mcVertexCount == 1 ? "mate connector" : "mate connectors");
+                print(")");
+            }
+        }
     }
     print("\n");
+
     addDebugEntities(context, value);
 }
 

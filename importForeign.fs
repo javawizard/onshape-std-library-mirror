@@ -1,12 +1,12 @@
-FeatureScript 1063; /* Automatically generated version */
+FeatureScript 1077; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "1063.0");
-import(path : "onshape/std/valueBounds.fs", version : "1063.0");
-import(path : "onshape/std/units.fs", version: "1063.0");
-import(path : "onshape/std/tabReferences.fs", version : "1063.0");
+import(path : "onshape/std/feature.fs", version : "1077.0");
+import(path : "onshape/std/valueBounds.fs", version : "1077.0");
+import(path : "onshape/std/units.fs", version: "1077.0");
+import(path : "onshape/std/tabReferences.fs", version : "1077.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
@@ -90,19 +90,27 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         definition.isInContext is boolean;
     }
     {
+        if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))
+        {
+            // In-context subfeatures have no external references that can be patterned, so correct behavior is to never
+            // pattern the subfeatures, and only pattern features that depend on them.
+            // In-context entities are unmodifiable, so this subfeature would fail anyway, but to prevent extra work and
+            // notices we just return early here.
+            return;
+        }
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : qNothing()});
-       if (definition.specifyUnits)
-       {
+        if (definition.specifyUnits)
+        {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1032_MESH_SCALING_IN_TRANSLATOR))
                 definition.scale = stringToUnit(definition.unit as string).value / stringToUnit(definition.originalUnit as string).value;
             else
                 definition.scale = stringToUnit(definition.unit as string).value;
-       }
-       else
-       {
+        }
+        else
+        {
             definition.scale = 1.0;
-       }
+        }
         definition.isModifiable = !definition.isInContext;
         if (definition.dependsOnBlob)
         {
