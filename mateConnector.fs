@@ -138,7 +138,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         if (definition.requireOwnerPart)
         {
             // The mate connector owner part should be the one in the part list, thus it should be modifiable
-            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES && SketchObject.NO, "MaxNumberOfPicks" : 1 }
             definition.ownerPart is Query;
         }
 
@@ -275,19 +275,33 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
 function findOwnerPart(context is Context, definition is map, possiblePartOwners is array)
 {
     var ownerPartQuery;
-    for (var i = 0; i < size(possiblePartOwners); i += 1)
+    for (var possiblePartOwner in possiblePartOwners)
     {
-        const meshQuery = qSourceMesh(possiblePartOwners[i]);
-        if (size(evaluateQuery(context, meshQuery)) != 0)
+        const meshQuery = qSourceMesh(possiblePartOwner);
+        if (evaluateQuery(context, meshQuery) != [])
         {
             ownerPartQuery = meshQuery;
             break;
         }
-        const currentQuery = qBodyType(qOwnerBody(possiblePartOwners[i]), BodyType.SOLID);
-        if (size(evaluateQuery(context, currentQuery)) != 0)
+
+        const solidQuery = qBodyType(qOwnerBody(possiblePartOwner), BodyType.SOLID);
+        if (evaluateQuery(context, solidQuery) != [])
         {
-            ownerPartQuery = currentQuery;
+            ownerPartQuery = solidQuery;
             break;
+        }
+
+        // After V285, findOwnerPart is only called when creating a new feature (so no versioning is required).
+        // However, before V285, findOwnerPart is called on rebuild.
+        // As a result, sheets need to be excluded from possible owners before V285.
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
+        {
+            const modifiableSurfaceQuery = qModifiableEntityFilter(qSketchFilter(qBodyType(qOwnerBody(possiblePartOwner), BodyType.SHEET), SketchObject.NO));
+            if (evaluateQuery(context, modifiableSurfaceQuery) != [])
+            {
+                ownerPartQuery = modifiableSurfaceQuery;
+                break;
+            }
         }
     }
     return ownerPartQuery;

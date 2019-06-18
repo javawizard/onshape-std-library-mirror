@@ -354,28 +354,48 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
             retestDirectionFlip = true;
         }
     }
-    var newDefinition = booleanStepEditLogic(context, id, oldDefinition, definition,
-                                specifiedParameters, hiddenBodies, revolve);
-    // booleanStepEditLogic might change boolean operation type,
-    // if flip was not adjusted above, re-test it
-    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
-    {
-        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
-    }
 
-    if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        var newDefinition = definition;
+        if (retestDirectionFlip)
+        {
+            // Always retest forward to stabilize the case where the forward and backward test both result in a flip to
+            // each other.  Example: BEL-106989
+            newDefinition.oppositeDirection = false;
+        }
+
+        newDefinition = booleanStepEditLogic(context, id, oldDefinition, newDefinition, specifiedParameters, hiddenBodies, revolve);
+
+        // booleanStepEditLogic might change boolean operation type,
+        // if flip was not adjusted above, re-test it
+        if (retestDirectionFlip)
+        {
+            if (canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+            {
+                newDefinition.oppositeDirection = true;
+            }
+            else
+            {
+                newDefinition.oppositeDirection = definition.oppositeDirection;
+            }
+        }
+
+        definition = newDefinition;
+    }
+    else if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
     {
         if (definition.revolveType != RevolveType.ONE_DIRECTION)
         {
-            newDefinition.surfaceOperationType = NewSurfaceOperationType.NEW;
+            definition.surfaceOperationType = NewSurfaceOperationType.NEW;
         }
         else
         {
-            newDefinition = surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
+            definition = surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
         }
     }
 
-    return newDefinition;
+    return definition;
 }
 
 

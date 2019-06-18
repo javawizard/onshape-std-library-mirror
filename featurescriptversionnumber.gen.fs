@@ -793,7 +793,17 @@ export enum FeatureScriptVersionNumber
     V1074_SKIP_IN_CONTEXT_PATTERN,
     V1075_DEDUPLICATE_CREATE,
     V1076_TRANSIENT_QUERY,
-    V1077_ERROR_STRING
+    V1077_ERROR_STRING,
+    V1086_EDGE_PATTERN_THICKNESS,
+    V1087_EXTEND_SURFACE,
+    V1088_SUBSTITUTION_EVAL,
+    V1089_SKETCH_CURVATURE_CONSTRAINT,
+    V1090_KEEP_SKETCHES_IN_SECTION_CUT,
+    V1091_BUMP_FOR_FEATURE_SPECS_TRANSLATION,
+    V1092_SURFACE_MATE_CONNECTOR_OWNER,
+    V1093_HOLE_THREAD_FIX,
+    V1094_HOLE_SM_FIX,
+    V1095_INTERNAL_FEATURE
 }
 
 /**
@@ -804,6 +814,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1077_ERROR_STRING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1095_INTERNAL_FEATURE;
 
 

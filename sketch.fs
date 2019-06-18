@@ -53,6 +53,7 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
@@ -66,6 +67,7 @@ export import(path : "onshape/std/radiusdisplay.gen.fs", version : "✨");
 export import(path : "onshape/std/sketchtooltype.gen.fs", version : "✨");
 export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "✨");
 export import(path : "onshape/std/constrainttype.gen.fs", version : "✨");
+export import(path : "onshape/std/fixedparameterposition.gen.fs", version : "✨");
 
 /**
  * @internal
@@ -210,6 +212,12 @@ precondition
             else
                 value.sketchPlane = fullTransform * planeOriginal;
         }
+    }
+    else if (!queryContainsActiveSheetMetal(context, value.planeReference))
+    {
+        reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_ACTIVE_MODEL_REQUIRED);
+        value.sketchPlane = XY_PLANE;
+        value.planeReference = qNothing();
     }
 
     endFeature(context, id + "sketchPlane");

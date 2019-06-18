@@ -249,7 +249,7 @@ export function sort(entities is array, compareFunction is function)
  * Throws exception if `filterFunction` throws, or if the `filterFunction` does
  * not return `boolean`.
  *
- * @example `filter([1, 2, 3, 4, 5, 6], function(x) { return x % 2 == 0 })`
+ * @example `filter([1, 2, 3, 4, 5, 6], function(x) { return x % 2 == 0; })`
  *          returns `[2, 4, 6]`
  *
  * @param filterFunction : A function which takes one argument (a member

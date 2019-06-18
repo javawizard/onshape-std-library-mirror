@@ -115,7 +115,6 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         if (definition.dependsOnBlob)
         {
             definition.foreignId = undefined;
-            definition.processedDataId = definition.blobData.processedDataId;
         }
         else
         {

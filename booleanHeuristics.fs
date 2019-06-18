@@ -39,14 +39,10 @@ export function booleanStepEditLogicAnalysis(context is Context, oldDefinition i
         return { "canDefineOperation" : false, "canDefineScope" : false };
     }
     var canDefineScope = true;
-    if (definition.booleanScope is Query)
+    if (!canDefineOperation && definition.booleanScope is Query)
     {
-        var scopeValue = evaluateQuery(context, definition.booleanScope);
-        // Something is in the scope from previous heuristics
-        if (!canDefineOperation && scopeValue != [])
-        {
-            canDefineScope = false;
-        }
+        // Only change scope if heuristics have not already filled scope
+        canDefineScope = (evaluateQuery(context, definition.booleanScope) == []);
     }
     return { "canDefineOperation" : canDefineOperation, "canDefineScope" : canDefineScope };
 }
@@ -69,7 +65,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
 
     var newOpDefinition = definition;
     newOpDefinition.operationType = NewBodyOperationType.NEW;
-    var heuristicsId = id  + "heuristics";
+    var heuristicsId = id + "heuristics";
     startFeature(context, heuristicsId, newOpDefinition);
     try
     {
@@ -92,7 +88,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
  * @internal
  * Used by features using boolean heuristics
  */
-export function canSetBooleanFlip (oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
+export function canSetBooleanFlip(oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
 {
     if (specifiedParameters.booleanScope || oldDefinition.operationType == definition.operationType)
     {

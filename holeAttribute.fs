@@ -57,33 +57,6 @@ export function makeHoleAttribute(attributeId is string, holeStyle is HoleStyle)
 /**
 * @internal
 */
-export function makeSimpleHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.SIMPLE,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
-export function makeCBoreHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.C_BORE,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
-export function makeCSinkHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.C_SINK,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
 export function getHoleAttributes(context is Context, topology is Query) returns array
 {
     return getAttributes(context, {
