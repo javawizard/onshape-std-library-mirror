@@ -1,35 +1,33 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "1077.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1077.0");
-import(path : "onshape/std/box.fs", version : "1077.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1077.0");
-import(path : "onshape/std/containers.fs", version : "1077.0");
-import(path : "onshape/std/coordSystem.fs", version : "1077.0");
-import(path : "onshape/std/evaluate.fs", version : "1077.0");
-import(path : "onshape/std/extrude.fs", version : "1077.0");
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/mathUtils.fs", version : "1077.0");
-import(path : "onshape/std/revolve.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1077.0");
-import(path : "onshape/std/sketch.fs", version : "1077.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1077.0");
-import(path : "onshape/std/tool.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
-import(path : "onshape/std/string.fs", version : "1077.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1077.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1077.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1077.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1077.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
-import(path : "onshape/std/attributes.fs", version : "1077.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "1077.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1077.0");
-
+import(path : "onshape/std/boolean.fs", version : "1095.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1095.0");
+import(path : "onshape/std/box.fs", version : "1095.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1095.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/coordSystem.fs", version : "1095.0");
+import(path : "onshape/std/evaluate.fs", version : "1095.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/mathUtils.fs", version : "1095.0");
+import(path : "onshape/std/revolve.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1095.0");
+import(path : "onshape/std/sketch.fs", version : "1095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1095.0");
+import(path : "onshape/std/tool.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
+import(path : "onshape/std/string.fs", version : "1095.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1095.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1095.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1095.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1095.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1095.0");
+import(path : "onshape/std/attributes.fs", version : "1095.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1095.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1095.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -48,8 +46,42 @@ export enum HoleEndStyle
     BLIND_IN_LAST
 }
 
-const CSINK_ANGLE = 90 * degree;
 const MAX_LOCATIONS = 100;
+
+/*
+ * IB: the call structure of the principal functions in this file is something like this:
+ *
+ * // hole does the definition checks
+ * hole           --> holeOp
+ *                --> reduceLocations
+ *
+ * // holeOp makes all the holes and booleans them with the merge scope
+ * holeOp         --> getCutOption                                 // getCutOption checks whether to boolean one hole at a time or all at once at the end
+ *                --> holeAtLocation
+ *                --> createAttributesFromTracking, assignSheetMetalHoleAttributes
+ *
+ * // holeAtLocation creates hole body at location (and cuts if one-cut-at-a-time is on)
+ * holeAtLocation --> computeCSys                                  // computeCSys figures out the coordinate system for the hole
+ *                --> calculateStartPoint
+ *                --> cylinderCastBiDirectional
+ *                --> cutHole
+ *
+ * cutHole        --> getSheetMetalModels
+ *                --> sketchCBore, sketchCSink, sketchToolCore
+ *                --> startSketchTracking
+ *                --> spinCut                                     // opRevolve, if individual cuts, opBoolean
+ *                --> createAttributesFromTracking, createSheetMetalHoleAttributes
+ *
+ * createAttributesFromTracking --> createHoleAttribute
+ *
+ * createSheetMetalHoleAttributes --> assignSheetMetalHoleAttributes --> createAttributesForSheetMetalHole --> createHoleAttribute
+ *
+ * createHoleAttribute --> makeHoleAttribute
+ *                     --> addCommonAttributeProperties
+ *                     --> addSectionSpecsToAttribute
+ *
+ * sketchToolCore --> cylinderCast // For "shoulder depth" for blind in last holes
+ */
 
 /**
  * Creates holes of specific dimensions and style, based either on standard
@@ -349,6 +381,8 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
     definition.cutOption = getCutOption(context, definition);
     var faceTracking = {};
     var instanceTracking = {};
+    var startDistanceMap = {};
+    var holeDepthMap = {};
     const holeBodiesId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V763_HOLE_CUT_ALL) ? id + "holeBodies" : id;
     for (var location in locations)
     {
@@ -363,14 +397,10 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
              */
             holeNumber += 1;
             result = holeAtLocation(context, holeBodiesId, holeNumber, location, definition, result);
-            if (result.faceTracking != undefined)
-            {
-                faceTracking[holeNumber] = result.faceTracking;
-            }
-            if (result.instanceTracking != undefined)
-            {
-                instanceTracking[holeNumber] = result.instanceTracking;
-            }
+            faceTracking[holeNumber] = result.faceTracking;
+            instanceTracking[holeNumber] = result.instanceTracking;
+            startDistanceMap[holeNumber] = result.startDistances;
+            holeDepthMap[holeNumber] = result.holeDepth;
         }
     }
     if (definition.cutOption == HoleCutOption.CUT_ALL && result.numSuccess > 0)
@@ -401,7 +431,7 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
             for (var holeTracking in faceTracking)
             {
                 const holeId = id + ("hole-" ~ holeTracking.key);
-                createAttributesFromTracking(context, holeId, definition, holeTracking.value, definition.style);
+                createAttributesFromTracking(context, holeId, definition, holeTracking.value, definition.style, startDistanceMap[holeTracking.key], holeDepthMap[holeTracking.key]);
                 if (sheetMetalModels != undefined && instanceTracking[holeTracking.key] != undefined)
                 {
                     const instanceHoleEdges = evaluateQuery(context, qIntersection([holeEdgesQ, instanceTracking[holeTracking.key]]));
@@ -472,13 +502,14 @@ function computeCSys(context is Context, location is Query, definition is map) r
 function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
 {
     var startPointData = computeCSys(context, location, definition);
-    var startPointCSys = startPointData.startPointCSys;
+    var startPointCSys is CoordSystem = startPointData.startPointCSys;
 
     const useUnstableComponent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
     const holeId = (useUnstableComponent) ? id + unstableIdComponent("hole-" ~ holeNumber) : id + ("hole-" ~ holeNumber);
 
-    var startDistances = { "resultFront" : [{ "distance" : 0 * meter }], "resultBack" : [{ "distance" : 0 * meter }] };
-    if (calculateStartPoint(context, definition))
+    var startDistances = { "resultFront" : [{ "distance" : 0 * meter }] };
+    const changeStartPoint = calculateStartPoint(context, definition);
+    if (changeStartPoint || size(evaluateQuery(context, definition.scope)) > 1)
     {
         var cylinderCastDiameter = maxDiameter(definition);
         var firstBodyCastDiameter = undefined;
@@ -499,6 +530,12 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
                     "firstBodyCastDiameter" : firstBodyCastDiameter,
                     "scope" : definition.scope,
                     "needBack" : false });
+        if (!changeStartPoint)
+        {
+            // If we're not actually changing the start point and the distances are only
+            // for the callouts, put the 0-distance start point back in the array:
+            startDistances.resultFront = concatenateArrays([[{ "distance" : 0 * meter }], startDistances.resultFront]);
+        }
     }
     if (useUnstableComponent)
     {
@@ -510,6 +547,8 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
         result.numSuccess += result.numSuccess + 1;
         result.faceTracking = cutHoleResult.faceTracking;
         result.instanceTracking = cutHoleResult.instanceTracking;
+        result.startDistances = startDistances.resultFront;
+        result.holeDepth = cutHoleResult.holeDepth;
     }
     if (result.error == undefined && cutHoleResult.error != undefined)
     {
@@ -524,15 +563,17 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
 
 function calculateStartPoint(context is Context, definition is map) returns boolean
 {
+    if (definition.generateErrorBodies || definition.heuristics == true)
+        return false;
+    if (definition.endStyle == HoleEndStyle.THROUGH && definition.style == HoleStyle.SIMPLE)
+        return false;
+
     var startFromSketch = definition.startFromSketch;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V401_HOLE_CLEAR_START_FROM_SKETCH) && definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
     {
         startFromSketch = false;
     }
-    return !startFromSketch &&
-        !definition.generateErrorBodies &&
-        definition.heuristics != true &&
-        !(definition.endStyle == HoleEndStyle.THROUGH && definition.style == HoleStyle.SIMPLE);
+    return !startFromSketch;
 }
 
 function maxDiameter(definition is map) returns ValueWithUnits
@@ -699,19 +740,13 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     const isCBore = holeDefinition.style == HoleStyle.C_BORE;
     const isCSink = holeDefinition.style == HoleStyle.C_SINK;
 
-    if (startDistances.resultFront != undefined)
+    if (size(startDistances.resultFront) > 0)
     {
-        if (size(startDistances.resultFront) > 0)
-        {
-            frontDist = startDistances.resultFront[0].distance;
-        }
+        frontDist = startDistances.resultFront[0].distance;
     }
-    else
-    {
-        frontDist = max(startDistances.frontDist, 0 * meter);
-    }
+
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V831_HOLE_TOLERANT_DIST) &&
-        abs(frontDist/meter) < TOLERANCE.zeroLength)
+        abs(frontDist / meter) < TOLERANCE.zeroLength)
     {
         frontDist = 0 * meter;
     }
@@ -832,14 +867,14 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     if (size(newFaces) == 0)
         success = false;
 
+    const faceTracking = concatenateArrays([coreTrackingSpecs, cboreTrackingSpecs, csinkTrackingSpecs]);
+
     if (doCut)
     {
         if (success)
         {
             // add required attributes onto faces that were created based upon our tracked sketch entities
-            createAttributesFromTracking(context, id, holeDefinition, coreTrackingSpecs, holeStyle);
-            createAttributesFromTracking(context, id, holeDefinition, cboreTrackingSpecs, holeStyle);
-            createAttributesFromTracking(context, id, holeDefinition, csinkTrackingSpecs, holeStyle);
+            createAttributesFromTracking(context, id, holeDefinition, faceTracking, holeStyle, startDistances.resultFront, coreResult.holeDepth);
 
             if (sheetmetalModels != undefined)
             {
@@ -859,7 +894,8 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
     }
     else if (success && holeDefinition.cutOption == HoleCutOption.CUT_ALL)
     {
-        result.faceTracking = concatenateArrays([coreTrackingSpecs, cboreTrackingSpecs, csinkTrackingSpecs]);
+        result.faceTracking = faceTracking;
+        result.holeDepth = coreResult.holeDepth;
         //Instance tracking is used to disambiguate topology corresponding to different hole instances created after cut
         const circularEdgesQ = qGeometry(qCreatedBy(id, EntityType.EDGE), GeometryType.CIRCLE);
         const cylindricalFacesQ = qGeometry(qCreatedBy(id, EntityType.FACE), GeometryType.CYLINDER);
@@ -930,18 +966,10 @@ function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdg
         });
     if (cylinder is Cylinder)
     {
-        const diameter = cylinder.radius * 2;
-        if (tolerantEquals(holeDefinition.holeDiameter, diameter))
-        {
-            holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, HoleSectionFaceType.THROUGH_FACE);
-        }
-        else if (holeStyle == HoleStyle.C_BORE && tolerantEquals(holeDefinition.cBoreDiameter, diameter))
-        {
-            holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, HoleSectionFaceType.CBORE_DIAMETER_FACE);
-        }
-    }
-    if (holeAttribute != undefined)
-    {
+        // Sheet metal holes are always simple and through
+        holeDefinition.holeDiameter = cylinder.radius * 2;
+        holeDefinition.endStyle = HoleEndStyle.THROUGH;
+        holeAttribute = createHoleAttribute(id, holeDefinition, HoleStyle.SIMPLE, HoleSectionFaceType.THROUGH_FACE);
         setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
     }
 }
@@ -1110,6 +1138,7 @@ precondition
                     startDist = 0 * meter;
                 }
             }
+            result.holeDepth = startDist + depth;
             depth += startDist - arg.startDepth - arg.clearanceDepth;
             if (arg.holeDefinition.holeDiameter > arg.holeDefinition.tapDrillDiameter + TOLERANCE.zeroLength * meter)
             {
@@ -1122,27 +1151,29 @@ precondition
             // Find shoulder depth
             try
             {
-                const result = cylinderCast(context, id + "limit_surf_cast", {
+
+                const castResult = cylinderCast(context, id + "foo"+"limit_surf_cast", {
                             "distance" : distance,
                             "cSys" : arg.cSys,
                             "isFront" : true,
                             "findClosest" : false,
                             "diameter" : 2 * radius,
                             "scope" : arg.holeDefinition.scope });
-                if (result.distance != undefined)
+                if (castResult.distance != undefined)
                 {
-                    var startDist = result.distance;
+                    var startDist = castResult.distance;
                     if (startDist < 0 && isAtVersionOrLater(context, FeatureScriptVersionNumber.V291_HOLE_FEATURE_STANDARD_DEFAULTS))
                     {
                         startDist = 0 * meter;
                     }
+                    result.holeDepth = startDist + depth;
                     depth += startDist - arg.startDepth - arg.clearanceDepth;
                     if (arg.holeDefinition.holeDiameter > arg.holeDefinition.tapDrillDiameter + TOLERANCE.zeroLength * meter)
                     {
                         var delta = (arg.holeDefinition.holeDiameter - arg.holeDefinition.tapDrillDiameter) / 2 / tan(tipAngle / 2);
                         depth -= delta;
                     }
-                    lastBody = result.target;
+                    lastBody = castResult.target;
                 }
             }
         }
@@ -1150,6 +1181,10 @@ precondition
         {
             depth += tipDepth;
         }
+    }
+    else
+    {
+        result.holeDepth = arg.startDepth + arg.clearanceDepth + depth - (useTipDepth ? tipDepth : 0 * meter);
     }
 
     var points;
@@ -1211,14 +1246,38 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
     return resultTrackingArray;
 }
 
-function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, sketchTracking is array, holeStyle is HoleStyle)
+function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, sketchTracking is array, holeStyle is HoleStyle, startDistances is array, holeDepth)
 {
+    sketchTracking = filter(sketchTracking, function(track) { return track.trackingQuery != undefined; });
+
+    var trackingQueries = [];
     for (var track in sketchTracking)
+        trackingQueries = append(trackingQueries, track.trackingQuery);
+
+    var partToStartDistance = {};
+    var lastBody;
+    for (var startDistance in startDistances)
     {
-        if (track.trackingQuery != undefined)
+        if (startDistance.target != undefined)
         {
-            var sketchTrackingQuery = qEntityFilter(track.trackingQuery, EntityType.FACE);
-            var trackingQueryEntities = evaluateQuery(context, sketchTrackingQuery);
+            var parts = evaluateQuery(context, startDistance.target);
+            if (size(parts) == 1)
+            {
+                partToStartDistance[parts[0]] = startDistance.distance;
+                lastBody = parts[0];
+            }
+        }
+    }
+
+    // Split by parts
+    for (var part in evaluateQuery(context, qOwnerBody(qUnion(trackingQueries))))
+    {
+        var faceTypes = {};
+        var entityToSectionType = {};
+        for (var track in sketchTracking)
+        {
+            const sketchTrackingQuery = qOwnedByBody(qEntityFilter(track.trackingQuery, EntityType.FACE), part);
+            const trackingQueryEntities = evaluateQuery(context, sketchTrackingQuery);
             for (var entity in trackingQueryEntities)
             {
                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V623_SHEETMETAL_HOLE_ATTRIBUTE_FIX) &&
@@ -1227,12 +1286,63 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
                     // Do not want active sheet metal in the regular attribute processing
                     continue;
                 }
-                clearHoleAttributes(context, entity);
-                var holeAttribute = createHoleAttribute(id, holeDefinition, holeStyle, track.sectionType);
-                if (holeAttribute != undefined)
-                {
-                    setAttribute(context, { "entities" : entity, "attribute" : holeAttribute });
-                }
+                entityToSectionType[entity] = track.sectionType;
+                faceTypes[track.sectionType] = true;
+            }
+        }
+        var modifiedHoleDefinition = holeDefinition;
+        var modifiedHoleStyle = holeStyle;
+        // Remove countersink and counterbore if necessary
+        if (holeStyle == HoleStyle.C_SINK)
+        {
+            if (faceTypes[HoleSectionFaceType.CSINK_FACE] == undefined && faceTypes[HoleSectionFaceType.CSINK_CBORE_FACE] == undefined)
+            {
+                modifiedHoleStyle = HoleStyle.SIMPLE;
+            }
+        }
+        else if (holeStyle == HoleStyle.C_BORE)
+        {
+            if (faceTypes[HoleSectionFaceType.CBORE_DIAMETER_FACE] == undefined && faceTypes[HoleSectionFaceType.CBORE_DEPTH_FACE] == undefined)
+            {
+                modifiedHoleStyle = HoleStyle.SIMPLE;
+            }
+        }
+        // Check if this is a thru hole -- it is if there are no tip faces
+        if (faceTypes[HoleSectionFaceType.BLIND_TIP_FACE] == undefined)
+        {
+            modifiedHoleDefinition.endStyle = HoleEndStyle.THROUGH;
+        }
+        else if (holeDepth != undefined) // Adjust the depth based on startDistances
+        {
+            var distance = partToStartDistance[part];
+            if (distance != undefined)
+            {
+                modifiedHoleDefinition.holeDepth = holeDepth - distance;
+                if (holeDefinition.tappedDepth != undefined)
+                    modifiedHoleDefinition.tappedDepth = holeDefinition.tappedDepth + modifiedHoleDefinition.holeDepth - holeDefinition.holeDepth;
+            }
+        }
+        if (holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+        {
+            // For a blind-in-last hole, use the blind-in-last standard to determine tap even if modified hole end style is through
+            modifiedHoleDefinition.standardTappedOrClearance = holeDefinition.standardBlindInLast;
+        }
+        if (part != lastBody && holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+        {
+            modifiedHoleDefinition.standardTappedOrClearance = undefined;
+        }
+        if (part == lastBody && tappedHoleWithOffset(holeDefinition)) // If this is a tapped hole, adjust diameter
+        {
+            modifiedHoleDefinition.holeDiameter = holeDefinition.tapDrillDiameter;
+        }
+
+        for (var entry in entityToSectionType)
+        {
+            clearHoleAttributes(context, entry.key);
+            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, modifiedHoleStyle, entry.value);
+            if (holeAttribute != undefined)
+            {
+                setAttribute(context, { "entities" : entry.key, "attribute" : holeAttribute });
             }
         }
     }

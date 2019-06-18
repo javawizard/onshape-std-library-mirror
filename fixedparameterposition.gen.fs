@@ -6,18 +6,17 @@ FeatureScript 1095; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * The subset of `GeometryType` which applies to 2-dimensional entities
+ * Specifies where a constraint should be resolved
+ * FIXED_AT_START or FIXED_AT_END will fix the constraint
+ * to coincide with the start or end of parametric curves.
+ * FIXED_ON_CURVE will fix the help point.
  */
-export enum SurfaceType
+export enum FixedParameterPosition
 {
-    PLANE,
-    CYLINDER,
-    CONE,
-    SPHERE,
-    TORUS,
-    OTHER,
-    REVOLVED,
-    EXTRUDED
+    FIXED_AT_START,
+    FIXED_AT_END,
+    FIXED_ON_CURVE,
+    FREE
 }
 
 

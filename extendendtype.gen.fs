@@ -5,12 +5,13 @@ FeatureScript 1095; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum DimensionHalfSpace
+/** See [opExtendSheetBody]. */
+export enum ExtendEndType
 {
-    UNSPECIFIED,
-    LEFT,
-    RIGHT
+    annotation {"Name" : "Blind"}
+    EXTEND_BLIND,
+    annotation {"Name" : "Up to target"}
+    EXTEND_TO_TARGET
 }
 
 

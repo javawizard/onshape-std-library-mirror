@@ -1,11 +1,11 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1077.0");
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/holeUtils.fs", version : "1077.0");
+import(path : "onshape/std/attributes.fs", version : "1095.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/holeUtils.fs", version : "1095.0");
 
 /**
  * @internal
@@ -51,33 +51,6 @@ export function asHoleAttribute(value is map) returns HoleAttribute
 export function makeHoleAttribute(attributeId is string, holeStyle is HoleStyle) returns HoleAttribute
 {
     return asHoleAttribute({'holeType' : holeStyle,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
-export function makeSimpleHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.SIMPLE,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
-export function makeCBoreHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.C_BORE,
-            'attributeId' : attributeId });
-}
-
-/**
-* @internal
-*/
-export function makeCSinkHoleAttribute(attributeId is string) returns HoleAttribute
-{
-    return asHoleAttribute({'holeType' : HoleStyle.C_SINK,
             'attributeId' : attributeId });
 }
 

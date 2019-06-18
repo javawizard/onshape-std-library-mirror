@@ -1,23 +1,23 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1077.0");
-export import(path : "onshape/std/query.fs", version : "1077.0");
-export import(path : "onshape/std/tool.fs", version : "1077.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1095.0");
+export import(path : "onshape/std/query.fs", version : "1095.0");
+export import(path : "onshape/std/tool.fs", version : "1095.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1077.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1077.0");
-import(path : "onshape/std/containers.fs", version : "1077.0");
-import(path : "onshape/std/evaluate.fs", version : "1077.0");
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/primitives.fs", version : "1077.0");
-import(path : "onshape/std/transform.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1077.0");
+import(path : "onshape/std/box.fs", version : "1095.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1095.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/evaluate.fs", version : "1095.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/primitives.fs", version : "1095.0");
+import(path : "onshape/std/transform.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1095.0");
 
 
 /**
@@ -39,14 +39,10 @@ export function booleanStepEditLogicAnalysis(context is Context, oldDefinition i
         return { "canDefineOperation" : false, "canDefineScope" : false };
     }
     var canDefineScope = true;
-    if (definition.booleanScope is Query)
+    if (!canDefineOperation && definition.booleanScope is Query)
     {
-        var scopeValue = evaluateQuery(context, definition.booleanScope);
-        // Something is in the scope from previous heuristics
-        if (!canDefineOperation && scopeValue != [])
-        {
-            canDefineScope = false;
-        }
+        // Only change scope if heuristics have not already filled scope
+        canDefineScope = (evaluateQuery(context, definition.booleanScope) == []);
     }
     return { "canDefineOperation" : canDefineOperation, "canDefineScope" : canDefineScope };
 }
@@ -69,7 +65,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
 
     var newOpDefinition = definition;
     newOpDefinition.operationType = NewBodyOperationType.NEW;
-    var heuristicsId = id  + "heuristics";
+    var heuristicsId = id + "heuristics";
     startFeature(context, heuristicsId, newOpDefinition);
     try
     {
@@ -92,7 +88,7 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
  * @internal
  * Used by features using boolean heuristics
  */
-export function canSetBooleanFlip (oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
+export function canSetBooleanFlip(oldDefinition is map, definition is map, specifiedParameters is map) returns boolean
 {
     if (specifiedParameters.booleanScope || oldDefinition.operationType == definition.operationType)
     {

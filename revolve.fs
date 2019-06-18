@@ -1,24 +1,24 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "1077.0");
+export import(path : "onshape/std/tool.fs", version : "1095.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "1077.0");
+export import(path : "onshape/std/manipulator.fs", version : "1095.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1077.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1077.0");
-import(path : "onshape/std/containers.fs", version : "1077.0");
-import(path : "onshape/std/evaluate.fs", version : "1077.0");
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/mathUtils.fs", version : "1077.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1077.0");
-import(path : "onshape/std/transform.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
+import(path : "onshape/std/boolean.fs", version : "1095.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1095.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/evaluate.fs", version : "1095.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/mathUtils.fs", version : "1095.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1095.0");
+import(path : "onshape/std/transform.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -354,28 +354,48 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
             retestDirectionFlip = true;
         }
     }
-    var newDefinition = booleanStepEditLogic(context, id, oldDefinition, definition,
-                                specifiedParameters, hiddenBodies, revolve);
-    // booleanStepEditLogic might change boolean operation type,
-    // if flip was not adjusted above, re-test it
-    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
-    {
-        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
-    }
 
-    if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        var newDefinition = definition;
+        if (retestDirectionFlip)
+        {
+            // Always retest forward to stabilize the case where the forward and backward test both result in a flip to
+            // each other.  Example: BEL-106989
+            newDefinition.oppositeDirection = false;
+        }
+
+        newDefinition = booleanStepEditLogic(context, id, oldDefinition, newDefinition, specifiedParameters, hiddenBodies, revolve);
+
+        // booleanStepEditLogic might change boolean operation type,
+        // if flip was not adjusted above, re-test it
+        if (retestDirectionFlip)
+        {
+            if (canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+            {
+                newDefinition.oppositeDirection = true;
+            }
+            else
+            {
+                newDefinition.oppositeDirection = definition.oppositeDirection;
+            }
+        }
+
+        definition = newDefinition;
+    }
+    else if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
     {
         if (definition.revolveType != RevolveType.ONE_DIRECTION)
         {
-            newDefinition.surfaceOperationType = NewSurfaceOperationType.NEW;
+            definition.surfaceOperationType = NewSurfaceOperationType.NEW;
         }
         else
         {
-            newDefinition = surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
+            definition = surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
         }
     }
 
-    return newDefinition;
+    return definition;
 }
 
 

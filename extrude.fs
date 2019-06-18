@@ -1,34 +1,34 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1077.0");
-export import(path : "onshape/std/query.fs", version : "1077.0");
-export import(path : "onshape/std/tool.fs", version : "1077.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1095.0");
+export import(path : "onshape/std/query.fs", version : "1095.0");
+export import(path : "onshape/std/tool.fs", version : "1095.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1077.0");
+export import(path : "onshape/std/manipulator.fs", version : "1095.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1077.0");
-import(path : "onshape/std/boolean.fs", version : "1077.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1077.0");
-import(path : "onshape/std/box.fs", version : "1077.0");
-import(path : "onshape/std/containers.fs", version : "1077.0");
-import(path : "onshape/std/coordSystem.fs", version : "1077.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1077.0");
-import(path : "onshape/std/evaluate.fs", version : "1077.0");
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/mathUtils.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1077.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1077.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1077.0");
-import(path : "onshape/std/transform.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
+import(path : "onshape/std/attributes.fs", version : "1095.0");
+import(path : "onshape/std/boolean.fs", version : "1095.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1095.0");
+import(path : "onshape/std/box.fs", version : "1095.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/coordSystem.fs", version : "1095.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1095.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1095.0");
+import(path : "onshape/std/evaluate.fs", version : "1095.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/mathUtils.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1095.0");
+import(path : "onshape/std/transform.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
 
 /**
  * The viewer being operated in
@@ -746,31 +746,51 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     }
     definition = setExtrudeSecondDirectionFlip(definition, specifiedParameters);
 
-    var newDefinition =  booleanStepEditLogic(context, id, oldDefinition, definition,
-                                specifiedParameters, hiddenBodies, extrude);
-    // booleanStepEditLogic might change boolean operation type,
-    // if flip was not adjusted above, re-test it
-    if (retestDirectionFlip && canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+    if (definition.bodyType == ToolBodyType.SOLID)
     {
-        newDefinition.oppositeDirection = !newDefinition.oppositeDirection;
-        newDefinition = setExtrudeSecondDirectionFlip(newDefinition, specifiedParameters);
-    }
+        var newDefinition = definition;
+        if (retestDirectionFlip)
+        {
+            // Always retest forward to stabilize the case where the forward and backward test both result in a flip to
+            // each other.  Example: BEL-106989
+            newDefinition.oppositeDirection = false;
+            newDefinition = setExtrudeSecondDirectionFlip(newDefinition, specifiedParameters);
+        }
 
-    if (definition.bodyType == ToolBodyType.SURFACE)
+        newDefinition = booleanStepEditLogic(context, id, oldDefinition, newDefinition, specifiedParameters, hiddenBodies, extrude);
+
+        // booleanStepEditLogic might change boolean operation type,
+        // if flip was not adjusted above, re-test it
+        if (retestDirectionFlip)
+        {
+            if (canSetBooleanFlip(definition, newDefinition, specifiedParameters))
+            {
+                newDefinition.oppositeDirection = true;
+            }
+            else
+            {
+                newDefinition.oppositeDirection = definition.oppositeDirection;
+            }
+            newDefinition = setExtrudeSecondDirectionFlip(newDefinition, specifiedParameters);
+        }
+
+        definition = newDefinition;
+    }
+    else if (definition.bodyType == ToolBodyType.SURFACE)
     {
         if (!specifiedParameters.surfaceOperationType)
         {
             if (definition.hasSecondDirection)
             {
-                newDefinition.surfaceOperationType = NewSurfaceOperationType.NEW;
+                definition.surfaceOperationType = NewSurfaceOperationType.NEW;
             }
             else
             {
-                newDefinition =  surfaceOperationTypeEditLogic(context, id, newDefinition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
+                definition =  surfaceOperationTypeEditLogic(context, id, definition, specifiedParameters, definition.surfaceEntities, hiddenBodies);
             }
         }
     }
-    return newDefinition;
+    return definition;
 }
 
 // -------------------- Utilities for SMFlatOp --------------------

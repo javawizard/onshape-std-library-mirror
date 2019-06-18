@@ -1,4 +1,4 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,29 +15,29 @@ FeatureScript 1077; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1077.0");
-import(path : "onshape/std/context.fs", version : "1077.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1077.0");
-import(path : "onshape/std/query.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
-import(path : "onshape/std/vector.fs", version : "1077.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/context.fs", version : "1095.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1095.0");
+import(path : "onshape/std/query.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
+import(path : "onshape/std/vector.fs", version : "1095.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1095.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1095.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1095.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1095.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1095.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1077.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1095.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1077.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1095.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1095.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -237,20 +237,16 @@ export function opEdgeChange(context is Context, id is Id, definition is map)
 
 /**
  * @internal
- * Extends the perimeter of a sheet body, moves sheet edges by distance or up to surface
+ * Extends or trims the perimeter of a sheet body by moving sheet edges by distance or up to a target sheet body
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{
- *    @field extendMethod {ExtendSheetBoundingType} : @autocomplete `ExtendSheetBoundingType.EXTEND_BY_DISTANCE`
- *    @field entities {Query} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} Bodies or edges to extend.
- *    @field distance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_BY_DISTANCE'} The distance to extend by. Must be positive.
+ *    @field endCondition {ExtendEndType} : @autocomplete `ExtendEndType.EXTEND_BLIND`. Condition that terminates the extension. May be blind or up to target.
+ *    @field entities {Query} : Bodies or edges to extend.
+ *.   @field tangentPropagation {boolean} : Whether additional edges should be added to the selection by tangent propagation. Default `true`. @optional
+ *    @field extendDistance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendEndType.EXTEND_BLIND'} The distance to extend by. Negative values may be used to trim.
  *                                       @autocomplete `0.1 * inch`
- *    @field limitEntity : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_SURFACE'} Entity to extend up to. Can be a face [Query], a [Plane] or a [Cylinder].
- *    @field offset {ValueWithUnits} : Offset for EXTEND_TO_SURFACE. @optional
- *    @field oppositeDirection {boolean} : For use with EXTEND_TO_SURFACE @optional
- *    @field edgeLimitOptions {array} : An array of objects with overriding options for specific edges for use with EXTEND_TO_SURFACE
- *                                      Takes the form ("edge", "offset", "limitEntity", "faceToExtend", "helpPoint"). Both offset and limitEntity are optional
- *                                      and will override the other offset and limitEntity parameters for the specified edge.
- *                                      The same edge can be specified multiple times as long as "faceToExtend" is different each time. @optional
+ *    @field target : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_TARGET'} Target part to extend up to.
+ *    @field extensionShape {ExtendSheetShapeType} : @autocomplete `ExtendSheetShapeType.LINEAR`. Shape characteristic of extension, whether curvature continuity is maintained or not.
  * }}
  */
 export function opExtendSheetBody(context is Context, id is Id, definition is map)
@@ -987,3 +983,4 @@ export function opTransform(context is Context, id is Id, definition is map)
 }
 
 // NOTE: For documentation readability, new operations in this file should be sorted alphabetically
+

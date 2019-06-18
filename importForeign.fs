@@ -1,12 +1,12 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "1077.0");
-import(path : "onshape/std/valueBounds.fs", version : "1077.0");
-import(path : "onshape/std/units.fs", version: "1077.0");
-import(path : "onshape/std/tabReferences.fs", version : "1077.0");
+import(path : "onshape/std/feature.fs", version : "1095.0");
+import(path : "onshape/std/valueBounds.fs", version : "1095.0");
+import(path : "onshape/std/units.fs", version: "1095.0");
+import(path : "onshape/std/tabReferences.fs", version : "1095.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
@@ -115,7 +115,6 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         if (definition.dependsOnBlob)
         {
             definition.foreignId = undefined;
-            definition.processedDataId = definition.blobData.processedDataId;
         }
         else
         {

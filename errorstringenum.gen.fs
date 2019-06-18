@@ -1,4 +1,4 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -973,7 +973,7 @@ export enum ErrorStringEnum
     BEND_EDGE_NO_EDGES,
     /* No seed entity was selected for the bend edge operation. */
     BEND_EDGE_NO_SEED_ENTITY,
-    /* No body was selected for the extend sheet body operation. */
+    /* No entities were selected for the extend operation. */
     EXTEND_SHEET_BODY_NO_BODY,
     /* No faces were selected for the extract surface operation. */
     EXTRACT_SURFACE_NO_FACES,
@@ -1794,7 +1794,31 @@ export enum ErrorStringEnum
     /* Document is not owned by company. */
     NON_GEOMETRIC_ITEMS_DOCUMENT_NOT_OWNED_BY_COMPANY,
     /* Failed to find specified item for document owner. */
-    NON_GEOMETRIC_ITEM_NO_ITEM_FOUND_FOR_DOCUMENT_OWNER
+    NON_GEOMETRIC_ITEM_NO_ITEM_FOUND_FOR_DOCUMENT_OWNER,
+    /* Select a target entity to terminate the extension. */
+    EXTEND_SHEET_BODY_NO_TARGET,
+    /* Selected target could not terminate the extension. */
+    EXTEND_TARGET_MISSED,
+    /* Extend would create a self-intersection. */
+    EXTEND_SELF_INTERSECTION,
+    /* Unable to extend selected entities. */
+    EXTEND_FAILED,
+    /* Unable to extend to face. Try Up to part/surface. */
+    EXTEND_TO_FACE_FAILED,
+    /* Unable to trim to multi-face surface. Select Up to face. */
+    TRIM_TO_MULTI_FAILED,
+    /* Cannot extend an interior edge. */
+    EXTEND_NON_LAMINAR,
+    /* Unable to extend to selected vertex. */
+    EXTEND_TO_VERTEX_FAILED,
+    /* Unable to trim to specifications. */
+    TRIM_FAILED,
+    /* Cannot create curvature constraint. */
+    SKETCH_EQUAL_CURVATURE_FAILED,
+    /* An equal curvature constraint requires two curves one of which must be a conic or spline. */
+    SKETCH_EQUAL_CURVATURE_INPUT_ERROR,
+    /* Failed to compute explode step direction. */
+    ASSEMBLY_EXPLODE_STEP_DIRECTION_QUERY_FAILED
 }
 
 

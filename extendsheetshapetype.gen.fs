@@ -5,12 +5,13 @@ FeatureScript 1095; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum DimensionHalfSpace
+/** See [opExtendSheetBody]. */
+export enum ExtendSheetShapeType
 {
-    UNSPECIFIED,
-    LEFT,
-    RIGHT
+    annotation {"Name" : "Linear"}
+    LINEAR,
+    annotation {"Name" : "Maintain curvature"}
+    SOFT
 }
 
 

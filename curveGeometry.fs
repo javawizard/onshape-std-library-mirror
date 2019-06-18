@@ -1,15 +1,16 @@
-FeatureScript 1077; /* Automatically generated version */
+FeatureScript 1095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "1077.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "1095.0");
 
 // Imports used internally
-import(path : "onshape/std/coordSystem.fs", version : "1077.0");
-import(path : "onshape/std/mathUtils.fs", version : "1077.0");
-import(path : "onshape/std/units.fs", version : "1077.0");
+import(path : "onshape/std/containers.fs", version : "1095.0");
+import(path : "onshape/std/coordSystem.fs", version : "1095.0");
+import(path : "onshape/std/mathUtils.fs", version : "1095.0");
+import(path : "onshape/std/units.fs", version : "1095.0");
 
 // ===================================== Line ======================================
 
@@ -245,16 +246,15 @@ export function toString(value is Ellipse) returns string
 /**
  * The definition of a spline in 3D space.
  * @type {{
- *      @field degree {number} : The degree of the spline
+ *      @field degree {number} : The degree of the spline.
  *      @field dimension {number} : The dimension of the spline. Must be 2 or 3.
- *      @field isRational {boolean} : Is the spline rational?
- *      @field isPeriodic {boolean} : Is the spline periodic?
+ *      @field isRational {boolean} : Whether the spline is rational.
+ *      @field isPeriodic {boolean} : Whether the spline is periodic.
  *      @field controlPoints {array} : An array of control points of the required dimension.
- *              Size should be at least degree + 1
- *      @field weights {array} : An array of unitless values of same size as the control points.
- *              Required for a rational spline
- *           @optional
- *      @field knots {array} : An array of non-decreasing knots of size equal to 1 + degree + size(controlPoints)
+ *              Size should be at least degree + 1.
+ *      @field weights {array} : An array of unitless values with the same size as the control points array.
+ *              @requiredIf{`isRational` is `true`}
+ *      @field knots {array} : An array of non-decreasing knots of size equal to 1 + `degree` + size(controlPoints)
  * }}
  */
 export type BSplineCurve typecheck canBeBSplineCurve;
@@ -272,14 +272,14 @@ export predicate canBeBSplineCurve(value)
     value.isPeriodic is boolean;
 
     value.controlPoints is array;
-    @size(value.controlPoints) > value.degree;
+    size(value.controlPoints) > value.degree;
     for (var controlPoint in value.controlPoints)
     {
         isLengthVector(controlPoint);
-        @size(controlPoint) == value.dimension;
+        size(controlPoint) == value.dimension;
     }
 
-    !value.isRational || (value.weights is array && @size(value.weights) == @size(value.controlPoints));
+    !value.isRational || (value.weights is array && size(value.weights) == size(value.controlPoints));
     if (value.isRational)
     {
         for (var weight in value.weights)
@@ -290,8 +290,8 @@ export predicate canBeBSplineCurve(value)
     }
 
     value.knots is array;
-    @size(value.knots) == value.degree + @size(value.controlPoints) + 1;
-    for (var i = 0; i < @size(value.knots); i += 1)
+    size(value.knots) == value.degree + size(value.controlPoints) + 1;
+    for (var i = 0; i < size(value.knots); i += 1)
     {
         value.knots[i] is number;
         i == 0 || value.knots[i] >= value.knots[i - 1];
@@ -299,19 +299,14 @@ export predicate canBeBSplineCurve(value)
 }
 
 /**
- * Returns a new polynomial `BSplineCurve`.
- *      @param degree {number} : The degree of the spline
- *      @param isPeriodic {boolean} : Is the spline periodic?
- *      @param controlPoints {array} : An array of control points of the required dimension.
- *              Size should be at least degree + 1
- *      @param knots {array} : An array of non-decreasing knots of size equal to 1 + degree + size(controlPoints)
+ * Returns a new polynomial [BSplineCurve].  See `BSplineCurve` documentation for description of parameters.
  */
 export function bSplineCurve(degree is number, isPeriodic is boolean, controlPoints is array, knots is array) returns BSplineCurve
 {
     var dimension = 3;
-    if (@size(controlPoints) > 0 && controlPoints[0] is Vector)
+    if (size(controlPoints) > 0 && controlPoints[0] is Vector)
     {
-        dimension = @size(controlPoints[0]);
+        dimension = size(controlPoints[0]);
     }
     return {
         'degree' : degree,
@@ -324,20 +319,14 @@ export function bSplineCurve(degree is number, isPeriodic is boolean, controlPoi
 }
 
 /**
- * Returns a new rational `BSplineCurve`.
- *      @param degree {number} : The degree of the spline
- *      @param isPeriodic {boolean} : Is the spline periodic?
- *      @param controlPoints {array} : An array of control points of the required dimension.
- *              Size should be at least degree + 1
- *      @param weights {array} : An array of unitless values of same size as the control points.
- *      @param knots {array} : An array of non-decreasing knots of size equal to 1 + degree + size(controlPoints)
+ * Returns a new rational [BSplineCurve]. See `BSplineCurve` documentation for description of parameters.
  */
 export function bSplineCurve(degree is number, isPeriodic is boolean, controlPoints is array, weights is array, knots is array) returns BSplineCurve
 {
     var dimension = 3;
-    if (@size(controlPoints) > 0 && controlPoints[0] is Vector)
+    if (size(controlPoints) > 0 && controlPoints[0] is Vector)
     {
-        dimension = @size(controlPoints[0]);
+        dimension = size(controlPoints[0]);
     }
     return {
         'degree' : degree,
