@@ -803,7 +803,8 @@ export enum FeatureScriptVersionNumber
     V1092_SURFACE_MATE_CONNECTOR_OWNER,
     V1093_HOLE_THREAD_FIX,
     V1094_HOLE_SM_FIX,
-    V1095_INTERNAL_FEATURE
+    V1095_INTERNAL_FEATURE,
+    V1096_FIX_STD
 }
 
 /**
@@ -814,6 +815,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1095_INTERNAL_FEATURE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1096_FIX_STD;
 
 
