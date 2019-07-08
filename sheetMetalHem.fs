@@ -16,7 +16,6 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
-import(path : "onshape/std/rollSurface.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");

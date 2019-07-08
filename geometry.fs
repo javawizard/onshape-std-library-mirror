@@ -26,6 +26,7 @@ export import(path : "onshape/std/deleteBodies.fs", version : "✨");
 export import(path : "onshape/std/deleteFace.fs", version : "✨");
 export import(path : "onshape/std/draft.fs", version : "✨");
 export import(path : "onshape/std/enclose.fs", version : "✨");
+export import(path : "onshape/std/extend.fs", version : "✨");
 export import(path : "onshape/std/extrude.fs", version : "✨");
 export import(path : "onshape/std/fillSurface.fs", version : "✨");
 export import(path : "onshape/std/fillet.fs", version : "✨");
@@ -64,4 +65,5 @@ export import(path : "onshape/std/splitpart.fs", version : "✨");
 export import(path : "onshape/std/sweep.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
+
 

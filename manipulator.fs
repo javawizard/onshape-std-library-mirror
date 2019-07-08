@@ -98,6 +98,7 @@ export predicate canBeManipulator(value)
     value is map;
     value.manipulatorType is ManipulatorType;
     value.style is undefined || value.style is ManipulatorStyleEnum;
+    value.primaryParameterId is undefined || value.primaryParameterId is string;
     //Anything else is up to the specific kind
 }
 
@@ -266,6 +267,19 @@ export function flipManipulator(base is Vector, direction is Vector, flipped is 
     return flipManipulator(base, direction, flipped, undefined);
 }
 
+export function flipManipulator(definition is map) returns Manipulator
+precondition
+{
+    is3dLengthVector(definition.base);
+    is3dDirection(definition.direction);
+    definition.flipped is boolean;
+    definition.sources == undefined || definition.sources is Query;
+}
+{
+    definition.manipulatorType = ManipulatorType.FLIP;
+    return definition as Manipulator;
+}
+
 /**
  * Add a manipulator to this feature, which will be visible and interactable
  * when a user edits the feature.
@@ -381,5 +395,4 @@ function evaluateQueries(context is Context, definition is map) returns map
  {
     return parameterId as CopyParameter;
  }
-
 

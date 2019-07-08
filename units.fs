@@ -729,3 +729,16 @@ export function unitProduct(unit1 is UnitSpec, unit2 is UnitSpec)
 
     return newUnit;
 }
+
+/**
+ * Parse a JSON string into either a map or array. Null values in the JSON
+ * are returned as `undefined`. Throws if the string is not well-formed JSON.
+ * Applicable strings are parsed into a ValueWithUnits. For instance, "3 inch"
+ * will map to a `ValueWithUnits` with length units that repreresents 3 inches.
+ *
+ * @return: A map or an array corresponding to the JSON value.
+ */
+export function parseJsonWithUnits(s is string)
+{
+    return @parseJson(s, {stringToUnitMap: STRING_TO_UNIT_MAP});
+}

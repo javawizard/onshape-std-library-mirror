@@ -973,7 +973,7 @@ export enum ErrorStringEnum
     BEND_EDGE_NO_EDGES,
     /* No seed entity was selected for the bend edge operation. */
     BEND_EDGE_NO_SEED_ENTITY,
-    /* No entities were selected for the extend operation. */
+    /* Select a surface or boundary edges to move. */
     EXTEND_SHEET_BODY_NO_BODY,
     /* No faces were selected for the extract surface operation. */
     EXTRACT_SURFACE_NO_FACES,
@@ -1725,15 +1725,15 @@ export enum ErrorStringEnum
     REST_ASSEMBLY_REVISION_PART_NUMBER_BLANK,
     /* Failed to find specified revision. */
     REST_ASSEMBLY_REVISION_NOT_FOUND,
-    /* Roll failed. */
+    /* Wrap failed. */
     ROLL_FAILED,
-    /* Failed to align roll surfaces. */
+    /* Failed to align wrap surfaces. */
     ROLL_CANNOT_ADJUST,
-    /* Entities do not lie on source roll surface. */
+    /* Entities do not lie on source wrap surface. */
     ROLL_MISMATCHED_SOURCE,
-    /* Roll surface invalid. */
+    /* Wrap surface invalid. */
     INVALID_ROLL_SURFACE,
-    /* Roll must be to or from a plane. */
+    /* Wrap must be to or from a plane. */
     ROLL_NOT_TO_OR_FROM_PLANE,
     /* Failed to find element specified in toReference. */
     FAILED_TO_FIND_ELEMENT_FOR_TO_STATE,
@@ -1795,21 +1795,21 @@ export enum ErrorStringEnum
     NON_GEOMETRIC_ITEMS_DOCUMENT_NOT_OWNED_BY_COMPANY,
     /* Failed to find specified item for document owner. */
     NON_GEOMETRIC_ITEM_NO_ITEM_FOUND_FOR_DOCUMENT_OWNER,
-    /* Select a target entity to terminate the extension. */
+    /* Select a target entity to terminate the move. */
     EXTEND_SHEET_BODY_NO_TARGET,
-    /* Selected target could not terminate the extension. */
+    /* Selected target could not terminate the move. */
     EXTEND_TARGET_MISSED,
-    /* Extend would create a self-intersection. */
+    /* Moved boundary would create a self-intersection. */
     EXTEND_SELF_INTERSECTION,
-    /* Unable to extend selected entities. */
+    /* Unable to move selected entities. */
     EXTEND_FAILED,
-    /* Unable to extend to face. Try Up to part/surface. */
+    /* Unable to move up to face. Try Up to part/surface. */
     EXTEND_TO_FACE_FAILED,
-    /* Unable to trim to multi-face surface. Select Up to face. */
+    /* Unable to move to multi-face surface. Select Up to face. */
     TRIM_TO_MULTI_FAILED,
-    /* Cannot extend an interior edge. */
+    /* No boundary edges found to move. */
     EXTEND_NON_LAMINAR,
-    /* Unable to extend to selected vertex. */
+    /* Unable to move up to selected vertex. */
     EXTEND_TO_VERTEX_FAILED,
     /* Unable to trim to specifications. */
     TRIM_FAILED,
@@ -1818,7 +1818,21 @@ export enum ErrorStringEnum
     /* An equal curvature constraint requires two curves one of which must be a conic or spline. */
     SKETCH_EQUAL_CURVATURE_INPUT_ERROR,
     /* Failed to compute explode step direction. */
-    ASSEMBLY_EXPLODE_STEP_DIRECTION_QUERY_FAILED
+    ASSEMBLY_EXPLODE_STEP_DIRECTION_QUERY_FAILED,
+    /* Trim and Imprint require the destination to be defined by a face. */
+    WRAP_DESTINATION_NO_FACE,
+    /* Failed to trim by destination face boundary. */
+    WRAP_TRIM_FAILED,
+    /* Wrapped geometry falls outside of destination face boundary. */
+    WRAP_TRIM_NO_INTERSECTION,
+    /* Failed to imprint edges onto destination face. */
+    WRAP_IMPRINT_FAILED,
+    /* Select anchor points for position control. */
+    WRAP_NEEDS_ANCHOR,
+    /* Select planar faces or sketch regions to wrap. */
+    WRAP_SELECT_TOOLS,
+    /* Select a cylindrical face to wrap around. */
+    WRAP_SELECT_TARGET
 }
 
 

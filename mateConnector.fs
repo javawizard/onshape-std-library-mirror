@@ -251,16 +251,18 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
                                     definition.originAdditionalQuery,
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery];
-        //if there are no selections, reset owner part, dont try to recompute
+        // If there are no selections, reset owner part, don't try to recompute
         if (size(evaluateQuery(context, qUnion(possiblePartOwners))) == 0)
         {
             definition.ownerPart = qUnion([]);
             return definition;
         }
-        //if there's a single part in the studio consider it as an owner
+        // If there's a single part or surface in the studio, consider it as an owner.
         const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
-        if (size(evaluateQuery(context, allParts)) == 1)
-            possiblePartOwners = append(possiblePartOwners, allParts);
+        const allSurfaces = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), SketchObject.NO), ConstructionObject.NO));
+        const allPartsAndSurfaces = qUnion([allParts, allSurfaces]);
+        if (size(evaluateQuery(context, allPartsAndSurfaces)) == 1)
+            possiblePartOwners = append(possiblePartOwners, allPartsAndSurfaces);
 
         var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
 

@@ -80,6 +80,7 @@ export predicate canBeQuery(value)
  * @value HISTORICAL                 : Used in historical queries
  * @value CREATED_BY                 : Used in [qCreatedBy]
  * @value SKETCH_REGION              : Used in [qSketchRegion]
+ * @value UNIQUE_VERTICES            : Used in [qUniqueVertices]
  * @value TRANSIENT                  : Used in [qTransient]
  * @value UNION                      : Used in [qUnion]
  * @value INTERSECTION               : Used in [qIntersection]
@@ -143,6 +144,7 @@ export enum QueryType
     HISTORICAL,
     CREATED_BY,
     SKETCH_REGION,
+    UNIQUE_VERTICES,
     TRANSIENT,
     ATTRIBUTE_FILTER,
     //Sheet metal
@@ -1375,6 +1377,15 @@ export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) retu
 export function qSketchRegion(featureId is Id) returns Query
 {
     return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : false } as Query;
+}
+
+/**
+ * A query that filters out duplicate vertices.
+ * When duplicates are found, the vertex with the lowest deterministic ID is used.
+ */
+export function qUniqueVertices(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.UNIQUE_VERTICES, "subquery" : subquery } as Query;
 }
 
 /**

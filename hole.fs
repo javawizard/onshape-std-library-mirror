@@ -47,6 +47,7 @@ export enum HoleEndStyle
 }
 
 const MAX_LOCATIONS = 100;
+const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid identifier, so it is not offered in autocomplete
 
 /*
  * IB: the call structure of the principal functions in this file is something like this:
@@ -188,13 +189,12 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
 
         annotation { "Name" : "Sketch points to place holes",
-                    "Filter" : EntityType.VERTEX && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
                     "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
         definition.scope is Query;
-
     }
     {
         // Holes are now supported in sheet metal so the queryContainsActiveSheetMetal check is not wanted in newer parts
@@ -373,17 +373,26 @@ function hasErrors(context is Context, id is Id) returns boolean
          return reportingStatus(context, id);
 }
 
+function getAndUpdateHoleFeatureCount(context is Context) returns number
+{
+    var value = try silent(getVariable(context, HOLE_FEATURE_COUNT_VARIABLE_NAME));
+    if (value == undefined)
+        value = 0;
+    setVariable(context, HOLE_FEATURE_COUNT_VARIABLE_NAME, value + 1);
+    return value;
+}
+
 function holeOp(context is Context, id is Id, locations is array, definition is map) returns map
 {
     var result = { "numSuccess" : 0 };
     // for each hole
     var holeNumber = -1;
     definition.cutOption = getCutOption(context, definition);
-    var faceTracking = {};
-    var instanceTracking = {};
-    var startDistanceMap = {};
-    var holeDepthMap = {};
+    var holeNumberToResult = {};
     const holeBodiesId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V763_HOLE_CUT_ALL) ? id + "holeBodies" : id;
+
+    definition.holeFeatureCount = getAndUpdateHoleFeatureCount(context);
+
     for (var location in locations)
     {
         try
@@ -397,10 +406,7 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
              */
             holeNumber += 1;
             result = holeAtLocation(context, holeBodiesId, holeNumber, location, definition, result);
-            faceTracking[holeNumber] = result.faceTracking;
-            instanceTracking[holeNumber] = result.instanceTracking;
-            startDistanceMap[holeNumber] = result.startDistances;
-            holeDepthMap[holeNumber] = result.holeDepth;
+            holeNumberToResult[holeNumber] = result;
         }
     }
     if (definition.cutOption == HoleCutOption.CUT_ALL && result.numSuccess > 0)
@@ -428,14 +434,14 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
             {
                 holeEdgesQ = getSheetMetalHoleEdgesQuery(id + "boolean", sheetMetalModels, true);
             }
-            for (var holeTracking in faceTracking)
+            for (var holeTracking in holeNumberToResult)
             {
                 const holeId = id + ("hole-" ~ holeTracking.key);
-                createAttributesFromTracking(context, holeId, definition, holeTracking.value, definition.style, startDistanceMap[holeTracking.key], holeDepthMap[holeTracking.key]);
-                if (sheetMetalModels != undefined && instanceTracking[holeTracking.key] != undefined)
+                createAttributesFromTracking(context, holeId, definition, holeTracking.key, holeTracking.value.faceTracking, definition.style, holeTracking.value.startDistances, holeTracking.value.holeDepth);
+                if (sheetMetalModels != undefined && holeTracking.value.instanceTracking != undefined)
                 {
-                    const instanceHoleEdges = evaluateQuery(context, qIntersection([holeEdgesQ, instanceTracking[holeTracking.key]]));
-                    assignSheetMetalHoleAttributes(context, holeId, instanceHoleEdges, definition, definition.style);
+                    const instanceHoleEdges = evaluateQuery(context, qIntersection([holeEdgesQ, holeTracking.value.instanceTracking]));
+                    assignSheetMetalHoleAttributes(context, holeId, instanceHoleEdges, definition, definition.style, holeNumber);
                 }
             }
         }
@@ -541,7 +547,7 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
     {
         setExternalDisambiguation(context, holeId, location);
     }
-    var cutHoleResult = cutHole(context, holeId, definition, startDistances, startPointCSys);
+    var cutHoleResult = cutHole(context, holeId, definition, holeNumber, startDistances, startPointCSys);
     if (cutHoleResult.success)
     {
         result.numSuccess += result.numSuccess + 1;
@@ -726,7 +732,7 @@ function getSheetMetalModels(context is Context, holeDefinition is map)
     return sheetMetalModels;
 }
 
-function cutHole(context is Context, id is Id, holeDefinition is map, startDistances is map, cSys is CoordSystem) returns map
+function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber is number, startDistances is map, cSys is CoordSystem) returns map
 {
     // Need to get the sheet metal models from the merge scope so that we can look for changes to the model following the cuts.
     var sheetmetalModels;
@@ -874,11 +880,11 @@ function cutHole(context is Context, id is Id, holeDefinition is map, startDista
         if (success)
         {
             // add required attributes onto faces that were created based upon our tracked sketch entities
-            createAttributesFromTracking(context, id, holeDefinition, faceTracking, holeStyle, startDistances.resultFront, coreResult.holeDepth);
+            createAttributesFromTracking(context, id, holeDefinition, holeNumber, faceTracking, holeStyle, startDistances.resultFront, coreResult.holeDepth);
 
             if (sheetmetalModels != undefined)
             {
-                createSheetMetalHoleAttributes(context, id, sheetmetalModels, holeDefinition, holeStyle);
+                createSheetMetalHoleAttributes(context, id, sheetmetalModels, holeDefinition, holeStyle, holeNumber);
             }
         }
 
@@ -930,7 +936,7 @@ function getSheetMetalHoleEdgesQuery(id is Id, sheetMetalModels is Query, includ
 }
 
 function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges is array,
-                                                    holeDefinition is map, holeStyle is HoleStyle)
+                                                    holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
 {
     for (var holeEdge in holeEdges)
     {
@@ -946,18 +952,18 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
             const holeFaces =  evaluateQuery(context, holeFacesQ);
             if (size(holeFaces) > 0)
             {
-                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle);
+                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle, holeNumber);
             }
         }
     }
 }
-function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle)
+function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
 {
     const holeEdgesQ = getSheetMetalHoleEdgesQuery(id, sheetMetalModels, false);
-    assignSheetMetalHoleAttributes(context, id, evaluateQuery(context, holeEdgesQ), holeDefinition, holeStyle);
+    assignSheetMetalHoleAttributes(context, id, evaluateQuery(context, holeEdgesQ), holeDefinition, holeStyle, holeNumber);
 }
 
-function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeStyle is HoleStyle)
+function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
 {
     clearHoleAttributes(context, holeFaces);
     var holeAttribute;
@@ -969,7 +975,7 @@ function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdg
         // Sheet metal holes are always simple and through
         holeDefinition.holeDiameter = cylinder.radius * 2;
         holeDefinition.endStyle = HoleEndStyle.THROUGH;
-        holeAttribute = createHoleAttribute(id, holeDefinition, HoleStyle.SIMPLE, HoleSectionFaceType.THROUGH_FACE);
+        holeAttribute = createHoleAttribute(id, holeDefinition, HoleStyle.SIMPLE, HoleSectionFaceType.THROUGH_FACE, holeNumber);
         setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
     }
 }
@@ -1152,7 +1158,7 @@ precondition
             try
             {
 
-                const castResult = cylinderCast(context, id + "foo"+"limit_surf_cast", {
+                const castResult = cylinderCast(context, id + "foo" + "limit_surf_cast", {
                             "distance" : distance,
                             "cSys" : arg.cSys,
                             "isFront" : true,
@@ -1246,7 +1252,7 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
     return resultTrackingArray;
 }
 
-function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, sketchTracking is array, holeStyle is HoleStyle, startDistances is array, holeDepth)
+function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, holeNumber is number, sketchTracking is array, holeStyle is HoleStyle, startDistances is array, holeDepth)
 {
     sketchTracking = filter(sketchTracking, function(track) { return track.trackingQuery != undefined; });
 
@@ -1274,9 +1280,11 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
     {
         var faceTypes = {};
         var entityToSectionType = {};
+        var allFaces = [];
         for (var track in sketchTracking)
         {
             const sketchTrackingQuery = qOwnedByBody(qEntityFilter(track.trackingQuery, EntityType.FACE), part);
+            allFaces = append(allFaces, sketchTrackingQuery);
             const trackingQueryEntities = evaluateQuery(context, sketchTrackingQuery);
             for (var entity in trackingQueryEntities)
             {
@@ -1335,27 +1343,52 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
         {
             modifiedHoleDefinition.holeDiameter = holeDefinition.tapDrillDiameter;
         }
-
+        var actualHoleDepth;
         for (var entry in entityToSectionType)
         {
             clearHoleAttributes(context, entry.key);
-            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, modifiedHoleStyle, entry.value);
+            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, modifiedHoleStyle, entry.value, holeNumber);
             if (holeAttribute != undefined)
             {
+                if (holeAttribute.isTappedHole == true && holeDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
+                {
+                    try // This shouldn't fail, but might for some reason on a legacy hole.  Don't break the feature in that case
+                    {
+                        if (actualHoleDepth == undefined)
+                            actualHoleDepth = computeActualHoleDepth(context, qUnion(allFaces));
+                        holeAttribute.isTappedThrough = (modifiedHoleDefinition.tappedDepth + TOLERANCE.zeroLength * meter) > actualHoleDepth;
+                    }
+                }
                 setAttribute(context, { "entities" : entry.key, "attribute" : holeAttribute });
             }
         }
     }
 }
 
+function computeActualHoleDepth(context is Context, faces is Query)
+{
+    var axialFaces = qUnion([qGeometry(faces, GeometryType.CYLINDER), qGeometry(faces, GeometryType.CONE)]);
+    var holeDirection = evAxis(context, { "axis" : qNthElement(axialFaces, 0) }).direction;
+    var holeBox is Box3d = evBox3d(context, {
+            "topology" : faces,
+            "cSys" : coordSystem(vector(0, 0, 0) * meter, perpendicularVector(holeDirection), holeDirection),
+            "tight" : true
+    });
+    return holeBox.maxCorner[2] - holeBox.minCorner[2];
+}
+
 /*
  * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
  * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
  */
-function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleStyle, holeFaceType is HoleSectionFaceType) returns HoleAttribute
+function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleStyle, holeFaceType is HoleSectionFaceType, holeNumber is number) returns HoleAttribute
 {
     // make the base hole attribute
     var holeAttribute = makeHoleAttribute(toAttributeId(id), holeStyle);
+
+    // add tag info
+    holeAttribute.holeNumber = holeNumber;
+    holeAttribute.holeFeatureCount = holeDefinition.holeFeatureCount;
 
     // add common properties
     holeAttribute = addCommonAttributeProperties(holeAttribute, holeStyle, holeDefinition);
@@ -1476,6 +1509,8 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
         resultAttribute.tapSize = tapSize ~ delimiter ~ pitch;
         if (holeDefinition.tappedDepth != undefined)
             resultAttribute.tappedDepth = holeDefinition.tappedDepth;
+        else if (holeDefinition.isTappedThrough)
+            resultAttribute.tappedDepth = 0 * meter; // it doesn't really matter, just not undefined
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH && holeDefinition.tapClearance != undefined)
             resultAttribute.tapClearance = holeDefinition.tapClearance;

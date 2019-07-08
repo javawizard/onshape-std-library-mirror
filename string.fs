@@ -81,6 +81,17 @@ export function splitIntoCharacters(s is string) returns array
     return @splitIntoCharacters(s);
 }
 
+/**
+ * Parse a JSON string into either a map or array. Null values in the JSON
+ * are returned as `undefined`. Throws if the string is not well-formed JSON.
+ *
+ * @return: A map or an array corresponding to the JSON value.
+ */
+export function parseJson(s is string)
+{
+    return @parseJson(s, {});
+}
+
 const REGEX_EXP = "(?:[eE][+-]?\\d+)?";
 const REGEX_FULL_FORM = "(?:-?\\d+\\.\\d*)";
 const REGEX_LEADING_DECIMAL = "(?:-?\\.?\\d+)";
