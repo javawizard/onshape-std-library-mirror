@@ -1,25 +1,25 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1096.0");
-export import(path : "onshape/std/tool.fs", version : "1096.0");
+export import(path : "onshape/std/query.fs", version : "1112.0");
+export import(path : "onshape/std/tool.fs", version : "1112.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1096.0");
-import(path : "onshape/std/evaluate.fs", version : "1096.0");
-import(path : "onshape/std/boolean.fs", version : "1096.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1096.0");
-import(path : "onshape/std/feature.fs", version : "1096.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1096.0");
-import(path : "onshape/std/transform.fs", version : "1096.0");
-import(path : "onshape/std/units.fs", version : "1096.0");
-import(path : "onshape/std/valueBounds.fs", version : "1096.0");
-import(path : "onshape/std/vector.fs", version : "1096.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1096.0");
-import(path : "onshape/std/string.fs", version : "1096.0");
+import(path : "onshape/std/containers.fs", version : "1112.0");
+import(path : "onshape/std/evaluate.fs", version : "1112.0");
+import(path : "onshape/std/boolean.fs", version : "1112.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1112.0");
+import(path : "onshape/std/feature.fs", version : "1112.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
+import(path : "onshape/std/transform.fs", version : "1112.0");
+import(path : "onshape/std/units.fs", version : "1112.0");
+import(path : "onshape/std/valueBounds.fs", version : "1112.0");
+import(path : "onshape/std/vector.fs", version : "1112.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1112.0");
+import(path : "onshape/std/string.fs", version : "1112.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -89,9 +89,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.sheetProfilesArray)
             {
                 annotation { "Name" : "Faces and sketch regions",
-                         "Filter" : (EntityType.FACE || EntityType.VERTEX ||
-                                    (EntityType.BODY && BodyType.SHEET))
-                                    && ConstructionObject.NO }
+                         "Filter" : ((EntityType.FACE || (EntityType.BODY && BodyType.SHEET)) && ConstructionObject.NO)
+                                    || EntityType.VERTEX }
                 profile.sheetProfileEntities is Query;
             }
         }
@@ -103,9 +102,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.wireProfilesArray)
             {
                 annotation { "Name" : "Edges, curves and sketches",
-                         "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE ||
-                                    (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET)))
-                                    && ConstructionObject.NO }
+                         "Filter" : ((EntityType.EDGE || EntityType.FACE || (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET))) && ConstructionObject.NO)
+                                    || EntityType.VERTEX }
                 profile.wireProfileEntities is Query;
             }
         }
@@ -202,7 +200,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.profileSubqueries = collectSubParameters(definition.sheetProfilesArray, "sheetProfileEntities");
         }
 
-        definition.profileSubqueries = wrapSubqueriesInConstructionFilter(context, definition.profileSubqueries);
+        const allowConstructionVerticesAsProfiles = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1103_CONSTRUCTION_VERTEX_CHANGE);
+        definition.profileSubqueries = wrapSubqueriesInConstructionFilter(context, definition.profileSubqueries, allowConstructionVerticesAsProfiles);
 
         if (size(definition.profileSubqueries) < 1)
         {
@@ -221,7 +220,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             {
                 queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
             }
-            definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, definition.guideSubqueries);
+            definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, definition.guideSubqueries, false);
             if (setQueriesForTransformAfterConstructionFilter)
             {
                 queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
@@ -347,14 +346,19 @@ export function createProfileConditions(context is Context, endCondition is Loft
 }
 
 /** @internal */
-export function wrapSubqueriesInConstructionFilter(context is Context, subqueries is array) returns array
+export function wrapSubqueriesInConstructionFilter(context is Context, subqueries is array, allowConstructionVertices is boolean) returns array
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
     {
         var wrappedSubqueries = [];
         for (var i = 0; i < @size(subqueries); i += 1)
         {
-            wrappedSubqueries = append(wrappedSubqueries, qConstructionFilter(subqueries[i], ConstructionObject.NO));
+            var wrappedSubquery = qConstructionFilter(subqueries[i], ConstructionObject.NO);
+            if (allowConstructionVertices)
+            {
+                wrappedSubquery = qUnion([wrappedSubquery, qEntityFilter(subqueries[i], EntityType.VERTEX)]);
+            }
+            wrappedSubqueries = append(wrappedSubqueries, wrappedSubquery);
         }
         return wrappedSubqueries;
     }

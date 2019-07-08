@@ -1,22 +1,22 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1096.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1096.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1096.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "1096.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "1096.0");
+export import(path : "onshape/std/query.fs", version : "1112.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1112.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1112.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "1112.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "1112.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1096.0");
-import(path : "onshape/std/evaluate.fs", version : "1096.0");
-import(path : "onshape/std/feature.fs", version : "1096.0");
-import(path : "onshape/std/tool.fs", version : "1096.0");
-import(path : "onshape/std/valueBounds.fs", version : "1096.0");
-import(path : "onshape/std/string.fs", version : "1096.0");
+import(path : "onshape/std/containers.fs", version : "1112.0");
+import(path : "onshape/std/evaluate.fs", version : "1112.0");
+import(path : "onshape/std/feature.fs", version : "1112.0");
+import(path : "onshape/std/tool.fs", version : "1112.0");
+import(path : "onshape/std/valueBounds.fs", version : "1112.0");
+import(path : "onshape/std/string.fs", version : "1112.0");
 
 /**
  * @internal
@@ -251,16 +251,18 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
                                     definition.originAdditionalQuery,
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery];
-        //if there are no selections, reset owner part, dont try to recompute
+        // If there are no selections, reset owner part, don't try to recompute
         if (size(evaluateQuery(context, qUnion(possiblePartOwners))) == 0)
         {
             definition.ownerPart = qUnion([]);
             return definition;
         }
-        //if there's a single part in the studio consider it as an owner
+        // If there's a single part or surface in the studio, consider it as an owner.
         const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
-        if (size(evaluateQuery(context, allParts)) == 1)
-            possiblePartOwners = append(possiblePartOwners, allParts);
+        const allSurfaces = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), SketchObject.NO), ConstructionObject.NO));
+        const allPartsAndSurfaces = qUnion([allParts, allSurfaces]);
+        if (size(evaluateQuery(context, allPartsAndSurfaces)) == 1)
+            possiblePartOwners = append(possiblePartOwners, allPartsAndSurfaces);
 
         var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
 

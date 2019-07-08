@@ -1,11 +1,11 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "1096.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1096.0");
-import(path : "onshape/std/string.fs", version : "1096.0");
+import(path : "onshape/std/math.fs", version : "1112.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1112.0");
+import(path : "onshape/std/string.fs", version : "1112.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -728,4 +728,17 @@ export function unitProduct(unit1 is UnitSpec, unit2 is UnitSpec)
         return unitless;
 
     return newUnit;
+}
+
+/**
+ * Parse a JSON string into either a map or array. Null values in the JSON
+ * are returned as `undefined`. Throws if the string is not well-formed JSON.
+ * Applicable strings are parsed into a ValueWithUnits. For instance, "3 inch"
+ * will map to a `ValueWithUnits` with length units that repreresents 3 inches.
+ *
+ * @return: A map or an array corresponding to the JSON value.
+ */
+export function parseJsonWithUnits(s is string)
+{
+    return @parseJson(s, {stringToUnitMap: STRING_TO_UNIT_MAP});
 }

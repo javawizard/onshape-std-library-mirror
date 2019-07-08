@@ -1,25 +1,26 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1096.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1096.0");
+export import(path : "onshape/std/query.fs", version : "1112.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1096.0");
-import(path : "onshape/std/containers.fs", version : "1096.0");
-import(path : "onshape/std/coordSystem.fs", version : "1096.0");
-import(path : "onshape/std/evaluate.fs", version : "1096.0");
-import(path : "onshape/std/extrude.fs", version : "1096.0");
-import(path : "onshape/std/feature.fs", version : "1096.0");
-import(path : "onshape/std/math.fs", version : "1096.0");
-import(path : "onshape/std/sketch.fs", version : "1096.0");
-import(path : "onshape/std/tool.fs", version : "1096.0");
-import(path : "onshape/std/units.fs", version : "1096.0");
-import(path : "onshape/std/vector.fs", version : "1096.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1096.0");
+import(path : "onshape/std/box.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1112.0");
+import(path : "onshape/std/coordSystem.fs", version : "1112.0");
+import(path : "onshape/std/evaluate.fs", version : "1112.0");
+import(path : "onshape/std/extrude.fs", version : "1112.0");
+import(path : "onshape/std/feature.fs", version : "1112.0");
+import(path : "onshape/std/math.fs", version : "1112.0");
+import(path : "onshape/std/sketch.fs", version : "1112.0");
+import(path : "onshape/std/tool.fs", version : "1112.0");
+import(path : "onshape/std/units.fs", version : "1112.0");
+import(path : "onshape/std/vector.fs", version : "1112.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1112.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1112.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -339,7 +340,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
     {
        toDeleteQ = qSketchFilter(toDeleteQ, SketchObject.NO);
     }
-    opDeleteBodies(context, id + "initialDelete", { "entities" : toDeleteQ });
+    try silent(opDeleteBodies(context, id + "initialDelete", { "entities" : toDeleteQ }));
 
     try
     {
@@ -417,7 +418,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             sketchPolyline(context, sketchId, polygon, offsetPlane);
             const extrudeId = id + "extrude";
             const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-            extrudeCut(context, extrudeId, target, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut);
+            extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut);
             opDeleteBodies(context, id + "deleteSketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
         }
     }
@@ -497,29 +498,34 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         const extrudeId = id + ("extrude" ~ brokenOutIndex);
         const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-        extrudeCut(context, extrudeId, target, sketchRegionQuery, undefined, isCropView);
+        extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, undefined, isCropView);
         opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
     }
 }
 
-function extrudeCut(context is Context, id is Id, target is Query, sketchRegionQuery is Query, depth, isIntersect is boolean)
+function extrudeCut(context is Context, id is Id, target is Query, direction, sketchRegionQuery is Query, depth, isIntersect is boolean)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
     if (depth != undefined && depth < 2 * TOLERANCE.booleanDefaultTolerance * meter)
     {
         depth = (2 * TOLERANCE.booleanDefaultTolerance) * meter;
     }
-    const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
-            "operationType" : isIntersect ? NewBodyOperationType.INTERSECT : NewBodyOperationType.REMOVE,
+    //Evaluate before extrude to avoid qEverything or such picking up extruded body
+    const evaluatedTarget = qUnion(evaluateQuery(context, target));
+    opExtrude(context, id, {
             "entities" : sketchRegionQuery,
+            "direction" : direction,
             "endBound" : depth == undefined ? BoundingType.THROUGH_ALL : BoundingType.BLIND,
-            "depth" : depth,
-            "defaultScope" : false,
-            "eraseImprintedEdges" : noMerge ? false : true,
-            "allowSheets" : true,
-            "booleanScope" : target};
+            "endDepth" : depth
+    });
 
-    extrude(context, id, extrudeDefinition);
+    opBoolean(context, id + "boolean", {
+            "tools" : qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID),
+            "operationType" : isIntersect ? BooleanOperationType.SUBTRACT_COMPLEMENT : BooleanOperationType.SUBTRACTION,
+            "targets" : evaluatedTarget,
+            "allowSheets" : true,
+            "eraseImprintedEdges" : noMerge ? false : true
+    });
 }
 
 function checkJogDirection(pointsInPlane is array)

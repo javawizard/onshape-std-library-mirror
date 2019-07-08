@@ -1,4 +1,4 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1096; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1096.0");
-import(path : "onshape/std/context.fs", version : "1096.0");
-import(path : "onshape/std/mathUtils.fs", version : "1096.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1096.0");
-import(path : "onshape/std/units.fs", version : "1096.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1096.0");
-import(path : "onshape/std/featureList.fs", version : "1096.0");
+import(path : "onshape/std/containers.fs", version : "1112.0");
+import(path : "onshape/std/context.fs", version : "1112.0");
+import(path : "onshape/std/mathUtils.fs", version : "1112.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
+import(path : "onshape/std/units.fs", version : "1112.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1112.0");
+import(path : "onshape/std/featureList.fs", version : "1112.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -80,6 +80,7 @@ export predicate canBeQuery(value)
  * @value HISTORICAL                 : Used in historical queries
  * @value CREATED_BY                 : Used in [qCreatedBy]
  * @value SKETCH_REGION              : Used in [qSketchRegion]
+ * @value UNIQUE_VERTICES            : Used in [qUniqueVertices]
  * @value TRANSIENT                  : Used in [qTransient]
  * @value UNION                      : Used in [qUnion]
  * @value INTERSECTION               : Used in [qIntersection]
@@ -143,6 +144,7 @@ export enum QueryType
     HISTORICAL,
     CREATED_BY,
     SKETCH_REGION,
+    UNIQUE_VERTICES,
     TRANSIENT,
     ATTRIBUTE_FILTER,
     //Sheet metal
@@ -1375,6 +1377,15 @@ export function qSketchRegion(featureId is Id, filterInnerLoops is boolean) retu
 export function qSketchRegion(featureId is Id) returns Query
 {
     return { "queryType" : QueryType.SKETCH_REGION, "featureId" : featureId, "filterInnerLoops" : false } as Query;
+}
+
+/**
+ * A query that filters out duplicate vertices.
+ * When duplicates are found, the vertex with the lowest deterministic ID is used.
+ */
+export function qUniqueVertices(subquery is Query) returns Query
+{
+    return { "queryType" : QueryType.UNIQUE_VERTICES, "subquery" : subquery } as Query;
 }
 
 /**

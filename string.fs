@@ -1,4 +1,4 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -79,6 +79,17 @@ export function println(value)
 export function splitIntoCharacters(s is string) returns array
 {
     return @splitIntoCharacters(s);
+}
+
+/**
+ * Parse a JSON string into either a map or array. Null values in the JSON
+ * are returned as `undefined`. Throws if the string is not well-formed JSON.
+ *
+ * @return: A map or an array corresponding to the JSON value.
+ */
+export function parseJson(s is string)
+{
+    return @parseJson(s, {});
 }
 
 const REGEX_EXP = "(?:[eE][+-]?\\d+)?";

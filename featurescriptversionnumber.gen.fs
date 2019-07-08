@@ -1,4 +1,4 @@
-FeatureScript 1096; /* Automatically generated version */
+FeatureScript 1112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -804,7 +804,19 @@ export enum FeatureScriptVersionNumber
     V1093_HOLE_THREAD_FIX,
     V1094_HOLE_SM_FIX,
     V1095_INTERNAL_FEATURE,
-    V1096_FIX_STD
+    V1096_FIX_STD,
+    V1101_SM_BEND_END,
+    V1102_DCM_VERSION_70_0_0,
+    V1103_CONSTRUCTION_VERTEX_CHANGE,
+    V1104_WRAP,
+    V1105_ALLOW_SHEETS_IN_SECTION,
+    V1106_WRAP_BUMP,
+    V1107_HOLE_SELECTION,
+    V1108_HOLE_TAP_FIX,
+    V1109_CLUSTER_VERTICES,
+    V1110_WRAP_POSTPONED,
+    V1111_LOFT_VERTEX,
+    V1112_LOFT_VERTEX_REGEN
 }
 
 /**
@@ -815,6 +827,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1096_FIX_STD;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1112_LOFT_VERTEX_REGEN;
 
 
