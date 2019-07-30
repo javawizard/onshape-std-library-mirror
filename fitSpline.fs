@@ -1,19 +1,20 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1112.0");
+export import(path : "onshape/std/query.fs", version : "1120.0");
 
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/evaluate.fs", version : "1112.0");
-import(path : "onshape/std/feature.fs", version : "1112.0");
-import(path : "onshape/std/manipulator.fs", version : "1112.0");
-import(path : "onshape/std/math.fs", version : "1112.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1112.0");
-import(path : "onshape/std/valueBounds.fs", version : "1112.0");
-import(path : "onshape/std/vector.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/evaluate.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1120.0");
+import(path : "onshape/std/manipulator.fs", version : "1120.0");
+import(path : "onshape/std/math.fs", version : "1120.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
+import(path : "onshape/std/uihint.gen.fs", version : "1120.0");
+import(path : "onshape/std/valueBounds.fs", version : "1120.0");
+import(path : "onshape/std/vector.fs", version : "1120.0");
 
 /**
  * Feature performing an [opFitSpline]
@@ -25,7 +26,7 @@ annotation { "Feature Type Name" : "Fit spline",
 export const fitSpline = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX }
+        annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX, "UIHint" : UIHint.ALLOW_QUERY_ORDER }
         definition.vertices is Query;
 
         annotation { "Name" : "Closed spline" }
@@ -39,7 +40,7 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             annotation { "Name" : "Start magnitude" }
             isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirectionStart is boolean;
 
             annotation { "Name" : "Match curvature at start" }
@@ -52,16 +53,16 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             annotation { "Name" : "End magnitude" }
             isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirectionEnd is boolean;
 
             annotation { "Name" : "Match curvature at end" }
             definition.matchEndCurvature is boolean;
 
-            annotation { "Name" : "Has start direction", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Has start direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.hasStartDirection is boolean;
 
-            annotation { "Name" : "Has end direction", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Has end direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.hasEndDirection is boolean;
         }
 

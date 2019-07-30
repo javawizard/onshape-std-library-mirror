@@ -1,11 +1,11 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Matrices are in row major order so that the first index is the row and the second is the column.
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/math.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/math.fs", version : "1120.0");
 
 /**
  * A `Matrix` is an array of rows, all the same size, each of which
@@ -56,6 +56,29 @@ precondition
 }
 {
     return makeArray(rows, makeArray(cols, 0)) as Matrix;
+}
+
+/**
+ * Given an array of `diagonalValues` of size `n`, construct an `n`x`n` matrix
+ * which has those values along its main diagonal (starting in the top-left),
+ * and `0` everywhere else.
+ */
+export function diagonalMatrix(diagonalValues is array) returns Matrix
+precondition
+{
+    for (var value in diagonalValues)
+    {
+        value is number;
+    }
+}
+{
+    var matrixSize = size(diagonalValues);
+    var result = zeroMatrix(matrixSize, matrixSize);
+    for (var i = 0; i < matrixSize; i += 1)
+    {
+        result[i][i] = diagonalValues[i];
+    }
+    return result;
 }
 
 export operator+(m1 is Matrix, m2 is Matrix) returns Matrix
@@ -143,14 +166,14 @@ export function norm(m is Matrix) returns number
 
 /**
  * Compute the singular value decomposition of a matrix,
- * i.e. `s`, `u`, and `v`, where `m == u * s * v` and s is a
+ * i.e. `s`, `u`, and `v`, where `m == u * s * transpose(v)` and s is a
  * diagonal matrix of singular values.
  *
- * @param m {Matrix}
+ * @param m {Matrix} : an n-by-p matrix.
  * @return {{
- *     @field u {Matrix} : A unitary matrix
- *     @field s {Matrix} : A diagonal matrix
- *     @field v {Matrix} : A unitary matrix
+ *     @field u {Matrix} : An n-by-n unitary matrix
+ *     @field s {Matrix} : An n-by-p diagonal matrix
+ *     @field v {Matrix} : A p-by-p unitary matrix
  * }}
  */
 export function svd(m is Matrix) returns map

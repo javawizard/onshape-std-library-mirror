@@ -1,28 +1,28 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1112.0");
-export import(path : "onshape/std/query.fs", version : "1112.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/query.fs", version : "1120.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "1112.0");
-export import(path : "onshape/std/tool.fs", version : "1112.0");
+export import(path : "onshape/std/manipulator.fs", version : "1120.0");
+export import(path : "onshape/std/tool.fs", version : "1120.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1112.0");
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/coordSystem.fs", version : "1112.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1112.0");
-import(path : "onshape/std/evaluate.fs", version : "1112.0");
-import(path : "onshape/std/feature.fs", version : "1112.0");
-import(path : "onshape/std/mathUtils.fs", version : "1112.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
-import(path : "onshape/std/tool.fs", version : "1112.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1112.0");
-import(path : "onshape/std/valueBounds.fs", version : "1112.0");
+import(path : "onshape/std/box.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/coordSystem.fs", version : "1120.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
+import(path : "onshape/std/evaluate.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1120.0");
+import(path : "onshape/std/mathUtils.fs", version : "1120.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
+import(path : "onshape/std/tool.fs", version : "1120.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
+import(path : "onshape/std/valueBounds.fs", version : "1120.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -226,7 +226,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
             if (definition.oppositeDirectionMateAxis != undefined)
             {
-                annotation { "Name" : "Flip primary axis", "UIHint" : "PRIMARY_AXIS" }
+                annotation { "Name" : "Flip primary axis", "UIHint" : ["PRIMARY_AXIS", "FIRST_IN_ROW"] }
                 definition.oppositeDirectionMateAxis is boolean;
             }
 
@@ -411,18 +411,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 coordSys = coordSystem(evVertexPoint(context, { "vertex" : scalePoint[0] }), vector(1, 0, 0), vector(0, 0, 1));
             }
 
-            var matrix = identityMatrix(3);
             if (definition.uniform)
             {
-                matrix *= definition.scale;
-                transformMatrix = transform(matrix, coordSys.origin - matrix * coordSys.origin);
+                transformMatrix = scaleUniformly(definition.scale, coordSys.origin);
             }
             else
             {
-                matrix[0][0] = definition.scaleX;
-                matrix[1][1] = definition.scaleY;
-                matrix[2][2] = definition.scaleZ;
-                transformMatrix = toWorld(coordSys) * transform(matrix, vector(0, 0, 0) * meter) * fromWorld(coordSys);
+                transformMatrix = scaleNonuniformly(definition.scaleX, definition.scaleY, definition.scaleZ, coordSys);
             }
         }
         else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)

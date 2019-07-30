@@ -1,25 +1,26 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1112.0");
-export import(path : "onshape/std/tool.fs", version : "1112.0");
+export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/tool.fs", version : "1120.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/evaluate.fs", version : "1112.0");
-import(path : "onshape/std/boolean.fs", version : "1112.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1112.0");
-import(path : "onshape/std/feature.fs", version : "1112.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
-import(path : "onshape/std/transform.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
-import(path : "onshape/std/valueBounds.fs", version : "1112.0");
-import(path : "onshape/std/vector.fs", version : "1112.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1112.0");
-import(path : "onshape/std/string.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/evaluate.fs", version : "1120.0");
+import(path : "onshape/std/boolean.fs", version : "1120.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1120.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
+import(path : "onshape/std/transform.fs", version : "1120.0");
+import(path : "onshape/std/uihint.gen.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/valueBounds.fs", version : "1120.0");
+import(path : "onshape/std/vector.fs", version : "1120.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
+import(path : "onshape/std/string.fs", version : "1120.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -69,7 +70,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
     precondition
     {
 
-        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -84,7 +85,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             annotation { "Name" : "Profiles", "Item name" : "profile",
-                "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+                "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
             definition.sheetProfilesArray is array;
             for (var profile in definition.sheetProfilesArray)
             {
@@ -97,7 +98,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         else
         {
             annotation { "Name" : "Profiles", "Item name" : "profile",
-                "Driven query" : "wireProfileEntities", "Item label template" : "#wireProfileEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+                "Driven query" : "wireProfileEntities", "Item label template" : "#wireProfileEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
             definition.wireProfilesArray is array;
             for (var profile in definition.wireProfilesArray)
             {
@@ -108,7 +109,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-        annotation { "Name" : "Start profile condition", "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Start profile condition", "UIHint" : UIHint.SHOW_LABEL }
         definition.startCondition is LoftEndDerivativeType;
 
         if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
@@ -117,7 +118,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
         }
 
-        annotation { "Name" : "End profile condition", "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "End profile condition", "UIHint" : UIHint.SHOW_LABEL }
         definition.endCondition is LoftEndDerivativeType;
         if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
         {
@@ -131,17 +132,17 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides)
         {
             annotation { "Name" : "Guides", "Item name" : "guide",
-                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : "COLLAPSE_ARRAY_ITEMS" }
+                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)
             {
                 annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
                 guide.guideEntities is Query;
 
-                annotation { "Name" : "Continuity", "UIHint" : [ "SHOW_LABEL", "MATCH_LAST_ARRAY_ITEM" ] }
+                annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }
                 guide.guideDerivativeType is LoftGuideDerivativeType;
 
-                annotation { "Name" : "Magnitude", "UIHint" : "ALWAYS_HIDDEN" }
+                annotation { "Name" : "Magnitude", "UIHint" : UIHint.ALWAYS_HIDDEN }
                 isReal(guide.guideDerivativeMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
             }
             if (definition.bodyType == ToolBodyType.SURFACE)
@@ -174,7 +175,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.vertices is Query;
         }
 
-        annotation { "Name" : "Make periodic", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Make periodic", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.makePeriodic is boolean;
 
         if (definition.bodyType == ToolBodyType.SOLID)

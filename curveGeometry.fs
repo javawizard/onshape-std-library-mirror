@@ -1,18 +1,33 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "1112.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "1120.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/coordSystem.fs", version : "1112.0");
-import(path : "onshape/std/mathUtils.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/coordSystem.fs", version : "1120.0");
+import(path : "onshape/std/mathUtils.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
 
 // ===================================== Line ======================================
+
+/**
+ * The global X axis, equivalent to `line(vector(0, 0, 0) * meter, vector(1, 0, 0))`
+ */
+export const X_AXIS = line(WORLD_ORIGIN, X_DIRECTION);
+
+/**
+ * The global Y axis, equivalent to `line(vector(0, 0, 0) * meter, vector(0, 1, 0))`
+ */
+export const Y_AXIS = line(WORLD_ORIGIN, Y_DIRECTION);
+
+/**
+ * The global Z axis, equivalent to `line(vector(0, 0, 0) * meter, vector(0, 0, 1))`
+ */
+export const Z_AXIS = line(WORLD_ORIGIN, Z_DIRECTION);
 
 /**
  * Represents a parameterized line in 3D space.
@@ -114,7 +129,7 @@ precondition
 
 export function toString(value is Line) returns string
 {
-    return "direction" ~ toString(value.direction) ~ "\n" ~ "origin" ~ toString(value.origin);
+    return "direction " ~ toString(value.direction) ~ "\n" ~ "origin " ~ toString(value.origin);
 }
 
 
@@ -175,7 +190,7 @@ export predicate tolerantEquals(circle1 is Circle, circle2 is Circle)
 
 export function toString(value is Circle) returns string
 {
-    return "radius" ~ toString(value.radius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
+    return "radius " ~ toString(value.radius) ~ "\n" ~ "center " ~ toString(value.coordSystem.origin);
 }
 
 
@@ -240,7 +255,7 @@ export predicate tolerantEquals(ellipse1 is Ellipse, ellipse2 is Ellipse)
 
 export function toString(value is Ellipse) returns string
 {
-    return "majorRadius" ~ toString(value.majorRadius) ~ "\n" ~ "minorRadius" ~ toString(value.minorRadius) ~ "\n" ~ "center" ~ toString(value.coordSystem.origin);
+    return "majorRadius " ~ toString(value.majorRadius) ~ "\n" ~ "minorRadius " ~ toString(value.minorRadius) ~ "\n" ~ "center " ~ toString(value.coordSystem.origin);
 }
 
 /**

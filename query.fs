@@ -1,4 +1,4 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1112; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/context.fs", version : "1112.0");
-import(path : "onshape/std/mathUtils.fs", version : "1112.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1112.0");
-import(path : "onshape/std/featureList.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/context.fs", version : "1120.0");
+import(path : "onshape/std/mathUtils.fs", version : "1120.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
+import(path : "onshape/std/featureList.fs", version : "1120.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -87,6 +87,8 @@ export predicate canBeQuery(value)
  * @value SUBTRACTION                : Used in [qSubtraction]
  * @value OWNED_BY_PART              : Used in [qOwnedByBody]
  * @value OWNER_PART                 : Used in [qOwnerBody]
+ * @value CONTAINED_IN_COMPOSITE     : Used in [qContainedInCompositeParts]
+ * @value COMPOSITE_CONTAINING       : Used in [qCompositePartsContaining]
  * @value VERTEX_ADJACENT            : Used in [qVertexAdjacent]
  * @value EDGE_ADJACENT              : Used in [qEdgeAdjacent]
  * @value LOOP_AROUND_FACE           : Not yet implemented
@@ -159,6 +161,8 @@ export enum QueryType
     //Topological
     OWNED_BY_PART,
     OWNER_PART,
+    CONTAINED_IN_COMPOSITE,
+    COMPOSITE_CONTAINING,
     VERTEX_ADJACENT,
     EDGE_ADJACENT,
     LOOP_AROUND_FACE,
@@ -233,6 +237,7 @@ export enum QueryType
  * @value POINT : A zero-dimensional point (e.g. a sketch point, or the result
  *      of opPoint)
  * @value MATE_CONNECTOR : A part studio mate connector.
+ * @internal @value COMPOSITE : For Onshape internal use.
  */
 export enum BodyType
 {
@@ -240,7 +245,8 @@ export enum BodyType
     SHEET,
     WIRE,
     POINT,
-    MATE_CONNECTOR
+    MATE_CONNECTOR,
+    COMPOSITE
 }
 
 /**
@@ -969,6 +975,24 @@ export function qOwnedByBody(subquery is Query, body is Query) returns Query
 export function qOwnerBody(query is Query) returns Query
 {
     return { "queryType" : QueryType.OWNER_PART, "query" : query } as Query;
+}
+
+/**
+ * @internal
+ * A query for each part contained in `compositeParts`.
+ */
+export function qContainedInCompositeParts(compositeParts is Query) returns Query
+{
+    return { "queryType" : QueryType.CONTAINED_IN_COMPOSITE, "compositeParts" : compositeParts } as Query;
+}
+
+/**
+ * @internal
+ * A query for each composite part containing `bodies`.
+ */
+export function qCompositePartsContaining(bodies is Query) returns Query
+{
+    return { "queryType" : QueryType.COMPOSITE_CONTAINING, "bodies" : bodies } as Query;
 }
 
 /**

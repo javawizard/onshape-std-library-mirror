@@ -1,39 +1,38 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/math.fs", version : "1112.0");
-import(path : "onshape/std/matrix.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
-import(path : "onshape/std/vector.fs", version : "1112.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/math.fs", version : "1120.0");
+import(path : "onshape/std/matrix.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/vector.fs", version : "1120.0");
 
 /**
- * Type typically representing a change of position, orientation in 3D space
- * (other affine transformations such as scaling and sheering can also be
- * represented).
+ * A `Transform` typically represents a change of position and orientation in 3D space
+ * (other affine transformations, such as scaling and shearing, can also be represented).
  *
- * Transforms are commonly used with their `*` operator overloads to easily work
- * with geometry in multiple coordinate systems.
+ * [rotationAround], [scaleUniformly], [transform(Vector)], [toWorld(CoordSystem)]
+ * and [fromWorld(CoordSystem)] return useful transforms. `Transform`s are commonly
+ * used with [opTransform], whose documentation has examples of calling these functions.
  *
+ * `Transform`s are also commonly used with their `*` operator overloads to easily
+ * work with geometry in multiple coordinate systems.
  * @example `transform * (vector(1, 1, 1) * inch)` yields a point which is the
  *      given point, transformed by the `transform`.
  * @example `transform2 * transform1` yields a new transform which is equivalent
  *      to applying `transform1` followed by `transform2`.
  *
- * When applying a single transform transform, the linear potion is applied
- * first, followed by the vector translation. Generally, the individual fields
+ * A `Transform` contains a linear portion (rotation, scaling, or shearing), which is applied
+ * first, and a translation vector, which is applied second. Generally, these individual fields
  * on this type don't need to be directly used, and everything you need can be
- * accomplished through the operator overloads above, and the functions in this
+ * accomplished through the operator overloads above, or other functions in this
  * module and the `coordSystem` module.
- *
- * [rotationAround], [scaleUniformly], [toWorld(CoordSystem)] and [fromWorld(CoordSystem)] return
- * transforms for common operations.
  *
  * @type {{
  *      @field linear {Matrix} : A linear motion, which is generally a rotation,
- *              but can also be a scaling, inversion, or sheering.
+ *              but can also be a scaling, inversion, or shearing.
  *      @field translation {Vector} : A 3D translation vector.
  * }}
  */
@@ -140,11 +139,11 @@ export function scaleUniformly(scale is number) returns Transform
 
 /**
  * Returns a [Transform] that represents a uniform scaling around
- * the given point.
+ * `pointToScaleAbout`.
  */
-export function scaleUniformly(scale is number, point is Vector) returns Transform
+export function scaleUniformly(scale is number, pointToScaleAbout is Vector) returns Transform
 {
-    return transform(identityMatrix(3) * scale, point * (1 - scale));
+    return transform(identityMatrix(3) * scale, pointToScaleAbout * (1 - scale));
 }
 
 /**
@@ -153,10 +152,16 @@ export function scaleUniformly(scale is number, point is Vector) returns Transfo
  */
 export function scaleNonuniformly(xScale is number, yScale is number, zScale is number) returns Transform
 {
-    var matrix = zeroMatrix(3, 3);
-    matrix[0][0] = xScale;
-    matrix[1][1] = yScale;
-    matrix[2][2] = zScale;
-    return transform(matrix, vector(0, 0, 0) * inch);
+    return transform(diagonalMatrix([xScale, yScale, zScale]), vector(0, 0, 0) * inch);
+}
+
+/**
+ * Returns a [Transform] that represents 3 independent scalings along the X, Y, and Z axes,
+ * centered around `pointToScaleAbout`.
+ */
+export function scaleNonuniformly(xScale is number, yScale is number, zScale is number, pointToScaleAbout is Vector) returns Transform
+{
+    var scaling = diagonalMatrix([xScale, yScale, zScale]);
+    return transform(scaling, (identityMatrix(3) - scaling) * pointToScaleAbout);
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1832,7 +1832,13 @@ export enum ErrorStringEnum
     /* Select planar faces or sketch regions to wrap. */
     WRAP_SELECT_TOOLS,
     /* Select a cylindrical face to wrap around. */
-    WRAP_SELECT_TARGET
+    WRAP_SELECT_TARGET,
+    /* Failed to create composite part. */
+    CREATE_COMPOSITE_PART_FAILED,
+    /* Failed to resolve explosion. */
+    ASSEMBLY_EXPLOSION_DOES_NOT_EXIST,
+    /* Select guide entities. */
+    FILL_SURFACE_NO_GUIDES
 }
 
 

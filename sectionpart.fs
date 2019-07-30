@@ -1,26 +1,27 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1112.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1112.0");
+export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1112.0");
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/coordSystem.fs", version : "1112.0");
-import(path : "onshape/std/evaluate.fs", version : "1112.0");
-import(path : "onshape/std/extrude.fs", version : "1112.0");
-import(path : "onshape/std/feature.fs", version : "1112.0");
-import(path : "onshape/std/math.fs", version : "1112.0");
-import(path : "onshape/std/sketch.fs", version : "1112.0");
-import(path : "onshape/std/tool.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
-import(path : "onshape/std/vector.fs", version : "1112.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1112.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1112.0");
+import(path : "onshape/std/box.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/coordSystem.fs", version : "1120.0");
+import(path : "onshape/std/evaluate.fs", version : "1120.0");
+import(path : "onshape/std/extrude.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1120.0");
+import(path : "onshape/std/math.fs", version : "1120.0");
+import(path : "onshape/std/sketch.fs", version : "1120.0");
+import(path : "onshape/std/tool.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/vector.fs", version : "1120.0");
+import(path : "onshape/std/transform.fs", version : "1120.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1120.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1120.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -225,6 +226,104 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
         jogSectionCut(context, id, definition);
     }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+
+/**
+ * @internal
+ * Array parameter entry for sectionTransformedParts definition.targets
+ * When using for assembly section transformations are occurrence cumulative transformations,
+ * instanceNames are compressed occurrence pathes.
+ * @type{{
+ *      @field part {Query} : bodies to be patterned and sectioned.
+ *      @field transformations {array} : array of transformations to be used for part pattern.
+ *      @field instanceNames {array} : array of strings, same size as transformations to be used as identities of pattern instances.
+ *      }}
+ */
+export type SectionTarget typecheck canBeSectionTarget;
+
+/** @internal */
+export predicate canBeSectionTarget(value)
+{
+    value is map;
+    value.part is Query;
+    value.transformations is array;
+    for (var transform in value.transformations)
+    {
+        transform is Transform;
+    }
+    value.instanceNames is array;
+    size(value.transformations) == size(value.instanceNames);
+    for (var name in value.instanceNames)
+    {
+        name is string;
+    }
+}
+
+/**
+ * @internal
+ * method for processing all part studio parts for assembly section
+ */
+export const sectionTransformedParts = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.targets is array;
+        for (var target in definition.targets)
+        {
+            target is SectionTarget;
+        }
+        definition.sketchPlane is Plane;
+        definition.jogPoints is array;
+        for (var point in definition.jogPoints)
+        {
+            if (point != undefined)
+            {
+                is3dLengthVector(point);
+            }
+        }
+        if (definition.bbox != undefined)
+        {
+            definition.bbox is Box3d;
+        }
+        definition.isPartialSection is boolean;
+        definition.isBrokenOut is boolean;
+        definition.isCropView is boolean;
+        definition.keepSketches is boolean;
+        definition.brokenOutPointNumbers is array;
+        definition.brokenOutEndConditions is array;
+        definition.offsetPoints is array;
+    }
+    {
+        // remove sheet metal attributes and helper bodies
+        clearSheetMetalData(context, id + "sheetMetal", undefined);
+        //Collect patterned parts
+        var allTargetParts = [];
+        for (var i = 0; i < size(definition.targets); i += 1)
+        {
+            allTargetParts = append(allTargetParts, patternTarget(context, id + unstableIdComponent(i), definition.targets[i]));
+        }
+        //making a single array from array of arrays
+        allTargetParts = concatenateArrays(allTargetParts);
+        const targetQ = qUnion(allTargetParts);
+        definition.target = targetQ;
+
+        const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
+        const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
+        definition.jogPoints = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
+        definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
+        const offsetPoints = definition.offsetPoints != undefined ? definition.offsetPoints : [];
+
+        jogSectionCut(context, id, definition);
+    }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : false,
+            brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+
+    function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
+    {
+        opPattern(context, id, {
+                "entities" : args.part,
+                "transforms" : args.transformations,
+                "instanceNames" : args.instanceNames
+                });
+        return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+    }
 
 /**
  * @internal

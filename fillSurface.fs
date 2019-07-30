@@ -1,19 +1,20 @@
-FeatureScript 1112; /* Automatically generated version */
+FeatureScript 1120; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/tool.fs", version : "1112.0");
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1112.0");
+export import(path : "onshape/std/tool.fs", version : "1120.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1120.0");
 
-import(path : "onshape/std/boolean.fs", version : "1112.0");
-import(path : "onshape/std/containers.fs", version : "1112.0");
-import(path : "onshape/std/feature.fs", version : "1112.0");
-import(path : "onshape/std/query.fs", version : "1112.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1112.0");
-import(path : "onshape/std/transform.fs", version : "1112.0");
-import(path : "onshape/std/units.fs", version : "1112.0");
-import(path : "onshape/std/valueBounds.fs", version : "1112.0");
+import(path : "onshape/std/boolean.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1120.0");
+import(path : "onshape/std/query.fs", version : "1120.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
+import(path : "onshape/std/transform.fs", version : "1120.0");
+import(path : "onshape/std/uihint.gen.fs", version : "1120.0");
+import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/valueBounds.fs", version : "1120.0");
 
 /**
  * @internal
@@ -54,21 +55,20 @@ annotation { "Feature Type Name" : "Fill" ,
 export const fill = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : "ALWAYS_HIDDEN", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
         definition.preselectedEntities is Query;
 
         surfaceOperationTypePredicate(definition);
 
-        annotation { "Name" : "Edges", "Item name" : "edge",
-                "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
+        annotation { "Name" : "Edges", "Item name" : "edge", "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
         definition.edges is array;
         for (var edge in definition.edges)
         {
             annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)),
-                         "UIHint" : "ALWAYS_HIDDEN" }
+                         "UIHint" : UIHint.ALWAYS_HIDDEN }
             edge.entities is Query;
 
-            annotation { "Name" : "Continuity", "UIHint" : [ "SHOW_LABEL", "MATCH_LAST_ARRAY_ITEM" ] }
+            annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }
             edge.continuity is GeometricContinuity;
         }
 
