@@ -1832,7 +1832,13 @@ export enum ErrorStringEnum
     /* Select planar faces or sketch regions to wrap. */
     WRAP_SELECT_TOOLS,
     /* Select a cylindrical face to wrap around. */
-    WRAP_SELECT_TARGET
+    WRAP_SELECT_TARGET,
+    /* Failed to create composite part. */
+    CREATE_COMPOSITE_PART_FAILED,
+    /* Failed to resolve explosion. */
+    ASSEMBLY_EXPLOSION_DOES_NOT_EXIST,
+    /* Select guide entities. */
+    FILL_SURFACE_NO_GUIDES
 }
 
 

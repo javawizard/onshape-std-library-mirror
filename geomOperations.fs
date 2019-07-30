@@ -101,6 +101,19 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 }
 
 /**
+ * @internal
+ * Create a composite part.
+ * @param id : @autocomplete `id + "compositePart1"`
+ * @param definition {{
+ *      @field bodies {Query} : Bodies from which to create the composite part.
+ * }}
+ */
+export function opCreateCompositePart(context is Context, id is Id, definition is map)
+{
+  return @opCreateCompositePart(context, id, definition);
+}
+
+/**
  * Adds a chamfer to given edges and faces.
  * @param id : @autocomplete `id + "chamfer1"`
  * @param definition {{

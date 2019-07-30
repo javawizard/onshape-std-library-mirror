@@ -226,7 +226,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
             if (definition.oppositeDirectionMateAxis != undefined)
             {
-                annotation { "Name" : "Flip primary axis", "UIHint" : "PRIMARY_AXIS" }
+                annotation { "Name" : "Flip primary axis", "UIHint" : ["PRIMARY_AXIS", "FIRST_IN_ROW"] }
                 definition.oppositeDirectionMateAxis is boolean;
             }
 
@@ -411,18 +411,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 coordSys = coordSystem(evVertexPoint(context, { "vertex" : scalePoint[0] }), vector(1, 0, 0), vector(0, 0, 1));
             }
 
-            var matrix = identityMatrix(3);
             if (definition.uniform)
             {
-                matrix *= definition.scale;
-                transformMatrix = transform(matrix, coordSys.origin - matrix * coordSys.origin);
+                transformMatrix = scaleUniformly(definition.scale, coordSys.origin);
             }
             else
             {
-                matrix[0][0] = definition.scaleX;
-                matrix[1][1] = definition.scaleY;
-                matrix[2][2] = definition.scaleZ;
-                transformMatrix = toWorld(coordSys) * transform(matrix, vector(0, 0, 0) * meter) * fromWorld(coordSys);
+                transformMatrix = scaleNonuniformly(definition.scaleX, definition.scaleY, definition.scaleZ, coordSys);
             }
         }
         else if (transformType == TransformType.TRANSFORM_MATE_CONNECTORS)

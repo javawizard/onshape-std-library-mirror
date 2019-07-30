@@ -6,10 +6,31 @@ FeatureScript ✨; /* Automatically generated version */
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 
+
 /**
- * The world coordinate system, whose axes all other coordinate systems are defined against.
+ * Position of the world origin, equivalent to `vector(0, 0, 0) * meter`
  */
-export const WORLD_COORD_SYSTEM = coordSystem(vector(0, 0, 0) * meter, vector(1, 0, 0), vector(0, 0, 1));
+export const WORLD_ORIGIN = vector(0, 0, 0) * meter;
+
+/**
+ * Direction parallel to the X axis, equivalent to `vector(1, 0, 0)`
+ */
+export const X_DIRECTION = vector(1, 0, 0);
+
+/**
+ * Direction parallel to the Y axis, equivalent to `vector(0, 1, 0)`
+ */
+export const Y_DIRECTION = vector(0, 1, 0);
+
+/**
+ * Direction parallel to the Z axis, equivalent to `vector(0, 1, 0)`
+ */
+export const Z_DIRECTION = vector(0, 0, 1);
+
+/**
+ * The world coordinate system, equivalent to `coordSystem(vector(0, 0, 0) * meter, vector(1, 0, 0), vector(0, 0, 1))`
+ */
+export const WORLD_COORD_SYSTEM = coordSystem(WORLD_ORIGIN, X_DIRECTION, Z_DIRECTION);
 
 /**
  * A right-handed Cartesian coordinate system. Used for converting points and
@@ -151,6 +172,16 @@ export operator*(transform is Transform, cSys is CoordSystem) returns CoordSyste
 }
 
 /**
+ * Returns a [Transform] that represents 3 independent scalings along the X, Y, and Z axes
+ * of a particular `cSys`, centered around `cSys.origin`.
+ */
+export function scaleNonuniformly(xScale is number, yScale is number, zScale is number, cSys is CoordSystem) returns Transform
+{
+    var scaling = diagonalMatrix([xScale, yScale, zScale]);
+    return toWorld(cSys) * transform(scaling, vector(0, 0, 0) * meter) * fromWorld(cSys);
+}
+
+/**
  * Returns the y-axis of a coordinate system
  * @returns {Vector} : A 3D vector in world space.
  */
@@ -164,6 +195,6 @@ export function yAxis(cSys is CoordSystem) returns Vector
  */
 export function toString(cSys is CoordSystem) returns string
 {
-    return "origin" ~ toString(cSys.origin) ~ "\n" ~ "x-Axis" ~ toString(cSys.xAxis) ~ "\n" ~ "z-Axis" ~ toString(cSys.zAxis);
+    return "origin " ~ toString(cSys.origin) ~ "\n" ~ "x-Axis " ~ toString(cSys.xAxis) ~ "\n" ~ "z-Axis " ~ toString(cSys.zAxis);
 }
 

@@ -138,7 +138,8 @@ export function debug(context is Context, value is Query)
                                    BodyType.SHEET : "sheet",
                                    BodyType.WIRE : "wire",
                                    BodyType.POINT : "point",
-                                   BodyType.MATE_CONNECTOR : "mate connector"}[bodyType.value];
+                                   BodyType.MATE_CONNECTOR : "mate connector",
+                                   BodyType.COMPOSITE : "composite" }[bodyType.value];
                 print(bodyCount ~ " " ~ bodyString);
             }
             print(")");

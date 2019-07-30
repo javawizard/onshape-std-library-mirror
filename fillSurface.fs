@@ -12,6 +12,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/uihint.gen.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
@@ -54,21 +55,20 @@ annotation { "Feature Type Name" : "Fill" ,
 export const fill = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : "ALWAYS_HIDDEN", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
         definition.preselectedEntities is Query;
 
         surfaceOperationTypePredicate(definition);
 
-        annotation { "Name" : "Edges", "Item name" : "edge",
-                "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
+        annotation { "Name" : "Edges", "Item name" : "edge", "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
         definition.edges is array;
         for (var edge in definition.edges)
         {
             annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)),
-                         "UIHint" : "ALWAYS_HIDDEN" }
+                         "UIHint" : UIHint.ALWAYS_HIDDEN }
             edge.entities is Query;
 
-            annotation { "Name" : "Continuity", "UIHint" : [ "SHOW_LABEL", "MATCH_LAST_ARRAY_ITEM" ] }
+            annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }
             edge.continuity is GeometricContinuity;
         }
 

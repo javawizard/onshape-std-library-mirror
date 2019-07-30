@@ -18,9 +18,19 @@ export import(path : "onshape/std/surfacetype.gen.fs", version : "✨");
 //===================================== Plane ======================================
 
 /**
- * The default XY plane, whose normal points along the Z axis.
+ * The world XY plane, equivalent to `plane(vector(0, 0, 0) * meter, vector(0, 0, 1), vector(1, 0, 0))`
  */
-export const XY_PLANE = plane(vector(0, 0, 0) * meter, vector(0, 0, 1));
+export const XY_PLANE = plane(WORLD_ORIGIN, Z_DIRECTION, X_DIRECTION);
+
+/**
+ * The world YZ plane, equivalent to `plane(vector(0, 0, 0) * meter, vector(1, 0, 0), vector(0, 1, 0))`
+ */
+export const YZ_PLANE = plane(WORLD_ORIGIN, X_DIRECTION, Y_DIRECTION);
+
+/**
+ * The world XZ plane, equivalent to `plane(vector(0, 0, 0) * meter, vector(0, 1, 0), vector(0, 0, 1))`
+ */
+export const XZ_PLANE = plane(WORLD_ORIGIN, Y_DIRECTION, Z_DIRECTION);
 
 /**
  * A `Plane` is a data type representing an origin, a normal vector, and an X direction,
@@ -160,7 +170,7 @@ export function coordSystem(plane is Plane) returns CoordSystem
 
 export function toString(value is Plane) returns string
 {
-    return "normal" ~ toString(value.normal) ~ " " ~ "origin" ~ toString(value.origin) ~ " " ~ "x" ~ toString(value.x);
+    return "normal " ~ toString(value.normal) ~ " origin " ~ toString(value.origin) ~ " x " ~ toString(value.x);
 }
 
 /**
@@ -404,7 +414,7 @@ export predicate tolerantEquals(cone1 is Cone, cone2 is Cone)
 
 export function toString(value is Cone) returns string
 {
-    return "half angle" ~ toString(value.halfAngle) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
+    return "half angle " ~ toString(value.halfAngle) ~ "\n" ~ "basis " ~ toString(value.coordSystem);
 }
 
 // ===================================== Cylinder ======================================
@@ -456,7 +466,7 @@ export predicate tolerantEquals(cylinder1 is Cylinder, cylinder2 is Cylinder)
 
 export function toString(value is Cylinder) returns string
 {
-    return "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
+    return "radius " ~ toString(value.radius) ~ "\n" ~ "basis " ~ toString(value.coordSystem);
 }
 
 // ===================================== Torus ======================================
@@ -516,7 +526,7 @@ export predicate tolerantEquals(torus1 is Torus, torus2 is Torus)
 
 export function toString(value is Torus) returns string
 {
-    return "radius" ~ toString(value.radius) ~ "\n" ~ "minor radius" ~ toString(value.minorRadius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
+    return "radius " ~ toString(value.radius) ~ "\n" ~ "minor radius " ~ toString(value.minorRadius) ~ "\n" ~ "basis " ~ toString(value.coordSystem);
 }
 
 // ===================================== Sphere ======================================
@@ -564,6 +574,6 @@ export predicate tolerantEquals(sphere1 is Sphere, sphere2 is Sphere)
 
 export function toString(value is Sphere) returns string
 {
-    return "radius" ~ toString(value.radius) ~ "\n" ~ "basis" ~ toString(value.coordSystem);
+    return "radius " ~ toString(value.radius) ~ "\n" ~ "basis " ~ toString(value.coordSystem);
 }
 

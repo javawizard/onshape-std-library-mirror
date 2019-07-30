@@ -816,7 +816,13 @@ export enum FeatureScriptVersionNumber
     V1109_CLUSTER_VERTICES,
     V1110_WRAP_POSTPONED,
     V1111_LOFT_VERTEX,
-    V1112_LOFT_VERTEX_REGEN
+    V1112_LOFT_VERTEX_REGEN,
+    V1115_SM_CORNER_FIX,
+    V1116_WRAP_OVERLAP_CHECK,
+    V1117_NO_GUIDES_ERROR,
+    V1118_SKETCH_TEXT_CONSTRUCTION,
+    V1119_INTERNAL_ENUM_VALUE,
+    V1120_SCALE_NONUNIFORMLY
 }
 
 /**
@@ -827,6 +833,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1112_LOFT_VERTEX_REGEN;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1120_SCALE_NONUNIFORMLY;
 
 

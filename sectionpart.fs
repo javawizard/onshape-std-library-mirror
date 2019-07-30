@@ -19,6 +19,7 @@ import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
 
@@ -225,6 +226,104 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
         jogSectionCut(context, id, definition);
     }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+
+/**
+ * @internal
+ * Array parameter entry for sectionTransformedParts definition.targets
+ * When using for assembly section transformations are occurrence cumulative transformations,
+ * instanceNames are compressed occurrence pathes.
+ * @type{{
+ *      @field part {Query} : bodies to be patterned and sectioned.
+ *      @field transformations {array} : array of transformations to be used for part pattern.
+ *      @field instanceNames {array} : array of strings, same size as transformations to be used as identities of pattern instances.
+ *      }}
+ */
+export type SectionTarget typecheck canBeSectionTarget;
+
+/** @internal */
+export predicate canBeSectionTarget(value)
+{
+    value is map;
+    value.part is Query;
+    value.transformations is array;
+    for (var transform in value.transformations)
+    {
+        transform is Transform;
+    }
+    value.instanceNames is array;
+    size(value.transformations) == size(value.instanceNames);
+    for (var name in value.instanceNames)
+    {
+        name is string;
+    }
+}
+
+/**
+ * @internal
+ * method for processing all part studio parts for assembly section
+ */
+export const sectionTransformedParts = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.targets is array;
+        for (var target in definition.targets)
+        {
+            target is SectionTarget;
+        }
+        definition.sketchPlane is Plane;
+        definition.jogPoints is array;
+        for (var point in definition.jogPoints)
+        {
+            if (point != undefined)
+            {
+                is3dLengthVector(point);
+            }
+        }
+        if (definition.bbox != undefined)
+        {
+            definition.bbox is Box3d;
+        }
+        definition.isPartialSection is boolean;
+        definition.isBrokenOut is boolean;
+        definition.isCropView is boolean;
+        definition.keepSketches is boolean;
+        definition.brokenOutPointNumbers is array;
+        definition.brokenOutEndConditions is array;
+        definition.offsetPoints is array;
+    }
+    {
+        // remove sheet metal attributes and helper bodies
+        clearSheetMetalData(context, id + "sheetMetal", undefined);
+        //Collect patterned parts
+        var allTargetParts = [];
+        for (var i = 0; i < size(definition.targets); i += 1)
+        {
+            allTargetParts = append(allTargetParts, patternTarget(context, id + unstableIdComponent(i), definition.targets[i]));
+        }
+        //making a single array from array of arrays
+        allTargetParts = concatenateArrays(allTargetParts);
+        const targetQ = qUnion(allTargetParts);
+        definition.target = targetQ;
+
+        const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
+        const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
+        definition.jogPoints = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
+        definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
+        const offsetPoints = definition.offsetPoints != undefined ? definition.offsetPoints : [];
+
+        jogSectionCut(context, id, definition);
+    }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : false,
+            brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+
+    function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
+    {
+        opPattern(context, id, {
+                "entities" : args.part,
+                "transforms" : args.transformations,
+                "instanceNames" : args.instanceNames
+                });
+        return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+    }
 
 /**
  * @internal
