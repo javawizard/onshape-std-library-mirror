@@ -1,16 +1,16 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/units.fs", version : "1135.0");
 
 // ===================================== Line ======================================
 
@@ -125,6 +125,65 @@ precondition
 {
     const rotation = rotationMatrix3d(line.direction, angle);
     return transform(rotation, line.origin - rotation * line.origin);
+}
+
+/**
+ * Represents an intersection between two lines. Depending on the
+ * lines, this intersection may be a point, a line, or nothing.
+ *
+ * @type {{
+ *      @field dim {number} : Integer representing the dimension of the intersection.
+ *              @eg `0` indicates that `intersection` is a 3D length [Vector].
+ *              @eg `1` indicates that `intersection` is a [Line]. (i.e. the lines are collinear)
+ *              @eg `-1` indicates that the intersection does not exist.
+ *      @field intersection : `undefined` or [Vector] or [Line] (depending on `dim`) that represents the intersection.
+ * }}
+ */
+export type LineLineIntersection typecheck canBeLineLineIntersection;
+
+/** Typecheck for [LineLineIntersection] */
+export predicate canBeLineLineIntersection(value)
+{
+    value is map;
+    value.dim == 0 || value.dim == 1 || value.dim == -1;
+    if (value.dim == 0)
+        value.intersection is Vector;
+    if (value.dim == 1)
+        value.intersection is Line;
+}
+
+/**
+ * Returns a [LineLineIntersection] representing the intersection between two lines.  If the lines are collinear, `line1`
+ * will be stored in the `intersection` field of that `LineLineIntersection`.
+ */
+export function intersection(line1 is Line, line2 is Line) returns LineLineIntersection
+{
+    const crossDirections = cross(line1.direction, line2.direction);
+    if (tolerantEquals(crossDirections, vector(0, 0, 0))) // Lines are parallel
+    {
+        if (isPointOnLine(line1.origin, line2))
+            return { "dim" : 1, "intersection" : line1 } as LineLineIntersection; // lines are collinear
+        else
+            return { "dim" : -1 } as LineLineIntersection; // lines are parallel but not collinear
+    }
+    const p1ToP2 = line2.origin - line1.origin;
+    if (!tolerantEquals(0 * meter, dot(p1ToP2, crossDirections)))
+        return { "dim" : -1 } as LineLineIntersection; // No intersection
+    const p1ToP2CrossLine2Dir = cross(p1ToP2, line2.direction);
+    const t = dot(p1ToP2CrossLine2Dir, crossDirections) / squaredNorm(crossDirections);
+    return { "dim" : 0, "intersection" : line1.origin + t * line1.direction } as LineLineIntersection;
+}
+
+/**
+ * Returns true if the point lies on the line.
+ */
+export function isPointOnLine(point is Vector, line is Line) returns boolean
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    return tolerantEquals(project(line, point), point);
 }
 
 export function toString(value is Line) returns string

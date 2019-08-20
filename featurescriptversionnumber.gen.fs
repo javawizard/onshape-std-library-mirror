@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -822,7 +822,15 @@ export enum FeatureScriptVersionNumber
     V1117_NO_GUIDES_ERROR,
     V1118_SKETCH_TEXT_CONSTRUCTION,
     V1119_INTERNAL_ENUM_VALUE,
-    V1120_SCALE_NONUNIFORMLY
+    V1120_SCALE_NONUNIFORMLY,
+    V1128_PATTERN_OF_ONE,
+    V1129_NEWLY_LAMINAR_SPLIT,
+    V1130_SURFACING_IMPROVEMENTS,
+    V1131_DISALLOW_SPLIT_IN_COPY,
+    V1132_WRAP_RELEASE,
+    V1133_BLIND_IN_LAST_FIX,
+    V1134_WRAP_BUMP,
+    V1135_HOLE_TAP_CHECK
 }
 
 /**
@@ -833,6 +841,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1120_SCALE_NONUNIFORMLY;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1135_HOLE_TAP_CHECK;
 
 

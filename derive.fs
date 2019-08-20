@@ -1,17 +1,17 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/context.fs", version : "1120.0");
-import(path : "onshape/std/query.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/geomOperations.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1120.0");
-import(path : "onshape/std/transform.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/context.fs", version : "1135.0");
+import(path : "onshape/std/query.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/geomOperations.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1135.0");
+import(path : "onshape/std/transform.fs", version : "1135.0");
 
 const neverKeep = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
             qCreatedBy(makeId("Front"), EntityType.BODY),
@@ -79,6 +79,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     // don't want to merge default bodies or unmodifiable bodies
     if (options.filterOutNonModifiable != false)
         bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);
+    bodiesToKeep = qUnion([bodiesToKeep, qContainedInCompositeParts(bodiesToKeep)]);
 
     const toDelete = qSubtraction(qUnion([allBodies, smPartsQ]), bodiesToKeep);
 
@@ -90,6 +91,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
         for (var query in options.queriesToTrack)
             queriesToTrack = append(queriesToTrack, query.key);
     }
+    queriesToTrack = append(queriesToTrack, qContainedInCompositeParts(qUnion(queriesToTrack)));
 
     const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack });
     if (options.propagateMergeStatus != false)

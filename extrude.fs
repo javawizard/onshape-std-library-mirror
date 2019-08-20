@@ -1,34 +1,34 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1120.0");
-export import(path : "onshape/std/query.fs", version : "1120.0");
-export import(path : "onshape/std/tool.fs", version : "1120.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1135.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
+export import(path : "onshape/std/tool.fs", version : "1135.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1120.0");
+export import(path : "onshape/std/manipulator.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1120.0");
-import(path : "onshape/std/boolean.fs", version : "1120.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1120.0");
-import(path : "onshape/std/box.fs", version : "1120.0");
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1120.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
-import(path : "onshape/std/transform.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
+import(path : "onshape/std/attributes.fs", version : "1135.0");
+import(path : "onshape/std/boolean.fs", version : "1135.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1135.0");
+import(path : "onshape/std/box.fs", version : "1135.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1135.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
+import(path : "onshape/std/transform.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
 
 /**
  * The viewer being operated in
@@ -251,7 +251,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
 
         // Add manipulator
-        addExtrudeManipulator(context, id, definition, entities, extrudeAxis);
+        addExtrudeManipulator(context, id, definition, entities, extrudeAxis, true);
 
         // Transform the definition
         definition = transformExtrudeDefinitionForOpExtrude(context, id, entities, extrudeAxis.direction, definition);
@@ -354,7 +354,8 @@ predicate mainViewExtrudePredicate(definition is map)
 
     if (definition.endBound != BoundingType.SYMMETRIC)
     {
-        annotation { "Name" : "Second end position" }
+        annotation { "Name" : "Second end position",
+                     "UIHint" : "FIRST_IN_ROW" }
         definition.hasSecondDirection is boolean;
 
         if (definition.hasSecondDirection)
@@ -372,7 +373,7 @@ predicate mainViewExtrudePredicate(definition is map)
                 ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
                  (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
             {
-                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : "DISPLAY_SHORT" }
+                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
                 definition.hasSecondDirectionDraft is boolean;
 
                 if (definition.hasSecondDirectionDraft)
@@ -502,7 +503,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     if (size(dependencies) == 0)
         throw "Cannot find any dependency for the extruded body";
     var neutralPlane;
-    try
+    try silent
     {
         const line = evEdgeTangentLine(context, { "edge" : dependencies[0], "parameter" : 0.5 });
         neutralPlane = plane(transform * line.origin, direction);

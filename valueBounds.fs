@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 1120; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/math.fs", version : "1120.0");
-import(path : "onshape/std/error.fs", version : "1120.0");
-export import(path : "onshape/std/units.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/math.fs", version : "1135.0");
+import(path : "onshape/std/error.fs", version : "1135.0");
+export import(path : "onshape/std/units.fs", version : "1135.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -347,7 +347,7 @@ export const SECONDARY_PATTERN_BOUNDS =
  */
 export const CIRCULAR_PATTERN_BOUNDS =
 {
-    (unitless) : [2, 4, 2500]
+    (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
 /**
@@ -356,7 +356,7 @@ export const CIRCULAR_PATTERN_BOUNDS =
  */
 export const CURVE_PATTERN_BOUNDS =
 {
-    (unitless) : [2, 2, 2500]
+    (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
 /** @internal */

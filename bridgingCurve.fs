@@ -1,14 +1,14 @@
-FeatureScript 1120; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/manipulator.fs", version : "1120.0");
-import(path : "onshape/std/math.fs", version : "1120.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
-import(path : "onshape/std/vector.fs", version : "1120.0");
+FeatureScript 1135; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/manipulator.fs", version : "1135.0");
+import(path : "onshape/std/math.fs", version : "1135.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/vector.fs", version : "1135.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -577,12 +577,13 @@ function createG0G1BridgingCurve(context is Context, id is Id,
 {
 
     const defaultSpeed = determineDefaultG0G1Speed(point, curvatureFrame.frame.origin, curvatureFrameTangent(curvatureFrame));
-     var magnitudeManipulator is Manipulator = linearManipulator(
-        curvatureFrame.frame.origin,
-        curvatureFrameTangent(curvatureFrame),
-        magnitude * UI_SCALING * defaultSpeed
-    );
-    magnitudeManipulator.minValue = TOLERANCE.zeroLength;
+    var magnitudeManipulator is Manipulator = linearManipulator({
+                "base" : curvatureFrame.frame.origin,
+                "direction" : curvatureFrameTangent(curvatureFrame),
+                "offset" : magnitude * UI_SCALING * defaultSpeed,
+                "minValue" : TOLERANCE.zeroLength * meter,
+                "primaryParameterId" : "magnitude"
+            });
     addManipulators(context, id, {
                 (MAGNITUDE_MANIPULATOR) : magnitudeManipulator
             });
@@ -640,12 +641,13 @@ function createG1G1Manipulators(context is Context, id is Id,
     const direction = normalize(cross(line2.origin - line1.origin, normal));
     const base = (line1.origin + line2.origin) * 0.5;
     const offset = magnitude * UI_SCALING * (speed1 + speed2) * 0.5;
-    var magnitudeManipulator is Manipulator = linearManipulator(
-        base,
-        direction,
-        offset
-    );
-    magnitudeManipulator.minValue = TOLERANCE.zeroLength;
+    var magnitudeManipulator is Manipulator = linearManipulator({
+                "base" : base,
+                "direction" : direction,
+                "offset" : offset,
+                "minValue" : TOLERANCE.zeroLength * meter,
+                "primaryParameterId" : "magnitude"
+            });
 
     const halfWidth = norm(line1.origin - line2.origin) * 0.5;
     const radius = halfWidth / sin(ANGLE_RANGE * 0.5);
@@ -656,7 +658,8 @@ function createG1G1Manipulators(context is Context, id is Id,
             "angle" : (bias - 0.5) * ANGLE_RANGE,
             "minValue" : -ANGLE_RANGE * 0.49,
             "maxValue" : ANGLE_RANGE * 0.49,
-            "style" : ManipulatorStyleEnum.SIMPLE
+            "style" : ManipulatorStyleEnum.SIMPLE,
+            "primaryParameterId" : "bias"
         });
 
     addManipulators(context, id, {
@@ -719,12 +722,13 @@ function createG0G2BridgingCurve(context is Context, id is Id,
         P3
     ];
 
-    var magnitudeManipulator is Manipulator = linearManipulator(
-        curvatureFrame.frame.origin,
-        curvatureFrameTangent(curvatureFrame),
-        magnitude * UI_SCALING * defaultSpeed
-    );
-    magnitudeManipulator.minValue = TOLERANCE.zeroLength;
+    var magnitudeManipulator is Manipulator = linearManipulator({
+                "base" : curvatureFrame.frame.origin,
+                "direction" : curvatureFrameTangent(curvatureFrame),
+                "offset" : magnitude * UI_SCALING * defaultSpeed,
+                "minValue" : TOLERANCE.zeroLength * meter,
+                "primaryParameterId" : "magnitude"
+            });
     addManipulators(context, id, {
                 (MAGNITUDE_MANIPULATOR) : magnitudeManipulator
             });

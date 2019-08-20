@@ -1,12 +1,12 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
-import(path : "onshape/std/units.fs", version: "1120.0");
-import(path : "onshape/std/tabReferences.fs", version : "1120.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/units.fs", version: "1135.0");
+import(path : "onshape/std/tabReferences.fs", version : "1135.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
@@ -48,17 +48,17 @@ annotation { "Feature Type Name" : "Import" }
 export const importForeign = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Depends on blob", "UIHint" : "ALWAYS_HIDDEN", "Default" : false }
+        annotation { "Name" : "Depends on blob", "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : false }
         definition.dependsOnBlob is boolean;
 
         if (definition.dependsOnBlob)
         {
-            annotation { "Name" : "Blob Data", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Blob Data", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.blobData is CADImportData;
         }
         else
         {
-            annotation { "Name" : "Foreign Id", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Foreign Id", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.foreignId is ForeignId;
         }
 
@@ -68,26 +68,29 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Allow faulty parts" }
         definition.allowFaultyParts is boolean;
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        annotation {"UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.specifyUnits is boolean;
 
-        if (definition.specifyUnits)
+       if (definition.specifyUnits)
         {
             annotation { "Name" : "Unit", "Default" : LengthUnitNames.Meter }
             definition.unit is LengthUnitNames;
 
-            annotation { "Name" : "Original unit", "UIHint" : "ALWAYS_HIDDEN", "Default" : LengthUnitNames.Meter}
+            annotation { "Name" : "Original unit", "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : LengthUnitNames.Meter}
             definition.originalUnit is LengthUnitNames;
         }
 
-        annotation {"Name" : "Flatten assembly", "UIHint" : "ALWAYS_HIDDEN"}
+        annotation {"Name" : "Flatten assembly", "UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.flatten is boolean;
 
-        annotation {"Name" : "Maximum number of assemblies created", "UIHint" : "ALWAYS_HIDDEN"}
+        annotation {"Name" : "Maximum number of assemblies created", "UIHint" : UIHint.ALWAYS_HIDDEN}
         isInteger(definition.maxAssembliesToCreate, POSITIVE_COUNT_BOUNDS);
 
-        annotation { "Name" : "IsInContext", "UIHint" : "ALWAYS_HIDDEN", "Default" : false  }
+        annotation {"Name" : "IsInContext", "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : false}
         definition.isInContext is boolean;
+
+        annotation {"Name" : "Create composite", "UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.createComposite is boolean;
     }
     {
         if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))
@@ -130,7 +133,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false});
 
 
 

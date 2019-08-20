@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -17,13 +17,15 @@ FeatureScript 1120; /* Automatically generated version */
  * @value FLIP      : A static arrow which can be clicked to toggle a flip
  *         direction. See `extrude` (with BoundingType.THROUGH_ALL) for an
  *         example.
+ * @value POINTS    : A series of points which can be selected one at a time.
  */
 export enum ManipulatorType
 {
     LINEAR_1D,
     LINEAR_3D,
     ANGULAR,
-    FLIP
+    FLIP,
+    POINTS
 }
 
 

@@ -1,28 +1,28 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1120.0");
-export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1135.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "1120.0");
-export import(path : "onshape/std/tool.fs", version : "1120.0");
+export import(path : "onshape/std/manipulator.fs", version : "1135.0");
+export import(path : "onshape/std/tool.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1120.0");
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
-import(path : "onshape/std/tool.fs", version : "1120.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
+import(path : "onshape/std/box.fs", version : "1135.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
+import(path : "onshape/std/tool.fs", version : "1135.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -158,7 +158,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
     {
         annotation { "Name" : "Entities to transform or copy",
                      "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
-                     "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+                     "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
 
         annotation { "Name" : "Transform type" }
@@ -166,12 +166,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
         if (definition.transformType == TransformType.TRANSLATION_ENTITY)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirectionEntity is boolean;
 
             annotation { "Name" : "Line or points",
                          "Filter" : EntityType.VERTEX || EntityType.EDGE,
-                         "MaxNumberOfPicks" : 2 }
+                         "MaxNumberOfPicks" : 2,
+                         "UIHint" : UIHint.ALLOW_QUERY_ORDER }
             definition.transformLine is Query;
         }
         else if (definition.transformType == TransformType.ROTATION)
@@ -226,13 +227,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
 
             if (definition.oppositeDirectionMateAxis != undefined)
             {
-                annotation { "Name" : "Flip primary axis", "UIHint" : ["PRIMARY_AXIS", "FIRST_IN_ROW"] }
+                annotation { "Name" : "Flip primary axis", "UIHint" : [UIHint.PRIMARY_AXIS, UIHint.FIRST_IN_ROW] }
                 definition.oppositeDirectionMateAxis is boolean;
             }
 
             if (definition.secondaryAxisType != undefined)
             {
-                annotation { "Name" : "Reorient secondary axis", "UIHint" : "MATE_CONNECTOR_AXIS_TYPE", "Default" : MateConnectorAxisType.PLUS_X }
+                annotation { "Name" : "Reorient secondary axis", "UIHint" : UIHint.MATE_CONNECTOR_AXIS_TYPE, "Default" : MateConnectorAxisType.PLUS_X }
                 definition.secondaryAxisType is MateConnectorAxisType;
             }
         }
@@ -246,7 +247,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         if (definition.transformType == TransformType.ROTATION ||
             definition.transformType == TransformType.TRANSLATION_DISTANCE)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
         }
 
@@ -360,7 +361,14 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 if (definition.oppositeDirection)
                     distance = -distance;
                 addManipulators(context, id, {
-                            (OFFSET_LINE) : linearManipulator(origin, direction, distance, target) });
+                            (OFFSET_LINE) : linearManipulator({
+                                        "base" : origin,
+                                        "direction": direction,
+                                        "offset" : distance,
+                                        "sources" : target,
+                                        "primaryParameterId" : "distance"
+                                    })
+                        });
                 translation = direction * definition.distance;
             }
             transformMatrix = transform(translation);
@@ -375,13 +383,16 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             var angle = reduceAngle(definition.angle);
             if (definition.oppositeDirection)
                 angle = -angle;
-            addManipulators(context, id,
-                    { (ROTATE) :
-                      angularManipulator({ "axisOrigin" : project(axis, origin),
-                                           "axisDirection" : axis.direction,
-                                           "rotationOrigin" : origin,
-                                           "angle" : angle,
-                                           "sources" : target }) });
+            addManipulators(context, id, {
+                        (ROTATE) : angularManipulator({
+                                    "axisOrigin" : project(axis, origin),
+                                    "axisDirection" : axis.direction,
+                                    "rotationOrigin" : origin,
+                                    "angle" : angle,
+                                    "sources" : target,
+                                    "primaryParameterId" : "angle"
+                                })
+                    });
             transformMatrix = rotationAround(axis, angle);
         }
         else if (transformType == TransformType.TRANSLATION_3D)
@@ -395,7 +406,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             const origin = findCenter(context, id, target);
             if (origin is undefined)
                 return;
-            addManipulators(context, id, { (TRANSLATION) : triadManipulator(origin, transformVector, target) });
+            addManipulators(context, id, {
+                        (TRANSLATION) : triadManipulator({
+                                    "base" : origin,
+                                    "offset" : transformVector,
+                                    "sources" : target
+                                })
+                    });
         }
         else if (transformType == TransformType.SCALE_UNIFORMLY)
         {

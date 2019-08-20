@@ -1,17 +1,17 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/tool.fs", version : "1120.0");
-import(path : "onshape/std/transform.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/tool.fs", version : "1135.0");
+import(path : "onshape/std/transform.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1135.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -85,7 +85,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                                           qCreatedBy(makeId("Top"), EntityType.BODY),
                                           qCreatedBy(makeId("Right"), EntityType.BODY)]);
 
-            var bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
+            var bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts), qContainedInCompositeParts(definition.parts)]), defaultBodies);
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V566_MODIFIABLE_ONLY_IN_DERIVED))
             {
                 bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);

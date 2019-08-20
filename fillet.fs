@@ -1,26 +1,26 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1120.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1120.0");
+export import(path : "onshape/std/manipulator.fs", version : "1135.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1120.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1120.0");
-import(path : "onshape/std/tool.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
-import(path : "onshape/std/vector.fs", version : "1120.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1135.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1135.0");
+import(path : "onshape/std/tool.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/vector.fs", version : "1135.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -199,6 +199,8 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
     }
 }
 
+const FILLET_RADIUS_MANIPULATOR = "filletRadiusManipulator";
+
 /*
  * Create a linear manipulator for the fillet
  */
@@ -229,12 +231,16 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
 
             const offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
 
-            addManipulators(context, id, {"filletRadiusManipulator" :
-                            linearManipulator({ "base" : origin,
-                                                "direction" : direction,
-                                                "offset" : offset,
-                                                "minValue" : minDragValue,
-                                                "maxValue" : maxDragValue }) });
+            addManipulators(context, id, {
+                        (FILLET_RADIUS_MANIPULATOR) : linearManipulator({
+                                    "base" : origin,
+                                    "direction" : direction,
+                                    "offset" : offset,
+                                    "minValue" : minDragValue,
+                                    "maxValue" : maxDragValue,
+                                    "primaryParameterId" : "radius"
+                                })
+                    });
         }
     }
 }
@@ -247,7 +253,7 @@ export function filletManipulatorChange(context is Context, definition is map, n
 {
     try
     {
-        if (newManipulators["filletRadiusManipulator"] is map)
+        if (newManipulators[FILLET_RADIUS_MANIPULATOR] is map)
         {
             // convert given offset and edge topology into new radius
             const operativeEntity = findManipulationEntity(context, definition);
@@ -255,7 +261,7 @@ export function filletManipulatorChange(context is Context, definition is map, n
             const normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
             const convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
 
-            definition.radius = convexity * newManipulators["filletRadiusManipulator"].offset / findRadiusToOffsetRatio(normals);
+            definition.radius = convexity * newManipulators[FILLET_RADIUS_MANIPULATOR].offset / findRadiusToOffsetRatio(normals);
         }
     }
 

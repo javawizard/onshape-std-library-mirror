@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,13 +7,13 @@ FeatureScript 1120; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/context.fs", version : "1120.0");
-import(path : "onshape/std/coordSystem.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/string.fs", version : "1120.0");
-import(path : "onshape/std/units.fs", version : "1120.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "1120.0");
+import(path : "onshape/std/context.fs", version : "1135.0");
+import(path : "onshape/std/coordSystem.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/string.fs", version : "1135.0");
+import(path : "onshape/std/units.fs", version : "1135.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "1135.0");
 
 //===================================== Plane ======================================
 
@@ -307,16 +307,16 @@ export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line o
 }
 
 /**
- * Represents an intersection between a line an a plane. Depending on the
+ * Represents an intersection between a line and a plane. Depending on the
  * line and plane, this intersection may be a point, a line, or nothing.
  *
  * @type {{
  *      @field dim {number} : Integer representing the dimension of the intersection.
- *              @eg `0` indicates that `intersection` is a 3D length `Vector`.
+ *              @eg `0` indicates that `intersection` is a 3D length [Vector].
  *              @eg `1` indicates that `intersection` is a [Line].
  *              @eg `-1` indicates that the intersection does not exist (i.e.
  *                  the line and the plane are parallel).
- *      @field intersection : `undefined` or `Vector` or [Line] (depending on `dim`) that represents the intersection.
+ *      @field intersection : `undefined` or [Vector] or [Line] (depending on `dim`) that represents the intersection.
  * }}
  */
 export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
@@ -325,7 +325,7 @@ export type LinePlaneIntersection typecheck canBeLinePlaneIntersection;
 export predicate canBeLinePlaneIntersection(value)
 {
     value is map;
-    (value.dim == 0 || value.dim == 1 || value.dim == -1);
+    value.dim == 0 || value.dim == 1 || value.dim == -1;
     if (value.dim == 0)
         value.intersection is Vector;
     if (value.dim == 1)
@@ -333,7 +333,7 @@ export predicate canBeLinePlaneIntersection(value)
 }
 
 /**
- * Returns a `LinePlaneIntersection` representing the intersection between
+ * Returns a [LinePlaneIntersection] representing the intersection between
  * `line` and `plane`.
  */
 export function intersection(plane is Plane, line is Line) returns LinePlaneIntersection

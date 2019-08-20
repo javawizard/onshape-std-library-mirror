@@ -1,23 +1,23 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1120.0");
+export import(path : "onshape/std/manipulator.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1120.0");
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
+import(path : "onshape/std/box.fs", version : "1135.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
 
 /**
  * The method of defining a construction plane.
@@ -560,10 +560,15 @@ const ROTATE_MANIPULATOR = "rotateManipulator";
 
 function addOffsetManipulator(context is Context, id is Id, definition is map, referencePoint is Vector)
 {
-    addManipulators(context, id, { (DEPTH_MANIPULATOR) :
-    linearManipulator(referencePoint,
-                      definition.plane.normal,
-                      definition.offset) });
+
+    addManipulators(context, id, {
+                (DEPTH_MANIPULATOR) : linearManipulator({
+                            "base" : referencePoint,
+                            "direction" : definition.plane.normal,
+                            "offset" : definition.offset,
+                            "primaryParameterId" : "offset"
+                        })
+            });
 }
 
 function addAngleManipulator(context is Context, id is Id, definition is map, angle is ValueWithUnits, revolvePoint is Vector, planeBounds is box)
@@ -579,14 +584,17 @@ function addAngleManipulator(context is Context, id is Id, definition is map, an
     revolvePoint = project(plane(axisOrigin, cross(revolvePoint, axisDirection)), revolvePoint); // Project revolvePoint onto the plane at 0-degrees
     revolvePoint = axisOrigin + normalize(revolvePoint - axisOrigin) * size / 4; // Scale manipulator to reach halfway across the plane
 
-    addManipulators(context, id, { (ROTATE_MANIPULATOR) :
-        angularManipulator({
-                "axisOrigin" : axisOrigin,
-                "axisDirection" : axisDirection,
-                "rotationOrigin" : revolvePoint,
-                "angle": angle,
-                "minValue": minValue,
-                "maxValue": maxValue })});
+    addManipulators(context, id, {
+                (ROTATE_MANIPULATOR) : angularManipulator({
+                            "axisOrigin" : axisOrigin,
+                            "axisDirection" : axisDirection,
+                            "rotationOrigin" : revolvePoint,
+                            "angle": angle,
+                            "minValue": minValue,
+                            "maxValue": maxValue,
+                            "primaryParameterId" : "angle"
+                        })
+            });
 }
 
 /**

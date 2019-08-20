@@ -1,21 +1,21 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1120.0");
+export import(path : "onshape/std/query.fs", version : "1135.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1120.0");
-import(path : "onshape/std/evaluate.fs", version : "1120.0");
-import(path : "onshape/std/feature.fs", version : "1120.0");
-import(path : "onshape/std/manipulator.fs", version : "1120.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
-import(path : "onshape/std/vector.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1135.0");
+import(path : "onshape/std/evaluate.fs", version : "1135.0");
+import(path : "onshape/std/feature.fs", version : "1135.0");
+import(path : "onshape/std/manipulator.fs", version : "1135.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/vector.fs", version : "1135.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -679,14 +679,14 @@ function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirec
                 }
 
                 addPartingLineDraftAngularManipulator(context, topLevelId, manipulatorName, manipulatorFaceData, rawPullDirection,
-                        angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT);
+                        angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT, "angle");
             }
             else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
             {
                 // Add a manipulator on the designated face
                 const firstParams = getTwoSidedManipulatorParameters(manipulatorFaceData.isAlong, definition);
                 const added = addPartingLineDraftAngularManipulator(context, topLevelId, firstParams.manipulatorName, manipulatorFaceData,
-                        rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style);
+                        rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style, firstParams.parameterId);
 
                 // Add an additional manipulator if possible
                 if (!added || manipulatorFaceData.isAlong != otherFaceData.isAlong)
@@ -696,7 +696,7 @@ function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirec
                     // manipulator, we are also safe adding this one.
                     const secondParams = getTwoSidedManipulatorParameters(otherFaceData.isAlong, definition);
                     addPartingLineDraftAngularManipulator(context, topLevelId, secondParams.manipulatorName, otherFaceData,
-                            rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style);
+                            rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style, secondParams.parameterId);
                 }
             }
         }
@@ -720,7 +720,8 @@ function addNeutralPlaneDraftAngularManipulator(context is Context, topLevelId i
                     "rotationOrigin" : firstFacePlane.origin,
                     "angle" : definition.pullDirection ? -definition.angle : definition.angle,
                     "minValue" : -ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
-                    "maxValue" : ANGLE_STRICT_90_BOUNDS[degree][2] * degree
+                    "maxValue" : ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
+                    "primaryParameterId" : "angle"
                 });
         addManipulators(context, topLevelId, { (ANGLE_MANIPULATOR) : manipulator });
     }
@@ -733,12 +734,16 @@ function addPartingLineDraftFlipManipulator(context is Context, topLevelId is Id
     const manipulatorOrigin = faceData.quarterGeometry.coEdgeLine.origin;
     const manipulatorDirection = cross(faceData.quarterGeometry.faceTangentPlane.normal, faceData.quarterGeometry.coEdgeLine.direction);
 
-    const manipulator = flipManipulator(manipulatorOrigin, manipulatorDirection, false);
+    const manipulator = flipManipulator({
+                "base" : manipulatorOrigin,
+                "direction" : manipulatorDirection,
+                "flipped" : false
+            });
     addManipulators(context, topLevelId, { (FLIP_MANIPULATOR) : manipulator });
 }
 
 function addPartingLineDraftAngularManipulator(context is Context, topLevelId is Id, manipulatorName is string, faceData is map,
-        rawPullDirection is Vector, angle is ValueWithUnits, flipped is boolean, style is ManipulatorStyleEnum) returns boolean
+        rawPullDirection is Vector, angle is ValueWithUnits, flipped is boolean, style is ManipulatorStyleEnum, parameterId is string) returns boolean
 {
     try silent
     {
@@ -752,7 +757,8 @@ function addPartingLineDraftAngularManipulator(context is Context, topLevelId is
                         "angle" : flipped ? -angle : angle,
                         "minValue" : -ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
                         "maxValue" : ANGLE_STRICT_90_BOUNDS[degree][2] * degree,
-                        "style" : style
+                        "style" : style,
+                        "primaryParameterId" : parameterId
                     });
             addManipulators(context, topLevelId, { (manipulatorName) : manipulator });
             return true;
@@ -768,7 +774,8 @@ function getTwoSidedManipulatorParameters(isAlong is boolean, definition is map)
             "manipulatorName" : isAlong ? SECOND_ANGLE_MANIPULATOR : ANGLE_MANIPULATOR,
             "angle"           : isAlong ? definition.secondAngle : definition.angle,
             "flipped"         : isAlong ? definition.secondPullDirection : definition.pullDirection,
-            "style"           : isAlong ? ManipulatorStyleEnum.SECONDARY : ManipulatorStyleEnum.DEFAULT
+            "style"           : isAlong ? ManipulatorStyleEnum.SECONDARY : ManipulatorStyleEnum.DEFAULT,
+            "parameterId"     : isAlong ? "secondAngle" : "angle"
         };
 }
 

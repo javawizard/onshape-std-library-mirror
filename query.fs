@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1120; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/context.fs", version : "1120.0");
-import(path : "onshape/std/mathUtils.fs", version : "1120.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1120.0");
-import(path : "onshape/std/units.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/featureList.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/context.fs", version : "1135.0");
+import(path : "onshape/std/mathUtils.fs", version : "1135.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
+import(path : "onshape/std/units.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/featureList.fs", version : "1135.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -106,6 +106,7 @@ export predicate canBeQuery(value)
  * @value HOLE_FACES                 : Used in [qHoleFaces]
  * @value FILLET_FACES               : Used in [qFilletFaces]
  * @value PATTERN                    : Used in [qMatching]
+ * @value PATTERN_INSTANCES          : Used in [qPatternInstances]
  * @value CONTAINS_POINT             : Used in [qContainsPoint]
  * @value INTERSECTS_LINE            : Used in [qIntersectsLine]
  * @value INTERSECTS_PLANE           : Used in [qIntersectsPlane]
@@ -149,6 +150,7 @@ export enum QueryType
     UNIQUE_VERTICES,
     TRANSIENT,
     ATTRIBUTE_FILTER,
+    PATTERN_INSTANCES,
     //Sheet metal
     ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,
@@ -1466,6 +1468,23 @@ precondition
 export function qMatching(subquery is Query) returns Query
 {
     return { "queryType" : QueryType.PATTERN, "subquery" : subquery } as Query;
+}
+
+/**
+ * A query for entities created by a specific instance or instances of an `opPattern` operation.
+ *
+ * @param featureId : The `Id` of the specified feature. @eg `id + "pattern1"`
+ * @param instanceNames : The names of the instances to query for, a subset of the instanceNames passed into the `opPattern` operation.
+ * @param entityType : @autocomplete `EntityType.BODY`
+ */
+export function qPatternInstances(featureId is Id, instanceNames is array, entityType is EntityType) returns Query
+{
+    return { "queryType" : QueryType.PATTERN_INSTANCES, "featureId" : featureId, "instanceNames" : instanceNames, "entityType" : entityType } as Query;
+}
+
+export function qPatternInstances(featureId is Id, instanceName is string, entityType is EntityType) returns Query
+{
+    return { "queryType" : QueryType.PATTERN_INSTANCES, "featureId" : featureId, "instanceNames" : [instanceName], "entityType" : entityType } as Query;
 }
 
 /** @internal */

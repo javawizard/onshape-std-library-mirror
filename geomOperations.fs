@@ -1,4 +1,4 @@
-FeatureScript 1120; /* Automatically generated version */
+FeatureScript 1135; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,29 +15,31 @@ FeatureScript 1120; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1120.0");
-import(path : "onshape/std/context.fs", version : "1120.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1120.0");
-import(path : "onshape/std/query.fs", version : "1120.0");
-import(path : "onshape/std/valueBounds.fs", version : "1120.0");
-import(path : "onshape/std/vector.fs", version : "1120.0");
+import(path : "onshape/std/containers.fs", version : "1135.0");
+import(path : "onshape/std/context.fs", version : "1135.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
+import(path : "onshape/std/query.fs", version : "1135.0");
+import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/vector.fs", version : "1135.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1135.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1135.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1135.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1135.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1135.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1120.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1135.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1120.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1135.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1120.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1135.0");
+/* opWrap uses enumerations from WrapType */
+export import(path : "onshape/std/wraptype.gen.fs", version : "1135.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -106,6 +108,8 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "compositePart1"`
  * @param definition {{
  *      @field bodies {Query} : Bodies from which to create the composite part.
+ *.     @field closed {boolean} : @optional
+ *              A `closed` composite part consumes its constituent bodies, so that they are not available interactively for individual selection.
  * }}
  */
 export function opCreateCompositePart(context is Context, id is Id, definition is map)
@@ -622,7 +626,6 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
  *      @field copyPropertiesAndAttributes {boolean} : If true (default), copies properties and attributes to patterned entities. @optional
  * }}
  */
-/* TODO: make it easy to query for instance names */
 export function opPattern(context is Context, id is Id, definition is map)
 {
     return @opPattern(context, id, definition);
@@ -720,27 +723,6 @@ export function opReplaceFace(context is Context, id is Id, definition is map)
 export function opRevolve(context is Context, id is Id, definition is map)
 {
     return @opRevolve(context, id, definition);
-}
-
-/**
- * Rolls or unrolls faces from one surface onto another.  The location and orientation of the rolled faces on the destination
- * surface is controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [RollSurface]s.
- * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies representing
- * the rolled or unrolled faces.  Faces that are topologically connected will remain topologically connected in the result
- * body. This operation currently supports rolling from a plane onto a cylinder, and unrolling from a cylinder onto a plane.
- * @param definition {{
- *      @field entities {Query} : Faces to roll from `source` to `destination`.
- *      @field source {RollSurface}      : The surface to roll from. All `entities` must lie on this surface.
- *      @field destination {RollSurface} : The surface to roll onto.
- *      @field orientWithDestination {boolean} : @optional If true (default), the normals of the resulting surface will point
- *                                               in the same direction as the `destination`. If false, the normals of the
- *                                               resulting surface will point in the opposite direction.  For the purpose
- *                                               of this parameter, the normals of a [Cylinder] are always pointing outwards.
- * }}
- */
-export function opRoll(context is Context, id is Id, definition is map)
-{
-    return @opRoll(context, id, definition);
 }
 
 /**
@@ -993,6 +975,35 @@ export function opThicken(context is Context, id is Id, definition is map)
 export function opTransform(context is Context, id is Id, definition is map)
 {
     return @opTransform(context, id, definition);
+}
+
+/**
+ * Wraps or unwraps faces from one surface onto another.  The location and orientation of the wrapped faces on the destination
+ * surface are controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [WrapSurface]s.
+ * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies or imprinted edges
+ * representing the wrapped or unwrapped faces. Faces that are topologically connected will remain topologically connected in the result
+ * body for `WrapType.SIMPLE` and `WrapType.TRIM`. This operation currently supports wrapping from a plane onto a cylinder,
+ * and unwrapping from a cylinder onto a plane.
+ *
+ * (Formerly `opRoll`)
+ *
+ * @param id : @autocomplete `id + "wrap1"`
+ * @param definition {{
+ *      @field wrapType {WrapType} : The type of wrap to execute.
+ *              @eg `WrapType.SIMPLE` wraps `entities` around the infinite definition of `destination`.
+ *      @field entities {Query} : Faces to wrap from `source` to `destination`.
+ *      @field source {WrapSurface}      : The surface to wrap from. All `entities` must lie on this surface.
+ *      @field destination {WrapSurface} : The surface to wrap onto. Must be defined using the `face` field for `WrapType.TRIM` or `WrapType.IMPRINT`.
+ *      @field orientWithDestination {boolean} : @optional If true (default), the normals of the resulting surface will point
+ *                                               in the same direction as the `destination`. If false, the normals of the
+ *                                               resulting surface will point in the opposite direction. For the purpose
+ *                                               of this parameter, the normals of a [WrapSurface] defined by an infinite
+ *                                               [Cylinder] are always pointing outwards.
+ * }}
+ */
+export function opWrap(context is Context, id is Id, definition is map)
+{
+    return @opWrap(context, id, definition);
 }
 
 // NOTE: For documentation readability, new operations in this file should be sorted alphabetically
