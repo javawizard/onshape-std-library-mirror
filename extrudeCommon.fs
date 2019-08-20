@@ -493,7 +493,7 @@ const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
  * @internal
  * Add the appropriate depth and flip manipulators for [extrude] feature or [sheetMetalStart] feature using `Extrude` option.
  */
-export function addExtrudeManipulator(context is Context, id is Id, definition is map, entities is Query, extrudeAxis is Line)
+export function addExtrudeManipulator(context is Context, id is Id, definition is map, entities is Query, extrudeAxis is Line, showEntities is boolean)
 {
     if (evaluateQuery(context, qSheetMetalFlatFilter(entities, SMFlatType.YES)) != [])
     {
@@ -501,11 +501,13 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
     }
     if (!isFirstDirectionOfType(definition, BoundingType.BLIND) && !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
     {
-        addManipulators(context, id, { (FLIP_MANIPULATOR) :
-                        flipManipulator(extrudeAxis.origin,
-                                        extrudeAxis.direction,
-                                        isOppositeDirection(definition),
-                                        entities) });
+        addManipulators(context, id, {
+                    (FLIP_MANIPULATOR) : flipManipulator({
+                                "base" : extrudeAxis.origin,
+                                "direction" : extrudeAxis.direction,
+                                "flipped" : isOppositeDirection(definition)
+                            })
+                });
     }
     else
     {
@@ -515,35 +517,45 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
         // Both BLIND and SYMMETRIC rely on oppositeDirection to determine the flip of the manipulator
         if (isOppositeDirection(definition))
             depthOffset *= -1;
-        addManipulators(context, id, { (DEPTH_MANIPULATOR) :
-                        linearManipulator(extrudeAxis.origin,
-                            extrudeAxis.direction,
-                            depthOffset,
-                            entities) });
+        addManipulators(context, id, {
+                    (DEPTH_MANIPULATOR) : linearManipulator({
+                                "base" : extrudeAxis.origin,
+                                "direction" : extrudeAxis.direction,
+                                "offset" : depthOffset,
+                                "sources" : showEntities ? entities : undefined,
+                                "primaryParameterId" : "depth"
+                            })
+                });
     }
 
     if (definition.hasSecondDirection && !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
     {
         if (!isSecondDirectionOfType(definition, BoundingType.BLIND))
         {
-            addManipulators(context, id, { (SECOND_FLIP_MANIPULATOR) :
-                            flipManipulator(extrudeAxis.origin,
-                                            extrudeAxis.direction,
-                                            isSecondDirectionOppositeDirection(definition),
-                                            entities,
-                                            ManipulatorStyleEnum.SECONDARY) });
+            addManipulators(context, id, {
+                        (SECOND_FLIP_MANIPULATOR) : flipManipulator({
+                                    "base" : extrudeAxis.origin,
+                                    "direction" : extrudeAxis.direction,
+                                    "flipped" : isSecondDirectionOppositeDirection(definition),
+                                    "style" : ManipulatorStyleEnum.SECONDARY
+                                })
+                    });
         }
         else
         {
             var secondDirectionDepthOffset = definition.secondDirectionDepth;
             if (isSecondDirectionOppositeDirection(definition))
                 secondDirectionDepthOffset *= -1;
-            addManipulators(context, id, { (SECOND_DEPTH_MANIPULATOR) :
-                            linearManipulator(extrudeAxis.origin,
-                                              extrudeAxis.direction,
-                                              secondDirectionDepthOffset,
-                                              entities,
-                                              ManipulatorStyleEnum.SECONDARY) });
+            addManipulators(context, id, {
+                        (SECOND_DEPTH_MANIPULATOR) : linearManipulator({
+                                    "base" : extrudeAxis.origin,
+                                    "direction" : extrudeAxis.direction,
+                                    "offset" : secondDirectionDepthOffset,
+                                    "sources" : showEntities ? entities : undefined,
+                                    "style" : ManipulatorStyleEnum.SECONDARY,
+                                    "primaryParameterId" : "secondDirectionDepth"
+                                })
+                    });
         }
     }
 }

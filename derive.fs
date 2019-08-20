@@ -79,6 +79,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     // don't want to merge default bodies or unmodifiable bodies
     if (options.filterOutNonModifiable != false)
         bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);
+    bodiesToKeep = qUnion([bodiesToKeep, qContainedInCompositeParts(bodiesToKeep)]);
 
     const toDelete = qSubtraction(qUnion([allBodies, smPartsQ]), bodiesToKeep);
 
@@ -90,6 +91,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
         for (var query in options.queriesToTrack)
             queriesToTrack = append(queriesToTrack, query.key);
     }
+    queriesToTrack = append(queriesToTrack, qContainedInCompositeParts(qUnion(queriesToTrack)));
 
     const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack });
     if (options.propagateMergeStatus != false)

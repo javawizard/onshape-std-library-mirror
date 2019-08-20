@@ -222,7 +222,7 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                 unsetFeaturePatternInstanceData(context, instanceId);
             }
 
-            if (featureSuccessCount == 0) // TODO: better error
+            if (featureSuccessCount == 0 && expectedToCreateGeometry(context, definition)) // TODO: better error
                 throw regenError(ErrorStringEnum.PATTERN_FEATURE_FAILED, ["instanceFunction"]);
         }
         else
@@ -308,7 +308,8 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
         @transferSubfeatureErrorDisplay(context, id, {"subfeatureId" : id + "faces"});
     }
 
-    if (size(evaluateQuery(context, qCreatedBy(id))) == 0) //we could not create anything
+    // An error occurs if we're expecting to create something (instance count > 1) but get nothing.
+    if (expectedToCreateGeometry(context, definition) && evaluateQuery(context, qCreatedBy(id)) == [])
     {
         throw regenError(ErrorStringEnum.PATTERN_FEATURE_FAILED, ["instanceFunction"]);
     }
@@ -426,3 +427,13 @@ function sheetMetalAwareGeometryPattern(context is Context, id is Id, definition
     }
 }
 
+/** @internal */
+export function tooFewPatternInstances(context is Context, instanceCount is number) returns boolean
+{
+    return instanceCount < 1 || (instanceCount < 2 && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1128_PATTERN_OF_ONE));
+}
+
+function expectedToCreateGeometry(context is Context, definition is map) returns boolean
+{
+    return !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1128_PATTERN_OF_ONE) || definition.transforms != [];
+}

@@ -157,7 +157,7 @@ export function debug(context is Context, value is Query)
     }
     print("\n");
 
-    addDebugEntities(context, value);
+    addDebugEntities(context, qUnion([value, qContainedInCompositeParts(value)]));
 }
 
 export function debug(context is Context, value is Line)

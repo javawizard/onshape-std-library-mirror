@@ -199,6 +199,8 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
     }
 }
 
+const FILLET_RADIUS_MANIPULATOR = "filletRadiusManipulator";
+
 /*
  * Create a linear manipulator for the fillet
  */
@@ -229,12 +231,16 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
 
             const offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
 
-            addManipulators(context, id, {"filletRadiusManipulator" :
-                            linearManipulator({ "base" : origin,
-                                                "direction" : direction,
-                                                "offset" : offset,
-                                                "minValue" : minDragValue,
-                                                "maxValue" : maxDragValue }) });
+            addManipulators(context, id, {
+                        (FILLET_RADIUS_MANIPULATOR) : linearManipulator({
+                                    "base" : origin,
+                                    "direction" : direction,
+                                    "offset" : offset,
+                                    "minValue" : minDragValue,
+                                    "maxValue" : maxDragValue,
+                                    "primaryParameterId" : "radius"
+                                })
+                    });
         }
     }
 }
@@ -247,7 +253,7 @@ export function filletManipulatorChange(context is Context, definition is map, n
 {
     try
     {
-        if (newManipulators["filletRadiusManipulator"] is map)
+        if (newManipulators[FILLET_RADIUS_MANIPULATOR] is map)
         {
             // convert given offset and edge topology into new radius
             const operativeEntity = findManipulationEntity(context, definition);
@@ -255,7 +261,7 @@ export function filletManipulatorChange(context is Context, definition is map, n
             const normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
             const convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
 
-            definition.radius = convexity * newManipulators["filletRadiusManipulator"].offset / findRadiusToOffsetRatio(normals);
+            definition.radius = convexity * newManipulators[FILLET_RADIUS_MANIPULATOR].offset / findRadiusToOffsetRatio(normals);
         }
     }
 

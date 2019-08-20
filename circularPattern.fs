@@ -114,12 +114,12 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         if (definition.equalSpace)
         {
-            if (definition.instanceCount < 2)
+            if (tooFewPatternInstances(context, definition.instanceCount))
                 throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
 
             const isFull = abs(abs(stripUnits(angle)) - (2 * PI)) < TOLERANCE.zeroAngle;
             const instCt = isFull ? definition.instanceCount : definition.instanceCount - 1;
-            angle = angle / instCt; //with error check above, no chance of instCt < 1
+            angle = instCt <= 1 ? angle : angle / instCt;
         }
 
         // If centered, create (instanceCount - 1) number of new instances on either side of the seed.

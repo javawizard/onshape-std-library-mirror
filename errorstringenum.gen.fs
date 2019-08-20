@@ -126,7 +126,7 @@ export enum ErrorStringEnum
     EXTRUDE_INVALID_ENTITIES,
     /* Cannot have more than 2500 instances in a pattern. */
     PATTERN_INPUT_TOO_MANY_INSTANCES,
-    /* Instance count cannot be less than 2. */
+    /* Instance count cannot be less than 1. */
     PATTERN_INPUT_TOO_FEW_INSTANCES,
     /* Failed to create pattern, check input. */
     PATTERN_FACE_FAILED,
@@ -1579,9 +1579,9 @@ export enum ErrorStringEnum
     SHEET_METAL_FACE_PATTERN_FLOATING_WALL,
     /* No faces meet flattened sheet metal bodies. */
     SM_FLAT_OP_NO_INTERSECT,
-    /* Some faces don't meet flattened sheet metal parts. */
+    /* Some faces do not meet flattened sheet metal parts. */
     SM_FLAT_OP_PARTIAL_INTERSECT,
-    /* Added material can't cross edges of flattened sheet metal body. */
+    /* Added material cannot cross edges of flattened sheet metal body. */
     SM_FLAT_OP_ADD_CROSSES_EDGE,
     /* Can only use planar faces. */
     SM_FLAT_OP_NON_PLANAR_TOOL,
@@ -1827,7 +1827,7 @@ export enum ErrorStringEnum
     WRAP_TRIM_NO_INTERSECTION,
     /* Failed to imprint edges onto destination face. */
     WRAP_IMPRINT_FAILED,
-    /* Select anchor points for position control. */
+    /* Anchor points could not be automatically chosen. Select "Specify anchor points" option to choose them manually. */
     WRAP_NEEDS_ANCHOR,
     /* Select planar faces or sketch regions to wrap. */
     WRAP_SELECT_TOOLS,
@@ -1835,10 +1835,20 @@ export enum ErrorStringEnum
     WRAP_SELECT_TARGET,
     /* Failed to create composite part. */
     CREATE_COMPOSITE_PART_FAILED,
+    /* Attempted to create a composite part containing another composite part. */
+    NESTED_COMPOSITE_PARTS,
     /* Failed to resolve explosion. */
     ASSEMBLY_EXPLOSION_DOES_NOT_EXIST,
     /* Select guide entities. */
-    FILL_SURFACE_NO_GUIDES
+    FILL_SURFACE_NO_GUIDES,
+    /* Depth, tapped depth, tap clearance, and pitch are inconsistent. */
+    HOLE_INCONSISTENT_TAP_INFO,
+    /* Source entities must all lie on the same plane. */
+    WRAP_SOURCE_DIFFERING_PLANES,
+    /* Cannot split active sheet metal. */
+    WRAP_IMPRINT_SHEET_METAL,
+    /* Select anchor points. */
+    WRAP_SELECT_ANCHORS
 }
 
 

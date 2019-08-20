@@ -3,8 +3,8 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/tool.fs", version : "✨");
 export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "✨");
+export import(path : "onshape/std/tool.fs", version : "✨");
 
 import(path : "onshape/std/boolean.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
@@ -12,7 +12,6 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
-import(path : "onshape/std/uihint.gen.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 

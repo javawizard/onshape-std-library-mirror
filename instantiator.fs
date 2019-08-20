@@ -348,7 +348,7 @@ export function instantiate(context is Context, instantiator is Instantiator)
                     transform *= mateConnectorTransform;
 
                 const instanceParts = (instance.partQuery == undefined) ? instantiator[].partQuery : instance.partQuery;
-                const derivedParts = mergedParts[instanceParts];
+                var derivedParts = mergedParts[instanceParts];
                 if (derivedParts == undefined)
                     throw regenError("Error tracking parts of " ~ instance.name);
 

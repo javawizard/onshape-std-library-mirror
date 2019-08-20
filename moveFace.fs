@@ -239,7 +239,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             else
             {
                 definition.offsetDistance = definition.offsetDistance * directionSign;
-                addOffsetManipulator(context, id, definition.offsetDistance, facePlane);
+                addOffsetManipulator(context, id, definition.offsetDistance, facePlane, "offsetDistance");
             }
 
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
@@ -271,7 +271,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 {
                     var translation = translationDirection * definition.translationDistance * directionSign;
                     definition.transform = transform(translation);
-                    addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
+                    addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign, "translationDistance");
 
                     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                     {
@@ -352,7 +352,7 @@ function getOffsetToEntity(context is Context, face is Query, definition is map,
     {
         // Move the manipulator plane by the offset distance so it will line up with the preview.
         faceTangentPlane.origin = faceTangentPlane.origin + offsetDistance * faceTangentPlane.normal;
-        addOffsetManipulator(context, id, definition.offset, faceTangentPlane);
+        addOffsetManipulator(context, id, definition.offset, faceTangentPlane, "offset");
     }
 
     return offsetDistance + definition.offset;
@@ -418,7 +418,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
     const translation = translationDirection * definition.offset + (limitPoint - intersectionPoint);
     if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
     {
-        addTranslateManipulator(context, id, faceTangentPlane.origin + (limitPoint - intersectionPoint), translationDirection, definition.offset);
+        addTranslateManipulator(context, id, faceTangentPlane.origin + (limitPoint - intersectionPoint), translationDirection, definition.offset, "offset");
     }
     return transform(translation);
 }
@@ -1105,16 +1105,28 @@ const OFFSET_MANIPULATOR = "offsetManipulator";
 const TRANSLATE_MANIPULATOR = "translateManipulator";
 const ROTATE_MANIPULATOR = "rotateManipulator";
 
-function addOffsetManipulator(context is Context, id is Id, offsetDistance is ValueWithUnits, facePlane is Plane)
+function addOffsetManipulator(context is Context, id is Id, offsetDistance is ValueWithUnits, facePlane is Plane, primaryParameterId is string)
 {
-    addManipulators(context, id, { (OFFSET_MANIPULATOR) :
-                    linearManipulator(facePlane.origin, facePlane.normal, offsetDistance) });
+    addManipulators(context, id, {
+                (OFFSET_MANIPULATOR) : linearManipulator({
+                            "base" : facePlane.origin,
+                            "direction" : facePlane.normal,
+                            "offset" : offsetDistance,
+                            "primaryParameterId" : primaryParameterId
+                        })
+            });
 }
 
-function addTranslateManipulator(context is Context, id is Id, origin is Vector, direction is Vector, magnitude is ValueWithUnits)
+function addTranslateManipulator(context is Context, id is Id, origin is Vector, direction is Vector, magnitude is ValueWithUnits, primaryParameterId is string)
 {
-    addManipulators(context, id, { (TRANSLATE_MANIPULATOR) :
-                    linearManipulator(origin, direction, magnitude) });
+    addManipulators(context, id, {
+                (TRANSLATE_MANIPULATOR) : linearManipulator({
+                            "base" : origin,
+                            "direction" : direction,
+                            "offset" : magnitude,
+                            "primaryParameterId" : primaryParameterId
+                        })
+            });
 }
 
 function addRotateManipulator(context is Context, id is Id, axis is Line, facePlane is Plane, angle is ValueWithUnits, faceQuery is Query)
@@ -1146,12 +1158,17 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
     var minValue = -2 * PI * radian;
     var maxValue = 2 * PI * radian;
 
-    addManipulators(context, id, { (ROTATE_MANIPULATOR) : angularManipulator({ "axisOrigin" : rotateOrigin,
+    addManipulators(context, id, {
+                (ROTATE_MANIPULATOR) : angularManipulator({
+                            "axisOrigin" : rotateOrigin,
                             "axisDirection" : axis.direction,
                             "rotationOrigin" : refPoint,
                             "angle" : angle,
                             "minValue" : minValue,
-                            "maxValue" : maxValue }) });
+                            "maxValue" : maxValue ,
+                            "primaryParameterId" : "angle"
+                        })
+            });
 }
 
 /**
@@ -1159,9 +1176,6 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
  * Manipulator change function for `moveFace`.
  */
 export function moveFaceManipulatorChange(context is Context, moveFaceDefinition is map, newManipulators is map) returns map
-precondition
-{
-}
 {
     var newValue = 0 * meter;
     if (moveFaceDefinition.moveFaceType == MoveFaceType.OFFSET)
@@ -1194,7 +1208,8 @@ precondition
         moveFaceDefinition.angle = abs(newValue);
     }
 
-    if (moveFaceDefinition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && moveFaceDefinition.hasOffset)
+    const respectsLimitType = moveFaceDefinition.moveFaceType == MoveFaceType.OFFSET || moveFaceDefinition.moveFaceType == MoveFaceType.TRANSLATE;
+    if (respectsLimitType && moveFaceDefinition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && moveFaceDefinition.hasOffset)
     {
         moveFaceDefinition.oppositeOffsetDirection = newValue.value < 0;
     }
@@ -1325,7 +1340,7 @@ function moveFaceCreateLegacy(context is Context, id is Id, definition is map, q
         else
         {
             definition.offsetDistance = definition.offsetDistance * directionSign;
-            addOffsetManipulator(context, id, definition.offsetDistance, facePlane);
+            addOffsetManipulator(context, id, definition.offsetDistance, facePlane, "offsetDistance");
         }
 
         opExtractSurface(context, id, {"faces" : qSurfacesAndFaces,
@@ -1362,7 +1377,7 @@ function moveFaceCreateLegacy(context is Context, id is Id, definition is map, q
             {
                 translation = translationDirection * definition.translationDistance * directionSign;
                 definition.transform = transform(translation);
-                addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign);
+                addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign, "translationDistance");
             }
             definition.direction = translationDirection;
         }

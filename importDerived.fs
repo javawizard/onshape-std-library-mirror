@@ -85,7 +85,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                                           qCreatedBy(makeId("Top"), EntityType.BODY),
                                           qCreatedBy(makeId("Right"), EntityType.BODY)]);
 
-            var bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts)]), defaultBodies);
+            var bodiesToKeep = qSubtraction(qUnion([definition.parts, qMateConnectorsOfParts(definition.parts), qContainedInCompositeParts(definition.parts)]), defaultBodies);
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V566_MODIFIABLE_ONLY_IN_DERIVED))
             {
                 bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);

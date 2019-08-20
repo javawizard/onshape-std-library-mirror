@@ -85,7 +85,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         verifyPatternSize(context, id, definition.instanceCount);
 
-        if (definition.instanceCount < 2)
+        if (tooFewPatternInstances(context, definition.instanceCount))
             throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
 
         if (size(evaluateQuery(context, definition.edges)) == 0)
@@ -110,34 +110,39 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
         var path = constructPathResult.path;
         var withinBoundingBox = constructPathResult.pathDistanceInformation.withinBoundingBox;
+        var transforms = [];
+        var names = [];
 
-        // If the path is open, the parameters are {0.0, 1 / (instanceCount - 1), ..., (instanceCount - 2) / (instanceCount - 1), 1.0}
-        // If the path is closed, the parameters are {0.0, 1 / (instanceCount), ..., (instanceCount - 2) / (instanceCount), (instanceCount - 1) / (instanceCount)}
-        var divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
-        var parameters = [];
-        for (var i = 0; i < definition.instanceCount; i += 1)
+        if (definition.instanceCount > 1)
         {
-            parameters = append(parameters, i / divisor);
-        }
+            // If the path is open, the parameters are {0.0, 1 / (instanceCount - 1), ..., (instanceCount - 2) / (instanceCount - 1), 1.0}
+            // If the path is closed, the parameters are {0.0, 1 / (instanceCount), ..., (instanceCount - 2) / (instanceCount), (instanceCount - 1) / (instanceCount)}
+            var divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
+            var parameters = [];
+            for (var i = 0; i < definition.instanceCount; i += 1)
+            {
+                parameters = append(parameters, i / divisor);
+            }
 
-        // Get tangent planes or lines from computePatternTangents
-        var patternTangentResult = computePatternTangents(context, id, path, parameters, referenceEntities, definition.keepOrientation);
-        var tangents = patternTangentResult.tangents;
-        withinBoundingBox = withinBoundingBox || patternTangentResult.pathDistanceInformation.withinBoundingBox;
+            // Get tangent planes or lines from computePatternTangents
+            var patternTangentResult = computePatternTangents(context, id, path, parameters, referenceEntities, definition.keepOrientation);
+            var tangents = patternTangentResult.tangents;
+            withinBoundingBox = withinBoundingBox || patternTangentResult.pathDistanceInformation.withinBoundingBox;
 
-        if (!withinBoundingBox)
-        {
-            var message = path.closed ? ErrorStringEnum.CURVE_PATTERN_START_OFF_CLOSED_PATH : ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH;
-            reportFeatureInfo(context, id, message);
-        }
+            if (!withinBoundingBox)
+            {
+                var message = path.closed ? ErrorStringEnum.CURVE_PATTERN_START_OFF_CLOSED_PATH : ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH;
+                reportFeatureInfo(context, id, message);
+            }
 
-        // Transform(..., ...) works with planes or lines
-        var transforms = [transform(tangents[0], tangents[1])];
-        var names = ["1"];
-        for (var i = 2; i < definition.instanceCount; i += 1)
-        {
-            transforms = append(transforms, transform(tangents[i - 1], tangents[i]) * transforms[i - 2]);
-            names = append(names, "" ~ i);
+            // Transform(..., ...) works with planes or lines
+            transforms = [transform(tangents[0], tangents[1])];
+            names = ["1"];
+            for (var i = 2; i < definition.instanceCount; i += 1)
+            {
+                transforms = append(transforms, transform(tangents[i - 1], tangents[i]) * transforms[i - 2]);
+                names = append(names, "" ~ i);
+            }
         }
 
         definition.transforms = transforms;

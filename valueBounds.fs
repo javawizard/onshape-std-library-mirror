@@ -347,7 +347,7 @@ export const SECONDARY_PATTERN_BOUNDS =
  */
 export const CIRCULAR_PATTERN_BOUNDS =
 {
-    (unitless) : [2, 4, 2500]
+    (unitless) : [1, 4, 2500]
 } as IntegerBoundSpec;
 
 /**
@@ -356,7 +356,7 @@ export const CIRCULAR_PATTERN_BOUNDS =
  */
 export const CURVE_PATTERN_BOUNDS =
 {
-    (unitless) : [2, 2, 2500]
+    (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
 /** @internal */

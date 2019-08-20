@@ -67,7 +67,14 @@ precondition
 const OFFSET_MANIPULATOR = "offsetManipulator";
 function addOffsetManipulator(context is Context, id is Id, offsetDistance is ValueWithUnits, facePlane is Plane)
 {
-    addManipulators(context, id, { (OFFSET_MANIPULATOR) : linearManipulator(facePlane.origin, facePlane.normal, offsetDistance) });
+    addManipulators(context, id, {
+                (OFFSET_MANIPULATOR) : linearManipulator({
+                            "base" : facePlane.origin,
+                            "direction" : facePlane.normal,
+                            "offset" : offsetDistance,
+                            "primaryParameterId" : "offset"
+                        })
+            });
 }
 
 /**

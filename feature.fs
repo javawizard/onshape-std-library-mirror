@@ -8,6 +8,7 @@ export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/error.fs", version : "✨");
 export import(path : "onshape/std/geomOperations.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/uihint.gen.fs", version : "✨");
 
 // Imports used internally
 import(path : "onshape/std/containers.fs", version : "✨");

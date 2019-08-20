@@ -272,14 +272,18 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
             maxValue = 0 * radian;
         }
     }
-    addManipulators(context, id, { (ANGLE_MANIPULATOR) :
-        angularManipulator({ "axisOrigin" : axisOrigin,
-            "axisDirection" : revolveDefinition.axis.direction,
-            "rotationOrigin" : revolvePoint,
-            "angle" : angle,
-            "sources" : entities,
-            "minValue" : minValue,
-            "maxValue" : maxValue })});
+    addManipulators(context, id, {
+                (ANGLE_MANIPULATOR) : angularManipulator({
+                            "axisOrigin" : axisOrigin,
+                            "axisDirection" : revolveDefinition.axis.direction,
+                            "rotationOrigin" : revolvePoint,
+                            "angle" : angle,
+                            "sources" : entities,
+                            "minValue" : minValue,
+                            "maxValue" : maxValue,
+                            "primaryParameterId" : "angle"
+                        })
+            });
 
     if (enableTwoDirectionManipulator(context, revolveDefinition))
     {
@@ -287,15 +291,19 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
 
         if (revolveDefinition.oppositeDirection == true)
             angleBack *= -1;
-        addManipulators(context, id, { (SECOND_ANGLE_MANIPULATOR) :
-            angularManipulator({ "axisOrigin" : axisOrigin,
-                "axisDirection" : revolveDefinition.axis.direction,
-                "rotationOrigin" : revolvePoint,
-                "angle" : angleBack,
-                "sources" : entities,
-                "minValue" : minValue,
-                "maxValue" : maxValue,
-                "style" : ManipulatorStyleEnum.SECONDARY })});
+        addManipulators(context, id, {
+                    (SECOND_ANGLE_MANIPULATOR) : angularManipulator({
+                                "axisOrigin" : axisOrigin,
+                                "axisDirection" : revolveDefinition.axis.direction,
+                                "rotationOrigin" : revolvePoint,
+                                "angle" : angleBack,
+                                "sources" : entities,
+                                "minValue" : minValue,
+                                "maxValue" : maxValue,
+                                "style" : ManipulatorStyleEnum.SECONDARY,
+                                "primaryParameterId" : "angleBack"
+                            })
+                });
     }
 }
 

@@ -65,5 +65,5 @@ export import(path : "onshape/std/splitpart.fs", version : "✨");
 export import(path : "onshape/std/sweep.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
-
+export import(path : "onshape/std/wrap.fs", version : "✨");
 

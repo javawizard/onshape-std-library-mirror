@@ -32,9 +32,9 @@ annotation { "Feature Type Name" : "Boolean", "Filter Selector" : "allparts" }
 export const booleanBodies = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Operation type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Operation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.operationType is BooleanOperationType;
-        annotation { "Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID }
+        annotation { "Name" : "Tools", "Filter" : EntityType.BODY && BodyType.SOLID, "UIHint" : UIHint.ALLOW_QUERY_ORDER }
         definition.tools is Query;
 
         if (definition.operationType == BooleanOperationType.SUBTRACTION)
@@ -60,7 +60,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 annotation { "Name" : "Offset distance" }
                 isLength(definition.offsetDistance, SHELL_OFFSET_BOUNDS);
 
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.oppositeDirection is boolean;
 
                 annotation { "Name" : "Reapply fillet" }
@@ -235,7 +235,7 @@ export function convertNewBodyOpToBoolOp(operationType is NewBodyOperationType) 
  */
 export predicate booleanStepTypePredicate(booleanDefinition is map)
 {
-    annotation { "Name" : "Result body operation type", "UIHint" : "HORIZONTAL_ENUM" }
+    annotation { "Name" : "Result body operation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
     booleanDefinition.operationType is NewBodyOperationType;
 }
 
@@ -404,7 +404,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
  */
 export predicate surfaceOperationTypePredicate(surfaceDefinition is map)
 {
-    annotation { "Name" : "Result body operation type", "UIHint" : "HORIZONTAL_ENUM" }
+    annotation { "Name" : "Result body operation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
     surfaceDefinition.surfaceOperationType is NewSurfaceOperationType;
 }
 

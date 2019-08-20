@@ -239,6 +239,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
+        if (definition.endStyle != HoleEndStyle.BLIND && (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
+        {
+            definition.startFromSketch = false;
+        }
+
         if (definition.tapDrillDiameter == undefined)
         {
             definition.tapDrillDiameter = definition.holeDiameter;
@@ -342,6 +347,15 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             opDeleteBodies(context, id + "delete", { "entities" : errorBodyQuery });
         }
 
+        // Verify consistency between pitch, tap depth, and clearance (BEL-120375)
+        if (definition.showTappedDepth && definition.endStyle != HoleEndStyle.THROUGH && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1135_HOLE_TAP_CHECK))
+        {
+            var pitch = computePitch(definition);
+            if (pitch != undefined && !tolerantEquals(definition.holeDepth, definition.tappedDepth + definition.tapClearance * pitch))
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.HOLE_INCONSISTENT_TAP_INFO);
+            }
+        }
     }, {
             endStyle : HoleEndStyle.BLIND,
             style : HoleStyle.SIMPLE,
@@ -536,7 +550,7 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
                     "firstBodyCastDiameter" : firstBodyCastDiameter,
                     "scope" : definition.scope,
                     "needBack" : false });
-        if (!changeStartPoint)
+        if (definition.startFromSketch)
         {
             // If we're not actually changing the start point and the distances are only
             // for the callouts, put the 0-distance start point back in the array:
@@ -574,12 +588,11 @@ function calculateStartPoint(context is Context, definition is map) returns bool
     if (definition.endStyle == HoleEndStyle.THROUGH && definition.style == HoleStyle.SIMPLE)
         return false;
 
-    var startFromSketch = definition.startFromSketch;
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V401_HOLE_CLEAR_START_FROM_SKETCH) && definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V401_HOLE_CLEAR_START_FROM_SKETCH))
     {
-        startFromSketch = false;
+        return true;
     }
-    return !startFromSketch;
+    return !definition.startFromSketch;
 }
 
 function maxDiameter(definition is map) returns ValueWithUnits
@@ -1731,6 +1744,28 @@ function computeMajorDiameter(definition is map)
     return undefined;
 }
 
+function computePitch(definition is map)
+{
+    var standard = getStandardAndTable(definition).standard;
+    if (standard != undefined && standard.pitch != undefined)
+    {
+        // Check for NN.N tpi or NN.N mm
+        var result = match(standard.pitch, "([0123456789.]*)\\s*(tpi|mm)");
+        if (result.hasMatch)
+        {
+            if (result.captures[2] == "tpi")
+            {
+                return 1.0 / stringToNumber(result.captures[1]) * inch;
+            }
+            else if (result.captures[2] == "mm")
+            {
+                return stringToNumber(result.captures[1]) * millimeter;
+            }
+        }
+    }
+    return undefined;
+}
+
 /*
  * Accounts for tapped holes by computing depth or threaded depth based on pitch
  */
@@ -1739,44 +1774,26 @@ function adjustThreadDepth(oldDefinition is map, definition is map) returns map
     if (threadPitchChanged(oldDefinition, definition))
     {
         definition.showTappedDepth = false;
-        var standard = getStandardAndTable(definition).standard;
-        if (standard != undefined && standard.pitch != undefined)
+        var pitch = computePitch(definition);
+        if (pitch != undefined)
         {
-            // Check for NN.N tpi or NN.N mm
-            var result = match(standard.pitch, "([0123456789.]*)\\s*(tpi|mm)");
-            if (result.hasMatch)
+            definition.showTappedDepth = true;
+
+            // if blind hole type and have valid tap clearance value, then calculate and set either tapped or hole depth
+            if ((definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST) && definition.tapClearance != undefined)
             {
-                var pitch;
-                if (result.captures[2] == "tpi")
+                if (definition.holeDepth != oldDefinition.holeDepth)
                 {
-                    pitch = 1.0 / stringToNumber(result.captures[1]) * inch;
-                }
-                else if (result.captures[2] == "mm")
-                {
-                    pitch = stringToNumber(result.captures[1]) * millimeter;
+                    if (definition.holeDepth != undefined)
+                    {
+                        definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
+                    }
                 }
                 else
                 {
-                    return definition;
-                }
-                definition.showTappedDepth = true;
-
-                // if blind hole type and have valid tap clearance value, then calculate and set either tapped or hole depth
-                if ((definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST) && definition.tapClearance != undefined)
-                {
-                    if (definition.holeDepth != oldDefinition.holeDepth)
+                    if (definition.tappedDepth != undefined)
                     {
-                        if (definition.holeDepth != undefined)
-                        {
-                            definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
-                        }
-                    }
-                    else
-                    {
-                        if (definition.tappedDepth != undefined)
-                        {
-                            definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
-                        }
+                        definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
                     }
                 }
             }

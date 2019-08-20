@@ -8,19 +8,18 @@ export import(path : "onshape/std/query.fs", version : "✨");
 export import(path : "onshape/std/tool.fs", version : "✨");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "✨");
-import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/boolean.fs", version : "✨");
 import(path : "onshape/std/booleanHeuristics.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
-import(path : "onshape/std/uihint.gen.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
-import(path : "onshape/std/topologyUtils.fs", version : "✨");
-import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -293,7 +292,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
             var matches = createLoftTopologyMatchesForSurfaceJoin(context, id, definition, remainingTransform);
-            joinSurfaceBodies(context, id, matches, false, reconstructOp);
+            var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1130_SURFACING_IMPROVEMENTS) ? true : false;
+            joinSurfaceBodies(context, id, matches, makeSolid, reconstructOp);
         }
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,

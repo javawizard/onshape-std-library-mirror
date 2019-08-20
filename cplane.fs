@@ -560,10 +560,15 @@ const ROTATE_MANIPULATOR = "rotateManipulator";
 
 function addOffsetManipulator(context is Context, id is Id, definition is map, referencePoint is Vector)
 {
-    addManipulators(context, id, { (DEPTH_MANIPULATOR) :
-    linearManipulator(referencePoint,
-                      definition.plane.normal,
-                      definition.offset) });
+
+    addManipulators(context, id, {
+                (DEPTH_MANIPULATOR) : linearManipulator({
+                            "base" : referencePoint,
+                            "direction" : definition.plane.normal,
+                            "offset" : definition.offset,
+                            "primaryParameterId" : "offset"
+                        })
+            });
 }
 
 function addAngleManipulator(context is Context, id is Id, definition is map, angle is ValueWithUnits, revolvePoint is Vector, planeBounds is box)
@@ -579,14 +584,17 @@ function addAngleManipulator(context is Context, id is Id, definition is map, an
     revolvePoint = project(plane(axisOrigin, cross(revolvePoint, axisDirection)), revolvePoint); // Project revolvePoint onto the plane at 0-degrees
     revolvePoint = axisOrigin + normalize(revolvePoint - axisOrigin) * size / 4; // Scale manipulator to reach halfway across the plane
 
-    addManipulators(context, id, { (ROTATE_MANIPULATOR) :
-        angularManipulator({
-                "axisOrigin" : axisOrigin,
-                "axisDirection" : axisDirection,
-                "rotationOrigin" : revolvePoint,
-                "angle": angle,
-                "minValue": minValue,
-                "maxValue": maxValue })});
+    addManipulators(context, id, {
+                (ROTATE_MANIPULATOR) : angularManipulator({
+                            "axisOrigin" : axisOrigin,
+                            "axisDirection" : axisDirection,
+                            "rotationOrigin" : revolvePoint,
+                            "angle": angle,
+                            "minValue": minValue,
+                            "maxValue": maxValue,
+                            "primaryParameterId" : "angle"
+                        })
+            });
 }
 
 /**

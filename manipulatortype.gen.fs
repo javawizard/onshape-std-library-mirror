@@ -17,13 +17,15 @@ FeatureScript ✨; /* Automatically generated version */
  * @value FLIP      : A static arrow which can be clicked to toggle a flip
  *         direction. See `extrude` (with BoundingType.THROUGH_ALL) for an
  *         example.
+ * @value POINTS    : A series of points which can be selected one at a time.
  */
 export enum ManipulatorType
 {
     LINEAR_1D,
     LINEAR_3D,
     ANGULAR,
-    FLIP
+    FLIP,
+    POINTS
 }
 
 

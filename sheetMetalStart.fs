@@ -694,7 +694,7 @@ function extrudeSketchCurves(context is Context, id is Id, definition is map) re
         definition = adjustExtrudeDirectionForBlind(definition);
 
         const extrudeAxis = getExtrudeDirection(context, resolvedEntities[0]);
-        addExtrudeManipulator(context, id, definition, sketchCurves, extrudeAxis);
+        addExtrudeManipulator(context, id, definition, sketchCurves, extrudeAxis, false);
 
         definition = transformExtrudeDefinitionForOpExtrude(context, id, sketchCurves, extrudeAxis.direction, definition);
 

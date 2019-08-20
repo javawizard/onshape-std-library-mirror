@@ -21,6 +21,7 @@ export const deleteBodies = defineFeature(function(context is Context, id is Id,
         definition.entities is Query;
     }
     {
+        definition.entities = qUnion([definition.entities, qContainedInCompositeParts(definition.entities)]);
         opDeleteBodies(context, id, definition);
     });
 

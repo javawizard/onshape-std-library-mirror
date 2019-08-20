@@ -251,7 +251,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
 
         // Add manipulator
-        addExtrudeManipulator(context, id, definition, entities, extrudeAxis);
+        addExtrudeManipulator(context, id, definition, entities, extrudeAxis, true);
 
         // Transform the definition
         definition = transformExtrudeDefinitionForOpExtrude(context, id, entities, extrudeAxis.direction, definition);
@@ -354,7 +354,8 @@ predicate mainViewExtrudePredicate(definition is map)
 
     if (definition.endBound != BoundingType.SYMMETRIC)
     {
-        annotation { "Name" : "Second end position" }
+        annotation { "Name" : "Second end position",
+                     "UIHint" : "FIRST_IN_ROW" }
         definition.hasSecondDirection is boolean;
 
         if (definition.hasSecondDirection)
@@ -372,7 +373,7 @@ predicate mainViewExtrudePredicate(definition is map)
                 ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
                  (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
             {
-                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : "DISPLAY_SHORT" }
+                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
                 definition.hasSecondDirectionDraft is boolean;
 
                 if (definition.hasSecondDirectionDraft)
@@ -502,7 +503,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
     if (size(dependencies) == 0)
         throw "Cannot find any dependency for the extruded body";
     var neutralPlane;
-    try
+    try silent
     {
         const line = evEdgeTangentLine(context, { "edge" : dependencies[0], "parameter" : 0.5 });
         neutralPlane = plane(transform * line.origin, direction);

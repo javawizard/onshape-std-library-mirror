@@ -78,9 +78,14 @@ function addOffsetManipulator(context is Context, id is Id, replaceFaceDefinitio
     if (replaceFaceDefinition.oppositeSense)
         offsetDirection = -offsetDirection;
 
-    addManipulators(context, id, { (OFFSET_MANIPULATOR) :
-                    linearManipulator(offsetOrigin, offsetDirection, replaceFaceDefinition.offset) });
-
+    addManipulators(context, id, {
+                (OFFSET_MANIPULATOR) : linearManipulator({
+                            "base" : offsetOrigin,
+                            "direction" : offsetDirection,
+                            "offset" : replaceFaceDefinition.offset,
+                            "primaryParameterId" : "offset"
+                        })
+            });
 }
 
 function computeFacePlane(context is Context, id is Id, entitiesQuery is Query)

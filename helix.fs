@@ -317,17 +317,19 @@ const HEIGHT_MANIPULATOR = "heightManipulator";
 
 function addHelixManipulator(context is Context, id is Id, definition is map, extrudeAxis is Line)
 {
-    const usedEntities = definition.edge;
     var offset = definition.height;
     if (definition.oppositeDirection)
     {
         offset *= -1;
     }
-    addManipulators(context, id, { (HEIGHT_MANIPULATOR) :
-                    linearManipulator(extrudeAxis.origin,
-                        extrudeAxis.direction,
-                        offset,
-                        usedEntities) });
+    addManipulators(context, id, {
+                (HEIGHT_MANIPULATOR) : linearManipulator({
+                            "base" : extrudeAxis.origin,
+                            "direction" : extrudeAxis.direction,
+                            "offset" : offset,
+                            "primaryParameterId" : "height"
+                        })
+            });
 }
 
 /**

@@ -12,7 +12,6 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/manipulator.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
-import(path : "onshape/std/uihint.gen.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
@@ -22,7 +21,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
 annotation { "Feature Type Name" : "Fit spline",
         "Manipulator Change Function" : "fitSplineManipulatorChange",
         "Editing Logic Function" : "fitSplineEditLogic",
-        "UIHint" : "NO_PREVIEW_PROVIDED" }
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const fitSpline = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -333,13 +332,23 @@ function addFitSplineManipulators(context is Context, id is Id, definition, star
     if (startCondition != undefined)
     {
         const manipulatorMagnitude = definition.startMagnitude * totalSpan / MANIPULATOR_SCALE_FACTOR;
-        manipulators[START_MANIPULATOR] = linearManipulator(points[0], startCondition.direction, manipulatorMagnitude);
+        manipulators[START_MANIPULATOR] = linearManipulator({
+                    "base" : points[0],
+                    "direction" : startCondition.direction,
+                    "offset" : manipulatorMagnitude,
+                    "primaryParameterId" : "startMagnitude"
+                });
     }
 
     if (endCondition != undefined)
     {
         const manipulatorMagnitude = definition.endMagnitude * totalSpan / MANIPULATOR_SCALE_FACTOR;
-        manipulators[END_MANIPULATOR] = linearManipulator(points[size(points) - 1], -endCondition.direction, manipulatorMagnitude);
+        manipulators[END_MANIPULATOR] = linearManipulator({
+                    "base" : points[size(points) - 1],
+                    "direction" : -endCondition.direction,
+                    "offset" : manipulatorMagnitude,
+                    "primaryParameterId" : "endMagnitude"
+                });
     }
 
     addManipulators(context, id, manipulators);
