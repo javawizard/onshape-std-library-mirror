@@ -1,4 +1,4 @@
-FeatureScript 1135; /* Automatically generated version */
+FeatureScript 1150; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1135; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1135.0");
-import(path : "onshape/std/context.fs", version : "1135.0");
-import(path : "onshape/std/mathUtils.fs", version : "1135.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
-import(path : "onshape/std/units.fs", version : "1135.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
-import(path : "onshape/std/featureList.fs", version : "1135.0");
+import(path : "onshape/std/containers.fs", version : "1150.0");
+import(path : "onshape/std/context.fs", version : "1150.0");
+import(path : "onshape/std/mathUtils.fs", version : "1150.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1150.0");
+import(path : "onshape/std/units.fs", version : "1150.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1150.0");
+import(path : "onshape/std/featureList.fs", version : "1150.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -777,7 +777,7 @@ export function qLaminarDependency(subquery is Query) returns Query
 
 /**
  * A query for start/end cap vertex, edge, and face entities created by `featureId`.
- * Cap entities are produced by extrude, revolve, sweep and loft features
+ * Cap entities are produced by extrude, revolve, sweep, loft and thicken features
  * @param featureId : @autocomplete `id + "extrude1"`
  * @param capType : @autocomplete `CapType.END`
  * @param entityType : @optional @autocomplete `EntityType.FACE`
@@ -819,7 +819,7 @@ export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
 
 /**
  * A query for vertex, edge, and face entities created by `featureId` that are not cap entities.
- * Cap entities are produced by extrude, revolve, sweep and loft features
+ * Cap entities are produced by extrude, revolve, sweep, loft and thicken features
  * @param featureId : @autocomplete `id + "extrude1"`
  * @param entityType: @optional @autocomplete `EntityType.FACE`
  */

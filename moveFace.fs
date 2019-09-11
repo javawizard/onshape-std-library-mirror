@@ -1,28 +1,28 @@
-FeatureScript 1135; /* Automatically generated version */
+FeatureScript 1150; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1135.0");
-export import(path : "onshape/std/tool.fs", version : "1135.0");
+export import(path : "onshape/std/query.fs", version : "1150.0");
+export import(path : "onshape/std/tool.fs", version : "1150.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1135.0");
+export import(path : "onshape/std/manipulator.fs", version : "1150.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1135.0");
-import(path : "onshape/std/box.fs", version : "1135.0");
-import(path : "onshape/std/containers.fs", version : "1135.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1135.0");
-import(path : "onshape/std/evaluate.fs", version : "1135.0");
-import(path : "onshape/std/feature.fs", version : "1135.0");
-import(path : "onshape/std/mathUtils.fs", version : "1135.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1135.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1135.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1135.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1135.0");
-import(path : "onshape/std/valueBounds.fs", version : "1135.0");
+import(path : "onshape/std/attributes.fs", version : "1150.0");
+import(path : "onshape/std/box.fs", version : "1150.0");
+import(path : "onshape/std/containers.fs", version : "1150.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1150.0");
+import(path : "onshape/std/evaluate.fs", version : "1150.0");
+import(path : "onshape/std/feature.fs", version : "1150.0");
+import(path : "onshape/std/mathUtils.fs", version : "1150.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1150.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1150.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1150.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1150.0");
+import(path : "onshape/std/valueBounds.fs", version : "1150.0");
 
 
 /**
@@ -438,30 +438,31 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
         const sheetMetalQueryCount = size(evaluateQuery(context, queries.sheetMetalQueries));
         if (sheetMetalQueryCount > 0)
         {
+            const smOffsetId = id + "smOffset";
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V486_MOVE_FACE_PROPAGATE_INFO))
             {
                 try
                 {
                     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V733_EDGE_CHANGE))
                     {
-                        offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                        offsetSheetMetalFaces(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                     }
                     else
                     {
-                        offsetSheetMetalFacesLegacy(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                        offsetSheetMetalFacesLegacy(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                     }
                 }
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
+                processSubfeatureStatus(context, id, { "subfeatureId" : smOffsetId, "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
             }
             else
             {
                 try
                 {
-                    offsetSheetMetalFacesLegacy(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                    offsetSheetMetalFacesLegacy(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                 }
                 catch
                 {
-                    processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
+                    processSubfeatureStatus(context, id, { "subfeatureId" : smOffsetId, "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
                 }
             }
         }
