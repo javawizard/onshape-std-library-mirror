@@ -830,7 +830,16 @@ export enum FeatureScriptVersionNumber
     V1132_WRAP_RELEASE,
     V1133_BLIND_IN_LAST_FIX,
     V1134_WRAP_BUMP,
-    V1135_HOLE_TAP_CHECK
+    V1135_HOLE_TAP_CHECK,
+    V1142_HOLE_FIXES,
+    V1143_ROLLED_OUTLINE_INNER_LOOPS,
+    V1144_PS_VERSION_32_0_152,
+    V1145_SKETCH_HELPERS_CONSTRUCTION,
+    V1146_COMPOSITE_ERROR_VERSION_BUMP,
+    V1147_EDGE_BLEND_HISTORY,
+    V1148_SECTION_PART,
+    V1149_COMPOSITE_INPUT_CHECKS,
+    V1150_COMPOSITE_FEATURE_PATTERN
 }
 
 /**
@@ -841,6 +850,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1135_HOLE_TAP_CHECK;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1150_COMPOSITE_FEATURE_PATTERN;
 
 

@@ -244,6 +244,13 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.startFromSketch = false;
         }
 
+        if ((definition.style == HoleStyle.C_BORE && tolerantEquals(definition.holeDiameter, definition.cBoreDiameter)) ||
+            (definition.style == HoleStyle.C_SINK && tolerantEquals(definition.holeDiameter, definition.cSinkDiameter)))
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1142_HOLE_FIXES))
+                definition.style = HoleStyle.SIMPLE;
+        }
+
         if (definition.tapDrillDiameter == undefined)
         {
             definition.tapDrillDiameter = definition.holeDiameter;

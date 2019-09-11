@@ -433,6 +433,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
     const isBrokenOut = definition.isBrokenOut;
     const isCropView = definition.isCropView;
     const offsetPoints = definition.offsetPoints;
+    const versionOperationUse = (definition.versionOperationUse == true);
 
     var toDeleteQ = qSubtraction(qEverything(EntityType.BODY), target);
     if (keepSketches)
@@ -451,7 +452,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
         }
         if (isBrokenOut || isCropView)
         {
-            brokenOutSectionCut(context, id, target, sketchPlane, bboxInSketchCS, jogPointsArray, offsetDistancesArray, isCropView);
+            brokenOutSectionCut(context, id, target, sketchPlane, bboxInSketchCS, jogPointsArray, offsetDistancesArray,
+                                isCropView, versionOperationUse);
         }
         else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
         {
@@ -517,7 +519,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             sketchPolyline(context, sketchId, polygon, offsetPlane);
             const extrudeId = id + "extrude";
             const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-            extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut);
+            extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut,
+                        versionOperationUse);
             opDeleteBodies(context, id + "deleteSketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
         }
     }
@@ -530,7 +533,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
 /**
  * 'jogPointsArray' is an array of array, each array contains the spline section points and the depth point
  */
-function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, bboxIn, jogPointsArray is array, offsetDistancesArray is array, isCropView is boolean)
+function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, bboxIn, jogPointsArray is array,
+                            offsetDistancesArray is array, isCropView is boolean, versionOperationUse is boolean)
 {
     const coordinateSystem = planeToCSys(sketchPlane);
     const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
@@ -597,34 +601,57 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         const extrudeId = id + ("extrude" ~ brokenOutIndex);
         const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-        extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, undefined, isCropView);
+        extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, undefined, isCropView, versionOperationUse);
         opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
     }
 }
 
-function extrudeCut(context is Context, id is Id, target is Query, direction, sketchRegionQuery is Query, depth, isIntersect is boolean)
+function extrudeCut(context is Context, id is Id, target is Query, direction, sketchRegionQuery is Query, depth,
+                    isIntersect is boolean, versionOperationUse is boolean)
 {
     var noMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V620_DONT_MERGE_SECTION_FACE);
     if (depth != undefined && depth < 2 * TOLERANCE.booleanDefaultTolerance * meter)
     {
         depth = (2 * TOLERANCE.booleanDefaultTolerance) * meter;
     }
-    //Evaluate before extrude to avoid qEverything or such picking up extruded body
-    const evaluatedTarget = qUnion(evaluateQuery(context, target));
-    opExtrude(context, id, {
-            "entities" : sketchRegionQuery,
-            "direction" : direction,
-            "endBound" : depth == undefined ? BoundingType.THROUGH_ALL : BoundingType.BLIND,
-            "endDepth" : depth
-    });
+    // BEL-110102 in rel-1.99 use of operations change was released without versioning.
+    // It causes missing parts in section views held back to versions earlier than V1017_SUBTRACT_COMPLEMENT
+    // In order to preserve drawings created between rel-1.99 and release of this fix, versionOperationUse is controlled
+    // by drawing view version.
+    if (versionOperationUse  || isAtVersionOrLater(context, FeatureScriptVersionNumber.V1017_SUBTRACT_COMPLEMENT))
+    {
+        //Evaluate before extrude to avoid qEverything or such picking up extruded body
+        const evaluatedTarget = qUnion(evaluateQuery(context, target));
+        opExtrude(context, id, {
+                "entities" : sketchRegionQuery,
+                "direction" : direction,
+                "endBound" : depth == undefined ? BoundingType.THROUGH_ALL : BoundingType.BLIND,
+                "endDepth" : depth
+        });
 
-    opBoolean(context, id + "boolean", {
-            "tools" : qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID),
-            "operationType" : isIntersect ? BooleanOperationType.SUBTRACT_COMPLEMENT : BooleanOperationType.SUBTRACTION,
-            "targets" : evaluatedTarget,
+        opBoolean(context, id + "boolean", {
+                "tools" : qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID),
+                "operationType" : isIntersect ? BooleanOperationType.SUBTRACT_COMPLEMENT : BooleanOperationType.SUBTRACTION,
+                "targets" : evaluatedTarget,
+                "allowSheets" : true,
+                "eraseImprintedEdges" : noMerge ? false : true
+        });
+    }
+    else
+    {
+        const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
+            "operationType" : isIntersect ? NewBodyOperationType.INTERSECT : NewBodyOperationType.REMOVE,
+            "entities" : sketchRegionQuery,
+            "endBound" : depth == undefined ? BoundingType.THROUGH_ALL : BoundingType.BLIND,
+            "depth" : depth,
+            "defaultScope" : false,
+            "eraseImprintedEdges" : noMerge ? false : true,
             "allowSheets" : true,
-            "eraseImprintedEdges" : noMerge ? false : true
-    });
+            "booleanScope" : target};
+
+        extrude(context, id, extrudeDefinition);
+
+    }
 }
 
 function checkJogDirection(pointsInPlane is array)

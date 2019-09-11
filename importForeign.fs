@@ -91,6 +91,12 @@ export const importForeign = defineFeature(function(context is Context, id is Id
 
         annotation {"Name" : "Create composite", "UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.createComposite is boolean;
+
+        if (definition.createComposite)
+        {
+            annotation {"Name" : "Composite name", "UIHint" : UIHint.ALWAYS_HIDDEN}
+            definition.compositeName is string;
+        }
     }
     {
         if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))

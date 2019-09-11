@@ -438,30 +438,31 @@ function sheetMetalAwareMoveFace(context is Context, id is Id, definition is map
         const sheetMetalQueryCount = size(evaluateQuery(context, queries.sheetMetalQueries));
         if (sheetMetalQueryCount > 0)
         {
+            const smOffsetId = id + "smOffset";
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V486_MOVE_FACE_PROPAGATE_INFO))
             {
                 try
                 {
                     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V733_EDGE_CHANGE))
                     {
-                        offsetSheetMetalFaces(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                        offsetSheetMetalFaces(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                     }
                     else
                     {
-                        offsetSheetMetalFacesLegacy(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                        offsetSheetMetalFacesLegacy(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                     }
                 }
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
+                processSubfeatureStatus(context, id, { "subfeatureId" : smOffsetId, "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
             }
             else
             {
                 try
                 {
-                    offsetSheetMetalFacesLegacy(context, id + "smOffset", mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
+                    offsetSheetMetalFacesLegacy(context, smOffsetId, mergeMaps(definition, { "moveFaces" : queries.sheetMetalQueries}));
                 }
                 catch
                 {
-                    processSubfeatureStatus(context, id, { "subfeatureId" : id + "smOffset", "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
+                    processSubfeatureStatus(context, id, { "subfeatureId" : smOffsetId, "propagateErrorDisplay" : true, "featureParameterMap" : { "moveFaces" : "moveFaces" } });
                 }
             }
         }

@@ -109,7 +109,7 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field bodies {Query} : Bodies from which to create the composite part.
  *.     @field closed {boolean} : @optional
- *              A `closed` composite part consumes its constituent bodies, so that they are not available interactively for individual selection.
+ *              A `closed` composite part consumes its constituent bodies, so that they are not available interactively for individual selection. Default is `false`.
  * }}
  */
 export function opCreateCompositePart(context is Context, id is Id, definition is map)

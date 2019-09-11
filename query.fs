@@ -777,7 +777,7 @@ export function qLaminarDependency(subquery is Query) returns Query
 
 /**
  * A query for start/end cap vertex, edge, and face entities created by `featureId`.
- * Cap entities are produced by extrude, revolve, sweep and loft features
+ * Cap entities are produced by extrude, revolve, sweep, loft and thicken features
  * @param featureId : @autocomplete `id + "extrude1"`
  * @param capType : @autocomplete `CapType.END`
  * @param entityType : @optional @autocomplete `EntityType.FACE`
@@ -819,7 +819,7 @@ export function qCapEntity(featureId is Id, isStartCap is boolean) returns Query
 
 /**
  * A query for vertex, edge, and face entities created by `featureId` that are not cap entities.
- * Cap entities are produced by extrude, revolve, sweep and loft features
+ * Cap entities are produced by extrude, revolve, sweep, loft and thicken features
  * @param featureId : @autocomplete `id + "extrude1"`
  * @param entityType: @optional @autocomplete `EntityType.FACE`
  */

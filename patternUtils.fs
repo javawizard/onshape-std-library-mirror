@@ -259,7 +259,9 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     const allBodies = qCreatedBy(definition.instanceFunction, EntityType.BODY);
     const allSheets = qBodyType(allBodies, BodyType.SHEET);
     const allSolids = qBodyType(allBodies, BodyType.SOLID);
-    const allWiresAndPoints = qSubtraction(allBodies, qUnion([allSolids, allSheets]));
+    const allComposites = qBodyType(allBodies, BodyType.COMPOSITE);
+    const allBodiesInComposites = qContainedInCompositeParts(allComposites);
+    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets]));
 
     // handle sketch regions
     var toDelete = [];
@@ -282,7 +284,7 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
 
     //handle parts to pattern
     const separatedSolids = separateSheetMetalQueries(context, allSolids);
-    var partsToPattern = qUnion([separatedSolids.sheetMetalQueries, allWiresAndPoints, qUnion(sketchSheets)]);
+    var partsToPattern = qUnion([separatedSolids.sheetMetalQueries, allWiresPointsAndComposites, qUnion(sketchSheets)]);
     if (size(evaluateQuery(context, partsToPattern)) > 0)
     {
         definition.entities = partsToPattern;
@@ -294,8 +296,8 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
 
     //handle faces to pattern
     const allCreatedFaces = qCreatedBy(definition.instanceFunction, EntityType.FACE);
-    //skip faces from sheets and sheetMetalQueries already handled
-    const allFacesToSkip = qOwnedByBody(qUnion([qUnion(originalSketchSheets), separatedSolids.sheetMetalQueries]));
+    //skip faces from sheets, sheetMetalQueries, and constituents of composites already handled
+    const allFacesToSkip = qOwnedByBody(qUnion([qUnion(originalSketchSheets), separatedSolids.sheetMetalQueries, allBodiesInComposites]), EntityType.FACE);
     const facesToPattern = qSubtraction(allCreatedFaces, allFacesToSkip);
     if (size(evaluateQuery(context, facesToPattern)) > 0)
     {

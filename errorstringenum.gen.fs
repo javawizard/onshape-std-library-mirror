@@ -1848,7 +1848,21 @@ export enum ErrorStringEnum
     /* Cannot split active sheet metal. */
     WRAP_IMPRINT_SHEET_METAL,
     /* Select anchor points. */
-    WRAP_SELECT_ANCHORS
+    WRAP_SELECT_ANCHORS,
+    /* Operation cancelled. */
+    OPERATION_CANCELLED,
+    /* Cannot create a closed composite part that partially overlaps another composite part. */
+    COMPOSITE_CLOSED_OVERLAP,
+    /* Cannot create an open composite part that partially overlaps a closed composite part. */
+    COMPOSITE_OPEN_OVERLAP,
+    /* Cannot create a closed composite part containing a sketch. */
+    COMPOSITE_SKETCH,
+    /* Cannot create a composite part containing a mate connector. */
+    COMPOSITE_MATE_CONNECTOR,
+    /* Cannot create a composite part containing a plane. */
+    COMPOSITE_PLANE,
+    /* Cannot create a composite part containing a non-modifiable body. */
+    COMPOSITE_NON_MODIFIABLE
 }
 
 
