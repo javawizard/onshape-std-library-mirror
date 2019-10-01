@@ -781,8 +781,12 @@ export function opSplitPart(context is Context, id is Id, definition is map)
  *              The edges to cut with.
  *      @field direction {Vector} : @requiredif {there are edge tools.}
  *              The projection direction.
+ *      @field faceTools {Query} : @optional
+ *              The faces to cut with.
  *      @field bodyTools {Query} : @optional
  *              The bodies to cut with.
+ *      @field keepToolSurfaces {boolean} : @optional
+ *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional
  *              The planes to cut with.
  * }}
