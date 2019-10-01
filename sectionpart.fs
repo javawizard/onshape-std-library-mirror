@@ -1,27 +1,29 @@
-FeatureScript 1150; /* Automatically generated version */
+FeatureScript 1160; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1150.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1150.0");
+export import(path : "onshape/std/query.fs", version : "1160.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1160.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1150.0");
-import(path : "onshape/std/containers.fs", version : "1150.0");
-import(path : "onshape/std/coordSystem.fs", version : "1150.0");
-import(path : "onshape/std/evaluate.fs", version : "1150.0");
-import(path : "onshape/std/extrude.fs", version : "1150.0");
-import(path : "onshape/std/feature.fs", version : "1150.0");
-import(path : "onshape/std/math.fs", version : "1150.0");
-import(path : "onshape/std/sketch.fs", version : "1150.0");
-import(path : "onshape/std/tool.fs", version : "1150.0");
-import(path : "onshape/std/units.fs", version : "1150.0");
-import(path : "onshape/std/vector.fs", version : "1150.0");
-import(path : "onshape/std/transform.fs", version : "1150.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1150.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1150.0");
+import(path : "onshape/std/attributes.fs", version : "1160.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1160.0");
+import(path : "onshape/std/box.fs", version : "1160.0");
+import(path : "onshape/std/containers.fs", version : "1160.0");
+import(path : "onshape/std/coordSystem.fs", version : "1160.0");
+import(path : "onshape/std/evaluate.fs", version : "1160.0");
+import(path : "onshape/std/extrude.fs", version : "1160.0");
+import(path : "onshape/std/feature.fs", version : "1160.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1160.0");
+import(path : "onshape/std/math.fs", version : "1160.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1160.0");
+import(path : "onshape/std/sketch.fs", version : "1160.0");
+import(path : "onshape/std/tool.fs", version : "1160.0");
+import(path : "onshape/std/transform.fs", version : "1160.0");
+import(path : "onshape/std/units.fs", version : "1160.0");
+import(path : "onshape/std/vector.fs", version : "1160.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -120,6 +122,7 @@ export const sectionPart = defineFeature(function(context is Context, id is Id, 
         definition.plane is Plane;
     }
     {
+        retainHoleAttributes(context, definition.targets);
         var bodiesToDelete = qEverything(EntityType.BODY); // Delete everything if there's an error
         try
         {
@@ -421,6 +424,27 @@ function getOffsetDistancesArray(endConditions is array)
     return offsetDistancesArray;
 }
 
+type HoleAttributesOnPart typecheck canBeHoleAttributesOnPart;
+
+predicate canBeHoleAttributesOnPart(value)
+{
+    value is array;
+    for (var item in value)
+        item is HoleAttribute;
+}
+
+function retainHoleAttributes(context is Context, bodies is Query)
+{
+    for (var part in evaluateQuery(context, qBodyType(bodies, BodyType.SOLID)))
+    {
+        var holeAttributes = getHoleAttributes(context, qOwnedByBody(part, EntityType.FACE));
+        setAttribute(context, {
+                "entities" : part,
+                "attribute" : holeAttributes as HoleAttributesOnPart
+        });
+    }
+}
+
 function jogSectionCut(context is Context, id is Id, definition is map)
 {
     const target = definition.target;
@@ -441,6 +465,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
        toDeleteQ = qSketchFilter(toDeleteQ, SketchObject.NO);
     }
     try silent(opDeleteBodies(context, id + "initialDelete", { "entities" : toDeleteQ }));
+
+    retainHoleAttributes(context, qEverything(EntityType.BODY));
 
     try
     {
@@ -618,7 +644,7 @@ function extrudeCut(context is Context, id is Id, target is Query, direction, sk
     // It causes missing parts in section views held back to versions earlier than V1017_SUBTRACT_COMPLEMENT
     // In order to preserve drawings created between rel-1.99 and release of this fix, versionOperationUse is controlled
     // by drawing view version.
-    if (versionOperationUse  || isAtVersionOrLater(context, FeatureScriptVersionNumber.V1017_SUBTRACT_COMPLEMENT))
+    if (!versionOperationUse  || isAtVersionOrLater(context, FeatureScriptVersionNumber.V1017_SUBTRACT_COMPLEMENT))
     {
         //Evaluate before extrude to avoid qEverything or such picking up extruded body
         const evaluatedTarget = qUnion(evaluateQuery(context, target));

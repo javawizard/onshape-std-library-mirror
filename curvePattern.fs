@@ -1,20 +1,20 @@
-FeatureScript 1150; /* Automatically generated version */
+FeatureScript 1160; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "1150.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1160.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "1150.0");
+export import(path : "onshape/std/path.fs", version : "1160.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "1150.0");
-import(path : "onshape/std/mathUtils.fs", version : "1150.0");
-import(path : "onshape/std/sketch.fs", version : "1150.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1150.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1150.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1160.0");
+import(path : "onshape/std/mathUtils.fs", version : "1160.0");
+import(path : "onshape/std/sketch.fs", version : "1160.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1160.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1160.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs

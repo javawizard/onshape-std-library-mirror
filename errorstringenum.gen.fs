@@ -1,4 +1,4 @@
-FeatureScript 1150; /* Automatically generated version */
+FeatureScript 1160; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1862,7 +1862,9 @@ export enum ErrorStringEnum
     /* Cannot create a composite part containing a plane. */
     COMPOSITE_PLANE,
     /* Cannot create a composite part containing a non-modifiable body. */
-    COMPOSITE_NON_MODIFIABLE
+    COMPOSITE_NON_MODIFIABLE,
+    /* "Replace failed because it would create cyclical references." */
+    ASSEMBLY_REPLACE_WILL_CAUSE_CYCLES
 }
 
 
