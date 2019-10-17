@@ -1068,8 +1068,8 @@ function representInVectors(context is Context, vector1 is Vector, vector2 is Ve
          return undefined;
     }
 
-    var matrixM is Matrix = [[squaredNorm(vector1), dot(vector2, vector1)],
-                             [dot(vector1, vector2), squaredNorm(vector2)]] as Matrix;
+    var matrixM is Matrix = matrix([[squaredNorm(vector1), dot(vector2, vector1)],
+                                    [dot(vector1, vector2), squaredNorm(vector2)]]);
     var rhs = vector(dot(inVector, vector1), dot(inVector, vector2));
 
     var components = inverse(matrixM) * rhs;

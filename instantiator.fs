@@ -399,7 +399,7 @@ function splitConfiguration(configuration is map, tolerances is map) returns map
     }
     if (vector == [])
         vector = [0];
-    return { "exact" : exact, "tolerant" : tolerant, "vector" : [vector] as Matrix };
+    return { "exact" : exact, "tolerant" : tolerant, "vector" : matrix([vector]) };
 }
 
 function getTolerance(entry is map, tolerances is map)

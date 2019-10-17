@@ -1363,6 +1363,16 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
         {
             modifiedHoleDefinition.holeDiameter = holeDefinition.tapDrillDiameter;
         }
+        if (modifiedHoleDefinition.endStyle == HoleEndStyle.THROUGH)
+        {
+            try
+            {
+                // Check if going through only a subset of the part
+                var holeAxis = computeHoleAxis(context, qUnion(allFaces));
+                var distance = evDistance(context, { side0 : part, side1 : holeAxis }).distance;
+                modifiedHoleDefinition.partialThrough = distance * 2 < modifiedHoleDefinition.holeDiameter - TOLERANCE.zeroLength * meter;
+            }
+        }
         var actualHoleDepth;
         for (var entry in entityToSectionType)
         {
@@ -1385,10 +1395,15 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
     }
 }
 
-function computeActualHoleDepth(context is Context, faces is Query)
+function computeHoleAxis(context is Context, faces is Query) returns Line
 {
     var axialFaces = qUnion([qGeometry(faces, GeometryType.CYLINDER), qGeometry(faces, GeometryType.CONE)]);
-    var holeDirection = evAxis(context, { "axis" : qNthElement(axialFaces, 0) }).direction;
+    return evAxis(context, { "axis" : qNthElement(axialFaces, 0) });
+}
+
+function computeActualHoleDepth(context is Context, faces is Query)
+{
+    var holeDirection = computeHoleAxis(context, faces).direction;
     var holeBox is Box3d = evBox3d(context, {
             "topology" : faces,
             "cSys" : coordSystem(vector(0, 0, 0) * meter, perpendicularVector(holeDirection), holeDirection),
@@ -1432,8 +1447,11 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
 
-    // not blind?
-    if (resultAttribute.endType != HoleEndStyle.THROUGH)
+    if (resultAttribute.endType == HoleEndStyle.THROUGH)
+    {
+        resultAttribute.partialThrough = holeDefinition.partialThrough;
+    }
+    else
     {
         // blind hole depth
         resultAttribute.holeDepth = holeDefinition.holeDepth;

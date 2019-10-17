@@ -37,7 +37,8 @@ export const TOLERANCE =
     "zeroAngle" : 1e-11,
     "zeroLength" : 1e-8,
     "g1Angle" : (PI / 180) * .1,
-    "booleanDefaultTolerance" : 1e-5 // meter
+    "booleanDefaultTolerance" : 1e-5, // meter
+    "computational" : 1e-13
 };
 
 /**

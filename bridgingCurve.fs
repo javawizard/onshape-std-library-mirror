@@ -524,17 +524,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
 
 function createG0G0BridgingCurve(context is Context, id is Id, point1 is Vector, point2 is Vector)
 {
-    const bCurve = {
-                'degree' : 1,
-                'dimension' : 3,
-                'isPeriodic' : false,
-                'isRational' : false,
-                'knots' : [0, 0, 1, 1],
-                'controlPoints' : [point1, point2]
-            } as BSplineCurve;
-    opCreateBSplineCurve(context, id, {
-                "bSplineCurve" : bCurve
-            });
+    createBezierCurve(context, id, [point1, point2]);
 }
 
 function determineDefaultG0G1Speed(point1 is Vector, point2 is Vector, direction is Vector) returns ValueWithUnits
@@ -812,25 +802,7 @@ function createG2G2BridgingCurve(context is Context, id is Id,
 
 function createBezierCurve(context is Context, id is Id, controlPoints is array)
 {
-    const degree = size(controlPoints) - 1;
-    var knots = makeArray(2 * size(controlPoints));
-    for (var i = 0; i < degree + 1; i += 1)
-    {
-        knots[i] = 0;
-        knots[i + degree + 1] = 1;
-    }
-
-    const bCurve = {
-                'degree' : degree,
-                'dimension' : 3,
-                'isPeriodic' : false,
-                'isRational' : false,
-                'knots' : knots,
-                'controlPoints' : controlPoints
-            } as BSplineCurve;
-
-    opCreateBSplineCurve(context, id, {
-                "bSplineCurve" : bCurve
-            });
+    const bCurve = bSplineCurve({ "degree" : size(controlPoints) - 1, "isPeriodic" : false, "controlPoints" : controlPoints });
+    opCreateBSplineCurve(context, id, { "bSplineCurve" : bCurve });
 }
 

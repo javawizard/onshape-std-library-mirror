@@ -37,6 +37,18 @@ export predicate isSquare(matrix is Matrix)
 }
 
 /**
+ * Cast a two-dimensional array to a matrix.
+ */
+export function matrix(value is array) returns Matrix
+precondition
+{
+    canBeMatrix(value);
+}
+{
+    return value as Matrix;
+}
+
+/**
  * Construct an identity matrix of a given dimension.
  */
 export function identityMatrix(size is number) returns Matrix

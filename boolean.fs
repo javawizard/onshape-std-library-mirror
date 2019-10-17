@@ -930,13 +930,29 @@ function trimTool(context is Context, id is Id, thickened is Query, tool is Quer
     return qOwnerBody(qCreatedBy(intersectionId));
 }
 
-function createOutline(context is Context, id is Id, trimmed is Query, face is Query, capFacesTracking is Query) returns Query
+function createOutline(context is Context, id is Id, parentId, trimmed is Query, face is Query, faceIsPlanar is boolean, capFacesTracking is Query) returns Query
 {
+    const offsetFaces = qIntersection([capFacesTracking, qOwnedByBody(trimmed, EntityType.FACE)]);
+    if (!faceIsPlanar && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1170_ROLLED_OUTLINE_REVERT))
+    {
+        for (var oneTrimmed in evaluateQuery(context, trimmed))
+        {
+            if (size(evaluateQuery(context, qIntersection([qOwnedByBody(oneTrimmed, EntityType.FACE), offsetFaces]))) != 2)
+            {
+                if (parentId != undefined)
+                {
+                    reportFeatureError(context, parentId, ErrorStringEnum.SHEET_METAL_TOOL_DOES_NOT_CUT_THROUGH);
+                }
+                throw regenError(ErrorStringEnum.SHEET_METAL_TOOL_DOES_NOT_CUT_THROUGH);
+            }
+        }
+    }
+
     const outlineId = id + "outline";
     opCreateOutline(context, outlineId, {
                 "tools" : trimmed,
                 "target" : face,
-                "offsetFaces" : qIntersection([capFacesTracking, qOwnedByBody(trimmed, EntityType.FACE)])
+                "offsetFaces" : offsetFaces
             });
     return qCreatedBy(outlineId, EntityType.FACE);
 }
@@ -950,7 +966,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
 {
     const toolsToCopy = new box({});
     const faceSweptData = new box({});
-    const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, face, undefined, tools, undefined,
+    const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, tools, undefined,
                                     modelParameters, toolsToCopy, faceSweptData);
     if (outlineBodiesQ == undefined)  //outlineBodiesQ will be qNothing if no outline bodies were created, but a toolCopy is needed.
         return undefined;
@@ -981,7 +997,7 @@ const SM_THIN_EXTENSION_LEGACY = 1.e-4 * meter;
  * Returns undefined if no tool is necessary (tools don't intersect thickened body), or a query for outline bodies created. It might be a qNothing
  * if all tools were added to toolsToCopy
  */
-function createOutlineBooleanToolsForFace(context is Context, id is Id, face is Query, faceBox, tools is Query,
+function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId, face is Query, faceBox, tools is Query,
         toolToThickenedToolBox, modelParameters is map,
         toolsToCopy is box, faceSweptData is box)
 {
@@ -1047,7 +1063,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, face is 
         if (trimResultIsValid)
         {
             allTrimmed = append(allTrimmed, trimmed);
-            const outline = createOutline(context, subId, trimmed, face, trackingCapFaces);
+            const outline = createOutline(context, subId, parentId, trimmed, face, planarFace, trackingCapFaces);
             if (outline != undefined)
             {
                 outlines = append(outlines, outline);
@@ -1201,7 +1217,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
             continue;
         }
 
-        const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), face, faceBox,
+        const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), id, face, faceBox,
                 definition.tools, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData);
         if (toolBodies != undefined)
         {

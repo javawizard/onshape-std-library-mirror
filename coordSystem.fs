@@ -128,7 +128,7 @@ precondition
  */
 export function toWorld(cSys is CoordSystem) returns Transform
 {
-    const rotation = transpose([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix);
+    const rotation = transpose(matrix([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis]));
     return transform(rotation, cSys.origin);
 }
 
@@ -160,7 +160,7 @@ precondition
  */
 export function fromWorld(cSys is CoordSystem) returns Transform
 {
-    const rotation = [cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis] as Matrix;
+    const rotation = matrix([cSys.xAxis, cross(cSys.zAxis, cSys.xAxis), cSys.zAxis]);
     return transform(rotation, rotation * -cSys.origin);
 }
 

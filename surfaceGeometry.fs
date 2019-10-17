@@ -7,6 +7,7 @@ FeatureScript ✨; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
@@ -285,7 +286,7 @@ export function transform(from is Plane, to is Plane) returns Transform
  */
 export function mirrorAcross(plane is Plane) returns Transform
 {
-    const normalMatrix = [plane.normal] as Matrix;
+    const normalMatrix = matrix([plane.normal]);
     const linear = identityMatrix(3) - 2 * transpose(normalMatrix) * normalMatrix;
     return transform(linear, plane.origin - linear * plane.origin);
 }
@@ -302,7 +303,7 @@ export function intersection(plane1 is Plane, plane2 is Plane) // Returns Line o
     direction = normalize(direction);
     const rhs = vector(dot(plane1.normal, plane1.origin), dot(plane2.normal, plane2.origin),
         dot(direction, 0.5 * (plane1.origin + plane2.origin)));
-    const point = inverse([plane1.normal, plane2.normal, direction] as Matrix) * rhs;
+    const point = inverse(matrix([plane1.normal, plane2.normal, direction])) * rhs;
     return line(point, direction);
 }
 
@@ -575,5 +576,294 @@ export predicate tolerantEquals(sphere1 is Sphere, sphere2 is Sphere)
 export function toString(value is Sphere) returns string
 {
     return "radius " ~ toString(value.radius) ~ "\n" ~ "basis " ~ toString(value.coordSystem);
+}
+
+/**
+ * A two-dimensional array of 3D position vectors. Reading across a row represents a change in v, and reading down a
+ * column represents a change in u.
+ */
+export type ControlPointMatrix typecheck canBeControlPointMatrix;
+
+/** Typecheck for [ControlPointMatrix] */
+export predicate canBeControlPointMatrix(value)
+{
+    value is array;
+    for (var row in value)
+    {
+        row is array;
+        size(row) == size(value[0]);
+        for (var item in row)
+        {
+            is3dLengthVector(item);
+        }
+    }
+}
+
+/**
+ *  Cast a two-dimensional array of 3D position vectors to a [ControlPointMatrix].
+ */
+export function controlPointMatrix(value is array) returns ControlPointMatrix
+precondition
+{
+    canBeControlPointMatrix(value);
+}
+{
+    return value as ControlPointMatrix;
+}
+
+/**
+ * The definition of a spline in 3D space.  For all matrices of the spline definition, reading across a row represents a change in v,
+ * and reading down a column represents a change in u.
+ * @seeAlso [bSplineSurface]
+ * @type {{
+ *      @field uDegree {number} : The degree of the spline in u.
+ *      @field vDegree {number} : The degree of the spline in v.
+ *      @field isRational {boolean} : Whether the spline is rational.
+ *      @field isUPeriodic {boolean} : Whether the spline periodic in u.
+ *      @field isVPeriodic {boolean} : Whether the spline periodic in v.
+ *      @field controlPoints {ControlPointMatrix} : A grid of 3d control points.
+ *              Must have at least `uDegree + 1` rows and `vDegree + 1` columns.
+ *      @field weights {Matrix} : A matrix of unitless values with the same shape as the control points grid.
+ *              @requiredIf {`rational` is `true`}
+ *      @field uKnots {KnotArray} : An array of non-decreasing knots of size equal to 1 + `uDegree` + number of rows in `controlPoints`
+ *      @field vKnots {KnotArray} : An array of non-decreasing knots of size equal to 1 + `vDegree` + number of columns in `controlPoints`
+ * }}
+ */
+export type BSplineSurface typecheck canBeBSplineSurface;
+
+/** Typecheck for [BSplineSurface] */
+export predicate canBeBSplineSurface(value)
+{
+    value is map;
+    isPositiveInteger(value.uDegree);
+    isPositiveInteger(value.vDegree);
+    value.isRational is boolean;
+    value.isUPeriodic is boolean;
+    value.isVPeriodic is boolean;
+
+    value.controlPoints is ControlPointMatrix;
+    size(value.controlPoints) > value.uDegree;
+    size(value.controlPoints[0]) > value.vDegree;
+
+    if (value.isRational)
+    {
+        value.weights is Matrix;
+        size(value.weights) == size(value.controlPoints);
+        for (var weightRow in value.weights)
+        {
+            size(weightRow) == size(value.controlPoints[0]);
+            for (var weight in weightRow)
+            {
+                weight is number;
+                weight >= 0;
+            }
+        }
+    }
+
+    value.uKnots is KnotArray;
+    knotArrayIsCorrectSize(value.uKnots, value.uDegree, /* rows of control points */ size(value.controlPoints));
+
+    value.vKnots is KnotArray;
+    knotArrayIsCorrectSize(value.vKnots, value.vDegree, /* columns of control points */ size(value.controlPoints[0]));
+}
+
+/**
+ * Update control points and knots for either u or v.
+ */
+function updateControlPointsAndKnots(controlPoints is box, weights is box, knots is box, degree is number, otherDegree is number, isPeriodic is boolean, forU is boolean)
+{
+    // Care about rows for u, and columns for v
+    var controlPointCount = forU ? size(controlPoints[]) : size(controlPoints[][0]);
+
+    // -----
+    // If either knot array is already the correct size for the given control points, no adjustments need to be made to
+    // that knot array; It is guaranteed that only a full knot array and a full set of control points will return true
+    // from `knotArrayIsCorrectSize`. A full set of control points with a truncated knot array, a truncated set of control
+    // points with a full knot array, and a truncated set of control points with a truncated knot array are all guaranteed
+    // to return false from `knotArrayIsCorrectSize` for any degree greater than 0, because of the way their sizes interact.
+    // -----
+    if (knots[] != undefined && knotArrayIsCorrectSize(knots[], degree, controlPointCount))
+    {
+        return;
+    }
+
+    // -- Fill in control points if necessary --
+    if (isPeriodic)
+    {
+        // Trust the first otherDegree + 1 columns (for u) or rows (for v) to determine whether the control point matrix
+        // needs overlap. Need to test this many because any contiguous group of otherDegree columns or rows can validly
+        // be a list of a single point (which will report that it does not need overlap), while the rows that are not a
+        // single point may need overlap, or may already be overlapped.
+        var controlPointArraysToTestOverlap = [];
+        if (forU)
+        {
+            const nColumnsToCheck = min(otherDegree + 1, size(controlPoints[][0])); // Take care not to overflow
+            for (var v = 0; v < nColumnsToCheck; v += 1)
+            {
+                controlPointArraysToTestOverlap = append(controlPointArraysToTestOverlap, mapArray(controlPoints[], function(row) { return row[v]; }));
+            }
+        }
+        else // forV
+        {
+            const nRowsToCheck = min(otherDegree + 1, size(controlPoints[])); // Take care not to overflow
+            for (var u = 0; u < nRowsToCheck; u += 1)
+            {
+                controlPointArraysToTestOverlap = append(controlPointArraysToTestOverlap, controlPoints[][u]);
+            }
+        }
+
+        var needsOverlap = false;
+        for (var controlPointArray in controlPointArraysToTestOverlap)
+        {
+            if (controlPointsNeedsOverlap(controlPointArray, degree))
+            {
+                // If any row needs overlap, assume that the whole matrix needs overlap across the parameter in question.
+                needsOverlap = true;
+                break;
+            }
+        }
+
+        if (needsOverlap)
+        {
+            if (forU)
+            {
+                // Overlap entire rows
+                controlPoints[] = overlapControlPoints(controlPoints[], degree);
+                if (weights[] != undefined)
+                {
+                    weights[] = overlapControlPoints(weights[], degree);
+                }
+                controlPointCount = size(controlPoints[]);
+            }
+            else // forV
+            {
+                // Overlap last `degree` control points of each row
+                for (var u = 0; u < size(controlPoints[]); u += 1)
+                {
+
+                    controlPoints[][u] = overlapControlPoints(controlPoints[][u], degree);
+                    if (weights[] != undefined)
+                    {
+                        weights[][u] = overlapControlPoints(weights[][u], degree);
+                    }
+                }
+                controlPointCount = size(controlPoints[][0]);
+            }
+        }
+    }
+
+    // -- Update knots --
+    knots[] = createOrAdjustKnotArray(knots[], degree, controlPointCount, isPeriodic);
+}
+
+/**
+ * Returns a new [BSplineSurface], adding knot padding and control point overlap as necessary.
+ * @example
+ * ```
+ * opCreateBSplineSurface(context, id + "bSplineSurface1", {
+ *             "bSplineSurface" : bSplineSurface({
+ *                         "uDegree" : 2,
+ *                         "vDegree" : 2,
+ *                         "isUPeriodic" : false,
+ *                         "isVPeriodic" : false,
+ *                         "controlPoints" : controlPointMatrix([
+ *                                     [vector(-2,  2, 0) * inch, vector(-1,  2, 0) * inch, vector(0,  2, 0) * inch, vector(1,  2, 0) * inch, vector(2,  2, 0) * inch],
+ *                                     [vector(-2,  1, 0) * inch, vector(-1,  1, 0) * inch, vector(0,  1, 0) * inch, vector(1,  1, 0) * inch, vector(2,  1, 0) * inch],
+ *                                     [vector(-2,  0, 0) * inch, vector(-1,  0, 0) * inch, vector(0,  0, 1) * inch, vector(1,  0, 0) * inch, vector(2,  0, 0) * inch],
+ *                                     [vector(-2, -2, 0) * inch, vector(-1, -2, 0) * inch, vector(0, -2, 0) * inch, vector(1, -2, 0) * inch, vector(2, -2, 0) * inch]
+ *                                 ]),
+ *                         "uKnots" : knotArray([0, .1, 1]), // Will be padded to [0, 0, 0, .1, 1, 1, 1]
+ *                         "vKnots" : knotArray([0, 1/3, 2/3, 1]) // Same as default when no knots provided.  Will be padded to [0, 0, 0, 1/3, 2/3, 1, 1, 1]
+ *                     })
+ *         });
+ * ```
+ * Creates a new spline surface on the XY plane with a protrusion at the origin, falling back to the XY plane more quickly in the +Y direction.
+ * @example
+ * ```
+ * opCreateBSplineSurface(context, id + "bSplineSurface1", {
+ *             "bSplineSurface" : bSplineSurface({
+ *                         "uDegree" : 2,
+ *                         "vDegree" : 1,
+ *                         "isUPeriodic" : true,
+ *                         "isVPeriodic" : false,
+ *                         "controlPoints" : controlPointMatrix([
+ *                                     [vector(0,  0, 1) * inch, vector(-1,  0, 0) * inch, vector(-2,  0, -1) * inch],
+ *                                     [vector(1,  1, 1) * inch, vector( 0,  1, 0) * inch, vector(-1,  1, -1) * inch],
+ *                                     [vector(2,  0, 1) * inch, vector( 1,  0, 0) * inch, vector( 0,  0, -1) * inch],
+ *                                     [vector(1, -1, 1) * inch, vector( 0, -1, 0) * inch, vector(-1, -1, -1) * inch]
+ *                                     // Will be overlapped by repeating the first two rows
+ *                                 ]),
+ *                         "uKnots" : knotArray([0, .25, .5, .75, 1]), // Same as default when no knots provided. Will be padded to [-.5, -.25, 0, .25, .5, .75, 1, 1.25, 1.5]
+ *                         "vKnots" : knotArray([0, .5, 1]) // Same as default when no knots provided.  Will be padded to [0, 0, .5, 1, 1]
+ *                     })
+ *         });
+ * ```
+ * Creates a new spline surface which is a tube surrounding the origin, sheared in the X direction.
+ * @param definition {{
+ *      @field uDegree {number} : The degree of the spline in u.
+ *              @autocomplete `2`
+ *      @field vDegree {number} : The degree of the spline in v.
+ *              @autocomplete `1`
+ *      @field isUPeriodic {boolean} : Whether the spline periodic in u.
+ *              @autocomplete `true`
+ *      @field isVPeriodic {boolean} : Whether the spline periodic in v.
+ *              @autocomplete `false`
+ *      @field controlPoints {ControlPointMatrix} : A matrix of control points. See [BSplineSurface] for specific detail.
+ *              If u or v is periodic, you may provide the necessary overlap, or provide control points without any
+ *              overlap.  If no overlap is provided, `degree` overlapping control point rows or columns (corresponding to
+ *              the first `degree` control point rows or columns) will be added. (unless you provide a set of knots that
+ *              show no overlap is necessary).
+ * @eg ```
+ * controlPointMatrix([
+ *     [vector(-1, -1, -1) * inch, vector(-1, 0, 0) * inch, vector(-1, -2, 1) * inch],
+ *     [vector( 0,  1, -1) * inch, vector( 0, 2, 0) * inch, vector( 0,  0, 1) * inch],
+ *     [vector( 1, -1, -1) * inch, vector( 1, 0, 0) * inch, vector( 1, -2, 1) * inch]
+ * ])
+ * ```
+ *      @field weights {array} : @optional A matrix of weights. See [BSplineSurface] for specific detail.
+ *      @field uKnots {KnotArray} : @optional An array of knots. See [BSplineSurface] for specific detail.  If knots are not provided
+ *              a uniform parameterization will be created such that the u parameterization exists on the range `[0, 1]`. For
+ *              non-periodic u with `n` control point rows, you may provide the full set of `n + degree + 1` knots,
+ *              or you may provide `n - degree + 1` knots, and multiplicity will by padded onto the ends (which has the
+ *              effect of clamping the surface to the control points in the first and last rows).  For periodic u with
+ *              `n` unique control points (and optionally an additional `degree` overlapping control points), you
+ *              may provide the full set of `n + 2 * degree + 1` knots, or you may provide `n + 1` knots, and the periodic
+ *              knots will be padded onto the ends.
+ *      @field vKnots {KnotArray} : @optional See `uKnots`.
+ * }}
+ */
+export function bSplineSurface(definition is map)
+precondition
+{
+    definition.uDegree is number;
+    definition.vDegree is number;
+    definition.isUPeriodic is boolean;
+    definition.isVPeriodic is boolean;
+    definition.controlPoints is ControlPointMatrix;
+    definition.weights is undefined || definition.weights is Matrix;
+    definition.uKnots is undefined || definition.uKnots is KnotArray;
+    definition.vKnots is undefined || definition.vKnots is KnotArray;
+}
+{
+    var controlPoints = new box(definition.controlPoints);
+    var weights = new box(definition.weights);
+    var uKnots = new box(definition.uKnots);
+    var vKnots = new box(definition.vKnots);
+
+    // Do v knots first, because it will be more efficient to replicate entire knot rows for u after updating knot columns for v.
+    updateControlPointsAndKnots(controlPoints, weights, vKnots, definition.vDegree, definition.uDegree, definition.isVPeriodic, false);
+    updateControlPointsAndKnots(controlPoints, weights, uKnots, definition.uDegree, definition.vDegree, definition.isUPeriodic, true);
+
+    return {
+        'uDegree' : definition.uDegree,
+        'vDegree' : definition.vDegree,
+        'isRational' : weights[] != undefined,
+        'isUPeriodic' : definition.isUPeriodic,
+        'isVPeriodic' : definition.isVPeriodic,
+        'controlPoints' : controlPoints[],
+        'weights' : weights[],
+        'uKnots' : uKnots[],
+        'vKnots' : vKnots[]
+    } as BSplineSurface;
 }
 

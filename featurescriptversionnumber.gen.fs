@@ -844,7 +844,13 @@ export enum FeatureScriptVersionNumber
     V1157_UNSTABLE_COMP_QUERY,
     V1158_SM_UNFOLDER,
     V1159_BETTER_HOLE_TAGS,
-    V1160_SECTION_PART
+    V1160_SECTION_PART,
+    V1169_UVMAPPER_TOLERANCE,
+    V1170_ROLLED_OUTLINE_REVERT,
+    V1171_BCURVE_DEFINITION_ADJUST,
+    V1172_LOFT_BUG,
+    V1173_BSPLINESRUFACE_BUMP,
+    V1174_BSPLINESRUFACE_BUMP_2
 }
 
 /**
@@ -855,6 +861,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1160_SECTION_PART;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1174_BSPLINESRUFACE_BUMP_2;
 
 
