@@ -1,19 +1,19 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "1160.0");
-import(path : "onshape/std/containers.fs", version : "1160.0");
-import(path : "onshape/std/coordSystem.fs", version : "1160.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1160.0");
-import(path : "onshape/std/feature.fs", version : "1160.0");
-import(path : "onshape/std/mathUtils.fs", version : "1160.0");
-import(path : "onshape/std/primitives.fs", version : "1160.0");
-import(path : "onshape/std/sketch.fs", version : "1160.0");
-import(path : "onshape/std/string.fs", version : "1160.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1160.0");
-import(path : "onshape/std/units.fs", version : "1160.0");
+import(path : "onshape/std/box.fs", version : "1174.0");
+import(path : "onshape/std/containers.fs", version : "1174.0");
+import(path : "onshape/std/coordSystem.fs", version : "1174.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
+import(path : "onshape/std/feature.fs", version : "1174.0");
+import(path : "onshape/std/mathUtils.fs", version : "1174.0");
+import(path : "onshape/std/primitives.fs", version : "1174.0");
+import(path : "onshape/std/sketch.fs", version : "1174.0");
+import(path : "onshape/std/string.fs", version : "1174.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
+import(path : "onshape/std/units.fs", version : "1174.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
@@ -296,6 +296,70 @@ export function addDebugEntities(context is Context, entities is Query)
     @addDebugEntities(context, { "entities" : entities });
 }
 
+/**
+ * Highlights a 3D `point` in red, without printing anything.
+ *
+ * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ */
+export function addDebugPoint(context is Context, point is Vector)
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    const pointId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "point";
+    startFeature(context, pointId, {});
+    try
+    {
+        opPoint(context, pointId, { "point" : point });
+        addDebugEntities(context, qCreatedBy(pointId));
+    }
+    abortFeature(context, pointId);
+}
+
+/**
+ * Draws an arrow in 3D space from `from` to `to`.
+ *
+ * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ *
+ * @param radius : Width of the four arrowhead lines @eg `.25 * centimeter`
+ */
+export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits)
+{
+    const arrowId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "arrow";
+    startFeature(context, arrowId, {});
+    try
+    {
+        const length = norm(to - from);
+        const orth = perpendicularVector(to - from);
+
+        var lineDef = { "end" : vector(length, 0 * meter) };
+
+        const sketch1 = newSketchOnPlane(context, arrowId + "sketch1", {
+                    "sketchPlane" : plane(from, orth, to - from)
+                });
+        lineDef.start = vector(0, 0) * meter;
+        skLineSegment(sketch1, "line1", lineDef);
+        lineDef.start = vector(length - radius, radius);
+        skLineSegment(sketch1, "line2", lineDef);
+        lineDef.start = vector(length - radius, -radius);
+        skLineSegment(sketch1, "line3", lineDef);
+        skSolve(sketch1);
+
+        const sketch2 = newSketchOnPlane(context, arrowId + "sketch2", {
+                    "sketchPlane" : plane(from, cross(orth, to - from), to - from)
+                });
+        lineDef.start = vector(length - radius, radius);
+        skLineSegment(sketch2, "line2", lineDef);
+        lineDef.start = vector(length - radius, -radius);
+        skLineSegment(sketch2, "line3", lineDef);
+        skSolve(sketch2);
+
+        addDebugEntities(context, qCreatedBy(arrowId, EntityType.EDGE));
+    }
+    abortFeature(context, arrowId);
+}
+
 // Timers for very basic profiling
 
 /** Starts the timer associated with the string `timer` or resets it.  Use with [printTimer(string)]. */
@@ -334,55 +398,5 @@ export function printTimer(timer is string)
 export function printTimer()
 {
     printTimer("");
-}
-
-// Utility functions below
-
-function addDebugPoint(context is Context, point is Vector)
-{
-    const pointId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "point";
-    startFeature(context, pointId, {});
-    try
-    {
-        opPoint(context, pointId, { "point" : point });
-        addDebugEntities(context, qCreatedBy(pointId));
-    }
-    abortFeature(context, pointId);
-}
-
-function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits)
-{
-    const arrowId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "arrow";
-    startFeature(context, arrowId, {});
-    try
-    {
-        const length = norm(to - from);
-        const orth = perpendicularVector(to - from);
-
-        var lineDef = { "end" : vector(length, 0 * meter) };
-
-        const sketch1 = newSketchOnPlane(context, arrowId + "sketch1", {
-                    "sketchPlane" : plane(from, orth, to - from)
-                });
-        lineDef.start = vector(0, 0) * meter;
-        skLineSegment(sketch1, "line1", lineDef);
-        lineDef.start = vector(length - radius, radius);
-        skLineSegment(sketch1, "line2", lineDef);
-        lineDef.start = vector(length - radius, -radius);
-        skLineSegment(sketch1, "line3", lineDef);
-        skSolve(sketch1);
-
-        const sketch2 = newSketchOnPlane(context, arrowId + "sketch2", {
-                    "sketchPlane" : plane(from, cross(orth, to - from), to - from)
-                });
-        lineDef.start = vector(length - radius, radius);
-        skLineSegment(sketch2, "line2", lineDef);
-        lineDef.start = vector(length - radius, -radius);
-        skLineSegment(sketch2, "line3", lineDef);
-        skSolve(sketch2);
-
-        addDebugEntities(context, qCreatedBy(arrowId, EntityType.EDGE));
-    }
-    abortFeature(context, arrowId);
 }
 

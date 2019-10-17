@@ -1,33 +1,33 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boolean.fs", version : "1160.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1160.0");
-import(path : "onshape/std/box.fs", version : "1160.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1160.0");
-import(path : "onshape/std/containers.fs", version : "1160.0");
-import(path : "onshape/std/coordSystem.fs", version : "1160.0");
-import(path : "onshape/std/evaluate.fs", version : "1160.0");
-import(path : "onshape/std/feature.fs", version : "1160.0");
-import(path : "onshape/std/mathUtils.fs", version : "1160.0");
-import(path : "onshape/std/revolve.fs", version : "1160.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1160.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1160.0");
-import(path : "onshape/std/sketch.fs", version : "1160.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1160.0");
-import(path : "onshape/std/tool.fs", version : "1160.0");
-import(path : "onshape/std/valueBounds.fs", version : "1160.0");
-import(path : "onshape/std/string.fs", version : "1160.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1160.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1160.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1160.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1160.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1160.0");
-import(path : "onshape/std/attributes.fs", version : "1160.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "1160.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1160.0");
+import(path : "onshape/std/boolean.fs", version : "1174.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1174.0");
+import(path : "onshape/std/box.fs", version : "1174.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1174.0");
+import(path : "onshape/std/containers.fs", version : "1174.0");
+import(path : "onshape/std/coordSystem.fs", version : "1174.0");
+import(path : "onshape/std/evaluate.fs", version : "1174.0");
+import(path : "onshape/std/feature.fs", version : "1174.0");
+import(path : "onshape/std/mathUtils.fs", version : "1174.0");
+import(path : "onshape/std/revolve.fs", version : "1174.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1174.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1174.0");
+import(path : "onshape/std/sketch.fs", version : "1174.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
+import(path : "onshape/std/tool.fs", version : "1174.0");
+import(path : "onshape/std/valueBounds.fs", version : "1174.0");
+import(path : "onshape/std/string.fs", version : "1174.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1174.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1174.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1174.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1174.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
+import(path : "onshape/std/attributes.fs", version : "1174.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1174.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1174.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -1363,6 +1363,16 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
         {
             modifiedHoleDefinition.holeDiameter = holeDefinition.tapDrillDiameter;
         }
+        if (modifiedHoleDefinition.endStyle == HoleEndStyle.THROUGH)
+        {
+            try
+            {
+                // Check if going through only a subset of the part
+                var holeAxis = computeHoleAxis(context, qUnion(allFaces));
+                var distance = evDistance(context, { side0 : part, side1 : holeAxis }).distance;
+                modifiedHoleDefinition.partialThrough = distance * 2 < modifiedHoleDefinition.holeDiameter - TOLERANCE.zeroLength * meter;
+            }
+        }
         var actualHoleDepth;
         for (var entry in entityToSectionType)
         {
@@ -1385,10 +1395,15 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
     }
 }
 
-function computeActualHoleDepth(context is Context, faces is Query)
+function computeHoleAxis(context is Context, faces is Query) returns Line
 {
     var axialFaces = qUnion([qGeometry(faces, GeometryType.CYLINDER), qGeometry(faces, GeometryType.CONE)]);
-    var holeDirection = evAxis(context, { "axis" : qNthElement(axialFaces, 0) }).direction;
+    return evAxis(context, { "axis" : qNthElement(axialFaces, 0) });
+}
+
+function computeActualHoleDepth(context is Context, faces is Query)
+{
+    var holeDirection = computeHoleAxis(context, faces).direction;
     var holeBox is Box3d = evBox3d(context, {
             "topology" : faces,
             "cSys" : coordSystem(vector(0, 0, 0) * meter, perpendicularVector(holeDirection), holeDirection),
@@ -1432,8 +1447,11 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
 
-    // not blind?
-    if (resultAttribute.endType != HoleEndStyle.THROUGH)
+    if (resultAttribute.endType == HoleEndStyle.THROUGH)
+    {
+        resultAttribute.partialThrough = holeDefinition.partialThrough;
+    }
+    else
     {
         // blind hole depth
         resultAttribute.holeDepth = holeDefinition.holeDepth;

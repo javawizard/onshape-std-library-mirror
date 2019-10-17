@@ -1,4 +1,4 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1297,7 +1297,7 @@ export enum ErrorStringEnum
     BOOLEAN_NO_TARGET_SURFACE,
     /* The definition of the B-spline is invalid. */
     BAD_BSPLINECURVE_DEFINITION,
-    /* The B-spline definition must define a 3d curve. */
+    /* The B-spline definition must define a 3D curve. */
     REQUIRE_3D_BSPLINECURVE_DATA,
     /* The B-spline definition is marked as periodic but the data does not define a periodic curve. */
     PERIODIC_BSPLINECURVE_NOT_CLOSED,
@@ -1864,7 +1864,29 @@ export enum ErrorStringEnum
     /* Cannot create a composite part containing a non-modifiable body. */
     COMPOSITE_NON_MODIFIABLE,
     /* "Replace failed because it would create cyclical references." */
-    ASSEMBLY_REPLACE_WILL_CAUSE_CYCLES
+    ASSEMBLY_REPLACE_WILL_CAUSE_CYCLES,
+    /* Two offset faces are required per body. */
+    CREATE_OUTLINE_TWO_OFFSET_FACES_PER_BODY,
+    /* Subtractive tool must cut all the way through sheet metal rolled wall or bend. */
+    SHEET_METAL_TOOL_DOES_NOT_CUT_THROUGH,
+    /* The B-spline surface definition is marked as periodic but the data does not define a periodic surface. */
+    PERIODIC_BSPLINESURFACE_NOT_CLOSED,
+    /* The B-spline surface definition is marked as periodic but would not be smooth at the join. */
+    PERIODIC_BSPLINESURFACE_NOT_SMOOTH,
+    /* A B-spline surface could not be created with the given definition. */
+    CANNOT_MAKE_BSPLINESURFACE,
+    /* The B-spline surface definition contains a G1 discontinuity. */
+    BSPLINESURFACE_NOT_G1,
+    /* The definition of one of the 2D B-spline boundary curves is invalid. */
+    BAD_2D_BOUNDARY_BSPLINECURVE_DEFINITION,
+    /* A 2D B-spline boundary curve definition is marked as periodic but the data does not define a periodic curve. */
+    PERIODIC_2D_BOUNDARY_BSPLINECURVE_NOT_CLOSED,
+    /* A 2D B-spline boundary curve definition is marked as periodic but would not be smooth at the join. */
+    PERIODIC_2D_BOUNDARY_BSPLINECURVE_NOT_SMOOTH,
+    /* The boundary curves of the B-spline surface must form a single closed loop. */
+    BSPLINESURFACE_BOUNDARY_NOT_SINGLE_CLOSED_LOOP,
+    /* The B-spline surface could not be made into a solid. */
+    BSPLINESURFACE_FAILED_TO_MAKE_SOLID
 }
 
 

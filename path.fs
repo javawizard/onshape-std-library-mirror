@@ -1,20 +1,22 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "1160.0");
-export import(path : "onshape/std/query.fs", version : "1160.0");
-export import(path : "onshape/std/units.fs", version : "1160.0");
+export import(path : "onshape/std/context.fs", version : "1174.0");
+export import(path : "onshape/std/query.fs", version : "1174.0");
+export import(path : "onshape/std/units.fs", version : "1174.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1160.0");
-import(path : "onshape/std/containers.fs", version : "1160.0");
-import(path : "onshape/std/evaluate.fs", version : "1160.0");
-import(path : "onshape/std/feature.fs", version : "1160.0");
-import(path : "onshape/std/mathUtils.fs", version : "1160.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1160.0");
+import(path : "onshape/std/box.fs", version : "1174.0");
+import(path : "onshape/std/containers.fs", version : "1174.0");
+import(path : "onshape/std/debug.fs", version : "1174.0");
+import(path : "onshape/std/evaluate.fs", version : "1174.0");
+import(path : "onshape/std/feature.fs", version : "1174.0");
+import(path : "onshape/std/mathUtils.fs", version : "1174.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1174.0");
+import(path : "onshape/std/valueBounds.fs", version : "1174.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -92,7 +94,7 @@ export function reverse(path is Path) returns Path
 }
 
 /**
- * Construct a [Path] from a [Query] of edges, picking the starting point of the path based on query evaluation order for edgesQuery
+ * Construct a [Path] from a [Query] of edges, picking the starting point of the path based on query evaluation order for `edgesQuery`
  *
  * @param context {Context}
  * @param edgesQuery {Query}: A [Query] of edges to form into a [Path]. The edges are ordered with query evaluation
@@ -105,13 +107,38 @@ export function constructPath(context is Context, edgesQuery is Query) returns P
 }
 
 /**
- * Construct a [Path] from a [Query] of edges, picking the starting point as the closest viable starting point to the
- * supplied referenceGeometry
+ * @internal Explicitly ensure old calls with (Context, Query, Query) don't get redirected straight to (Context, Query, map)
+ */
+annotation { "Deprecated" : "Use [constructPath(Context, Query, map)]" }
+export function constructPath(context is Context, edgesQuery is Query, referenceGeometry is Query) returns map
+{
+    return constructPath(context, edgesQuery, {
+        "referenceGeometry" : referenceGeometry
+    });
+}
+
+/** @internal */
+annotation { "Deprecated" : "Use [constructPath(Context, Query, map)]" }
+export function constructPath(context is Context, edgesQuery is Query, referenceGeometry is undefined) returns map
+{
+    return constructPath(context, edgesQuery, {
+        "referenceGeometry" : referenceGeometry
+    });
+}
+
+/**
+ * Construct a [Path] from a [Query] of edges, optionally picking the starting point as the closest viable starting point to the
+ * supplied `referenceGeometry`
  *
  * @param context {Context}
  * @param edgesQuery {Query}: A [Query] of edges to form into a [Path].
- * @param referenceGeometry: A geometry [Query] to determine the start of the [Path], or `undefined`. If an empty
- *      [Query] or `undefined` is specified, the starting point of the path will be based on query evaluation order for edgesQuery.
+ * @param options {{
+ *      @field referenceGeometry: @optional A geometry [Query] to determine the start of the [Path]. If unspecified,
+ *          (or the query is empty) the starting point of the path will be based on query evaluation order for `edgesQuery`.
+ *      @field tolerance {ValueWithUnits}: @optional Tolerance with length units indicating how close endpoints need
+ *          to be to be considered part of the same path. Default is `1e-8 * meter`
+ *          @eg `1e-5 * meter`
+ * }}
  * @return {{
  *      @field path {Path} : The resulting constructed [Path]
  *      @field pathDistanceInformation {PathDistanceInformation} : A map containing the distance from the [Path] start
@@ -119,10 +146,11 @@ export function constructPath(context is Context, edgesQuery is Query) returns P
  *          inside that bounding box.
  * }}
  */
-export function constructPath(context is Context, edgesQuery is Query, referenceGeometry) returns map
+export function constructPath(context is Context, edgesQuery is Query, options is map) returns map
 precondition
 {
-    referenceGeometry is Query || referenceGeometry == undefined;
+    options.referenceGeometry is Query || options.referenceGeometry == undefined;
+    isLength(options.tolerance, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS) || options.tolerance == undefined;
 }
 {
     var edges is array = evaluateQuery(context, edgesQuery);
@@ -132,7 +160,7 @@ precondition
         throw "Cannot form path with no edges.";
     }
 
-    var referenceGeometryProvided = checkReferenceGeometryProvided(context, referenceGeometry);
+    var referenceGeometryProvided = checkReferenceGeometryProvided(context, options.referenceGeometry);
 
     if (size(edges) == 1 && !referenceGeometryProvided)
     {
@@ -142,7 +170,7 @@ precondition
             };
     }
 
-    var graphInformation = computeGraphInformation(context, edges, referenceGeometryProvided, referenceGeometry);
+    var graphInformation = computeGraphInformation(context, edges, referenceGeometryProvided, options);
     var startPointIndex = graphInformation.start;
     var pointIndexToGroup = graphInformation.pointIndexToGroup;
     var pathClosed = graphInformation.closed;
@@ -230,7 +258,7 @@ precondition
  * Compute and return the start index of the path, the groups of indices that form vertices in the graph, whether
  * the path is closed, and the path distance information (as defined in [PathDistanceInformation])
  */
-function computeGraphInformation(context is Context, edges is array, referenceGeometryProvided is boolean, referenceGeometry) returns map
+function computeGraphInformation(context is Context, edges is array, referenceGeometryProvided is boolean, options is map) returns map
 {
     var pathPoints = [];
     for (var edge in edges)
@@ -240,9 +268,13 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
         pathPoints = append(pathPoints, endpoints[1].origin);
     }
 
-    var pointGroups = clusterPoints(pathPoints, TOLERANCE.zeroLength);
+    if (options.tolerance == undefined)
+    {
+        options.tolerance = TOLERANCE.zeroLength * meter;
+    }
+    var pointGroups = clusterPoints(pathPoints, options.tolerance / meter);
 
-    var oddNumberedGroups = 0;
+    var oddNumberedGroups = []; // array of point vectors
     var pointIndexToGroup = {}; // map: endpoint -> group in pointGroups
 
     var possibleStartPoints = [];
@@ -254,7 +286,7 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
 
         if (isOdd)
         {
-            oddNumberedGroups += 1;
+            oddNumberedGroups = append(oddNumberedGroups, pathPoints[group[0]]);
         }
 
         for (var point in group)
@@ -270,11 +302,15 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
 
     var pathClosed = false;
 
-    if (oddNumberedGroups != 0 && oddNumberedGroups != 2)
+    if (size(oddNumberedGroups) != 0 && size(oddNumberedGroups) != 2)
     {
+        for (var point in oddNumberedGroups)
+        {
+            addDebugPoint(context, point);
+        }
         throw "Edges do not form a continuous path.";
     }
-    else if (oddNumberedGroups == 0)
+    else if (size(oddNumberedGroups) == 0)
     {
         pathClosed = true;
         possibleStartPoints = pathPoints;
@@ -285,7 +321,7 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
     var pathDistanceInformation;
     if (referenceGeometryProvided)
     {
-        var heuristic = computeDistanceHeuristic(context, possibleStartPoints, referenceGeometry);
+        var heuristic = computeDistanceHeuristic(context, possibleStartPoints, options.referenceGeometry);
         var distanceResult = heuristic.distanceResult;
         pathDistanceInformation = heuristic.pathDistanceInformation;
 

@@ -1,4 +1,4 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,31 +15,32 @@ FeatureScript 1160; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1160.0");
-import(path : "onshape/std/context.fs", version : "1160.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1160.0");
-import(path : "onshape/std/query.fs", version : "1160.0");
-import(path : "onshape/std/valueBounds.fs", version : "1160.0");
-import(path : "onshape/std/vector.fs", version : "1160.0");
+import(path : "onshape/std/containers.fs", version : "1174.0");
+import(path : "onshape/std/context.fs", version : "1174.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
+import(path : "onshape/std/query.fs", version : "1174.0");
+import(path : "onshape/std/valueBounds.fs", version : "1174.0");
+import(path : "onshape/std/vector.fs", version : "1174.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1174.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1174.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1174.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1174.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1174.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1160.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1174.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1160.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1174.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1174.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1160.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1174.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -83,7 +84,27 @@ export function opBoolean(context is Context, id is Id, definition is map)
  */
 export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
 {
-    return @opCreateBSplineCurve(context, id, definition.bSplineCurve);
+    return @opCreateBSplineCurve(context, id, definition);
+}
+
+/**
+ * Generates a sheet body given a [BSplineSurface] definition.
+ * The spline must have dimension of 3 and be G1-continuous.
+ * @param id : @autocomplete `id + "bSplineSurface1"`
+ * @param definition {{
+ *      @field bSplineSurface {BSplineSurface} : The definition of the spline surface.
+ *      @field boundaryBSplineCurves {array} : @optional An array of [BSplineCurve]s defined in the parameter space of
+ *                  `bSplineSurface` to use as the boundary of the created sheet body.  The boundary must form a single
+ *                  closed loop on the surface.  The `dimension` of each curve must be `2`, as the boundaries are being
+ *                  defined in UV space of the created surface.  If no boundary is supplied, the created sheet body will
+ *                  cover the full parameter range of `bSplineSurface`.
+ *      @field makeSolid {boolean} : @optional When set to `true`, the operation will produce a solid instead of a sheet
+ *                  if the surface encloses a region.  Default is `false`.
+ * }}
+ */
+export function opCreateBSplineSurface(context is Context, id is Id, definition is map)
+{
+    return @opCreateBSplineSurface(context, id, definition);
 }
 
 /**
@@ -93,8 +114,9 @@ export function opCreateBSplineCurve(context is Context, id is Id, definition is
  * @param definition {{
  *      @field tools {Query} : The tool parts or surfaces
  *      @field target {Query} : The face whose surface will be used to create outline.
- *                              Currently only planes, cylinders or extruded surfaces are supported.
- *      @field offsetFaces {Query} : Faces in tools which are offsets of target face. @optional
+ *              Currently only planes, cylinders or extruded surfaces are supported.
+ *      @field offsetFaces {Query} : @optional Faces in tools which are offsets of target face. If `offsetFaces` are
+ *              provided, the operation will fail if `target` is non-planar and there are not exactly two offset faces per tool.
  * }}
  */
 export function opCreateOutline(context is Context, id is Id, definition is map)
@@ -360,7 +382,7 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *      @field tangentPropagation {boolean} : @optional
  *              `true` to propagate the fillet along edges tangent to those passed in. Default is `false`.
  *      @field crossSection {FilletCrossSection} : @optional
-               Fillet cross section. One of `CIRCULAR`, `CONIC`, `CURVATURE`. Default is `CIRCULAR`.
+                Fillet cross section. One of `CIRCULAR`, `CONIC`, `CURVATURE`. Default is `CIRCULAR`.
  *      @field rho {number} : @requiredif {`crossSection` is `CONIC`.}
  *              A number between 0 and 1, specifying the Rho value of a conic fillet
  *              @ex `0.01` creates a flat, nearly-chamfered shape.
@@ -368,9 +390,14 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
  *              A number between 0 and 1, specifying the magnitude of curvature match.
  *      @field isVariable {boolean} : @optional Fillet controls can be varied at vertices via `vertexSettings`. Default is `false`.
- *      @field vertexSettings {array} : @optional Array of fillet settings at specified vertices.
-        @field createDetachedSurface {boolean} : @optional
-               Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
+ *      @field vertexSettings {array} : @optional An array of maps representing fillet settings at specified vertices.  Each map should
+ *              contain a `vertex` query, a `vertexRadius` value, a `variableMagnitude` if the `crossSection` is
+ *              `FilletCrossSection.CURVATURE`, and a `variableRho` if the `crossSection` is `FilletCrossSection.CONIC`.
+ *              @ex `[{ "vertex" : vertexQuery0, "vertexRadius" : 1 * inch, "variableRho" : 0.2 }, { "vertex" : vertexQuery1, "vertexRadius" : 2 * inch, "variableRho" : 0.8 }]`
+ *      @field smoothTransition {boolean} : @requiredif { `isVariable` is `true` }  Whether to create a smoother transition
+ *              between each vertex.
+ *      @field createDetachedSurface {boolean} : @optional
+ *              Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
  * }}
  */
 export function opFillet(context is Context, id is Id, definition is map)
@@ -483,9 +510,9 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
  *      @field bodyType {ToolBodyType} : If true (default) create solid body. If false, create surface body. @optional
  *      @field trimGuidesByProfiles {boolean} : If false (default) use full length of guides. If true restrict resulting surface by the first and last profile.
-                                                Meaningful only for non-periodic surface loft. @optional
-        @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.
-                                                Meaningful only for surface loft with open profiles. @optional
+ *                                              Meaningful only for non-periodic surface loft. @optional
+ *      @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.
+ *                                              Meaningful only for surface loft with open profiles. @optional
  *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
  *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
  *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.

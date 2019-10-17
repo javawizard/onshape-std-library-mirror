@@ -1,4 +1,4 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -37,7 +37,8 @@ export const TOLERANCE =
     "zeroAngle" : 1e-11,
     "zeroLength" : 1e-8,
     "g1Angle" : (PI / 180) * .1,
-    "booleanDefaultTolerance" : 1e-5 // meter
+    "booleanDefaultTolerance" : 1e-5, // meter
+    "computational" : 1e-13
 };
 
 /**

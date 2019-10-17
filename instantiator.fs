@@ -1,4 +1,4 @@
-FeatureScript 1160; /* Automatically generated version */
+FeatureScript 1174; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,17 +32,17 @@ FeatureScript 1160; /* Automatically generated version */
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "1160.0");
+export import(path : "onshape/std/tabReferences.fs", version : "1174.0");
 
-import(path : "onshape/std/containers.fs", version : "1160.0");
-import(path : "onshape/std/context.fs", version : "1160.0");
-import(path : "onshape/std/feature.fs", version : "1160.0");
-import(path : "onshape/std/geomOperations.fs", version : "1160.0");
-import(path : "onshape/std/math.fs", version : "1160.0");
-import(path : "onshape/std/matrix.fs", version : "1160.0");
-import(path : "onshape/std/transform.fs", version : "1160.0");
-import(path : "onshape/std/units.fs", version : "1160.0");
-import(path : "onshape/std/derive.fs", version : "1160.0");
+import(path : "onshape/std/containers.fs", version : "1174.0");
+import(path : "onshape/std/context.fs", version : "1174.0");
+import(path : "onshape/std/feature.fs", version : "1174.0");
+import(path : "onshape/std/geomOperations.fs", version : "1174.0");
+import(path : "onshape/std/math.fs", version : "1174.0");
+import(path : "onshape/std/matrix.fs", version : "1174.0");
+import(path : "onshape/std/transform.fs", version : "1174.0");
+import(path : "onshape/std/units.fs", version : "1174.0");
+import(path : "onshape/std/derive.fs", version : "1174.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;
@@ -399,7 +399,7 @@ function splitConfiguration(configuration is map, tolerances is map) returns map
     }
     if (vector == [])
         vector = [0];
-    return { "exact" : exact, "tolerant" : tolerant, "vector" : [vector] as Matrix };
+    return { "exact" : exact, "tolerant" : tolerant, "vector" : matrix([vector]) };
 }
 
 function getTolerance(entry is map, tolerances is map)
