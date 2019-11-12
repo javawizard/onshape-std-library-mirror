@@ -1,4 +1,4 @@
-FeatureScript 1174; /* Automatically generated version */
+FeatureScript 1188; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1174; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1174.0");
-import(path : "onshape/std/context.fs", version : "1174.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
-import(path : "onshape/std/query.fs", version : "1174.0");
-import(path : "onshape/std/valueBounds.fs", version : "1174.0");
-import(path : "onshape/std/vector.fs", version : "1174.0");
+import(path : "onshape/std/containers.fs", version : "1188.0");
+import(path : "onshape/std/context.fs", version : "1188.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1188.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1188.0");
+import(path : "onshape/std/query.fs", version : "1188.0");
+import(path : "onshape/std/valueBounds.fs", version : "1188.0");
+import(path : "onshape/std/vector.fs", version : "1188.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1188.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1188.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1188.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1188.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1188.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1174.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1188.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1174.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1188.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1188.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1174.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1188.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -125,7 +125,6 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 }
 
 /**
- * @internal
  * Create a composite part.
  * @param id : @autocomplete `id + "compositePart1"`
  * @param definition {{
@@ -137,6 +136,20 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 export function opCreateCompositePart(context is Context, id is Id, definition is map)
 {
   return @opCreateCompositePart(context, id, definition);
+}
+
+/**
+ * Modifies a composite part.
+ * @param id : @autocomplete `id + "modifyCompositePart1"`
+ * @param definition {{
+ *      @field composite {Query} : Existing composite part to modify.
+ *      @field toAdd {Query} : Bodies to add to the composite part.
+ *      @field toRemove {Query} : Bodies to remove from the composite part.
+ * }}
+ */
+export function opModifyCompositePart(context is Context, id is Id, definition is map)
+{
+    @opModifyCompositePart(context, id, definition);
 }
 
 /**

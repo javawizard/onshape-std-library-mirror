@@ -1,4 +1,4 @@
-FeatureScript 1174; /* Automatically generated version */
+FeatureScript 1188; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1174; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1174.0");
-import(path : "onshape/std/context.fs", version : "1174.0");
-import(path : "onshape/std/mathUtils.fs", version : "1174.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
-import(path : "onshape/std/units.fs", version : "1174.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
-import(path : "onshape/std/featureList.fs", version : "1174.0");
+import(path : "onshape/std/containers.fs", version : "1188.0");
+import(path : "onshape/std/context.fs", version : "1188.0");
+import(path : "onshape/std/mathUtils.fs", version : "1188.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1188.0");
+import(path : "onshape/std/units.fs", version : "1188.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1188.0");
+import(path : "onshape/std/featureList.fs", version : "1188.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -135,6 +135,7 @@ export predicate canBeQuery(value)
  * @value TANGENT_CONNECTED_EDGES    : Used in [qTangentConnectedEdges]
  * @value LOOP_EDGES                 : Used in [qLoopEdges]
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
+ * @value CONSUMED                   : Used in [qConsumed]
 
  ******************************************************************************/
 export enum QueryType
@@ -214,7 +215,8 @@ export enum QueryType
     COINCIDES_WITH_PLANE,
     LAMINAR_DEPENDENCY,
     PLANE_PARALLEL_DIRECTION,
-    FACE_PARALLEL_DIRECTION
+    FACE_PARALLEL_DIRECTION,
+    CONSUMED
 }
 
 /**
@@ -588,6 +590,20 @@ export enum CompareType
     LESS_EQUAL,
     GREATER,
     GREATER_EQUAL
+}
+
+/**
+ * Specifies whether to filter or allow bodies (and their vertices, edges, and faces) consumed by closed composite parts.
+ *
+ * @seealso [qConsumed]
+ *
+ * @value YES : Matches only bodies that are consumed
+ * @value NO  : Matches only bodies that are not consumed
+ */
+export enum Consumed
+{
+    YES,
+    NO
 }
 
 //Don't strip units off historical queries
@@ -980,7 +996,6 @@ export function qOwnerBody(query is Query) returns Query
 }
 
 /**
- * @internal
  * A query for each part contained in `compositeParts`.
  */
 export function qContainedInCompositeParts(compositeParts is Query) returns Query
@@ -989,12 +1004,28 @@ export function qContainedInCompositeParts(compositeParts is Query) returns Quer
 }
 
 /**
- * @internal
  * A query for each composite part containing `bodies`.
  */
 export function qCompositePartsContaining(bodies is Query) returns Query
 {
     return { "queryType" : QueryType.COMPOSITE_CONTAINING, "bodies" : bodies } as Query;
+}
+
+/**
+ * A query for non-composite entities in `entities` and constituents of composite parts in `entities`.
+ */
+export function qFlattenedCompositeParts(entities is Query) returns Query
+{
+    return qUnion([qSubtraction(entities, qBodyType(entities, BodyType.COMPOSITE)), qContainedInCompositeParts(entities)]);
+}
+
+/**
+ * Depending on the value of `consumed`, a query for filtering out all bodies (or their vertices, edges, and faces)
+ * consumed by closed composite parts or allowing only such entities.
+ */
+export function qConsumed(subquery is Query, consumed is Consumed) returns Query
+{
+    return { "queryType" : QueryType.CONSUMED, "consumed" : consumed, "subquery" : subquery } as Query;
 }
 
 /**

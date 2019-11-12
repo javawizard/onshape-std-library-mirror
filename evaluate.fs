@@ -1,4 +1,4 @@
-FeatureScript 1174; /* Automatically generated version */
+FeatureScript 1188; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 1174; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "1174.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1174.0");
-import(path : "onshape/std/containers.fs", version : "1174.0");
-import(path : "onshape/std/context.fs", version : "1174.0");
-import(path : "onshape/std/coordSystem.fs", version : "1174.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1174.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1174.0");
-import(path : "onshape/std/mathUtils.fs", version : "1174.0");
-import(path : "onshape/std/query.fs", version : "1174.0");
-import(path : "onshape/std/feature.fs", version : "1174.0");
-import(path : "onshape/std/string.fs", version : "1174.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1174.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1174.0");
-import(path : "onshape/std/units.fs", version : "1174.0");
+import(path : "onshape/std/box.fs", version : "1188.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1188.0");
+import(path : "onshape/std/containers.fs", version : "1188.0");
+import(path : "onshape/std/context.fs", version : "1188.0");
+import(path : "onshape/std/coordSystem.fs", version : "1188.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1188.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1188.0");
+import(path : "onshape/std/mathUtils.fs", version : "1188.0");
+import(path : "onshape/std/query.fs", version : "1188.0");
+import(path : "onshape/std/feature.fs", version : "1188.0");
+import(path : "onshape/std/string.fs", version : "1188.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1188.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1188.0");
+import(path : "onshape/std/units.fs", version : "1188.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -157,7 +157,7 @@ precondition
 }
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
-    var ownedFaces = qOwnedByBody(arg.entities, EntityType.FACE);
+    var ownedFaces = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.FACE);
     return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
 }
 
@@ -990,7 +990,7 @@ precondition
 }
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
-    var ownedEdges = qOwnedByBody(arg.entities, EntityType.EDGE);
+    var ownedEdges = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.EDGE);
     return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
 }
 

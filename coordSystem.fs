@@ -1,10 +1,10 @@
-FeatureScript 1174; /* Automatically generated version */
+FeatureScript 1188; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "1174.0");
-import(path : "onshape/std/units.fs", version : "1174.0");
+import(path : "onshape/std/mathUtils.fs", version : "1188.0");
+import(path : "onshape/std/units.fs", version : "1188.0");
 
 
 /**
@@ -23,7 +23,7 @@ export const X_DIRECTION = vector(1, 0, 0);
 export const Y_DIRECTION = vector(0, 1, 0);
 
 /**
- * Direction parallel to the Z axis, equivalent to `vector(0, 1, 0)`
+ * Direction parallel to the Z axis, equivalent to `vector(0, 0, 1)`
  */
 export const Z_DIRECTION = vector(0, 0, 1);
 

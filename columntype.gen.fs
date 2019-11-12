@@ -5,18 +5,15 @@ FeatureScript 1188; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum SketchSilhouetteDisambiguation
+/**
+ * @internal.
+ */
+export enum ColumnType
 {
-    NONE,
-    ALIGNED,
-    ANTI_ALIGNED,
-    OUTER,
-    INNER,
-    TORUS_TOP,
-    TORUS_BOTTOM,
-    TORUS_LEFT,
-    TORUS_RIGHT
+    TABLE_IDENTITY,
+    ROW_IDENTITY,
+    DEFINITION,
+    CUMULATIVE
 }
 
 
