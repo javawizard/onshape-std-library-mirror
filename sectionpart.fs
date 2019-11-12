@@ -261,6 +261,12 @@ export predicate canBeSectionTarget(value)
     }
 }
 
+/** @internal */
+export function sectionTarget(instanceNames is array, part is Query, transformations is array) returns SectionTarget
+{
+    return  {'instanceNames' : instanceNames,  'part' : part, 'transformations' : transformations} as SectionTarget;
+}
+
 /**
  * @internal
  * method for processing all part studio parts for assembly section

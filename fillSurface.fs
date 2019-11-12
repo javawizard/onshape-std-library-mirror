@@ -124,18 +124,24 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCreatedBy(id, EntityType.EDGE),
-                definition.allEdges, remainingTransform);
-            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
-            joinSurfaceBodies(context, id, matches, true, reconstructOp);
-
+           if (autodetectMatches())
+           {
+                joinSurfaceBodiesWithAutoMatching(context, id, definition, true, reconstructOp);
+           }
+           else
+           {
+                var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCreatedBy(id, EntityType.EDGE),
+                    definition.allEdges, remainingTransform);
+                checkForNotJoinableSurfacesInScope(context, id, definition, matches);
+                joinSurfaceBodies(context, id, matches, true, reconstructOp);
+            }
             if (getFeatureInfo(context, id) == ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE ||
-                getFeatureError(context, id) != undefined)
+                    (getFeatureError(context, id) != undefined &&
+                     getFeatureError(context, id) != ErrorStringEnum.BOOLEAN_NO_TARGET_SURFACE) )
             {
                 //update error message to fill related one, and also error out when no matches could be found
                 reportFeatureError(context, id, ErrorStringEnum.FILL_SURFACE_ATTACH_FAIL);
             }
-
         }
     }, { showIsocurves : false, preselectedEntities : qNothing(), defaultSurfaceScope : true, useSampling : false,
         addGuides : false, constraintMode : FillConstraintMode.PRECISE, curveCount : 10, sampleSize : 5});

@@ -178,9 +178,16 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.entities, remainingTransform);
-            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
-            joinSurfaceBodies(context, id, matches, false, reconstructOp);
+            if (autodetectMatches())
+            {
+                joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
+            }
+            else
+            {
+                var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.entities, remainingTransform);
+                checkForNotJoinableSurfacesInScope(context, id, definition, matches);
+                joinSurfaceBodies(context, id, matches, false, reconstructOp);
+            }
         }
     }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 

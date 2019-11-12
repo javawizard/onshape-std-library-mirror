@@ -154,6 +154,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
     if (isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
+        // Handle surface patterns in sheet metal. Not yet implemented for surface features
         if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
         {
             joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);

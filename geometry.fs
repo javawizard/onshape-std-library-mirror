@@ -20,6 +20,7 @@ export import(path : "onshape/std/common.fs", version : "✨");
 export import(path : "onshape/std/bridgingCurve.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
 export import(path : "onshape/std/compositeCurve.fs", version : "✨");
+export import(path : "onshape/std/compositePart.fs", version : "✨");
 export import(path : "onshape/std/cplane.fs", version : "✨");
 export import(path : "onshape/std/cpoint.fs", version : "✨");
 export import(path : "onshape/std/deleteBodies.fs", version : "✨");

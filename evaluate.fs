@@ -157,7 +157,7 @@ precondition
 }
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
-    var ownedFaces = qOwnedByBody(arg.entities, EntityType.FACE);
+    var ownedFaces = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.FACE);
     return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
 }
 
@@ -990,7 +990,7 @@ precondition
 }
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
-    var ownedEdges = qOwnedByBody(arg.entities, EntityType.EDGE);
+    var ownedEdges = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.EDGE);
     return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
 }
 

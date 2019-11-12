@@ -125,7 +125,6 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 }
 
 /**
- * @internal
  * Create a composite part.
  * @param id : @autocomplete `id + "compositePart1"`
  * @param definition {{
@@ -137,6 +136,20 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
 export function opCreateCompositePart(context is Context, id is Id, definition is map)
 {
   return @opCreateCompositePart(context, id, definition);
+}
+
+/**
+ * Modifies a composite part.
+ * @param id : @autocomplete `id + "modifyCompositePart1"`
+ * @param definition {{
+ *      @field composite {Query} : Existing composite part to modify.
+ *      @field toAdd {Query} : Bodies to add to the composite part.
+ *      @field toRemove {Query} : Bodies to remove from the composite part.
+ * }}
+ */
+export function opModifyCompositePart(context is Context, id is Id, definition is map)
+{
+    @opModifyCompositePart(context, id, definition);
 }
 
 /**

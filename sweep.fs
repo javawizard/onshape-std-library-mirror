@@ -110,8 +110,15 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
-            joinSurfaceBodies(context, id, matches, false, reconstructOp);
+            if (autodetectMatches())
+            {
+                joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
+            }
+            else
+            {
+                var matches = createMatchesForSurfaceJoin(context, id, definition, remainingTransform);
+                joinSurfaceBodies(context, id, matches, false, reconstructOp);
+            }
         }
     }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 

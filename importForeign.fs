@@ -89,7 +89,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation {"Name" : "IsInContext", "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : false}
         definition.isInContext is boolean;
 
-        annotation {"Name" : "Create composite", "UIHint" : UIHint.ALWAYS_HIDDEN}
+        annotation {"Name" : "Create composite"}
         definition.createComposite is boolean;
 
         if (definition.createComposite)

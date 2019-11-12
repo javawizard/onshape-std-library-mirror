@@ -86,7 +86,7 @@ export enum ErrorStringEnum
     BOOLEAN_INTERSECT_FAIL,
     /* Cannot subtract a part from itself. */
     BOOLEAN_SAME_INPUT,
-    /* Need at least two parts for a Boolean operation. */
+    /* Need at least two parts or surfaces for a Boolean operation. */
     BOOLEAN_BAD_INPUT,
     /* Boolean resulted in no geometry change. The parts either do not intersect or are totally contained. */
     BOOLEAN_UNION_NO_OP,
@@ -464,7 +464,7 @@ export enum ErrorStringEnum
     EXTRUDE_NO_SELECTED_REGION,
     /* Selected sketch contains no region (has only open curves). */
     EXTRUDE_NO_REGION_IN_SKETCH,
-    /* Select parts to delete. */
+    /* Select entities to delete. */
     DELETE_SELECT_PARTS,
     /* Select parts to copy. */
     COPY_SELECT_PARTS,
@@ -1886,7 +1886,35 @@ export enum ErrorStringEnum
     /* The boundary curves of the B-spline surface must form a single closed loop. */
     BSPLINESURFACE_BOUNDARY_NOT_SINGLE_CLOSED_LOOP,
     /* The B-spline surface could not be made into a solid. */
-    BSPLINESURFACE_FAILED_TO_MAKE_SOLID
+    BSPLINESURFACE_FAILED_TO_MAKE_SOLID,
+    /* Failed to add surface. No shared edges with existing surfaces. */
+    BOOLEAN_NO_SHARED_EDGE_WITH_OTHER_SURFACE,
+    /* No surfaces available to merge. */
+    BOOLEAN_NO_SURFACE_TO_MERGE_WITH,
+    /* Invalid combination of parameters. */
+    BOOLEAN_INVALID_PARAMETER_COMBINATION,
+    /* Failed to modify composite part. */
+    MODIFY_COMPOSITE_PART_FAILED,
+    /* Referenced body has been consumed by a closed composite part. */
+    INSTANCE_CONSUMED_BY_CLOSED_COMPOSITE,
+    /* "One or more explode step instances are suppressed." */
+    EXPLODE_STEP_INSTANCE_IS_SUPPRESSED,
+    /* Cannot create a composite part from a single solid import. */
+    NO_COMPOSITE_FOR_SINGLE_SOLID,
+    /* Cannot simultaneously add a body to and remove it from a composite part. */
+    COMPOSITE_PART_ADD_AND_REMOVE_BODY,
+    /* Only union operation allows sheet tools. */
+    BOOLEAN_TOOL_INPUTS_NOT_SOLID,
+    /* Cannot use a mix of solids and surfaces. */
+    BOOLEAN_CANNOT_MIX_SOLIDS_AND_SURFACES,
+    /* The B-spline surface definition has too many control points in the u or v direction. */
+    BSPLINESURFACE_CONTROL_POINTS_GRID_TOO_LONG,
+    /* The B-spline definition has too many control points. */
+    BSPLINE_TOO_MANY_CONTROL_POINTS,
+    /* The degree of the B-spline definition is too high. */
+    BSPLINE_DEGREE_TOO_HIGH,
+    /* Select entities to create a composite part. */
+    COMPOSITE_PART_SELECT_ENTITIES
 }
 
 

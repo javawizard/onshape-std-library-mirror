@@ -285,15 +285,23 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             transformResultIfNecessary(context, id, remainingTransform);
         };
 
+        var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1130_SURFACING_IMPROVEMENTS) ? true : false;
+
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createLoftTopologyMatchesForSurfaceJoin(context, id, definition, remainingTransform);
-            var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1130_SURFACING_IMPROVEMENTS) ? true : false;
-            joinSurfaceBodies(context, id, matches, makeSolid, reconstructOp);
+            if (autodetectMatches())
+            {
+                joinSurfaceBodiesWithAutoMatching(context, id, definition, makeSolid, reconstructOp);
+            }
+            else
+            {
+                var matches = createLoftTopologyMatchesForSurfaceJoin(context, id, definition, remainingTransform);
+                joinSurfaceBodies(context, id, matches, makeSolid, reconstructOp);
+            }
         }
 
     }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,

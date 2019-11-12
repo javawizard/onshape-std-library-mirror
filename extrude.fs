@@ -267,9 +267,16 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.surfaceEntities, definition.transform);
-            checkForNotJoinableSurfacesInScope(context, id, definition, matches);
-            joinSurfaceBodies(context, id, matches, false, reconstructOp);
+           if (autodetectMatches())
+           {
+                joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
+           }
+           else
+           {
+                var matches = createTopologyMatchesForSurfaceJoin(context, id, definition, qCapEntity(id, CapType.START), definition.surfaceEntities, definition.transform);
+                checkForNotJoinableSurfacesInScope(context, id, definition, matches);
+                joinSurfaceBodies(context, id, matches, false, reconstructOp);
+           }
         }
 
         cleanupTemporaryBoundaryPlanes(context, id, definition);

@@ -23,7 +23,7 @@ export const X_DIRECTION = vector(1, 0, 0);
 export const Y_DIRECTION = vector(0, 1, 0);
 
 /**
- * Direction parallel to the Z axis, equivalent to `vector(0, 1, 0)`
+ * Direction parallel to the Z axis, equivalent to `vector(0, 0, 1)`
  */
 export const Z_DIRECTION = vector(0, 0, 1);
 
