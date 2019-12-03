@@ -1,34 +1,34 @@
-FeatureScript 1188; /* Automatically generated version */
+FeatureScript 1204; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1188.0");
-export import(path : "onshape/std/query.fs", version : "1188.0");
-export import(path : "onshape/std/tool.fs", version : "1188.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1204.0");
+export import(path : "onshape/std/query.fs", version : "1204.0");
+export import(path : "onshape/std/tool.fs", version : "1204.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1188.0");
+export import(path : "onshape/std/manipulator.fs", version : "1204.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1188.0");
-import(path : "onshape/std/boolean.fs", version : "1188.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1188.0");
-import(path : "onshape/std/box.fs", version : "1188.0");
-import(path : "onshape/std/containers.fs", version : "1188.0");
-import(path : "onshape/std/coordSystem.fs", version : "1188.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1188.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1188.0");
-import(path : "onshape/std/evaluate.fs", version : "1188.0");
-import(path : "onshape/std/feature.fs", version : "1188.0");
-import(path : "onshape/std/mathUtils.fs", version : "1188.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1188.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1188.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1188.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1188.0");
-import(path : "onshape/std/transform.fs", version : "1188.0");
-import(path : "onshape/std/valueBounds.fs", version : "1188.0");
+import(path : "onshape/std/attributes.fs", version : "1204.0");
+import(path : "onshape/std/boolean.fs", version : "1204.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1204.0");
+import(path : "onshape/std/box.fs", version : "1204.0");
+import(path : "onshape/std/containers.fs", version : "1204.0");
+import(path : "onshape/std/coordSystem.fs", version : "1204.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1204.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1204.0");
+import(path : "onshape/std/evaluate.fs", version : "1204.0");
+import(path : "onshape/std/feature.fs", version : "1204.0");
+import(path : "onshape/std/mathUtils.fs", version : "1204.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1204.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1204.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1204.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1204.0");
+import(path : "onshape/std/transform.fs", version : "1204.0");
+import(path : "onshape/std/valueBounds.fs", version : "1204.0");
 
 /**
  * The viewer being operated in
@@ -267,7 +267,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-           if (autodetectMatches())
+           if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
            {
                 joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
            }
@@ -279,7 +279,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
            }
         }
 
+        // This cleanup should be done after boolean processing.
+        // Otherwise reconstuctOp would fail in case of extrude up-to-vertex
         cleanupTemporaryBoundaryPlanes(context, id, definition);
+
 
     }, { endBound : BoundingType.BLIND, oppositeDirection : false,
             bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,

@@ -1,22 +1,22 @@
-FeatureScript 1188; /* Automatically generated version */
+FeatureScript 1204; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "1188.0");
+export import(path: "onshape/std/patternCommon.fs", version : "1204.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "1188.0");
-export import(path : "onshape/std/containers.fs", version : "1188.0");
-export import(path : "onshape/std/evaluate.fs", version : "1188.0");
-export import(path : "onshape/std/feature.fs", version : "1188.0");
-export import(path : "onshape/std/featureList.fs", version : "1188.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1188.0");
+export import(path : "onshape/std/boolean.fs", version : "1204.0");
+export import(path : "onshape/std/containers.fs", version : "1204.0");
+export import(path : "onshape/std/evaluate.fs", version : "1204.0");
+export import(path : "onshape/std/feature.fs", version : "1204.0");
+export import(path : "onshape/std/featureList.fs", version : "1204.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1204.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "1188.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "1188.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1188.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1188.0");
+import(path : "onshape/std/mathUtils.fs", version : "1204.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "1204.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1204.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1204.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -154,14 +154,31 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
     if (isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
-        // Handle surface patterns in sheet metal. Not yet implemented for surface features
-        if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
+        if (definition.operationType == NewBodyOperationType.ADD)
         {
-            joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
-            if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE))
             {
-                return;
+                if (evaluateQuery(context, qModifiableSurface(qUnion([definition.seed, qCreatedBy(id)]))) != [])
+                {
+                    definition.defaultSurfaceScope = definition.defaultScope;
+                    definition.booleanSurfaceScope = definition.booleanScope;
+                    joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
+                    // Pattern may have only one instance.
+                    if (evaluateQuery(context, qBodyType(qEntityFilter(definition.seed, EntityType.BODY), BodyType.SOLID)) == [])
+                    {
+                       return;
+                    }
+                 }
             }
+            else if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
+            {
+                joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
+                if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+                {
+                    return;
+                }
+            }
+
         }
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }
