@@ -293,7 +293,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            if (autodetectMatches())
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
             {
                 joinSurfaceBodiesWithAutoMatching(context, id, definition, makeSolid, reconstructOp);
             }

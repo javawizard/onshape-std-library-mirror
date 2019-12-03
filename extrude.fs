@@ -267,7 +267,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-           if (autodetectMatches())
+           if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
            {
                 joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
            }
@@ -279,7 +279,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
            }
         }
 
+        // This cleanup should be done after boolean processing.
+        // Otherwise reconstuctOp would fail in case of extrude up-to-vertex
         cleanupTemporaryBoundaryPlanes(context, id, definition);
+
 
     }, { endBound : BoundingType.BLIND, oppositeDirection : false,
             bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,

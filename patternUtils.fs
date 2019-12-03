@@ -154,14 +154,31 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
     if (isPartPattern(definition.patternType))
     {
         const reconstructOp = function(id) { opPattern(context, id, definition); };
-        // Handle surface patterns in sheet metal. Not yet implemented for surface features
-        if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
+        if (definition.operationType == NewBodyOperationType.ADD)
         {
-            joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
-            if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE))
             {
-                return;
+                if (evaluateQuery(context, qModifiableSurface(qUnion([definition.seed, qCreatedBy(id)]))) != [])
+                {
+                    definition.defaultSurfaceScope = definition.defaultScope;
+                    definition.booleanSurfaceScope = definition.booleanScope;
+                    joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
+                    // Pattern may have only one instance.
+                    if (evaluateQuery(context, qBodyType(qEntityFilter(definition.seed, EntityType.BODY), BodyType.SOLID)) == [])
+                    {
+                       return;
+                    }
+                 }
             }
+            else if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
+            {
+                joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
+                if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+                {
+                    return;
+                }
+            }
+
         }
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
     }

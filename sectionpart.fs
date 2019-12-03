@@ -320,19 +320,37 @@ export const sectionTransformedParts = defineFeature(function(context is Context
         definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
         const offsetPoints = definition.offsetPoints != undefined ? definition.offsetPoints : [];
 
-        jogSectionCut(context, id, definition);
+        jogSectionCut(context, id + "cut", definition);
+
+        // need to transform the cut results to their original posistion in the part studio
+        for (var i = 0; i < size(definition.targets); i += 1)
+        {
+            transformCutResult(context, id + unstableIdComponent(i), id + unstableIdComponent(i ~ "move"), definition.targets[i]);
+        }
     }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : false,
             brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
 
-    function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
+function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
+{
+    opPattern(context, id, {
+            "entities" : args.part,
+            "transforms" : args.transformations,
+            "instanceNames" : args.instanceNames
+            });
+    return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+}
+
+function transformCutResult(context is Context, patternId is Id, moveId is Id, args is SectionTarget)
+{
+    for (var i = 0; i < size(args.instanceNames); i += 1)
     {
-        opPattern(context, id, {
-                "entities" : args.part,
-                "transforms" : args.transformations,
-                "instanceNames" : args.instanceNames
+        var instanceQuery = qPatternInstances(patternId, args.instanceNames[i], EntityType.BODY);
+        opTransform(context, moveId + unstableIdComponent(i), {
+                    "bodies" : instanceQuery,
+                    "transform" : inverse(args.transformations[i])
                 });
-        return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
     }
+}
 
 /**
  * @internal

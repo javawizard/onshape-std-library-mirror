@@ -856,7 +856,17 @@ export enum FeatureScriptVersionNumber
     V1185_COMPOSITE_PART_SELECT_ERROR,
     V1186_COMPOSITE_QUERY,
     V1187_COMPOSITE_DERIVE_MATE_CONNECTORS,
-    V1188_FS_EXPOSE_COMPOSITE_PARTS
+    V1188_FS_EXPOSE_COMPOSITE_PARTS,
+    V1195_CLEANUP_PLANES_BEFORE_BOOLEAN,
+    V1196_FORCE_MERGE_DELETION,
+    V1197_DETECT_SURFACE_JOIN_CPP,
+    V1198_RECORD_SM_DEACTIVATION,
+    V1199_LOFT_COMPOSITE_CLAMP_FIX,
+    V1200_JOIN_SURFACE_PATTERN,
+    V1201_SURFACE_MIRROR_MERGE_WITH_ALL,
+    V1202_ERROR_MESSAGE_CHANGE_IN_REL,
+    V1203_BOOLEAN_PATTERN_OF_ONE,
+    V1204_FIX_BOOLEAN_PATTERN_OF_ONE
 }
 
 /**
@@ -867,6 +877,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE;
 
 

@@ -1691,7 +1691,7 @@ export enum ErrorStringEnum
     VARIABLE_NAME_TOO_LONG,
     /* No instance selected for replacement. */
     NO_INSTANCE_TO_REPLACE,
-    /* Replacement part is not specified. */
+    /* Replacement component is not specified. */
     ASSEMBLY_REPLACE_NO_REPLACER,
     /* Cannot replace sub-assemblies */
     CANNOT_REPLACE_IN_SUBASSEMBLIES,

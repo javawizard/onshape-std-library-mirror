@@ -17,6 +17,7 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/patternCommon.fs", version : "✨");
 import(path : "onshape/std/primitives.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -77,12 +78,9 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         }
     }
     {
-        if (autodetectMatches())
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
         {
-            const sheetsToolsQuery = qSketchFilter(
-                                    qConstructionFilter(qBodyType(definition.tools, BodyType.SHEET),
-                                        ConstructionObject.NO), SketchObject.NO);
-            const hasSheetsAsTools = evaluateQuery(context, sheetsToolsQuery) != [];
+            const hasSheetsAsTools = evaluateQuery(context, qModifiableSurface(definition.tools)) != [];
 
             if (definition.operationType != BooleanOperationType.UNION)
             {
@@ -757,11 +755,18 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
 
 /**
  * @internal
- * Returns `true` if edge matching is to be detected internally by opBoolean
+ * A query that filters out non-modifiable or non-surface entities in subquery
  */
-export function autodetectMatches() returns boolean
+export function qModifiableSurface(subquery is Query) returns Query
 {
-    return @detectSurfaceJoinEnabled();   // TODO replace with version check
+    return qModifiableEntityFilter(
+            qSketchFilter(
+                qConstructionFilter(
+                    qBodyType(
+                        qEntityFilter(subquery, EntityType.BODY),
+                    BodyType.SHEET),
+                ConstructionObject.NO),
+            SketchObject.NO));
 }
 
 /**
@@ -774,6 +779,8 @@ export function autodetectMatches() returns boolean
  *              @eg `false` indicates merge scope is specified in `booleanSurfaceScope`
  *      @field booleanSurfaceScope {Query}: targets to use if `defaultSurfaceScope` is false
  *                                       @requiredIf{`defaultSurfaceScope` is `false`}
+ *      @field seed {Query}: @optional
+ *              If set, will be included in the tools section of the boolean.
  * }}
  * @param makeSolid {boolean}: Tries to join the surfaces into a solid
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
@@ -781,28 +788,43 @@ export function autodetectMatches() returns boolean
  */
 export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, definition is map, makeSolid is boolean, reconstructOp is function)
 {
-    if (definition.defaultSurfaceScope == undefined)
+    const seeded = definition.seed != undefined;
+    if (definition.defaultSurfaceScope == undefined && !seeded)
     {
         return;
     }
 
     const joinId = id + "join";
-    const tools = qCreatedBy(id, EntityType.BODY);
-    const contextSheets = qSketchFilter(
-        qConstructionFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), ConstructionObject.NO),
-                        SketchObject.NO);
-    const contextTargets = qSubtraction(contextSheets, tools);
+    // Need to add seed surfaces in case of pattern feature.
+    const entities = seeded ? qUnion([definition.seed, qCreatedBy(id)]) : qCreatedBy(id);
+    const tools = qModifiableSurface(entities);
+    const contextTargets = qSubtraction(qModifiableSurface(qEverything()), tools);
 
-    if (evaluateQuery(context, tools) != [])
+    var targets = undefined;
+    if (definition.defaultSurfaceScope == true)
     {
-        if (definition.defaultSurfaceScope)
+        if (evaluateQuery(context, contextTargets) != [])
         {
-            if (evaluateQuery(context, contextTargets) == [])
+            targets = contextTargets;
+        }
+    }
+    else if (definition.booleanSurfaceScope != undefined &&
+        evaluateQuery(context, qModifiableSurface(definition.booleanSurfaceScope)) != [])
+    {
+        targets = qModifiableSurface(definition.booleanSurfaceScope);
+    }
+    // otherwise join feature surfaces between themselves but not to merge scope.
+
+    if (!seeded)
+    {
+        if (definition.defaultSurfaceScope == true)
+        {
+            if (targets == undefined)
             {
                 throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_TO_MERGE_WITH, qCreatedBy(id, EntityType.BODY));
             }
         }
-        else if (evaluateQuery(context, definition.booleanSurfaceScope) == [])
+        else if (targets == undefined)
         {
             throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE,
                             ["booleanSurfaceScope"], qCreatedBy(id, EntityType.BODY));
@@ -818,8 +840,8 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
             "detectAdjacencyForSheets" : true,
             "recomputeMatches" : true,
             "tools" : tools,
-            "targets" : definition.defaultSurfaceScope ? contextTargets : definition.booleanSurfaceScope,
-            "targetsAndToolsNeedGrouping" : true
+            "targets" : targets,
+            "targetsAndToolsNeedGrouping" : targets != undefined
             });
     }
     processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });

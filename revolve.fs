@@ -178,7 +178,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
-            if (autodetectMatches())
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
             {
                 joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
             }
@@ -238,14 +238,14 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
 
     //Compute manipulator parameters
     var revolvePoint;
-    const faceResult = try(evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) }));
+    const faceResult = try silent(evFaceTangentPlane(context, { "face" : qNthElement(entities, 0), "parameter" : vector(0.5, 0.5) }));
     if (faceResult != undefined)
     {
         revolvePoint = faceResult.origin;
     }
     else
     {
-        const edgeResult = try(evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 }));
+        const edgeResult = try silent(evEdgeTangentLine(context, { "edge" : qNthElement(entities, 0), "parameter" : 0.5 }));
         if (edgeResult != undefined)
             revolvePoint = edgeResult.origin;
         else

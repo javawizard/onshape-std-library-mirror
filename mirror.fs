@@ -103,9 +103,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         if (definition.patternType == MirrorType.PART && definition.operationType == NewBodyOperationType.ADD)
         {
             definition.seed = definition.entities;
-            definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
+            if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1200_JOIN_SURFACE_PATTERN))
+            {
+                // Optimization: after this version we no longer need the matches, as they are calculated automatically
+                definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
+            }
         }
-
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 
