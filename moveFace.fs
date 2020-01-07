@@ -1,28 +1,28 @@
-FeatureScript 1204; /* Automatically generated version */
+FeatureScript 1218; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1204.0");
-export import(path : "onshape/std/tool.fs", version : "1204.0");
+export import(path : "onshape/std/query.fs", version : "1218.0");
+export import(path : "onshape/std/tool.fs", version : "1218.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1204.0");
+export import(path : "onshape/std/manipulator.fs", version : "1218.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1204.0");
-import(path : "onshape/std/box.fs", version : "1204.0");
-import(path : "onshape/std/containers.fs", version : "1204.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1204.0");
-import(path : "onshape/std/evaluate.fs", version : "1204.0");
-import(path : "onshape/std/feature.fs", version : "1204.0");
-import(path : "onshape/std/mathUtils.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1204.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1204.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1204.0");
-import(path : "onshape/std/valueBounds.fs", version : "1204.0");
+import(path : "onshape/std/attributes.fs", version : "1218.0");
+import(path : "onshape/std/box.fs", version : "1218.0");
+import(path : "onshape/std/containers.fs", version : "1218.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1218.0");
+import(path : "onshape/std/evaluate.fs", version : "1218.0");
+import(path : "onshape/std/feature.fs", version : "1218.0");
+import(path : "onshape/std/mathUtils.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1218.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1218.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1218.0");
+import(path : "onshape/std/valueBounds.fs", version : "1218.0");
 
 
 /**
@@ -294,17 +294,25 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                         return;
                     }
                 }
-                // Since parasolid works off the transform only, it will try construct faces along the shortest path
-                // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
-                // Therefore we split the rotation into two steps.
-                if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1210_FROM_SKETCH_FIXES))
                 {
-                    const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
-                    definition.transformList = [transform, transform];
+                    //parasolid issue below appears to have been fixed
+                    definition.transform = rotationAround(axisResult, definition.angle * directionSign);
                 }
                 else
                 {
-                    definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                    // Since parasolid works off the transform only, it will try construct faces along the shortest path
+                    // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
+                    // Therefore we split the rotation into two steps.
+                    if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                    {
+                        const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
+                        definition.transformList = [transform, transform];
+                    }
+                    else
+                    {
+                        definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                    }
                 }
             }
             sheetMetalAwareMoveFace(context, id, definition);

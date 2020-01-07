@@ -1,8 +1,8 @@
-FeatureScript 1204; /* Automatically generated version */
+FeatureScript 1218; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "1204.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1204.0");
+import(path : "onshape/std/units.fs", version : "1218.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1218.0");
 
 const ANSI_drillTable = {
     "name" : "size",

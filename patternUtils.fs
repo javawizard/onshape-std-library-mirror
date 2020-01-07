@@ -1,22 +1,22 @@
-FeatureScript 1204; /* Automatically generated version */
+FeatureScript 1218; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "1204.0");
+export import(path: "onshape/std/patternCommon.fs", version : "1218.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "1204.0");
-export import(path : "onshape/std/containers.fs", version : "1204.0");
-export import(path : "onshape/std/evaluate.fs", version : "1204.0");
-export import(path : "onshape/std/feature.fs", version : "1204.0");
-export import(path : "onshape/std/featureList.fs", version : "1204.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1204.0");
+export import(path : "onshape/std/boolean.fs", version : "1218.0");
+export import(path : "onshape/std/containers.fs", version : "1218.0");
+export import(path : "onshape/std/evaluate.fs", version : "1218.0");
+export import(path : "onshape/std/feature.fs", version : "1218.0");
+export import(path : "onshape/std/featureList.fs", version : "1218.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1218.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1204.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1204.0");
+import(path : "onshape/std/mathUtils.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1218.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1218.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -149,7 +149,7 @@ function checkPatternInput(context is Context, definition is map, isMirror is bo
 }
 
 /** @internal */
-export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
+function processPatternBooleansIfNeededPreV1215(context is Context, id is Id, definition is map)
 {
     if (isPartPattern(definition.patternType))
     {
@@ -181,6 +181,70 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
 
         }
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
+    }
+}
+
+/** @internal */
+export function processPatternBooleansIfNeeded(context is Context, id is Id, definition is map)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1215_BOOLEANS_OF_SURFACES))
+    {
+        processPatternBooleansIfNeededPreV1215(context, id, definition);
+        return;
+    }
+
+    if (isPartPattern(definition.patternType))
+    {
+        if (definition.operationType == NewBodyOperationType.NEW)
+        {
+            return;
+        }
+
+        if (definition.operationType == NewBodyOperationType.REMOVE || definition.operationType == NewBodyOperationType.INTERSECT)
+        {
+            const qSurfaces = qModifiableSurface(qCreatedBy(id)); // No seed in mirror; BEL-131318
+            if (evaluateQuery(context, qSurfaces) != [])
+            {
+                throw regenError(ErrorStringEnum.SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT, qSurfaces);
+            }
+        }
+
+        const reconstructOp = function(id) { opPattern(context, id, definition); };
+
+        // Seed is undefined in mirror unless operation is ADD. UX is thinking if this needs to change.
+        const decomposedSeed = definition.seed == undefined ? qNothing() :
+                qUnion([definition.seed, qContainedInCompositeParts(qBodyType(definition.seed, BodyType.COMPOSITE))]);
+
+        if (definition.operationType == NewBodyOperationType.ADD)
+        {
+            const patternSurfaces = qModifiableSurface(qUnion([decomposedSeed, qCreatedBy(id)]));
+            if (evaluateQuery(context, patternSurfaces) != [])
+            {
+                // preserve original definition
+                var definitionSurface = mergeMaps(definition, { seed : qModifiableSurface(decomposedSeed) });
+                definitionSurface.defaultSurfaceScope = definition.defaultScope == undefined ? false : definition.defaultScope;
+                definitionSurface.booleanSurfaceScope = definition.booleanScope == undefined ? qNothing() : definition.booleanScope;
+                joinSurfaceBodiesWithAutoMatching(context, id, definitionSurface, false, reconstructOp);
+                const featureError = getFeatureError(context, id);
+                if (featureError != undefined)
+                {
+                    throw regenError(featureError, patternSurfaces);
+                }
+            }
+        }
+
+        // opBoolean is potentially called twice. If any of these two return error then the overall feature will fail.
+        // If there are not failures but info/warnings then warning will naturally win over info.
+        // In case of a tie solid wins. Error graphics will show potentially both
+        const seedSolids = qBodyType(qEntityFilter(decomposedSeed, EntityType.BODY), BodyType.SOLID);
+        const newSolids = qBodyType(qEntityFilter(qCreatedBy(id), EntityType.BODY), BodyType.SOLID);
+        if (evaluateQuery(context, qUnion([seedSolids, newSolids])) != [])  // mirror has no seed
+        {
+            const solidBooleanScope = definition.booleanScope == undefined ? qNothing() :
+                        qBodyType(qEntityFilter(definition.booleanScope, EntityType.BODY), BodyType.SOLID);
+            const definitionSolid = mergeMaps(definition, { seed : seedSolids, booleanScope : solidBooleanScope });
+            processNewBodyIfNeeded(context, id, definitionSolid, reconstructOp);
+        }
     }
 }
 

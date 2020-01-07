@@ -1,4 +1,4 @@
-FeatureScript 1204; /* Automatically generated version */
+FeatureScript 1218; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1204; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1204.0");
-import(path : "onshape/std/context.fs", version : "1204.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1204.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1204.0");
-import(path : "onshape/std/query.fs", version : "1204.0");
-import(path : "onshape/std/valueBounds.fs", version : "1204.0");
-import(path : "onshape/std/vector.fs", version : "1204.0");
+import(path : "onshape/std/containers.fs", version : "1218.0");
+import(path : "onshape/std/context.fs", version : "1218.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1218.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1218.0");
+import(path : "onshape/std/query.fs", version : "1218.0");
+import(path : "onshape/std/valueBounds.fs", version : "1218.0");
+import(path : "onshape/std/vector.fs", version : "1218.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1218.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1218.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1218.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1218.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1218.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1204.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1218.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1204.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1218.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1218.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1204.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1218.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -64,6 +64,8 @@ export import(path : "onshape/std/wraptype.gen.fs", version : "1204.0");
  *          Array of topology matches between tools and targets. Each matching element is a map with fields `topology1`, `topology2`
  *          and `matchType`; where `topology1` and `topology2` are a pair of matching edges or faces and
  *          `matchType` is the type of match [TopologyMatchType] between them.
+ *          If targetsAndToolsNeedGrouping is true and matches are provided then grouping is computed
+ *          entirely based on matches without computation of body collisions.
  *      @field recomputeMatches {boolean} :  @optional
  *          If true, matches will be recomputed and specified matches will be used only for surface alignment purposes (for surface boolean). Defaults to `false`.
  * }}

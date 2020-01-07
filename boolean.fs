@@ -1,30 +1,30 @@
-FeatureScript 1204; /* Automatically generated version */
+FeatureScript 1218; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1204.0");
-export import(path : "onshape/std/query.fs", version : "1204.0");
-export import(path : "onshape/std/tool.fs", version : "1204.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1218.0");
+export import(path : "onshape/std/query.fs", version : "1218.0");
+export import(path : "onshape/std/tool.fs", version : "1218.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1204.0");
-import(path : "onshape/std/box.fs", version : "1204.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1204.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1204.0");
-import(path : "onshape/std/containers.fs", version : "1204.0");
-import(path : "onshape/std/evaluate.fs", version : "1204.0");
-import(path : "onshape/std/feature.fs", version : "1204.0");
-import(path : "onshape/std/math.fs", version : "1204.0");
-import(path : "onshape/std/patternCommon.fs", version : "1204.0");
-import(path : "onshape/std/primitives.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1204.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1204.0");
-import(path : "onshape/std/string.fs", version : "1204.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1204.0");
-import(path : "onshape/std/transform.fs", version : "1204.0");
-import(path : "onshape/std/valueBounds.fs", version : "1204.0");
+import(path : "onshape/std/attributes.fs", version : "1218.0");
+import(path : "onshape/std/box.fs", version : "1218.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1218.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1218.0");
+import(path : "onshape/std/containers.fs", version : "1218.0");
+import(path : "onshape/std/evaluate.fs", version : "1218.0");
+import(path : "onshape/std/feature.fs", version : "1218.0");
+import(path : "onshape/std/math.fs", version : "1218.0");
+import(path : "onshape/std/patternCommon.fs", version : "1218.0");
+import(path : "onshape/std/primitives.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1218.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1218.0");
+import(path : "onshape/std/string.fs", version : "1218.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1218.0");
+import(path : "onshape/std/transform.fs", version : "1218.0");
+import(path : "onshape/std/valueBounds.fs", version : "1218.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -301,6 +301,35 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
 }
 
 /**
+ * Used by body-creating pattern feature preconditions to allow post-creation booleans with surfaces or solids,
+ * specifying the merge scope (or "Merge with all") for that boolean.
+ *
+ * @param booleanDefinition : @autocomplete `definition`
+ */
+export predicate booleanPatternScopePredicate(booleanDefinition is map)
+{
+    if (booleanDefinition.operationType != NewBodyOperationType.NEW)
+    {
+        if (booleanDefinition.defaultScope != undefined)
+        {
+            annotation { "Name" : "Merge with all", "Default" : false }
+            booleanDefinition.defaultScope is boolean;
+            if (booleanDefinition.defaultScope != true)
+            {
+                // In reality surfaces are allowed as targets only in
+                // surface + surfaces and surface - solid.
+                // Unfortunately, we can't check for that in precondition
+                // It will be enforced during execution
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY &&
+                    (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))
+                    && ModifiableEntityOnly.YES }
+                booleanDefinition.booleanScope is Query;
+            }
+        }
+    }
+}
+
+/**
  * Constructs a map with tools and targets queries for boolean operations. For operations where
  * seed needs to be part of the tools for the boolean, set the "seed" parameter in the definition.
  *
@@ -412,7 +441,15 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         try
         {
             reconstructOp(errorId);
-            setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+            var qError = qCreatedBy(errorId, EntityType.BODY);
+            // For the needs of pattern processPatternBooleansIfNeeded we need to highlight just solids
+            // in case of info and warning but everything in case of true error
+            if (getFeatureError(context, boolId) == undefined &&
+                definition.operationType == NewBodyOperationType.ADD)
+            {
+                qError = qBodyType(qError, BodyType.SOLID);
+            }
+            setErrorEntities(context, id, { "entities" : qError });
             opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
         }
         catch (e)
@@ -777,10 +814,10 @@ export function qModifiableSurface(subquery is Query) returns Query
  *      @field defaultSurfaceScope {boolean}: @optional
  *              @eg `true`  indicates merge scope of all the original and related surfaces used as input to create this surface (default)
  *              @eg `false` indicates merge scope is specified in `booleanSurfaceScope`
- *      @field booleanSurfaceScope {Query}: targets to use if `defaultSurfaceScope` is false
- *                                       @requiredIf{`defaultSurfaceScope` is `false`}
+ *      @field booleanSurfaceScope {Query}: @optional targets to use if `defaultSurfaceScope` is false
+ *              Default is `qNothing()`
  *      @field seed {Query}: @optional
- *              If set, will be included in the tools section of the boolean.
+ *              Default is `qNothing()` If set, will be included in the tools section of the boolean.
  * }}
  * @param makeSolid {boolean}: Tries to join the surfaces into a solid
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
@@ -789,19 +826,20 @@ export function qModifiableSurface(subquery is Query) returns Query
 export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, definition is map, makeSolid is boolean, reconstructOp is function)
 {
     const seeded = definition.seed != undefined;
-    if (definition.defaultSurfaceScope == undefined && !seeded)
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1215_BOOLEANS_OF_SURFACES) &&
+        definition.defaultSurfaceScope == undefined && !seeded)
     {
         return;
     }
 
     const joinId = id + "join";
-    // Need to add seed surfaces in case of pattern feature.
+    // Need to add seed surfaces if defined.
     const entities = seeded ? qUnion([definition.seed, qCreatedBy(id)]) : qCreatedBy(id);
     const tools = qModifiableSurface(entities);
     const contextTargets = qSubtraction(qModifiableSurface(qEverything()), tools);
 
     var targets = undefined;
-    if (definition.defaultSurfaceScope == true)
+    if (definition.defaultSurfaceScope != false)
     {
         if (evaluateQuery(context, contextTargets) != [])
         {
@@ -848,10 +886,18 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
 
     if (featureHasNonTrivialStatus(context, joinId))
     {
-        const errorId = id + "errorEntities";
+        const errorId = id + "errorSurfaces";
         reconstructOp(errorId);
-        setErrorEntities(context, id, { "entities" : qCreatedBy(errorId, EntityType.BODY) });
-        opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+        // For the needs of pattern processPatternBooleansIfNeeded we need to highlight just surfaces
+        // in case of info and warning but everything in case of true error
+        var qError = qCreatedBy(errorId, EntityType.BODY);
+        if (getFeatureError(context, joinId) == undefined) // no need to version display data
+        {
+
+            qError = qModifiableSurface(qError);
+        }
+        setErrorEntities(context, id, { "entities" : qError });
+        opDeleteBodies(context, id + "deleteSurfaces", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
     }
 }
 
