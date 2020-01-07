@@ -82,7 +82,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         if (definition.patternType == PatternType.PART)
         {
-            booleanStepScopePredicate(definition);
+            booleanPatternScopePredicate(definition);
         }
 
         if (definition.patternType == PatternType.FEATURE)

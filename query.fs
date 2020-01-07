@@ -241,7 +241,7 @@ export enum QueryType
  * @value POINT : A zero-dimensional point (e.g. a sketch point, or the result
  *      of opPoint)
  * @value MATE_CONNECTOR : A part studio mate connector.
- * @internal @value COMPOSITE : For Onshape internal use.
+ * @value COMPOSITE : A composite part body, which can contain bodies of any other type
  */
 export enum BodyType
 {

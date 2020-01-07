@@ -866,7 +866,16 @@ export enum FeatureScriptVersionNumber
     V1201_SURFACE_MIRROR_MERGE_WITH_ALL,
     V1202_ERROR_MESSAGE_CHANGE_IN_REL,
     V1203_BOOLEAN_PATTERN_OF_ONE,
-    V1204_FIX_BOOLEAN_PATTERN_OF_ONE
+    V1204_FIX_BOOLEAN_PATTERN_OF_ONE,
+    V1210_FROM_SKETCH_FIXES,
+    V1211_PS_VERSION_32_0_225,
+    V1212_SKETCH_DUPLICATION,
+    V1213_PATTERN_SECTION_ON_COMPOSITE,
+    V1214_BETTER_COMPOSITE_DELETION,
+    V1215_BOOLEANS_OF_SURFACES,
+    V1216_SECTION_PART_COMPOSITE,
+    V1217_BOOLEANS_CHECK_CLASH_DETECTION,
+    V1218_SECTION_PART_KEEP_COMPOSITES
 }
 
 /**
@@ -877,6 +886,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1218_SECTION_PART_KEEP_COMPOSITES;
 
 

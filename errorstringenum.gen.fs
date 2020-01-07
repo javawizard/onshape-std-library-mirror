@@ -1899,7 +1899,7 @@ export enum ErrorStringEnum
     INSTANCE_CONSUMED_BY_CLOSED_COMPOSITE,
     /* "One or more explode step instances are suppressed." */
     EXPLODE_STEP_INSTANCE_IS_SUPPRESSED,
-    /* Cannot create a composite part from a single solid import. */
+    /* No composite part created when importing a single solid. */
     NO_COMPOSITE_FOR_SINGLE_SOLID,
     /* Cannot simultaneously add a body to and remove it from a composite part. */
     COMPOSITE_PART_ADD_AND_REMOVE_BODY,
@@ -1914,7 +1914,11 @@ export enum ErrorStringEnum
     /* The degree of the B-spline definition is too high. */
     BSPLINE_DEGREE_TOO_HIGH,
     /* Select entities to create a composite part. */
-    COMPOSITE_PART_SELECT_ENTITIES
+    COMPOSITE_PART_SELECT_ENTITIES,
+    /* Failed to delete composite part. */
+    DELETE_COMPOSITE_PART_FAILED,
+    /* Cannot remove or intersect patterned surfaces. */
+    SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT
 }
 
 

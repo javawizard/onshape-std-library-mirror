@@ -58,7 +58,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.patternType == MirrorType.PART)
         {
-            booleanStepScopePredicate(definition);
+            booleanPatternScopePredicate(definition);
         }
     }
     {

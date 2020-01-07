@@ -56,7 +56,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         annotation { "Name" : "Tangent propagation", "Default" : true }
         definition.tangentPropagation is boolean;
 
-        annotation { "Name" : "Cross section", "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
         definition.crossSection is FilletCrossSection;
 
         annotation { "Name" : "Radius" }
@@ -74,7 +74,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         }
 
         //to show an info only when certain parameters are changed
-        annotation {"Name" : "Defaults changed", "UIHint" : "ALWAYS_HIDDEN"}
+        annotation {"Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.defaultsChanged is boolean;
 
         annotation {"Name" : "Variable fillet"}
@@ -83,26 +83,27 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         if (definition.isVariable)
         {
             annotation { "Name" : "Vertices", "Item name" : "vertex",
-                        "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex" }
+                        "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
+                        "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
             definition.vertexSettings is array;
             for (var setting in definition.vertexSettings)
             {
                 annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO,
                             "MaxNumberOfPicks" : 1 ,
-                            "UIHint" : "ALWAYS_HIDDEN" }
+                            "UIHint" : UIHint.ALWAYS_HIDDEN }
                 setting.vertex is Query;
 
-                annotation { "Name" : "Radius", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                 isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
 
                 if (definition.crossSection == FilletCrossSection.CONIC)
                 {
-                    annotation { "Name" : "Rho", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                    annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                     isReal(setting.variableRho, FILLET_RHO_BOUNDS);
                 }
                 else if (definition.crossSection == FilletCrossSection.CURVATURE)
                 {
-                    annotation { "Name" : "Magnitude", "UIHint" : "MATCH_LAST_ARRAY_ITEM" }
+                    annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                     isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
                 }
             }

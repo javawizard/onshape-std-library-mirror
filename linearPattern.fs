@@ -115,7 +115,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         }
         if (definition.patternType == PatternType.PART)
         {
-            booleanStepScopePredicate(definition);
+            booleanPatternScopePredicate(definition);
         }
 
         if (definition.patternType == PatternType.FEATURE)

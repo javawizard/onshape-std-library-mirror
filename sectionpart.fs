@@ -332,8 +332,15 @@ export const sectionTransformedParts = defineFeature(function(context is Context
 
 function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
 {
+    var query = args.part;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS))
+    {
+        const allComposites = qBodyType(query, BodyType.COMPOSITE);
+        const allNonComposites = qSubtraction(query, allComposites);
+        query = qUnion([allNonComposites,qContainedInCompositeParts(allComposites)]);
+    }
     opPattern(context, id, {
-            "entities" : args.part,
+            "entities" : query,
             "transforms" : args.transformations,
             "instanceNames" : args.instanceNames
             });
@@ -483,10 +490,14 @@ function jogSectionCut(context is Context, id is Id, definition is map)
     const offsetPoints = definition.offsetPoints;
     const versionOperationUse = (definition.versionOperationUse == true);
 
-    var toDeleteQ = qSubtraction(qEverything(EntityType.BODY), target);
+    var toKeepQ = target;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1218_SECTION_PART_KEEP_COMPOSITES)) {
+        toKeepQ = qUnion([target, qCompositePartsContaining(target)]);
+    }
+    var toDeleteQ = qSubtraction(qEverything(EntityType.BODY), toKeepQ);
     if (keepSketches)
     {
-       toDeleteQ = qSketchFilter(toDeleteQ, SketchObject.NO);
+        toDeleteQ = qSketchFilter(toDeleteQ, SketchObject.NO);
     }
     try silent(opDeleteBodies(context, id + "initialDelete", { "entities" : toDeleteQ }));
 

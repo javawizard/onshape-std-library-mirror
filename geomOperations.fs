@@ -64,6 +64,8 @@ export import(path : "onshape/std/wraptype.gen.fs", version : "✨");
  *          Array of topology matches between tools and targets. Each matching element is a map with fields `topology1`, `topology2`
  *          and `matchType`; where `topology1` and `topology2` are a pair of matching edges or faces and
  *          `matchType` is the type of match [TopologyMatchType] between them.
+ *          If targetsAndToolsNeedGrouping is true and matches are provided then grouping is computed
+ *          entirely based on matches without computation of body collisions.
  *      @field recomputeMatches {boolean} :  @optional
  *          If true, matches will be recomputed and specified matches will be used only for surface alignment purposes (for surface boolean). Defaults to `false`.
  * }}

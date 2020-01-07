@@ -294,17 +294,25 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                         return;
                     }
                 }
-                // Since parasolid works off the transform only, it will try construct faces along the shortest path
-                // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
-                // Therefore we split the rotation into two steps.
-                if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1210_FROM_SKETCH_FIXES))
                 {
-                    const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
-                    definition.transformList = [transform, transform];
+                    //parasolid issue below appears to have been fixed
+                    definition.transform = rotationAround(axisResult, definition.angle * directionSign);
                 }
                 else
                 {
-                    definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                    // Since parasolid works off the transform only, it will try construct faces along the shortest path
+                    // to the transformed face(s). For angles >= PI this means it will try to construct in the wrong direction.
+                    // Therefore we split the rotation into two steps.
+                    if (definition.angle >= (PI - TOLERANCE.zeroAngle) * radian && isAtVersionOrLater(context, FeatureScriptVersionNumber.V309_MOVE_FACE_SUPPORT_360_DEG_ROTATION))
+                    {
+                        const transform = rotationAround(axisResult, definition.angle / 2 * directionSign);
+                        definition.transformList = [transform, transform];
+                    }
+                    else
+                    {
+                        definition.transform = rotationAround(axisResult, definition.angle * directionSign);
+                    }
                 }
             }
             sheetMetalAwareMoveFace(context, id, definition);
