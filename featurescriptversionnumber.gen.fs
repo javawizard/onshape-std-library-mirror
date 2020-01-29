@@ -1,4 +1,4 @@
-FeatureScript 1218; /* Automatically generated version */
+FeatureScript 1224; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -875,7 +875,9 @@ export enum FeatureScriptVersionNumber
     V1215_BOOLEANS_OF_SURFACES,
     V1216_SECTION_PART_COMPOSITE,
     V1217_BOOLEANS_CHECK_CLASH_DETECTION,
-    V1218_SECTION_PART_KEEP_COMPOSITES
+    V1218_SECTION_PART_KEEP_COMPOSITES,
+    V1223_DIRECT_EDIT_STABILITY,
+    V1224_DRAWINGS_VERSION_BUMP
 }
 
 /**
@@ -886,6 +888,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1218_SECTION_PART_KEEP_COMPOSITES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1224_DRAWINGS_VERSION_BUMP;
 
 
