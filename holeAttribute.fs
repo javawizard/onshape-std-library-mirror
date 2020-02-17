@@ -1,11 +1,11 @@
-FeatureScript 1224; /* Automatically generated version */
+FeatureScript 1237; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1224.0");
-import(path : "onshape/std/feature.fs", version : "1224.0");
-import(path : "onshape/std/holeUtils.fs", version : "1224.0");
+import(path : "onshape/std/attributes.fs", version : "1237.0");
+import(path : "onshape/std/feature.fs", version : "1237.0");
+import(path : "onshape/std/holeUtils.fs", version : "1237.0");
 
 /**
  * @internal
@@ -30,9 +30,6 @@ export predicate canBeHoleAttribute (value)
     value is map;
     value.attributeId == undefined || value.attributeId is string;
     value.holeType == undefined || value.holeType is HoleStyle;
-
-    annotation { 'Column name' : 'Column', 'Type' : ColumnType.ROW_IDENTITY }
-    value.holeIdentity == undefined || value.holeIdentity is string;
 }
 
 /**

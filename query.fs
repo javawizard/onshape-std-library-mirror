@@ -1,4 +1,4 @@
-FeatureScript 1224; /* Automatically generated version */
+FeatureScript 1237; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1224; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1224.0");
-import(path : "onshape/std/context.fs", version : "1224.0");
-import(path : "onshape/std/mathUtils.fs", version : "1224.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1224.0");
-import(path : "onshape/std/units.fs", version : "1224.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1224.0");
-import(path : "onshape/std/featureList.fs", version : "1224.0");
+import(path : "onshape/std/containers.fs", version : "1237.0");
+import(path : "onshape/std/context.fs", version : "1237.0");
+import(path : "onshape/std/mathUtils.fs", version : "1237.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1237.0");
+import(path : "onshape/std/units.fs", version : "1237.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1237.0");
+import(path : "onshape/std/featureList.fs", version : "1237.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -628,7 +628,9 @@ export function qNothing() returns Query
 
 /**
  * A query for all entities of a specified [EntityType] in the context.
- * @param entityType : @optional
+ * @seealso [qAllModifiableSolidBodies]
+ *
+ * @param entityType : @optional @autocomplete `EntityType.BODY`
  */
 export function qEverything(entityType is EntityType) returns Query
 {
@@ -652,7 +654,8 @@ export function qAllNonMeshSolidBodies() returns Query
 }
 
 /**
- * A query for all solid bodies that do not have mesh geometry or in context geometry.
+ * A query for all solid bodies that do not have mesh geometry or in context geometry, i.e. every part
+ * displayed in the Part Studio's "Parts" list.
  */
 export function qAllModifiableSolidBodies() returns Query
 {
@@ -660,37 +663,39 @@ export function qAllModifiableSolidBodies() returns Query
 }
 
 /**
- * A query for an element of a subquery at a specified index
- * @param subquery {Query} : A query which resolves to at least n+1 entities
- * @param n {number} : Zero-based index of element in subquery.
- *      @eg `0`  indicates the first element
- *      @eg `-1` indicates the last element
+ * A query for one entity in `queryToFilter` at a specified index. The order of entities resolved
+ * by a query is deterministic but arbitrary.
+ * @param queryToFilter {Query} : A query which resolves to at least n+1 entities
+ * @param n {number} : Zero-based index of entity in `queryToFilter`.
+ *      @eg `0`  indicates the first entity
+ *      @eg `-1` indicates the last entity
  */
-export function qNthElement(subquery is Query, n is number) returns Query
+export function qNthElement(queryToFilter is Query, n is number) returns Query
 precondition
 {
     isInteger(n);
 }
 {
-    return { queryType : QueryType.NTH_ELEMENT, "n" : n, "subquery" : subquery } as Query;
+    return { queryType : QueryType.NTH_ELEMENT, "n" : n, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for entities of a subquery which match a given [EntityType].
+ * A query for entities in a `queryToFilter` which match a given [EntityType].
  */
-export function qEntityFilter(subquery is Query, entityType is EntityType) returns Query
+export function qEntityFilter(queryToFilter is Query, entityType is EntityType) returns Query
 {
-    return { queryType : QueryType.ENTITY_FILTER, "entityType" : entityType, "subquery" : subquery } as Query;
+    return { queryType : QueryType.ENTITY_FILTER, "entityType" : entityType, "subquery" : queryToFilter } as Query;
 }
 
 /**
-* A query for entities of a subquery which have been assigned an attribute matching a given `attributePattern`.
+* A query for entities in a `queryToFilter` which have been assigned an attribute matching a given `attributePattern`.
 * @seealso [getAttributes]
 */
-export function qAttributeFilter(subquery is Query, attributePattern) returns Query
+export function qAttributeFilter(queryToFilter is Query, attributePattern) returns Query
 {
-    return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern, "subquery" : subquery } as Query;
+    return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern, "subquery" : queryToFilter } as Query;
 }
+
 /**
 * A query for all entities which have been assigned an attribute matching a given `attributePattern`.
 * Equivalent to `qAttributeFilter(qEverything(), attributePattern)`
@@ -698,15 +703,6 @@ export function qAttributeFilter(subquery is Query, attributePattern) returns Qu
 export function qAttributeQuery(attributePattern) returns Query
 {
     return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern} as Query;
-}
-/**
-* A query for entities in sheet metal flattened body
-* corresponding to those in folded body defined by subquery
-* @param subquery {Query} : A query which resolves to entities in folded sheet metal body
-*/
-export function qCorrespondingInFlat(subquery is Query) returns Query
-{
-    return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : subquery} as Query;
 }
 
 /**
@@ -770,26 +766,6 @@ export function qTransient(id is TransientId) returns Query
 {
     return { "queryType" : QueryType.TRANSIENT, "transientId" : id } as Query;
 }
-
-/**
- * A query for the true dependency of the query. For instance, the true dependency of the extruded
- * body will be the face or sketch edges of the profile from which it is extruded.
- */
-export function qDependency(subquery is Query) returns Query
-{
-    return { "queryType" : QueryType.DEPENDENCY, "subquery" : subquery } as Query;
-}
-
-/**
- * A query for the true dependency of the query, specifically for use with wire edges that
- * have been created from laminar edges. If the immediate dependency is not laminar then it will
- * track back until it reaches a laminar dependency (if there is one).
- */
-export function qLaminarDependency(subquery is Query) returns Query
-{
-    return { "queryType" : QueryType.LAMINAR_DEPENDENCY, "subquery" : subquery } as Query;
-}
-
 
 /**
  * A query for start/end cap vertex, edge, and face entities created by `featureId`.
@@ -919,6 +895,8 @@ export function transientQueriesToStrings(value)
  * `qUnion` is guaranteed to preserve order. That is, entities which match
  * queries earlier in the `subqueries` input list will also be listed earlier
  * in the output of `evaluateQuery`.
+ *
+ * @param subqueries : @autocomplete `[query1, query2]`
  */
 export function qUnion(subqueries is array) returns Query
 precondition
@@ -933,6 +911,8 @@ precondition
 /**
  * A query for entities which match all of a list of queries.
  * qIntersection preserves the order of the first subquery.
+ *
+ * @param subqueries : @autocomplete `[query1, query2]`
  */
 export function qIntersection(subqueries is array) returns Query
 precondition
@@ -979,20 +959,22 @@ export function qOwnedByBody(body is Query) returns Query
 }
 
 /**
- * A query for all of the entities which match a subquery, and belong to the
+ * A query for all of the entities which match a `queryToFilter`, and belong to the
  * specified body or bodies.
  */
-export function qOwnedByBody(subquery is Query, body is Query) returns Query
+export function qOwnedByBody(queryToFilter is Query, body is Query) returns Query
 {
-    return { "queryType" : QueryType.OWNED_BY_PART, "subquery" : subquery, "part" : body } as Query;
+    return { "queryType" : QueryType.OWNED_BY_PART, "subquery" : queryToFilter, "part" : body } as Query;
 }
 
 /**
- * A query for each part that any entities in the `query` belong to.
+ * A query for each body that any of the given `entities` belong to.
+ *
+ * If a body is passed in, the result will include that body itself.
  */
-export function qOwnerBody(query is Query) returns Query
+export function qOwnerBody(entities is Query) returns Query
 {
-    return { "queryType" : QueryType.OWNER_PART, "query" : query } as Query;
+    return { "queryType" : QueryType.OWNER_PART, "query" : entities } as Query;
 }
 
 /**
@@ -1020,20 +1002,23 @@ export function qFlattenedCompositeParts(entities is Query) returns Query
 }
 
 /**
- * Depending on the value of `consumed`, a query for filtering out all bodies (or their vertices, edges, and faces)
- * consumed by closed composite parts or allowing only such entities.
+ * A query for all entities in `queryToFilter` which are consumed by any closed composite part, or all
+ * entities of `queryToFilter` which are not consumed by any closed composite part.
  */
-export function qConsumed(subquery is Query, consumed is Consumed) returns Query
+export function qConsumed(queryToFilter is Query, consumed is Consumed) returns Query
 {
-    return { "queryType" : QueryType.CONSUMED, "consumed" : consumed, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.CONSUMED, "consumed" : consumed, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for each mesh that the mesh vertices in the `query` belong to.
+ * A query for each mesh that any `selectedMeshVertices` belong to.
+ *
+ * `selectedMeshVertices` should be the point bodies created when a user selects a mesh vertex. Mesh vertices
+ * which have not been selected cannot be queried in FeatureScript
  */
-export function qSourceMesh(query is Query) returns Query
+export function qSourceMesh(selectedMeshVertices is Query) returns Query
 {
- return { "queryType" : QueryType.SOURCE_MESH, "query" : query } as Query;
+ return { "queryType" : QueryType.SOURCE_MESH, "query" : selectedMeshVertices } as Query;
 }
 
 /**
@@ -1059,9 +1044,9 @@ precondition
     return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : seed, "entityType" : entityType } as Query;
 }
 
-export function qAdjacent(query is Query, adjacencyType is AdjacencyType)
+export function qAdjacent(seed is Query, adjacencyType is AdjacencyType)
 {
-    return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : query } as Query;
+    return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : seed } as Query;
 }
 
 const adjacencyTypeToQueryType = {
@@ -1091,11 +1076,11 @@ precondition
 }
 
 /**
- * A query for edges of a subquery which match a given [EdgeTopology].
+ * A query for edges in a `queryToFilter` which match a given [EdgeTopology].
  */
-export function qEdgeTopologyFilter(subquery is Query, edgeTopologyType is EdgeTopology) returns Query
+export function qEdgeTopologyFilter(queryToFilter is Query, edgeTopologyType is EdgeTopology) returns Query
 {
-    return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : subquery } as Query;
+    return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : queryToFilter } as Query;
 }
 
 
@@ -1105,72 +1090,70 @@ export function qEdgeTopologyFilter(subquery is Query, edgeTopologyType is EdgeT
 //======================== Geometry Type Queries ==============================
 
 /**
- * A query for all entities of a specified [GeometryType] matching a subquery.
+ * A query for all entities in `queryToFilter` with a specified [GeometryType].
  */
-export function qGeometry(subquery is Query, geometryType is GeometryType) returns Query
+export function qGeometry(queryToFilter is Query, geometryType is GeometryType) returns Query
 {
-    return { "queryType" : QueryType.GEOMETRY, "geometryType" : geometryType, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.GEOMETRY, "geometryType" : geometryType, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for all entities of a specified [BodyType] matching a subquery.
+ * A query for all entities in `queryToFilter` which are bodies of the a specified [BodyType],
+ * or are owned by bodies with the specified [BodyType]
  */
-export function qBodyType(subquery is Query, bodyType is BodyType) returns Query
+export function qBodyType(queryToFilter is Query, bodyType is BodyType) returns Query
 {
-    return qBodyType(subquery, [bodyType]);
+    return qBodyType(queryToFilter, [bodyType]);
 }
 
 /**
- * A query for all entities of a `subquery` with any of a list of [BodyType]s.
+ * A query for all entities in `queryToFilter` with any of a list of [BodyType]s.
  *
  * @param bodyTypes : An array of [BodyType]s.
  */
-export function qBodyType(subquery is Query, bodyTypes is array) returns Query
+export function qBodyType(queryToFilter is Query, bodyTypes is array) returns Query
 precondition
 {
-    for (var el in bodyTypes)
+    for (var bodyType in bodyTypes)
     {
-        el is BodyType;
+        bodyType is BodyType;
     }
 }
 {
-    if (subquery.queryType == QueryType.EVERYTHING)
+    if (queryToFilter.queryType == QueryType.EVERYTHING)
     {
-        subquery.bodyType = bodyTypes;
-        return subquery;
+        queryToFilter.bodyType = bodyTypes;
+        return queryToFilter;
     }
-    return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyTypes, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.BODY_TYPE, "bodyType" : bodyTypes, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for all construction entities, or all non-construction entities,
- * matching a subquery.
+ * A query for all construction entities or all non-construction entities in `queryToFilter`.
  * @seealso [ConstructionObject]
  */
-export function qConstructionFilter(subquery is Query, constructionFilter is ConstructionObject) returns Query
+export function qConstructionFilter(queryToFilter is Query, constructionFilter is ConstructionObject) returns Query
 {
-    return { "queryType" : QueryType.CONSTRUCTION_FILTER, "constructionFilter" : constructionFilter, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.CONSTRUCTION_FILTER, "constructionFilter" : constructionFilter, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for all entities belonging to an active sheet metal part, or all entities not belonging to an active sheet
- * metal part, matching a subquery.
+ * A query for all entities in `queryToFilter` belonging to an active sheet metal part.
  *
  * @seealso [ActiveSheetMetal]
  */
-export function qActiveSheetMetalFilter(subquery is Query, activeSheetMetal is ActiveSheetMetal)
+export function qActiveSheetMetalFilter(queryToFilter is Query, activeSheetMetal is ActiveSheetMetal)
 {
-    return { "queryType" : QueryType.ACTIVE_SM_FILTER, "activeSheetMetal" : activeSheetMetal, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.ACTIVE_SM_FILTER, "activeSheetMetal" : activeSheetMetal, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for all entities belonging to a flattened sheet metal part, or all entities not belonging to a flattened sheet metal
- * part, matching a subquery.
+ * A query for all entities in `queryToFilter` belonging to a flattened sheet metal part.
  * @seealso [SMFlatType]
  */
-export function qSheetMetalFlatFilter(subquery is Query, filterFlat is SMFlatType) returns Query
+export function qSheetMetalFlatFilter(queryToFilter is Query, filterFlat is SMFlatType) returns Query
 {
-    return { "queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.SM_FLAT_FILTER, "flatFilter" : filterFlat, "subquery" : queryToFilter } as Query;
 }
 
 annotation { "Deprecated" : "Use [qSheetMetalFlatFilter]" }
@@ -1180,40 +1163,52 @@ export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType) retur
 }
 
 /**
- * A query for parts to which subquery entities are attached (e.g. sheet metal bend line entities are attached to a
+ * A query for parts to which `sheetMetalEntities` are attached (e.g. sheet metal bend line entities are attached to a
  * flattened sheet metal part)
  */
-export function qPartsAttachedTo(subquery is Query) returns Query
+export function qPartsAttachedTo(sheetMetalEntities is Query) returns Query
 {
-    return { "queryType" : QueryType.PARTS_ATTACHED_TO, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.PARTS_ATTACHED_TO, "subquery" : sheetMetalEntities } as Query;
 }
 
 /**
- * Depending on meshGeometryFilter, a query for filtering out all mesh entities or allowing only mesh entities matching a subquery.
+ * A query for entities in sheet metal flattened body corresponding to any `entitiesInFolded` which
+ * are part of 3D sheet metal bodies
+ */
+export function qCorrespondingInFlat(entitiesInFolded is Query) returns Query
+{
+    return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : entitiesInFolded } as Query;
+}
+
+/**
+ * A query for all mesh entities or all non-mesh entities in `queryToFilter`.
+ *
  * A body is considered a "mesh entity" if any of its faces or edges have mesh geometry.
  * @seealso [MeshGeometry]
  */
-export function qMeshGeometryFilter(subquery is Query, meshGeometryFilter is MeshGeometry) returns Query
+export function qMeshGeometryFilter(queryToFilter is Query, meshGeometryFilter is MeshGeometry) returns Query
 {
-    return { "queryType" : QueryType.MESH_GEOMETRY_FILTER, "meshGeometryFilter" : meshGeometryFilter, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.MESH_GEOMETRY_FILTER, "meshGeometryFilter" : meshGeometryFilter, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A geometry is considered not "modifiable" if it is a in context entity.
+ * A query for all modifiable entities, or all non-modifiable entities in `queryToFilter`.
+ *
+ * An entity is considered non-modifiable if it is an in-context entity.
  * @seealso [ModifiableEntityOnly]
+ * @seealso [qAllModifiableSolidBodies]
  */
-export function qModifiableEntityFilter(subquery is Query) returns Query
+export function qModifiableEntityFilter(queryToFilter is Query) returns Query
 {
-    return { "queryType" : QueryType.MODIFIABLE_ENTITY_FILTER, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.MODIFIABLE_ENTITY_FILTER, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query for all sketch entities, or all non-sketch entities,
- * matching a subquery.
+ * A query for all sketch entities, or all non-sketch entities in `queryToFilter`.
  */
-export function qSketchFilter(subquery is Query, sketchObjectFilter is SketchObject) returns Query
+export function qSketchFilter(queryToFilter is Query, sketchObjectFilter is SketchObject) returns Query
 {
-    return { "queryType" : QueryType.SKETCH_OBJECT_FILTER, "sketchObjectFilter" : sketchObjectFilter, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.SKETCH_OBJECT_FILTER, "sketchObjectFilter" : sketchObjectFilter, "subquery" : queryToFilter } as Query;
 }
 
 
@@ -1223,75 +1218,76 @@ export function qSketchFilter(subquery is Query, sketchObjectFilter is SketchObj
  * @param referencePlane : The plane to reference when checking for parallelism.
  * @param allowAntiparallel : Whether to also return entities that are antiparallel.
  */
-export function qParallelPlanes(subquery is Query, referencePlane is Plane, allowAntiparallel is boolean) returns Query
+export function qParallelPlanes(queryToFilter is Query, referencePlane is Plane, allowAntiparallel is boolean) returns Query
 {
     var normal is Vector = referencePlane.normal;
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : queryToFilter, "normal" : normal, "allowAntiparallel" : allowAntiparallel } as Query;
 }
 
 /**
- * A query for all planar face entities that are parallel to the `referencePlane`.
+ * A query for all planar face entities in `queryToFilter` that are parallel to the `referencePlane`.
  * @param referencePlane : The plane to reference when checking for parallelism.
  */
-export function qParallelPlanes(subquery is Query, referencePlane is Plane) returns Query
+export function qParallelPlanes(queryToFilter is Query, referencePlane is Plane) returns Query
 {
     var normal is Vector = referencePlane.normal;
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normal, "allowAntiparallel" : true } as Query;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : queryToFilter, "normal" : normal, "allowAntiparallel" : true } as Query;
 }
 
 /**
- * A query for all planar face entities that are parallel to a plane specified by the `normal` vector.
+ * A query for all planar face entities in `queryToFilter` that are parallel to a plane specified by the `normal` vector.
  * @param normal : The normal vector to reference when checking for parallelism.
  * @param allowAntiparallel : Whether to also return entities that are antiparallel.
  */
-export function qParallelPlanes(subquery is Query, normal is Vector, allowAntiparallel is boolean) returns Query
+export function qParallelPlanes(queryToFilter is Query, normal is Vector, allowAntiparallel is boolean) returns Query
 precondition
 {
     @size(normal) == 3;
 }
 {
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normalize(normal), "allowAntiparallel" : allowAntiparallel } as Query;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : queryToFilter, "normal" : normalize(normal), "allowAntiparallel" : allowAntiparallel } as Query;
 }
 
 /**
- * A query for all planar faces that are parallel to the given direction vector (i.e., the plane normal is perpendicular to `direction`).
+ * A query for all planar faces in `queryToFilter` that are parallel to the given direction vector
+ * (i.e., the plane normal is perpendicular to `direction`).
  */
-export function qPlanesParallelToDirection(subquery is Query, direction is Vector) returns Query
+export function qPlanesParallelToDirection(queryToFilter is Query, direction is Vector) returns Query
 precondition
 {
     @size(direction) == 3;
 }
 {
-    return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : normalize(direction) } as Query;
+    return { "queryType" : QueryType.PLANE_PARALLEL_DIRECTION, "subquery" : queryToFilter, "direction" : normalize(direction) } as Query;
 }
 
 /**
- * A query for all faces that are parallel to the given direction vector
+ * A query for all faces in `queryToFilter` that are parallel to the given direction vector
  * e.g.
  *    if it is a planar face, the plane normal is perpendicular to `direction`
  *    if it is a cylindrical face, the axis is parallel to `direction`
  *    if it is an extruded face, the extrude direction is parallel to `direction`
  */
-export function qFacesParallelToDirection(subquery is Query, direction is Vector) returns Query
+export function qFacesParallelToDirection(queryToFilter is Query, direction is Vector) returns Query
 precondition
 {
     @size(direction) == 3;
 }
 {
-    return { "queryType" : QueryType.FACE_PARALLEL_DIRECTION, "subquery" : subquery, "direction" : normalize(direction) } as Query;
+    return { "queryType" : QueryType.FACE_PARALLEL_DIRECTION, "subquery" : queryToFilter, "direction" : normalize(direction) } as Query;
 }
 
 /**
- * A query for all planar face entities that are parallel to a plane specified by the `normal` vector.
+ * A query for all planar face entities in `queryToFilter` that are parallel to a plane specified by the `normal` vector.
  * @param normal : The normal vector to reference when checking for parallelism.
  */
-export function qParallelPlanes(subquery is Query, normal is Vector) returns Query
+export function qParallelPlanes(queryToFilter is Query, normal is Vector) returns Query
 precondition
 {
     @size(normal) == 3;
 }
 {
-    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : subquery, "normal" : normalize(normal), "allowAntiparallel" : true } as Query;
+    return { "queryType" : QueryType.PLANE_NORMAL, "subquery" : queryToFilter, "normal" : normalize(normal), "allowAntiparallel" : true } as Query;
 }
 
 // ======================= Tangency Queries ===================================
@@ -1300,9 +1296,8 @@ precondition
 
 // ======================= Faces Related Queries ==============================
 /**
- * A query for a set of faces connected via convex edges. `subquery` is used as
- * a seed, and the query will flood-fill match any faces connected across a convex
- * edge.
+ * A query for a set of faces connected to `seed` via convex edges, flood-filling
+ * across any number of convex edges.
  *
  * A convex edge is an edge which forms a convex angle along the full length of
  * the edge. A convex angle is strictly less than 180 degrees for flat faces,
@@ -1311,15 +1306,14 @@ precondition
  * equal to 180 degrees. Thus, the two bounding edges of an exterior fillet are
  * considered convex.
  */
-export function qConvexConnectedFaces(subquery is Query) returns Query
+export function qConvexConnectedFaces(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.CONVEX_CONNECTED_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.CONVEX_CONNECTED_FACES, "subquery" : seed } as Query;
 }
 
 /**
- * A query for a set of faces connected via concave edges. `subquery` is used as
- * a seed, and the query will flood-fill match any faces connected across a concave
- * edge.
+ * A query for a set of faces connected to `seed` via concave edges, flood-filling
+ * across any number of concave edges.
  *
  * A concave edge is an edge which forms a concave angle along the full length of
  * the edge. A concave angle is strictly greater than 180 degrees for flat faces,
@@ -1328,89 +1322,90 @@ export function qConvexConnectedFaces(subquery is Query) returns Query
  * equal to 180 degrees. Thus, the two bounding edges of an interior fillet are
  * considered concave.
  */
-export function qConcaveConnectedFaces(subquery is Query) returns Query
+export function qConcaveConnectedFaces(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.CONCAVE_CONNECTED_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.CONCAVE_CONNECTED_FACES, "subquery" : seed } as Query;
 }
 
 /**
- * A query for a set of faces connected via tangent edges. `subquery` is used as
- * a seed, and the query will flood-fill match any faces connected across a tangent
- * edge.
+ * A query for a set of faces connected to `seed` via tangent edges, flood-filling
+ * across any number of tangent edges.
  *
  * A tangent edge is an edge joining two faces such that the surface direction
  * is continuous across the edge, at every point along the full length of the
  * edge.
  */
-export function qTangentConnectedFaces(subquery is Query) returns Query
+export function qTangentConnectedFaces(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : seed } as Query;
 }
 
 /**
- * A query that returns a tangent chain of edges with seed edges defined by `subquery`.
+ * A query for a chain of tangent edges connected to `seed` via tangent vertices, chaining
+ * across any number of tangent vertices.
  */
-export function qTangentConnectedEdges(subquery is Query) returns Query
+export function qTangentConnectedEdges(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.TANGENT_CONNECTED_EDGES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.TANGENT_CONNECTED_EDGES, "subquery" : seed } as Query;
 }
 
 /**
- * A query for a set of edges defining a loop. If the `subquery` has laminar edges, the query will extend
- * to include the laminar loops that contain the edges. For face selections in `subquery` it returns
- * the loops forming the outer boundary of joined faces.
+ * A query for a set of edges defining a loop. If the `seed` has laminar edges, this query will extend
+ * to include all laminar loops that contain any `seed` edges. If the `seed` has faces, the result will
+ * include the loops forming the outer boundary of the joined faces.
  */
-export function qLoopEdges(subquery is Query) returns Query
+export function qLoopEdges(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.LOOP_EDGES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.LOOP_EDGES, "subquery" : seed } as Query;
 }
 
 /**
- * A query that returns edges that are parallel to the edges in `subquery`.
- * Only edges from the owner bodies of seeds are returned.
+ * A query for linear edges parallel to any edge in `referenceEdges`.
+ * Only edges from the owner bodies of `referenceEdges` are included.
  */
-export function qParallelEdges(subquery is Query) returns Query
+export function qParallelEdges(referenceEdges is Query) returns Query
 {
-    return { "queryType" : QueryType.PARALLEL_EDGES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.PARALLEL_EDGES, "subquery" : referenceEdges } as Query;
 }
-
 
 /**
  * Given a face and an edge, query for all faces bounded by the given face, on
  * the side of the given edge.
  *
- * For example, to select an entire pocket, pass in a the face which surrounds
+ * For example, to select an entire pocket, pass in the face which surrounds
  * the pocket, and an edge of the face which touches that pocket.
  *
- * @param subquery : Should match a face and an edge. If multiple faces and
+ * @param faceAndEdge : Should match a face and an edge. If multiple faces and
  *          edges match, used the first face and the first edge.
+ *          @autocomplete `qUnion([boundaryFace, adjacentEdge])`
  */
-export function qLoopBoundedFaces(subquery is Query) returns Query
+export function qLoopBoundedFaces(faceAndEdge is Query) returns Query
 {
-    return { "queryType" : QueryType.LOOP_BOUNDED_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.LOOP_BOUNDED_FACES, "subquery" : faceAndEdge } as Query;
 }
 
 /**
  * Given a seed face and bounding entities, matches all adjacent faces inside
  * the bounding entities, expanding from the seed face.
  *
- * @param subquery : A Query for the seed face, followed by any boundary faces
+ * @param faceAndBoundingEntities : A Query for the seed face, followed by any boundary faces
  *          or edges. The seed face must be first, so a `qUnion` should be used
  *          to guarantee the order.
+ *          @autocomplete `qUnion([seedFace, boundingEntities])`
  */
-export function qFaceOrEdgeBoundedFaces(subquery is Query) returns Query
+export function qFaceOrEdgeBoundedFaces(faceAndBoundingEntities is Query) returns Query
 {
-    return { "queryType" : QueryType.FACE_OR_EDGE_BOUNDED_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.FACE_OR_EDGE_BOUNDED_FACES, "subquery" : faceAndBoundingEntities } as Query;
 }
 
 /**
  * Given a single face inside a hole or hole-like geometry, returns all faces of that hole.
  *
- * @param subquery : A query for a single face inside the hole.
+ * @param seed : A query for a single face inside the hole.
  */
-export function qHoleFaces(subquery is Query) returns Query
+export function qHoleFaces(seed is Query) returns Query
 {
-    return { "queryType" : QueryType.HOLE_FACES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.HOLE_FACES, "subquery" : seed } as Query;
 }
 
 /**
@@ -1440,9 +1435,9 @@ export function qSketchRegion(featureId is Id) returns Query
  * A query that filters out duplicate vertices.
  * When duplicates are found, the vertex with the lowest deterministic ID is used.
  */
-export function qUniqueVertices(subquery is Query) returns Query
+export function qUniqueVertices(vertices is Query) returns Query
 {
-    return { "queryType" : QueryType.UNIQUE_VERTICES, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.UNIQUE_VERTICES, "subquery" : vertices } as Query;
 }
 
 /**
@@ -1462,43 +1457,51 @@ export function qCoEdge(faceQuery is Query, edgeQuery is Query) returns Query
 }
 
 /**
- * A query for all mate connectors owned by the parts of a subquery.
+ * A query for all mate connectors owned by `parts`.
  */
-export function qMateConnectorsOfParts(subquery is Query) returns Query
+export function qMateConnectorsOfParts(parts is Query) returns Query
 {
-    return { "queryType" : QueryType.MATE_CONNECTOR, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.MATE_CONNECTOR, "subquery" : parts } as Query;
 }
+// TODO: qOwnerPartsOfMateConnectors(mateConnectors is Query)
 
 /**
- * A query for fillet faces of radius equal to, less than and equal to, or greater than and equal to the
- * input faces. If subquery does not match one or more fillet faces, the resulting query will not
- * match any faces. Will find the fillet radius from the faces and then compare to find all the faces
- * of fillets that satisfy the compareType.
+ * A query for fillet faces of radius equal to, less than or equal to, or greater than or equal to the
+ * input faces. If `facesToCompareTo` does not match one or more fillet faces, the resulting query will not
+ * match any faces. Will find the fillet radius from each face and compare to find faces of all fillets
+ * on that body that satisfy the compareType.
  *
- * If `subquery` resolves to multiple fillet faces, all are matched independently. That is,
+ * If `facesToCompareTo` resolves to multiple fillet faces, all are matched independently. That is,
  * `qFilletFaces(qUnion([q1, q2], compareType))` returns the same thing as
  * `qUnion([qFilletFaces(q1, compareType), qFilletFaces(q2, compareType)])`.
  */
-export function qFilletFaces(subquery is Query, compareType is CompareType) returns Query
+export function qFilletFaces(facesToCompareTo is Query, compareType is CompareType) returns Query
 precondition
 {
     compareType == CompareType.EQUAL || compareType == CompareType.LESS_EQUAL || compareType == CompareType.GREATER_EQUAL;
 }
 {
-    return { "queryType" : QueryType.FILLET_FACES, "compareType" : compareType, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.FILLET_FACES, "compareType" : compareType, "subquery" : facesToCompareTo } as Query;
 }
 
 /**
- * Matches any faces or edges within owner bodies of entities in `subquery` which are geometrically identical
- * (same size and shape) to the face or edge in `subquery`.
+ * Matches any faces or edges within owner bodies of entities in `referenceEntities` which are geometrically identical
+ * (same size and shape) to the face or edge in `referenceEntities`.
  *
- * If `subquery` resolves to multiple entities, all are matched independently. That is,
+ * If `referenceEntities` resolves to multiple entities, all are matched independently. That is,
  * `qMatching(qUnion([q1, q2]))` returns the same thing as
  * `qUnion([qMatching(q1), qMatching(q2)])`.
  */
-export function qMatching(subquery is Query) returns Query
+export function qMatching(referenceEntities is Query) returns Query
 {
-    return { "queryType" : QueryType.PATTERN, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.PATTERN, "subquery" : referenceEntities } as Query;
+}
+
+/** @internal */
+annotation { "Deprecated" : "Use `qMatching`" }
+export function qMatchingFaces(subquery is Query) returns Query
+{
+    return qMatching(subquery);
 }
 
 /**
@@ -1518,119 +1521,134 @@ export function qPatternInstances(featureId is Id, instanceName is string, entit
     return { "queryType" : QueryType.PATTERN_INSTANCES, "featureId" : featureId, "instanceNames" : [instanceName], "entityType" : entityType } as Query;
 }
 
-/** @internal */
-annotation { "Deprecated" : "Use `qMatching`" }
-export function qMatchingFaces(subquery is Query) returns Query
+/**
+ * A query for the true dependency of the given `dependentEntities`. For instance, the true dependency of the extruded
+ * body will be the face or sketch edges of the profile from which it is extruded.
+ */
+export function qDependency(dependentEntities is Query) returns Query
 {
-    return qMatching(subquery);
+    return { "queryType" : QueryType.DEPENDENCY, "subquery" : dependentEntities } as Query;
+}
+
+/**
+ * A query for the true dependency of the given `dependentEntities`, specifically for use with wire edges that
+ * have been created from laminar edges. If the immediate dependency is not laminar then it will
+ * track back until it reaches a laminar dependency (if there is one).
+ */
+export function qLaminarDependency(dependentEntities is Query) returns Query
+{
+    return { "queryType" : QueryType.LAMINAR_DEPENDENCY, "subquery" : dependentEntities } as Query;
 }
 
 //===================================== Containment / Intersection Queries =====================================
 /**
- * A query for all entities (bodies, faces, edges, or points) containing a specified point.
+ * A query for all entities (bodies, faces, edges, or points)  in `queryToFilter` containing a specified point.
  * @param point : A 3D point, in world space.
  */
-export function qContainsPoint(subquery is Query, point is Vector) returns Query
+export function qContainsPoint(queryToFilter is Query, point is Vector) returns Query
 precondition
 {
     is3dLengthVector(point);
 }
 {
-    return { "queryType" : QueryType.CONTAINS_POINT, "subquery" : subquery, "point" : stripUnits(point) } as Query;
+    return { "queryType" : QueryType.CONTAINS_POINT, "subquery" : queryToFilter, "point" : stripUnits(point) } as Query;
 }
 
 /**
- * A query for all entities (bodies, faces, edges, or points) touching a specified infinite line.
+ * A query for all entities (bodies, faces, edges, or points) in `queryToFilter` touching a specified infinite line.
  */
-export function qIntersectsLine(subquery is Query, line is Line) returns Query
+export function qIntersectsLine(queryToFilter is Query, line is Line) returns Query
 {
-    return { "queryType" : QueryType.INTERSECTS_LINE, "subquery" : subquery, "line" : stripUnits(line) } as Query;
+    return { "queryType" : QueryType.INTERSECTS_LINE, "subquery" : queryToFilter, "line" : stripUnits(line) } as Query;
 }
 
 /**
- * A query for all entities (bodies, faces, edges, or points) touching a specified infinite plane.
+ * A query for all entities (bodies, faces, edges, or points) in `queryToFilter` touching a specified infinite plane.
  * @param plane :
  *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
  */
-export function qIntersectsPlane(subquery is Query, plane is Plane) returns Query
+export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns Query
 {
-    return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
+    return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : queryToFilter, "plane" : stripUnits(plane) } as Query;
 }
 
 /**
- * A query for all entities (bodies, faces, edges, or points) coinciding with a specified infinite plane.
+ * A query for all entities (bodies, faces, edges, or points)  in `queryToFilter` coinciding with a specified infinite plane.
  * @param plane :
  *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
  */
-export function qCoincidesWithPlane(subquery is Query, plane is Plane) returns Query
+// TODO: tolerance
+export function qCoincidesWithPlane(queryToFilter is Query, plane is Plane) returns Query
 {
-    return { "queryType" : QueryType.COINCIDES_WITH_PLANE, "subquery" : subquery, "plane" : stripUnits(plane) } as Query;
+    return { "queryType" : QueryType.COINCIDES_WITH_PLANE, "subquery" : queryToFilter, "plane" : stripUnits(plane) } as Query;
 }
 
 /**
- * A query for all entities (bodies, faces, edges or points) that are within a specified radius from a point.
+ * A query for all entities (bodies, faces, edges or points) in `queryToFilter` that are within a specified radius from a point.
  * @param point : The point from which to check distance from.
  * @param radius : The distance away from the point.
  */
-export function qWithinRadius(subquery is Query, point is Vector, radius is ValueWithUnits)
+export function qWithinRadius(queryToFilter is Query, point is Vector, radius is ValueWithUnits)
 precondition
 {
     is3dLengthVector(point);
 }
 {
-    return { "queryType" : QueryType.INTERSECTS_BALL, "subquery" : subquery, "point" : stripUnits(point), "radius" : stripUnits(radius) } as Query;
+    return { "queryType" : QueryType.INTERSECTS_BALL, "subquery" : queryToFilter, "point" : stripUnits(point), "radius" : stripUnits(radius) } as Query;
 }
 
 //===================================== Optimization Queries =====================================
 /**
- *  A query for the entity closest to a point.
+ *  A query for the entity in `queryToFilter` closest to a point.
  *
  *  In the case of a tie, resolves to all entities within `TOLERANCE.zeroLength` of being the closest.
  *  @param point : A position vector for the point to find entities closest to.
  */
-export function qClosestTo(subquery is Query, point is Vector) returns Query
+export function qClosestTo(queryToFilter is Query, point is Vector) returns Query
 precondition
 {
     is3dLengthVector(point);
 }
 {
-    return { "queryType" : QueryType.CLOSEST_TO, "subquery" : subquery, "point" : stripUnits(point)} as Query;
+    return { "queryType" : QueryType.CLOSEST_TO, "subquery" : queryToFilter, "point" : stripUnits(point)} as Query;
 }
 
 /**
- *  A query for the entity farthest along a `direction` in world space.
+ *  A query for the entity in `queryToFilter` farthest along a `direction` in world space.
  *  In the case of a tie, resolves to all entities within `TOLERANCE.zeroLength` of being the farthest.
  *  @param direction : A vector for the direction to find the entity farthest away.
  */
-export function qFarthestAlong(subquery is Query, direction is Vector)
+export function qFarthestAlong(queryToFilter is Query, direction is Vector)
 precondition
 {
     @size(direction) == 3;
 }
 {
-    return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : subquery, "direction" : normalize(direction) } as Query;
+    return { "queryType" : QueryType.FARTHEST_ALONG, "subquery" : queryToFilter, "direction" : normalize(direction) } as Query;
 }
 
 /**
- * A query to find the largest entity (by length, area, or volume) within a subquery. If subquery contains entities
- * of different dimensionality (e.g. solid bodies and faces), only entities of the highest dimension are
- * considered. Entities are compared by length, area or volume. Multiple entities may be returned if they tie
- * within tolerance.
+ * A query to find the largest entity (by length, area, or volume)  in `queryToFilter`.
+ *
+ * If `queryToFilter` contains entities of different dimensionality (e.g. both solid bodies and faces), only entities of
+ * the highest dimension are considered. Entities are compared by length, area or volume. Multiple entities may be
+ * returned if they tie within tolerance.
  */
-export function qLargest(subquery is Query) returns Query
+export function qLargest(queryToFilter is Query) returns Query
 {
-    return { "queryType" : QueryType.LARGEST, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.LARGEST, "subquery" : queryToFilter } as Query;
 }
 
 /**
- * A query to find the smallest entity (by length, area, or volume) within a subquery. If subquery contains entities
- * of different dimensionality (e.g. solid bodies and faces), only entities of the highest dimension are
- * considered. Entities are compared by length, area or volume. Multiple entities may be returned if they tie
- * within tolerance.
+ * A query to find the smallest entity (by length, area, or volume) in `queryToFilter`.
+ *
+ * If `queryToFilter` contains entities of different dimensionality (e.g. solid bodies and faces), only entities of
+ * the highest dimension are considered. Entities are compared by length, area or volume. Multiple entities may be
+ * returned if they tie within tolerance.
  */
-export function qSmallest(subquery is Query) returns Query
+export function qSmallest(queryToFilter is Query) returns Query
 {
-    return { "queryType" : QueryType.SMALLEST, "subquery" : subquery } as Query;
+    return { "queryType" : QueryType.SMALLEST, "subquery" : queryToFilter } as Query;
 }
 
 // ==================================== Historical Query stuff ================================
@@ -1775,6 +1793,34 @@ export predicate canBeTransientId(value)
 export function toString(value is TransientId)
 {
     return "Tr:" ~ @transientIdToString(value);
+}
+
+//====================== Query evaluation ========================
+
+/**
+ * Returns an array of queries for the individual entities in a context which match
+ * a specified query.  The returned array contains exactly one transient query
+ * for each matching entity at the time of the call.  If the context is modified,
+ * the returned queries may become invalid and no longer match an entity.
+ *
+ * It is usually not necessary to evaluate queries, since operation and
+ * evaluation functions can accept non-evaluated queries. Rather, the evaluated
+ * queries can be used to count the number of entities (if any) that match a
+ * query, or to iterate through the list to process entities individually.
+ *
+ * The order of entities returned by this function is arbitrary (and generally
+ * not predictable) except in the case of a `qUnion` query. In that case, the
+ * entities matched by earlier queries in the argument to `qUnion` are
+ * returned first.
+ *
+ * @seealso [qTransient]
+ */
+export function evaluateQuery(context is Context, query is Query) returns array
+{
+    var out = @evaluateQuery(context, { "query" : query });
+    for (var i = 0; i < @size(out); i += 1)
+        out[i] = qTransient(out[i] as TransientId);
+    return out;
 }
 
 //==================

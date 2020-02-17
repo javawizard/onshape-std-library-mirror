@@ -1,29 +1,29 @@
-FeatureScript 1224; /* Automatically generated version */
+FeatureScript 1237; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1224.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1224.0");
+export import(path : "onshape/std/query.fs", version : "1237.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1237.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1224.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1224.0");
-import(path : "onshape/std/box.fs", version : "1224.0");
-import(path : "onshape/std/containers.fs", version : "1224.0");
-import(path : "onshape/std/coordSystem.fs", version : "1224.0");
-import(path : "onshape/std/evaluate.fs", version : "1224.0");
-import(path : "onshape/std/extrude.fs", version : "1224.0");
-import(path : "onshape/std/feature.fs", version : "1224.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1224.0");
-import(path : "onshape/std/math.fs", version : "1224.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1224.0");
-import(path : "onshape/std/sketch.fs", version : "1224.0");
-import(path : "onshape/std/tool.fs", version : "1224.0");
-import(path : "onshape/std/transform.fs", version : "1224.0");
-import(path : "onshape/std/units.fs", version : "1224.0");
-import(path : "onshape/std/vector.fs", version : "1224.0");
+import(path : "onshape/std/attributes.fs", version : "1237.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1237.0");
+import(path : "onshape/std/box.fs", version : "1237.0");
+import(path : "onshape/std/containers.fs", version : "1237.0");
+import(path : "onshape/std/coordSystem.fs", version : "1237.0");
+import(path : "onshape/std/evaluate.fs", version : "1237.0");
+import(path : "onshape/std/extrude.fs", version : "1237.0");
+import(path : "onshape/std/feature.fs", version : "1237.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1237.0");
+import(path : "onshape/std/math.fs", version : "1237.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1237.0");
+import(path : "onshape/std/sketch.fs", version : "1237.0");
+import(path : "onshape/std/tool.fs", version : "1237.0");
+import(path : "onshape/std/transform.fs", version : "1237.0");
+import(path : "onshape/std/units.fs", version : "1237.0");
+import(path : "onshape/std/vector.fs", version : "1237.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -332,19 +332,27 @@ export const sectionTransformedParts = defineFeature(function(context is Context
 
 function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
 {
+    // for [1188, 1237), unpack composites before pattern
+    // for further versions, unpack composites after pattern
+    const unpackAfterPattern = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1237_ASSEMBLY_SECTION_CUT_FIXES);
+    const unpackBeforePattern = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS) && !unpackAfterPattern;
+
     var query = args.part;
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS))
+    if (unpackBeforePattern)
     {
-        const allComposites = qBodyType(query, BodyType.COMPOSITE);
-        const allNonComposites = qSubtraction(query, allComposites);
-        query = qUnion([allNonComposites,qContainedInCompositeParts(allComposites)]);
+        query = qFlattenedCompositeParts(query);
     }
     opPattern(context, id, {
             "entities" : query,
             "transforms" : args.transformations,
             "instanceNames" : args.instanceNames
             });
-    return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+    query = qCreatedBy(id, EntityType.BODY);
+    if (unpackAfterPattern)
+    {
+        query = qFlattenedCompositeParts(query);
+    }
+    return evaluateQuery(context, query);
 }
 
 function transformCutResult(context is Context, patternId is Id, moveId is Id, args is SectionTarget)
@@ -352,6 +360,12 @@ function transformCutResult(context is Context, patternId is Id, moveId is Id, a
     for (var i = 0; i < size(args.instanceNames); i += 1)
     {
         var instanceQuery = qPatternInstances(patternId, args.instanceNames[i], EntityType.BODY);
+        // it could be empty, i.e., the instance is not cut at all
+        if (size(evaluateQuery(context, instanceQuery)) == 0)
+        {
+            continue;
+        }
+
         opTransform(context, moveId + unstableIdComponent(i), {
                     "bodies" : instanceQuery,
                     "transform" : inverse(args.transformations[i])

@@ -1,22 +1,22 @@
-FeatureScript 1224; /* Automatically generated version */
+FeatureScript 1237; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1224.0");
-export import(path : "onshape/std/error.fs", version : "1224.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1224.0");
-export import(path : "onshape/std/query.fs", version : "1224.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1224.0");
+export import(path : "onshape/std/context.fs", version : "1237.0");
+export import(path : "onshape/std/error.fs", version : "1237.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1237.0");
+export import(path : "onshape/std/query.fs", version : "1237.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1237.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1224.0");
-import(path : "onshape/std/math.fs", version : "1224.0");
-import(path : "onshape/std/string.fs", version : "1224.0");
-import(path : "onshape/std/transform.fs", version : "1224.0");
-import(path : "onshape/std/units.fs", version : "1224.0");
-import(path : "onshape/std/tabReferences.fs", version : "1224.0");
+import(path : "onshape/std/containers.fs", version : "1237.0");
+import(path : "onshape/std/math.fs", version : "1237.0");
+import(path : "onshape/std/string.fs", version : "1237.0");
+import(path : "onshape/std/transform.fs", version : "1237.0");
+import(path : "onshape/std/units.fs", version : "1237.0");
+import(path : "onshape/std/tabReferences.fs", version : "1237.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -356,34 +356,6 @@ export function transformResultIfNecessary(context is Context, id is Id, transfo
                   "transform" : transform
                 });
     }
-}
-
-//====================== Query evaluation ========================
-
-/**
- * Returns an array of queries for the individual entities in a context which match
- * a specified query.  The returned array contains exactly one transient query
- * for each matching entity at the time of the call.  If the context is modified,
- * the returned queries may become invalid and no longer match an entity.
- *
- * It is usually not necessary to evaluate queries, since operation and
- * evaluation functions can accept non-evaluated queries. Rather, the evaluated
- * queries can be used to count the number of entities (if any) that match a
- * query, or to iterate through the list to process entities individually.
- *
- * The order of entities returned by this function is arbitrary (and generally
- * not predictable) except in the case of a `qUnion` query. In that case, the
- * entities matched by earlier queries in the argument to `qUnion` are
- * returned first.
- *
- * @seealso [qTransient]
- */
-export function evaluateQuery(context is Context, query is Query) returns array
-{
-    var out = @evaluateQuery(context, { "query" : query });
-    for (var i = 0; i < @size(out); i += 1)
-        out[i] = qTransient(out[i] as TransientId);
-    return out;
 }
 
 //================ Compatibility with early expressions ================
