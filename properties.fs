@@ -62,6 +62,37 @@ precondition
     @setProperty(context, definition);
 }
 
+/** @internal Works only in editing logic and manipulators */
+export function getProperty(context is Context, definition is map)
+precondition
+{
+    definition.entity is Query;
+    definition.propertyType is PropertyType;
+
+    if (definition.propertyType == PropertyType.CUSTOM)
+    {
+        definition.customPropertyId is string;
+        annotation { 'Message' : 'customPropertyId must be 24 hexadecimal digits' }
+        match(definition.customPropertyId, "[0-9a-fA-F]{24}").hasMatch; // mongo id
+    }
+}
+{
+    var result = @getProperty(context, definition);
+    if (result != undefined)
+    {
+        if (definition.propertyType == PropertyType.APPEARANCE)
+        {
+            result = result as Color;
+        }
+        else if (definition.propertyType == PropertyType.MATERIAL)
+        {
+            result.density *= kilogram / meter ^ 3;
+            result = result as Material;
+        }
+    }
+    return result;
+}
+
 /** Represents a color as red, green, blue, and alpha transparency components, each between 0 and 1 (inclusive). */
 export type Color typecheck canBeColor;
 

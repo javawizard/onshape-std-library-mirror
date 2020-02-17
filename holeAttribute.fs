@@ -30,9 +30,6 @@ export predicate canBeHoleAttribute (value)
     value is map;
     value.attributeId == undefined || value.attributeId is string;
     value.holeType == undefined || value.holeType is HoleStyle;
-
-    annotation { 'Column name' : 'Column', 'Type' : ColumnType.ROW_IDENTITY }
-    value.holeIdentity == undefined || value.holeIdentity is string;
 }
 
 /**

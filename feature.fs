@@ -358,34 +358,6 @@ export function transformResultIfNecessary(context is Context, id is Id, transfo
     }
 }
 
-//====================== Query evaluation ========================
-
-/**
- * Returns an array of queries for the individual entities in a context which match
- * a specified query.  The returned array contains exactly one transient query
- * for each matching entity at the time of the call.  If the context is modified,
- * the returned queries may become invalid and no longer match an entity.
- *
- * It is usually not necessary to evaluate queries, since operation and
- * evaluation functions can accept non-evaluated queries. Rather, the evaluated
- * queries can be used to count the number of entities (if any) that match a
- * query, or to iterate through the list to process entities individually.
- *
- * The order of entities returned by this function is arbitrary (and generally
- * not predictable) except in the case of a `qUnion` query. In that case, the
- * entities matched by earlier queries in the argument to `qUnion` are
- * returned first.
- *
- * @seealso [qTransient]
- */
-export function evaluateQuery(context is Context, query is Query) returns array
-{
-    var out = @evaluateQuery(context, { "query" : query });
-    for (var i = 0; i < @size(out); i += 1)
-        out[i] = qTransient(out[i] as TransientId);
-    return out;
-}
-
 //================ Compatibility with early expressions ================
 /**
  * A predicate which always returns true.

@@ -1837,7 +1837,7 @@ export enum ErrorStringEnum
     CREATE_COMPOSITE_PART_FAILED,
     /* Attempted to create a composite part containing another composite part. */
     NESTED_COMPOSITE_PARTS,
-    /* Failed to resolve explosion. */
+    /* Failed to resolve exploded view. */
     ASSEMBLY_EXPLOSION_DOES_NOT_EXIST,
     /* Select guide entities. */
     FILL_SURFACE_NO_GUIDES,
@@ -1918,7 +1918,9 @@ export enum ErrorStringEnum
     /* Failed to delete composite part. */
     DELETE_COMPOSITE_PART_FAILED,
     /* Cannot remove or intersect patterned surfaces. */
-    SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT
+    SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT,
+    /* The flange to merge cannot be used as the subtraction scope. */
+    SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE
 }
 
 

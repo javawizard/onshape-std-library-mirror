@@ -332,19 +332,27 @@ export const sectionTransformedParts = defineFeature(function(context is Context
 
 function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
 {
+    // for [1188, 1237), unpack composites before pattern
+    // for further versions, unpack composites after pattern
+    const unpackAfterPattern = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1237_ASSEMBLY_SECTION_CUT_FIXES);
+    const unpackBeforePattern = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS) && !unpackAfterPattern;
+
     var query = args.part;
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1188_FS_EXPOSE_COMPOSITE_PARTS))
+    if (unpackBeforePattern)
     {
-        const allComposites = qBodyType(query, BodyType.COMPOSITE);
-        const allNonComposites = qSubtraction(query, allComposites);
-        query = qUnion([allNonComposites,qContainedInCompositeParts(allComposites)]);
+        query = qFlattenedCompositeParts(query);
     }
     opPattern(context, id, {
             "entities" : query,
             "transforms" : args.transformations,
             "instanceNames" : args.instanceNames
             });
-    return evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
+    query = qCreatedBy(id, EntityType.BODY);
+    if (unpackAfterPattern)
+    {
+        query = qFlattenedCompositeParts(query);
+    }
+    return evaluateQuery(context, query);
 }
 
 function transformCutResult(context is Context, patternId is Id, moveId is Id, args is SectionTarget)
@@ -352,6 +360,12 @@ function transformCutResult(context is Context, patternId is Id, moveId is Id, a
     for (var i = 0; i < size(args.instanceNames); i += 1)
     {
         var instanceQuery = qPatternInstances(patternId, args.instanceNames[i], EntityType.BODY);
+        // it could be empty, i.e., the instance is not cut at all
+        if (size(evaluateQuery(context, instanceQuery)) == 0)
+        {
+            continue;
+        }
+
         opTransform(context, moveId + unstableIdComponent(i), {
                     "bodies" : instanceQuery,
                     "transform" : inverse(args.transformations[i])

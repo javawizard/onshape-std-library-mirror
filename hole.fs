@@ -1424,7 +1424,6 @@ function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleS
     // add tag info
     holeAttribute.holeNumber = holeNumber;
     holeAttribute.holeFeatureCount = holeDefinition.holeFeatureCount;
-    holeAttribute.holeIdentity = holeDefinition.holeFeatureCount ~ "-" ~ holeNumber;
 
     // add common properties
     holeAttribute = addCommonAttributeProperties(holeAttribute, holeStyle, holeDefinition);

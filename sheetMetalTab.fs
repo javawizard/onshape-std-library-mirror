@@ -41,7 +41,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         annotation { "Name" : "Subtraction offset" }
         isLength(definition.booleanOffset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-        annotation { "Name" : "Subtraction scope", "Filter" : (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES) || (BodyType.SOLID && EntityType.BODY) }
+        annotation { "Name" : "Subtraction scope", "Filter" : (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES) || (BodyType.SOLID && EntityType.BODY && ActiveSheetMetal.NO) }
         definition.booleanSubtractScope is Query;
     }
     {
@@ -51,13 +51,26 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         createTools(context, id + "extract", definition.tabFaces);
 
         const unionEntities = try silent(getSMDefinitionEntities(context, definition.booleanUnionScope));
-        if (unionEntities is undefined || size(unionEntities) == 0)
+        if (unionEntities == undefined || size(unionEntities) == 0)
+        {
             throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_WALL, ["booleanUnionScope"]);
+        }
         const unionEntityQuery = qUnion(unionEntities);
-        const sheetMetalBodies = evaluateQuery(context, qOwnerBody(unionEntityQuery));
+        const unionBodies = evaluateQuery(context, qOwnerBody(unionEntityQuery));
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1235_TAB_MERGE_AND_SUBTRACT))
+        {
+            // Do not allow users to target the same flange for both merging and subtraction
+            const subtractEntityQuery = qUnion(getSMDefinitionEntities(context, definition.booleanSubtractScope));
+            const entitiesInBothUnionAndSubtract = evaluateQuery(context, qIntersection([unionEntityQuery, subtractEntityQuery]));
+            if (entitiesInBothUnionAndSubtract != [])
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE, ["booleanUnionScope", "booleanSubtractScope"], qUnion(entitiesInBothUnionAndSubtract));
+            }
+        }
 
         var subtractBodies = getOwnerSMModel(context, definition.booleanSubtractScope);
-        var sheetMetalBodiesQuery = qUnion(concatenateArrays([subtractBodies, sheetMetalBodies]));
+        var sheetMetalBodiesQuery = qUnion(concatenateArrays([subtractBodies, unionBodies]));
         const initialData = getInitialEntitiesAndAttributes(context, sheetMetalBodiesQuery);
         sheetMetalBodiesQuery = qUnion([startTracking(context, sheetMetalBodiesQuery), sheetMetalBodiesQuery]);
 
@@ -658,37 +671,44 @@ export function sheetMetalTabEditingLogic(context is Context, id is Id, oldDefin
                 const visibleFaces = qSubtraction(qEverything(EntityType.FACE), qOwnedByBody(hiddenBodies, EntityType.FACE));
                 const associatedEntities = evaluateQuery(context, qSubtraction(qAttributeFilter(visibleFaces, attribute), wallQuery));
                 const ownerBody = getOwnerSMModel(context, qUnion(associatedEntities));
-                const isActive = isSheetMetalModelActive(context, ownerBody[0]);
-                if (isActive != undefined && isActive)
+                if (ownerBody != [])
                 {
-                    allSMWalls = concatenateArrays([allSMWalls, associatedEntities]);
+                    const isActive = isSheetMetalModelActive(context, ownerBody[0]);
+                    if (isActive != undefined && isActive)
+                    {
+                        allSMWalls = concatenateArrays([allSMWalls, associatedEntities]);
+                    }
                 }
             }
         }
-        const collisions = evCollision(context, {
-                    "tools" : qCreatedBy(id + "extractHeuristic", EntityType.BODY),
-                    "targets" : qUnion(allSMWalls)
-                });
+
         var union = [];
         var subtraction = [];
-        for (var collision in collisions)
+        const collisions = try silent(evCollision(context, {
+                    "tools" : qCreatedBy(id + "extractHeuristic", EntityType.BODY),
+                    "targets" : qUnion(allSMWalls)
+                }));
+        if (collisions != undefined)
         {
-            const tabPlane = try silent(evPlane(context, {
-                            "face" : collision.tool
-                        }));
-            if (tabPlane is undefined)
-                continue;
+            for (var collision in collisions)
+            {
+                const tabPlane = try silent(evPlane(context, {
+                                "face" : collision.tool
+                            }));
+                if (tabPlane is undefined)
+                    continue;
 
-            const sheetMetalFacePlane = try silent(evPlane(context, { "face" : collision.target }));
-            if (sheetMetalFacePlane != undefined && parallelVectors(tabPlane.normal, sheetMetalFacePlane.normal))
-            {
-                union = append(union, collision.target);
-            }
-            else
-            {
-                if (collision["type"] != ClashType.ABUT_NO_CLASS)
+                const sheetMetalFacePlane = try silent(evPlane(context, { "face" : collision.target }));
+                if (sheetMetalFacePlane != undefined && parallelVectors(tabPlane.normal, sheetMetalFacePlane.normal))
                 {
-                    subtraction = append(subtraction, collision.target);
+                    union = append(union, collision.target);
+                }
+                else
+                {
+                    if (collision["type"] != ClashType.ABUT_NO_CLASS)
+                    {
+                        subtraction = append(subtraction, collision.target);
+                    }
                 }
             }
         }
