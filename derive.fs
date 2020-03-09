@@ -1,17 +1,17 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1237.0");
-import(path : "onshape/std/context.fs", version : "1237.0");
-import(path : "onshape/std/query.fs", version : "1237.0");
-import(path : "onshape/std/feature.fs", version : "1237.0");
-import(path : "onshape/std/evaluate.fs", version : "1237.0");
-import(path : "onshape/std/coordSystem.fs", version : "1237.0");
-import(path : "onshape/std/geomOperations.fs", version : "1237.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1237.0");
-import(path : "onshape/std/transform.fs", version : "1237.0");
+import(path : "onshape/std/containers.fs", version : "1247.0");
+import(path : "onshape/std/context.fs", version : "1247.0");
+import(path : "onshape/std/query.fs", version : "1247.0");
+import(path : "onshape/std/feature.fs", version : "1247.0");
+import(path : "onshape/std/evaluate.fs", version : "1247.0");
+import(path : "onshape/std/coordSystem.fs", version : "1247.0");
+import(path : "onshape/std/geomOperations.fs", version : "1247.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
+import(path : "onshape/std/transform.fs", version : "1247.0");
 
 const neverKeep = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
             qCreatedBy(makeId("Front"), EntityType.BODY),
@@ -80,7 +80,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
                                                     makeId(id[0] ~ "_inBase") : id;
 
     // remove sheet metal attributes and helper bodies
-    var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined);
+    var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined, false);
 
     var bodiesToKeep = qSubtraction(options.parts, neverKeep) ;
     // don't want to merge default bodies or unmodifiable bodies

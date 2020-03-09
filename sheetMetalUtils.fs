@@ -1,29 +1,29 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1237.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1237.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1237.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1237.0");
-import(path : "onshape/std/containers.fs", version : "1237.0");
-import(path : "onshape/std/coordSystem.fs", version : "1237.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1237.0");
-import(path : "onshape/std/evaluate.fs", version : "1237.0");
-import(path : "onshape/std/feature.fs", version : "1237.0");
-import(path : "onshape/std/math.fs", version : "1237.0");
-import(path : "onshape/std/manipulator.fs", version : "1237.0");
-import(path : "onshape/std/query.fs", version : "1237.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1237.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1237.0");
-import(path : "onshape/std/string.fs", version : "1237.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1237.0");
-import(path : "onshape/std/tool.fs", version : "1237.0");
-import(path : "onshape/std/valueBounds.fs", version : "1237.0");
-import(path : "onshape/std/vector.fs", version : "1237.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1237.0");
-import(path : "onshape/std/transform.fs", version : "1237.0");
+import(path : "onshape/std/attributes.fs", version : "1247.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1247.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1247.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1247.0");
+import(path : "onshape/std/coordSystem.fs", version : "1247.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1247.0");
+import(path : "onshape/std/evaluate.fs", version : "1247.0");
+import(path : "onshape/std/feature.fs", version : "1247.0");
+import(path : "onshape/std/math.fs", version : "1247.0");
+import(path : "onshape/std/manipulator.fs", version : "1247.0");
+import(path : "onshape/std/query.fs", version : "1247.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1247.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1247.0");
+import(path : "onshape/std/string.fs", version : "1247.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
+import(path : "onshape/std/tool.fs", version : "1247.0");
+import(path : "onshape/std/valueBounds.fs", version : "1247.0");
+import(path : "onshape/std/vector.fs", version : "1247.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
+import(path : "onshape/std/transform.fs", version : "1247.0");
 
 
 
@@ -1228,7 +1228,7 @@ export function checkNotInFeaturePattern(context is Context, references is Query
  * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
  * sheet metal models in partsToKeep.
  */
-export function clearSheetMetalData(context is Context, id is Id, partsToKeep) returns Query
+export function clearSheetMetalData(context is Context, id is Id, partsToKeep, keepDefinitionBodies is boolean) returns Query
 precondition
 {
     partsToKeep == undefined || partsToKeep is Query;
@@ -1305,10 +1305,12 @@ precondition
         "attributePattern" : smAssociationAttributePattern
     });
 
-    // Deleting all sheet bodies
-    opDeleteBodies(context, id + "deleteSheetBodies", {
-            "entities" : qUnion(smModelsEvaluated)
-    });
+    if (!keepDefinitionBodies) {
+        // Deleting all sheet bodies
+        opDeleteBodies(context, id + "deleteSheetBodies", {
+                "entities" : qUnion(smModelsEvaluated)
+        });
+    }
 
    return qUnion(smPartNBendLineQEvaluated);
 }

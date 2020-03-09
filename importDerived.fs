@@ -1,17 +1,17 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1237.0");
+export import(path : "onshape/std/query.fs", version : "1247.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1237.0");
-import(path : "onshape/std/feature.fs", version : "1237.0");
-import(path : "onshape/std/tool.fs", version : "1237.0");
-import(path : "onshape/std/transform.fs", version : "1237.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1237.0");
+import(path : "onshape/std/containers.fs", version : "1247.0");
+import(path : "onshape/std/feature.fs", version : "1247.0");
+import(path : "onshape/std/tool.fs", version : "1247.0");
+import(path : "onshape/std/transform.fs", version : "1247.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -80,7 +80,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                                                     makeId(id[0] ~ "_inBase") : id;
 
             // remove sheet metal attributes and helper bodies
-            var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", undefined);
+            var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", undefined, false);
 
             //don't want to merge default bodies
             const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),

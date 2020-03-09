@@ -1,4 +1,4 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,9 +8,9 @@ FeatureScript 1237; /* Automatically generated version */
  * It is designed to be imported instead of the `geometry` module in Feature
  * Studios where only math (not higher-level modeling functionality) is needed.
  */
-export import(path : "onshape/std/math.fs", version : "1237.0");
-export import(path : "onshape/std/matrix.fs", version : "1237.0");
-export import(path : "onshape/std/matrixWithUnits.fs", version : "1237.0");
-export import(path : "onshape/std/transform.fs", version : "1237.0");
-export import(path : "onshape/std/vector.fs", version : "1237.0");
+export import(path : "onshape/std/math.fs", version : "1247.0");
+export import(path : "onshape/std/matrix.fs", version : "1247.0");
+export import(path : "onshape/std/matrixWithUnits.fs", version : "1247.0");
+export import(path : "onshape/std/transform.fs", version : "1247.0");
+export import(path : "onshape/std/vector.fs", version : "1247.0");
 

@@ -1,22 +1,22 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1237.0");
+export import(path : "onshape/std/query.fs", version : "1247.0");
 
 // Imports used internally
-import(path : "onshape/std/boundingtype.gen.fs", version : "1237.0");
-import(path : "onshape/std/containers.fs", version : "1237.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1237.0");
-import(path : "onshape/std/evaluate.fs", version : "1237.0");
-import(path : "onshape/std/feature.fs", version : "1237.0");
-import(path : "onshape/std/mathUtils.fs", version : "1237.0");
-import(path : "onshape/std/sketch.fs", version : "1237.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1237.0");
-import(path : "onshape/std/tool.fs", version : "1237.0");
-import(path : "onshape/std/valueBounds.fs", version : "1237.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1247.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1247.0");
+import(path : "onshape/std/evaluate.fs", version : "1247.0");
+import(path : "onshape/std/feature.fs", version : "1247.0");
+import(path : "onshape/std/mathUtils.fs", version : "1247.0");
+import(path : "onshape/std/sketch.fs", version : "1247.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
+import(path : "onshape/std/tool.fs", version : "1247.0");
+import(path : "onshape/std/valueBounds.fs", version : "1247.0");
 
 /**
  * Create a cube of a specified size, with one corner on the origin.

@@ -1,4 +1,4 @@
-FeatureScript 1237; /* Automatically generated version */
+FeatureScript 1247; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,17 +32,17 @@ FeatureScript 1237; /* Automatically generated version */
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "1237.0");
+export import(path : "onshape/std/tabReferences.fs", version : "1247.0");
 
-import(path : "onshape/std/containers.fs", version : "1237.0");
-import(path : "onshape/std/context.fs", version : "1237.0");
-import(path : "onshape/std/feature.fs", version : "1237.0");
-import(path : "onshape/std/geomOperations.fs", version : "1237.0");
-import(path : "onshape/std/math.fs", version : "1237.0");
-import(path : "onshape/std/matrix.fs", version : "1237.0");
-import(path : "onshape/std/transform.fs", version : "1237.0");
-import(path : "onshape/std/units.fs", version : "1237.0");
-import(path : "onshape/std/derive.fs", version : "1237.0");
+import(path : "onshape/std/containers.fs", version : "1247.0");
+import(path : "onshape/std/context.fs", version : "1247.0");
+import(path : "onshape/std/feature.fs", version : "1247.0");
+import(path : "onshape/std/geomOperations.fs", version : "1247.0");
+import(path : "onshape/std/math.fs", version : "1247.0");
+import(path : "onshape/std/matrix.fs", version : "1247.0");
+import(path : "onshape/std/transform.fs", version : "1247.0");
+import(path : "onshape/std/units.fs", version : "1247.0");
+import(path : "onshape/std/derive.fs", version : "1247.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;
@@ -125,6 +125,8 @@ precondition
 
     if (options.tolerances != undefined)
         options.tolerances = mergeMaps(defaults.tolerances, options.tolerances);
+    if (options.partQuery != undefined)
+        options.partQuery = qEntityFilter(options.partQuery, EntityType.BODY);
     options = mergeMaps(defaults, options);
     return new box({
                     "id" : id,
@@ -213,6 +215,9 @@ precondition
         }
     }
 
+    if (definition.partQuery != undefined)
+       definition.partQuery = qEntityFilter(definition.partQuery, EntityType.BODY);  //Filter out non-bodies
+
     const instance = {
             "id" : instanceId,
             "partQuery" : definition.partQuery,
@@ -289,10 +294,35 @@ export function addInstance(instantiator is Instantiator, partStudio is PartStud
  */
 export function instantiate(context is Context, instantiator is Instantiator)
 {
+    const allDerivedId = instantiator[].id + "derived";
+    skipOrderDisambiguation(context, allDerivedId);
+
+    try
+    {
+        deriveAndPattern(context, instantiator, allDerivedId);
+    }
+    catch (error)
+    {
+        instantiationCleanup(context, instantiator[].id, allDerivedId);
+        throw error;
+    }
+
+    instantiationCleanup(context, instantiator[].id, allDerivedId);
+}
+
+function instantiationCleanup(context is Context, id is Id, allDerivedId is Id )
+{
+    const derivedQ = qCreatedBy(allDerivedId, EntityType.BODY);
+    if (evaluateQuery(context, derivedQ) != [])
+    {
+        opDeleteBodies(context, id + "delete", { "entities" : derivedQ });
+    }
+}
+
+function deriveAndPattern(context is Context, instantiator is Instantiator, allDerivedId is Id)
+{
     var idx = 0;
     var toPattern = [];
-
-    skipOrderDisambiguation(context, instantiator[].id + "derived");
 
     // For each build function and exact configuration
     for (var entry in instantiator[].buildAndConfigurationToInstances)
@@ -301,7 +331,6 @@ export function instantiate(context is Context, instantiator is Instantiator)
         const exactConfiguration = entry.key[1];
 
         const tolerantConfigurations = entry.value;
-
         // For each tolerant configuration group
         for (var tolerantConfigurationInstances in tolerantConfigurations)
         {
@@ -329,7 +358,7 @@ export function instantiate(context is Context, instantiator is Instantiator)
             for (var query in mergedParts)
                 partArray = append(partArray, query.key);
 
-            const derivedId is Id = instantiator[].id + "derived" + unstableIdComponent("derived" ~ idx);
+            const derivedId is Id = allDerivedId + unstableIdComponent("derived" ~ idx);
             const derivedResult = derive(context, derivedId, build, {
                 "parts" : qUnion(partArray),
                 "configuration" : configuration,
@@ -368,8 +397,6 @@ export function instantiate(context is Context, instantiator is Instantiator)
         }
         opPattern(context, instance.id, instance);
     }
-
-    opDeleteBodies(context, instantiator[].id + "delete", { "entities" : qCreatedBy(instantiator[].id + "derived", EntityType.BODY) });
 }
 
 /**
