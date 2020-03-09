@@ -123,7 +123,7 @@ annotation { "Feature Type Name" : "Draft",
 export const draft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Draft type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Draft type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.draftFeatureType is DraftFeatureType;
 
         if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
@@ -133,7 +133,8 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
                         "MaxNumberOfPicks" : 1 }
             definition.neutralPlane is Query;
 
-            annotation { "Name" : "Entities to draft", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+            annotation { "Name" : "Entities to draft", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT,
+                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.draftFaces is Query;
         }
         else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
@@ -143,11 +144,11 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
                         "MaxNumberOfPicks" : 1 }
             definition.pullDirectionEntity is Query;
 
-            annotation { "Name" : "Parting edges", "UIHint" : "SHOW_CREATE_SELECTION",
+            annotation { "Name" : "Parting edges", "UIHint" : [UIHint.SHOW_CREATE_SELECTION, UIHint.INITIAL_FOCUS_ON_EDIT],
                          "Filter" : EntityType.EDGE && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.partingEdges is Query;
 
-            annotation { "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.hintFaces is Query;
 
             annotation { "Name" : "Sides" }
@@ -155,7 +156,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
 
             if (definition.partingLineSides == PartingLineSides.ONE_SIDED)
             {
-                annotation { "Name" : "Switch face", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                annotation { "Name" : "Switch face", "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
                 definition.alongPull is boolean;
             }
         }
@@ -163,7 +164,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
         annotation { "Name" : "Draft angle" }
         isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR", "Default" : false }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : false }
         definition.pullDirection is boolean;
 
         if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE && definition.partingLineSides == PartingLineSides.TWO_SIDED)
@@ -171,7 +172,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             annotation { "Name" : "Second draft angle" }
             isAngle(definition.secondAngle, ANGLE_STRICT_90_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR", "Default" : true }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : true }
             definition.secondPullDirection is boolean;
         }
 

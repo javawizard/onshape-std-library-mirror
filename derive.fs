@@ -80,7 +80,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
                                                     makeId(id[0] ~ "_inBase") : id;
 
     // remove sheet metal attributes and helper bodies
-    var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined);
+    var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", (options.clearSMDataFromAll == false) ? options.parts : undefined, false);
 
     var bodiesToKeep = qSubtraction(options.parts, neverKeep) ;
     // don't want to merge default bodies or unmodifiable bodies

@@ -1228,7 +1228,7 @@ export function checkNotInFeaturePattern(context is Context, references is Query
  * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
  * sheet metal models in partsToKeep.
  */
-export function clearSheetMetalData(context is Context, id is Id, partsToKeep) returns Query
+export function clearSheetMetalData(context is Context, id is Id, partsToKeep, keepDefinitionBodies is boolean) returns Query
 precondition
 {
     partsToKeep == undefined || partsToKeep is Query;
@@ -1305,10 +1305,12 @@ precondition
         "attributePattern" : smAssociationAttributePattern
     });
 
-    // Deleting all sheet bodies
-    opDeleteBodies(context, id + "deleteSheetBodies", {
-            "entities" : qUnion(smModelsEvaluated)
-    });
+    if (!keepDefinitionBodies) {
+        // Deleting all sheet bodies
+        opDeleteBodies(context, id + "deleteSheetBodies", {
+                "entities" : qUnion(smModelsEvaluated)
+        });
+    }
 
    return qUnion(smPartNBendLineQEvaluated);
 }

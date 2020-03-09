@@ -302,7 +302,7 @@ export const sectionTransformedParts = defineFeature(function(context is Context
     }
     {
         // remove sheet metal attributes and helper bodies
-        clearSheetMetalData(context, id + "sheetMetal", undefined);
+        clearSheetMetalData(context, id + "sheetMetal", undefined, isAtVersionOrLater(context, FeatureScriptVersionNumber.V1246_SM_SECTION_PART_FIXES));
         //Collect patterned parts
         var allTargetParts = [];
         for (var i = 0; i < size(definition.targets); i += 1)
@@ -404,7 +404,7 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
     }
     {
         // remove sheet metal attributes and helper bodies
-        clearSheetMetalData(context, id + "sheetMetal", undefined);
+        clearSheetMetalData(context, id + "sheetMetal", undefined, isAtVersionOrLater(context, FeatureScriptVersionNumber.V1246_SM_SECTION_PART_FIXES));
         const brokenOutPointNumbers = definition.brokenOutPointNumbers != undefined ? definition.brokenOutPointNumbers : [];
         definition.jogPoints = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
         definition.offsetDistances  = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];

@@ -1920,7 +1920,9 @@ export enum ErrorStringEnum
     /* Cannot remove or intersect patterned surfaces. */
     SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT,
     /* The flange to merge cannot be used as the subtraction scope. */
-    SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE
+    SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE,
+    /* Attempt to set invalid starting position for exploded view. */
+    EXPLODED_VIEW_INVALID_STARTING_POSITION
 }
 
 
