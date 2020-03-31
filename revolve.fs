@@ -115,13 +115,12 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
         definition.entities = getEntitiesToUse(context, definition);
         const resolvedEntities = evaluateQuery(context, definition.entities);
-        if (@size(resolvedEntities) == 0)
+        if (resolvedEntities == [])
         {
             if (definition.bodyType == ToolBodyType.SOLID)
                 throw regenError(ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
             else
                 throw regenError(ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
-            return;
         }
 
         var remainingTransform = getRemainderPatternTransform(context,

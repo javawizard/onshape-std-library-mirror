@@ -123,7 +123,7 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
 
     // Cannot pattern two sided edges (joints)
     const twoSidedEdges = evaluateQuery(context, qEdgeTopologyFilter(definitionEdgesQ, EdgeTopology.TWO_SIDED));
-    if (size(twoSidedEdges) > 0)
+    if (twoSidedEdges != [])
     {
         var errorEntities = getSelectionsForSMDefinitionEntities(context, qUnion(twoSidedEdges), definition.entities);
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
@@ -138,8 +138,8 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
-    if (definition.filterVertices && (size(definitionFaces) + size(definitionEdges) == 0) ||
-        (!definition.filterVertices && size(definitionVertices) > 0))
+    if (definition.filterVertices && (definitionFaces == [] && definitionEdges == []) ||
+        (!definition.filterVertices && definitionVertices != []))
     {
         //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
         var errorEntities = getSelectionsForSMDefinitionEntities(context, qUnion(definitionVertices), definition.entities);
@@ -708,7 +708,7 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
             {
                 targets = qNothing();
 
-                if (size(evaluateQuery(context, definition.booleanScope)) != 0)
+                if (evaluateQuery(context, definition.booleanScope) != [])
                 {
                     if (queryContainsNonSheetMetal(context, definition.booleanScope))
                     {
@@ -734,13 +734,13 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
                 var seedBodies = qOwnerBody(seedFaces);
                 tools = qUnion([seedBodies, tools]);
                 targets = qSubtraction(targets, seedBodies);
-                if (size(evaluateQuery(context, targets)) == 0)
+                if (evaluateQuery(context, targets) == [])
                 {
                     targetsAndToolsNeedGrouping = false;
                 }
             }
 
-            if (targetsAndToolsNeedGrouping && size(evaluateQuery(context, targets)) == 0)
+            if (targetsAndToolsNeedGrouping && evaluateQuery(context, targets) == [])
             {
                 setErrorEntities(context, topLevelId, { "entities" : bodiesToAttach });
                 throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"]);

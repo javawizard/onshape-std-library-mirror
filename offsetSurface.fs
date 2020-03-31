@@ -46,7 +46,7 @@ precondition
             {"references" : qSurfacesAndFaces});
 
     const resolvedEntities = evaluateQuery(context, qSurfacesAndFaces);
-    if (@size(resolvedEntities) == 0)
+    if (resolvedEntities == [])
         throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_CREATE_SELECT, ["surfacesAndFaces"]);
 
     definition.offset = definition.offset * (definition.oppositeDirection ? -1 : 1);

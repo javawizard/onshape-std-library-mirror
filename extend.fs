@@ -117,7 +117,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
                                 "offset" : definition.extendDistance });
                 }
 
-                if (size(edgeChangeOptions) == 0)
+                if (edgeChangeOptions == [])
                 {
                     throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY, ["entities"]);
                 }
@@ -127,30 +127,21 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         }
         else //up to target => up to face,part,vertex
         {
-            if (evaluateQuery(context, definition.entities) == [])
-            {
-                throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY, ["entities"]);
-            }
+            verifyNonemptyQuery(context, definition, "entities", ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY);
 
             var toDelete = [];
             definition.target = definition.targetPart;
             var errorEntityString = "targetPart";
             if (definition.endCondition == ExtendBoundingType.UP_TO_FACE)
             {
-                if (evaluateQuery(context, definition.targetFace) == [])
-                {
-                    throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, ["targetFace"]);
-                }
+                verifyNonemptyQuery(context, definition, "targetFace", ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET);
                 definition.target = getTargetFromFace(context, id, definition);
                 toDelete = append(toDelete, definition.target);
                 errorEntityString = "targetFace";
             }
             else if (definition.endCondition == ExtendBoundingType.UP_TO_VERTEX)
             {
-                if (evaluateQuery(context, definition.targetVertex) == [])
-                {
-                    throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, ["targetVertex"]);
-                }
+                verifyNonemptyQuery(context, definition, "targetVertex", ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET);
                 definition.target = getTargetFromVertex(context, id, definition);
                 toDelete = append(toDelete, definition.target);
                 errorEntityString = "targetVertex";

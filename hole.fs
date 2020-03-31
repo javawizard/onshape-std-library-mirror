@@ -266,7 +266,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         definition.transform = getRemainderPatternTransform(context, { "references" : definition.locations });
 
         const locations = reduceLocations(context, definition.locations);
-        if (size(locations) == 0)
+        if (locations == [])
         {
             throw regenError(ErrorStringEnum.HOLE_NO_POINTS, ["locations"]);
         }

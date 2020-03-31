@@ -158,7 +158,7 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
 
     //make sure the two faces are not currently sharing edges
     var commonEdges = evaluateQuery(context, qIntersection([qAdjacent(faces[0], AdjacencyType.EDGE, EntityType.FACE), faces[1]]));
-    if (size(commonEdges) != 0)
+    if (commonEdges != [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_JOINT_FAIL_ADJACENT_FACES, ["entities"]);
     }

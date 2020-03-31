@@ -454,7 +454,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     for (var e in originalFlangeEdges)
     {
         var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
-        if (size(newEdge) == 0)
+        if (newEdge == [])
         {
             const errorFace = edgeToFlangeData[e].adjacentFace;
             setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qAdjacent(errorFace, AdjacencyType.EDGE, EntityType.EDGE)]) });
@@ -1534,15 +1534,14 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     var flangeDirection = flangeData.direction;
     var flangePlane = flangeData.plane;
 
-    var entity = evaluateQuery(context, definition.limitEntity);
-    if (size(entity) < 1)
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);
+    const entities = verifyNonemptyQuery(context, definition, "limitEntity", ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY);
+    const entity = entities[0];
 
     //see if it's a plane:
-    var planeResult = try silent(evPlane(context, {"face" : entity[0]}));
+    var planeResult = try silent(evPlane(context, {"face" : entity}));
     if (planeResult == undefined)
     {   //see if it's an vertex
-        var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity[0]}));
+        var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity}));
         if (limitVertex == undefined)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);

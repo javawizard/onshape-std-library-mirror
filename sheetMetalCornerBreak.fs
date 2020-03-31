@@ -32,11 +32,7 @@ export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is
         isLength(definition.range, BLEND_BOUNDS);
     }
     {
-        var entityArray = evaluateQuery(context, definition.entities);
-        if (size(entityArray) == 0)
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES, ["entities"]);
-        }
+        const entityArray = verifyNonemptyQuery(context, definition, "entities", ErrorStringEnum.SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES);
 
         var definitionVertices = getDefinitionVertices(context, entityArray);
         var wallIds = getWallIds(context, entityArray, definitionVertices);

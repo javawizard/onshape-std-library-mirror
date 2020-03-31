@@ -68,9 +68,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             definition.path = qConstructionFilter(definition.path, ConstructionObject.NO);
             if (pathQuery.queryType == QueryType.UNION && size(pathQuery.subqueries) > 0)
             {
-                const queryResults = evaluateQuery(context, definition.path);
-                if (size(queryResults) == 0)
-                    throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["path"]);
+                verifyNonemptyQuery(context, definition, "path", ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION);
             }
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
             {

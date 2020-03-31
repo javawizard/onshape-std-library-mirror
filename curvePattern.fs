@@ -88,8 +88,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         if (tooFewPatternInstances(context, definition.instanceCount))
             throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
 
-        if (size(evaluateQuery(context, definition.edges)) == 0)
-            throw regenError(ErrorStringEnum.PATTERN_CURVE_NO_EDGES, ["edges"]);
+        verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.PATTERN_CURVE_NO_EDGES);
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
         {
@@ -175,7 +174,7 @@ function collectReferenceEntities(context is Context, definition is map) returns
         }
         referenceEntities = qUnion(referenceEntityQueries);
 
-        if (size(evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES))) > 0)
+        if (evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES)) != [])
             throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, ["instanceFunction"]);
     }
     else

@@ -102,8 +102,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         surfaceJoinStepScopePredicate(definition);
     }
     {
-        if (size(definition.edges) == 0)
-            throw regenError(ErrorStringEnum.FILL_SURFACE_NO_EDGES, ["edges"]);
+        verifyNonemptyArray(context, definition, "edges", ErrorStringEnum.FILL_SURFACE_NO_EDGES);
         if (!definition.addGuides)
             definition.guideEntities = qNothing();
 

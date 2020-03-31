@@ -124,10 +124,7 @@ export const wrap = defineFeature(function(context is Context, id is Id, definit
     }
     {
         // ----- Source and Destination -----
-        if (evaluateQuery(context, definition.source) == [])
-        {
-            throw regenError(ErrorStringEnum.WRAP_SELECT_TOOLS, ["source"]);
-        }
+        verifyNonemptyQuery(context, definition, "source", ErrorStringEnum.WRAP_SELECT_TOOLS);
         if (size(evaluateQuery(context, definition.destination)) != 1)
         {
             throw regenError(ErrorStringEnum.WRAP_SELECT_TARGET, ["destination"]);

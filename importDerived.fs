@@ -73,8 +73,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1186_COMPOSITE_QUERY))
                 definition.parts = qConsumed(definition.parts, Consumed.NO);
 
-            if (size(evaluateQuery(otherContext, definition.parts)) == 0)
-                throw regenError(ErrorStringEnum.IMPORT_DERIVED_NO_PARTS, ["parts"]);
+            verifyNonemptyQuery(otherContext, definition, "parts", ErrorStringEnum.IMPORT_DERIVED_NO_PARTS);
 
             const otherContextId is Id = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1018_DERIVED) ?
                                                     makeId(id[0] ~ "_inBase") : id;

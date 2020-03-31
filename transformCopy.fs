@@ -334,7 +334,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 if (validateInputs)
                     reportCoincident(context, id, translation);
             }
-            else if (distanceSpecified && @size(planarEntities) >= 1) // A plane or mate connector only provides direction
+            else if (distanceSpecified && planarEntities != []) // A plane or mate connector only provides direction
             {
                 translation = extractDirection(context, planarEntities[0]);
                 if (translation == undefined)
@@ -416,16 +416,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (transformType == TransformType.SCALE_UNIFORMLY)
         {
-            const scalePoint = evaluateQuery(context, definition.scalePoint);
-            if (@size(scalePoint) == 0)
-            {
-                throw regenError(ErrorStringEnum.TRANSFORM_SCALE_SELECTION, ["scalePoint"]);
-            }
+            const scalePoints = verifyNonemptyQuery(context, definition, "scalePoint", ErrorStringEnum.TRANSFORM_SCALE_SELECTION);
+            const scalePoint = scalePoints[0];
 
-            var coordSys = try silent (evMateConnector(context, { "mateConnector" : scalePoint[0] }));
+            var coordSys = try silent (evMateConnector(context, { "mateConnector" : scalePoint }));
             if (coordSys == undefined)
             {
-                coordSys = coordSystem(evVertexPoint(context, { "vertex" : scalePoint[0] }), vector(1, 0, 0), vector(0, 0, 1));
+                coordSys = coordSystem(evVertexPoint(context, { "vertex" : scalePoint }), vector(1, 0, 0), vector(0, 0, 1));
             }
 
             if (definition.uniform)

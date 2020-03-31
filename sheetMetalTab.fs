@@ -51,7 +51,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         createTools(context, id + "extract", definition.tabFaces);
 
         const unionEntities = try silent(getSMDefinitionEntities(context, definition.booleanUnionScope));
-        if (unionEntities == undefined || size(unionEntities) == 0)
+        if (unionEntities == undefined || unionEntities == [])
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_WALL, ["booleanUnionScope"]);
         }
@@ -314,7 +314,7 @@ function groupByCoincidentPlanes(context is Context, tuples is array) returns ar
 function createTools(context is Context, id is Id, tools is Query)
 {
     const faces = evaluateQuery(context, tools);
-    if (size(faces) == 0)
+    if (faces == [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_TAB, ["tabFaces"]);
     }

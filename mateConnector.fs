@@ -211,8 +211,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.ownerPart = findOwnerPart(context, definition, possiblePartOwners);
         }
 
-        if (definition.requireOwnerPart && evaluateQuery(context, definition.ownerPart) == [])
-            throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
+        if (definition.requireOwnerPart)
+        {
+            verifyNonemptyQuery(context, definition, "ownerPart", ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED);
+        }
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
         transformResultIfNecessary(context, id, remainingTransform);

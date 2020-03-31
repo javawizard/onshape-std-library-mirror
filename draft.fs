@@ -277,9 +277,7 @@ function getNeutralPlane(context is Context, definition is map)
 function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, edgeToOrderedFaceData is map,
         definition is map) returns array
 {
-    const partingEdges = evaluateQuery(context, definition.partingEdges);
-    if (size(partingEdges) == 0)
-        throw regenError(ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES, ["partingEdges"]);
+    const partingEdges = verifyNonemptyQuery(context, definition, "partingEdges", ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES);
 
     var draftOptions = [];
     if (definition.partingLineSides == PartingLineSides.ONE_SIDED)

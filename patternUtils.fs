@@ -309,7 +309,7 @@ export function applyPattern(context is Context, id is Id, definition is map, re
         }
         else
         {
-            if (size(evaluateQuery(context, qCreatedBy(definition.instanceFunction))) == 0)
+            if (evaluateQuery(context, qCreatedBy(definition.instanceFunction)) == [])
             {
                 throw regenError(ErrorStringEnum.PATTERN_NO_GEOM_FROM_FEATURES, ["instanceFunction"]);
             }

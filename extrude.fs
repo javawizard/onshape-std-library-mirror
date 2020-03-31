@@ -231,7 +231,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         const entities = getEntitiesToUse(context, definition);
 
         const resolvedEntities = evaluateQuery(context, entities);
-        if (size(resolvedEntities) == 0)
+        if (resolvedEntities == [])
         {
             if (definition.bodyType == ToolBodyType.SOLID)
                 throw regenError(ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION, ["entities"]);

@@ -244,11 +244,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addSections)
         {
             var spineNoConstructionQuery = qConstructionFilter(definition.spine, ConstructionObject.NO);
-            if (size(evaluateQuery(context, spineNoConstructionQuery)) == 0 && size(evaluateQuery(context, definition.spine)) != 0)
+            if (evaluateQuery(context, spineNoConstructionQuery) == [] && evaluateQuery(context, definition.spine) != [])
             {
                 throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["spine"]);
             }
-            if (definition.addGuides && size(evaluateQuery(context, definition.spine)) > 0 && size(definition.guideSubqueries) > 3 )
+            if (definition.addGuides && evaluateQuery(context, definition.spine) != [] && size(definition.guideSubqueries) > 3 )
             {
                 throw regenError(ErrorStringEnum.LOFT_SPINE_TOO_MANY_GUIDES, ["spine", "guides"]);
             }

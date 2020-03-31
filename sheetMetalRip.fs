@@ -137,7 +137,7 @@ function createFlatJointWithSplit(context is Context, id is Id, definition is ma
     opDeleteBodies(context, id + "del", {"entities" : qOwnerBody(splitLines)});
 
     var createdFaces = evaluateQuery(context, originalFace);
-    if (size(createdFaces) < 1)
+    if (createdFaces == [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_RIP_NEED_MORE_VERTICES, ["vertices"]);
     }

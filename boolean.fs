@@ -131,7 +131,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             else
             {
                 faceQuery = wrapFaceQueryInCopy(definition.entitiesToOffset, id + suffix);
-                if (size(evaluateQuery(context, faceQuery)) == 0)
+                if (evaluateQuery(context, faceQuery) == [])
                     throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
             }
 

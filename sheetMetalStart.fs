@@ -336,10 +336,7 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
 
 function convertExistingPart(context is Context, id is Id, definition is map)
 {
-    if (evaluateQuery(context, definition.partToConvert) == [])
-    {
-        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["partToConvert"]);
-    }
+    verifyNonemptyQuery(context, definition, "partToConvert", ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
 
     var associationAttributes = getSMAssociationAttributes(context, definition.partToConvert);
     if (associationAttributes != [])
@@ -525,7 +522,7 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
     definition.trackingBendArcs = (definition.supportRolled == true) ? startTracking(context, definition.bendArcs) : qNothing();
     const sheetQuery = extrudeSketchCurves(context, id, definition);
     const createdSheetBodies = evaluateQuery(context, sheetQuery);
-    if (size(createdSheetBodies) == 0)
+    if (createdSheetBodies == [])
     {
         throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["sketchCurves"]);
     }

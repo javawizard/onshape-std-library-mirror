@@ -164,8 +164,8 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
 function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
-    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
+    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {
