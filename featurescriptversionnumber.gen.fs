@@ -1,4 +1,4 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -882,7 +882,11 @@ export enum FeatureScriptVersionNumber
     V1236_ERROR_MESSAGE_CHANGE_IN_REL,
     V1237_ASSEMBLY_SECTION_CUT_FIXES,
     V1246_SM_SECTION_PART_FIXES,
-    V1247_ERROR_STRING_BUMP
+    V1247_ERROR_STRING_BUMP,
+    V1257_PS_VERSION_32_1_157,
+    V1258_SHARED_DELETIONS,
+    V1259_ATTACH_UNBOUNDED_CURVES,
+    V1260_REVOLVE_LATERALS
 }
 
 /**
@@ -893,6 +897,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1247_ERROR_STRING_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1260_REVOLVE_LATERALS;
 
 

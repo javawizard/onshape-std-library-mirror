@@ -1,22 +1,22 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1247.0");
-export import(path : "onshape/std/error.fs", version : "1247.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1247.0");
-export import(path : "onshape/std/query.fs", version : "1247.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1247.0");
+export import(path : "onshape/std/context.fs", version : "1260.0");
+export import(path : "onshape/std/error.fs", version : "1260.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1260.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/math.fs", version : "1247.0");
-import(path : "onshape/std/string.fs", version : "1247.0");
-import(path : "onshape/std/transform.fs", version : "1247.0");
-import(path : "onshape/std/units.fs", version : "1247.0");
-import(path : "onshape/std/tabReferences.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/math.fs", version : "1260.0");
+import(path : "onshape/std/string.fs", version : "1260.0");
+import(path : "onshape/std/transform.fs", version : "1260.0");
+import(path : "onshape/std/units.fs", version : "1260.0");
+import(path : "onshape/std/tabReferences.fs", version : "1260.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -554,14 +554,78 @@ export function isInFeaturePattern(context is Context)
 
 /**
  * @internal
- * Throws a regeneration error if the parameter specified is not a query for at least one
- * entity, marking the given parameter as faulty.
+ * @seealso [verifyNonemptyQuery(Context, map, string, string)]
  */
-export function verifyNonemptyQuery(context is Context, definition is map,
-    parameterName is string, errorToReport is ErrorStringEnum)
+export function verifyNonemptyQuery(context is Context, definition is map, parameterName is string, errorToReport is ErrorStringEnum) returns array
 {
-    if (!(definition[parameterName] is Query)
-        || evaluateQuery(context, definition[parameterName]) == [])
+    return verifyNonemptyQueryInternal(context, definition, parameterName, errorToReport);
+}
+
+/**
+ * Throws a [regenError] and marks the specified [Query] parameter as faulty if the specified `Query` parameter is not
+ * a `Query` which resolves to at least one entity. This happens when the user has not made any selection into the `Query`
+ * parameter, or when upstream geometry has changed such that the `Query`s of the `Query` parameter no longer resolve to
+ * anything. Should be used to check all non-optional `Query` parameters in a feature. By convention, `errorToReport`
+ * should take the form "Select parameter display name." For example, a parameter declared as follows:
+```
+annotation { "Name" : "Entities to use", "Filter" : EntityType.FACE }
+definition.entitiesToUse is Query;
+```
+ * should verify that the input is nonempty in the following way:
+ * @ex `verifyNonemptyQuery(context, definition, "entitiesToUse", "Select entities to use.")`
+ *
+ * @returns : An array representing the result of evaluating the `Query` parameter with [evaluateQuery]
+ */
+export function verifyNonemptyQuery(context is Context, definition is map, parameterName is string, errorToReport is string) returns array
+{
+    return verifyNonemptyQueryInternal(context, definition, parameterName, errorToReport);
+}
+
+function verifyNonemptyQueryInternal(context is Context, definition is map, parameterName is string, errorToReport) returns array
+{
+    if (definition[parameterName] is Query)
+    {
+        const result = evaluateQuery(context, definition[parameterName]);
+        if (result != [])
+        {
+            return result;
+        }
+    }
+    // Parameter was either not a query, or was a query with no content.
+    throw regenError(errorToReport, [parameterName]);
+}
+
+/**
+ * @internal
+ * @seealso [verifyNonemptyArray(Context, map, string, string)]
+ */
+export function verifyNonemptyArray(context is Context, definition is map, parameterName is string, errorToReport is ErrorStringEnum)
+{
+    verifyNonemptyArrayInternal(context, definition, parameterName, errorToReport);
+}
+
+/**
+ * Throws a [regenError] and marks the specified array parameter as faulty if the specified array parameter does not
+ * have any entries. A parameter declared as follows:
+```
+annotation { "Name" : "Array items", "Item name" : "Array item" }
+definition.arrayItems is array;
+for (var arrayItem in definition.arrayItems)
+{
+    ...
+}
+```
+ * could verify that the input is nonempty in the following way:
+ * @ex `verifyNonemptyArray(context, definition, "arrayItems", "Add an array item.")`
+ */
+export function verifyNonemptyArray(context is Context, definition is map, parameterName is string, errorToReport is string)
+{
+    verifyNonemptyArrayInternal(context, definition, parameterName, errorToReport);
+}
+
+function verifyNonemptyArrayInternal(context is Context, definition is map, parameterName is string, errorToReport)
+{
+    if (!(definition[parameterName] is array) || size(definition[parameterName]) == 0)
     {
         throw regenError(errorToReport, [parameterName]);
     }

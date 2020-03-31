@@ -1,21 +1,21 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1247.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1247.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/manipulator.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1260.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/manipulator.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -277,9 +277,7 @@ function getNeutralPlane(context is Context, definition is map)
 function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, edgeToOrderedFaceData is map,
         definition is map) returns array
 {
-    const partingEdges = evaluateQuery(context, definition.partingEdges);
-    if (size(partingEdges) == 0)
-        throw regenError(ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES, ["partingEdges"]);
+    const partingEdges = verifyNonemptyQuery(context, definition, "partingEdges", ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES);
 
     var draftOptions = [];
     if (definition.partingLineSides == PartingLineSides.ONE_SIDED)

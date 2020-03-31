@@ -1,26 +1,26 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1247.0");
-export import(path : "onshape/std/tool.fs", version : "1247.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
+export import(path : "onshape/std/tool.fs", version : "1260.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1247.0");
+export import(path : "onshape/std/manipulator.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/primitives.fs", version : "1247.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/primitives.fs", version : "1260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "1247.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1247.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "1260.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1260.0");
 
 /**
  * Bounding type used with extend.
@@ -117,7 +117,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
                                 "offset" : definition.extendDistance });
                 }
 
-                if (size(edgeChangeOptions) == 0)
+                if (edgeChangeOptions == [])
                 {
                     throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY, ["entities"]);
                 }
@@ -127,30 +127,21 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         }
         else //up to target => up to face,part,vertex
         {
-            if (evaluateQuery(context, definition.entities) == [])
-            {
-                throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY, ["entities"]);
-            }
+            verifyNonemptyQuery(context, definition, "entities", ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY);
 
             var toDelete = [];
             definition.target = definition.targetPart;
             var errorEntityString = "targetPart";
             if (definition.endCondition == ExtendBoundingType.UP_TO_FACE)
             {
-                if (evaluateQuery(context, definition.targetFace) == [])
-                {
-                    throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, ["targetFace"]);
-                }
+                verifyNonemptyQuery(context, definition, "targetFace", ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET);
                 definition.target = getTargetFromFace(context, id, definition);
                 toDelete = append(toDelete, definition.target);
                 errorEntityString = "targetFace";
             }
             else if (definition.endCondition == ExtendBoundingType.UP_TO_VERTEX)
             {
-                if (evaluateQuery(context, definition.targetVertex) == [])
-                {
-                    throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, ["targetVertex"]);
-                }
+                verifyNonemptyQuery(context, definition, "targetVertex", ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET);
                 definition.target = getTargetFromVertex(context, id, definition);
                 toDelete = append(toDelete, definition.target);
                 errorEntityString = "targetVertex";

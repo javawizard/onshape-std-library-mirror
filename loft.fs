@@ -1,25 +1,25 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1247.0");
-export import(path : "onshape/std/tool.fs", version : "1247.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
+export import(path : "onshape/std/tool.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1247.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1247.0");
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/string.fs", version : "1247.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
-import(path : "onshape/std/transform.fs", version : "1247.0");
-import(path : "onshape/std/units.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
+import(path : "onshape/std/boolean.fs", version : "1260.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1260.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/string.fs", version : "1260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
+import(path : "onshape/std/transform.fs", version : "1260.0");
+import(path : "onshape/std/units.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -244,11 +244,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addSections)
         {
             var spineNoConstructionQuery = qConstructionFilter(definition.spine, ConstructionObject.NO);
-            if (size(evaluateQuery(context, spineNoConstructionQuery)) == 0 && size(evaluateQuery(context, definition.spine)) != 0)
+            if (evaluateQuery(context, spineNoConstructionQuery) == [] && evaluateQuery(context, definition.spine) != [])
             {
                 throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["spine"]);
             }
-            if (definition.addGuides && size(evaluateQuery(context, definition.spine)) > 0 && size(definition.guideSubqueries) > 3 )
+            if (definition.addGuides && evaluateQuery(context, definition.spine) != [] && size(definition.guideSubqueries) > 3 )
             {
                 throw regenError(ErrorStringEnum.LOFT_SPINE_TOO_MANY_GUIDES, ["spine", "guides"]);
             }

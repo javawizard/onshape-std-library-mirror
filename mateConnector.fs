@@ -1,22 +1,22 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1247.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1247.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1247.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "1247.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "1247.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1260.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1260.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "1260.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/tool.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/string.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/tool.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/string.fs", version : "1260.0");
 
 /**
  * @internal
@@ -211,8 +211,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.ownerPart = findOwnerPart(context, definition, possiblePartOwners);
         }
 
-        if (definition.requireOwnerPart && evaluateQuery(context, definition.ownerPart) == [])
-            throw regenError(ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED, ["ownerPart"]);
+        if (definition.requireOwnerPart)
+        {
+            verifyNonemptyQuery(context, definition, "ownerPart", ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED);
+        }
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
         transformResultIfNecessary(context, id, remainingTransform);

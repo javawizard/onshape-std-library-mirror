@@ -1,21 +1,21 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "1247.0");
-export import(path : "onshape/std/query.fs", version : "1247.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "1260.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/math.fs", version : "1247.0");
-import(path : "onshape/std/matrix.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/math.fs", version : "1260.0");
+import(path : "onshape/std/matrix.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -98,8 +98,8 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
 function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
-    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
+    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
+    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {

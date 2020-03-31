@@ -1,24 +1,24 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "1247.0");
+export import(path : "onshape/std/tool.fs", version : "1260.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "1247.0");
+export import(path : "onshape/std/manipulator.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1247.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1247.0");
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/mathUtils.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
-import(path : "onshape/std/transform.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
+import(path : "onshape/std/boolean.fs", version : "1260.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1260.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/mathUtils.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
+import(path : "onshape/std/transform.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -115,13 +115,12 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
         definition.entities = getEntitiesToUse(context, definition);
         const resolvedEntities = evaluateQuery(context, definition.entities);
-        if (@size(resolvedEntities) == 0)
+        if (resolvedEntities == [])
         {
             if (definition.bodyType == ToolBodyType.SOLID)
                 throw regenError(ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
             else
                 throw regenError(ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
-            return;
         }
 
         var remainingTransform = getRemainderPatternTransform(context,

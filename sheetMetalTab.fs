@@ -1,27 +1,27 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1247.0");
-export import(path : "onshape/std/tool.fs", version : "1247.0");
+export import(path : "onshape/std/query.fs", version : "1260.0");
+export import(path : "onshape/std/tool.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1247.0");
-import(path : "onshape/std/boolean.fs", version : "1247.0");
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/math.fs", version : "1247.0");
-import(path : "onshape/std/moveFace.fs", version : "1247.0");
-import(path : "onshape/std/transform.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
+import(path : "onshape/std/attributes.fs", version : "1260.0");
+import(path : "onshape/std/boolean.fs", version : "1260.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/math.fs", version : "1260.0");
+import(path : "onshape/std/moveFace.fs", version : "1260.0");
+import(path : "onshape/std/transform.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
@@ -51,7 +51,7 @@ export const sheetMetalTab = defineSheetMetalFeature(function(context is Context
         createTools(context, id + "extract", definition.tabFaces);
 
         const unionEntities = try silent(getSMDefinitionEntities(context, definition.booleanUnionScope));
-        if (unionEntities == undefined || size(unionEntities) == 0)
+        if (unionEntities == undefined || unionEntities == [])
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_WALL, ["booleanUnionScope"]);
         }
@@ -314,7 +314,7 @@ function groupByCoincidentPlanes(context is Context, tuples is array) returns ar
 function createTools(context is Context, id is Id, tools is Query)
 {
     const faces = evaluateQuery(context, tools);
-    if (size(faces) == 0)
+    if (faces == [])
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_TAB_NO_TAB, ["tabFaces"]);
     }

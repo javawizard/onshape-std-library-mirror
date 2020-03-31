@@ -1,10 +1,10 @@
-FeatureScript 1247; /* Automatically generated version */
-import(path : "onshape/std/boundingtype.gen.fs", version : "1247.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1247.0");
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
+FeatureScript 1260; /* Automatically generated version */
+import(path : "onshape/std/boundingtype.gen.fs", version : "1260.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1260.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
 
 /**
  *  Performs [opExtrude] twice to extrude two sketches and then [opBoolean] to produce the intersection of the extruded surfaces
@@ -27,7 +27,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
         const edgeQ1 = qConstructionFilter(definition.sketchEdges1, ConstructionObject.NO);
         const edgeQ2 = qConstructionFilter(definition.sketchEdges2, ConstructionObject.NO);
 
-        if (size(evaluateQuery(context, edgeQ1)) == 0)
+        if (evaluateQuery(context, edgeQ1) == [])
         {
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges1"]);
         }
@@ -37,7 +37,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
             verifySameSketch(context, edgeQ1, "sketchEdges1");
         }
 
-        if (size(evaluateQuery(context, edgeQ2)) == 0)
+        if (evaluateQuery(context, edgeQ2) == [])
         {
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges2"]);
         }

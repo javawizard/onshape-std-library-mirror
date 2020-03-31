@@ -1,22 +1,22 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "1247.0");
+export import(path: "onshape/std/patternCommon.fs", version : "1260.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "1247.0");
-export import(path : "onshape/std/containers.fs", version : "1247.0");
-export import(path : "onshape/std/evaluate.fs", version : "1247.0");
-export import(path : "onshape/std/feature.fs", version : "1247.0");
-export import(path : "onshape/std/featureList.fs", version : "1247.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1247.0");
+export import(path : "onshape/std/boolean.fs", version : "1260.0");
+export import(path : "onshape/std/containers.fs", version : "1260.0");
+export import(path : "onshape/std/evaluate.fs", version : "1260.0");
+export import(path : "onshape/std/feature.fs", version : "1260.0");
+export import(path : "onshape/std/featureList.fs", version : "1260.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1260.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
+import(path : "onshape/std/mathUtils.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -309,7 +309,7 @@ export function applyPattern(context is Context, id is Id, definition is map, re
         }
         else
         {
-            if (size(evaluateQuery(context, qCreatedBy(definition.instanceFunction))) == 0)
+            if (evaluateQuery(context, qCreatedBy(definition.instanceFunction)) == [])
             {
                 throw regenError(ErrorStringEnum.PATTERN_NO_GEOM_FROM_FEATURES, ["instanceFunction"]);
             }

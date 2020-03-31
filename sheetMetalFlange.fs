@@ -1,28 +1,28 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1247.0");
-import(path : "onshape/std/boolean.fs", version : "1247.0");
-import(path : "onshape/std/containers.fs", version : "1247.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1247.0");
-import(path : "onshape/std/extrude.fs", version : "1247.0");
-import(path : "onshape/std/evaluate.fs", version : "1247.0");
-import(path : "onshape/std/feature.fs", version : "1247.0");
-import(path : "onshape/std/math.fs", version : "1247.0");
-import(path : "onshape/std/matrix.fs", version : "1247.0");
-import(path : "onshape/std/query.fs", version : "1247.0");
-import(path : "onshape/std/sketch.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1247.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1247.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1247.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
-import(path : "onshape/std/units.fs", version : "1247.0");
-import(path : "onshape/std/valueBounds.fs", version : "1247.0");
-import(path : "onshape/std/vector.fs", version : "1247.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1247.0");
+import(path : "onshape/std/attributes.fs", version : "1260.0");
+import(path : "onshape/std/boolean.fs", version : "1260.0");
+import(path : "onshape/std/containers.fs", version : "1260.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1260.0");
+import(path : "onshape/std/extrude.fs", version : "1260.0");
+import(path : "onshape/std/evaluate.fs", version : "1260.0");
+import(path : "onshape/std/feature.fs", version : "1260.0");
+import(path : "onshape/std/math.fs", version : "1260.0");
+import(path : "onshape/std/matrix.fs", version : "1260.0");
+import(path : "onshape/std/query.fs", version : "1260.0");
+import(path : "onshape/std/sketch.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1260.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
+import(path : "onshape/std/units.fs", version : "1260.0");
+import(path : "onshape/std/valueBounds.fs", version : "1260.0");
+import(path : "onshape/std/vector.fs", version : "1260.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1260.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -454,7 +454,7 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     for (var e in originalFlangeEdges)
     {
         var newEdge = evaluateQuery(context, oldEdgeToNewEdge[e]);
-        if (size(newEdge) == 0)
+        if (newEdge == [])
         {
             const errorFace = edgeToFlangeData[e].adjacentFace;
             setErrorEntities(context, topLevelId, { "entities" : qUnion([errorFace, qAdjacent(errorFace, AdjacencyType.EDGE, EntityType.EDGE)]) });
@@ -1534,15 +1534,14 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     var flangeDirection = flangeData.direction;
     var flangePlane = flangeData.plane;
 
-    var entity = evaluateQuery(context, definition.limitEntity);
-    if (size(entity) < 1)
-        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);
+    const entities = verifyNonemptyQuery(context, definition, "limitEntity", ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY);
+    const entity = entities[0];
 
     //see if it's a plane:
-    var planeResult = try silent(evPlane(context, {"face" : entity[0]}));
+    var planeResult = try silent(evPlane(context, {"face" : entity}));
     if (planeResult == undefined)
     {   //see if it's an vertex
-        var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity[0]}));
+        var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity}));
         if (limitVertex == undefined)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);

@@ -1,20 +1,20 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "1247.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1260.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "1247.0");
+export import(path : "onshape/std/path.fs", version : "1260.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "1247.0");
-import(path : "onshape/std/mathUtils.fs", version : "1247.0");
-import(path : "onshape/std/sketch.fs", version : "1247.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1247.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1247.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1260.0");
+import(path : "onshape/std/mathUtils.fs", version : "1260.0");
+import(path : "onshape/std/sketch.fs", version : "1260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1260.0");
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -88,8 +88,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         if (tooFewPatternInstances(context, definition.instanceCount))
             throw regenError(ErrorStringEnum.PATTERN_INPUT_TOO_FEW_INSTANCES, ["instanceCount"]);
 
-        if (size(evaluateQuery(context, definition.edges)) == 0)
-            throw regenError(ErrorStringEnum.PATTERN_CURVE_NO_EDGES, ["edges"]);
+        verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.PATTERN_CURVE_NO_EDGES);
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
         {
@@ -175,7 +174,7 @@ function collectReferenceEntities(context is Context, definition is map) returns
         }
         referenceEntities = qUnion(referenceEntityQueries);
 
-        if (size(evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES))) > 0)
+        if (evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES)) != [])
             throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, ["instanceFunction"]);
     }
     else

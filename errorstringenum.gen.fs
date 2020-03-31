@@ -1,4 +1,4 @@
-FeatureScript 1247; /* Automatically generated version */
+FeatureScript 1260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1922,7 +1922,9 @@ export enum ErrorStringEnum
     /* The flange to merge cannot be used as the subtraction scope. */
     SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE,
     /* Attempt to set invalid starting position for exploded view. */
-    EXPLODED_VIEW_INVALID_STARTING_POSITION
+    EXPLODED_VIEW_INVALID_STARTING_POSITION,
+    /* "Explode steps do not support instances of type Sketch." */
+    CANNOT_EXPLODE_SKETCH
 }
 
 
