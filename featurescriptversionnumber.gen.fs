@@ -886,7 +886,8 @@ export enum FeatureScriptVersionNumber
     V1257_PS_VERSION_32_1_157,
     V1258_SHARED_DELETIONS,
     V1259_ATTACH_UNBOUNDED_CURVES,
-    V1260_REVOLVE_LATERALS
+    V1260_REVOLVE_LATERALS,
+    V1271_GENERAL_BODY_CHECK
 }
 
 /**
@@ -897,6 +898,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1260_REVOLVE_LATERALS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1271_GENERAL_BODY_CHECK;
 
 

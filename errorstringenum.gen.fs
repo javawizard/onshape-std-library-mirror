@@ -1924,7 +1924,9 @@ export enum ErrorStringEnum
     /* Attempt to set invalid starting position for exploded view. */
     EXPLODED_VIEW_INVALID_STARTING_POSITION,
     /* "Explode steps do not support instances of type Sketch." */
-    CANNOT_EXPLODE_SKETCH
+    CANNOT_EXPLODE_SKETCH,
+    /* "Failed to create exploded view." */
+    FAILED_TO_CREATE_EXPLODED_VIEW
 }
 
 
