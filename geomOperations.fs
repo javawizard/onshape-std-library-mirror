@@ -520,6 +520,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field profileSubqueries {array} : An ordered array of queries for the profiles. For a solid loft, these must be
  *              sheet bodies, faces, or vertices. For a surface loft, these could be wire bodies, sheet bodies, faces, edges, or vertices.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
@@ -531,7 +532,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
  *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
  *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
- *              @eg `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces }]`
+ *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces } ]`
  *              The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  * }}

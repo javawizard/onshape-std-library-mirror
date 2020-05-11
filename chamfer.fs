@@ -59,7 +59,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
         if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
             definition.chamferType == ChamferType.TWO_OFFSETS)
         {
-            annotation { "Name" : "Opposite direction", "Default" : false, "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Default" : false, "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
         }
 

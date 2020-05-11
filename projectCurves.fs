@@ -10,7 +10,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
  *  Performs [opExtrude] twice to extrude two sketches and then [opBoolean] to produce the intersection of the extruded surfaces
  */
 annotation { "Feature Type Name" : "Projected curve",
-        "UIHint" : "NO_PREVIEW_PROVIDED" }
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const projectCurves = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {

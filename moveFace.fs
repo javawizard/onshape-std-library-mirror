@@ -71,7 +71,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         if (definition.outputType == MoveFaceOutputType.MOVE)
         {
             annotation { "Name" : "Faces to move",
-                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE && (ActiveSheetMetal.NO || SheetMetalDefinitionEntityType.EDGE || SheetMetalDefinitionEntityType.FACE))
                                     && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.moveFaces is Query;
@@ -79,7 +79,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         else
         {
             annotation { "Name" : "Faces, surfaces, and sketch regions",
-                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY))
                             && ConstructionObject.NO }
             definition.surfacesAndFaces is Query;
@@ -105,7 +105,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
         if (definition.moveFaceType != MoveFaceType.ROTATE)
         {
-            annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
+            annotation { "Name" : "End type", "UIHint" : UIHint.SHOW_LABEL }
             definition.limitType is MoveFaceBoundingType;
         }
 
@@ -127,7 +127,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 isLength(definition.offsetDistance, MOVE_FACE_OFFSET_BOUNDS);
             }
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
         }
         else
@@ -151,10 +151,10 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
                 if (definition.hasOffset)
                 {
-                    annotation { "Name" : "Offset", "UIHint" : "DISPLAY_SHORT" }
+                    annotation { "Name" : "Offset", "UIHint" : UIHint.DISPLAY_SHORT }
                     isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-                    annotation { "Name" : "Opposite offset direction", "Default" : true, "UIHint" : "OPPOSITE_DIRECTION" }
+                    annotation { "Name" : "Opposite offset direction", "Default" : true, "UIHint" : UIHint.OPPOSITE_DIRECTION }
                     definition.oppositeOffsetDirection is boolean;
                 }
             }

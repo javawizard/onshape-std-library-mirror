@@ -38,7 +38,7 @@ export const shell = defineFeature(function(context is Context, id is Id, defini
         annotation { "Name" : "Shell thickness" }
         isLength(definition.thickness, SHELL_OFFSET_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
     }
     {

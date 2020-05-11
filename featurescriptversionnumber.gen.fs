@@ -887,7 +887,13 @@ export enum FeatureScriptVersionNumber
     V1258_SHARED_DELETIONS,
     V1259_ATTACH_UNBOUNDED_CURVES,
     V1260_REVOLVE_LATERALS,
-    V1271_GENERAL_BODY_CHECK
+    V1271_GENERAL_BODY_CHECK,
+    V1282_CUSTOMER_BUGS,
+    V1283_HOLE_REDUCE,
+    V1284_NORMALIZE,
+    V1285_HOLE_SCOPE_DEFAULT,
+    V1286_NORMAL_REVERT,
+    V1287_ERROR_STRING_BUMP
 }
 
 /**
@@ -898,6 +904,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1271_GENERAL_BODY_CHECK;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1287_ERROR_STRING_BUMP;
 
 

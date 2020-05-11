@@ -60,7 +60,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         definition.endCondition is ExtendBoundingType;
         if (definition.endCondition == ExtendBoundingType.BLIND)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
 
             annotation { "Name" : "Extend distance" }

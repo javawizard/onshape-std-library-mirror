@@ -3,30 +3,31 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
+import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/boolean.fs", version : "✨");
 import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
 import(path : "onshape/std/box.fs", version : "✨");
 import(path : "onshape/std/clashtype.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
+import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/cylinderCast.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/holetables.gen.fs", version : "✨");
+import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/revolve.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
-import(path : "onshape/std/string.fs", version : "✨");
-import(path : "onshape/std/holetables.gen.fs", version : "✨");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "✨");
-import(path : "onshape/std/lookupTablePath.fs", version : "✨");
-import(path : "onshape/std/cylinderCast.fs", version : "✨");
-import(path : "onshape/std/curveGeometry.fs", version : "✨");
-import(path : "onshape/std/attributes.fs", version : "✨");
+
 export import(path : "onshape/std/holeAttribute.fs", version : "✨");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "✨");
 export import(path : "onshape/std/holeUtils.fs", version : "✨");
 
 /**
@@ -96,10 +97,10 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "INITIAL_FOCUS"] }
         definition.style is HoleStyle;
 
-        annotation { "Name" : "Termination", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Termination", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         definition.endStyle is HoleEndStyle;
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardThrough != undefined)
@@ -129,7 +130,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             annotation { "Name" : "Countersink diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cSinkDiameter, HOLE_BORE_DIAMETER_BOUNDS);
 
-            annotation { "Name" : "Countersink angle", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Countersink angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isAngle(definition.cSinkAngle, CSINK_ANGLE_BOUNDS);
         }
 
@@ -153,38 +154,38 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
          * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
          * threads, then they would have an effect.
          */
-        annotation { "Name" : "Tapped details", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Tapped details", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.showTappedDepth is boolean;
 
         if (definition.endStyle != HoleEndStyle.THROUGH)
         {
-            annotation { "Name" : "Depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
         }
         if (definition.showTappedDepth)
         {
             if (definition.endStyle == HoleEndStyle.THROUGH)
             {
-                annotation { "Name" : "Tap through all", "Default" : true, "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                annotation { "Name" : "Tap through all", "Default" : true, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 definition.isTappedThrough is boolean;
             }
 
             if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
             {
-                annotation { "Name" : "Tapped depth", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                annotation { "Name" : "Tapped depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
             }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
-                annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+                annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
         }
 
         if (definition.endStyle == HoleEndStyle.BLIND || (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
         {
-            annotation { "Name" : "Start from sketch plane", "Default" : true}
+            annotation { "Name" : "Start from sketch plane", "Default" : true }
             definition.startFromSketch is boolean;
         }
 
@@ -197,18 +198,15 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         definition.scope is Query;
     }
     {
+        // ------------- Error checking -------------
+
         // Holes are now supported in sheet metal so the queryContainsActiveSheetMetal check is not wanted in newer parts
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES) && queryContainsActiveSheetMetal(context, definition.scope))
         {
             const smQueries = separateSheetMetalQueries(context, definition.scope).sheetMetalQueries;
             throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, ["scope"], smQueries);
         }
-        var trackedBodies = [];
-        for (var body in evaluateQuery(context, definition.scope))
-        {
-            trackedBodies = append(trackedBodies, qUnion([startTracking(context, body), body]));
-        }
-        definition.mainId = id;
+
         // V206 was the current version when it was determined that a version check was needed
         if (definition.style == HoleStyle.C_BORE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
         {
@@ -239,6 +237,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
+        // ------------- Definition adjustment -------------
+
         if (definition.endStyle != HoleEndStyle.BLIND && (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
         {
             definition.startFromSketch = false;
@@ -263,6 +263,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE, ["holeDiameter", "tapDrillDiameter"]);
             }
         }
+
         definition.transform = getRemainderPatternTransform(context, { "references" : definition.locations });
 
         const locations = reduceLocations(context, definition.locations);
@@ -270,91 +271,18 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             throw regenError(ErrorStringEnum.HOLE_NO_POINTS, ["locations"]);
         }
-        else
+        if (size(locations) > MAX_LOCATIONS && isAtVersionOrLater(context, FeatureScriptVersionNumber.V274_HOLE_LIMIT_NUM_LOCATIONS_100))
         {
-            if (size(locations) > MAX_LOCATIONS && isAtVersionOrLater(context, FeatureScriptVersionNumber.V274_HOLE_LIMIT_NUM_LOCATIONS_100))
-            {
-                throw regenError(ErrorStringEnum.HOLE_EXCEEDS_MAX_LOCATIONS, ["locations"]);
-            }
-
-            definition.scopeSize = 0.1 * meter;
-            const scopeTest = evaluateQuery(context, definition.scope);
-            if (size(scopeTest) == 0)
-            {
-                reportFeatureError(context, id, ErrorStringEnum.HOLE_EMPTY_SCOPE, ["scope"]);
-            }
-            else
-            {
-                definition.scopeSize = try(scopeSize(context, definition));
-                if (definition.scopeSize == undefined)
-                {
-                    reportFeatureError(context, id, ErrorStringEnum.HOLE_FAIL_BBOX, ["scope"]);
-                }
-            }
+            throw regenError(ErrorStringEnum.HOLE_EXCEEDS_MAX_LOCATIONS, ["locations"]);
         }
 
-        const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        // -- If any feature status is set above this line, `produceHoles` will display the hole tools as error entities --
 
-        // If we have no errors, warnings or info, test for sucess and disjoint and report those errors
-        if (!reportingStatus(context, id))
-        {
-            // ------------- Perform the operation ---------------
-            var opResult = holeOp(context, id, locations, definition);
-
-            if (opResult.numSuccess == 0)
-            {
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V362_HOLE_IMPROVED_DEPTH_FINDING) && opResult.error != undefined)
-                {
-                    reportFeatureError(context, id, opResult.error, ["scope"]);
-                }
-                else
-                {
-                    reportFeatureError(context, id, ErrorStringEnum.HOLE_NO_HITS, ["scope"]);
-                }
-            }
-            else
-            {
-                // The V371_HOLE_IMPROVED_DISJOINT_CHECK check and contained code fixes obscure behaviors and prevents valid cases from working, so we'll ignore it going forward
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V371_HOLE_IMPROVED_DISJOINT_CHECK) &&
-                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES))
-                {
-                    for (var trackedBody in trackedBodies)
-                    {
-                        var trackedCount = size(evaluateQuery(context, trackedBody));
-                        if (trackedCount > 1)
-                        {
-                            reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
-                        }
-                        else if (trackedCount < 1)
-                        {
-                            reportFeatureError(context, id, ErrorStringEnum.HOLE_DESTROY_SOLID, ["scope"]);
-                        }
-                    }
-                }
-                else
-                {
-                    const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
-                    if (finalBodyCount > startingBodyCount)
-                        reportFeatureError(context, id, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
-                    else if (opResult.warning != undefined)
-                    {
-                        reportFeatureWarning(context, id, opResult.warning);
-                    }
-                }
-            }
-        }
-        // Test status again, now with success and disjoint check
-        if (reportingStatus(context, id))
-        {
-            const errorId = id + "errorEntities";
-            definition.generateErrorBodies = true;
-            holeOp(context, errorId, locations, definition);
-            var errorBodyQuery = qCreatedBy(errorId, EntityType.BODY);
-            setErrorEntities(context, id, { "entities" : errorBodyQuery });
-            opDeleteBodies(context, id + "delete", { "entities" : errorBodyQuery });
-        }
+        // ------------- Perform the operation -------------
+        produceHoles(context, id, definition, locations);
 
         // Verify consistency between pitch, tap depth, and clearance (BEL-120375)
+        // This must be done after `produceHoles`, because that function will display error entities if the feature has a status.
         if (definition.showTappedDepth && definition.endStyle != HoleEndStyle.THROUGH && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1135_HOLE_TAP_CHECK))
         {
             var pitch = computePitch(definition);
@@ -372,9 +300,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkUseDepth : false,
             cSinkDepth : 0 * meter,
             cSinkAngle : 90 * degree,
-            generateErrorBodies : false,
             startFromSketch : false,
-            collisions : {},
             showTappedDepth : false,
             tappedDepth : 0.5 * inch,
             tapClearance : 3,
@@ -388,10 +314,100 @@ function reportingStatus(context is Context, id is Id) returns boolean
 
 function hasErrors(context is Context, id is Id) returns boolean
 {
-     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V782_HOLE_ERROR_REPORTING))
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V782_HOLE_ERROR_REPORTING))
         return getFeatureError(context, id) != undefined;
-     else
-         return reportingStatus(context, id);
+    else
+        return reportingStatus(context, id);
+}
+
+function produceHoles(context is Context, topLevelId is Id, definition is map, locations is array)
+{
+    // ------------- Check scope ---------------
+    definition.scopeSize = 0.1 * meter; // Set a default so that if we fail early, we can still generate the error entities (BEL-139027)
+    const scopeTest = evaluateQuery(context, definition.scope);
+    if (size(scopeTest) == 0)
+    {
+        throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, ErrorStringEnum.HOLE_EMPTY_SCOPE, ["scope"]);
+    }
+    definition.scopeSize = try(scopeSize(context, definition));
+    if (definition.scopeSize == undefined)
+    {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1285_HOLE_SCOPE_DEFAULT))
+        {
+            // Give some default so that we do not fail during error entity generation
+            definition.scopeSize = 0.1 * meter;
+        }
+        throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, ErrorStringEnum.HOLE_FAIL_BBOX, ["scope"]);
+    }
+
+    var trackedBodies = [];
+    for (var body in evaluateQuery(context, definition.scope))
+    {
+        trackedBodies = append(trackedBodies, qUnion([startTracking(context, body), body]));
+    }
+    const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+
+    // ------------- Perform the operation ---------------
+    definition.generateErrorBodies = false;
+    var opResult = holeOp(context, topLevelId, locations, definition);
+
+    // ------------- Check the result ---------------
+    if (opResult.numSuccess == 0)
+    {
+        const errorInResult = isAtVersionOrLater(context, FeatureScriptVersionNumber.V362_HOLE_IMPROVED_DEPTH_FINDING);
+        const error = (errorInResult && opResult.error != undefined) ? opResult.error : ErrorStringEnum.HOLE_NO_HITS;
+        throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, error, ["scope"]);
+    }
+
+    // The V371_HOLE_IMPROVED_DISJOINT_CHECK check and contained code fixes obscure behaviors and prevents valid cases from working, so we'll ignore it going forward
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V371_HOLE_IMPROVED_DISJOINT_CHECK) &&
+        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V621_SHEET_METAL_HOLES))
+    {
+        for (var trackedBody in trackedBodies)
+        {
+            var trackedCount = size(evaluateQuery(context, trackedBody));
+            if (trackedCount != 1)
+            {
+                const error = trackedCount > 1 ? ErrorStringEnum.HOLE_DISJOINT : ErrorStringEnum.HOLE_DESTROY_SOLID;
+                throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, error, ["scope"]);
+            }
+        }
+    }
+    else
+    {
+        const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        if (finalBodyCount > startingBodyCount)
+        {
+            throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
+        }
+        else if (opResult.warning != undefined)
+        {
+            reportFeatureWarning(context, topLevelId, opResult.warning);
+        }
+    }
+
+    // This is bad practice, and it would be good to avoid it if possible, but it currently captures cases where
+    // feature statuses are set deeper in the operation (such as tools and targets not intersecting in the boolean)
+    if (reportingStatus(context, topLevelId))
+    {
+        displayToolErrorEntities(context, topLevelId, definition, locations);
+    }
+}
+
+function throwRegenErrorWithToolErrorEntities(context is Context, topLevelId is Id, definition is map, locations is array, error is ErrorStringEnum, faultyParameters is array)
+{
+    displayToolErrorEntities(context, topLevelId, definition, locations);
+    throw regenError(error, faultyParameters);
+}
+
+function displayToolErrorEntities(context is Context, topLevelId is Id, definition is map, locations is array)
+{
+    const errorId = topLevelId + "errorEntities";
+    definition.generateErrorBodies = true;
+    holeOp(context, errorId, locations, definition);
+    var errorBodyQuery = qCreatedBy(errorId, EntityType.BODY);
+    setErrorEntities(context, topLevelId, { "entities" : errorBodyQuery });
+    opDeleteBodies(context, topLevelId + "delete", { "entities" : errorBodyQuery });
 }
 
 function getAndUpdateHoleFeatureCount(context is Context) returns number
@@ -435,13 +451,14 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
         try
         {
             booleanBodies(context, id + "boolean", { "targets" : definition.scope,
-                                             "tools" : qBodyType(qCreatedBy(holeBodiesId, EntityType.BODY), BodyType.SOLID),
-                                             "operationType" : BooleanOperationType.SUBTRACTION});
+                        "tools" : qBodyType(qCreatedBy(holeBodiesId, EntityType.BODY), BodyType.SOLID),
+                        "operationType" : BooleanOperationType.SUBTRACTION
+                    });
         }
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "boolean",
-                                               "propagateErrorDisplay" : true,
-                                               "featureParameterMap" : {"tools" : "locations", "targets" : "scope"}
-                                               });
+                    "propagateErrorDisplay" : true,
+                    "featureParameterMap" : { "tools" : "locations", "targets" : "scope" }
+                });
         if (hasErrors(context, id))
         {
             result.numSuccess = 0;
@@ -470,21 +487,20 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
     return result;
 }
 
-function computeCSys(context is Context, location is Query, definition is map) returns map
+function computeCSys(context is Context, location is Query, definition is map) returns CoordSystem
 {
     const sign = definition.oppositeDirection ? 1 : -1;
 
     var point;
     var locationPlane;
-    var mateConnectorCSys = try silent(evMateConnector(context, {
-        "mateConnector" : location
-    }));
+    var mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : location }));
     if (mateConnectorCSys != undefined)
     {
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1021_HOLE_MATE_CONNECTOR_CSYS))
         {
+            // This accidentally disregards need for pattern transform
             mateConnectorCSys.zAxis *= sign;
-            return { "point" : mateConnectorCSys.origin, "startPointCSys" : mateConnectorCSys };
+            return mateConnectorCSys;
         }
 
         locationPlane = plane(mateConnectorCSys);
@@ -505,6 +521,11 @@ function computeCSys(context is Context, location is Query, definition is map) r
             ray = definition.transform * ray;
         }
         startPointCSys = coordSystem(ray.origin, perpendicularVector(ray.direction), ray.direction);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V388_HOLE_FIX_FEATURE_PATTERN_TRANSFORM))
+        {
+            point = startPointCSys.origin;
+        }
     }
     else
     {
@@ -516,20 +537,12 @@ function computeCSys(context is Context, location is Query, definition is map) r
         }
     }
 
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V388_HOLE_FIX_FEATURE_PATTERN_TRANSFORM))
-    {
-        point = startPointCSys.origin;
-    }
-
-    startPointCSys = coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
-
-    return { "point" : point, "startPointCSys" : startPointCSys };
+    return coordSystem(point, startPointCSys.xAxis, sign * startPointCSys.zAxis);
 }
 
 function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
 {
-    var startPointData = computeCSys(context, location, definition);
-    var startPointCSys is CoordSystem = startPointData.startPointCSys;
+    var startPointCSys = computeCSys(context, location, definition);
 
     const useUnstableComponent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
     const holeId = (useUnstableComponent) ? id + unstableIdComponent("hole-" ~ holeNumber) : id + ("hole-" ~ holeNumber);
@@ -614,6 +627,12 @@ function maxDiameter(definition is map) returns ValueWithUnits
 
 function reduceLocations(context is Context, rawLocationQuery is Query) returns array
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1283_HOLE_REDUCE))
+    {
+        return clusterVertexQueries(context, rawLocationQuery);
+    }
+
+    // -- Very bad performance, clusterVertexQueries is much more optimized --
     const rawLocations = evaluateQuery(context, rawLocationQuery);
     var pts = [];
     var locations = [];
@@ -865,8 +884,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
             spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
             var warning = getFeatureWarning(context, id);
             if (warning is ErrorStringEnum &&
-                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD ||
-                 warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT))
+                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD || warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT))
             {
                 result.warning = warning;
             }
@@ -925,8 +943,10 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
         //Instance tracking is used to disambiguate topology corresponding to different hole instances created after cut
         const circularEdgesQ = qGeometry(qCreatedBy(id, EntityType.EDGE), GeometryType.CIRCLE);
         const cylindricalFacesQ = qGeometry(qCreatedBy(id, EntityType.FACE), GeometryType.CYLINDER);
-        result.instanceTracking = startTracking(context, { "subquery" : qUnion([circularEdgesQ, cylindricalFacesQ]),
-                                                        "trackPartialDependency" : true });
+        result.instanceTracking = startTracking(context, {
+                    "subquery" : qUnion([circularEdgesQ, cylindricalFacesQ]),
+                    "trackPartialDependency" : true
+                });
     }
     result.success = success;
     return result;
@@ -952,11 +972,11 @@ function getSheetMetalHoleEdgesQuery(id is Id, sheetMetalModels is Query, includ
     if (includeArcs)
         return qUnion([qGeometry(smEdges, GeometryType.CIRCLE), qGeometry(smEdges, GeometryType.ARC)]);
     else
-       return qGeometry(smEdges, GeometryType.CIRCLE);
+        return qGeometry(smEdges, GeometryType.CIRCLE);
 }
 
 function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges is array,
-                                                    holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
+    holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
 {
     for (var holeEdge in holeEdges)
     {
@@ -967,9 +987,9 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
             // We need to assign attribute to associated faces of private patches so that
             // attribute propagates in downstream operations where the corresponding patch is not rebuilt.
             const holeFacesQ = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V859_SM_HOLE_ATTRIBUTE)) ?
-                    qEntityFilter(qAttributeQuery(association), EntityType.FACE) :
-                    qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
-            const holeFaces =  evaluateQuery(context, holeFacesQ);
+                qEntityFilter(qAttributeQuery(association), EntityType.FACE) :
+                qEntityFilter(qBodyType(qAttributeQuery(association), BodyType.SOLID), EntityType.FACE);
+            const holeFaces = evaluateQuery(context, holeFacesQ);
             if (size(holeFaces) > 0)
             {
                 createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle, holeNumber);
@@ -977,6 +997,7 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
         }
     }
 }
+
 function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
 {
     const holeEdgesQ = getSheetMetalHoleEdgesQuery(id, sheetMetalModels, false);
@@ -1274,7 +1295,10 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
 
 function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, holeNumber is number, sketchTracking is array, holeStyle is HoleStyle, startDistances is array, holeDepth)
 {
-    sketchTracking = filter(sketchTracking, function(track) { return track.trackingQuery != undefined; });
+    sketchTracking = filter(sketchTracking, function(track)
+        {
+            return track.trackingQuery != undefined;
+        });
 
     var trackingQueries = [];
     for (var track in sketchTracking)
@@ -1408,7 +1432,7 @@ function computeActualHoleDepth(context is Context, faces is Query)
             "topology" : faces,
             "cSys" : coordSystem(vector(0, 0, 0) * meter, perpendicularVector(holeDirection), holeDirection),
             "tight" : true
-    });
+        });
     return holeBox.maxCorner[2] - holeBox.minCorner[2];
 }
 
@@ -1698,7 +1722,7 @@ function getCutOption(context is Context, holeDefinition is map) returns HoleCut
     if (holeDefinition.generateErrorBodies == true || holeDefinition.heuristics == true)
         return HoleCutOption.NO_CUT;
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V763_HOLE_CUT_ALL) ||
-         tappedHoleWithOffset(holeDefinition))
+        tappedHoleWithOffset(holeDefinition))
         return HoleCutOption.CUT_PER_LOCATION;
     return HoleCutOption.CUT_ALL;
 }
@@ -1706,7 +1730,7 @@ function getCutOption(context is Context, holeDefinition is map) returns HoleCut
 function tappedHoleWithOffset(holeDefinition is map) returns boolean
 {
     return holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST &&
-           holeDefinition.tapDrillDiameter < (holeDefinition.holeDiameter - TOLERANCE.zeroLength * meter);
+        holeDefinition.tapDrillDiameter < (holeDefinition.holeDiameter - TOLERANCE.zeroLength * meter);
 }
 
 /**
@@ -1718,7 +1742,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
 {
     if (oldDefinition.locations != definition.locations)
     {
-        definition.locations = clusterVertexQueries(context, definition.locations);
+        definition.locations = qUnion(clusterVertexQueries(context, definition.locations));
     }
     if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
         oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
@@ -2168,11 +2192,17 @@ function findCollisions(context is Context, id is Id, holeNumber is number, soli
 }
 
 /**
- *  Expects selected query to evaluate to a set of vertices. Throws if non-vertex is returned
- *  Clusters coincident vertices created by the same operation, uses one representative for each cluster
- *  union query of cluster representative queries is returned
+ * Expects `selected` query to evaluate to a set of vertices. Throws if non-vertex is passed.
+ *
+ * Clusters coincident vertices created by the same operation, it is important to group by
+ * operation because we may have multiple sketches with different normals which share a location.
+ * We would still want to make two holes in that case.
+ *
+ * Returns an array of vertices, each representing the "first" vertex of a cluster, where "first"
+ * is determined by the query evaluation order of `selected`.  The overall ordering of the returned
+ * array will also respect the query evaluation order of `selected`.
  */
-function clusterVertexQueries(context is Context, selected is Query) returns Query
+function clusterVertexQueries(context is Context, selected is Query) returns array
 {
     var perFeature = {};
     for (var tId in evaluateQuery(context, selected))
@@ -2185,7 +2215,6 @@ function clusterVertexQueries(context is Context, selected is Query) returns Que
         perFeature[operationId] = append(perFeature[operationId], tId);
     }
     var clusterQueries = [];
-    var didCluster = false;
     for (var entry in perFeature)
     {
         var nPoints = size(entry.value);
@@ -2200,24 +2229,13 @@ function clusterVertexQueries(context is Context, selected is Query) returns Que
             {
                 points[i] = evVertexPoint(context, { 'vertex' : entry.value[i] });
             }
-            var clusters = clusterPoints(points, TOLERANCE.zeroLength);
-            if (size(clusters) != size(points))
-            {
-                didCluster = true;
-            }
+            var clusters = clusterPoints(points, TOLERANCE.zeroLength * meter);
             for (var cluster in clusters)
             {
                 clusterQueries = append(clusterQueries, entry.value[cluster[0]]);
             }
         }
     }
-    if (didCluster)
-    {
-        return qUnion(clusterQueries);
-    }
-    else
-    {
-        return selected;
-    }
+    return evaluateQuery(context, qIntersection([selected, qUnion(clusterQueries)]));
 }
 

@@ -41,7 +41,7 @@ annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts",
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Split type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Split type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.splitType is SplitType;
 
         if (definition.splitType == SplitType.PART)

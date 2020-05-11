@@ -49,7 +49,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
 
         if (definition.jointType == SMJointType.RIP)
         {
-            annotation { "Name" : "Has style", "Default" : true, "UIHint" : "ALWAYS_HIDDEN"}
+            annotation { "Name" : "Has style", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN}
             definition.hasStyle is boolean;
             if (definition.hasStyle)
             {

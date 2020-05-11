@@ -455,15 +455,16 @@ export function perpendicularVectors(vector1 is Vector, vector2 is Vector) retur
  * @returns {array} : Array of arrays, where each array is a cluster of nearby
  *          points, represented as indices into points array.
  */
-export function clusterPoints( points is array, tolerance is number) returns array
+export function clusterPoints(points is array, tolerance is ValueWithUnits) returns array
 precondition
 {
     for (var point in points)
     {
         is3dLengthVector(point);
     }
+    isLength(tolerance);
 }
 {
-    return @clusterPoints(stripUnits(points), tolerance);
+    return @clusterPoints(stripUnits(points), tolerance.value);
 }
 

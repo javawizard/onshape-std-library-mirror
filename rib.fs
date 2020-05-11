@@ -67,7 +67,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Rib extrusion direction" }
         definition.ribExtrusionDirection is RibExtrusionDirection;
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
         definition.oppositeDirection is boolean;
 
         annotation { "Name" : "Extend profiles to part" }

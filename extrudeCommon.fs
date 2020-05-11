@@ -129,10 +129,10 @@ export predicate extrudeBoundParametersPredicate(definition is map)
 
         if (definition.hasOffset)
         {
-            annotation {"Name" : "Offset distance", "UIHint" : "DISPLAY_SHORT" }
+            annotation {"Name" : "Offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
             isLength(definition.offsetDistance, LENGTH_BOUNDS);
 
-            annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+            annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
             definition.offsetOppositeDirection is boolean;
         }
     }
@@ -194,10 +194,10 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
 
         if (definition.hasSecondDirectionOffset)
         {
-            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : "DISPLAY_SHORT" }
+            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
             isLength(definition.secondDirectionOffsetDistance, LENGTH_BOUNDS);
 
-            annotation {"Name" : "Opposite direction", "Column Name" : "Second offset opposite direction", "UIHint" : "OPPOSITE_DIRECTION"}
+            annotation {"Name" : "Opposite direction", "Column Name" : "Second offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
             definition.secondDirectionOffsetOppositeDirection is boolean;
         }
     }

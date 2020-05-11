@@ -1079,9 +1079,9 @@ export enum ErrorStringEnum
     RIB_MERGE_FAILED,
     /* Failed to save named position. */
     ASSEMBLY_NAMED_POSITIONS_SAVE_FAILED,
-    /* Mates or parts have changed. Position may not be exact. */
+    /* Instance position or mate has changed. */
     ASSEMBLY_NAMED_POSITIONS_LOAD_FAILED,
-    /* A non-empty assembly is required in order to save a named position. */
+    /* Assembly must not be empty. */
     ASSEMBLY_NAMED_POSITIONS_NO_MATES_TO_SAVE,
     /* Named position not found. */
     ASSEMBLY_NAMED_POSITIONS_POSITION_NOT_FOUND,
@@ -1926,7 +1926,9 @@ export enum ErrorStringEnum
     /* "Explode steps do not support instances of type Sketch." */
     CANNOT_EXPLODE_SKETCH,
     /* "Failed to create exploded view." */
-    FAILED_TO_CREATE_EXPLODED_VIEW
+    FAILED_TO_CREATE_EXPLODED_VIEW,
+    /* Instances have been added to the assembly. */
+    ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES
 }
 
 

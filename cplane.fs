@@ -72,13 +72,13 @@ const PLANE_OFFSET_BOUNDS =
 /**
  * Creates a construction plane feature by calling [opPlane].
  */
-annotation { "Feature Type Name" : "Plane", "Manipulator Change Function" : "cplaneManipulatorChange", "UIHint" : "CONTROL_VISIBILITY", "Editing Logic Function" : "cPlaneLogic"}
+annotation { "Feature Type Name" : "Plane", "Manipulator Change Function" : "cplaneManipulatorChange", "UIHint" : UIHint.CONTROL_VISIBILITY, "Editing Logic Function" : "cPlaneLogic"}
 export const cPlane = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Entities",
                     "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR,
-                    "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+                    "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
 
         annotation { "Name" : "Plane type" }
@@ -98,7 +98,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.cplaneType == CPlaneType.OFFSET || definition.cplaneType == CPlaneType.LINE_ANGLE)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
         }
 
@@ -108,10 +108,10 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             definition.flipAlignment is boolean;
         }
 
-        annotation { "Name" : "Starting width", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Starting width", "UIHint" : UIHint.ALWAYS_HIDDEN }
         isLength(definition.width, PLANE_SIZE_BOUNDS);
 
-        annotation { "Name" : "Starting height", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Starting height", "UIHint" : UIHint.ALWAYS_HIDDEN }
         isLength(definition.height, PLANE_SIZE_BOUNDS);
     }
     //============================ Body =============================

@@ -272,7 +272,7 @@ function computeGraphInformation(context is Context, edges is array, referenceGe
     {
         options.tolerance = TOLERANCE.zeroLength * meter;
     }
-    var pointGroups = clusterPoints(pathPoints, options.tolerance / meter);
+    var pointGroups = clusterPoints(pathPoints, options.tolerance);
 
     var oddNumberedGroups = []; // array of point vectors
     var pointIndexToGroup = {}; // map: endpoint -> group in pointGroups

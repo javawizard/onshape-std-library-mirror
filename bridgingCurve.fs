@@ -48,11 +48,11 @@ const DEFAULT_G1G1_SCALE = 2 / 3;
 annotation { "Feature Type Name" : "Bridging curve",
         "Editing Logic Function" : "onFeatureChange",
         "Manipulator Change Function" : "onManipulatorChange",
-        "UIHint" : "NO_PREVIEW_PROVIDED" }
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const bridgingCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : "ALWAYS_HIDDEN", "Filter" : EntityType.EDGE || EntityType.VERTEX }
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX }
         definition.preselectedEntities is Query;
         annotation { "Name" : "First side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;

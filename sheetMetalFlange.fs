@@ -116,10 +116,10 @@ precondition
                     && ((GeometryType.LINE && AllowFlattenedGeometry.YES) || (GeometryType.PLANE && AllowFlattenedGeometry.NO)) }
     definition.edges is Query;
 
-    annotation {"Name" : "Flange alignment", "UIHint" : "SHOW_LABEL"}
+    annotation {"Name" : "Flange alignment", "UIHint" : UIHint.SHOW_LABEL}
     definition.flangeAlignment is SMFlangeAlignment;
 
-    annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
+    annotation { "Name" : "End type", "UIHint" : UIHint.SHOW_LABEL }
     definition.limitType is SMFlangeBoundingType;
 
     if (definition.limitType == SMFlangeBoundingType.BLIND)
@@ -136,7 +136,7 @@ precondition
             annotation { "Name" : "Offset"}
             isLength(definition.offset, NONNEGATIVE_LENGTH_BOUNDS);
 
-            annotation { "Name" : "Opposite offset direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeOffsetDirection is boolean;
         }
     }
@@ -144,7 +144,7 @@ precondition
     annotation { "Name" : "Angle control type" }
     definition.angleControlType is SMFlangeAngleControlType;
 
-    annotation { "Name" : "Opposite side", "UIHint" : "OPPOSITE_DIRECTION" }
+    annotation { "Name" : "Opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
     definition.oppositeDirection is boolean;
 
     if (definition.angleControlType == SMFlangeAngleControlType.BEND_ANGLE)
@@ -165,7 +165,7 @@ precondition
         annotation { "Name" : "Angle" }
         isAngle(definition.angleFromDirection, FLANGE_DIRECTION_ANGLE_BOUNDS);
 
-        annotation { "Name" : "Opposite angle", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite angle", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.angleFromDirectionOppositeAngle is boolean;
     }
 

@@ -14,7 +14,6 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 
 
-
 /**
 * @internal
 *  TODO : This feature assigns a name to selected entity. This name becomes its identity.
@@ -23,7 +22,7 @@ import(path : "onshape/std/query.fs", version : "✨");
 */
 annotation { "Feature Type Name" : "Name entity",
              "Feature Name Template": "Name #entityName",
-             "UIHint" : "NO_PREVIEW_PROVIDED"}
+             "UIHint" : UIHint.NO_PREVIEW_PROVIDED}
 export const nameEntity = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {

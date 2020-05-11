@@ -28,14 +28,14 @@ annotation { "Feature Type Name" : "Offset surface" ,
 export const offsetSurface = defineFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation { "Name" : "Faces, surfaces, and sketch regions", "UIHint" : "SHOW_CREATE_SELECTION",
+    annotation { "Name" : "Faces, surfaces, and sketch regions", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                  "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO }
     definition.surfacesAndFaces is Query;
 
     annotation { "Name" : "Offset"}
     isLength(definition.offset, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
-    annotation { "Name" : "Opposite offset direction", "UIHint" : "OPPOSITE_DIRECTION" }
+    annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
     definition.oppositeDirection is boolean;
 }
 {

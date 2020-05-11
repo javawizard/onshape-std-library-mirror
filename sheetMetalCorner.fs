@@ -28,7 +28,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
                         && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.corner is Query;
 
-        annotation { "Name" : "Corner relief type", "Default" : SMCornerReliefStyle.SIZED_RECTANGLE, "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Corner relief type", "Default" : SMCornerReliefStyle.SIZED_RECTANGLE, "UIHint" : UIHint.SHOW_LABEL }
         definition.cornerStyle is SMCornerReliefStyle;
 
         if (definition.cornerStyle == SMCornerReliefStyle.RECTANGLE || definition.cornerStyle == SMCornerReliefStyle.ROUND)
@@ -38,12 +38,12 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         }
         if (definition.cornerStyle == SMCornerReliefStyle.SIZED_ROUND)
         {
-            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.roundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
         }
         if (definition.cornerStyle == SMCornerReliefStyle.SIZED_RECTANGLE)
         {
-            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.squareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
         }
     }

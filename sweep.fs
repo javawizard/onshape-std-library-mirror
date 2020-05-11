@@ -26,7 +26,7 @@ annotation { "Feature Type Name" : "Sweep",
 export const sweep = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType == ToolBodyType.SOLID)

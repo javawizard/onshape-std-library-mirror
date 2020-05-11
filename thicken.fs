@@ -39,7 +39,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         annotation { "Name" : "Direction 1" }
         isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
         annotation { "Name" : "Direction 2" }

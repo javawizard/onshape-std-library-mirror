@@ -25,7 +25,7 @@ FeatureScript ✨; /* Automatically generated version */
  *         definition.faces is Query;
  *         annotation { "Name" : "My Length" }
  *         isLength(definition.depth, LENGTH_BOUNDS);
- *         annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+ *         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
  *         definition.shouldFlip is boolean;
  *     }
  *     {

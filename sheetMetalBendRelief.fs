@@ -29,7 +29,7 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
                         && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.bendRelief is Query;
 
-        annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.SIZED_OBROUND, "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.SIZED_OBROUND, "UIHint" : UIHint.SHOW_LABEL }
         definition.bendReliefStyle is SMBendReliefStyle;
 
         if (definition.bendReliefStyle == SMBendReliefStyle.RECTANGLE || definition.bendReliefStyle == SMBendReliefStyle.OBROUND)

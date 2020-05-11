@@ -81,7 +81,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         // This hidden "placeholder" Query allows preselection of both cones/cylinders AND circles/arcs
         // We purposely accept all all EDGEs to allow for preselection in the feature tree.
         // Further constraints are applied in the helixLogic preselection function
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || EntityType.EDGE }
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || EntityType.EDGE }
         definition.initEntities is Query;
 
         annotation { "Name" : "Helix type" }
@@ -91,14 +91,14 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
             definition.helixType == HelixType.HEIGHT_PITCH ||
             definition.helixType == HelixType.TURNS_PITCH)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;    // false by default
         }
 
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
             annotation { "Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS,
-                         "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+                         "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
             definition.entities is Query;
         }
         else

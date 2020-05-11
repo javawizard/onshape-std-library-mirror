@@ -70,7 +70,7 @@ export const NORMAL_PARAMETER_BOUNDS =
  *      @field nz {number} : @requiredIf {`specifyNormal` is `true`}
  * }}
  */
-annotation { "Feature Type Name" : "Mate connector", "UIHint" : "CONTROL_VISIBILITY" , "Editing Logic Function" : "connectorEditLogic" }
+annotation { "Feature Type Name" : "Mate connector", "UIHint" : UIHint.CONTROL_VISIBILITY , "Editing Logic Function" : "connectorEditLogic" }
 export const mateConnector = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -80,18 +80,18 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Origin entity",
                      "Filter" : (EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO),
                      "MaxNumberOfPicks" : 1,
-                     "UIHint" : "UNCONFIGURABLE" }
+                     "UIHint" : UIHint.UNCONFIGURABLE }
         definition.originQuery is Query;
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.entityInferenceType is EntityInferenceType;
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.secondaryOriginQuery is Query;
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : "UNCONFIGURABLE" }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
             definition.originAdditionalQuery is Query;
         }
 
@@ -132,7 +132,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             isAngle(definition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
         }
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : true }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : true }
         definition.requireOwnerPart is boolean;
 
         if (definition.requireOwnerPart)
@@ -142,26 +142,26 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.ownerPart is Query;
         }
 
-        annotation { "Name" : "Specify normal", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Specify normal", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.specifyNormal is boolean;
 
         if (definition.specifyNormal)
         {
-            annotation { "Name" : "Normal x", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Normal x", "UIHint" : UIHint.ALWAYS_HIDDEN }
             isReal(definition.nx, NORMAL_PARAMETER_BOUNDS);
-            annotation { "Name" : "Normal y", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Normal y", "UIHint" : UIHint.ALWAYS_HIDDEN }
             isReal(definition.ny, NORMAL_PARAMETER_BOUNDS);
-            annotation { "Name" : "Normal z", "UIHint" : "ALWAYS_HIDDEN" }
+            annotation { "Name" : "Normal z", "UIHint" : UIHint.ALWAYS_HIDDEN }
             isReal(definition.nz, NORMAL_PARAMETER_BOUNDS);
         }
 
         annotation { "Name" : "Flip primary axis", "UIHint" : [ "OPPOSITE_DIRECTION", "FIRST_IN_ROW" ] }
         definition.flipPrimary is boolean;
 
-        annotation { "Name" : "Reorient secondary axis", "UIHint" : "MATE_CONNECTOR_AXIS_TYPE", "Default" : MateConnectorAxisType.PLUS_X }
+        annotation { "Name" : "Reorient secondary axis", "UIHint" : UIHint.MATE_CONNECTOR_AXIS_TYPE, "Default" : MateConnectorAxisType.PLUS_X }
         definition.secondaryAxisType is MateConnectorAxisType;
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : false }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : false }
         definition.isForSubFeature is boolean;
     }
     {

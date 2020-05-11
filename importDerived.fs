@@ -42,9 +42,9 @@ annotation { "Feature Type Name" : "Derived" }
 export const importDerived = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Parts to import", "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "Name" : "Parts to import", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.parts is Query;
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.buildFunction is BuildFunction;
     }
     {

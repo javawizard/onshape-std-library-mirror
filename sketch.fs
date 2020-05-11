@@ -143,7 +143,7 @@ export function isIdForSketch(context is Context, id is Id)
  * }}
  */
 // TODO: Is there a nice way to combine this and newSketchOnPlane without upsetting precondition analysis?
-annotation { "Feature Type Name" : "Sketch", "UIHint" : "CONTROL_VISIBILITY" }
+annotation { "Feature Type Name" : "Sketch", "UIHint" : UIHint.CONTROL_VISIBILITY }
 export function newSketch(context is Context, id is Id, value is map) returns Sketch
 precondition
 {

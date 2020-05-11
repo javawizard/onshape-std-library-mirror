@@ -85,7 +85,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Instance count" }
         isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
         annotation { "Name" : "Centered"}
@@ -107,7 +107,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Instance count", "Column Name" : "Second instance count" }
             isInteger(definition.instanceCountTwo, SECONDARY_PATTERN_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirectionTwo is boolean;
 
             annotation { "Name" : "Centered", "Column Name" : "Second centered"}

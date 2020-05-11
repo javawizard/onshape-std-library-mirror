@@ -7,7 +7,7 @@ import(path : "onshape/std/topologyUtils.fs", version : "✨");
  * sketches or other Curves.
  */
 annotation { "Feature Type Name" : "Composite curve",
-        "UIHint" : "NO_PREVIEW_PROVIDED" }
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const compositeCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
