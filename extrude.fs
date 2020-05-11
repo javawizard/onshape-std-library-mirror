@@ -1,34 +1,34 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1271.0");
-export import(path : "onshape/std/query.fs", version : "1271.0");
-export import(path : "onshape/std/tool.fs", version : "1271.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1287.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
+export import(path : "onshape/std/tool.fs", version : "1287.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1271.0");
+export import(path : "onshape/std/manipulator.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/boolean.fs", version : "1271.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1271.0");
-import(path : "onshape/std/box.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/coordSystem.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/mathUtils.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/transform.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/boolean.fs", version : "1287.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1287.0");
+import(path : "onshape/std/box.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/coordSystem.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/mathUtils.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/transform.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
 
 /**
  * The viewer being operated in
@@ -155,12 +155,12 @@ annotation { "Feature Type Name" : "Extrude",
 export const extrude = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "UIHint" : "ALWAYS_HIDDEN", "Default" : OperationDomain.MODEL }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : OperationDomain.MODEL }
         definition.domain is OperationDomain;
 
         if (definition.domain != OperationDomain.FLAT)
         {
-            annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+            annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
             definition.bodyType is ToolBodyType;
 
             if (definition.bodyType != ToolBodyType.SURFACE)
@@ -174,7 +174,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
         else
         {
-            annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM", "Default" : FlatOperationType.REMOVE }
+            annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM, "Default" : FlatOperationType.REMOVE }
             definition.flatOperationType is FlatOperationType;
         }
 
@@ -341,7 +341,7 @@ predicate mainViewExtrudePredicate(definition is map)
 
     if (definition.endBound != BoundingType.SYMMETRIC)
     {
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
     }
 
@@ -354,10 +354,10 @@ predicate mainViewExtrudePredicate(definition is map)
 
         if (definition.hasDraft == true)
         {
-            annotation { "Name" : "Draft angle", "UIHint" : "DISPLAY_SHORT" }
+            annotation { "Name" : "Draft angle", "UIHint" : UIHint.DISPLAY_SHORT }
             isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
             definition.draftPullDirection is boolean;
         }
     }
@@ -365,7 +365,7 @@ predicate mainViewExtrudePredicate(definition is map)
     if (definition.endBound != BoundingType.SYMMETRIC)
     {
         annotation { "Name" : "Second end position",
-                     "UIHint" : "FIRST_IN_ROW" }
+                     "UIHint" : UIHint.FIRST_IN_ROW }
         definition.hasSecondDirection is boolean;
 
         if (definition.hasSecondDirection)
@@ -374,7 +374,7 @@ predicate mainViewExtrudePredicate(definition is map)
             definition.secondDirectionBound is SecondDirectionBoundingType;
 
             annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                         "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                         "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
             definition.secondDirectionOppositeDirection is boolean;
 
             extrudeSecondDirectionBoundParametersPredicate(definition);
@@ -388,10 +388,10 @@ predicate mainViewExtrudePredicate(definition is map)
 
                 if (definition.hasSecondDirectionDraft)
                 {
-                    annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : "DISPLAY_SHORT" }
+                    annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : UIHint.DISPLAY_SHORT }
                     isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
 
-                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
+                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
                     definition.secondDirectionDraftPullDirection is boolean;
                 }
             }

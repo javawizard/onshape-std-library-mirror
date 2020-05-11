@@ -1,24 +1,24 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "1271.0");
+export import(path : "onshape/std/tool.fs", version : "1287.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "1271.0");
+export import(path : "onshape/std/manipulator.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1271.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/mathUtils.fs", version : "1271.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1271.0");
-import(path : "onshape/std/transform.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
+import(path : "onshape/std/boolean.fs", version : "1287.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/mathUtils.fs", version : "1287.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1287.0");
+import(path : "onshape/std/transform.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -46,7 +46,7 @@ annotation { "Feature Type Name" : "Revolve",
 export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType != ToolBodyType.SURFACE)
@@ -80,7 +80,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.revolveType != RevolveType.SYMMETRIC
             && definition.revolveType != RevolveType.FULL)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION_CIRCULAR" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
             definition.oppositeDirection is boolean;
         }
 

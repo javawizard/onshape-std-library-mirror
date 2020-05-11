@@ -1,16 +1,16 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1271.0");
-export import(path : "onshape/std/tool.fs", version : "1271.0");
-export import(path : "onshape/std/patternUtils.fs", version : "1271.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
+export import(path : "onshape/std/tool.fs", version : "1287.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/mathUtils.fs", version : "1271.0");
-import(path : "onshape/std/units.fs", version : "1271.0");
+import(path : "onshape/std/mathUtils.fs", version : "1287.0");
+import(path : "onshape/std/units.fs", version : "1287.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -85,7 +85,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Instance count" }
         isInteger(definition.instanceCount, PRIMARY_PATTERN_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
         annotation { "Name" : "Centered"}
@@ -107,7 +107,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Instance count", "Column Name" : "Second instance count" }
             isInteger(definition.instanceCountTwo, SECONDARY_PATTERN_BOUNDS);
 
-            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirectionTwo is boolean;
 
             annotation { "Name" : "Centered", "Column Name" : "Second centered"}

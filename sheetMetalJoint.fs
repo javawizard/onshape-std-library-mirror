@@ -1,23 +1,23 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "1271.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1271.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1287.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/math.fs", version : "1271.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1271.0");
-import(path : "onshape/std/string.fs", version : "1271.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/math.fs", version : "1287.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1287.0");
+import(path : "onshape/std/string.fs", version : "1287.0");
 
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
@@ -49,7 +49,7 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
 
         if (definition.jointType == SMJointType.RIP)
         {
-            annotation { "Name" : "Has style", "Default" : true, "UIHint" : "ALWAYS_HIDDEN"}
+            annotation { "Name" : "Has style", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN}
             definition.hasStyle is boolean;
             if (definition.hasStyle)
             {

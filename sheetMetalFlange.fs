@@ -1,28 +1,28 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/boolean.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/extrude.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/math.fs", version : "1271.0");
-import(path : "onshape/std/matrix.fs", version : "1271.0");
-import(path : "onshape/std/query.fs", version : "1271.0");
-import(path : "onshape/std/sketch.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1271.0");
-import(path : "onshape/std/units.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/vector.fs", version : "1271.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/boolean.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/extrude.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/math.fs", version : "1287.0");
+import(path : "onshape/std/matrix.fs", version : "1287.0");
+import(path : "onshape/std/query.fs", version : "1287.0");
+import(path : "onshape/std/sketch.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1287.0");
+import(path : "onshape/std/units.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/vector.fs", version : "1287.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1287.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -116,10 +116,10 @@ precondition
                     && ((GeometryType.LINE && AllowFlattenedGeometry.YES) || (GeometryType.PLANE && AllowFlattenedGeometry.NO)) }
     definition.edges is Query;
 
-    annotation {"Name" : "Flange alignment", "UIHint" : "SHOW_LABEL"}
+    annotation {"Name" : "Flange alignment", "UIHint" : UIHint.SHOW_LABEL}
     definition.flangeAlignment is SMFlangeAlignment;
 
-    annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
+    annotation { "Name" : "End type", "UIHint" : UIHint.SHOW_LABEL }
     definition.limitType is SMFlangeBoundingType;
 
     if (definition.limitType == SMFlangeBoundingType.BLIND)
@@ -136,7 +136,7 @@ precondition
             annotation { "Name" : "Offset"}
             isLength(definition.offset, NONNEGATIVE_LENGTH_BOUNDS);
 
-            annotation { "Name" : "Opposite offset direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeOffsetDirection is boolean;
         }
     }
@@ -144,7 +144,7 @@ precondition
     annotation { "Name" : "Angle control type" }
     definition.angleControlType is SMFlangeAngleControlType;
 
-    annotation { "Name" : "Opposite side", "UIHint" : "OPPOSITE_DIRECTION" }
+    annotation { "Name" : "Opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
     definition.oppositeDirection is boolean;
 
     if (definition.angleControlType == SMFlangeAngleControlType.BEND_ANGLE)
@@ -165,7 +165,7 @@ precondition
         annotation { "Name" : "Angle" }
         isAngle(definition.angleFromDirection, FLANGE_DIRECTION_ANGLE_BOUNDS);
 
-        annotation { "Name" : "Opposite angle", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite angle", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.angleFromDirectionOppositeAngle is boolean;
     }
 

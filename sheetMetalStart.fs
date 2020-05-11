@@ -1,33 +1,33 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "1271.0");
-export import(path : "onshape/std/query.fs", version : "1271.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1287.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
 
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/box.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/coordSystem.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/error.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/geomOperations.fs", version : "1271.0");
-import(path : "onshape/std/manipulator.fs", version : "1271.0");
-import(path : "onshape/std/math.fs", version : "1271.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/sketch.fs", version : "1271.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1271.0");
-import(path : "onshape/std/string.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/tool.fs", version : "1271.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/vector.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/box.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/coordSystem.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/error.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/geomOperations.fs", version : "1287.0");
+import(path : "onshape/std/manipulator.fs", version : "1287.0");
+import(path : "onshape/std/math.fs", version : "1287.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/sketch.fs", version : "1287.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1287.0");
+import(path : "onshape/std/string.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/tool.fs", version : "1287.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/vector.fs", version : "1287.0");
 
 /**
  * Method of initializing sheet metal model
@@ -110,11 +110,11 @@ annotation { "Feature Type Name" : "Sheet metal model",
 export const sheetMetalStart = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
      precondition
     {
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
             ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
         definition.initEntities is Query;
 
-        annotation { "Name" : "Process", "UIHint" : "HORIZONTAL_ENUM" }
+        annotation { "Name" : "Process", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.process is SMProcessType;
 
         // First the entities
@@ -142,7 +142,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
             if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
             {
-                annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.oppositeExtrudeDirection is boolean;
             }
 
@@ -159,7 +159,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
                     definition.secondDirectionBound is SMExtrudeSecondDirectionBoundingType;
 
                     annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                                 "UIHint" : "OPPOSITE_DIRECTION", "Default" : true }
+                                 "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
                     definition.secondDirectionOppositeExtrudeDirection is boolean;
 
                     extrudeSecondDirectionBoundParametersPredicate(definition);
@@ -197,22 +197,22 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
 
         // Then some common parameters
-        annotation { "Name" : "Thickness", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.thickness, SM_THICKNESS_BOUNDS);
 
-        annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
-        annotation { "Name" : "Bend radius", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
 
-        annotation { "Name" : "Bend K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isReal(definition.kFactor, K_FACTOR_BOUNDS);
 
-        annotation { "Name" : "Rolled K Factor", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
 
-        annotation { "Name" : "Minimal gap", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+        annotation { "Name" : "Minimal gap", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
 
         annotation { "Name" : "Corner relief type",
@@ -223,19 +223,19 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
             definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
         {
-            annotation { "Name" : "Corner relief scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
         }
 
         if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
         {
-            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
         }
 
         if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
         {
-            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
         }
 
@@ -248,9 +248,9 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
             definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
         {
-            annotation { "Name" : "Bend relief depth scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Bend relief depth scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
-            annotation { "Name" : "Bend relief width scale", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Bend relief width scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
         }
     }

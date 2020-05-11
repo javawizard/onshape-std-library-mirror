@@ -1,23 +1,23 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1271.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1271.0");
+export import(path : "onshape/std/manipulator.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/mathUtils.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
+import(path : "onshape/std/box.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/mathUtils.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
 
 
 /**
@@ -81,7 +81,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         // This hidden "placeholder" Query allows preselection of both cones/cylinders AND circles/arcs
         // We purposely accept all all EDGEs to allow for preselection in the feature tree.
         // Further constraints are applied in the helixLogic preselection function
-        annotation { "Name" : "Entities", "UIHint" : "ALWAYS_HIDDEN", "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || EntityType.EDGE }
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS) || EntityType.EDGE }
         definition.initEntities is Query;
 
         annotation { "Name" : "Helix type" }
@@ -91,14 +91,14 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
             definition.helixType == HelixType.HEIGHT_PITCH ||
             definition.helixType == HelixType.TURNS_PITCH)
         {
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;    // false by default
         }
 
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
             annotation { "Name" : "Conical or cylindrical face", "MaxNumberOfPicks" : 1, "Filter" : EntityType.FACE && QueryFilterCompound.ALLOWS_AXIS,
-                         "UIHint" : "PREVENT_CREATING_NEW_MATE_CONNECTORS" }
+                         "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
             definition.entities is Query;
         }
         else

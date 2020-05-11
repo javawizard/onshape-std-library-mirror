@@ -1,4 +1,4 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1079,9 +1079,9 @@ export enum ErrorStringEnum
     RIB_MERGE_FAILED,
     /* Failed to save named position. */
     ASSEMBLY_NAMED_POSITIONS_SAVE_FAILED,
-    /* Mates or parts have changed. Position may not be exact. */
+    /* Instance position or mate has changed. */
     ASSEMBLY_NAMED_POSITIONS_LOAD_FAILED,
-    /* A non-empty assembly is required in order to save a named position. */
+    /* Assembly must not be empty. */
     ASSEMBLY_NAMED_POSITIONS_NO_MATES_TO_SAVE,
     /* Named position not found. */
     ASSEMBLY_NAMED_POSITIONS_POSITION_NOT_FOUND,
@@ -1926,7 +1926,9 @@ export enum ErrorStringEnum
     /* "Explode steps do not support instances of type Sketch." */
     CANNOT_EXPLODE_SKETCH,
     /* "Failed to create exploded view." */
-    FAILED_TO_CREATE_EXPLODED_VIEW
+    FAILED_TO_CREATE_EXPLODED_VIEW,
+    /* Instances have been added to the assembly. */
+    ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES
 }
 
 

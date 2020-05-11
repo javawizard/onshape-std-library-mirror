@@ -1,20 +1,20 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "1271.0");
+export import(path : "onshape/std/smcornerreliefstyle.gen.fs", version : "1287.0");
 
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
 
 /**
  * Corner feature is used to override default sheet metal model corner relief style or dimensions for an individual corner
@@ -28,7 +28,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
                         && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.corner is Query;
 
-        annotation { "Name" : "Corner relief type", "Default" : SMCornerReliefStyle.SIZED_RECTANGLE, "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Corner relief type", "Default" : SMCornerReliefStyle.SIZED_RECTANGLE, "UIHint" : UIHint.SHOW_LABEL }
         definition.cornerStyle is SMCornerReliefStyle;
 
         if (definition.cornerStyle == SMCornerReliefStyle.RECTANGLE || definition.cornerStyle == SMCornerReliefStyle.ROUND)
@@ -38,12 +38,12 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         }
         if (definition.cornerStyle == SMCornerReliefStyle.SIZED_ROUND)
         {
-            annotation { "Name" : "Corner relief diameter", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.roundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
         }
         if (definition.cornerStyle == SMCornerReliefStyle.SIZED_RECTANGLE)
         {
-            annotation { "Name" : "Corner relief width", "UIHint" : "REMEMBER_PREVIOUS_VALUE" }
+            annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.squareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
         }
     }

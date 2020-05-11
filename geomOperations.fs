@@ -1,4 +1,4 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1271; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/context.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/query.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/vector.fs", version : "1271.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/context.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/query.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/vector.fs", version : "1287.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1287.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1287.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1287.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1287.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1287.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1271.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1287.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1271.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1287.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1287.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1271.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1287.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -520,6 +520,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  * @param definition {{
  *      @field profileSubqueries {array} : An ordered array of queries for the profiles. For a solid loft, these must be
  *              sheet bodies, faces, or vertices. For a surface loft, these could be wire bodies, sheet bodies, faces, edges, or vertices.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
@@ -531,7 +532,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
  *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
  *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
- *              @eg `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces }]`
+ *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces } ]`
  *              The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  * }}

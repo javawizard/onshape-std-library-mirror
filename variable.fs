@@ -1,19 +1,19 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1271.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/string.fs", version : "1271.0");
-import(path : "onshape/std/tool.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/manipulator.fs", version : "1271.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/string.fs", version : "1287.0");
+import(path : "onshape/std/tool.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/manipulator.fs", version : "1287.0");
 
 /**
  * Specifies the type of values `assignVariable` is allowed to set.
@@ -50,38 +50,38 @@ export enum VariableType
  *      @field anyValue : Used if `variableType` is `ANY`.  Can be any immutable FeatureScript value, including a length, an array, or a function.
  * }}
  */
-annotation {"Feature Type Name" : "Variable", "Feature Name Template": "###name = #value", "UIHint" : "NO_PREVIEW_PROVIDED", "Editing Logic Function" : "variableEditLogic"}
+annotation {"Feature Type Name" : "Variable", "Feature Name Template": "###name = #value", "UIHint" : UIHint.NO_PREVIEW_PROVIDED, "Editing Logic Function" : "variableEditLogic"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
         annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
         definition.variableType is VariableType;
 
-        annotation { "Name" : "Name", "UIHint" : "UNCONFIGURABLE", "MaxLength": 10000 }
+        annotation { "Name" : "Name", "UIHint" : UIHint.UNCONFIGURABLE, "MaxLength": 10000 }
         definition.name is string;
 
         if (definition.variableType == VariableType.LENGTH)
         {
-            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
             isLength(definition.lengthValue, ZERO_DEFAULT_LENGTH_BOUNDS);
         }
         if (definition.variableType == VariableType.ANGLE)
         {
-            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
             isAngle(definition.angleValue, ANGLE_360_ZERO_DEFAULT_BOUNDS);
         }
         if (definition.variableType == VariableType.NUMBER)
         {
-            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
             isReal(definition.numberValue, { (unitless) : [-1e12, 0, 1e12] } as RealBoundSpec);
         }
         if (definition.variableType == VariableType.ANY)
         {
-            annotation { "Name" : "Value", "UIHint" : "INITIAL_FOCUS_ON_EDIT" }
+            annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
             isAnything(definition.anyValue);
         }
 
-        annotation { "UIHint" : "ALWAYS_HIDDEN" }
+        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
         isAnything(definition.value);
     }
     {

@@ -1,20 +1,20 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "1271.0");
+export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "1287.0");
 
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
 
 /**
  * Bend relief feature is used to override default bend relief of sheet metal model
@@ -29,7 +29,7 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
                         && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
         definition.bendRelief is Query;
 
-        annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.SIZED_OBROUND, "UIHint" : "SHOW_LABEL" }
+        annotation { "Name" : "Bend relief type", "Default" : SMBendReliefStyle.SIZED_OBROUND, "UIHint" : UIHint.SHOW_LABEL }
         definition.bendReliefStyle is SMBendReliefStyle;
 
         if (definition.bendReliefStyle == SMBendReliefStyle.RECTANGLE || definition.bendReliefStyle == SMBendReliefStyle.OBROUND)

@@ -1,14 +1,14 @@
-FeatureScript 1271; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/coordSystem.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/manipulator.fs", version : "1271.0");
-import(path : "onshape/std/math.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
-import(path : "onshape/std/vector.fs", version : "1271.0");
+FeatureScript 1287; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/coordSystem.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/manipulator.fs", version : "1287.0");
+import(path : "onshape/std/math.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
+import(path : "onshape/std/vector.fs", version : "1287.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -48,11 +48,11 @@ const DEFAULT_G1G1_SCALE = 2 / 3;
 annotation { "Feature Type Name" : "Bridging curve",
         "Editing Logic Function" : "onFeatureChange",
         "Manipulator Change Function" : "onManipulatorChange",
-        "UIHint" : "NO_PREVIEW_PROVIDED" }
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const bridgingCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : "ALWAYS_HIDDEN", "Filter" : EntityType.EDGE || EntityType.VERTEX }
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX }
         definition.preselectedEntities is Query;
         annotation { "Name" : "First side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;

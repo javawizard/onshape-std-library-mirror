@@ -1,4 +1,4 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,10 +9,9 @@ FeatureScript 1271; /* Automatically generated version */
  ******************************************
  */
 
-import(path : "onshape/std/error.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/query.fs", version : "1271.0");
-
+import(path : "onshape/std/error.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/query.fs", version : "1287.0");
 
 
 /**
@@ -23,7 +22,7 @@ import(path : "onshape/std/query.fs", version : "1271.0");
 */
 annotation { "Feature Type Name" : "Name entity",
              "Feature Name Template": "Name #entityName",
-             "UIHint" : "NO_PREVIEW_PROVIDED"}
+             "UIHint" : UIHint.NO_PREVIEW_PROVIDED}
 export const nameEntity = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {

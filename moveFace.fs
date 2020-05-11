@@ -1,28 +1,28 @@
-FeatureScript 1271; /* Automatically generated version */
+FeatureScript 1287; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1271.0");
-export import(path : "onshape/std/tool.fs", version : "1271.0");
+export import(path : "onshape/std/query.fs", version : "1287.0");
+export import(path : "onshape/std/tool.fs", version : "1287.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1271.0");
+export import(path : "onshape/std/manipulator.fs", version : "1287.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1271.0");
-import(path : "onshape/std/box.fs", version : "1271.0");
-import(path : "onshape/std/containers.fs", version : "1271.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1271.0");
-import(path : "onshape/std/evaluate.fs", version : "1271.0");
-import(path : "onshape/std/feature.fs", version : "1271.0");
-import(path : "onshape/std/mathUtils.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1271.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1271.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1271.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1271.0");
-import(path : "onshape/std/valueBounds.fs", version : "1271.0");
+import(path : "onshape/std/attributes.fs", version : "1287.0");
+import(path : "onshape/std/box.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1287.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
+import(path : "onshape/std/evaluate.fs", version : "1287.0");
+import(path : "onshape/std/feature.fs", version : "1287.0");
+import(path : "onshape/std/mathUtils.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1287.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1287.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1287.0");
+import(path : "onshape/std/valueBounds.fs", version : "1287.0");
 
 
 /**
@@ -71,7 +71,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         if (definition.outputType == MoveFaceOutputType.MOVE)
         {
             annotation { "Name" : "Faces to move",
-                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE && (ActiveSheetMetal.NO || SheetMetalDefinitionEntityType.EDGE || SheetMetalDefinitionEntityType.FACE))
                                     && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.moveFaces is Query;
@@ -79,7 +79,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         else
         {
             annotation { "Name" : "Faces, surfaces, and sketch regions",
-                         "UIHint" : "SHOW_CREATE_SELECTION",
+                         "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY))
                             && ConstructionObject.NO }
             definition.surfacesAndFaces is Query;
@@ -105,7 +105,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
         if (definition.moveFaceType != MoveFaceType.ROTATE)
         {
-            annotation { "Name" : "End type", "UIHint" : "SHOW_LABEL" }
+            annotation { "Name" : "End type", "UIHint" : UIHint.SHOW_LABEL }
             definition.limitType is MoveFaceBoundingType;
         }
 
@@ -127,7 +127,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
                 isLength(definition.offsetDistance, MOVE_FACE_OFFSET_BOUNDS);
             }
 
-            annotation { "Name" : "Opposite direction", "UIHint" : "OPPOSITE_DIRECTION" }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
         }
         else
@@ -151,10 +151,10 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
                 if (definition.hasOffset)
                 {
-                    annotation { "Name" : "Offset", "UIHint" : "DISPLAY_SHORT" }
+                    annotation { "Name" : "Offset", "UIHint" : UIHint.DISPLAY_SHORT }
                     isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-                    annotation { "Name" : "Opposite offset direction", "Default" : true, "UIHint" : "OPPOSITE_DIRECTION" }
+                    annotation { "Name" : "Opposite offset direction", "Default" : true, "UIHint" : UIHint.OPPOSITE_DIRECTION }
                     definition.oppositeOffsetDirection is boolean;
                 }
             }
