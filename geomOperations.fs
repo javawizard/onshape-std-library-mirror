@@ -1,4 +1,4 @@
-FeatureScript 1287; /* Automatically generated version */
+FeatureScript 1301; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1287; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1287.0");
-import(path : "onshape/std/context.fs", version : "1287.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
-import(path : "onshape/std/query.fs", version : "1287.0");
-import(path : "onshape/std/valueBounds.fs", version : "1287.0");
-import(path : "onshape/std/vector.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1301.0");
+import(path : "onshape/std/context.fs", version : "1301.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1301.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1301.0");
+import(path : "onshape/std/query.fs", version : "1301.0");
+import(path : "onshape/std/valueBounds.fs", version : "1301.0");
+import(path : "onshape/std/vector.fs", version : "1301.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1301.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1301.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1301.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1301.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1301.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1287.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1301.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1287.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1301.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1301.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1301.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -524,7 +524,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
- *      @field bodyType {ToolBodyType} : If true (default) create solid body. If false, create surface body. @optional
+ *      @field bodyType {ToolBodyType} : Specifies a `SOLID` or `SURFACE` loft. Default is `SOLID`. @optional
  *      @field trimGuidesByProfiles {boolean} : If false (default) use full length of guides. If true restrict resulting surface by the first and last profile.
  *                                              Meaningful only for non-periodic surface loft. @optional
  *      @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.

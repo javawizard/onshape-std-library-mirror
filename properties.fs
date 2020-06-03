@@ -1,4 +1,4 @@
-FeatureScript 1287; /* Automatically generated version */
+FeatureScript 1301; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,15 +6,15 @@ FeatureScript 1287; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "1287.0");
-import(path : "onshape/std/query.fs", version : "1287.0");
-import(path : "onshape/std/string.fs", version : "1287.0");
-import(path : "onshape/std/units.fs", version : "1287.0");
+import(path : "onshape/std/context.fs", version : "1301.0");
+import(path : "onshape/std/query.fs", version : "1301.0");
+import(path : "onshape/std/string.fs", version : "1301.0");
+import(path : "onshape/std/units.fs", version : "1301.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "1287.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "1301.0");
 
 /**
- * Sets a property on a set of bodies.  The allowed properties are listed in [PropertyType].
+ * Sets a property on a set of bodies. The allowed properties are listed in [PropertyType].
  *
  * Note: Any properties set in this way will be overridden if they are set directly in the Part Studio
  * (via "Rename", "Set appearance", or the properties dialog).  In that case the property
@@ -22,7 +22,7 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "1287.0");
  * custom feature based on the configuration, manually editing the part number from the properties dialog
  * will override the custom feature's part number for all configurations.
  * @param definition {{
- *      @field entities {Query} : The bodies to apply the property to.
+ *      @field entities {Query} : The bodies (or, if `allowFaces` is true, the faces) to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
  *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
@@ -34,6 +34,9 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "1287.0");
  *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.  The value should be a string
  *          for a `CUSTOM` property even if the property is of a non-string type.
  *          @eg `color(1, 0, 0)` to make the part red.
+ *      @field allowFaces {boolean} : @optional
+ *          If set to `true`, `entities` may be faces, which allows setting face colors and names via
+ *          FeatureScript. Setting properties other than `APPEARANCE` and `NAME` on faces is not supported.
  * }}
  */
 export function setProperty(context is Context, definition is map)
@@ -62,7 +65,29 @@ precondition
     @setProperty(context, definition);
 }
 
-/** @internal Works only in editing logic and manipulators */
+/**
+ * NOTE: This function cannot be called inside custom features. It can only be called from [table functions](/FsDoc/tables.html),
+ * [editing logic](/FsDoc/uispec.html#editing-logic-function), and [manipulator change functions](/FsDoc/uispec.html#manipulator-change-function).
+ * Getting properties in custom features is not possible, since features are regenerated before any
+ * user-set properties are applied.
+ *
+ * Returns the value of a property of a single body, which can be either an Onshape property (allowed
+ * properties listed on PropertyType) or a custom property defined in company settings.
+ *
+ * The returned value's type will correspond to the property type: A [Color] if the `propertyType`
+ * is `APPEARANCE`, a [Material] if it is `MATERIAL`, a boolean if it is `EXCLUDE_FROM_BOM`, and
+ * a string otherwise.  `CUSTOM` property's returned value will always be a string, even if the
+ * custom property is of a non-string type.
+ *
+ * @param definition {{
+ *      @field entity {Query} : A single body the property applies to.
+ *      @field propertyType {PropertyType} : The property to get.
+ *          @eg `PropertyType.NAME` to get the body's name
+ *      @field customPropertyId {string} : @requiredIf {`propertyType` is `CUSTOM`}
+ *          The id of the custom property.  The property id is available from your
+ *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ * }}
+ */
 export function getProperty(context is Context, definition is map)
 precondition
 {
@@ -93,7 +118,9 @@ precondition
     return result;
 }
 
-/** Represents a color as red, green, blue, and alpha transparency components, each between 0 and 1 (inclusive). */
+/**
+ * Represents a color as red, green, blue, and alpha transparency components, each between 0 and 1 (inclusive).
+ */
 export type Color typecheck canBeColor;
 
 /** Typecheck for [Color] */
@@ -112,13 +139,13 @@ export predicate canBeColor(value)
     }
 }
 
-/** Create a [Color] from RGBA values. */
+/** Create a [Color] from RGBA values, each between 0 and 1 (inclusive) */
 export function color(red is number, green is number, blue is number, alpha is number) returns Color
 {
     return { "red" : red, "green" : green, "blue" : blue, "alpha" : alpha } as Color;
 }
 
-/** Create an opaque [Color] from RGB values. */
+/** Create an opaque [Color] from RGB values, each between 0 and 1 (inclusive) */
 export function color(red is number, green is number, blue is number) returns Color
 {
     return color(red, green, blue, 1);

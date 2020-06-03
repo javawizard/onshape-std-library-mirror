@@ -1,4 +1,4 @@
-FeatureScript 1287; /* Automatically generated version */
+FeatureScript 1301; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1928,7 +1928,9 @@ export enum ErrorStringEnum
     /* "Failed to create exploded view." */
     FAILED_TO_CREATE_EXPLODED_VIEW,
     /* Instances have been added to the assembly. */
-    ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES
+    ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES,
+    /* Unexpected error regenerating feature.  Please contact support. */
+    SYS_FEATURE_EXCEPTION
 }
 
 

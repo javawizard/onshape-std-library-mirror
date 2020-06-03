@@ -1,4 +1,4 @@
-FeatureScript 1287; /* Automatically generated version */
+FeatureScript 1301; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1287; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1287.0");
-import(path : "onshape/std/context.fs", version : "1287.0");
-import(path : "onshape/std/mathUtils.fs", version : "1287.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1287.0");
-import(path : "onshape/std/units.fs", version : "1287.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1287.0");
-import(path : "onshape/std/featureList.fs", version : "1287.0");
+import(path : "onshape/std/containers.fs", version : "1301.0");
+import(path : "onshape/std/context.fs", version : "1301.0");
+import(path : "onshape/std/mathUtils.fs", version : "1301.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1301.0");
+import(path : "onshape/std/units.fs", version : "1301.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1301.0");
+import(path : "onshape/std/featureList.fs", version : "1301.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1360,12 +1360,35 @@ export function qLoopEdges(seed is Query) returns Query
 }
 
 /**
+ * @internal
+ * Unconventional semantics, not for general use.
+ *
  * A query for linear edges parallel to any edge in `referenceEdges`.
  * Only edges from the owner bodies of `referenceEdges` are included.
  */
 export function qParallelEdges(referenceEdges is Query) returns Query
 {
     return { "queryType" : QueryType.PARALLEL_EDGES, "subquery" : referenceEdges } as Query;
+}
+
+/**
+ * A query for all linear edges in `queryToFilter` which are parallel (or anti-parallel) to the given `direction`.
+ */
+export function qParallelEdges(queryToFilter is Query, direction is Vector) returns Query
+precondition
+{
+    @size(direction) == 3;
+}
+{
+    return { "queryType" : QueryType.PARALLEL_EDGES, "queryToFilter" : queryToFilter, "direction" : normalize(direction) } as Query;
+}
+
+/**
+ * A query to find all linear edges in `queryToFilter` which are parallel (or anti-parallel) to any linear edge in `edges`.
+ */
+export function qParallelEdges(queryToFilter is Query, edges is Query) returns Query
+{
+    return { "queryType" : QueryType.PARALLEL_EDGES, "queryToFilter" : queryToFilter, "edges" : edges } as Query;
 }
 
 /**
