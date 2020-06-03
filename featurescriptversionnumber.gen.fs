@@ -893,7 +893,15 @@ export enum FeatureScriptVersionNumber
     V1284_NORMALIZE,
     V1285_HOLE_SCOPE_DEFAULT,
     V1286_NORMAL_REVERT,
-    V1287_ERROR_STRING_BUMP
+    V1287_ERROR_STRING_BUMP,
+    V1294_MULTI_BODY_MOVE_FACE,
+    V1295_SECTION_SOLID_SURFACE_ONLY,
+    V1296_DELETE_ALL_FACES,
+    V1297_PS_VERSION_32_1_212,
+    V1298_IMPORT_FACE_COLORS,
+    V1299_TABLES_ENABLED,
+    V1300_TABLE_DOCS,
+    V1301_ALLOW_FACES_DOC
 }
 
 /**
@@ -904,6 +912,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1287_ERROR_STRING_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1301_ALLOW_FACES_DOC;
 
 

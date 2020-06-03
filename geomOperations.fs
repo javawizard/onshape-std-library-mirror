@@ -524,7 +524,7 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
  *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
- *      @field bodyType {ToolBodyType} : If true (default) create solid body. If false, create surface body. @optional
+ *      @field bodyType {ToolBodyType} : Specifies a `SOLID` or `SURFACE` loft. Default is `SOLID`. @optional
  *      @field trimGuidesByProfiles {boolean} : If false (default) use full length of guides. If true restrict resulting surface by the first and last profile.
  *                                              Meaningful only for non-periodic surface loft. @optional
  *      @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.

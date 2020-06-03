@@ -492,7 +492,7 @@ function retainHoleAttributes(context is Context, bodies is Query)
 
 function jogSectionCut(context is Context, id is Id, definition is map)
 {
-    const target = definition.target;
+    const target = qUnion([qBodyType(definition.target, BodyType.SOLID), qBodyType(definition.target, BodyType.SHEET)]);
     const sketchPlane = definition.sketchPlane;
     const bboxIn = definition.bbox;
     const isPartialSection = definition.isPartialSection;

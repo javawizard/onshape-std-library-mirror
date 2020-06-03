@@ -554,6 +554,15 @@ export function isInFeaturePattern(context is Context)
 
 /**
  * @internal
+ * Only accesible during tables, editing logic and manipulator change function
+ */
+export function getFeatureName(context is Context, id is Id)
+{
+    return @getFeatureName(context, id);
+}
+
+/**
+ * @internal
  * @seealso [verifyNonemptyQuery(Context, map, string, string)]
  */
 export function verifyNonemptyQuery(context is Context, definition is map, parameterName is string, errorToReport is ErrorStringEnum) returns array

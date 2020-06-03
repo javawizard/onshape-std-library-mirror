@@ -9,7 +9,7 @@ FeatureScript ✨; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/box.fs", version : "✨");
+export import(path : "onshape/std/box.fs", version : "✨");
 export import(path : "onshape/std/clashtype.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/context.fs", version : "✨");
