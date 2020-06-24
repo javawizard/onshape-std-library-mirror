@@ -1,11 +1,11 @@
-FeatureScript 1301; /* Automatically generated version */
+FeatureScript 1311; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1301.0");
-import(path : "onshape/std/hole.fs", version : "1301.0");
-import(path : "onshape/std/table.fs", version : "1301.0");
+import(path : "onshape/std/attributes.fs", version : "1311.0");
+import(path : "onshape/std/hole.fs", version : "1311.0");
+import(path : "onshape/std/table.fs", version : "1311.0");
 
 /** Computes one hole table for each part */
 annotation { "Table Type Name" : "Hole table" }
@@ -22,18 +22,15 @@ export const holeTable = defineTable(function(context is Context, definition is 
         columnDefinitions = append(columnDefinitions, tableColumnDefinition("quantity", "Qty"));
 
         const attributePattern = {} as HoleAttribute;
-        const allModifiable = qAllModifiableSolidBodies();
-        const allModifiableAndNotConsumed = qConsumed(allModifiable, Consumed.NO);
-        const allCompositesWithSolids = qCompositePartsContaining(allModifiable);
 
-        for (var part in evaluateQuery(context, qUnion([allModifiableAndNotConsumed, allCompositesWithSolids])))
+        for (var partAndBodies in allSolidsAndClosedComposites(context))
         {
             var rows = [];
 
             var featureAndNumberToFaces = {};
             var sizeToRowData = {};
 
-            var holeFacesQuery = qAttributeFilter(qOwnedByBody(qFlattenedCompositeParts(part), EntityType.FACE), attributePattern);
+            var holeFacesQuery = qAttributeFilter(qOwnedByBody(partAndBodies.bodies, EntityType.FACE), attributePattern);
             for (var face in evaluateQuery(context, holeFacesQuery))
             {
                 var attribute = @getAttributes(context, { "entities" : face, "attributePattern" : attributePattern })[0];
@@ -76,10 +73,10 @@ export const holeTable = defineTable(function(context is Context, definition is 
                 rows = append(rows, tableRow({ "tag" : entry.value.tag, "size" : entry.value.size, "quantity" : entry.value.quantity }, qUnion([holeFaces, holeEdges])));
             }
 
-            var partName = getProperty(context, { "entity" : part, "propertyType" : PropertyType.NAME } );
+            var partName = getProperty(context, { "entity" : partAndBodies.part, "propertyType" : PropertyType.NAME } );
             var title = { "template" : "#name", "name" : partName } as TemplateString; // Use a template so we don't try to translate the part name
 
-            tables = append(tables, table(title, columnDefinitions, rows, part));
+            tables = append(tables, table(title, columnDefinitions, rows, partAndBodies.part));
         }
         return tableArray(tables);
     });

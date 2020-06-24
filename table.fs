@@ -1,17 +1,17 @@
-FeatureScript 1301; /* Automatically generated version */
+FeatureScript 1311; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/containers.fs", version : "1301.0");
-export import(path : "onshape/std/context.fs", version : "1301.0");
-export import(path : "onshape/std/evaluate.fs", version : "1301.0");
-export import(path : "onshape/std/math.fs", version : "1301.0");
-export import(path : "onshape/std/properties.fs", version : "1301.0");
-export import(path : "onshape/std/query.fs", version : "1301.0");
-export import(path : "onshape/std/string.fs", version : "1301.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1301.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1301.0");
+export import(path : "onshape/std/containers.fs", version : "1311.0");
+export import(path : "onshape/std/context.fs", version : "1311.0");
+export import(path : "onshape/std/evaluate.fs", version : "1311.0");
+export import(path : "onshape/std/math.fs", version : "1311.0");
+export import(path : "onshape/std/properties.fs", version : "1311.0");
+export import(path : "onshape/std/query.fs", version : "1311.0");
+export import(path : "onshape/std/string.fs", version : "1311.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1311.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1311.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -298,6 +298,38 @@ export predicate canBeTemplateString(value)
 export function templateString(value is map) returns TemplateString
 {
     return value as TemplateString;
+}
+
+// ----------------------------------- All parts query -----------------------------------
+
+/**
+ * Returns an array of maps for all modifiable non-mesh solids and closed composites.  Each map has a key `part`, which
+ * maps to a query for the solid or composite and `bodies`, which maps to either the solid or all constituent bodies.
+ * This is useful for iterating over what a user may consider to be "individual parts" in a context.
+ *
+ * @example ```
+ * for (var partAndBodies in allSolidsAndClosedComposites(context))
+ * {
+ *     var name = getProperty(context, { "entity" : partAndBodies.part, "propertyType" : PropertyType.NAME } );
+ *     var volume = evVolume(context, { "entities" : partAndBodies.bodies });
+ * }
+ * ```
+ */
+export function allSolidsAndClosedComposites(context is Context) returns array
+{
+    const allSolidsNotConsumed = qConsumed(qAllModifiableSolidBodies(), Consumed.NO);
+
+    var result = [];
+
+    for (var solid in evaluateQuery(context, allSolidsNotConsumed))
+        result = append(result, { "part" : solid, "bodies" : solid });
+
+    const allClosedComposites = qCompositePartTypeFilter(qEverything(EntityType.BODY), CompositePartType.CLOSED);
+
+    for (var composite in evaluateQuery(context, allClosedComposites))
+        result = append(result, { "part" : composite, "bodies" : qContainedInCompositeParts(composite) });
+
+    return result;
 }
 
 // ----------------------------------- toString -----------------------------------
