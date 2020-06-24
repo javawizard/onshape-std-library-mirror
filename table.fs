@@ -300,6 +300,38 @@ export function templateString(value is map) returns TemplateString
     return value as TemplateString;
 }
 
+// ----------------------------------- All parts query -----------------------------------
+
+/**
+ * Returns an array of maps for all modifiable non-mesh solids and closed composites.  Each map has a key `part`, which
+ * maps to a query for the solid or composite and `bodies`, which maps to either the solid or all constituent bodies.
+ * This is useful for iterating over what a user may consider to be "individual parts" in a context.
+ *
+ * @example ```
+ * for (var partAndBodies in allSolidsAndClosedComposites(context))
+ * {
+ *     var name = getProperty(context, { "entity" : partAndBodies.part, "propertyType" : PropertyType.NAME } );
+ *     var volume = evVolume(context, { "entities" : partAndBodies.bodies });
+ * }
+ * ```
+ */
+export function allSolidsAndClosedComposites(context is Context) returns array
+{
+    const allSolidsNotConsumed = qConsumed(qAllModifiableSolidBodies(), Consumed.NO);
+
+    var result = [];
+
+    for (var solid in evaluateQuery(context, allSolidsNotConsumed))
+        result = append(result, { "part" : solid, "bodies" : solid });
+
+    const allClosedComposites = qCompositePartTypeFilter(qEverything(EntityType.BODY), CompositePartType.CLOSED);
+
+    for (var composite in evaluateQuery(context, allClosedComposites))
+        result = append(result, { "part" : composite, "bodies" : qContainedInCompositeParts(composite) });
+
+    return result;
+}
+
 // ----------------------------------- toString -----------------------------------
 
 const MAX_SUBSTITUTIONS = 1000;

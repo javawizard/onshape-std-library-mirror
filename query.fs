@@ -136,6 +136,7 @@ export predicate canBeQuery(value)
  * @value LOOP_EDGES                 : Used in [qLoopEdges]
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
  * @value CONSUMED                   : Used in [qConsumed]
+ * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
 
  ******************************************************************************/
 export enum QueryType
@@ -216,7 +217,8 @@ export enum QueryType
     LAMINAR_DEPENDENCY,
     PLANE_PARALLEL_DIRECTION,
     FACE_PARALLEL_DIRECTION,
-    CONSUMED
+    CONSUMED,
+    COMPOSITE_PART_TYPE_FITLER
 }
 
 /**
@@ -604,6 +606,20 @@ export enum Consumed
 {
     YES,
     NO
+}
+
+/**
+ * Specifies whether to filter or allow closed or open composite parts.
+ *
+ * @seealso [qCompositePartTypeFilter]
+ *
+ * @value OPEN : Matches only open composite parts
+ * @value CLOSED  : Matches only closed composite parts
+ */
+export enum CompositePartType
+{
+    OPEN,
+    CLOSED
 }
 
 //Don't strip units off historical queries
@@ -994,6 +1010,14 @@ export function qCompositePartsContaining(bodies is Query) returns Query
 }
 
 /**
+ * A query for each composite part of the given type containing `bodies`.
+ */
+export function qCompositePartsContaining(bodies is Query, compositePartType is CompositePartType) returns Query
+{
+    return { "queryType" : QueryType.COMPOSITE_CONTAINING, "bodies" : bodies, "compositePartType" : compositePartType } as Query;
+}
+
+/**
  * A query for non-composite entities in `entities` and constituents of composite parts in `entities`.
  */
 export function qFlattenedCompositeParts(entities is Query) returns Query
@@ -1008,6 +1032,14 @@ export function qFlattenedCompositeParts(entities is Query) returns Query
 export function qConsumed(queryToFilter is Query, consumed is Consumed) returns Query
 {
     return { "queryType" : QueryType.CONSUMED, "consumed" : consumed, "subquery" : queryToFilter } as Query;
+}
+
+/**
+ * A query for all bodies in `queryToFilter` which are either open or closed composite parts, depending on the second parameter.
+ */
+export function qCompositePartTypeFilter(queryToFilter is Query, compositePartType is CompositePartType) returns Query
+{
+    return { "queryType" : QueryType.COMPOSITE_PART_TYPE_FITLER, "compositePartType" : compositePartType, "subquery" : queryToFilter } as Query;
 }
 
 /**
