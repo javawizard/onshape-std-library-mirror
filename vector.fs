@@ -1,14 +1,14 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/math.fs", version : "1311.0");
-import(path : "onshape/std/units.fs", version : "1311.0");
-import(path : "onshape/std/matrix.fs", version : "1311.0");
-import(path : "onshape/std/string.fs", version : "1311.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/math.fs", version : "1324.0");
+import(path : "onshape/std/units.fs", version : "1324.0");
+import(path : "onshape/std/matrix.fs", version : "1324.0");
+import(path : "onshape/std/string.fs", version : "1324.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.

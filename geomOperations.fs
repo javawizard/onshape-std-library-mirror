@@ -1,4 +1,4 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1311; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/context.fs", version : "1311.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1311.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1311.0");
-import(path : "onshape/std/query.fs", version : "1311.0");
-import(path : "onshape/std/valueBounds.fs", version : "1311.0");
-import(path : "onshape/std/vector.fs", version : "1311.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/context.fs", version : "1324.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1324.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1324.0");
+import(path : "onshape/std/query.fs", version : "1324.0");
+import(path : "onshape/std/valueBounds.fs", version : "1324.0");
+import(path : "onshape/std/vector.fs", version : "1324.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1324.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1324.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1324.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1324.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1324.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1311.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1324.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1311.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1324.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1324.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1324.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -232,37 +232,35 @@ export function opEnclose(context is Context, id is Id, definition is map)
  * @param id : @autocomplete `id + "draft1"`
  * @param definition {{
  *      @field draftType {DraftType} :
- *              Specifies a neutral plane or reference entity draft.
- *              @eg `DraftType.NEUTRAL_PLANE` for a neutral plane draft
- *
- *      @field neutralPlane {Query} : @requiredif { `draftType` is `NEUTRAL_PLANE` }
- *              The face defining the neutral plane for a `NEUTRAL_PLANE` draft.  The intersection of the drafted faces
- *              and the neutral plane remains unchanged.
- *              @autocomplete `neutralPlane`
- *      @field draftFaces {Query} : @requiredif { `draftType` is `NEUTRAL_PLANE` }
- *              The faces to draft for a `NEUTRAL_PLANE` draft.
+ *              Specifies a reference surface (e.g. a neutral plane) or reference entity draft.
+ *              @eg `DraftType.REFERENCE_SURFACE` for a reference surface draft
+ *      @field draftFaces {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` }
+ *              The faces to draft for a `REFERENCE_SURFACE` draft.
  *              @autocomplete `draftFaces`
- *
+ *      @field referenceFace {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referencePlane` is not set }
+ *              A face that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
+ *              where they intersect `referenceFace`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
+ *      @field referencePlane {Plane} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referenceFace` is not set }
+ *              A plane that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
+ *              where they intersect `referencePlane`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
+ *              @autocomplete `plane(vector(0, 0, 1) * inch, vector(0, 0, 1))`
  *      @field referenceEntityDraftOptions {array} : @requiredif { `draftType` is `REFERENCE_ENTITY` }
  *              An array of maps of the form ("face", "references", "angle").  "face" should be a [Query] for exactly one
  *              face.  "references" should be a [Query] for at least one edge attached to the face.  The "face" will
  *              be drafted while the geometry of the "references" remains unchanged. "angle" is an optional [ValueWithUnits]
  *              parameter between -89.9 and 89.9 degrees which overrides the default `angle` parameter.
- *
  *      @field pullVec {Vector} : The 3d direction relative to which the draft is applied.
- *              @eg `evPlane(context, {"face" : neutralPlane}).normal` will draft uniformly away from the neutral plane.
+ *              @eg `vector(0, 0, 1)`.
  *      @field angle {ValueWithUnits} : The draft angle, must be between 0 and 89.9 degrees.
  *              @eg `3 * degree`
- *
  *      @field tangentPropagation {boolean} : @optional
- *              For a `NEUTRAL_PLANE` draft, `true` to propagate draft across tangent faces.
+ *              For a `REFERENCE_SURFACE` draft, `true` to propagate draft across tangent faces.
  *              Default is `false`.
  *      @field referenceEntityPropagation {boolean} : @optional
  *              For a `REFERENCE_ENTITY` draft, `true` to collect new reference entities and faces by pulling in edges
  *              connected to the specified reference edges.  Connected edges on the same face or on tangent connected
  *              faces will be pulled in.
  *              Default is `false`.
- *
  *      @field reFillet {boolean} : @optional
  *              `true` to attempt to defillet draft faces before the draft and reapply the fillets
  *              after. Default is `false`.
@@ -689,10 +687,10 @@ export function opBooleanedPattern(context is Context, id is Id, definition is m
  * @param definition {{
  *      @field plane {Plane} : The plane to create.
  *              @eg `plane(vector(0, 0, 6) * inch, vector(0, 0, 1))`
- *      @field width {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
- *              @autocomplete `6 * inch`
- *      @field height {ValueWithUnits} : The side length of the construction plane, as it is initially displayed.
- *              @autocomplete `6 * inch`
+ *      @field width {ValueWithUnits} : @optional
+ *              The side length of the construction plane, as it is initially displayed.
+ *      @field height {ValueWithUnits} : @optional
+ *              The side length of the construction plane, as it is initially displayed.
  *      @field defaultType @internalType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */

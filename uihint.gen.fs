@@ -1,4 +1,4 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -59,6 +59,7 @@ FeatureScript 1311; /* Automatically generated version */
  *      its displayed row.
  * @value ALLOW_QUERY_ORDER : Enable reordering of queries in a query parameter.
  * @value PREVENT_ARRAY_REORDER : Disable reordering of items in an array parameter.
+ * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
  */
 export enum UIHint
 {
@@ -86,7 +87,8 @@ export enum UIHint
     PREVENT_CREATING_NEW_MATE_CONNECTORS,
     FIRST_IN_ROW,
     ALLOW_QUERY_ORDER,
-    PREVENT_ARRAY_REORDER
+    PREVENT_ARRAY_REORDER,
+    VARIABLE_NAME
 }
 
 

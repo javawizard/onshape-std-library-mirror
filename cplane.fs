@@ -1,23 +1,23 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1311.0");
+export import(path : "onshape/std/query.fs", version : "1324.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1311.0");
+export import(path : "onshape/std/manipulator.fs", version : "1324.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1311.0");
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/evaluate.fs", version : "1311.0");
-import(path : "onshape/std/feature.fs", version : "1311.0");
-import(path : "onshape/std/mathUtils.fs", version : "1311.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1311.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1311.0");
-import(path : "onshape/std/valueBounds.fs", version : "1311.0");
+import(path : "onshape/std/box.fs", version : "1324.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/evaluate.fs", version : "1324.0");
+import(path : "onshape/std/feature.fs", version : "1324.0");
+import(path : "onshape/std/mathUtils.fs", version : "1324.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1324.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1324.0");
+import(path : "onshape/std/valueBounds.fs", version : "1324.0");
 
 /**
  * The method of defining a construction plane.
@@ -107,6 +107,9 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Flip alignment" }
             definition.flipAlignment is boolean;
         }
+
+        annotation { "Name" : "Flip normal" }
+        definition.flipNormal is boolean;
 
         annotation { "Name" : "Starting width", "UIHint" : UIHint.ALWAYS_HIDDEN }
         isLength(definition.width, PLANE_SIZE_BOUNDS);
@@ -306,6 +309,10 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
             definition.plane = plane(lineResult.origin, lineResult.direction);
         }
+        if (definition.flipNormal)
+        {
+            definition.plane.normal *= -1;
+        }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX))
         {
@@ -315,7 +322,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         }
         opPlane(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { oppositeDirection : false, flipAlignment : false, width : 1 * meter, height : 1 * meter });
+    }, { oppositeDirection : false, flipAlignment : false, flipNormal : false, width : 1 * meter, height : 1 * meter });
 
 function lineAnglePlane(context is Context, id is Id, definition is map, entities is array, angle is ValueWithUnits, planeBounds is box) returns Plane
 {

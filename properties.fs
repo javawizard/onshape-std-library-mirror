@@ -1,4 +1,4 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,12 +6,12 @@ FeatureScript 1311; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "1311.0");
-import(path : "onshape/std/query.fs", version : "1311.0");
-import(path : "onshape/std/string.fs", version : "1311.0");
-import(path : "onshape/std/units.fs", version : "1311.0");
+import(path : "onshape/std/context.fs", version : "1324.0");
+import(path : "onshape/std/query.fs", version : "1324.0");
+import(path : "onshape/std/string.fs", version : "1324.0");
+import(path : "onshape/std/units.fs", version : "1324.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "1311.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "1324.0");
 
 /**
  * Sets a property on a set of bodies. The allowed properties are listed in [PropertyType].
@@ -31,8 +31,9 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "1311.0");
  *          Note that this call performs no checks as to whether the custom property value is valid, so
  *          invalid property values may be recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
- *          a boolean if it is `EXCLUDE_FROM_BOM`, and a string otherwise.  The value should be a string
- *          for a `CUSTOM` property even if the property is of a non-string type.
+ *          a boolean if it is `EXCLUDE_FROM_BOM`, a value with mass units if it is `MASS_OVERRIDE`,
+ *          and a string otherwise.  The value should be a string for a `CUSTOM` property even if the property
+ *          is of a non-string type.
  *          @eg `color(1, 0, 0)` to make the part red.
  *      @field allowFaces {boolean} : @optional
  *          If set to `true`, `entities` may be faces, which allows setting face colors and names via
@@ -113,6 +114,10 @@ precondition
         {
             result.density *= kilogram / meter ^ 3;
             result = result as Material;
+        }
+        else if (definition.propertyType == PropertyType.MASS_OVERRIDE)
+        {
+            result *= kilogram;
         }
     }
     return result;

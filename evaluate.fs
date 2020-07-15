@@ -1,4 +1,4 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 1311; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-export import(path : "onshape/std/box.fs", version : "1311.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1311.0");
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/context.fs", version : "1311.0");
-import(path : "onshape/std/coordSystem.fs", version : "1311.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1311.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1311.0");
-import(path : "onshape/std/mathUtils.fs", version : "1311.0");
-import(path : "onshape/std/query.fs", version : "1311.0");
-import(path : "onshape/std/feature.fs", version : "1311.0");
-import(path : "onshape/std/string.fs", version : "1311.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1311.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1311.0");
-import(path : "onshape/std/units.fs", version : "1311.0");
+export import(path : "onshape/std/box.fs", version : "1324.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1324.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/context.fs", version : "1324.0");
+import(path : "onshape/std/coordSystem.fs", version : "1324.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1324.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1324.0");
+import(path : "onshape/std/mathUtils.fs", version : "1324.0");
+import(path : "onshape/std/query.fs", version : "1324.0");
+import(path : "onshape/std/feature.fs", version : "1324.0");
+import(path : "onshape/std/string.fs", version : "1324.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1324.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1324.0");
+import(path : "onshape/std/units.fs", version : "1324.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -714,6 +714,28 @@ precondition
     for (var i = 0; i < @size(result); i += 1)
         result[i] = lineFromBuiltin(result[i]);
     return result;
+}
+
+/**
+ * Return the periodicity in primary and secondary direction of a face, returned in an array of booleans.
+ *
+ * A particular direction is periodic when the face's underlying surface definition is wrapped along that direction.
+ * For instance, if primary direction is periodic, the parameters `[0, v]` and `[1, v]` will prepresent the same point
+ * for all valid `v`. If the secondary direction is periodic, the parameters `[u, 0]` and `[u, 1]` represent the same
+ * point for all valid `u`.
+ * @param arg {{
+ *      @field face{Query} : The face on which to evaluate periodicity
+ *      @field trimmed{boolean} : If `true` (default), return trimmed face periodicity instead of the underlying surface's. @optional
+ * }}
+ */
+export function evFacePeriodicity(context is Context, arg is map) returns array
+precondition
+{
+    arg.face is Query;
+    arg.trimmed is boolean || arg.trimmed is undefined;
+}
+{
+    return @evFacePeriodicity(context, arg);
 }
 
 /**

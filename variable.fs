@@ -1,19 +1,19 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1311.0");
+export import(path : "onshape/std/query.fs", version : "1324.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/evaluate.fs", version : "1311.0");
-import(path : "onshape/std/feature.fs", version : "1311.0");
-import(path : "onshape/std/string.fs", version : "1311.0");
-import(path : "onshape/std/tool.fs", version : "1311.0");
-import(path : "onshape/std/valueBounds.fs", version : "1311.0");
-import(path : "onshape/std/manipulator.fs", version : "1311.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/evaluate.fs", version : "1324.0");
+import(path : "onshape/std/feature.fs", version : "1324.0");
+import(path : "onshape/std/string.fs", version : "1324.0");
+import(path : "onshape/std/tool.fs", version : "1324.0");
+import(path : "onshape/std/valueBounds.fs", version : "1324.0");
+import(path : "onshape/std/manipulator.fs", version : "1324.0");
 
 /**
  * Specifies the type of values `assignVariable` is allowed to set.
@@ -57,7 +57,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
         definition.variableType is VariableType;
 
-        annotation { "Name" : "Name", "UIHint" : UIHint.UNCONFIGURABLE, "MaxLength": 10000 }
+        annotation { "Name" : "Name", "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.VARIABLE_NAME], "MaxLength": 10000 }
         definition.name is string;
 
         if (definition.variableType == VariableType.LENGTH)

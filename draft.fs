@@ -1,21 +1,23 @@
-FeatureScript 1311; /* Automatically generated version */
+FeatureScript 1324; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1311.0");
+export import(path : "onshape/std/query.fs", version : "1324.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1311.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1311.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1311.0");
-import(path : "onshape/std/evaluate.fs", version : "1311.0");
-import(path : "onshape/std/feature.fs", version : "1311.0");
-import(path : "onshape/std/manipulator.fs", version : "1311.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1311.0");
-import(path : "onshape/std/valueBounds.fs", version : "1311.0");
-import(path : "onshape/std/vector.fs", version : "1311.0");
+import(path : "onshape/std/containers.fs", version : "1324.0");
+import(path : "onshape/std/coordSystem.fs", version : "1324.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1324.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1324.0");
+import(path : "onshape/std/evaluate.fs", version : "1324.0");
+import(path : "onshape/std/feature.fs", version : "1324.0");
+import(path : "onshape/std/manipulator.fs", version : "1324.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1324.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1324.0");
+import(path : "onshape/std/valueBounds.fs", version : "1324.0");
+import(path : "onshape/std/vector.fs", version : "1324.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -55,17 +57,15 @@ const STEEPNESS_TOLERANCE = sin(TOLERANCE.zeroAngle * radian);
  * @param id : @autocomplete `id + "draft1"`
  * @param definition {{
  *      @field draftFeatureType {DraftFeatureType}: @optional
- *              Specifies a NEUTRAL_PLANE or PARTING_LINE draft. Default is `NEUTRAL_PLANE`.
- *
+ *              Specifies a `NEUTRAL_PLANE` or `PARTING_LINE` draft. Default is `NEUTRAL_PLANE`.
  *      @field neutralPlane {Query}: @requiredif { `draftFeatureType` is `NEUTRAL_PLANE` }
- *              A planar face defining both the neutral plane and pull direction of the the draft.  The intersection of
- *              the drafted faces and the neutral plane remains unchanged.  The pull direction of the draft will be the
- *              normal of the face.
+ *              A planar face or mate connector defining both the neutral plane and pull direction of the the draft.
+ *              The intersection of the drafted faces and the neutral plane remains unchanged.
+ *              The pull direction of the draft will be the face normal or mate connector z-axis.
  *              @autocomplete `neutralPlane`
  *      @field draftFaces {Query}: @requiredif { `draftFeatureType` is `NEUTRAL_PLANE` }
  *              The faces to draft for a `NEUTRAL_PLANE` draft.
  *              @autocomplete `draftFaces`
- *
  *      @field pullDirectionEntity {Query}: @requiredif { `draftFeatureType` is `PARTING_LINE` }
  *              An entity defining the pull direction of the draft. This entity should conform to the `ALLOWS_DIRECTION`
  *              specification in [QueryFilterCompound].
@@ -129,12 +129,12 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
         if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
         {
             annotation { "Name" : "Neutral plane",
-                        "Filter" : GeometryType.PLANE,
+                        "Filter" : QueryFilterCompound.ALLOWS_PLANE,
                         "MaxNumberOfPicks" : 1 }
             definition.neutralPlane is Query;
 
             annotation { "Name" : "Entities to draft", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT,
-                         "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                        "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.draftFaces is Query;
         }
         else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
@@ -145,7 +145,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             definition.pullDirectionEntity is Query;
 
             annotation { "Name" : "Parting edges", "UIHint" : [UIHint.SHOW_CREATE_SELECTION, UIHint.INITIAL_FOCUS_ON_EDIT],
-                         "Filter" : EntityType.EDGE && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ModifiableEntityOnly.YES }
+                        "Filter" : EntityType.EDGE && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ModifiableEntityOnly.YES }
             definition.partingEdges is Query;
 
             annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -191,82 +191,87 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
         definition.reFillet is boolean;
     }
     {
-        const rawPullDirection = getPullDirection(context, definition);
-        definition.pullVec = rawPullDirection;
-        if (definition.pullDirection)
+        definition = switch (definition.draftFeatureType)
         {
-            // definition.pullDirection is an opposite direction flipper
-            definition.pullVec = -definition.pullVec;
-        }
-
-        definition.draftType = getDraftType(definition);
-
-        var edgeToOrderedFaceData = {};
-        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
-        {
-            edgeToOrderedFaceData = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
-                    definition.hintFaces, true);
-        }
-
-        // add draft manipulators before getting reference entity draft options, as getting reference entity draft
-        // options may fail on cases where we still want to show manipulators.
-        addDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
-
-        if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
-        {
-            definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection,
-                    edgeToOrderedFaceData, definition);
-        }
-
+            DraftFeatureType.NEUTRAL_PLANE : initReferenceSurfaceDraft(context, id, definition),
+            DraftFeatureType.PARTING_LINE : initReferenceEntityDraft(context, id, definition)
+        };
         opDraft(context, id, definition);
-    }, { draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,
-         pullDirection : false, secondPullDirection : false,
-         tangentPropagation : false, referenceEdgePropagation: false,
-         reFillet : false, hintFaces : qNothing() });
+    },
+    {
+        draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,
+        pullDirection : false, secondPullDirection : false,
+        tangentPropagation : false, referenceEdgePropagation : false,
+        reFillet : false, hintFaces : qNothing()
+    });
+
+
+function initReferenceSurfaceDraft(context is Context, id is Id, definition is map) returns map
+{
+    definition.draftType = DraftType.REFERENCE_SURFACE;
+    const cSys = try silent(evMateConnector(context, { "mateConnector" : definition.neutralPlane }));
+    if (cSys != undefined)
+    {
+        definition = initDraftFromMateConnector(context, id, definition, cSys);
+    }
+    else
+    {
+        definition = initDraftFromFaceQuery(context, id, definition);
+    }
+    definition.pullVec = getPullVec(definition, -definition.rawNeutralPlane.normal);
+    addNeutralPlaneDraftAngularManipulator(context, id, definition, definition.rawNeutralPlane);
+    return definition;
+}
+
+function getPullVec(definition is map, trueVector is Vector) returns Vector
+{
+    return (definition.pullDirection) ? trueVector : -trueVector;
+}
+
+function initDraftFromFaceQuery(context is Context, id is Id, definition is map) returns map
+{
+    definition.referenceFace = definition.neutralPlane;
+    //rawNeutralPlane is only used to find pullVec and to locate draft manipulators
+    const rawNeutralPlane = try(evFaceTangentPlane(context, {
+                    "face" : definition.neutralPlane,
+                    "parameter" : vector(0.5, 0.5)
+                }));
+    if (rawNeutralPlane == undefined)
+    {
+        throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
+    }
+    definition.rawNeutralPlane = rawNeutralPlane;
+    return definition;
+}
+
+function initDraftFromMateConnector(context is Context, id is Id, definition is map, cSys is CoordSystem) returns map
+{
+    definition.referencePlane = plane(cSys);
+    definition.rawNeutralPlane = definition.referencePlane;
+    return definition;
+}
+
+function initReferenceEntityDraft(context is Context, id is Id, definition is map) returns map
+{
+    definition.draftType = DraftType.REFERENCE_ENTITY;
+    const rawPullDirection = getPullDirection(context, definition);
+    definition.pullVec = getPullVec(definition, -rawPullDirection);
+    var edgeToOrderedFaceData = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection, definition.hintFaces, true);
+    // Add draft manipulators before getting reference entity draft options.
+    // `getReferenceEntityDraftOptions` may fail on cases where we still want to show manipulators.
+    addReferenceEntityDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+    definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+    return definition;
+}
 
 function getPullDirection(context is Context, definition is map) returns Vector
 {
-    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+    const directionResult = extractDirection(context, definition.pullDirectionEntity);
+    if (directionResult == undefined)
     {
-        const planeResult = getNeutralPlane(context, definition);
-        if (planeResult == undefined)
-            throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL, ["neutralPlane"]);
-        return planeResult.normal;
+        throw regenError(ErrorStringEnum.DRAFT_SELECT_PULL_DIRECTION_ENTITY, ["pullDirectionEntity"]);
     }
-    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
-    {
-        const directionResult = extractDirection(context, definition.pullDirectionEntity);
-        if (directionResult == undefined)
-            throw regenError(ErrorStringEnum.DRAFT_SELECT_PULL_DIRECTION_ENTITY, ["pullDirectionEntity"]);
-        return directionResult;
-    }
-    else
-    {
-        throw "Unsupported draft type";
-    }
-}
-
-function getDraftType(definition is map) returns DraftType
-{
-    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
-    {
-        return DraftType.NEUTRAL_PLANE;
-    }
-    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
-    {
-        return DraftType.REFERENCE_ENTITY;
-    }
-    else
-    {
-        throw "Unsupported draft type";
-    }
-}
-
-////////// Neutral Plane Utilities //////////
-
-function getNeutralPlane(context is Context, definition is map)
-{
-    return try(evFaceTangentPlane(context, { "face" : definition.neutralPlane, "parameter" : vector(0.5, 0.5) }));
+    return directionResult;
 }
 
 ////////// Parting Line Utilities //////////
@@ -275,7 +280,7 @@ function getNeutralPlane(context is Context, definition is map)
  * Assemble referenceEntityDraftOptions map to pass into [opDraft].
  */
 function getReferenceEntityDraftOptions(context is Context, topLevelId is Id, rawPullDirection is Vector, edgeToOrderedFaceData is map,
-        definition is map) returns array
+    definition is map) returns array
 {
     const partingEdges = verifyNonemptyQuery(context, definition, "partingEdges", ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES);
 
@@ -357,7 +362,7 @@ function getAlongAndAwayDraftAngles(definition is map) returns map
  * for information about the ordering and contents of ordered face data.
  */
 function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, rawPullDirection is Vector,
-        hintFaces is Query, failOnError is boolean) returns map
+    hintFaces is Query, failOnError is boolean) returns map
 {
     var edgeToOrderedFaceData = {};
     var moreAlongFirst = new box(undefined);
@@ -386,7 +391,7 @@ function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, raw
             {
                 edgeToOrderedFaceData[edge] = undefined;
             }
-       }
+        }
     }
 
     return edgeToOrderedFaceData;
@@ -420,7 +425,7 @@ function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, raw
  * an error.
  */
 function getOrderedFaceData(context is Context, edge is Query, rawPullDirection is Vector, moreAlongFirst is box,
-        hintFaces is Query, edgeToOrderedFaceData is map) returns array
+    hintFaces is Query, edgeToOrderedFaceData is map) returns array
 {
     const bothFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
     if (size(bothFaces) == 0 || size(bothFaces) > 2)
@@ -598,7 +603,7 @@ function augmentOrderedFaceDataWithGeometryData(context is Context, edge is Quer
  * `addGeometryData` may be turned off for a performance gain if geometry data is not needed.
  */
 function getDataForManipulator(context is Context, rawPullDirection is Vector, edgeToOrderedFaceData is map,
-        definition is map, addGeometryData is boolean) returns map
+    definition is map, addGeometryData is boolean) returns map
 {
     const edges = evaluateQuery(context, definition.partingEdges);
     const manipulatorEdge = edges[size(edges) - 1];
@@ -645,69 +650,60 @@ const SYMMETRIC_ALONG_ANGLE_MANIPULATOR = "symmetricAlongAngleManipulator";
 const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
 const FLIP_MANIPULATOR = "flipManipulator";
 
-function addDraftManipulators(context is Context, topLevelId is Id, rawPullDirection is Vector,
-        edgeToOrderedFaceData is map, definition is map)
+function addReferenceEntityDraftManipulators(context is Context, topLevelId is Id, rawPullDirection is Vector,
+    edgeToOrderedFaceData is map, definition is map)
 {
-    if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+    try silent
     {
-        addNeutralPlaneDraftAngularManipulator(context, topLevelId, definition);
-    }
-    else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
-    {
-        try silent
+        const manipulatorData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceData, definition, true);
+        const manipulatorFaceData = manipulatorData.manipulatorFaceData;
+        const otherFaceData = manipulatorData.otherFaceData;
+
+        // Flip manipulator dictates which face we are drafting.
+        if (definition.partingLineSides == PartingLineSides.ONE_SIDED && edgeIsTwoSided(context, manipulatorData.manipulatorEdge))
         {
-            const manipulatorData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceData, definition, true);
-            const manipulatorFaceData = manipulatorData.manipulatorFaceData;
-            const otherFaceData = manipulatorData.otherFaceData;
+            addPartingLineDraftFlipManipulator(context, topLevelId, manipulatorFaceData, rawPullDirection);
+        }
 
-            // Flip manipulator dictates which face we are drafting.
-            if (definition.partingLineSides == PartingLineSides.ONE_SIDED && edgeIsTwoSided(context, manipulatorData.manipulatorEdge))
+        if (definition.partingLineSides == PartingLineSides.ONE_SIDED || definition.partingLineSides == PartingLineSides.SYMMETRIC)
+        {
+            const angles = getAlongAndAwayDraftAngles(definition);
+            const angle = manipulatorFaceData.isAlong ? angles.along : angles.away;
+
+            var manipulatorName = ANGLE_MANIPULATOR;
+            if (definition.partingLineSides == PartingLineSides.SYMMETRIC && manipulatorFaceData.isAlong)
             {
-                addPartingLineDraftFlipManipulator(context, topLevelId, manipulatorFaceData, rawPullDirection);
+                manipulatorName = SYMMETRIC_ALONG_ANGLE_MANIPULATOR;
             }
 
-            if (definition.partingLineSides == PartingLineSides.ONE_SIDED || definition.partingLineSides == PartingLineSides.SYMMETRIC)
+            addPartingLineDraftAngularManipulator(context, topLevelId, manipulatorName, manipulatorFaceData, rawPullDirection,
+                    angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT, "angle");
+        }
+        else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
+        {
+            // Add a manipulator on the designated face
+            const firstParams = getTwoSidedManipulatorParameters(manipulatorFaceData.isAlong, definition);
+            const added = addPartingLineDraftAngularManipulator(context, topLevelId, firstParams.manipulatorName, manipulatorFaceData,
+                    rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style, firstParams.parameterId);
+
+            // Add an additional manipulator if possible
+            if (!added || manipulatorFaceData.isAlong != otherFaceData.isAlong)
             {
-                const angles = getAlongAndAwayDraftAngles(definition);
-                const angle = manipulatorFaceData.isAlong ? angles.along : angles.away;
-
-                var manipulatorName = ANGLE_MANIPULATOR;
-                if (definition.partingLineSides == PartingLineSides.SYMMETRIC && manipulatorFaceData.isAlong)
-                {
-                    manipulatorName = SYMMETRIC_ALONG_ANGLE_MANIPULATOR;
-                }
-
-                addPartingLineDraftAngularManipulator(context, topLevelId, manipulatorName, manipulatorFaceData, rawPullDirection,
-                        angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT, "angle");
-            }
-            else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
-            {
-                // Add a manipulator on the designated face
-                const firstParams = getTwoSidedManipulatorParameters(manipulatorFaceData.isAlong, definition);
-                const added = addPartingLineDraftAngularManipulator(context, topLevelId, firstParams.manipulatorName, manipulatorFaceData,
-                        rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style, firstParams.parameterId);
-
-                // Add an additional manipulator if possible
-                if (!added || manipulatorFaceData.isAlong != otherFaceData.isAlong)
-                {
-                    // Ideally we would like to add both manipulators, but if both faces are along or both faces are
-                    // away, the manipulator will be redundant.  If for some reason we failed to add the first
-                    // manipulator, we are also safe adding this one.
-                    const secondParams = getTwoSidedManipulatorParameters(otherFaceData.isAlong, definition);
-                    addPartingLineDraftAngularManipulator(context, topLevelId, secondParams.manipulatorName, otherFaceData,
-                            rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style, secondParams.parameterId);
-                }
+                // Ideally we would like to add both manipulators, but if both faces are along or both faces are
+                // away, the manipulator will be redundant.  If for some reason we failed to add the first
+                // manipulator, we are also safe adding this one.
+                const secondParams = getTwoSidedManipulatorParameters(otherFaceData.isAlong, definition);
+                addPartingLineDraftAngularManipulator(context, topLevelId, secondParams.manipulatorName, otherFaceData,
+                        rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style, secondParams.parameterId);
             }
         }
     }
 }
 
-function addNeutralPlaneDraftAngularManipulator(context is Context, topLevelId is Id, definition is map)
+function addNeutralPlaneDraftAngularManipulator(context is Context, topLevelId is Id, definition is map, neutralPlane is Plane)
 {
     try silent
     {
-        const neutralPlane = getNeutralPlane(context, definition);
-
         const firstFacePlane = evFaceTangentPlane(context, {
                     "face" : qNthElement(definition.draftFaces, 0),
                     "parameter" : vector(0.5, 0.5)
@@ -742,7 +738,7 @@ function addPartingLineDraftFlipManipulator(context is Context, topLevelId is Id
 }
 
 function addPartingLineDraftAngularManipulator(context is Context, topLevelId is Id, manipulatorName is string, faceData is map,
-        rawPullDirection is Vector, angle is ValueWithUnits, flipped is boolean, style is ManipulatorStyleEnum, parameterId is string) returns boolean
+    rawPullDirection is Vector, angle is ValueWithUnits, flipped is boolean, style is ManipulatorStyleEnum, parameterId is string) returns boolean
 {
     try silent
     {
@@ -771,10 +767,10 @@ function getTwoSidedManipulatorParameters(isAlong is boolean, definition is map)
     // See getReferenceEntityDraftOptions(...):  "away" corresponds to first angle.  "along" corresponds to second angle.
     return {
             "manipulatorName" : isAlong ? SECOND_ANGLE_MANIPULATOR : ANGLE_MANIPULATOR,
-            "angle"           : isAlong ? definition.secondAngle : definition.angle,
-            "flipped"         : isAlong ? definition.secondPullDirection : definition.pullDirection,
-            "style"           : isAlong ? ManipulatorStyleEnum.SECONDARY : ManipulatorStyleEnum.DEFAULT,
-            "parameterId"     : isAlong ? "secondAngle" : "angle"
+            "angle" : isAlong ? definition.secondAngle : definition.angle,
+            "flipped" : isAlong ? definition.secondPullDirection : definition.pullDirection,
+            "style" : isAlong ? ManipulatorStyleEnum.SECONDARY : ManipulatorStyleEnum.DEFAULT,
+            "parameterId" : isAlong ? "secondAngle" : "angle"
         };
 }
 
@@ -861,7 +857,7 @@ predicate canGenerateHintFaces(context is Context, oldDefinition is map, definit
     // faces when we go from no pull direction entity to some pull direction entity. `try silent` for old definition
     // because oldDefinition.pullDirectionEntity is undefined when first creating the feature.
     oldDefinition.partingEdges != definition.partingEdges ||
-    (try silent(size(evaluateQuery(context, oldDefinition.pullDirectionEntity))) == 0 && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
+        (try silent(size(evaluateQuery(context, oldDefinition.pullDirectionEntity))) == 0 && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
 }
 
 function generateHintFaces(context is Context, edgeToOrderedFaceDataBox is box, definition is map) returns Query
@@ -915,7 +911,7 @@ function flipAlongPull(context is Context, edgeToOrderedFaceDataBox is box, defi
             edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
                     definition.hintFaces, true);
         }
-        const manipulatorData = getDataForManipulator(context, rawPullDirection,  edgeToOrderedFaceDataBox[], definition, false);
+        const manipulatorData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceDataBox[], definition, false);
         const manipulatorFaceData = manipulatorData.manipulatorFaceData;
         const otherFaceData = manipulatorData.otherFaceData;
 
