@@ -108,6 +108,9 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             definition.flipAlignment is boolean;
         }
 
+        annotation { "Name" : "Flip normal" }
+        definition.flipNormal is boolean;
+
         annotation { "Name" : "Starting width", "UIHint" : UIHint.ALWAYS_HIDDEN }
         isLength(definition.width, PLANE_SIZE_BOUNDS);
 
@@ -306,6 +309,10 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
             definition.plane = plane(lineResult.origin, lineResult.direction);
         }
+        if (definition.flipNormal)
+        {
+            definition.plane.normal *= -1;
+        }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V316_PLANE_DEFAULT_SIZE_FIX))
         {
@@ -315,7 +322,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         }
         opPlane(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { oppositeDirection : false, flipAlignment : false, width : 1 * meter, height : 1 * meter });
+    }, { oppositeDirection : false, flipAlignment : false, flipNormal : false, width : 1 * meter, height : 1 * meter });
 
 function lineAnglePlane(context is Context, id is Id, definition is map, entities is array, angle is ValueWithUnits, planeBounds is box) returns Plane
 {

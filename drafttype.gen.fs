@@ -8,15 +8,15 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * Specifies the type of draft to execute.
  *
- * @value NEUTRAL_PLANE : Draft faces relative to a neutral plane.
  * @value REFERENCE_ENTITY : Draft faces holding a specific reference entity constant for each face.
+ * @value REFERENCE_SURFACE : Draft faces relative to a single neutral surface.
+ * @internal @value NEUTRAL_PLANE : Deprecated. Draft faces relative to a neutral plane.
  */
 export enum DraftType
 {
-    annotation {"Name" : "Neutral plane"}
     NEUTRAL_PLANE,
-    annotation {"Name" : "Parting line"}
-    REFERENCE_ENTITY
+    REFERENCE_ENTITY,
+    REFERENCE_SURFACE
 }
 
 

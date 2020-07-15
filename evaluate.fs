@@ -717,6 +717,28 @@ precondition
 }
 
 /**
+ * Return the periodicity in primary and secondary direction of a face, returned in an array of booleans.
+ *
+ * A particular direction is periodic when the face's underlying surface definition is wrapped along that direction.
+ * For instance, if primary direction is periodic, the parameters `[0, v]` and `[1, v]` will prepresent the same point
+ * for all valid `v`. If the secondary direction is periodic, the parameters `[u, 0]` and `[u, 1]` represent the same
+ * point for all valid `u`.
+ * @param arg {{
+ *      @field face{Query} : The face on which to evaluate periodicity
+ *      @field trimmed{boolean} : If `true` (default), return trimmed face periodicity instead of the underlying surface's. @optional
+ * }}
+ */
+export function evFacePeriodicity(context is Context, arg is map) returns array
+precondition
+{
+    arg.face is Query;
+    arg.trimmed is boolean || arg.trimmed is undefined;
+}
+{
+    return @evFacePeriodicity(context, arg);
+}
+
+/**
  * The result of an [evFaceCurvature] call -- principal directions and curvatures at a point.
  *
  * The curvature along a particular direction (in the tangent plane) is the inverse of the radius of curvature

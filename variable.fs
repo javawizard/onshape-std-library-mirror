@@ -57,7 +57,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
         definition.variableType is VariableType;
 
-        annotation { "Name" : "Name", "UIHint" : UIHint.UNCONFIGURABLE, "MaxLength": 10000 }
+        annotation { "Name" : "Name", "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.VARIABLE_NAME], "MaxLength": 10000 }
         definition.name is string;
 
         if (definition.variableType == VariableType.LENGTH)

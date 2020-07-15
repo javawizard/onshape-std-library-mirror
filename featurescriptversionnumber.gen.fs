@@ -904,7 +904,10 @@ export enum FeatureScriptVersionNumber
     V1301_ALLOW_FACES_DOC,
     V1309_SPLIT_BODY_DISAMBIGUATION,
     V1310_OWNER_BODY,
-    V1311_FIX_CONFIGURE_FACE_COLOR_SOURCE
+    V1311_FIX_CONFIGURE_FACE_COLOR_SOURCE,
+    V1322_REUSE_COMPOSITE_BODY,
+    V1323_PROPERTY_SOURCE_TYPE,
+    V1324_FLIP_NORMAL
 }
 
 /**
@@ -915,6 +918,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1311_FIX_CONFIGURE_FACE_COLOR_SOURCE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1324_FLIP_NORMAL;
 
 
