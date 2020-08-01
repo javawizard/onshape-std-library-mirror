@@ -46,11 +46,12 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
         if (definition.splitType == SplitType.PART)
         {
-            annotation { "Name" : "Parts or surfaces to split", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && ModifiableEntityOnly.YES }
+            annotation { "Name" : "Parts or surfaces to split",
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && ModifiableEntityOnly.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",
-                        "Filter" : (EntityType.BODY && BodyType.SHEET) || (GeometryType.PLANE && ConstructionObject.YES) || EntityType.FACE,
+                        "Filter" : (EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR,
                         "MaxNumberOfPicks" : 1 }
             definition.tool is Query;
 
@@ -66,83 +67,171 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
-                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) ||
-                            (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) ||
-                            EntityType.FACE || (GeometryType.PLANE && ConstructionObject.YES) }
+                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) || //Sketch edge
+                            (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) || //Sheet Body (surface)
+                            EntityType.FACE || //Face or Construction Plane
+                            BodyType.MATE_CONNECTOR
+                    }
             definition.faceTools is Query;
 
-            annotation {"Name" : "Keep tool surfaces", "Default" : true}
+            annotation { "Name" : "Keep tool surfaces", "Default" : true }
             definition.keepToolSurfaces is boolean;
         }
     }
     {
-        performSplit(context, id, definition);
-    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepToolSurfaces : true});
+        switch (definition.splitType)
+        {
+            SplitType.PART : performSplitPart(context, id, definition),
+            SplitType.FACE : performSplitFace(context, id, definition)
+        };
+    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepToolSurfaces : true });
 
-function performSplit(context is Context, id is Id, definition is map)
+function performSplitPart(context is Context, topLevelId is Id, definition is map)
 {
-    if (definition.splitType == SplitType.PART)
+    var tempPlaneQueries = [];
+
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V747_SPLIT_ALLOW_FACES))
     {
-        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V747_SPLIT_ALLOW_FACES))
-        {
-            definition.tool = qOwnerBody(definition.tool);
-        }
-        else
-        {
-            const sizeF = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));
-            if (sizeF == 1)
-            {
-                if (definition.keepTools == false)
-                    reportFeatureInfo(context, id, ErrorStringEnum.SPLIT_KEEP_TOOLS_WITH_FACE);
-            }
-            else
-            {
-                const allFaces = evaluateQuery(context, qOwnedByBody(definition.tool, EntityType.FACE));
-                if (size(allFaces) > 1 && definition.useTrimmed) //multi-face surface body as tool
-                    reportFeatureInfo(context, id, ErrorStringEnum.SPLIT_TRIM_WITH_SINGLE_FACE);
-            }
-        }
-        opSplitPart(context, id, definition);
+        definition.tool = qOwnerBody(definition.tool);
     }
     else
     {
-        const edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE),
-            ConstructionObject.NO);
-        const bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY),
-            ConstructionObject.NO);
-        const planeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
-            ConstructionObject.YES);
-        const faceTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE),
-            ConstructionObject.NO);
-        var splitFaceDefinition = {
-            "faceTargets" : definition.faceTargets,
-            "edgeTools" : edgeTools,
-            "bodyTools" : bodyTools,
-            "planeTools" : planeTools,
-            "faceTools" : faceTools,
-            "keepToolSurfaces" : definition.keepToolSurfaces
-        };
-
-        // edge tools could be empty
-        const planeResult = try silent (evOwnerSketchPlane(context, { "entity" : edgeTools }));
-        if (planeResult != undefined)
+        const toolIsMultiFaceBody = (size(evaluateQuery(context, qOwnedByBody(definition.tool, EntityType.FACE))) > 1);
+        if (toolIsMultiFaceBody && definition.useTrimmed)
         {
-            splitFaceDefinition.direction = planeResult.normal;
+            reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_TRIM_WITH_SINGLE_FACE);
         }
 
-        opSplitFace(context, id, splitFaceDefinition);
+        // Create temporary planes from mate connectors if needed
+        tempPlaneQueries = createTemporaryPlanesForMateConnectors(context, topLevelId, definition.tool);
+        const sizeTempPlaneQueries = size(tempPlaneQueries);
+        if (sizeTempPlaneQueries == 1)
+        {
+            definition.tool = tempPlaneQueries[0];
+        }
+        else if (sizeTempPlaneQueries > 1)
+        {
+            throw regenError(ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED, ["tool"], definition.tool);
+        }
+
+        // Split part doesn't delete single faces, construction planes, or mate connectors
+        // For mate connector tools, `definition.tool` has already been set to the temporary plane.
+        const toolIsSingleFace = (size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE))) == 1);
+        if (toolIsSingleFace && !definition.keepTools)
+        {
+            const toolIsConstructionPlane = (evaluateQuery(context, qConstructionFilter(definition.tool, ConstructionObject.YES)) != []);
+            if (toolIsConstructionPlane)
+            {
+                reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS);
+            }
+            else
+            {
+                reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_KEEP_TOOLS_WITH_FACE);
+            }
+        }
     }
+    opSplitPart(context, topLevelId, definition);
+    // `opSplitPart` doesn't delete planes regardless of `keepToolSurfaces` so we delete them here.
+    if (tempPlaneQueries != [])
+    {
+        opDeleteBodies(context, topLevelId + "deleteBodies1", { "entities" : qUnion(tempPlaneQueries) });
+    }
+}
+
+function performSplitFace(context is Context, topLevelId is Id, definition is map)
+{
+    const edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE), ConstructionObject.NO);
+    const faceTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE), ConstructionObject.NO);
+
+    // bodyTools are sheet bodies
+    var bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY), ConstructionObject.NO);
+    // Older documents require an additional filter to remove the mate connectors
+    bodyTools = removeMateConnectors(context, bodyTools);
+
+    // planeTools are construction planes and temp planes created from mate connectors
+    const constructionPlaneQuery = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE), ConstructionObject.YES);
+    const tempPlaneQueries = createTemporaryPlanesForMateConnectors(context, topLevelId, definition.faceTools);
+    const planeTools = qUnion(append(tempPlaneQueries, constructionPlaneQuery));
+
+    // Split face doesn't delete construction planes or mate connectors
+    const hasConstructionTools = (evaluateQuery(context, planeTools) != []);
+    if (hasConstructionTools && !definition.keepToolSurfaces)
+    {
+        reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS);
+    }
+
+    var splitFaceDefinition = {
+        "faceTargets" : definition.faceTargets,
+        "edgeTools" : edgeTools,
+        "bodyTools" : bodyTools,
+        "planeTools" : planeTools,
+        "faceTools" : faceTools,
+        "keepToolSurfaces" : definition.keepToolSurfaces
+    };
+
+    splitFaceDefinition = setDirectionForEdgeTools(context, splitFaceDefinition);
+    opSplitFace(context, topLevelId, splitFaceDefinition);
+    // `opSplitFace` doesn't delete planes regardless of `keepToolSurfaces` so we delete them here.
+    if (tempPlaneQueries != [])
+    {
+        opDeleteBodies(context, topLevelId + "deleteBodies1", { "entities" : qUnion(tempPlaneQueries) });
+    }
+}
+
+function setDirectionForEdgeTools(context is Context, splitFaceDefinition is map) returns map
+{
+    // edge tools need an explicit direction
+    // if there are edge tools we set the direction to be the sketch plane normal
+    const planeResult = try silent(evOwnerSketchPlane(context, { "entity" : splitFaceDefinition.edgeTools }));
+    if (planeResult != undefined)
+    {
+        splitFaceDefinition.direction = planeResult.normal;
+    }
+    return splitFaceDefinition;
+}
+
+function createTemporaryPlanesForMateConnectors(context is Context, id is Id, tools is Query) returns array
+{
+    var tempPlaneQueries = [];
+    var mateConnectorIndex = 0;
+    const toolsArray = evaluateQuery(context, tools);
+    for (var tool in toolsArray)
+    {
+        const cSys = try silent(evMateConnector(context, { "mateConnector" : tool }));
+        if (cSys != undefined)
+        {
+            const idPlane = id + "plane" + unstableIdComponent(mateConnectorIndex);
+            setExternalDisambiguation(context, idPlane, tool);
+            opPlane(context, idPlane, { "plane" : plane(cSys) });
+            tempPlaneQueries = append(tempPlaneQueries, qEntityFilter(qCreatedBy(idPlane), EntityType.FACE));
+            mateConnectorIndex += 1;
+        }
+    }
+    return tempPlaneQueries;
+}
+
+function removeMateConnectors(context is Context, queryToFilter is Query) returns Query
+{
+    // mate connectors return false, all other queries return true
+    const filterFunction = function(query)
+    {
+        const cs = try silent(evMateConnector(context, { "mateConnector" : query }));
+        return cs == undefined;
+    };
+
+    const queryArray = filter(evaluateQuery(context, queryToFilter), filterFunction);
+    return qUnion(queryArray);
 }
 
 /**
  * @internal
- * Edit logic to set keepTools to true when a face is selected
+ * Edit logic to set keepTools to true when a single face is selected
  */
 export function splitEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    const sizeF = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));
-    if (sizeF == 1 && !specifiedParameters.keepTools)
+    const numFaces = size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE)));
+    if (numFaces == 1 && !specifiedParameters.keepTools)
     {
         definition.keepTools = true;
     }

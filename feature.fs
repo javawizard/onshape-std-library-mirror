@@ -519,7 +519,7 @@ function lastOperationId(context is Context) returns Id
 }
 
 /**
-* Used to set external disambiguation for operations with unstable component in id
+* Used to set external disambiguation for operations with unstable component in id.
 * The disambiguation will be applied to results of sub-operations which otherwise don't
 * track dependency e.g. [Sketch] , [opPlane], [opPoint]
 * @param id {Id} : ends in unstable component

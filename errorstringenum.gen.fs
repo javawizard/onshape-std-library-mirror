@@ -1934,7 +1934,9 @@ export enum ErrorStringEnum
     /* Some curves could not be created. */
     CURVE_PARTIAL_FAILED,
     /* Could not create any curves. */
-    CURVE_FAILED
+    CURVE_FAILED,
+    /* Planes and mate connectors will be kept. */
+    SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS
 }
 
 

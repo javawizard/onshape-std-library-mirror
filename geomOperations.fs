@@ -802,9 +802,9 @@ export function opSMFlatOperation(context is Context, id is Id, definition is ma
  *      @field targets {Query} : The solid and sheet bodies to split.
  *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
  *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
- *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
+ *      @field keepTools {boolean} : If false, the tool is deleted. Default is `false`. @optional
  *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
- *      @field useTrimmed {boolean} : Controls whether the underlying surface or the trimmed face boundaries are used as the tool. @optional
+ *      @field useTrimmed {boolean} : If true, the trimmed face boundaries are used as the tool, rather than the underlying surface. Default is `false`. @optional
  * }}
  */
 /* TODO: why not wires? */
@@ -829,7 +829,7 @@ export function opSplitPart(context is Context, id is Id, definition is map)
  *      @field keepToolSurfaces {boolean} : @optional
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional
- *              The planes to cut with.
+ *              These planar faces are treated as infinite, rather than bounded to the face extents.
  * }}
  */
 export function opSplitFace(context is Context, id is Id, definition is map)

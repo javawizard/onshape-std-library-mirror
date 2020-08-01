@@ -482,11 +482,17 @@ function retainHoleAttributes(context is Context, bodies is Query)
 {
     for (var part in evaluateQuery(context, qBodyType(bodies, BodyType.SOLID)))
     {
-        var holeAttributes = getHoleAttributes(context, qOwnedByBody(part, EntityType.FACE));
-        setAttribute(context, {
+        if (getAttributes(context, {
                 "entities" : part,
-                "attribute" : holeAttributes as HoleAttributesOnPart
-        });
+                "attributePattern" : [] as HoleAttributesOnPart
+        }) == [])
+        {
+            var holeAttributes = getHoleAttributes(context, qOwnedByBody(part, EntityType.FACE));
+            setAttribute(context, {
+                        "entities" : part,
+                        "attribute" : holeAttributes as HoleAttributesOnPart
+                    });
+        }
     }
 }
 
