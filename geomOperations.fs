@@ -1,4 +1,4 @@
-FeatureScript 1324; /* Automatically generated version */
+FeatureScript 1337; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,32 @@ FeatureScript 1324; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1324.0");
-import(path : "onshape/std/context.fs", version : "1324.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1324.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1324.0");
-import(path : "onshape/std/query.fs", version : "1324.0");
-import(path : "onshape/std/valueBounds.fs", version : "1324.0");
-import(path : "onshape/std/vector.fs", version : "1324.0");
+import(path : "onshape/std/containers.fs", version : "1337.0");
+import(path : "onshape/std/context.fs", version : "1337.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1337.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1337.0");
+import(path : "onshape/std/query.fs", version : "1337.0");
+import(path : "onshape/std/valueBounds.fs", version : "1337.0");
+import(path : "onshape/std/vector.fs", version : "1337.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1337.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1337.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1337.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1337.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1337.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1324.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1337.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1324.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1337.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1337.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1324.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1337.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -802,9 +802,9 @@ export function opSMFlatOperation(context is Context, id is Id, definition is ma
  *      @field targets {Query} : The solid and sheet bodies to split.
  *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
  *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
- *      @field keepTools {boolean} : If false (default), the tool is deleted. @optional
+ *      @field keepTools {boolean} : If false, the tool is deleted. Default is `false`. @optional
  *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
- *      @field useTrimmed {boolean} : Controls whether the underlying surface or the trimmed face boundaries are used as the tool. @optional
+ *      @field useTrimmed {boolean} : If true, the trimmed face boundaries are used as the tool, rather than the underlying surface. Default is `false`. @optional
  * }}
  */
 /* TODO: why not wires? */
@@ -829,7 +829,7 @@ export function opSplitPart(context is Context, id is Id, definition is map)
  *      @field keepToolSurfaces {boolean} : @optional
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional
- *              The planes to cut with.
+ *              These planar faces are treated as infinite, rather than bounded to the face extents.
  * }}
  */
 export function opSplitFace(context is Context, id is Id, definition is map)

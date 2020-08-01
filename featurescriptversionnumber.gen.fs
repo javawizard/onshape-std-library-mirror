@@ -1,4 +1,4 @@
-FeatureScript 1324; /* Automatically generated version */
+FeatureScript 1337; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -907,7 +907,11 @@ export enum FeatureScriptVersionNumber
     V1311_FIX_CONFIGURE_FACE_COLOR_SOURCE,
     V1322_REUSE_COMPOSITE_BODY,
     V1323_PROPERTY_SOURCE_TYPE,
-    V1324_FLIP_NORMAL
+    V1324_FLIP_NORMAL,
+    V1334_SPLIT_WITH_MATE_CONNECTOR,
+    V1335_COMPARE_CURVATURES,
+    V1336_REVERT_SPLIT_DISAMBIGUATION,
+    V1337_EXCLUDE_MESH_UPTO
 }
 
 /**
@@ -918,6 +922,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1324_FLIP_NORMAL;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1337_EXCLUDE_MESH_UPTO;
 
 
