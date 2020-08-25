@@ -14,7 +14,8 @@ import(path : "onshape/std/units.fs", version : "✨");
 export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
 
 /**
- * Sets a property on a set of bodies. The allowed properties are listed in [PropertyType].
+ * Sets a property on a set of bodies and/or faces. The allowed properties are listed in [PropertyType]. Only
+ * `APPEARANCE` and `NAME` properties are supported for faces.
  *
  * Note: Any properties set in this way will be overridden if they are set directly in the Part Studio
  * (via "Rename", "Set appearance", or the properties dialog).  In that case the property
@@ -22,7 +23,7 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  * custom feature based on the configuration, manually editing the part number from the properties dialog
  * will override the custom feature's part number for all configurations.
  * @param definition {{
- *      @field entities {Query} : The bodies (or, if `allowFaces` is true, the faces) to apply the property to.
+ *      @field entities {Query} : The bodies and/or faces to apply the property to.
  *      @field propertyType {PropertyType} : The property to set.
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
  *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
@@ -35,9 +36,6 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  *          and a string otherwise.  The value should be a string for a `CUSTOM` property even if the property
  *          is of a non-string type.
  *          @eg `color(1, 0, 0)` to make the part red.
- *      @field allowFaces {boolean} : @optional
- *          If set to `true`, `entities` may be faces, which allows setting face colors and names via
- *          FeatureScript. Setting properties other than `APPEARANCE` and `NAME` on faces is not supported.
  * }}
  */
 export function setProperty(context is Context, definition is map)

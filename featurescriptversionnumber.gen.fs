@@ -911,7 +911,11 @@ export enum FeatureScriptVersionNumber
     V1334_SPLIT_WITH_MATE_CONNECTOR,
     V1335_COMPARE_CURVATURES,
     V1336_REVERT_SPLIT_DISAMBIGUATION,
-    V1337_EXCLUDE_MESH_UPTO
+    V1337_EXCLUDE_MESH_UPTO,
+    V1346_FILLET_ORDERING,
+    V1347_DEFAULT_ALLOW_FACES,
+    V1348_SM_UNFOLD,
+    V1349_DELETE_FACE_EDIT_LOGIC
 }
 
 /**
@@ -922,6 +926,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1337_EXCLUDE_MESH_UPTO;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1349_DELETE_FACE_EDIT_LOGIC;
 
 

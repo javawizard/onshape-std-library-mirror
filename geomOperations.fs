@@ -25,6 +25,8 @@ import(path : "onshape/std/vector.fs", version : "✨");
 
 /* opBoolean uses enumerations from TopologyMatchType */
 export import(path : "onshape/std/topologymatchtype.gen.fs", version : "✨");
+/* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "✨");
 /* opDraft uses enumerations from DraftType */
 export import(path : "onshape/std/drafttype.gen.fs", version : "✨");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
@@ -178,6 +180,95 @@ export function opModifyCompositePart(context is Context, id is Id, definition i
 export function opChamfer(context is Context, id is Id, definition is map)
 {
     return @opChamfer(context, id, definition);
+}
+
+/**
+ * Describes a set of isoparametric curves on a face.
+ * @type {{
+ *      @field face {Query} : Face the curves are meant to lie on.
+ *      @field creationType {FaceCurveCreationType} : Determines the type of curves. Currently supports isoparameter curves only
+ *              in primary or secondary directions, either equally spaced or defined by a parameter array.
+ *      @field names {array} : An array of distinct non-empty strings to identify the curves created.
+ *      @field nCurves {number} : @requiredif {`creationType` is `DIR1_AUTO_SPACED_ISO` or `DIR2_AUTO_SPACED_ISO`} Number of curves.
+ *      @field parameters {array} : @requiredif {`creationType` is `DIR1_ISO` or `DIR2_ISO`} Parameters to create curves at.
+ * }}
+ */
+export type CurveOnFaceDefinition typecheck canBeCurveOnFaceDefinition;
+/** Typecheck for [CurveOnFaceDefinition] */
+export predicate canBeCurveOnFaceDefinition(value)
+{
+    value is map;
+    value.face is Query;
+    value.creationType is FaceCurveCreationType;
+    value.names is array;
+    for (var name in value.names)
+    {
+        name is string;
+    }
+
+    value.nCurves is number || value.nCurves is undefined;
+    if (value.nCurves is number)
+    {
+        value.nCurves == size(value.names);
+    }
+    value.parameters is array || value.parameters is undefined;
+    if (value.parameters is array)
+    {
+        size(value.parameters) == size(value.names);
+        for (var parameter in value.parameters)
+        {
+            parameter is number;
+        }
+    }
+}
+
+function curveOnFaceDefinitionPrivate(face is Query, creationType is FaceCurveCreationType, names is array, nCurves, parameters)
+precondition
+{
+    nCurves is number || nCurves is undefined;
+    parameters is array || parameters is undefined;
+    if (parameters is array)
+    {
+        for (var parameter in parameters)
+        {
+            parameter is number;
+        }
+    }
+}
+{
+    return {
+        "face" : face,
+        "creationType" : creationType,
+        "names" : names,
+        "nCurves" : nCurves,
+        "parameters" : parameters
+    } as CurveOnFaceDefinition;
+}
+
+/**
+ * Returns a new [CurveOnFaceDefinition].
+ */
+export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCreationType, names is array, nCurves is number) returns CurveOnFaceDefinition
+{
+    return curveOnFaceDefinitionPrivate(face, creationType, names, nCurves, undefined);
+}
+
+export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCreationType, names is array, parameters is array) returns CurveOnFaceDefinition
+{
+    return curveOnFaceDefinitionPrivate(face, creationType, names, undefined, parameters);
+}
+
+/**
+ * Generates isoparametric curves of faces. That is, for each specified surface parameter value, creates a new wire body
+ * following the curve which keeps the surface parameter at that constant value.
+ * @param id : @autocomplete `id + "curvesOnFace"`
+ * @param definition {{
+ *      @field curveDefinition {array} : An array of [CurveOnFaceDefinition]s that describe group of curves per face.
+ * }}
+ */
+export function opCreateCurvesOnFace(context is Context, id is Id, definition is map)
+{
+    return @opCreateCurvesOnFace(context, id, definition);
 }
 
 /**

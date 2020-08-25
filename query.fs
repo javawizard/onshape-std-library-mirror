@@ -924,6 +924,21 @@ precondition
     return { "queryType" : QueryType.UNION, "subqueries" : subqueries } as Query;
 }
 
+export function qUnion(query1 is Query, query2 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2] } as Query;
+}
+
+export function qUnion(query1 is Query, query2 is Query, query3 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2, query3] } as Query;
+}
+
+export function qUnion(query1 is Query, query2 is Query, query3 is Query, query4 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2, query3, query4] } as Query;
+}
+
 /**
  * A query for entities which match all of a list of queries.
  * qIntersection preserves the order of the first subquery.
@@ -938,6 +953,11 @@ precondition
 }
 {
     return { "queryType" : QueryType.INTERSECTION, "subqueries" : subqueries } as Query;
+}
+
+export function qIntersection(query1 is Query, query2 is Query) returns Query
+{
+    return { "queryType" : QueryType.INTERSECTION, "subqueries" : [query1, query2] } as Query;
 }
 
 /**

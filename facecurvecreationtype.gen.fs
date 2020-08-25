@@ -6,7 +6,8 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies type of curve on face. * @seealso [opCreateCurvesOnFace]
+ * Specifies type of curve on face.
+ * @seealso [opCreateCurvesOnFace]
  *
  * @value DIR1_ISO               : Iso-parameter curves in primary direction
  * @value DIR2_ISO               : Iso-parameter curves in secondary direction.

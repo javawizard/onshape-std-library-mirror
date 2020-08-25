@@ -7,10 +7,10 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
-
 
 /**
  * Specifies how the void resulting from delete face should be closed, if at all.
@@ -21,11 +21,11 @@ import(path : "onshape/std/transform.fs", version : "✨");
  */
 export enum DeleteFaceType
 {
-    annotation {"Name" : "Heal"}
+    annotation { "Name" : "Heal" }
     HEAL,
-    annotation {"Name" : "Cap"}
+    annotation { "Name" : "Cap" }
     CAP,
-    annotation {"Name" : "Leave open"}
+    annotation { "Name" : "Leave open" }
     VOID
 }
 
@@ -33,19 +33,19 @@ export enum DeleteFaceType
  * Feature performing an [opDeleteFace]. Has options to heal the void created by removing the selected faces,
  * or to leave it open.
  */
-annotation { "Feature Type Name" : "Delete face", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Delete face", "Filter Selector" : "allparts", "Editing Logic Function" : "deleteFaceEditLogic" }
 export const deleteFace = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation {"Name" : "Delete faces",
+        annotation { "Name" : "Delete faces",
                     "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                    "Filter": (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                    "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.deleteFaces is Query;
 
-        annotation {"Name" : "Type"}
+        annotation { "Name" : "Type" }
         definition.healType is DeleteFaceType;
 
-        annotation {"Name" : "Delete fillet faces", "Default" : true}
+        annotation { "Name" : "Delete fillet faces", "Default" : true }
         definition.includeFillet is boolean;
 
     }
@@ -55,5 +55,25 @@ export const deleteFace = defineFeature(function(context is Context, id is Id, d
         definition.leaveOpen = (definition.healType == DeleteFaceType.VOID);
 
         opDeleteFace(context, id, definition);
-    }, { includeFillet : true,  healType : DeleteFaceType.HEAL});
+    }, { includeFillet : true, healType : DeleteFaceType.HEAL });
+
+/**
+ * @internal
+ * Editing logic function for delete face feature
+ */
+export function deleteFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map
+{
+    if (!specifiedParameters.healType && oldDefinition.deleteFaces != definition.deleteFaces && evaluateQuery(context, definition.deleteFaces) != [])
+    {
+        const allSheetFaces = evaluateQuery(context, qSubtraction(definition.deleteFaces, qBodyType(definition.deleteFaces, BodyType.SHEET))) == [];
+        const oldFacesEmpty = oldDefinition.deleteFaces == undefined || evaluateQuery(context, oldDefinition.deleteFaces) == [];
+        if (allSheetFaces && oldFacesEmpty)
+        {
+            //We only change the heal type if all of the selected faces are sheet faces.
+            //oldFacesEmpty alows the type to change via both preselection and first selection inside the feature
+            definition.healType = DeleteFaceType.VOID;
+        }
+    }
+    return definition;
+}
 
