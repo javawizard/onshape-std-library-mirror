@@ -1,4 +1,4 @@
-FeatureScript 1337; /* Automatically generated version */
+FeatureScript 1349; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,32 +15,34 @@ FeatureScript 1337; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1337.0");
-import(path : "onshape/std/context.fs", version : "1337.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1337.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1337.0");
-import(path : "onshape/std/query.fs", version : "1337.0");
-import(path : "onshape/std/valueBounds.fs", version : "1337.0");
-import(path : "onshape/std/vector.fs", version : "1337.0");
+import(path : "onshape/std/containers.fs", version : "1349.0");
+import(path : "onshape/std/context.fs", version : "1349.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1349.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1349.0");
+import(path : "onshape/std/query.fs", version : "1349.0");
+import(path : "onshape/std/valueBounds.fs", version : "1349.0");
+import(path : "onshape/std/vector.fs", version : "1349.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1349.0");
+/* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1349.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1349.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1349.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1349.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1349.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1337.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1349.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1337.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1349.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1349.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1337.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1349.0");
 
 /**
  * Performs a boolean operation on multiple solid bodies.
@@ -178,6 +180,95 @@ export function opModifyCompositePart(context is Context, id is Id, definition i
 export function opChamfer(context is Context, id is Id, definition is map)
 {
     return @opChamfer(context, id, definition);
+}
+
+/**
+ * Describes a set of isoparametric curves on a face.
+ * @type {{
+ *      @field face {Query} : Face the curves are meant to lie on.
+ *      @field creationType {FaceCurveCreationType} : Determines the type of curves. Currently supports isoparameter curves only
+ *              in primary or secondary directions, either equally spaced or defined by a parameter array.
+ *      @field names {array} : An array of distinct non-empty strings to identify the curves created.
+ *      @field nCurves {number} : @requiredif {`creationType` is `DIR1_AUTO_SPACED_ISO` or `DIR2_AUTO_SPACED_ISO`} Number of curves.
+ *      @field parameters {array} : @requiredif {`creationType` is `DIR1_ISO` or `DIR2_ISO`} Parameters to create curves at.
+ * }}
+ */
+export type CurveOnFaceDefinition typecheck canBeCurveOnFaceDefinition;
+/** Typecheck for [CurveOnFaceDefinition] */
+export predicate canBeCurveOnFaceDefinition(value)
+{
+    value is map;
+    value.face is Query;
+    value.creationType is FaceCurveCreationType;
+    value.names is array;
+    for (var name in value.names)
+    {
+        name is string;
+    }
+
+    value.nCurves is number || value.nCurves is undefined;
+    if (value.nCurves is number)
+    {
+        value.nCurves == size(value.names);
+    }
+    value.parameters is array || value.parameters is undefined;
+    if (value.parameters is array)
+    {
+        size(value.parameters) == size(value.names);
+        for (var parameter in value.parameters)
+        {
+            parameter is number;
+        }
+    }
+}
+
+function curveOnFaceDefinitionPrivate(face is Query, creationType is FaceCurveCreationType, names is array, nCurves, parameters)
+precondition
+{
+    nCurves is number || nCurves is undefined;
+    parameters is array || parameters is undefined;
+    if (parameters is array)
+    {
+        for (var parameter in parameters)
+        {
+            parameter is number;
+        }
+    }
+}
+{
+    return {
+        "face" : face,
+        "creationType" : creationType,
+        "names" : names,
+        "nCurves" : nCurves,
+        "parameters" : parameters
+    } as CurveOnFaceDefinition;
+}
+
+/**
+ * Returns a new [CurveOnFaceDefinition].
+ */
+export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCreationType, names is array, nCurves is number) returns CurveOnFaceDefinition
+{
+    return curveOnFaceDefinitionPrivate(face, creationType, names, nCurves, undefined);
+}
+
+export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCreationType, names is array, parameters is array) returns CurveOnFaceDefinition
+{
+    return curveOnFaceDefinitionPrivate(face, creationType, names, undefined, parameters);
+}
+
+/**
+ * Generates isoparametric curves of faces. That is, for each specified surface parameter value, creates a new wire body
+ * following the curve which keeps the surface parameter at that constant value.
+ * @param id : @autocomplete `id + "curvesOnFace"`
+ * @param definition {{
+ *      @field curveDefinition {array} : An array of [CurveOnFaceDefinition]s that describe group of curves per face.
+ * }}
+ */
+export function opCreateCurvesOnFace(context is Context, id is Id, definition is map)
+{
+    return @opCreateCurvesOnFace(context, id, definition);
 }
 
 /**

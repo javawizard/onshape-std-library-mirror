@@ -1,4 +1,4 @@
-FeatureScript 1337; /* Automatically generated version */
+FeatureScript 1349; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,8 @@ FeatureScript 1337; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies type of curve on face. * @seealso [opCreateCurvesOnFace]
+ * Specifies type of curve on face.
+ * @seealso [opCreateCurvesOnFace]
  *
  * @value DIR1_ISO               : Iso-parameter curves in primary direction
  * @value DIR2_ISO               : Iso-parameter curves in secondary direction.

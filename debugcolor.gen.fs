@@ -3,7 +3,20 @@ FeatureScript 1349; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/circularPattern.fs", version : "1349.0");
-export import(path : "onshape/std/curvePattern.fs", version : "1349.0");
-export import(path : "onshape/std/linearPattern.fs", version : "1349.0");
+/* Automatically generated file -- DO NOT EDIT */
+
+/**
+ * Color choices for the [debug] function
+ */
+export enum DebugColor
+{
+    RED,
+    GREEN,
+    BLUE,
+    CYAN,
+    MAGENTA,
+    YELLOW,
+    BLACK
+}
+
 

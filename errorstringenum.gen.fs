@@ -1,4 +1,4 @@
-FeatureScript 1337; /* Automatically generated version */
+FeatureScript 1349; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1936,7 +1936,11 @@ export enum ErrorStringEnum
     /* Could not create any curves. */
     CURVE_FAILED,
     /* Planes and mate connectors will be kept. */
-    SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS
+    SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS,
+    /* "Must specify explode line starting point." */
+    EXPLODE_LINES_MUST_SPECIFY_STARTING_POINT,
+    /* "Failed to compute explode line starting point." */
+    EXPLODE_LINES_FAILED_TO_RESOLVE_ENTITY
 }
 
 

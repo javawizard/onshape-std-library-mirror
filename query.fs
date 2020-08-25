@@ -1,4 +1,4 @@
-FeatureScript 1337; /* Automatically generated version */
+FeatureScript 1349; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1337; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1337.0");
-import(path : "onshape/std/context.fs", version : "1337.0");
-import(path : "onshape/std/mathUtils.fs", version : "1337.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1337.0");
-import(path : "onshape/std/units.fs", version : "1337.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1337.0");
-import(path : "onshape/std/featureList.fs", version : "1337.0");
+import(path : "onshape/std/containers.fs", version : "1349.0");
+import(path : "onshape/std/context.fs", version : "1349.0");
+import(path : "onshape/std/mathUtils.fs", version : "1349.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1349.0");
+import(path : "onshape/std/units.fs", version : "1349.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1349.0");
+import(path : "onshape/std/featureList.fs", version : "1349.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -924,6 +924,21 @@ precondition
     return { "queryType" : QueryType.UNION, "subqueries" : subqueries } as Query;
 }
 
+export function qUnion(query1 is Query, query2 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2] } as Query;
+}
+
+export function qUnion(query1 is Query, query2 is Query, query3 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2, query3] } as Query;
+}
+
+export function qUnion(query1 is Query, query2 is Query, query3 is Query, query4 is Query) returns Query
+{
+  return { "queryType" : QueryType.UNION, "subqueries" : [query1, query2, query3, query4] } as Query;
+}
+
 /**
  * A query for entities which match all of a list of queries.
  * qIntersection preserves the order of the first subquery.
@@ -938,6 +953,11 @@ precondition
 }
 {
     return { "queryType" : QueryType.INTERSECTION, "subqueries" : subqueries } as Query;
+}
+
+export function qIntersection(query1 is Query, query2 is Query) returns Query
+{
+    return { "queryType" : QueryType.INTERSECTION, "subqueries" : [query1, query2] } as Query;
 }
 
 /**

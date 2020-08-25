@@ -1,27 +1,28 @@
-FeatureScript 1337; /* Automatically generated version */
+FeatureScript 1349; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "1337.0");
-import(path : "onshape/std/containers.fs", version : "1337.0");
-import(path : "onshape/std/coordSystem.fs", version : "1337.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1337.0");
-import(path : "onshape/std/feature.fs", version : "1337.0");
-import(path : "onshape/std/mathUtils.fs", version : "1337.0");
-import(path : "onshape/std/primitives.fs", version : "1337.0");
-import(path : "onshape/std/sketch.fs", version : "1337.0");
-import(path : "onshape/std/string.fs", version : "1337.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1337.0");
-import(path : "onshape/std/units.fs", version : "1337.0");
+export import(path : "onshape/std/debugcolor.gen.fs", version : "1349.0");
+import(path : "onshape/std/box.fs", version : "1349.0");
+import(path : "onshape/std/containers.fs", version : "1349.0");
+import(path : "onshape/std/coordSystem.fs", version : "1349.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1349.0");
+import(path : "onshape/std/feature.fs", version : "1349.0");
+import(path : "onshape/std/mathUtils.fs", version : "1349.0");
+import(path : "onshape/std/primitives.fs", version : "1349.0");
+import(path : "onshape/std/sketch.fs", version : "1349.0");
+import(path : "onshape/std/string.fs", version : "1349.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1349.0");
+import(path : "onshape/std/units.fs", version : "1349.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
 const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
 
 /**
- * Print and, if applicable, display `value` in a Part Studio, highlighting or
- * creating entities in red.
+ * Print and, if applicable, display `value` in a Part Studio, highlighting
+ * or creating entities in a chosen color, red by default.
  *
  * The displayed data will ONLY be visible when the feature calling the
  * `debug` function is being edited. Entities displayed during debug are for
@@ -29,12 +30,12 @@ const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
  *
  * Values which can be debugged are:
  *
- * `Query`: Highlights entities matching the `Query` (bodies, faces, edges,
+ * [Query]: Highlights entities matching the `Query` (bodies, faces, edges,
  * and vertices) in red.
  *
- * 3D length `Vector`: Displays a single point in world space.
+ * 3D length [Vector]: Displays a single point in world space.
  *
- * Unitless, normalized 3D `Vector`: Displays an arrow starting at the world
+ * Unitless, normalized 3D [Vector]: Displays an arrow starting at the world
  * origin, pointing in the given direction.
  *
  * [Line]: Displays an arrow starting at the line's origin, pointing in the
@@ -51,33 +52,40 @@ const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
  * system, if provided)
  *
  * The overloads in this module define these behaviors.
+ * @param color : @optional The color of the debug highlight
  */
-export function debug(context is Context, value) // TODO: `Circle`, `Ellipse`, `Cylinder`, `Cone`, `Torus`, `Transform`, `Box`.
+export function debug(context is Context, value, color is DebugColor) // TODO: `Circle`, `Ellipse`, `Cylinder`, `Cone`, `Torus`, `Transform`, `Box`.
 {
     print("debug: ");
     println("" ~ value);
 }
 
-export function debug(context is Context, value is ValueWithUnits)
+// This functions handles dispatching to all the specific implementations of debug() when a color parameter is not supplied
+export function debug(context is Context, value)
+{
+    debug(context, value, DebugColor.RED);
+}
+
+export function debug(context is Context, value is ValueWithUnits, color is DebugColor)
 {
     print("debug: ");
     println(value);
 }
 
-export function debug(context is Context, value is Vector)
+export function debug(context is Context, value is Vector, color is DebugColor)
 {
     print("debug: ");
     if (is3dLengthVector(value))
     {
         print("Vector ");
         println(value);
-        addDebugPoint(context, value);
+        addDebugPoint(context, value, color);
     }
     else if (is3dDirection(value))
     {
         print("Direction ");
         println(value);
-        addDebugArrow(context, vector(0, 0, 0) * meter, value * ARROW_LENGTH, ARROW_RADIUS);
+        addDebugArrow(context, vector(0, 0, 0) * meter, value * ARROW_LENGTH, ARROW_RADIUS, color);
     }
     else
     {
@@ -85,7 +93,7 @@ export function debug(context is Context, value is Vector)
     }
 }
 
-export function debug(context is Context, value is Query)
+export function debug(context is Context, value is Query, color is DebugColor)
 {
     print("debug: Query resolves to ");
     const entities = evaluateQuery(context, value);
@@ -107,17 +115,19 @@ export function debug(context is Context, value is Query)
         var entityString;
         if (count == 1)
         {
-            entityString = { EntityType.VERTEX : "vertex",
-                             EntityType.EDGE : "edge",
-                             EntityType.FACE : "face",
-                             EntityType.BODY : "body" }[entityType.value];
+            entityString = {
+                        EntityType.VERTEX : "vertex",
+                        EntityType.EDGE : "edge",
+                        EntityType.FACE : "face",
+                        EntityType.BODY : "body" }[entityType.value];
         }
         else
         {
-            entityString = { EntityType.VERTEX : "vertices",
-                             EntityType.EDGE : "edges",
-                             EntityType.FACE : "faces",
-                             EntityType.BODY : "bodies" }[entityType.value];
+            entityString = {
+                        EntityType.VERTEX : "vertices",
+                        EntityType.EDGE : "edges",
+                        EntityType.FACE : "faces",
+                        EntityType.BODY : "bodies" }[entityType.value];
         }
         print(count ~ " " ~ entityString);
 
@@ -134,12 +144,13 @@ export function debug(context is Context, value is Query)
                 print(firstBodyType ? "" : ", ");
                 firstBodyType = false;
 
-                var bodyString = { BodyType.SOLID : "solid",
-                                   BodyType.SHEET : "sheet",
-                                   BodyType.WIRE : "wire",
-                                   BodyType.POINT : "point",
-                                   BodyType.MATE_CONNECTOR : "mate connector",
-                                   BodyType.COMPOSITE : "composite" }[bodyType.value];
+                var bodyString = {
+                        BodyType.SOLID : "solid",
+                        BodyType.SHEET : "sheet",
+                        BodyType.WIRE : "wire",
+                        BodyType.POINT : "point",
+                        BodyType.MATE_CONNECTOR : "mate connector",
+                        BodyType.COMPOSITE : "composite" }[bodyType.value];
                 print(bodyCount ~ " " ~ bodyString);
             }
             print(")");
@@ -157,33 +168,33 @@ export function debug(context is Context, value is Query)
     }
     print("\n");
 
-    addDebugEntities(context, qUnion([value, qContainedInCompositeParts(value)]));
+    addDebugEntities(context, qUnion([value, qContainedInCompositeParts(value)]), color);
 }
 
-export function debug(context is Context, value is Line)
+export function debug(context is Context, value is Line, color is DebugColor)
 {
     print("debug: Line ");
     println(value);
-    addDebugArrow(context, value.origin, value.origin + value.direction * ARROW_LENGTH, ARROW_RADIUS);
-    addDebugArrow(context, value.origin + value.direction * ARROW_LENGTH, value.origin, ARROW_RADIUS * 0.5);
+    addDebugArrow(context, value.origin, value.origin + value.direction * ARROW_LENGTH, ARROW_RADIUS, color);
+    addDebugArrow(context, value.origin + value.direction * ARROW_LENGTH, value.origin, ARROW_RADIUS * 0.5, color);
 }
 
-export function debug(context is Context, value is CoordSystem)
+export function debug(context is Context, value is CoordSystem, color is DebugColor)
 {
     print("debug: CoordSystem ");
     println(value);
-    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS);
-    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3));
-    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5);
+    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS, color);
+    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), color);
+    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, color);
 }
 
-export function debug(context is Context, value is Plane)
+export function debug(context is Context, value is Plane, color is DebugColor)
 {
     print("debug: Plane ");
     println(value);
-    addDebugArrow(context, value.origin, value.origin + value.x * ARROW_LENGTH, ARROW_RADIUS);
-    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3));
-    addDebugArrow(context, value.origin, value.origin + value.normal * ARROW_LENGTH * 0.5, ARROW_RADIUS * 0.5);
+    addDebugArrow(context, value.origin, value.origin + value.x * ARROW_LENGTH, ARROW_RADIUS, color);
+    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), color);
+    addDebugArrow(context, value.origin, value.origin + value.normal * ARROW_LENGTH * 0.5, ARROW_RADIUS * 0.5, color);
 
     const planeId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "plane";
     startFeature(context, planeId, {});
@@ -191,11 +202,11 @@ export function debug(context is Context, value is Plane)
     {
         const sketch = newSketchOnPlane(context, planeId, { "sketchPlane" : value });
         skRectangle(sketch, "rectangle", {
-                "firstCorner" : vector(0, 0) * meter,
-                "secondCorner" : vector(ARROW_LENGTH, ARROW_LENGTH)
-            });
+                    "firstCorner" : vector(0, 0) * meter,
+                    "secondCorner" : vector(ARROW_LENGTH, ARROW_LENGTH)
+                });
         skSolve(sketch);
-        addDebugEntities(context, qCreatedBy(planeId, EntityType.FACE));
+        addDebugEntities(context, qCreatedBy(planeId, EntityType.FACE), color);
     }
     abortFeature(context, planeId);
 }
@@ -203,7 +214,7 @@ export function debug(context is Context, value is Plane)
 /**
  * Draws a line between `point1` and `point2` and prints the points with the distance between them.
  */
-export function debug(context is Context, point1 is Vector, point2 is Vector)
+export function debug(context is Context, point1 is Vector, point2 is Vector, color is DebugColor)
 {
     print("debug: Two vectors: ");
     print(point1);
@@ -228,7 +239,7 @@ export function debug(context is Context, point1 is Vector, point2 is Vector)
             skLineSegment(sketch1, "line1", lineDef);
             skSolve(sketch1);
 
-            addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE));
+            addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE), color);
         }
         abortFeature(context, lineId);
     }
@@ -238,23 +249,28 @@ export function debug(context is Context, point1 is Vector, point2 is Vector)
     }
 }
 
-/**
- * Displays the edges of a bounding box in the world coordinate system.
- */
-export function debug(context is Context, boundingBox is Box3d)
+export function debug(context is Context, point1 is Vector, point2 is Vector)
 {
-    debug(context, boundingBox, undefined);
+    debug(context, point1, point2, DebugColor.RED);
 }
 
 /**
- * Displays the edges of a bounding box in the given coordinate system.
+ * Displays the edges of a [Box3d] in the world coordinate system with a chosen [DebugColor].
+ */
+export function debug(context is Context, boundingBox is Box3d, color is DebugColor)
+{
+    debug(context, boundingBox, undefined, color);
+}
+
+/**
+ * Displays the edges of a [Box3d] in the given coordinate system with a chosen [DebugColor].
  *
  * @example ```
  * const myBox = evBox3d(context, { "topology" : entities, "cSys" : myCSys });
- * debug(context, myBox, myCSys);
+ * debug(context, myBox, myCSys, DebugColor.RED);
  * ```
  */
-export function debug(context is Context, boundingBox is Box3d, cSys)
+export function debug(context is Context, boundingBox is Box3d, cSys, color is DebugColor)
 {
     print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.maxCorner));
     if (cSys == undefined)
@@ -274,34 +290,46 @@ export function debug(context is Context, boundingBox is Box3d, cSys)
     try
     {
         fCuboid(context, boxId + "cube", {
-            "corner1" : boundingBox.minCorner,
-            "corner2" : boundingBox.maxCorner
-        });
+                    "corner1" : boundingBox.minCorner,
+                    "corner2" : boundingBox.maxCorner
+                });
         opTransform(context, boxId + "transform", {
-                "bodies" : qCreatedBy(boxId + "cube", EntityType.BODY),
-                "transform" : transform
-        });
-        addDebugEntities(context, qCreatedBy(boxId, EntityType.EDGE));
+                    "bodies" : qCreatedBy(boxId + "cube", EntityType.BODY),
+                    "transform" : transform
+                });
+        addDebugEntities(context, qCreatedBy(boxId, EntityType.EDGE), color);
     }
     abortFeature(context, boxId);
 }
 
-/**
- * Highlights `entities` in red, without printing anything.
- *
- * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
- */
-export function addDebugEntities(context is Context, entities is Query)
+export function debug(context is Context, boundingBox is Box3d, cSys)
 {
-    @addDebugEntities(context, { "entities" : entities });
+    debug(context, boundingBox, cSys, DebugColor.RED);
 }
 
 /**
- * Highlights a 3D `point` in red, without printing anything.
+ * Highlights `entities` in a given [DebugColor], without printing anything.
  *
  * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ * @param color : @autocomplete `DebugColor.RED`
  */
-export function addDebugPoint(context is Context, point is Vector)
+export function addDebugEntities(context is Context, entities is Query, color is DebugColor)
+{
+    @addDebugEntities(context, { "entities" : entities, "color" : color });
+}
+
+export function addDebugEntities(context is Context, entities is Query)
+{
+    addDebugEntities(context, entities, DebugColor.RED);
+}
+
+/**
+ * Highlights a 3D `point` in a given [DebugColor], without printing anything.
+ *
+ * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ * @param color : @autocomplete `DebugColor.RED`
+ */
+export function addDebugPoint(context is Context, point is Vector, color is DebugColor)
 precondition
 {
     is3dLengthVector(point);
@@ -312,19 +340,25 @@ precondition
     try
     {
         opPoint(context, pointId, { "point" : point });
-        addDebugEntities(context, qCreatedBy(pointId));
+        addDebugEntities(context, qCreatedBy(pointId), color);
     }
     abortFeature(context, pointId);
 }
 
+export function addDebugPoint(context is Context, point is Vector)
+{
+    addDebugPoint(context, point, DebugColor.RED);
+}
+
 /**
- * Draws an arrow in 3D space from `from` to `to`.
+ * Draws an arrow in 3D space from `from` to `to` with a chosen [DebugColor].
  *
  * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
  *
  * @param radius : Width of the four arrowhead lines @eg `.25 * centimeter`
+ * @param color : @autocomplete `DebugColor.RED`
  */
-export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits)
+export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits, color is DebugColor)
 {
     const arrowId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "arrow";
     startFeature(context, arrowId, {});
@@ -355,9 +389,14 @@ export function addDebugArrow(context is Context, from is Vector, to is Vector, 
         skLineSegment(sketch2, "line3", lineDef);
         skSolve(sketch2);
 
-        addDebugEntities(context, qCreatedBy(arrowId, EntityType.EDGE));
+        addDebugEntities(context, qCreatedBy(arrowId, EntityType.EDGE), color);
     }
     abortFeature(context, arrowId);
+}
+
+export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits)
+{
+    addDebugArrow(context, from, to, .25 * centimeter, DebugColor.RED);
 }
 
 // Timers for very basic profiling
