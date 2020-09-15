@@ -1,22 +1,35 @@
-FeatureScript 1349; /* Automatically generated version */
+FeatureScript 1364; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1349.0");
+export import(path : "onshape/std/query.fs", version : "1364.0");
 
-import(path : "onshape/std/containers.fs", version : "1349.0");
-import(path : "onshape/std/evaluate.fs", version : "1349.0");
-import(path : "onshape/std/feature.fs", version : "1349.0");
-import(path : "onshape/std/manipulator.fs", version : "1349.0");
-import(path : "onshape/std/math.fs", version : "1349.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1349.0");
-import(path : "onshape/std/valueBounds.fs", version : "1349.0");
-import(path : "onshape/std/vector.fs", version : "1349.0");
+import(path : "onshape/std/containers.fs", version : "1364.0");
+import(path : "onshape/std/evaluate.fs", version : "1364.0");
+import(path : "onshape/std/feature.fs", version : "1364.0");
+import(path : "onshape/std/manipulator.fs", version : "1364.0");
+import(path : "onshape/std/math.fs", version : "1364.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1364.0");
+import(path : "onshape/std/valueBounds.fs", version : "1364.0");
+import(path : "onshape/std/vector.fs", version : "1364.0");
 
 /**
- * Feature performing an [opFitSpline]
+ * The type of fit spline.
+ * @value VERTICES : Creates spline through selected vertices.
+ * @value EDGES : Approximates a set of edges by a single spline.
+ */
+export enum FitSplineType
+{
+    annotation { "Name" : "Vertices" }
+    VERTICES,
+    annotation { "Name" : "Edges" }
+    EDGES
+}
+
+/**
+ * Feature performing either [opFitSpline] or [opSplineThroughEdges] depending on selection
  */
 annotation { "Feature Type Name" : "Fit spline",
         "Manipulator Change Function" : "fitSplineManipulatorChange",
@@ -25,149 +38,186 @@ annotation { "Feature Type Name" : "Fit spline",
 export const fitSpline = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX, "UIHint" : UIHint.ALLOW_QUERY_ORDER }
-        definition.vertices is Query;
+        // This hidden "placeholder" Query allows preselection of both vertices AND edges
+        // It contents are directed to where necessary in the fitSplineEditLogic function
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.VERTEX || EntityType.EDGE }
+        definition.initEntities is Query;
 
-        annotation { "Name" : "Closed spline" }
-        definition.closed is boolean;
+        annotation { "Name" : "Approximation type", "UIHint" : UIHint.HORIZONTAL_ENUM}
+        definition.fitType is FitSplineType;
 
-        if (!definition.closed)
+        if (definition.fitType != FitSplineType.EDGES)
         {
-            annotation { "Name" : "Start direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
-            definition.startDirection is Query;
+            annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX, "UIHint" : UIHint.ALLOW_QUERY_ORDER }
+            definition.vertices is Query;
 
-            annotation { "Name" : "Start magnitude" }
-            isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            annotation { "Name" : "Closed spline" }
+            definition.closed is boolean;
 
-            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.oppositeDirectionStart is boolean;
+            if (!definition.closed)
+            {
+                annotation { "Name" : "Start direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+                definition.startDirection is Query;
 
-            annotation { "Name" : "Match curvature at start" }
-            definition.matchStartCurvature is boolean;
+                annotation { "Name" : "Start magnitude" }
+                isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
 
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.oppositeDirectionStart is boolean;
 
-            annotation { "Name" : "End direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
-            definition.endDirection is Query;
+                annotation { "Name" : "Match curvature at start" }
+                definition.matchStartCurvature is boolean;
 
-            annotation { "Name" : "End magnitude" }
-            isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                annotation { "Name" : "End direction", "Filter" : EntityType.EDGE || QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+                definition.endDirection is Query;
 
-            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.oppositeDirectionEnd is boolean;
+                annotation { "Name" : "End magnitude" }
+                isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
 
-            annotation { "Name" : "Match curvature at end" }
-            definition.matchEndCurvature is boolean;
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.oppositeDirectionEnd is boolean;
 
-            annotation { "Name" : "Has start direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
-            definition.hasStartDirection is boolean;
+                annotation { "Name" : "Match curvature at end" }
+                definition.matchEndCurvature is boolean;
 
-            annotation { "Name" : "Has end direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
-            definition.hasEndDirection is boolean;
+                annotation { "Name" : "Has start direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                definition.hasStartDirection is boolean;
+
+                annotation { "Name" : "Has end direction", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                definition.hasEndDirection is boolean;
+            }
         }
-
+        else
+        {
+            annotation { "Name" : "Edges", "Filter" : EntityType.EDGE }
+            definition.edges is Query;
+        }
     }
     {
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
+
+        if (definition.fitType == FitSplineType.EDGES)
+        {
+            verifyNoSheetMetalFlatQuery(context, definition.edges, "edges", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+        }
+        else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES) )
         {
             verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
             verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
             verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
         }
         // Part 1 of 2 calls for making the feature patternable via feature pattern.
-        var remainingTransform = getRemainderPatternTransform(context, { "references" : definition.vertices });
+        const qReferences = definition.fitType == FitSplineType.VERTICES ? definition.vertices : definition.edges;
+        var remainingTransform = getRemainderPatternTransform(context, { "references" : qReferences });
 
-        var points = [];
-        for (var vertex in evaluateQuery(context, definition.vertices))
+        if (definition.fitType != FitSplineType.EDGES)
         {
-            points = append(points, evVertexPoint(context, { "vertex" : vertex }));
+            const fitSplineDefn = getFitSplineThroughPointsDefinition(context, id, definition);
+            opFitSpline(context, id, fitSplineDefn);
         }
-
-        if (definition.closed)
+        else
         {
-            if (size(points) < 3)
-                throw regenError(ErrorStringEnum.CLOSED_SPLINE_THREE_POINTS, ["vertices"]);
-            points = append(points, points[0]);
+            // Don't evaluateQuery(context, definition.edges); doing so prevents sel-intersection edges warning.
+            // Rely on opSpline to check for non-empty selection of edges
+            opSplineThroughEdges(context, id, {"edges" : definition.edges});
         }
-        else if (size(points) < 2)
-        {
-            throw regenError(ErrorStringEnum.SPLINE_TWO_POINTS, ["vertices"]);
-        }
-
-        if (definition.oppositeDirectionStart)
-        {
-            definition.startMagnitude *= -1;
-        }
-
-        if (definition.oppositeDirectionEnd)
-        {
-            definition.endMagnitude *= -1;
-        }
-
-        const boundingBox = evBox3d(context, {
-                    "topology" : definition.vertices,
-                    "tight" : true
-                });
-
-        const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
-        if (tolerantEquals(totalSpan, 0 * meter))
-        {
-            throw regenError(ErrorStringEnum.FIT_SPLINE_REPEATED_POINT, ['vertices']);
-        }
-
-        var startDerivative = undefined;
-        var endDerivative = undefined;
-        var start2ndDerivative = undefined;
-        var end2ndDerivative = undefined;
-
-        if (!definition.closed)
-        {
-            // The sum of the square roots of distances between interpolation points.
-            // Important since the server uses centripetal knots, and some knowledge of the parametrization is necessary
-            // to get the end conditions correct.
-            const sqrtDistance = getSumSqrtDistances(points);
-            const startCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, true);
-            const endCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, false);
-
-           addFitSplineManipulators(context, id, definition, startCondition, endCondition, points, totalSpan);
-
-            if (startCondition != undefined)
-            {
-                if (tolerantEquals(startCondition.magnitude, 0 * meter))
-                {
-                    throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_START_MAGNITUDE, ['startMagnitude']);
-                }
-                startDerivative = startCondition.magnitude * startCondition.direction;
-                start2ndDerivative =  startCondition.second;
-            }
-
-            if (endCondition != undefined)
-            {
-                if (tolerantEquals(endCondition.magnitude, 0 * meter))
-                {
-                    throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_END_MAGNITUDE, ['endMagnitude']);
-                }
-                endDerivative = endCondition.direction * endCondition.magnitude;
-                end2ndDerivative = endCondition.second;
-            }
-        }
-        var fitSplineDefn = { "points" : points,
-                    "startDerivative" : startDerivative,
-                    "endDerivative" : endDerivative };
-        if (definition.matchStartCurvature)
-        {
-            fitSplineDefn = mergeMaps(fitSplineDefn, {"start2ndDerivative" : start2ndDerivative });
-        }
-        if (definition.matchEndCurvature)
-        {
-            fitSplineDefn = mergeMaps(fitSplineDefn, {"end2ndDerivative" : end2ndDerivative });
-        }
-        opFitSpline(context, id, fitSplineDefn);
 
         // Part 2 of 2 calls for making the feature patternable via feature pattern.
         transformResultIfNecessary(context, id, remainingTransform);
     }, { closed : false, startMagnitude : 1, endMagnitude : 1, startDirection : qNothing(), endDirection : qNothing(),
         matchStartCurvature : false, matchEndCurvature : false, oppositeDirectionStart : false, oppositeDirectionEnd : false,
-        hasStartDirection : false, hasEndDirection : false});
+        hasStartDirection : false, hasEndDirection : false, fitType : FitSplineType.VERTICES, initEntities : qNothing()});
+
+function getFitSplineThroughPointsDefinition(context is Context, id is Id, definition is map) returns map
+{
+    var points = [];
+    for (var vertex in evaluateQuery(context, definition.vertices))
+    {
+        points = append(points, evVertexPoint(context, { "vertex" : vertex }));
+    }
+
+    if (definition.closed)
+    {
+        if (size(points) < 3)
+        {
+            throw regenError(ErrorStringEnum.CLOSED_SPLINE_THREE_POINTS, ["vertices"]);
+        }
+        points = append(points, points[0]);
+    }
+    else if (size(points) < 2)
+    {
+        throw regenError(ErrorStringEnum.SPLINE_TWO_POINTS, ["vertices"]);
+    }
+
+    if (definition.oppositeDirectionStart)
+    {
+        definition.startMagnitude *= -1;
+    }
+
+    if (definition.oppositeDirectionEnd)
+    {
+        definition.endMagnitude *= -1;
+    }
+
+    const boundingBox = evBox3d(context, {
+                "topology" : definition.vertices,
+                "tight" : true
+            });
+
+    const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
+    if (tolerantEquals(totalSpan, 0 * meter))
+    {
+        throw regenError(ErrorStringEnum.FIT_SPLINE_REPEATED_POINT, ['vertices']);
+    }
+
+    var startDerivative = undefined;
+    var endDerivative = undefined;
+    var start2ndDerivative = undefined;
+    var end2ndDerivative = undefined;
+
+    if (!definition.closed)
+    {
+        // The sum of the square roots of distances between interpolation points.
+        // Important since the server uses centripetal knots, and some knowledge of the parametrization is necessary
+        // to get the end conditions correct.
+        const sqrtDistance = getSumSqrtDistances(points);
+        const startCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, true);
+        const endCondition = getEndCondition(context, definition, points, totalSpan, sqrtDistance, false);
+
+        addFitSplineManipulators(context, id, definition, startCondition, endCondition, points, totalSpan);
+
+        if (startCondition != undefined)
+        {
+            if (tolerantEquals(startCondition.magnitude, 0 * meter))
+            {
+                throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_START_MAGNITUDE, ['startMagnitude']);
+            }
+            startDerivative = startCondition.magnitude * startCondition.direction;
+            start2ndDerivative =  startCondition.second;
+        }
+
+        if (endCondition != undefined)
+        {
+            if (tolerantEquals(endCondition.magnitude, 0 * meter))
+            {
+                throw regenError(ErrorStringEnum.FIT_SPLINE_ZERO_END_MAGNITUDE, ['endMagnitude']);
+            }
+            endDerivative = endCondition.direction * endCondition.magnitude;
+            end2ndDerivative = endCondition.second;
+        }
+    }
+    var fitSplineDefn = { "points" : points,
+                "startDerivative" : startDerivative,
+                "endDerivative" : endDerivative };
+    if (definition.matchStartCurvature)
+    {
+        fitSplineDefn = mergeMaps(fitSplineDefn, {"start2ndDerivative" : start2ndDerivative });
+    }
+    if (definition.matchEndCurvature)
+    {
+        fitSplineDefn = mergeMaps(fitSplineDefn, {"end2ndDerivative" : end2ndDerivative });
+    }
+    return fitSplineDefn;
+}
 
 // Returns direction and magnitude for end condition.
 // Returns a direction and magnitude instead of just a vector to avoid some expensive operations downstream.
@@ -284,11 +334,35 @@ function getEndCondition(context is Context, definition is map, points is array,
 
 /**
  * @internal
+ * Handle preselection of either vertices or edges, choose fitType accordingly
  * Keep track of whether a selection was made for directions so that we can give correct error if it goes missing
  */
 export function fitSplineEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
         isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    if (oldDefinition == {}) // check preselection
+    {
+        const qEdges = qEntityFilter(definition.initEntities, EntityType.EDGE);
+        const qVertices = qEntityFilter(definition.initEntities, EntityType.VERTEX);
+        if (evaluateQuery(context, qEdges) != [])
+        {
+            definition.fitType = FitSplineType.EDGES;
+            definition.edges = qEdges;
+        }
+        else if (evaluateQuery(context, qVertices) != [])
+        {
+            definition.fitType = FitSplineType.VERTICES;
+            definition.vertices = qEntityFilter(definition.initEntities, EntityType.VERTEX);
+        }
+        // else keep fitType of previous invocation
+        definition.initEntities = qNothing();
+        return definition;
+    }
+
+    if (definition.fitType == FitSplineType.EDGES)
+    {
+        return definition;
+    }
     definition.hasStartDirection = false;
     definition.hasEndDirection = false;
 
@@ -360,6 +434,10 @@ function addFitSplineManipulators(context is Context, id is Id, definition, star
  */
 export function fitSplineManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
+    if (definition.fitType == FitSplineType.EDGES)
+    {
+        return definition;
+    }
     const startManipulator = newManipulators[START_MANIPULATOR];
     const endManipulator = newManipulators[END_MANIPULATOR];
 

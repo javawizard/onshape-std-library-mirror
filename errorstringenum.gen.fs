@@ -1,4 +1,4 @@
-FeatureScript 1349; /* Automatically generated version */
+FeatureScript 1364; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1940,7 +1940,17 @@ export enum ErrorStringEnum
     /* "Must specify explode line starting point." */
     EXPLODE_LINES_MUST_SPECIFY_STARTING_POINT,
     /* "Failed to compute explode line starting point." */
-    EXPLODE_LINES_FAILED_TO_RESOLVE_ENTITY
+    EXPLODE_LINES_FAILED_TO_RESOLVE_ENTITY,
+    /* Selected edges do not form a continuous chain. */
+    SPLINE_THROUGH_EDGES_SELECTED_EDGES_DONT_FORM_CHAIN,
+    /* Selected edges are not tangent continuous. */
+    SPLINE_THROUGH_EDGES_TANGENT_DISCONTINUITY_AT_EDGE_ENDS,
+    /* Cannot fit approximating spline. */
+    SPLINE_THROUGH_EDGES_CANNOT_FIT_SPLINE,
+    /* Select tangent continuous edges to be approximated by a spline. */
+    SPLINE_THROUGH_EDGES_SELECT_EDGES,
+    /* A single approximating spline resulted in more than one edge. */
+    SPLINE_THROUGH_EDGES_RESULTED_IN_MORE_THAN_ONE_EDGE
 }
 
 
