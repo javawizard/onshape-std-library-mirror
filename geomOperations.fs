@@ -805,6 +805,19 @@ export function opSphere(context is Context, id is Id, definition is map)
 }
 
 /**
+ * Creates a 3D spline curve representing a sequence of edges.
+ * The edges must form a tangent-continuous chain.
+ * @param id : @autocomplete `id + "splineThroughEdges1"`
+ * @param definition {{
+ *       @field edges {Query} : Edges to approximate.
+ * }}
+ */
+export function opSplineThroughEdges(context is Context, id is Id, definition is map)
+{
+    return @opSplineThroughEdges(context, id, definition);
+}
+
+/**
  * Creates a construction point (a `BodyType.POINT` with one vertex).
  * @param id : @autocomplete `id + "point1"`
  * @param definition {{

@@ -915,7 +915,13 @@ export enum FeatureScriptVersionNumber
     V1346_FILLET_ORDERING,
     V1347_DEFAULT_ALLOW_FACES,
     V1348_SM_UNFOLD,
-    V1349_DELETE_FACE_EDIT_LOGIC
+    V1349_DELETE_FACE_EDIT_LOGIC,
+    V1359_TWEAK_FACE_DISAMBIGUATION,
+    V1360_SPLIT_BODY_DISAMBIGUATION,
+    V1361_PS_VERSION_33_0_171,
+    V1362_SPLINE_THROUGH_EDGES,
+    V1363_SPLINE_THROUGH_EDGES_BUGFIXES,
+    V1364_SPLINE_THROUGH_EDGES_STRINGS
 }
 
 /**
@@ -926,6 +932,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1349_DELETE_FACE_EDIT_LOGIC;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1364_SPLINE_THROUGH_EDGES_STRINGS;
 
 
