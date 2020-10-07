@@ -1,28 +1,28 @@
-FeatureScript 1364; /* Automatically generated version */
+FeatureScript 1378; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1364.0");
-export import(path : "onshape/std/tool.fs", version : "1364.0");
+export import(path : "onshape/std/query.fs", version : "1378.0");
+export import(path : "onshape/std/tool.fs", version : "1378.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1364.0");
+export import(path : "onshape/std/manipulator.fs", version : "1378.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1364.0");
-import(path : "onshape/std/box.fs", version : "1364.0");
-import(path : "onshape/std/containers.fs", version : "1364.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1364.0");
-import(path : "onshape/std/evaluate.fs", version : "1364.0");
-import(path : "onshape/std/feature.fs", version : "1364.0");
-import(path : "onshape/std/mathUtils.fs", version : "1364.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1364.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1364.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1364.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1364.0");
-import(path : "onshape/std/valueBounds.fs", version : "1364.0");
+import(path : "onshape/std/attributes.fs", version : "1378.0");
+import(path : "onshape/std/box.fs", version : "1378.0");
+import(path : "onshape/std/containers.fs", version : "1378.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1378.0");
+import(path : "onshape/std/evaluate.fs", version : "1378.0");
+import(path : "onshape/std/feature.fs", version : "1378.0");
+import(path : "onshape/std/mathUtils.fs", version : "1378.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1378.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1378.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1378.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1378.0");
+import(path : "onshape/std/valueBounds.fs", version : "1378.0");
 
 
 /**
@@ -742,8 +742,38 @@ function getAssociatedAxis(context is Context, definition) returns Query
     }
 }
 
-function makeEdgeChangeParameter(context is Context, definition is map)
+function makeEdgeChangeParameter(context is Context, definition is map, edge is Query, face is Query, isBeingDeripped is boolean)
 {
+    // If the edge is not being deripped, it may be offset from the sheet body.
+    if (!isBeingDeripped && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1371_SM_MOVE_FACE_SET_BACKS))
+    {
+        const distanceResult = evDistance(context, {
+                    "side0" : face,
+                    "side1" : edge
+                });
+
+        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        {
+            const faceTangent = evFaceTangentPlane(context, {
+                        "face" : face,
+                        "parameter" : distanceResult.sides[0].parameter
+                    });
+            const signedDistance = dot(faceTangent.normal, distanceResult.sides[0].point - distanceResult.sides[1].point);
+            return { "offset" : definition.offsetDistance + signedDistance };
+        }
+        else
+        {
+            var transformList = definition.transformList;
+            if (definition.transform != undefined)
+            {
+                transformList = [definition.transform];
+            }
+            // Compose a transform that will translate the edge to the face before the transforms are applied.
+            transformList[0] = transformList[0] * transform(distanceResult.sides[0].point - distanceResult.sides[1].point);
+            return { "transformList" : transformList };
+        }
+    }
+
     if (definition.moveFaceType == MoveFaceType.OFFSET)
     {
         return { "offset" : definition.offsetDistance };
@@ -873,7 +903,8 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 }
                 faceToExtend = qUnion([faceToExtend, startTracking(context, faceToExtend)]);
                 smEdge = qUnion([smEdge, startTracking(context, smEdge)]);
-                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, definition));
+                const isBeingDeripped = size(adjacentFaces) == 2;
+                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, definition, smEdge, evaluatedFace, isBeingDeripped));
 
                 const sheetMetalModel = qOwnerBody(smEdge);
                 edgeChangeOptions = append(edgeChangeOptions, option);

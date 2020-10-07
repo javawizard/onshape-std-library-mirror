@@ -1,26 +1,26 @@
-FeatureScript 1364; /* Automatically generated version */
+FeatureScript 1378; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1364.0");
+export import(path : "onshape/std/query.fs", version : "1378.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1364.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1364.0");
+export import(path : "onshape/std/manipulator.fs", version : "1378.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1378.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1364.0");
-import(path : "onshape/std/evaluate.fs", version : "1364.0");
-import(path : "onshape/std/feature.fs", version : "1364.0");
-import(path : "onshape/std/containers.fs", version : "1364.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1364.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1364.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1364.0");
-import(path : "onshape/std/tool.fs", version : "1364.0");
-import(path : "onshape/std/valueBounds.fs", version : "1364.0");
-import(path : "onshape/std/vector.fs", version : "1364.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1378.0");
+import(path : "onshape/std/evaluate.fs", version : "1378.0");
+import(path : "onshape/std/feature.fs", version : "1378.0");
+import(path : "onshape/std/containers.fs", version : "1378.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1378.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1378.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1378.0");
+import(path : "onshape/std/tool.fs", version : "1378.0");
+import(path : "onshape/std/valueBounds.fs", version : "1378.0");
+import(path : "onshape/std/vector.fs", version : "1378.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -77,6 +77,12 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         annotation {"Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.defaultsChanged is boolean;
 
+        if (definition.crossSection != FilletCrossSection.CURVATURE)
+        {
+            annotation {"Name" : "Allow edge overflow", "Default" : true }
+            definition.allowEdgeOverflow is boolean;
+        }
+
         annotation {"Name" : "Variable fillet"}
         definition.isVariable is boolean;
 
@@ -112,6 +118,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         }
     }
     {
+        definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
+
         if (!definition.isVariable)
         {
             try(addFilletManipulator(context, id, definition));
@@ -134,7 +142,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             }
         }
 
-    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false });
+    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false, allowEdgeOverflow: true });
 
 
 /**
