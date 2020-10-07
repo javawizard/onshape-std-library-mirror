@@ -494,6 +494,7 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
  *              A number between 0 and 1, specifying the magnitude of curvature match.
  *      @field isVariable {boolean} : @optional Fillet controls can be varied at vertices via `vertexSettings`. Default is `false`.
+ *      @field allowEdgeOverflow {boolean} : @optional Allow `opFillet` to modify nearby edges to maintain the fillet profile. Default is `true`.
  *      @field vertexSettings {array} : @optional An array of maps representing fillet settings at specified vertices.  Each map should
  *              contain a `vertex` query, a `vertexRadius` value, a `variableMagnitude` if the `crossSection` is
  *              `FilletCrossSection.CURVATURE`, and a `variableRho` if the `crossSection` is `FilletCrossSection.CONIC`.

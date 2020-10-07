@@ -921,7 +921,15 @@ export enum FeatureScriptVersionNumber
     V1361_PS_VERSION_33_0_171,
     V1362_SPLINE_THROUGH_EDGES,
     V1363_SPLINE_THROUGH_EDGES_BUGFIXES,
-    V1364_SPLINE_THROUGH_EDGES_STRINGS
+    V1364_SPLINE_THROUGH_EDGES_STRINGS,
+    V1371_SM_MOVE_FACE_SET_BACKS,
+    V1372_USE_UV_ATT_CYL_BENDS,
+    V1373_CREATED_BY_FOR_PROPERTIES,
+    V1374_FILLET_KEEP_EDGES,
+    V1375_FLIP_OTHER_DIRECTION,
+    V1376_FS_VERSION_BUMP,
+    V1377_PERIODIC_UNROLL,
+    V1378_EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE
 }
 
 /**
@@ -932,6 +940,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1364_SPLINE_THROUGH_EDGES_STRINGS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1378_EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE;
 
 

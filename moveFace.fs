@@ -742,8 +742,38 @@ function getAssociatedAxis(context is Context, definition) returns Query
     }
 }
 
-function makeEdgeChangeParameter(context is Context, definition is map)
+function makeEdgeChangeParameter(context is Context, definition is map, edge is Query, face is Query, isBeingDeripped is boolean)
 {
+    // If the edge is not being deripped, it may be offset from the sheet body.
+    if (!isBeingDeripped && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1371_SM_MOVE_FACE_SET_BACKS))
+    {
+        const distanceResult = evDistance(context, {
+                    "side0" : face,
+                    "side1" : edge
+                });
+
+        if (definition.moveFaceType == MoveFaceType.OFFSET)
+        {
+            const faceTangent = evFaceTangentPlane(context, {
+                        "face" : face,
+                        "parameter" : distanceResult.sides[0].parameter
+                    });
+            const signedDistance = dot(faceTangent.normal, distanceResult.sides[0].point - distanceResult.sides[1].point);
+            return { "offset" : definition.offsetDistance + signedDistance };
+        }
+        else
+        {
+            var transformList = definition.transformList;
+            if (definition.transform != undefined)
+            {
+                transformList = [definition.transform];
+            }
+            // Compose a transform that will translate the edge to the face before the transforms are applied.
+            transformList[0] = transformList[0] * transform(distanceResult.sides[0].point - distanceResult.sides[1].point);
+            return { "transformList" : transformList };
+        }
+    }
+
     if (definition.moveFaceType == MoveFaceType.OFFSET)
     {
         return { "offset" : definition.offsetDistance };
@@ -873,7 +903,8 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 }
                 faceToExtend = qUnion([faceToExtend, startTracking(context, faceToExtend)]);
                 smEdge = qUnion([smEdge, startTracking(context, smEdge)]);
-                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, definition));
+                const isBeingDeripped = size(adjacentFaces) == 2;
+                var option = mergeMaps({ "edge" : smEdge, "face" : faceToExtend }, makeEdgeChangeParameter(context, definition, smEdge, evaluatedFace, isBeingDeripped));
 
                 const sheetMetalModel = qOwnerBody(smEdge);
                 edgeChangeOptions = append(edgeChangeOptions, option);

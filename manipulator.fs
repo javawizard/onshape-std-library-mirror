@@ -302,9 +302,10 @@ precondition
  *              @eg `Vector(0, 0, 1)` points manipulator along the z axis
  *      @field flipped {boolean}:
  *              @eg `false` points the manipulator along +direction
- *              @eg `true`  points the manipulator along -direction
+ *              @eg `true`  points the manipulator along -direction, or otherDirection if defined
  *      @field sources : @optional For Onshape internal use.
  *      @field style {ManipulatorStyleEnum} : @optional
+ *      @field otherDirection {Vector} : @optional A 3d vector for the flipped direction
  * }}
  */
 export function flipManipulator(definition is map) returns Manipulator
@@ -315,6 +316,7 @@ precondition
     definition.flipped is boolean;
     definition.sources == undefined || definition.sources is Query; // BEL-122076: This only works for extrude and revolve.
     definition.style == undefined || definition.style is ManipulatorStyleEnum;
+    definition.otherDirection == undefined || is3dDirection(definition.otherDirection);
 }
 {
     definition.manipulatorType = ManipulatorType.FLIP;

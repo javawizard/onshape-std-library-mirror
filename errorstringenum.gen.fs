@@ -1950,7 +1950,31 @@ export enum ErrorStringEnum
     /* Select tangent continuous edges to be approximated by a spline. */
     SPLINE_THROUGH_EDGES_SELECT_EDGES,
     /* A single approximating spline resulted in more than one edge. */
-    SPLINE_THROUGH_EDGES_RESULTED_IN_MORE_THAN_ONE_EDGE
+    SPLINE_THROUGH_EDGES_RESULTED_IN_MORE_THAN_ONE_EDGE,
+    /* Cannot delete spline handles. */
+    SKETCH_CANNOT_DELETE_SPLINE_HANDLES,
+    /* Cannot trim spline handles. */
+    SKETCH_TRIM_NO_SPLINE_HANDLES,
+    /* Cannot split spline handles. */
+    SKETCH_SPLIT_NO_SPLINE_HANDLES,
+    /* Cannot extend spline handles. */
+    SKETCH_EXTEND_NO_SPLINE_HANDLES,
+    /* Cannot pattern spline handles. */
+    SKETCH_PATTERN_NO_SPLINE_HANDLES,
+    /* Cannot fillet spline handles. */
+    SKETCH_FILLET_NO_SPLINE_HANDLES,
+    /* Cannot mirror spline handles. */
+    SKETCH_MIRROR_NO_SPLINE_HANDLES,
+    /* Cannot transform spline handles. */
+    SKETCH_TRANSFORM_NO_SPLINE_HANDLES,
+    /* Invalid rotation type. */
+    MATE_OFFSET_INVALID_ROTATION_TYPE,
+    /* Cannot create a tangent constraint between a spline and its handle. */
+    SKETCH_TANGENT_CONSTRAINT_SPLINE_AND_HANDLE,
+    /* Cannot create a curvature constraint between a spline and its handle. */
+    SKETCH_CURVATURE_CONSTRAINT_SPLINE_AND_HANDLE,
+    /* "Explode line must be placed on an exploded instance." */
+    EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE
 }
 
 

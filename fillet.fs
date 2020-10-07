@@ -77,6 +77,12 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         annotation {"Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.defaultsChanged is boolean;
 
+        if (definition.crossSection != FilletCrossSection.CURVATURE)
+        {
+            annotation {"Name" : "Allow edge overflow", "Default" : true }
+            definition.allowEdgeOverflow is boolean;
+        }
+
         annotation {"Name" : "Variable fillet"}
         definition.isVariable is boolean;
 
@@ -112,6 +118,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         }
     }
     {
+        definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
+
         if (!definition.isVariable)
         {
             try(addFilletManipulator(context, id, definition));
@@ -134,7 +142,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             }
         }
 
-    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false });
+    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false, allowEdgeOverflow: true });
 
 
 /**
