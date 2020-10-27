@@ -1,22 +1,22 @@
-FeatureScript 1378; /* Automatically generated version */
+FeatureScript 1389; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1378.0");
-export import(path : "onshape/std/error.fs", version : "1378.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1378.0");
-export import(path : "onshape/std/query.fs", version : "1378.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1378.0");
+export import(path : "onshape/std/context.fs", version : "1389.0");
+export import(path : "onshape/std/error.fs", version : "1389.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1389.0");
+export import(path : "onshape/std/query.fs", version : "1389.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1389.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1378.0");
-import(path : "onshape/std/math.fs", version : "1378.0");
-import(path : "onshape/std/string.fs", version : "1378.0");
-import(path : "onshape/std/transform.fs", version : "1378.0");
-import(path : "onshape/std/units.fs", version : "1378.0");
-import(path : "onshape/std/tabReferences.fs", version : "1378.0");
+import(path : "onshape/std/containers.fs", version : "1389.0");
+import(path : "onshape/std/math.fs", version : "1389.0");
+import(path : "onshape/std/string.fs", version : "1389.0");
+import(path : "onshape/std/transform.fs", version : "1389.0");
+import(path : "onshape/std/units.fs", version : "1389.0");
+import(path : "onshape/std/tabReferences.fs", version : "1389.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -159,6 +159,79 @@ export function endFeature(context is Context, id is Id)
         @endFeature(context, id, {});
     }
 }
+
+/**
+ * Iterate through all entities provided by a query, calling the provided function once for each geometric entity
+ * resolved by the provided `query`.
+ *
+ * `forEachEntity` behaves much like the code:
+ * ```
+ * const evaluated = evaluteQuery(context, query);
+ * for (var i = 0; i < size(evaluated); i += 1)
+ * {
+ *     operationToPerform(id + i, evaluated[i]);
+ * }
+ * ```
+ * However, `forEachEntity` has one additional benefit: The `entId` this function provides to `operationToPerform` is tied to
+ * the entity itself, not its index `i`. This means that downstream features made in the Part Studio will hold up better across
+ * upstream changes.
+ *
+ * For example, imagine the following scenario: A user inserts a custom feature which places a slot on every selected line. That
+ * feature calls `forEachEntity(context, lineQuery ...)`. The user then makes a sketch downstream which uses geometry from e.g. the
+ * third slot. Finally, the user decides some slots are unnecessary and deletes some of the lines. Since the feature used
+ * `forEachEntity`, the user's downstream sketch will still reference the same slots. If the feature instead used the code above,
+ * the user's sketch would break or jump around, since a different slot would suddenly become "slot 3".
+ *
+ * Aside from that difference, the two are interchangable.
+ *
+ * Like any expression function, be warned that the provided `operationToPerform` can read but can NOT modify the values of
+ * variables outside the function. It can, however, modify values inside a [box](https://cad.onshape.com/FsDoc/variables.html#box).
+ * @example ```
+ * const allParts = qAllModifiableSolidBodies();
+ * const threshold = 0.01 * inch^3;
+ * var deletedSizes is box = new box([]); // box containing an empty array
+ * forEachEntity(context, id + "deleteSmallParts", allParts, function(entity is Query, id is Id)
+ * {
+ *     const size = evVolume(context, {
+ *             "entities" : entity
+ *     });
+ *     if (size < threshold)
+ *     {
+ *         opDeleteBodies(context, id + "deleteBodies1", {
+ *                 "entities" : entity
+ *         });
+ *         deletedSizes[] = append(deletedSizes[], size);
+ *     }
+ * });
+ * println(deletedSizes[]);
+ * ```
+ *
+ * @param id: @autocomplete `id + "operation"`
+ * @param operationToPerform: @eg ```function(entity is Query, id is Id)
+ * {
+ *     // perform operations with the entity
+ * }
+ * ```
+ *
+ * The first argument to this function is a query resolving to one single entity of the input `query`.
+ *
+ * The second argument to this function is a unique id tied to the `entity`. By default it is named "`id`", which will shadow
+ * (i.e. take precedence over) the outer variable named "`id`". If you need access to that outer `id`, simply rename this
+ * argument to e.g. `innerId`.
+ */
+export function forEachEntity(context is Context, id is Id, query is Query, operationToPerform is function)
+{
+    const evaluated = evaluateQuery(context, query);
+    const querySize = size(evaluated);
+    for (var i = 0; i < querySize; i += 1)
+    {
+        const innerId = id + unstableIdComponent(i);
+        const entity = evaluated[i];
+        setExternalDisambiguation(context, innerId, entity);
+        operationToPerform(entity, innerId);
+    }
+}
+
 
 /**
  * @internal

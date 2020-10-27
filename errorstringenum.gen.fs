@@ -1,4 +1,4 @@
-FeatureScript 1378; /* Automatically generated version */
+FeatureScript 1389; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1863,7 +1863,7 @@ export enum ErrorStringEnum
     COMPOSITE_PLANE,
     /* Cannot create a composite part containing a non-modifiable body. */
     COMPOSITE_NON_MODIFIABLE,
-    /* "Replace failed because it would create cyclical references." */
+    /* Replace failed because it would create cyclical references. */
     ASSEMBLY_REPLACE_WILL_CAUSE_CYCLES,
     /* Two offset faces are required per body. */
     CREATE_OUTLINE_TWO_OFFSET_FACES_PER_BODY,
@@ -1897,7 +1897,7 @@ export enum ErrorStringEnum
     MODIFY_COMPOSITE_PART_FAILED,
     /* Referenced body has been consumed by a closed composite part. */
     INSTANCE_CONSUMED_BY_CLOSED_COMPOSITE,
-    /* "One or more explode step instances are suppressed." */
+    /* One or more explode step instances are suppressed. */
     EXPLODE_STEP_INSTANCE_IS_SUPPRESSED,
     /* No composite part created when importing a single solid. */
     NO_COMPOSITE_FOR_SINGLE_SOLID,
@@ -1923,9 +1923,9 @@ export enum ErrorStringEnum
     SHEET_METAL_TAB_MERGE_AND_SUBTRACT_SAME_FLANGE,
     /* Attempt to set invalid starting position for exploded view. */
     EXPLODED_VIEW_INVALID_STARTING_POSITION,
-    /* "Explode steps do not support instances of type Sketch." */
+    /* Explode steps do not support instances of type Sketch. */
     CANNOT_EXPLODE_SKETCH,
-    /* "Failed to create exploded view." */
+    /* Failed to create exploded view. */
     FAILED_TO_CREATE_EXPLODED_VIEW,
     /* Instances have been added to the assembly. */
     ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES,
@@ -1937,9 +1937,9 @@ export enum ErrorStringEnum
     CURVE_FAILED,
     /* Planes and mate connectors will be kept. */
     SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS,
-    /* "Must specify explode line starting point." */
+    /* Must specify explode line starting point. */
     EXPLODE_LINES_MUST_SPECIFY_STARTING_POINT,
-    /* "Failed to compute explode line starting point." */
+    /* Failed to compute explode line starting point. */
     EXPLODE_LINES_FAILED_TO_RESOLVE_ENTITY,
     /* Selected edges do not form a continuous chain. */
     SPLINE_THROUGH_EDGES_SELECTED_EDGES_DONT_FORM_CHAIN,
@@ -1973,7 +1973,7 @@ export enum ErrorStringEnum
     SKETCH_TANGENT_CONSTRAINT_SPLINE_AND_HANDLE,
     /* Cannot create a curvature constraint between a spline and its handle. */
     SKETCH_CURVATURE_CONSTRAINT_SPLINE_AND_HANDLE,
-    /* "Explode line must be placed on an exploded instance." */
+    /* Explode line must be placed on an exploded instance. */
     EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE
 }
 

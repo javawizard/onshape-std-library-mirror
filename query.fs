@@ -1,4 +1,4 @@
-FeatureScript 1378; /* Automatically generated version */
+FeatureScript 1389; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1378; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1378.0");
-import(path : "onshape/std/context.fs", version : "1378.0");
-import(path : "onshape/std/mathUtils.fs", version : "1378.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1378.0");
-import(path : "onshape/std/units.fs", version : "1378.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1378.0");
-import(path : "onshape/std/featureList.fs", version : "1378.0");
+import(path : "onshape/std/containers.fs", version : "1389.0");
+import(path : "onshape/std/context.fs", version : "1389.0");
+import(path : "onshape/std/mathUtils.fs", version : "1389.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1389.0");
+import(path : "onshape/std/units.fs", version : "1389.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1389.0");
+import(path : "onshape/std/featureList.fs", version : "1389.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -704,18 +704,103 @@ export function qEntityFilter(queryToFilter is Query, entityType is EntityType) 
 }
 
 /**
-* A query for entities in a `queryToFilter` which have been assigned an attribute matching a given `attributePattern`.
-* @seealso [getAttributes]
-*/
+ * Query for all entities marked with an attribute with name `name`
+ * @seealso [setAttribute]
+ */
+export function qHasAttribute(name is string)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name } as Query;
+}
+
+/**
+ * Query for all entities in `queryToFilter` marked with an attribute with name `name`
+ * @seealso [setAttribute]
+ */
+export function qHasAttribute(queryToFilter is Query, name is string)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name } as Query;
+}
+
+/**
+ * Query for all entities marked with an attribute with name `name` and value exactly equal to `value`
+ * @seealso [setAttribute]
+ */
+export function qHasAttributeWithValue(name is string, value)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name, "valueToMatchExactly" : value } as Query;
+}
+
+/**
+ * Query for all entities in `queryToFilter` marked with an attribute with name `name` and value exactly equal to `value`
+ * @seealso [setAttribute]
+ */
+export function qHasAttributeWithValue(queryToFilter is Query, name is string, value)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name, "valueToMatchExactly" : value } as Query;
+}
+
+/**
+ * Query for all entities marked with an attribute with name `name` and a map value matching
+ * every key-value pair in the provided `attributePattern` map.
+ * @seealso [setAttribute]
+ *
+ * @param attributePattern : @eg ```{
+ *     "key1" : valueToMatch,
+ * }```
+ */
+export function qHasAttributeWithValueMatching(name is string, attributePattern is map)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name, "attributePattern" : attributePattern } as Query;
+}
+
+/**
+ * Query for all entities in `queryToFilter` marked with an attribute with name `name` and a map value matching
+ * every key-value pair in the provided `attributePattern` map.
+ * @seealso [setAttribute]
+ *
+ * @param attributePattern : @eg ```{
+ *     "key1" : valueToMatch,
+ * }```
+ */
+export function qHasAttributeWithValueMatching(queryToFilter is Query, name is string, attributePattern is map)
+{
+    return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name, "attributePattern" : attributePattern } as Query;
+}
+
+/**
+ * Note: This query is used only for legacy unnamed attributes, which are still supported but no longer reccommended. See the
+ * [Attributes](library.html#module-attributes.fs) module for details.
+ *
+ * A query for entities in a `queryToFilter` which have been assigned a legacy unnamed attribute matching a given `attributePattern`.
+ *
+ * @param attributePattern : Will only resolve to queries whose legacy unnamed attributes match the type (and possibly the values)
+ *      of this pattern.
+ *
+ *      If attributePattern has a type tag, will only match attributes with that same type tag.
+ *      @eg `{} as MyCustomType` will match all attributes with type tag `MyCustomType`
+ *
+ *      If the attribute has no type tag (i.e. it is a [standard type](variables.html#standard-types) like `string` or `map`),
+ *      will match all attributes with that same standard type.
+ *      @ex `"asdf"` will match all `string` attributes.
+ *      @ex `{}` will match all `map` attributes.
+ *
+ *      If the attribute is a map, will only match maps which have identical values for every key-value pair in the pattern
+ *      @ex `{ "odd" : true }` matches all unnamed `map` attributes that have a field `"odd"` whose value is `true`.
+ *      @ex `{ "odd" : true } as MyCustomType` matches all unnamed `map` attributes with the  that have a field `"odd"` whose value is `true`.
+ *
+ */
 export function qAttributeFilter(queryToFilter is Query, attributePattern) returns Query
 {
     return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern, "subquery" : queryToFilter } as Query;
 }
 
 /**
-* A query for all entities which have been assigned an attribute matching a given `attributePattern`.
-* Equivalent to `qAttributeFilter(qEverything(), attributePattern)`
-*/
+ * Note: This query is used only for legacy unnamed attributes, which are still supported but no longer reccommended. See the
+ * [Attributes](library.html#module-attributes.fs) module for details.
+ *
+ * A query for all entities which have been assigned a legacy unnamed attribute matching a given `attributePattern`.
+ * Equivalent to `qAttributeFilter(qEverything(), attributePattern)`
+ */
 export function qAttributeQuery(attributePattern) returns Query
 {
     return { queryType : QueryType.ATTRIBUTE_FILTER, "attributePattern" : attributePattern} as Query;
