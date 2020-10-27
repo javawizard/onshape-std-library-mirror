@@ -94,7 +94,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             definition.vertexSettings is array;
             for (var setting in definition.vertexSettings)
             {
-                annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO,
+                annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
                             "MaxNumberOfPicks" : 1 ,
                             "UIHint" : UIHint.ALWAYS_HIDDEN }
                 setting.vertex is Query;

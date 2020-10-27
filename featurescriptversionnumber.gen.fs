@@ -929,7 +929,11 @@ export enum FeatureScriptVersionNumber
     V1375_FLIP_OTHER_DIRECTION,
     V1376_FS_VERSION_BUMP,
     V1377_PERIODIC_UNROLL,
-    V1378_EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE
+    V1378_EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE,
+    V1386_FILLET_PROPAGATE_UNIFICATION,
+    V1387_FLAT_OPERATION_SP_CURVES,
+    V1388_VRFILLET_UPDATE,
+    V1389_SPLIT_BODY
 }
 
 /**
@@ -940,6 +944,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1378_EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1389_SPLIT_BODY;
 
 
