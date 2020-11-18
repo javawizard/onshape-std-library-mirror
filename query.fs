@@ -153,6 +153,8 @@ export enum QueryType
     TRANSIENT,
     ATTRIBUTE_FILTER,
     PATTERN_INSTANCES,
+    OP_HOLE_PROFILE,
+    OP_HOLE_FACE,
     //Sheet metal
     ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,

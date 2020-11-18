@@ -933,7 +933,11 @@ export enum FeatureScriptVersionNumber
     V1386_FILLET_PROPAGATE_UNIFICATION,
     V1387_FLAT_OPERATION_SP_CURVES,
     V1388_VRFILLET_UPDATE,
-    V1389_SPLIT_BODY
+    V1389_SPLIT_BODY,
+    V1400_IMPRINT_AS_INTERSECT,
+    V1401_DISAMBIGUATION,
+    V1402_FLAT_OP_ALIGNMENT,
+    V1403_BODY_NET
 }
 
 /**
@@ -944,6 +948,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1389_SPLIT_BODY;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1403_BODY_NET;
 
 
