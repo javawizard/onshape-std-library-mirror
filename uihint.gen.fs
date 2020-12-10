@@ -59,6 +59,7 @@ FeatureScript ✨; /* Automatically generated version */
  *      its displayed row.
  * @value ALLOW_QUERY_ORDER : Enable reordering of queries in a query parameter.
  * @value PREVENT_ARRAY_REORDER : Disable reordering of items in an array parameter.
+ * @value FOCUS_INNER_QUERY : When selecting a new item of a selection-driven array parameter, move selection focus from the outer array         parameter to the inner QLV.
  * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
  */
 export enum UIHint
@@ -88,7 +89,8 @@ export enum UIHint
     FIRST_IN_ROW,
     ALLOW_QUERY_ORDER,
     PREVENT_ARRAY_REORDER,
-    VARIABLE_NAME
+    VARIABLE_NAME,
+    FOCUS_INNER_QUERY
 }
 
 

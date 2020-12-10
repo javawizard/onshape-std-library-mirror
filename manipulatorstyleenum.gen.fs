@@ -8,12 +8,13 @@ FeatureScript ✨; /* Automatically generated version */
 /**
  * Specifies the style of a manipulator intended to look unique.
  * @seealso [addManipulators]
- * @value DEFAULT : the standard display of the manipulator. * @value SECONDARY : the angular or linear manipulator has two arrow heads. * @value SIMPLE : the display of the angular manipulator is simpler. */
+ * @value DEFAULT : the standard display of the manipulator. * @value SECONDARY : the angular or linear manipulator has two arrow heads. * @value SIMPLE : the display of the angular manipulator is simpler. * @value TANGENTIAL : the linear manipulator has two smaller arrows around a circular base. */
 export enum ManipulatorStyleEnum
 {
     DEFAULT,
     SECONDARY,
-    SIMPLE
+    SIMPLE,
+    TANGENTIAL
 }
 
 

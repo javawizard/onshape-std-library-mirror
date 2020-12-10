@@ -97,12 +97,14 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 }
                 try
                 {
+                    const noImpliedDetection =
+                        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
                     opBoolean(context, id, {
                         "operationType" : BooleanOperationType.UNION,
-                        "makeSolid" : true,
+                         "makeSolid" : true,
                         "eraseImprintedEdges" : true,
-                        "detectAdjacencyForSheets" : true,
-                        "recomputeMatches" : true,
+                        "detectAdjacencyForSheets" : noImpliedDetection,
+                         "recomputeMatches" : true,
                         "tools" : definition.tools
                         });
                 }
@@ -385,9 +387,10 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 }
 
 /**
- * Performs a boolean operation (optionally). Used by body-creating features (like [extrude]) as the boolean step.
- * On top of the regular boolean feature, converts the `operationType` and creates error bodies on failure.
- *
+ * This function is designed to be used by body-creating features (like [extrude]) as a boolean post-processing
+ * step with options from [booleanStepTypePredicate] and [booleanStepScopePredicate] in the case where the preceding
+ * operations of the feature have created new solid or surface bodies.
+ * On top of the regular boolean operation, converts the `operationType` and creates error bodies on failure.
  * @param id : identifier of the main feature
  * @param definition {{
  *      @field operationType {NewBodyOperationType}:
@@ -400,8 +403,9 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  *      @field seed {Query}: @optional
  *              If set, will be included in the tools section of the boolean.
  * }}
- * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
- *      in case the input is problematic or the boolean itself fails.
+ * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user
+ *      as error geometry in case the input is problematic or the boolean itself fails.
+ *      @eg `function() {}`. For a more elaborate example see the source code of revolve feature in the Standard Library.
  */
 export function processNewBodyIfNeeded(context is Context, id is Id, definition is map, reconstructOp is function)
 {
@@ -738,6 +742,7 @@ export function checkForNotJoinableSurfacesInScope(context is Context, id is Id,
 }
 
 /**
+ * @internal
  * Joins surface bodies at the matching edges.
  * @param context {Context}
  * @param id {Id}: identifier of the feature
@@ -807,7 +812,9 @@ export function qModifiableSurface(subquery is Query) returns Query
 }
 
 /**
- * Detects matching edges of adjacent bodies and joins surface bodies at these  edges.
+ *  This function is designed to be used by surface-body-creating features (like [extrude]) as a boolean post-processing
+ * step with options from [surfaceOperationTypePredicate ] and [surfaceJoinStepScopePredicate]. It detects matching edges of adjacent
+ * bodies and joins surface bodies at these  edges.
  * @param context {Context}
  * @param id {Id}: identifier of the feature
  * @param definition {{
@@ -822,6 +829,7 @@ export function qModifiableSurface(subquery is Query) returns Query
  * @param makeSolid {boolean}: Tries to join the surfaces into a solid
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
  *      in case the input is problematic or the join itself fails.
+ *      @eg `function() {}`. For a more elaborate example see the source code of revolve feature in the Standard Library.
  */
 export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, definition is map, makeSolid is boolean, reconstructOp is function)
 {
@@ -871,11 +879,13 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
 
     try
     {
+        const noImpliedDetection =
+            !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
         opBoolean(context, joinId, {
             "operationType" : BooleanOperationType.UNION,
             "makeSolid" : makeSolid,
             "eraseImprintedEdges" : true,
-            "detectAdjacencyForSheets" : true,
+            "detectAdjacencyForSheets" : noImpliedDetection,
             "recomputeMatches" : true,
             "tools" : tools,
             "targets" : targets,
