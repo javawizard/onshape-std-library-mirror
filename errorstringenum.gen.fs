@@ -1,4 +1,4 @@
-FeatureScript 1403; /* Automatically generated version */
+FeatureScript 1420; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1974,7 +1974,15 @@ export enum ErrorStringEnum
     /* Cannot create a curvature constraint between a spline and its handle. */
     SKETCH_CURVATURE_CONSTRAINT_SPLINE_AND_HANDLE,
     /* Explode line must be placed on an exploded instance. */
-    EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE
+    EXPLODE_LINE_NOT_ON_EXPLODED_INSTANCE,
+    /* Sweep profiles must be single bodies. */
+    SWEEP_DISJOINT_PROFILE,
+    /* A sweep profile must be all edges or all faces. */
+    SWEEP_MIXED_PROFILE,
+    /* A multi-profile sweep cannot have inner loops. */
+    MULTI_PROFILE_SWEEP_NO_INNER_LOOPS,
+    /* First and last profiles of a multi-profile sweep must both be faces or both be edges. */
+    SWEEP_PROFILE_DIM_MISMATCH
 }
 
 

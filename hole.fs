@@ -1,34 +1,34 @@
-FeatureScript 1403; /* Automatically generated version */
+FeatureScript 1420; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1403.0");
-import(path : "onshape/std/boolean.fs", version : "1403.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1403.0");
-import(path : "onshape/std/box.fs", version : "1403.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1403.0");
-import(path : "onshape/std/containers.fs", version : "1403.0");
-import(path : "onshape/std/coordSystem.fs", version : "1403.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1403.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1403.0");
-import(path : "onshape/std/evaluate.fs", version : "1403.0");
-import(path : "onshape/std/feature.fs", version : "1403.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1403.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1403.0");
-import(path : "onshape/std/mathUtils.fs", version : "1403.0");
-import(path : "onshape/std/revolve.fs", version : "1403.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1403.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1403.0");
-import(path : "onshape/std/sketch.fs", version : "1403.0");
-import(path : "onshape/std/string.fs", version : "1403.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1403.0");
-import(path : "onshape/std/tool.fs", version : "1403.0");
-import(path : "onshape/std/valueBounds.fs", version : "1403.0");
+import(path : "onshape/std/attributes.fs", version : "1420.0");
+import(path : "onshape/std/boolean.fs", version : "1420.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1420.0");
+import(path : "onshape/std/box.fs", version : "1420.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1420.0");
+import(path : "onshape/std/containers.fs", version : "1420.0");
+import(path : "onshape/std/coordSystem.fs", version : "1420.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1420.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1420.0");
+import(path : "onshape/std/evaluate.fs", version : "1420.0");
+import(path : "onshape/std/feature.fs", version : "1420.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1420.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1420.0");
+import(path : "onshape/std/mathUtils.fs", version : "1420.0");
+import(path : "onshape/std/revolve.fs", version : "1420.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1420.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1420.0");
+import(path : "onshape/std/sketch.fs", version : "1420.0");
+import(path : "onshape/std/string.fs", version : "1420.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1420.0");
+import(path : "onshape/std/tool.fs", version : "1420.0");
+import(path : "onshape/std/valueBounds.fs", version : "1420.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1403.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1403.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1403.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1420.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1420.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -103,7 +103,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
-        if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardThrough != undefined)
+        if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
         {
             annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardTappedOrClearance is LookupTablePath;
@@ -475,11 +475,11 @@ function holeOp(context is Context, id is Id, locations is array, definition is 
             for (var holeTracking in holeNumberToResult)
             {
                 const holeId = id + ("hole-" ~ holeTracking.key);
-                createAttributesFromTracking(context, holeId, definition, holeTracking.key, holeTracking.value.faceTracking, definition.style, holeTracking.value.startDistances, holeTracking.value.holeDepth);
+                createAttributesFromTracking(context, holeId, definition, holeTracking.key, holeTracking.value.faceTracking, holeTracking.value.startDistances, holeTracking.value.holeDepth);
                 if (sheetMetalModels != undefined && holeTracking.value.instanceTracking != undefined)
                 {
                     const instanceHoleEdges = evaluateQuery(context, qIntersection([holeEdgesQ, holeTracking.value.instanceTracking]));
-                    assignSheetMetalHoleAttributes(context, holeId, instanceHoleEdges, definition, definition.style, holeNumber);
+                    assignSheetMetalHoleAttributes(context, holeId, instanceHoleEdges, definition, holeNumber);
                 }
             }
         }
@@ -782,8 +782,6 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
 
     var result = {};
     var frontDist = 0 * meter;
-    const isCBore = holeDefinition.style == HoleStyle.C_BORE;
-    const isCSink = holeDefinition.style == HoleStyle.C_SINK;
 
     if (size(startDistances.resultFront) > 0)
     {
@@ -808,14 +806,12 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
     var startDepth = 0 * meter;
     var cboreTrackingSpecs = [];
     var csinkTrackingSpecs = [];
-    var holeStyle = HoleStyle.SIMPLE;
 
     //Using common start prefix ensures intersection edge reference stability towards hole type  change.
     const useCommonPrefix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
     const commonStartPrefix = "start";
-    if (isCBore)
+    if (holeDefinition.style == HoleStyle.C_BORE)
     {
-        holeStyle = HoleStyle.C_BORE;
         cboreTrackingSpecs = sketchCBore(context, {
                     "prefix" : (useCommonPrefix) ? commonStartPrefix : "cbore_start",
                     "sketch" : sketch,
@@ -826,19 +822,13 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
         startDepth = frontDist;
         frontDist = 0 * meter;
     }
-
-    if (isCSink)
+    else if (holeDefinition.style == HoleStyle.C_SINK)
     {
-        holeStyle = HoleStyle.C_SINK;
-        var cSinkStartDepth = startDepth;
-        if (isCBore)
-            cSinkStartDepth += holeDefinition.cBoreDepth;
-
         csinkTrackingSpecs = sketchCSink(context, {
                     "prefix" : (useCommonPrefix) ? commonStartPrefix : "csink_start",
                     "sketch" : sketch,
                     "isPositive" : true,
-                    "startDepth" : cSinkStartDepth,
+                    "startDepth" : startDepth,
                     "clearanceDepth" : frontDist,
                     "cSinkUseDepth" : holeDefinition.cSinkUseDepth,
                     "cSinkDepth" : holeDefinition.cSinkDepth,
@@ -918,11 +908,11 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
         if (success)
         {
             // add required attributes onto faces that were created based upon our tracked sketch entities
-            createAttributesFromTracking(context, id, holeDefinition, holeNumber, faceTracking, holeStyle, startDistances.resultFront, coreResult.holeDepth);
+            createAttributesFromTracking(context, id, holeDefinition, holeNumber, faceTracking, startDistances.resultFront, coreResult.holeDepth);
 
             if (sheetmetalModels != undefined)
             {
-                createSheetMetalHoleAttributes(context, id, sheetmetalModels, holeDefinition, holeStyle, holeNumber);
+                createSheetMetalHoleAttributes(context, id, sheetmetalModels, holeDefinition, holeNumber);
             }
         }
 
@@ -975,8 +965,7 @@ function getSheetMetalHoleEdgesQuery(id is Id, sheetMetalModels is Query, includ
         return qGeometry(smEdges, GeometryType.CIRCLE);
 }
 
-function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges is array,
-    holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
+function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges is array, holeDefinition is map, holeNumber is number)
 {
     for (var holeEdge in holeEdges)
     {
@@ -992,19 +981,19 @@ function assignSheetMetalHoleAttributes(context is Context, id is Id, holeEdges 
             const holeFaces = evaluateQuery(context, holeFacesQ);
             if (size(holeFaces) > 0)
             {
-                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeStyle, holeNumber);
+                createAttributesForSheetMetalHole(context, id, holeEdge, holeFacesQ, holeDefinition, holeNumber);
             }
         }
     }
 }
 
-function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
+function createSheetMetalHoleAttributes(context is Context, id is Id, sheetMetalModels is Query, holeDefinition is map, holeNumber is number)
 {
     const holeEdgesQ = getSheetMetalHoleEdgesQuery(id, sheetMetalModels, false);
-    assignSheetMetalHoleAttributes(context, id, evaluateQuery(context, holeEdgesQ), holeDefinition, holeStyle, holeNumber);
+    assignSheetMetalHoleAttributes(context, id, evaluateQuery(context, holeEdgesQ), holeDefinition, holeNumber);
 }
 
-function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeStyle is HoleStyle, holeNumber is number)
+function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdge is Query, holeFaces is Query, holeDefinition is map, holeNumber is number)
 {
     clearHoleAttributes(context, holeFaces);
     var holeAttribute;
@@ -1015,8 +1004,9 @@ function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdg
     {
         // Sheet metal holes are always simple and through
         holeDefinition.holeDiameter = cylinder.radius * 2;
+        holeDefinition.style = HoleStyle.SIMPLE;
         holeDefinition.endStyle = HoleEndStyle.THROUGH;
-        holeAttribute = createHoleAttribute(id, holeDefinition, HoleStyle.SIMPLE, HoleSectionFaceType.THROUGH_FACE, holeNumber);
+        holeAttribute = createHoleAttribute(id, holeDefinition, HoleSectionFaceType.THROUGH_FACE, holeNumber);
         setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
     }
 }
@@ -1293,7 +1283,7 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
     return resultTrackingArray;
 }
 
-function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, holeNumber is number, sketchTracking is array, holeStyle is HoleStyle, startDistances is array, holeDepth)
+function createAttributesFromTracking(context is Context, id is Id, holeDefinition is map, holeNumber is number, sketchTracking is array, startDistances is array, holeDepth)
 {
     sketchTracking = filter(sketchTracking, function(track)
         {
@@ -1343,20 +1333,19 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
             }
         }
         var modifiedHoleDefinition = holeDefinition;
-        var modifiedHoleStyle = holeStyle;
         // Remove countersink and counterbore if necessary
-        if (holeStyle == HoleStyle.C_SINK)
+        if (holeDefinition.style == HoleStyle.C_SINK)
         {
             if (faceTypes[HoleSectionFaceType.CSINK_FACE] == undefined && faceTypes[HoleSectionFaceType.CSINK_CBORE_FACE] == undefined)
             {
-                modifiedHoleStyle = HoleStyle.SIMPLE;
+                modifiedHoleDefinition.style = HoleStyle.SIMPLE;
             }
         }
-        else if (holeStyle == HoleStyle.C_BORE)
+        else if (holeDefinition.style == HoleStyle.C_BORE)
         {
             if (faceTypes[HoleSectionFaceType.CBORE_DIAMETER_FACE] == undefined && faceTypes[HoleSectionFaceType.CBORE_DEPTH_FACE] == undefined)
             {
-                modifiedHoleStyle = HoleStyle.SIMPLE;
+                modifiedHoleDefinition.style = HoleStyle.SIMPLE;
             }
         }
         // Check if this is a thru hole -- it is if there are no tip faces
@@ -1401,7 +1390,7 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
         for (var entry in entityToSectionType)
         {
             clearHoleAttributes(context, entry.key);
-            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, modifiedHoleStyle, entry.value, holeNumber);
+            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, entry.value, holeNumber);
             if (holeAttribute != undefined)
             {
                 if (holeAttribute.isTappedHole == true && holeDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
@@ -1440,17 +1429,17 @@ function computeActualHoleDepth(context is Context, faces is Query)
  * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
  * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
  */
-function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleStyle, holeFaceType is HoleSectionFaceType, holeNumber is number) returns HoleAttribute
+function createHoleAttribute(id is Id, holeDefinition is map, holeFaceType is HoleSectionFaceType, holeNumber is number) returns HoleAttribute
 {
     // make the base hole attribute
-    var holeAttribute = makeHoleAttribute(toAttributeId(id), holeStyle);
+    var holeAttribute = makeHoleAttribute(toAttributeId(id), holeDefinition.style);
 
     // add tag info
     holeAttribute.holeNumber = holeNumber;
     holeAttribute.holeFeatureCount = holeDefinition.holeFeatureCount;
 
     // add common properties
-    holeAttribute = addCommonAttributeProperties(holeAttribute, holeStyle, holeDefinition);
+    holeAttribute = addCommonAttributeProperties(holeAttribute, holeDefinition);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
     holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinition);
@@ -1458,7 +1447,7 @@ function createHoleAttribute(id is Id, holeDefinition is map, holeStyle is HoleS
     return holeAttribute;
 }
 
-function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is HoleStyle, holeDefinition is map) returns HoleAttribute
+function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
 {
     var resultAttribute = attribute;
 
@@ -1581,15 +1570,15 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeStyle is H
     }
 
     // add properties specific to the hole type
-    if (holeStyle == HoleStyle.SIMPLE)
+    if (holeDefinition.style == HoleStyle.SIMPLE)
     {
         resultAttribute = addSimpleHoleAttributeProperties(resultAttribute, holeDefinition);
     }
-    else if (holeStyle == HoleStyle.C_BORE)
+    else if (holeDefinition.style == HoleStyle.C_BORE)
     {
         resultAttribute = addCBoreHoleAttributeProperties(resultAttribute, holeDefinition);
     }
-    else if (holeStyle == HoleStyle.C_SINK)
+    else if (holeDefinition.style == HoleStyle.C_SINK)
     {
         resultAttribute = addCSinkHoleAttributeProperties(resultAttribute, holeDefinition);
     }
