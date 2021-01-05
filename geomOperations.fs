@@ -1,4 +1,4 @@
-FeatureScript 1420; /* Automatically generated version */
+FeatureScript 1431; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,34 +15,34 @@ FeatureScript 1420; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1420.0");
-import(path : "onshape/std/context.fs", version : "1420.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1420.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1420.0");
-import(path : "onshape/std/query.fs", version : "1420.0");
-import(path : "onshape/std/valueBounds.fs", version : "1420.0");
-import(path : "onshape/std/vector.fs", version : "1420.0");
+import(path : "onshape/std/containers.fs", version : "1431.0");
+import(path : "onshape/std/context.fs", version : "1431.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1431.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1431.0");
+import(path : "onshape/std/query.fs", version : "1431.0");
+import(path : "onshape/std/valueBounds.fs", version : "1431.0");
+import(path : "onshape/std/vector.fs", version : "1431.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1431.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1431.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1431.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1431.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1431.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1431.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1420.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1431.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1420.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1431.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1431.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1420.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1431.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -668,7 +668,7 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
     {
         var queryResult = [];
         for (var queryItem in query)
-            queryResult = append(queryResult, qTransient(queryItem as TransientId));
+            queryResult = append(queryResult, qTransient(queryItem));
         out = append(out, queryResult);
     }
     return out;
@@ -992,12 +992,12 @@ export function opSplitByIsocline(context is Context, id is Id, definition is ma
     var steepFaces = [];
     for (var transientId in data.steepFaces)
     {
-        steepFaces = append(steepFaces, qTransient(transientId as TransientId));
+        steepFaces = append(steepFaces, qTransient(transientId));
     }
     var nonSteepFaces = [];
     for (var transientId in data.nonSteepFaces)
     {
-        nonSteepFaces = append(nonSteepFaces, qTransient(transientId as TransientId));
+        nonSteepFaces = append(nonSteepFaces, qTransient(transientId));
     }
 
     return {
@@ -1056,12 +1056,12 @@ export function opSplitBySelfShadow(context is Context, id is Id, definition is 
     var visibleFaces = [];
     for (var transientId in data.visibleFaces)
     {
-        visibleFaces = append(visibleFaces, qTransient(transientId as TransientId));
+        visibleFaces = append(visibleFaces, qTransient(transientId));
     }
     var invisibleFaces = [];
     for (var transientId in data.invisibleFaces)
     {
-        invisibleFaces = append(invisibleFaces, qTransient(transientId as TransientId));
+        invisibleFaces = append(invisibleFaces, qTransient(transientId));
     }
 
     return {

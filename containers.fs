@@ -1,4 +1,4 @@
-FeatureScript 1420; /* Automatically generated version */
+FeatureScript 1431; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,7 @@ FeatureScript 1420; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1420.0");
+import(path : "onshape/std/math.fs", version : "1431.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -304,5 +304,21 @@ export function subArray(input is array, startIndex is number, endIndex is numbe
     for (var i = startIndex; i < endIndex; i += 1)
         result = @resize(result, @size(result) + 1, input[i]); // inlined append
     return result;
+}
+
+/**
+ * Inserts `value` into the array keyed by `key`, returns the updated map
+ */
+export function insertIntoMapOfArrays(mapToInsertInto is map, key, value) returns map
+{
+    if (mapToInsertInto[key] == undefined)
+    {
+        mapToInsertInto[key] = [value];
+    }
+    else
+    {
+        mapToInsertInto[key] = append(mapToInsertInto[key], value);
+    }
+    return mapToInsertInto;
 }
 
