@@ -230,14 +230,13 @@ precondition
     for (var i = 0; i < size(collisions); i += 1)
     {
         /* Each collision is a map with fields type, target, targetBody, tool, toolBody */
-        collisions[i]['type'] = collisions[i]['type'] as ClashType;
-        for (var entry in collisions[i])
-        {
-            if (entry.value is builtin)
-            {
-                collisions[i][entry.key] = qTransient(entry.value as TransientId);
-            }
-        }
+        collisions[i] = {
+                            'type' : collisions[i]['type'] as ClashType,
+                            'target' : qTransient(collisions[i]['target']),
+                            'targetBody' : qTransient(collisions[i]['targetBody']),
+                            'tool' : qTransient(collisions[i]['tool']),
+                            'toolBody' : qTransient(collisions[i]['toolBody'])
+                        };
     }
     return collisions;
 }
@@ -270,12 +269,12 @@ precondition
         {
             for (var vert in data.allVertices)
             {
-                allVertices = append(allVertices, qTransient(vert as TransientId));
+                allVertices = append(allVertices, qTransient(vert));
             }
         }
         return {
             "cornerType" : data.cornerType as SMCornerType,
-            "primaryVertex" : qTransient(data.primaryVertex as TransientId),
+            "primaryVertex" : qTransient(data.primaryVertex),
             "allVertices" : allVertices
         };
     }
@@ -490,7 +489,7 @@ precondition
     {
         var result = {};
 
-        result.entity = qTransient(data[i].entity as TransientId);
+        result.entity = qTransient(data[i].entity);
         result.intersection = (data[i].intersection as Vector) * meter;
         result.distance = data[i].distance * meter;
         result.entityType = data[i].entityType as EntityType;
@@ -1217,8 +1216,8 @@ function offsetGroup(group is map) returns OffsetGroup
     var side1 = makeArray(n);
     for (var i = 0; i < n; i += 1)
     {
-        side0[i] = qTransient(group.side0[i] as TransientId);
-        side1[i] = qTransient(group.side1[i] as TransientId);
+        side0[i] = qTransient(group.side0[i]);
+        side1[i] = qTransient(group.side1[i]);
     }
     return {'side0' : side0, 'side1' : side1,
         'offsetLow' : group.offsetLow * meter, 'offsetHigh' : group.offsetHigh * meter} as OffsetGroup;

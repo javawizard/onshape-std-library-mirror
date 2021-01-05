@@ -668,7 +668,7 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
     {
         var queryResult = [];
         for (var queryItem in query)
-            queryResult = append(queryResult, qTransient(queryItem as TransientId));
+            queryResult = append(queryResult, qTransient(queryItem));
         out = append(out, queryResult);
     }
     return out;
@@ -992,12 +992,12 @@ export function opSplitByIsocline(context is Context, id is Id, definition is ma
     var steepFaces = [];
     for (var transientId in data.steepFaces)
     {
-        steepFaces = append(steepFaces, qTransient(transientId as TransientId));
+        steepFaces = append(steepFaces, qTransient(transientId));
     }
     var nonSteepFaces = [];
     for (var transientId in data.nonSteepFaces)
     {
-        nonSteepFaces = append(nonSteepFaces, qTransient(transientId as TransientId));
+        nonSteepFaces = append(nonSteepFaces, qTransient(transientId));
     }
 
     return {
@@ -1056,12 +1056,12 @@ export function opSplitBySelfShadow(context is Context, id is Id, definition is 
     var visibleFaces = [];
     for (var transientId in data.visibleFaces)
     {
-        visibleFaces = append(visibleFaces, qTransient(transientId as TransientId));
+        visibleFaces = append(visibleFaces, qTransient(transientId));
     }
     var invisibleFaces = [];
     for (var transientId in data.invisibleFaces)
     {
-        invisibleFaces = append(invisibleFaces, qTransient(transientId as TransientId));
+        invisibleFaces = append(invisibleFaces, qTransient(transientId));
     }
 
     return {

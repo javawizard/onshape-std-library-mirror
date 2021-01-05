@@ -858,6 +858,7 @@ export function qCreatedBy(features is FeatureList, entityType is EntityType) re
 }
 
 /**
+ * @internal
  * A transient query, which refers to a single entity in the context. All
  * transient queries are only valid until the context is modified again.
  *
@@ -865,7 +866,7 @@ export function qCreatedBy(features is FeatureList, entityType is EntityType) re
  * queries for specific entities, simply pass any other query into
  * [evaluateQuery].
  */
-export function qTransient(id is TransientId) returns Query
+export function qTransient(id is string) returns Query
 {
     return { "queryType" : QueryType.TRANSIENT, "transientId" : id } as Query;
 }
@@ -1935,28 +1936,6 @@ export function ownerDisambiguation(topology is array)
     return { disambiguationType : "OWNER", owners : topology };
 }
 
-/**
- * A `TransientId` is a deterministic id assigned to a specific topological
- * entity.
- *
- * Transient ids should generally not be used directly because they are not
- * stable. If a user modifies an upstream feature, the transient ids of all
- * entities can potentially change. To refer to geometry in a robust way,
- * use non-transient queries.
- */
-export type TransientId typecheck canBeTransientId;
-
-/** Typecheck for [TransientId] */
-export predicate canBeTransientId(value)
-{
-    @isTransientId(value); /* implies (value is builtin) */
-}
-
-export function toString(value is TransientId)
-{
-    return "Tr:" ~ @transientIdToString(value);
-}
-
 //====================== Query evaluation ========================
 
 /**
@@ -1974,14 +1953,13 @@ export function toString(value is TransientId)
  * not predictable) except in the case of a `qUnion` query. In that case, the
  * entities matched by earlier queries in the argument to `qUnion` are
  * returned first.
- *
- * @seealso [qTransient]
  */
 export function evaluateQuery(context is Context, query is Query) returns array
 {
-    var out = @evaluateQuery(context, { "query" : query });
-    for (var i = 0; i < @size(out); i += 1)
-        out[i] = qTransient(out[i] as TransientId);
+    var result = @evaluateQuery(context, { "query" : query });
+    var out = [];
+    for (var transientId in result)
+        out = append(out, { "queryType" : QueryType.TRANSIENT, "transientId" : transientId } as Query);
     return out;
 }
 

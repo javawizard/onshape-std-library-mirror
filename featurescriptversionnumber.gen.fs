@@ -944,7 +944,11 @@ export enum FeatureScriptVersionNumber
     V1417_IMPLIED_DETECT_ADJACENCY,
     V1418_CHERRYPICK_LOFTFIX,
     V1419_FOCUS_INNER_QUERY_UIHINT,
-    V1420_LOFT_BLOCK_CONNECTIONS
+    V1420_LOFT_BLOCK_CONNECTIONS,
+    V1428_PS_VERSION_33_0_229,
+    V1429_DCM_VERSION_72_3_0,
+    V1430_REMOVE_TRANSIENT_BUILTINS,
+    V1431_ATTRIBUTES_THROUGH_DERIVED
 }
 
 /**
@@ -955,6 +959,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1420_LOFT_BLOCK_CONNECTIONS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1431_ATTRIBUTES_THROUGH_DERIVED;
 
 
