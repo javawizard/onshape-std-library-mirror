@@ -1,25 +1,29 @@
-FeatureScript 1431; /* Automatically generated version */
+FeatureScript 1447; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1431.0");
-export import(path : "onshape/std/tool.fs", version : "1431.0");
+export import(path : "onshape/std/query.fs", version : "1447.0");
+export import(path : "onshape/std/tool.fs", version : "1447.0");
+
+// Features using manipulators must export manipulator.fs.
+export import(path : "onshape/std/manipulator.fs", version : "1447.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1431.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1431.0");
-import(path : "onshape/std/containers.fs", version : "1431.0");
-import(path : "onshape/std/evaluate.fs", version : "1431.0");
-import(path : "onshape/std/feature.fs", version : "1431.0");
-import(path : "onshape/std/string.fs", version : "1431.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1431.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1431.0");
-import(path : "onshape/std/transform.fs", version : "1431.0");
-import(path : "onshape/std/units.fs", version : "1431.0");
-import(path : "onshape/std/valueBounds.fs", version : "1431.0");
-import(path : "onshape/std/vector.fs", version : "1431.0");
+import(path : "onshape/std/boolean.fs", version : "1447.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1447.0");
+import(path : "onshape/std/containers.fs", version : "1447.0");
+import(path : "onshape/std/evaluate.fs", version : "1447.0");
+import(path : "onshape/std/feature.fs", version : "1447.0");
+import(path : "onshape/std/math.fs", version : "1447.0");
+import(path : "onshape/std/string.fs", version : "1447.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1447.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1447.0");
+import(path : "onshape/std/transform.fs", version : "1447.0");
+import(path : "onshape/std/units.fs", version : "1447.0");
+import(path : "onshape/std/valueBounds.fs", version : "1447.0");
+import(path : "onshape/std/vector.fs", version : "1447.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -59,11 +63,19 @@ const LOFT_INTERNAL_SECTIONS_COUNT =
     (unitless) : [1, 5, 50]
 }   as IntegerBoundSpec;
 
+/* @internal */
+const EDGE_INTERIOR_PARAMETER_BOUNDS = [0.001, 0.5, 0.999];
+
+/* @internal */
+const fsConnectionsArcLengthParameterization = false; // For better performance. Must use name different from definition map keys
+// [evDistance], [evEdgeTangentLine] etc. called in conjunction with connections should use this as value of arcLengthParameterization
+
 /**
  * Feature performing an [opLoft].
  */
 annotation { "Feature Type Name" : "Loft",
              "Filter Selector" : "allparts",
+             "Manipulator Change Function" : "loftManipulator",
              "Editing Logic Function" : "loftEditLogic" }
 export const loft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -125,6 +137,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
         }
 
+        if (definition.bodyType == ToolBodyType.SURFACE)
+        {
+            annotation { "Name" : "Trim profiles" , "Default" : false}
+            definition.trimProfiles is boolean;
+        }
+
         annotation { "Name" : "Guides and continuity" }
         definition.addGuides is boolean;
 
@@ -148,9 +166,6 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             {
                 annotation { "Name" : "Trim guides" , "Default" : true}
                 definition.trimGuidesByProfiles is boolean;
-
-                annotation { "Name" : "Trim profiles" , "Default" : false}
-                definition.trimProfilesByGuides is boolean;
             }
         }
 
@@ -166,12 +181,26 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
-        annotation { "Name" : "Match vertices" }
-        definition.matchVertices is boolean;
-        if (definition.matchVertices)
+        annotation { "Name" : "Match connections" }
+        definition.matchConnections is boolean;
+        if (definition.matchConnections)
         {
-            annotation { "Name" : "Vertices", "Filter" : EntityType.VERTEX }
-            definition.vertices is Query;
+            annotation { "Name" : "Connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
+                 "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
+            definition.connections is array;
+            for (var connection in definition.connections)
+            {
+                annotation { "Name" : "Vertices or edges",
+                    "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.VERTEX && AllowEdgePoint.NO) }
+                connection.connectionEntities is Query;
+
+                annotation { "Name" : "Edge queries" , "UIHint" : UIHint.ALWAYS_HIDDEN }
+                connection.connectionEdgeQueries is Query; // Unioned array of individual edge queries synchronized with connectionEdgeParameters
+
+                // Synced array of edge parameters (numbers) defined in accordance with fsConnectionsArcLengthParameterization
+                annotation { "Name" : "Edge parameters", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                isAnything(connection.connectionEdgeParameters);
+            }
         }
 
         annotation { "Name" : "Make periodic", "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -255,17 +284,34 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.spine = dissolveWires(spineNoConstructionQuery);
         }
 
-        if (!definition.matchVertices)
+        if (!definition.matchConnections)
         {
-            definition.vertices = qUnion([]);
+            definition.connections = [];
         }
         else
         {
-            queriesForTransform = append(queriesForTransform, definition.vertices);
+            // connectionsArcLengthParameterization is not a feature parameter, but we pass it to server using definition
+            definition.connectionsArcLengthParameterization = fsConnectionsArcLengthParameterization;
+            if (!isInFeaturePattern(context))
+            {
+                addConnectionManipulators(context, id, definition);
+            }
+            for (var connection in definition.connections)
+            {
+                queriesForTransform = append(queriesForTransform, connection.connectionEntities);
+                queriesForTransform = append(queriesForTransform, connection.connectionEdgeQueries);
+            }
         }
 
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion(queriesForTransform)});
+
+        // opLoft expects an array of individual connection edge queries
+        for ( var ii = 0; ii < size(definition.connections); ii += 1)
+        {
+            definition.connections[ii].connectionEdges =
+                evaluateQuery(context, definition.connections[ii].connectionEdgeQueries);
+        }
         try (opLoft(context, id, definition));
         // it is not a subfeature, but need to remap parameter ids
         processSubfeatureStatus(context, id, {'subfeatureId' : id,
@@ -304,11 +350,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, addGuides : false, matchVertices : false,
+    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
+        addGuides : false, matchConnections : false,
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
-        trimGuidesByProfiles : false, trimProfilesByGuides : false });
+        trimGuidesByProfiles : false, trimProfiles : false });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
@@ -379,8 +426,17 @@ export function wrapSubqueriesInConstructionFilter(context is Context, subquerie
  * Editing logic function for loft feature.
  */
 export function loftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    specifiedParameters is map, hiddenBodies is Query) returns map
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    if (definition.matchConnections)
+    {
+        definition.connections = updateConnections(context, definition.connections);
+    }
+
+    if (!isCreating)
+    {
+        return definition;
+    }
     if (definition.bodyType == ToolBodyType.SOLID)
     {
         if (oldDefinition.bodyType == ToolBodyType.SURFACE && specifiedParameters.sheetProfilesArray != true)
@@ -399,6 +455,116 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
        return surfaceOperationTypeEditLogic(context, id, definition,
                                     specifiedParameters, wireProfilesAndGuides(definition), hiddenBodies);
     }
+}
+
+/**
+ * @internal
+ * Manipulator function for loft feature.
+ */
+export function loftManipulator(context is Context, definition is map, newManipulators is map) returns map
+{
+    var manipulatorKeys = keys(newManipulators);
+    const regexStr = "(\\d+),(\\d+)";
+    for (var ii = 0; ii < size(manipulatorKeys); ii += 1)
+    {
+        var manipulator = newManipulators[manipulatorKeys[ii]];
+        if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
+            continue;
+        var parsed = match(manipulatorKeys[ii], regexStr);
+        if (!parsed.hasMatch)   // must be bug
+        {
+            throw regenError("Cannot parse an entry in manipulators map");
+        }
+        var connectorIndex = stringToNumber(parsed.captures[1]);
+        var edgeIndex = stringToNumber(parsed.captures[2]);
+        var pos = manipulator.base + manipulator.direction * manipulator.offset;
+        var qEdges = evaluateQuery(context, definition.connections[connectorIndex].connectionEdgeQueries);
+        var distanceResult is DistanceResult = evDistance(context, { "side0" : pos, "side1" : qEdges[edgeIndex],
+                "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
+        var parameter = distanceResult.sides[1].parameter;
+        if (parameter < EDGE_INTERIOR_PARAMETER_BOUNDS[0])
+        {
+            parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[0];
+        }
+        else if (parameter > EDGE_INTERIOR_PARAMETER_BOUNDS[2])
+        {
+            parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[2];
+        }
+        definition.connections[connectorIndex].connectionEdgeParameters[edgeIndex] = parameter;
+    }
+    return definition;
+}
+
+function addConnectionManipulators(context is Context, id is Id, definition is map)
+{
+    if (!definition.matchConnections)
+    {
+        return;
+    }
+    for (var ii = 0; ii < size(definition.connections); ii += 1)
+    {
+        var connection = definition.connections[ii];
+        var qEdges = evaluateQuery(context, connection.connectionEdgeQueries);
+        for (var jj = 0; jj < size(qEdges); jj += 1)
+        {
+            var line = evEdgeTangentLine(context, { "edge" : qEdges[jj], "parameter" : connection.connectionEdgeParameters[jj],
+                        "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
+            addManipulators(context, id,    { toString(ii) ~ "," ~ toString(jj) :
+                                linearManipulator({
+                                                "base" : line.origin,
+                                                "direction" : line.direction,
+                                                "offset" : 0 * inch,
+                                                "style" : ManipulatorStyleEnum.TANGENTIAL
+                                                })
+                                            });
+        }
+    }
+}
+
+function updateConnections(context is Context, connections is array) returns array
+{
+    for (var ii = 0; ii < size(connections); ii += 1)
+    {
+        // User actions may result in connections[ii].connectionEntities changes (QLV)
+        // The order of connectionEntities returned by QLV evaluation is not deterministic with an exception of qUnion
+        // connectionEdgeQueries uses qUnion to assure synchronization with connectionEdgeParameters.
+        // when connectionEntities QLV changes, we need to change both connectionEdgeQueries QLV and connectionEdgeParameters
+        // Since connectionEdgeQueries are changed only during editing logic call, they may be used to find
+        // the now to old connection correspondence
+        var oldQueries = evaluateQuery(context, connections[ii].connectionEdgeQueries);
+
+        // At this point oldQueries array is syncronized with connectionEdgeParameters.
+        // Avoid n^2 algorithm by taking advantage of FS maps ordering entries by key
+        var mapOld = {};
+        for (var jj = 0; jj < size(oldQueries); jj += 1)
+        {
+            mapOld[oldQueries[jj]] = connections[ii].connectionEdgeParameters[jj];
+        }
+
+        var nowQueries = evaluateQuery(context, qEntityFilter(connections[ii].connectionEntities, EntityType.EDGE));
+        const nowSize = size(nowQueries);
+        // Construct current connectionEdgeParameters
+        var nowParameters = [];
+        for (var jj = 0; jj < nowSize; jj += 1)
+        {
+            var oldParameter = mapOld[nowQueries[jj]];
+            if (oldParameter == undefined)
+            {
+                // TODO - Need to do better.see BEL-148540
+                var value = EDGE_INTERIOR_PARAMETER_BOUNDS[1];
+                nowParameters = append(nowParameters, value);
+            }
+            else
+            {
+                nowParameters = append(nowParameters, oldParameter);
+            }
+        }
+        connections[ii].connectionEdgeParameters = nowParameters;
+        // to make sure that connectionEdgeQueries are updated only by editing logic.
+        // E.G. change propagation via merge does not update it
+        connections[ii].connectionEdgeQueries = qUnion(nowQueries);
+    }
+    return connections;
 }
 
 function wireProfilesAndGuides(definition is map) returns Query

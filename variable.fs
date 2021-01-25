@@ -1,19 +1,19 @@
-FeatureScript 1431; /* Automatically generated version */
+FeatureScript 1447; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1431.0");
+export import(path : "onshape/std/query.fs", version : "1447.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1431.0");
-import(path : "onshape/std/evaluate.fs", version : "1431.0");
-import(path : "onshape/std/feature.fs", version : "1431.0");
-import(path : "onshape/std/string.fs", version : "1431.0");
-import(path : "onshape/std/tool.fs", version : "1431.0");
-import(path : "onshape/std/valueBounds.fs", version : "1431.0");
-import(path : "onshape/std/manipulator.fs", version : "1431.0");
+import(path : "onshape/std/containers.fs", version : "1447.0");
+import(path : "onshape/std/evaluate.fs", version : "1447.0");
+import(path : "onshape/std/feature.fs", version : "1447.0");
+import(path : "onshape/std/string.fs", version : "1447.0");
+import(path : "onshape/std/tool.fs", version : "1447.0");
+import(path : "onshape/std/valueBounds.fs", version : "1447.0");
+import(path : "onshape/std/manipulator.fs", version : "1447.0");
 
 /**
  * Specifies the type of values `assignVariable` is allowed to set.
@@ -85,7 +85,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         isAnything(definition.value);
     }
     {
-        verifyVariableName(definition.name);
+        verifyVariableName(definition.name, "name");
 
         if (definition.variableType == VariableType.ANGLE &&
                 !isAtVersionOrLater(context, FeatureScriptVersionNumber.V694_FILL_GUIDE_CURVES_FS))
@@ -120,13 +120,13 @@ export const assignVariable = defineFeature(function(context is Context, id is I
 /**
  * Throws an error if `name` is not a valid identifier.
  */
-export function verifyVariableName(name is string)
+export function verifyVariableName(name is string, faultyParameter is string)
 {
     if (length(name) > 10000)
-        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG);
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG, [faultyParameter]);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
-        throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID, [faultyParameter]);
 }
 
 /**
