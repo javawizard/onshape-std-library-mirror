@@ -1003,7 +1003,15 @@ function createAttributesForSheetMetalHole(context is Context, id is Id, holeEdg
     if (cylinder is Cylinder)
     {
         // Sheet metal holes are always simple and through
-        holeDefinition.holeDiameter = cylinder.radius * 2;
+        const diameter = cylinder.radius * 2;
+        // If the cylinder is not exactly the same as the definition diameter, make sure the definition is used (BEL-152781)
+        if (!tolerantEquals(holeDefinition.holeDiameter, diameter))
+        {
+            if (holeDefinition.style == HoleStyle.C_BORE && tolerantEquals(holeDefinition.cBoreDiameter, diameter))
+                holeDefinition.holeDiameter = holeDefinition.cBoreDiameter;
+            else
+                holeDefinition.holeDiameter = diameter;
+        }
         holeDefinition.style = HoleStyle.SIMPLE;
         holeDefinition.endStyle = HoleEndStyle.THROUGH;
         holeAttribute = createHoleAttribute(id, holeDefinition, HoleSectionFaceType.THROUGH_FACE, holeNumber);

@@ -85,7 +85,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         isAnything(definition.value);
     }
     {
-        verifyVariableName(definition.name);
+        verifyVariableName(definition.name, "name");
 
         if (definition.variableType == VariableType.ANGLE &&
                 !isAtVersionOrLater(context, FeatureScriptVersionNumber.V694_FILL_GUIDE_CURVES_FS))
@@ -120,13 +120,13 @@ export const assignVariable = defineFeature(function(context is Context, id is I
 /**
  * Throws an error if `name` is not a valid identifier.
  */
-export function verifyVariableName(name is string)
+export function verifyVariableName(name is string, faultyParameter is string)
 {
     if (length(name) > 10000)
-        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG);
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG, [faultyParameter]);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
-        throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID);
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID, [faultyParameter]);
 }
 
 /**

@@ -611,12 +611,24 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *              sheet bodies, faces, or vertices. For a surface loft, these could be wire bodies, sheet bodies, faces, edges, or vertices.
  *              @eg `[ profileQuery1, profileQuery2 ]`
  *      @field guideSubqueries {array} : An array of queries for guide curves. Each guide curve should intersect each profile once. @optional
- *      @field vertices {Query} : An array of vertices, one per profile, used in alignment of profiles. @optional
+ *      @field connections {array} : @optional An array of maps to define multiple profile alignments. Each connection map should contain:
+
+                (1) connectionEntities query describing an array of vertices or edges (one per profile),
+
+
+ *              (2) connectionEdges an array of individual queries for edges in connectionEntities. The order of individual
+ *              edge queries should be synchronized with connectionEdgeParameters.
+
+
+                (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
+ *              @eg `[ {"connectionEntities" : qVertexAndEdge1, "connectionEdges : [qEdge1], "connectionEdgeParameters" : [0.25]} {"connectionEntities" : qVertexAndEdge2, "connectionEdges" : [qEdge2], "connectionEdgeParameters" : [0.75]}]`
+ *      @field connectionsArcLengthParameterization {boolean} : Defaults to false for better performance. Controls interpretation of connectionEdgeParameters.
+ *              If [evDistance], [evEdgeTangentLine] etc. are called in conjunction with opLoft the same value should be passed as `arcLengthParameterization` there. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
  *      @field bodyType {ToolBodyType} : Specifies a `SOLID` or `SURFACE` loft. Default is `SOLID`. @optional
  *      @field trimGuidesByProfiles {boolean} : If false (default) use full length of guides. If true restrict resulting surface by the first and last profile.
  *                                              Meaningful only for non-periodic surface loft. @optional
- *      @field trimProfilesByGuides {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide.
+ *      @field trimProfiles {boolean} : If false (default) use full length of profiles. If true restrict resulting surface by the first and last guide or connection.
  *                                              Meaningful only for surface loft with open profiles. @optional
  *      @field derivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
  *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,

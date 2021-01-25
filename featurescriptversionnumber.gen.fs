@@ -948,7 +948,14 @@ export enum FeatureScriptVersionNumber
     V1428_PS_VERSION_33_0_229,
     V1429_DCM_VERSION_72_3_0,
     V1430_REMOVE_TRANSIENT_BUILTINS,
-    V1431_ATTRIBUTES_THROUGH_DERIVED
+    V1431_ATTRIBUTES_THROUGH_DERIVED,
+    V1441_WORKFLOW,
+    V1442_SOURCE_MESH_DUPLICATE,
+    V1443_LOFT_RESTORE_CONNECTIONS,
+    V1444_BODY_NET_TRACKUNG,
+    V1445_IMPRINT_DISAMBIGUATION,
+    V1446_LOFT_TRIM_PROFILES,
+    V1447_LOFT_CONNECTIONS_BUGFIX
 }
 
 /**
@@ -959,6 +966,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1431_ATTRIBUTES_THROUGH_DERIVED;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1447_LOFT_CONNECTIONS_BUGFIX;
 
 

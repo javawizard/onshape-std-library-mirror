@@ -1769,9 +1769,9 @@ export enum ErrorStringEnum
     CHAMFER_PARTIAL_FAIL,
     /* Cannot handle inconsistent extent of guides or profiles. Use Trim guides or Trim profiles option. */
     LOFT_INCONSISTENT_EXTENT,
-    /* Trim profiles option can be applied only to open profiles with two or more guides. Ignored. */
+    /* Trim profiles option can be applied only to open profiles with two or more guides or connections. */
     LOFT_CANT_TRIM_PROFILES_INFO,
-    /* Trim guides option can be applied only to non-periodic guides with two or more profiles. Ignored. */
+    /* Trim guides option can be applied only to non-periodic guides with two or more profiles. */
     LOFT_CANT_TRIM_GUIDES_INFO,
     /* Failed to insert non-geometric item into assembly. */
     NON_GEOMETRIC_ITEM_INSERTION_FAILED,
@@ -1982,7 +1982,9 @@ export enum ErrorStringEnum
     /* A multi-profile sweep cannot have inner loops. */
     MULTI_PROFILE_SWEEP_NO_INNER_LOOPS,
     /* First and last profiles of a multi-profile sweep must both be faces or both be edges. */
-    SWEEP_PROFILE_DIM_MISMATCH
+    SWEEP_PROFILE_DIM_MISMATCH,
+    /* Select a point on each profile to define a connection. */
+    LOFT_CONNECTION_MATCHING
 }
 
 
