@@ -1,4 +1,4 @@
-FeatureScript 1447; /* Automatically generated version */
+FeatureScript 1458; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1984,7 +1984,23 @@ export enum ErrorStringEnum
     /* First and last profiles of a multi-profile sweep must both be faces or both be edges. */
     SWEEP_PROFILE_DIM_MISMATCH,
     /* Select a point on each profile to define a connection. */
-    LOFT_CONNECTION_MATCHING
+    LOFT_CONNECTION_MATCHING,
+    /* Failed to compute load direction. */
+    SIMULATION_LOAD_DIRECTION_QUERY_FAILED,
+    /* Failed to compute faces for load. */
+    SIMULATION_LOAD_REGION_QUERY_FAILED,
+    /* Select faces to load. */
+    SIMULATION_LOAD_REGION_QUERY_EMPTY,
+    /* Load regions must lie on load instance. */
+    SIMULATION_LOAD_REGION_NOT_ON_LOAD_INSTANCE,
+    /* Select an instance. */
+    SIMULATION_LOAD_INSTANCE_NOT_SPECIFIED,
+    /* Select a load direction. */
+    SIMULATION_LOAD_DIRECTION_NOT_SPECIFIED,
+    /* Failed to compute faces for connection. */
+    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_FAILED,
+    /* Select faces to connect. */
+    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY
 }
 
 

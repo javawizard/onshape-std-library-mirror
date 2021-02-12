@@ -1,4 +1,4 @@
-FeatureScript 1447; /* Automatically generated version */
+FeatureScript 1458; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -160,6 +160,15 @@ export function stringToNumber(s is string) returns number
 export function length(s is string) returns number
 {
     return @size(@splitIntoCharacters(s));
+}
+
+
+/**
+ *  Is undefined or empty string.
+ */
+export predicate isUndefinedOrEmptyString(val)
+{
+    val == undefined || val == "";
 }
 
 
