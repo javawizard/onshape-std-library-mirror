@@ -955,7 +955,9 @@ export enum FeatureScriptVersionNumber
     V1444_BODY_NET_TRACKUNG,
     V1445_IMPRINT_DISAMBIGUATION,
     V1446_LOFT_TRIM_PROFILES,
-    V1447_LOFT_CONNECTIONS_BUGFIX
+    V1447_LOFT_CONNECTIONS_BUGFIX,
+    V1457_SM_CLOSED_RELIEF_FALLBACK,
+    V1458_REVERSE_ALL_EDGES
 }
 
 /**
@@ -966,6 +968,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1447_LOFT_CONNECTIONS_BUGFIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1458_REVERSE_ALL_EDGES;
 
 

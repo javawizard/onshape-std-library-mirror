@@ -163,3 +163,12 @@ export function length(s is string) returns number
 }
 
 
+/**
+ *  Is undefined or empty string.
+ */
+export predicate isUndefinedOrEmptyString(val)
+{
+    val == undefined || val == "";
+}
+
+

@@ -828,6 +828,7 @@ function getDefaultTwoCornerStyle(definition is map) returns SMReliefStyle
 function getDefaultThreeCornerStyle(context is Context, definition is map) returns SMReliefStyle
 {
     const includeSized = isAtVersionOrLater(context, FeatureScriptVersionNumber.V781_THREE_BEND_SIZED);
+    const fallbackToSimple = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1457_SM_CLOSED_RELIEF_FALLBACK);
 
     if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE)
     {
@@ -846,6 +847,10 @@ function getDefaultThreeCornerStyle(context is Context, definition is map) retur
         return SMReliefStyle.SIZED_ROUND;
     }
     else if (definition.defaultCornerStyle == SMCornerStrategyType.SIMPLE)
+    {
+        return SMReliefStyle.SIMPLE;
+    }
+    else if (fallbackToSimple)
     {
         return SMReliefStyle.SIMPLE;
     }
