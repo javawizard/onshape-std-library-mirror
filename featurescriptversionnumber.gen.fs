@@ -1,4 +1,4 @@
-FeatureScript 1458; /* Automatically generated version */
+FeatureScript 1472; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -957,7 +957,11 @@ export enum FeatureScriptVersionNumber
     V1446_LOFT_TRIM_PROFILES,
     V1447_LOFT_CONNECTIONS_BUGFIX,
     V1457_SM_CLOSED_RELIEF_FALLBACK,
-    V1458_REVERSE_ALL_EDGES
+    V1458_REVERSE_ALL_EDGES,
+    V1469_FS_REGEX_UNARY_MINUS,
+    V1470_LOFT_TANGENCY,
+    V1471_PERIODIC_PARAMS_IN_INTERVAL,
+    V1472_FILL_VERTEX_MATCHING
 }
 
 /**
@@ -968,6 +972,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1458_REVERSE_ALL_EDGES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1472_FILL_VERTEX_MATCHING;
 
 

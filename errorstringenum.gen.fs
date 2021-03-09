@@ -1,4 +1,4 @@
-FeatureScript 1458; /* Automatically generated version */
+FeatureScript 1472; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2000,7 +2000,9 @@ export enum ErrorStringEnum
     /* Failed to compute faces for connection. */
     SIMULATION_FUNCTIONAL_CONNECTION_QUERY_FAILED,
     /* Select faces to connect. */
-    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY
+    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY,
+    /* Hole could not conform to target geometry. */
+    HOLE_MATCH_FAILED
 }
 
 
