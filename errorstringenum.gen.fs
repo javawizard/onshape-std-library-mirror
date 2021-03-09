@@ -2000,7 +2000,9 @@ export enum ErrorStringEnum
     /* Failed to compute faces for connection. */
     SIMULATION_FUNCTIONAL_CONNECTION_QUERY_FAILED,
     /* Select faces to connect. */
-    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY
+    SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY,
+    /* Hole could not conform to target geometry. */
+    HOLE_MATCH_FAILED
 }
 
 
