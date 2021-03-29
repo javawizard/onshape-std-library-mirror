@@ -1470,6 +1470,10 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
     {
         return false;
     }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1482_DONT_COPY_SM_TOOLS) && queryContainsActiveSheetMetal(context, tool))
+    {
+        return false; // Cannot copy sheet metal parts.
+    }
     const faceData = getFaceSweptData(context, smFace, faceSweptData);
     const isPlanarFace = (faceData.planeNormal != undefined);
     if (!isPlanarFace)

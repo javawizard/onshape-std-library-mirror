@@ -1959,7 +1959,11 @@ export function evaluateQuery(context is Context, query is Query) returns array
     var result = @evaluateQuery(context, { "query" : query });
     var out = [];
     for (var transientId in result)
+    {
+        // Inline the construction of the query rather than calling qTransient because the function call would represent
+        // a nontrivial performance cost when evaluateQuery is used in a loop, or other performance-sensitive context.
         out = append(out, { "queryType" : QueryType.TRANSIENT, "transientId" : transientId } as Query);
+    }
     return out;
 }
 
