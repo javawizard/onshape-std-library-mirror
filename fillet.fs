@@ -1,26 +1,26 @@
-FeatureScript 1472; /* Automatically generated version */
+FeatureScript 1483; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1472.0");
+export import(path : "onshape/std/query.fs", version : "1483.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1472.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1472.0");
+export import(path : "onshape/std/manipulator.fs", version : "1483.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1483.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1472.0");
-import(path : "onshape/std/evaluate.fs", version : "1472.0");
-import(path : "onshape/std/feature.fs", version : "1472.0");
-import(path : "onshape/std/containers.fs", version : "1472.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1472.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1472.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1472.0");
-import(path : "onshape/std/tool.fs", version : "1472.0");
-import(path : "onshape/std/valueBounds.fs", version : "1472.0");
-import(path : "onshape/std/vector.fs", version : "1472.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1483.0");
+import(path : "onshape/std/evaluate.fs", version : "1483.0");
+import(path : "onshape/std/feature.fs", version : "1483.0");
+import(path : "onshape/std/containers.fs", version : "1483.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1483.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1483.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1483.0");
+import(path : "onshape/std/tool.fs", version : "1483.0");
+import(path : "onshape/std/valueBounds.fs", version : "1483.0");
+import(path : "onshape/std/vector.fs", version : "1483.0");
 
 const FILLET_RHO_BOUNDS =
 {

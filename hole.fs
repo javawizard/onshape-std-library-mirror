@@ -1,34 +1,34 @@
-FeatureScript 1472; /* Automatically generated version */
+FeatureScript 1483; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1472.0");
-import(path : "onshape/std/boolean.fs", version : "1472.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1472.0");
-import(path : "onshape/std/box.fs", version : "1472.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1472.0");
-import(path : "onshape/std/containers.fs", version : "1472.0");
-import(path : "onshape/std/coordSystem.fs", version : "1472.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1472.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1472.0");
-import(path : "onshape/std/evaluate.fs", version : "1472.0");
-import(path : "onshape/std/feature.fs", version : "1472.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1472.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1472.0");
-import(path : "onshape/std/mathUtils.fs", version : "1472.0");
-import(path : "onshape/std/revolve.fs", version : "1472.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1472.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1472.0");
-import(path : "onshape/std/sketch.fs", version : "1472.0");
-import(path : "onshape/std/string.fs", version : "1472.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1472.0");
-import(path : "onshape/std/tool.fs", version : "1472.0");
-import(path : "onshape/std/valueBounds.fs", version : "1472.0");
+import(path : "onshape/std/attributes.fs", version : "1483.0");
+import(path : "onshape/std/boolean.fs", version : "1483.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1483.0");
+import(path : "onshape/std/box.fs", version : "1483.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1483.0");
+import(path : "onshape/std/containers.fs", version : "1483.0");
+import(path : "onshape/std/coordSystem.fs", version : "1483.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1483.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1483.0");
+import(path : "onshape/std/evaluate.fs", version : "1483.0");
+import(path : "onshape/std/feature.fs", version : "1483.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1483.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1483.0");
+import(path : "onshape/std/mathUtils.fs", version : "1483.0");
+import(path : "onshape/std/revolve.fs", version : "1483.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1483.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1483.0");
+import(path : "onshape/std/sketch.fs", version : "1483.0");
+import(path : "onshape/std/string.fs", version : "1483.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1483.0");
+import(path : "onshape/std/tool.fs", version : "1483.0");
+import(path : "onshape/std/valueBounds.fs", version : "1483.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1472.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1472.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1472.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1483.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1483.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1483.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -74,7 +74,8 @@ const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid ide
  *                --> spinCut                                     // opRevolve, if individual cuts, opBoolean
  *                --> createAttributesFromTracking, createSheetMetalHoleAttributes
  *
- * createAttributesFromTracking --> createHoleAttribute
+ * createAttributesFromTracking --> adjustDefinitionForAttribute
+ *                              --> createHoleAttribute
  *
  * createSheetMetalHoleAttributes --> assignSheetMetalHoleAttributes --> createAttributesForSheetMetalHole --> createHoleAttribute
  *
@@ -1340,65 +1341,34 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
                 faceTypes[track.sectionType] = true;
             }
         }
-        var modifiedHoleDefinition = holeDefinition;
-        // Remove countersink and counterbore if necessary
-        if (holeDefinition.style == HoleStyle.C_SINK)
-        {
-            if (faceTypes[HoleSectionFaceType.CSINK_FACE] == undefined && faceTypes[HoleSectionFaceType.CSINK_CBORE_FACE] == undefined)
-            {
-                modifiedHoleDefinition.style = HoleStyle.SIMPLE;
-            }
-        }
-        else if (holeDefinition.style == HoleStyle.C_BORE)
-        {
-            if (faceTypes[HoleSectionFaceType.CBORE_DIAMETER_FACE] == undefined && faceTypes[HoleSectionFaceType.CBORE_DEPTH_FACE] == undefined)
-            {
-                modifiedHoleDefinition.style = HoleStyle.SIMPLE;
-            }
-        }
-        // Check if this is a thru hole -- it is if there are no tip faces
-        if (faceTypes[HoleSectionFaceType.BLIND_TIP_FACE] == undefined)
-        {
-            modifiedHoleDefinition.endStyle = HoleEndStyle.THROUGH;
-        }
-        else if (holeDepth != undefined) // Adjust the depth based on startDistances
+
+        var depthInPart;
+        if (holeDepth != undefined)
         {
             var distance = partToStartDistance[part];
             if (distance != undefined)
             {
-                modifiedHoleDefinition.holeDepth = holeDepth - distance;
-                if (holeDefinition.tappedDepth != undefined)
-                    modifiedHoleDefinition.tappedDepth = holeDefinition.tappedDepth + modifiedHoleDefinition.holeDepth - holeDefinition.holeDepth;
+                depthInPart = holeDepth - distance;
             }
         }
-        if (holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
-        {
-            // For a blind-in-last hole, use the blind-in-last standard to determine tap even if modified hole end style is through
-            modifiedHoleDefinition.standardTappedOrClearance = holeDefinition.standardBlindInLast;
-        }
-        if (part != lastBody && holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
-        {
-            modifiedHoleDefinition.standardTappedOrClearance = undefined;
-        }
-        if (part == lastBody && tappedHoleWithOffset(holeDefinition)) // If this is a tapped hole, adjust diameter
-        {
-            modifiedHoleDefinition.holeDiameter = holeDefinition.tapDrillDiameter;
-        }
-        if (modifiedHoleDefinition.endStyle == HoleEndStyle.THROUGH)
+
+        var holeDefinitionForAttribute = adjustDefinitionForAttribute(holeDefinition, faceTypes, part == lastBody, depthInPart);
+        if (holeDefinitionForAttribute.endStyle == HoleEndStyle.THROUGH)
         {
             try
             {
                 // Check if going through only a subset of the part
                 var holeAxis = computeHoleAxis(context, qUnion(allFaces));
                 var distance = evDistance(context, { side0 : part, side1 : holeAxis }).distance;
-                modifiedHoleDefinition.partialThrough = distance * 2 < modifiedHoleDefinition.holeDiameter - TOLERANCE.zeroLength * meter;
+                holeDefinitionForAttribute.partialThrough = distance * 2 < holeDefinitionForAttribute.holeDiameter - TOLERANCE.zeroLength * meter;
             }
         }
+
         var actualHoleDepth;
         for (var entry in entityToSectionType)
         {
             clearHoleAttributes(context, entry.key);
-            var holeAttribute = createHoleAttribute(id, modifiedHoleDefinition, entry.value, holeNumber);
+            var holeAttribute = createHoleAttribute(id, holeDefinitionForAttribute, entry.value, holeNumber);
             if (holeAttribute != undefined)
             {
                 if (holeAttribute.isTappedHole == true && holeDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
@@ -1407,13 +1377,59 @@ function createAttributesFromTracking(context is Context, id is Id, holeDefiniti
                     {
                         if (actualHoleDepth == undefined)
                             actualHoleDepth = computeActualHoleDepth(context, qUnion(allFaces));
-                        holeAttribute.isTappedThrough = (modifiedHoleDefinition.tappedDepth + TOLERANCE.zeroLength * meter) > actualHoleDepth;
+                        holeAttribute.isTappedThrough = (holeDefinitionForAttribute.tappedDepth + TOLERANCE.zeroLength * meter) > actualHoleDepth;
                     }
                 }
                 setAttribute(context, { "entities" : entry.key, "attribute" : holeAttribute });
             }
         }
     }
+}
+
+// This function does not handle `partialThrough` or `isTappedThrough`.  Caller should follow up with adjustments to those parameters.
+function adjustDefinitionForAttribute(featureDefinition is map, sectionFaceTypes is map, isLastTarget is boolean, depthInPart) returns map
+{
+    var modifiedFeatureDefinition = featureDefinition;
+    // Remove countersink and counterbore if necessary
+    if (featureDefinition.style == HoleStyle.C_SINK)
+    {
+        if (sectionFaceTypes[HoleSectionFaceType.CSINK_FACE] == undefined && sectionFaceTypes[HoleSectionFaceType.CSINK_CBORE_FACE] == undefined)
+        {
+            modifiedFeatureDefinition.style = HoleStyle.SIMPLE;
+        }
+    }
+    else if (featureDefinition.style == HoleStyle.C_BORE)
+    {
+        if (sectionFaceTypes[HoleSectionFaceType.CBORE_DIAMETER_FACE] == undefined && sectionFaceTypes[HoleSectionFaceType.CBORE_DEPTH_FACE] == undefined)
+        {
+            modifiedFeatureDefinition.style = HoleStyle.SIMPLE;
+        }
+    }
+    // Check if this is a thru hole -- it is if there are no tip faces
+    if (sectionFaceTypes[HoleSectionFaceType.BLIND_TIP_FACE] == undefined)
+    {
+        modifiedFeatureDefinition.endStyle = HoleEndStyle.THROUGH;
+    }
+    else if (depthInPart != undefined) // Adjust the depth based on startDistances
+    {
+        modifiedFeatureDefinition.holeDepth = depthInPart;
+        if (featureDefinition.tappedDepth != undefined)
+            modifiedFeatureDefinition.tappedDepth = featureDefinition.tappedDepth + modifiedFeatureDefinition.holeDepth - featureDefinition.holeDepth;
+    }
+    if (featureDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    {
+        // For a blind-in-last hole, use the blind-in-last standard to determine tap even if modified hole end style is through
+        modifiedFeatureDefinition.standardTappedOrClearance = featureDefinition.standardBlindInLast;
+    }
+    if (!isLastTarget && featureDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    {
+        modifiedFeatureDefinition.standardTappedOrClearance = undefined;
+    }
+    if (isLastTarget && tappedHoleWithOffset(featureDefinition)) // If this is a tapped hole, adjust diameter
+    {
+        modifiedFeatureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
+    }
+    return modifiedFeatureDefinition;
 }
 
 function computeHoleAxis(context is Context, faces is Query) returns Line

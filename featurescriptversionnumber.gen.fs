@@ -1,4 +1,4 @@
-FeatureScript 1472; /* Automatically generated version */
+FeatureScript 1483; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -961,7 +961,9 @@ export enum FeatureScriptVersionNumber
     V1469_FS_REGEX_UNARY_MINUS,
     V1470_LOFT_TANGENCY,
     V1471_PERIODIC_PARAMS_IN_INTERVAL,
-    V1472_FILL_VERTEX_MATCHING
+    V1472_FILL_VERTEX_MATCHING,
+    V1482_DONT_COPY_SM_TOOLS,
+    V1483_EXPOSE_WORKFLOW_MODULES
 }
 
 /**
@@ -972,6 +974,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1472_FILL_VERTEX_MATCHING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1483_EXPOSE_WORKFLOW_MODULES;
 
 
