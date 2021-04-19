@@ -1,4 +1,4 @@
-FeatureScript 1483; /* Automatically generated version */
+FeatureScript 1494; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2002,7 +2002,37 @@ export enum ErrorStringEnum
     /* Select faces to connect. */
     SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY,
     /* Hole could not conform to target geometry. */
-    HOLE_MATCH_FAILED
+    HOLE_MATCH_FAILED,
+    /* Select faces for fillet. */
+    FULLROUND_SELECT_FACES,
+    /* Select edges to create a ruled surface. */
+    RULED_SURFACE_SELECT_EDGES,
+    /* Some corners could not be mitered. */
+    RULED_SURFACE_MITER_FAILED,
+    /* Only sketch and face edges can be used for normal and tangent ruled surface. */
+    RULED_SURFACE_NO_TANGENT_DIR,
+    /* Select a direction to create a ruled surface. */
+    RULED_SURFACE_SELECT_DIRECTION,
+    /* Ruled surface would have a width of 0. */
+    RULED_SURFACE_ZERO_LENGTH,
+    /* Select entity to create ruled surface to. */
+    RULED_SURFACE_SELECT_UP_TO_ENTITY,
+    /* Sketch edges can only meet at their ends, overlapping or crossing edges are prohibited. */
+    RULED_SURFACE_OVERLAPPING_SKETCH_EDGES,
+    /* More than two edges cannot meet at a single point. */
+    RULED_SURFACE_EDGES_NOT_MANIFOLD,
+    /* Could not create ruled surface. */
+    RULED_SURFACE_FAILED,
+    /* A lock face must be provided for each path edge when maintaining orientation with faces. */
+    RULED_SURFACE_NO_LOCK_FACE,
+    /* Select a vertex for vertex override. */
+    RULED_SURFACE_VERTEX_SELECT_VERTEX,
+    /* Can only provide one lock face adjacent to an edge. */
+    RULED_SURFACE_MULTIPLE_LOCK_FACES,
+    /* Can only specify a boundary entity for vertex overrides. */
+    RULED_SURFACE_TOP_LEVEL_BOUNDARY_ENTITY,
+    /* A vertex override resolved to multiple vertices. Using the first vertex. */
+    RULED_SURFACE_SPLIT_VERTEX
 }
 
 

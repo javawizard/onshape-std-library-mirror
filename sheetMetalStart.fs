@@ -1,33 +1,33 @@
-FeatureScript 1483; /* Automatically generated version */
+FeatureScript 1494; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "1483.0");
-export import(path : "onshape/std/query.fs", version : "1483.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1494.0");
+export import(path : "onshape/std/query.fs", version : "1494.0");
 
-import(path : "onshape/std/attributes.fs", version : "1483.0");
-import(path : "onshape/std/box.fs", version : "1483.0");
-import(path : "onshape/std/containers.fs", version : "1483.0");
-import(path : "onshape/std/coordSystem.fs", version : "1483.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1483.0");
-import(path : "onshape/std/error.fs", version : "1483.0");
-import(path : "onshape/std/evaluate.fs", version : "1483.0");
-import(path : "onshape/std/feature.fs", version : "1483.0");
-import(path : "onshape/std/geomOperations.fs", version : "1483.0");
-import(path : "onshape/std/manipulator.fs", version : "1483.0");
-import(path : "onshape/std/math.fs", version : "1483.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1483.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1483.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1483.0");
-import(path : "onshape/std/sketch.fs", version : "1483.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1483.0");
-import(path : "onshape/std/string.fs", version : "1483.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1483.0");
-import(path : "onshape/std/tool.fs", version : "1483.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1483.0");
-import(path : "onshape/std/valueBounds.fs", version : "1483.0");
-import(path : "onshape/std/vector.fs", version : "1483.0");
+import(path : "onshape/std/attributes.fs", version : "1494.0");
+import(path : "onshape/std/box.fs", version : "1494.0");
+import(path : "onshape/std/containers.fs", version : "1494.0");
+import(path : "onshape/std/coordSystem.fs", version : "1494.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1494.0");
+import(path : "onshape/std/error.fs", version : "1494.0");
+import(path : "onshape/std/evaluate.fs", version : "1494.0");
+import(path : "onshape/std/feature.fs", version : "1494.0");
+import(path : "onshape/std/geomOperations.fs", version : "1494.0");
+import(path : "onshape/std/manipulator.fs", version : "1494.0");
+import(path : "onshape/std/math.fs", version : "1494.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1494.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1494.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1494.0");
+import(path : "onshape/std/sketch.fs", version : "1494.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1494.0");
+import(path : "onshape/std/string.fs", version : "1494.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1494.0");
+import(path : "onshape/std/tool.fs", version : "1494.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1494.0");
+import(path : "onshape/std/valueBounds.fs", version : "1494.0");
+import(path : "onshape/std/vector.fs", version : "1494.0");
 
 /**
  * Method of initializing sheet metal model
@@ -118,140 +118,151 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         definition.process is SMProcessType;
 
         // First the entities
-        if (definition.process == SMProcessType.CONVERT)
+        annotation { "Group Name" : "Selections", "Collapsed By Default" : false}
         {
-            annotation { "Name" : "Parts and surfaces to convert",
-                        "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
-            definition.partToConvert is Query;
-
-            annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
-            definition.facesToExclude is Query;
-        }
-        else if (definition.process == SMProcessType.EXTRUDE)
-        {
-            annotation { "Name" : "Sketch curves to extrude",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
-            definition.sketchCurves is Query;
-
-            annotation { "Name" : "Arcs to extrude as bends",
-                        "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
-            definition.bendArcs is Query;
-
-            annotation { "Name" : "End type" }
-            definition.endBound is SMExtrudeBoundingType;
-
-            if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
+            if (definition.process == SMProcessType.CONVERT)
             {
-                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-                definition.oppositeExtrudeDirection is boolean;
+                annotation { "Name" : "Parts and surfaces to convert",
+                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
+                definition.partToConvert is Query;
+
+                annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+                definition.facesToExclude is Query;
             }
-
-            extrudeBoundParametersPredicate(definition);
-
-            if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
+            else if (definition.process == SMProcessType.EXTRUDE)
             {
-                annotation { "Name" : "Second end position" }
-                definition.hasSecondDirection is boolean;
+                annotation { "Name" : "Sketch curves to extrude",
+                            "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
+                definition.sketchCurves is Query;
 
-                if (definition.hasSecondDirection)
+                annotation { "Name" : "Arcs to extrude as bends",
+                            "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
+                definition.bendArcs is Query;
+
+                annotation { "Name" : "End type" }
+                definition.endBound is SMExtrudeBoundingType;
+
+                if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
                 {
-                    annotation { "Name" : "End type", "Column Name" : "Second end type" }
-                    definition.secondDirectionBound is SMExtrudeSecondDirectionBoundingType;
+                    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                    definition.oppositeExtrudeDirection is boolean;
+                }
 
-                    annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                                 "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
-                    definition.secondDirectionOppositeExtrudeDirection is boolean;
+                extrudeBoundParametersPredicate(definition);
 
-                    extrudeSecondDirectionBoundParametersPredicate(definition);
+                if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
+                {
+                    annotation { "Name" : "Second end position" }
+                    definition.hasSecondDirection is boolean;
+
+                    if (definition.hasSecondDirection)
+                    {
+                        annotation { "Name" : "End type", "Column Name" : "Second end type" }
+                        definition.secondDirectionBound is SMExtrudeSecondDirectionBoundingType;
+
+                        annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                                     "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
+                        definition.secondDirectionOppositeExtrudeDirection is boolean;
+
+                        extrudeSecondDirectionBoundParametersPredicate(definition);
+                    }
                 }
             }
-        }
-        else if (definition.process == SMProcessType.THICKEN)
-        {
-            annotation { "Name" : "Faces or sketch regions to thicken",
-                        "Filter" : ConstructionObject.NO && (GeometryType.PLANE || GeometryType.CYLINDER || GeometryType.EXTRUDED) }
-            definition.regions is Query;
+            else if (definition.process == SMProcessType.THICKEN)
+            {
+                annotation { "Name" : "Faces or sketch regions to thicken",
+                            "Filter" : ConstructionObject.NO && (GeometryType.PLANE || GeometryType.CYLINDER || GeometryType.EXTRUDED) }
+                definition.regions is Query;
 
-            annotation { "Name" : "Tangent propagation", "Default" : false }
-            definition.tangentPropagation is boolean;
-        }
+                annotation { "Name" : "Tangent propagation", "Default" : false }
+                definition.tangentPropagation is boolean;
+            }
 
-        if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
-        {
-            annotation { "Name" : "Edges or cylinders to bend",
-                         "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE) ||
-                                     (EntityType.FACE && GeometryType.CYLINDER)) && SketchObject.NO }
-            definition.bends is Query;
+            if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
+            {
+                annotation { "Name" : "Edges or cylinders to bend",
+                             "Filter" : ((EntityType.EDGE && EdgeTopology.TWO_SIDED && GeometryType.LINE) ||
+                                         (EntityType.FACE && GeometryType.CYLINDER)) && SketchObject.NO }
+                definition.bends is Query;
 
-            annotation { "Name" : "Clearance from input" }
-            isLength(definition.clearance, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                annotation { "Name" : "Clearance from input" }
+                isLength(definition.clearance, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
-            annotation { "Name" : "Clearance includes bends" }
-            definition.bendsIncluded is boolean;
-        }
+                annotation { "Name" : "Include bends", "Description" : "Check to include the clearance for bends" }
+                definition.bendsIncluded is boolean;
+            }
 
-        if (definition.process == SMProcessType.CONVERT)
-        {
-            annotation { "Name" : "Keep input parts" }
-            definition.keepInputParts is boolean;
+            if (definition.process == SMProcessType.CONVERT)
+            {
+                annotation { "Name" : "Keep input parts" }
+                definition.keepInputParts is boolean;
+            }
         }
 
         // Then some common parameters
-        annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.thickness, SM_THICKNESS_BOUNDS);
-
-        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeDirection is boolean;
-
-        annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
-
-        annotation { "Name" : "Bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isReal(definition.kFactor, K_FACTOR_BOUNDS);
-
-        annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
-
-        annotation { "Name" : "Minimal gap", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
-
-        annotation { "Name" : "Corner relief type",
-                     "Default" : SMCornerStrategyType.SIMPLE,
-                     "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-        definition.defaultCornerStyle is SMCornerStrategyType;
-
-        if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
-            definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
+        annotation { "Group Name" : "General", "Collapsed By Default" : false}
         {
-            annotation { "Name" : "Corner relief scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
+            annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isLength(definition.thickness, SM_THICKNESS_BOUNDS);
+
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.oppositeDirection is boolean;
+
+            annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
         }
 
-        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+        annotation { "Group Name" : "Material", "Collapsed By Default" : true}
         {
-            annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
+            annotation { "Name" : "Bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isReal(definition.kFactor, K_FACTOR_BOUNDS);
+
+            annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
         }
 
-        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+        annotation { "Group Name" : "Relief", "Collapsed By Default" : true}
         {
-            annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
-        }
+            annotation { "Name" : "Minimal gap", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
 
-        annotation { "Name" : "Bend relief type",
-                     "Default" : SMBendStrategyType.OBROUND,
-                     "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-        definition.defaultBendReliefStyle is SMBendStrategyType;
+            annotation { "Name" : "Corner relief type",
+                         "Default" : SMCornerStrategyType.SIMPLE,
+                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+            definition.defaultCornerStyle is SMCornerStrategyType;
 
+            if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
+                definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
+            {
+                annotation { "Name" : "Corner relief scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
+            }
 
-        if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
-            definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
-        {
-            annotation { "Name" : "Bend relief depth scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
-            annotation { "Name" : "Bend relief width scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
+            if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+            {
+                annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
+            }
+
+            if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+            {
+                annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
+            }
+
+            annotation { "Name" : "Bend relief type",
+                         "Default" : SMBendStrategyType.OBROUND,
+                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+            definition.defaultBendReliefStyle is SMBendStrategyType;
+
+            if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
+                definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
+            {
+                annotation { "Name" : "Bend relief depth scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
+                annotation { "Name" : "Bend relief width scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
+            }
         }
     }
     {

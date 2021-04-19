@@ -1,4 +1,4 @@
-FeatureScript 1483; /* Automatically generated version */
+FeatureScript 1494; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,7 +6,8 @@ FeatureScript 1483; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1483.0");
+import(path : "onshape/std/math.fs", version : "1494.0");
+import(path : "onshape/std/string.fs", version : "1494.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -240,6 +241,63 @@ export function sort(entities is array, compareFunction is function)
         doubleLength += doubleLength;
     }
     return result[t];
+}
+
+/**
+ * Returns a sorted copy of `values`, where any sequence of values within `tolerance` of
+ * each other is sorted in the order of the original array.
+ *
+ * This is useful when sorting by a geometric measurement (like length, area, or volume)
+ * because it makes it much less likely that a tiny change in that computed value will
+ * change the resulting sort order.
+ *
+ * @example `tolerantSort([5, 1.000001, 1, 8], 0.001)` returns `[1.000001, 1, 5, 8]`
+ * @example `tolerantSort( [1 * inch, 1.00009 * inch, 0.99991 * inch], 0.0001 * inch)`
+ *      returns `[1 * inch, 1.00009 * inch, 0.99991 * inch]`. The order is entirely
+ *      unchanged since two pairs of values are within the tolerance (even though
+ *      the third pair isn't).
+ *
+ * @param values : An array of `number` or `ValueWithUnits`.
+ * @param tolerance : Tolerance for comparing elements of `values`.
+ */
+export function tolerantSort(values is array, tolerance) returns array
+{
+    return tolerantSort(values, tolerance, undefined);
+}
+
+/**
+ * Performs a [tolerantSort](tolerantSort(array, ?)) of `entities`, ordering by the value
+ * returned by `mapFunction`. Like `tolerantSort`, the original order will be preserved
+ * for values within `tolerance` for stability.
+ *
+ * @param tolerance : @eg `1e-7 * meter`
+ * @param mapFunction : A function taking in a single entity and returning a sortable
+        `number` or `ValueWithUnits`.
+ *      @eg `function(entity is Query) { return evLength(context, {"entities" : entity}); }` to sort entities by increasing length.
+ */
+export function tolerantSort(entities is array, tolerance, mapFunction) returns array
+precondition
+{
+    tolerance > 0;
+    mapFunction is function || mapFunction is undefined;
+}
+{
+    if (entities == [])
+    {
+        return entities;
+    }
+    var values = entities;
+    if (mapFunction != undefined)
+    {
+        values = mapArray(values, mapFunction);
+    }
+    if (!((values[0] / tolerance) is number))
+        throw "Tolerance " ~ toString(tolerance) ~ " must have the same units as array value " ~ toString(values[0]);
+    const indices = @tolerantSort(values, tolerance);
+    var result = [];
+    for (var index in indices)
+        result = append(result, entities[index]);
+    return result;
 }
 
 /**
