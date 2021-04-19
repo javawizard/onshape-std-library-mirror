@@ -175,9 +175,10 @@ precondition
     return true;
 }
 
-function isValidMetadataEnumValue(value is string, enumValues is array) returns boolean
+function isValidMetadataEnumValue(value, enumValues is array) returns boolean
 precondition
 {
+    value is undefined || value is string;
     isMetadataEnumValueList(enumValues);
 }
 {
