@@ -1,14 +1,14 @@
-FeatureScript 1494; /* Automatically generated version */
+FeatureScript 1511; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // For Onshape internal use.
 
-import(path : "onshape/std/containers.fs", version : "1494.0");
-import(path : "onshape/std/metadata.fs", version : "1494.0");
-import(path : "onshape/std/releases.fs", version : "1494.0");
-import(path : "onshape/std/workflow.fs", version : "1494.0");
+import(path : "onshape/std/containers.fs", version : "1511.0");
+import(path : "onshape/std/metadata.fs", version : "1511.0");
+import(path : "onshape/std/releases.fs", version : "1511.0");
+import(path : "onshape/std/workflow.fs", version : "1511.0");
 
 /**
  * @internal
@@ -90,6 +90,11 @@ precondition
     }
 
     value.properties = value.properties->mapArray(function(prop) { return assignMetadataPropertyTypeTags(prop); });
+
+    if (value.errors is array)
+    {
+        value.errors = value.errors->mapArray(function(err) { return assignReleaseItemErrorTypeTags(err); });
+    }
 
     return value as ReleasePackageItem;
 }

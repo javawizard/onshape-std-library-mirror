@@ -1,11 +1,11 @@
-FeatureScript 1494; /* Automatically generated version */
+FeatureScript 1511; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1494.0");
-import(path : "onshape/std/metadata.fs", version : "1494.0");
-import(path : "onshape/std/workflow.fs", version : "1494.0");
+import(path : "onshape/std/containers.fs", version : "1511.0");
+import(path : "onshape/std/metadata.fs", version : "1511.0");
+import(path : "onshape/std/workflow.fs", version : "1511.0");
 
 /**
  * @internal
@@ -244,7 +244,7 @@ precondition
  * @internal
  * Returns a metadata property of a Release candidate or item by its property id.
  */
-export function getPropertyById(rpOrItem is map, propertyId is string) returns MetadataProperty
+export function getPropertyById(rpOrItem is map, propertyId is string)
 precondition
 {
     canBeReleasePackage(rpOrItem) || canBeReleasePackageItem(rpOrItem);
