@@ -80,7 +80,8 @@ export predicate matchesMetadataValueType(value, valueType is MetadataValueType)
             value is array;
             for (var elem in value)
             {
-                elem is string;
+                elem is map;
+                elem.id is string;
             }
         }
         else if (valueType == MetadataValueType.CATEGORY)

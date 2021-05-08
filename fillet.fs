@@ -37,113 +37,175 @@ const VR_BLEND_BOUNDS =
     (yard)       : 0.005
 } as LengthBoundSpec;
 
+/** @internal */
+export enum FilletType
+{
+    annotation { "Name" : "Edge" }
+    EDGE,
+    annotation { "Name" : "Full round" }
+    FULL_ROUND
+}
 
 /**
- * Feature performing an [opFillet].
+ * Feature performing an [opFillet] or [opFullRoundFillet].
  */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange",
-             "Filter Selector" : "allparts",  "Editing Logic Function" : "filletEditLogic"}
+        "Filter Selector" : "allparts", "Editing Logic Function" : "filletEditLogic" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities to fillet",
-                    "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
-                                || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
-                        && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
-                    "AdditionalBoxSelectFilter" : EntityType.EDGE }
-        definition.entities is Query;
+        annotation { "Name" : "Fillet type", "UIHint" : UIHint.HORIZONTAL_ENUM }
+        definition.filletType is FilletType;
+
+        if (definition.filletType == FilletType.EDGE)
+        {
+            annotation { "Name" : "Entities to fillet",
+                        "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
+                                    || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
+                            && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                        "AdditionalBoxSelectFilter" : EntityType.EDGE }
+            definition.entities is Query;
+        }
+        else if (definition.filletType == FilletType.FULL_ROUND)
+        {
+            annotation { "Name" : "First side face",
+                        "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && ActiveSheetMetal.NO, "MaxNumberOfPicks" : 1 }
+            definition.side1Face is Query;
+
+            annotation { "Name" : "Second side face",
+                        "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && ActiveSheetMetal.NO, "MaxNumberOfPicks" : 1 }
+            definition.side2Face is Query;
+
+            annotation { "Name" : "Faces to round",
+                        "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && ActiveSheetMetal.NO }
+            definition.centerFaces is Query;
+        }
 
         annotation { "Name" : "Tangent propagation", "Default" : true }
         definition.tangentPropagation is boolean;
 
-        annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
-        definition.crossSection is FilletCrossSection;
-
-        annotation { "Name" : "Radius" }
-        isLength(definition.radius, BLEND_BOUNDS);
-
-        if (definition.crossSection == FilletCrossSection.CONIC)
+        if (definition.filletType == FilletType.EDGE)
         {
-            annotation { "Name" : "Rho" }
-            isReal(definition.rho, FILLET_RHO_BOUNDS);
-        }
-        else if (definition.crossSection == FilletCrossSection.CURVATURE)
-        {
-            annotation { "Name" : "Magnitude" }
-            isReal(definition.magnitude, FILLET_RHO_BOUNDS);
-        }
+            annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
+            definition.crossSection is FilletCrossSection;
 
-        //to show an info only when certain parameters are changed
-        annotation {"Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
-        definition.defaultsChanged is boolean;
+            annotation { "Name" : "Radius" }
+            isLength(definition.radius, BLEND_BOUNDS);
 
-        if (definition.crossSection != FilletCrossSection.CURVATURE)
-        {
-            annotation {"Name" : "Allow edge overflow", "Default" : true }
-            definition.allowEdgeOverflow is boolean;
-        }
-
-        annotation {"Name" : "Variable fillet"}
-        definition.isVariable is boolean;
-
-        if (definition.isVariable)
-        {
-            annotation { "Name" : "Vertices", "Item name" : "vertex",
-                        "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
-                        "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
-            definition.vertexSettings is array;
-            for (var setting in definition.vertexSettings)
+            if (definition.crossSection == FilletCrossSection.CONIC)
             {
-                annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
-                            "MaxNumberOfPicks" : 1 ,
-                            "UIHint" : UIHint.ALWAYS_HIDDEN }
-                setting.vertex is Query;
-
-                annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
-
-                if (definition.crossSection == FilletCrossSection.CONIC)
-                {
-                    annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                    isReal(setting.variableRho, FILLET_RHO_BOUNDS);
-                }
-                else if (definition.crossSection == FilletCrossSection.CURVATURE)
-                {
-                    annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                    isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
-                }
+                annotation { "Name" : "Rho" }
+                isReal(definition.rho, FILLET_RHO_BOUNDS);
             }
-            annotation {"Name" : "Smooth transition"}
-            definition.smoothTransition is boolean;
+            else if (definition.crossSection == FilletCrossSection.CURVATURE)
+            {
+                annotation { "Name" : "Magnitude" }
+                isReal(definition.magnitude, FILLET_RHO_BOUNDS);
+            }
+
+            //to show an info only when certain parameters are changed
+            annotation { "Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
+            definition.defaultsChanged is boolean;
+
+            if (definition.crossSection != FilletCrossSection.CURVATURE)
+            {
+                annotation { "Name" : "Allow edge overflow", "Default" : true }
+                definition.allowEdgeOverflow is boolean;
+            }
+
+            annotation { "Name" : "Variable fillet" }
+            definition.isVariable is boolean;
+
+            if (definition.isVariable)
+            {
+                annotation { "Name" : "Vertices", "Item name" : "vertex",
+                            "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
+                            "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                definition.vertexSettings is array;
+                for (var setting in definition.vertexSettings)
+                {
+                    annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
+                                "MaxNumberOfPicks" : 1,
+                                "UIHint" : UIHint.ALWAYS_HIDDEN }
+                    setting.vertex is Query;
+
+                    annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                    isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
+
+                    if (definition.crossSection == FilletCrossSection.CONIC)
+                    {
+                        annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                        isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                    }
+                    else if (definition.crossSection == FilletCrossSection.CURVATURE)
+                    {
+                        annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                        isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
+                    }
+                }
+                annotation { "Name" : "Smooth transition" }
+                definition.smoothTransition is boolean;
+            }
+
         }
     }
     {
-        definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
-
-        if (!definition.isVariable)
+        if (definition.filletType == FilletType.EDGE)
         {
-            try(addFilletManipulator(context, id, definition));
+            performEdgeFillet(context, id, definition);
         }
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
+        else if (definition.filletType == FilletType.FULL_ROUND)
         {
-            sheetMetalAwareFillet(context, id, definition);
+            performFullRoundFillet(context, id, definition);
         }
-        else
+    },
+    {
+        tangentPropagation : false,
+        crossSection : FilletCrossSection.CIRCULAR,
+        isVariable : false,
+        smoothTransition : false,
+        defaultsChanged : false,
+        allowEdgeOverflow : true,
+        filletType : FilletType.EDGE
+    });
+
+
+function performFullRoundFillet(context is Context, topLevelId is Id, definition is map)
+{
+    const allSelections =  qUnion([definition.side1Face, definition.side2Face, definition.centerFaces]);
+    if (queryContainsActiveSheetMetal(context, allSelections))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, allSelections);
+    }
+    opFullRoundFillet(context, topLevelId, definition);
+}
+
+function performEdgeFillet(context is Context, topLevelId is Id, definition is map)
+{
+    definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
+
+    if (!definition.isVariable)
+    {
+        try(addFilletManipulator(context, topLevelId, definition));
+    }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
+    {
+        sheetMetalAwareFillet(context, topLevelId, definition);
+    }
+    else
+    {
+        opFillet(context, topLevelId, definition);
+    }
+
+    if (!definition.defaultsChanged) //defaults did not change, suppress info if needed
+    {
+        var result = getFeatureStatus(context, topLevelId);
+        if (result != undefined && result.statusEnum == ErrorStringEnum.VRFILLET_NO_EFFECT)
         {
-            opFillet(context, id, definition);
+            clearFeatureStatus(context, topLevelId, { "withDisplayData" : false }); //keep supplemental graphics
         }
-
-        if (!definition.defaultsChanged) //defaults did not change, suppress info if needed
-        {
-            var result = getFeatureStatus(context, id);
-            if (result != undefined && result.statusEnum == ErrorStringEnum.VRFILLET_NO_EFFECT)
-            {
-                clearFeatureStatus(context, id, {"withDisplayData" : false}); //keep supplemental graphics
-            }
-        }
-
-    }, { tangentPropagation : false, crossSection : FilletCrossSection.CIRCULAR, isVariable : false, smoothTransition : false, defaultsChanged : false, allowEdgeOverflow: true });
-
+    }
+}
 
 /**
  * @internal
@@ -153,7 +215,7 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     definition.defaultsChanged = false;
-    if (specifiedParameters.radius  || specifiedParameters.rho || specifiedParameters.magnitude)
+    if (specifiedParameters.radius || specifiedParameters.rho || specifiedParameters.magnitude)
     {
         if (definition.radius != oldDefinition.radius ||
             definition.rho != oldDefinition.rho ||
@@ -191,12 +253,12 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
             throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["isVariable"]);
         }
         var cornerBreakDefinition = {
-                    "entities" : separatedQueries.sheetMetalQueries,
-                    "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
-                    "range" : definition.radius
-                };
+            "entities" : separatedQueries.sheetMetalQueries,
+            "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
+            "range" : definition.radius
+        };
         try(sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition));
-        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smFillet", "propagateErrorDisplay" : true});
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smFillet", "propagateErrorDisplay" : true });
         if (featureHasError(context, id))
             return;
     }

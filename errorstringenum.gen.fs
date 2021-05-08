@@ -2003,8 +2003,6 @@ export enum ErrorStringEnum
     SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY,
     /* Hole could not conform to target geometry. */
     HOLE_MATCH_FAILED,
-    /* Select faces for fillet. */
-    FULLROUND_SELECT_FACES,
     /* Select edges to create a ruled surface. */
     RULED_SURFACE_SELECT_EDGES,
     /* Some corners could not be mitered. */
@@ -2032,7 +2030,15 @@ export enum ErrorStringEnum
     /* Can only specify a boundary entity for vertex overrides. */
     RULED_SURFACE_TOP_LEVEL_BOUNDARY_ENTITY,
     /* A vertex override resolved to multiple vertices. Using the first vertex. */
-    RULED_SURFACE_SPLIT_VERTEX
+    RULED_SURFACE_SPLIT_VERTEX,
+    /* Select a first side face, a second side face, and one or more faces to round. */
+    FULL_ROUND_SELECT_FACES,
+    /* Cannot convert edge fillet to full round fillet. Create new fillet feature. */
+    FULL_ROUND_MINIMUM_VERSION,
+    /* Cannot select separate center face sets. */
+    FULL_ROUND_ADJACENT_CENTER_FACES,
+    /* Cannot use faces from more than one part or surface. */
+    FULL_ROUND_COMMON_BODY
 }
 
 

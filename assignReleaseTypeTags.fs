@@ -91,6 +91,11 @@ precondition
 
     value.properties = value.properties->mapArray(function(prop) { return assignMetadataPropertyTypeTags(prop); });
 
+    if (value.errors is array)
+    {
+        value.errors = value.errors->mapArray(function(err) { return assignReleaseItemErrorTypeTags(err); });
+    }
+
     return value as ReleasePackageItem;
 }
 

@@ -965,7 +965,15 @@ export enum FeatureScriptVersionNumber
     V1482_DONT_COPY_SM_TOOLS,
     V1483_EXPOSE_WORKFLOW_MODULES,
     V1493_QUERY_EXEC,
-    V1494_FIX_METADATA_ENUM_VALUES
+    V1494_FIX_METADATA_ENUM_VALUES,
+    V1504_PS_VERSION_33_1_200,
+    V1505_LOFT_GUIDE_STABLE,
+    V1506_SINGLE_FACE_IMPRINT,
+    V1507_FULL_ROUND_FILLET,
+    V1508_FULL_ROUND_FILLET_BUGFIXES,
+    V1509_FULL_ROUND_QLV_SPELLING,
+    V1510_FULL_ROUND_FILLET_BUGFIX_2,
+    V1511_FIX_WORKFLOW_PROPERTY_TYPES
 }
 
 /**
@@ -976,6 +984,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1494_FIX_METADATA_ENUM_VALUES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1511_FIX_WORKFLOW_PROPERTY_TYPES;
 
 

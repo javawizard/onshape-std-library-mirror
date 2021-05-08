@@ -297,9 +297,9 @@ precondition
  * Create a manipulator represented by a single arrow which flips direction when clicked.
  * @param definition {{
  *      @field base {Vector}: A 3d point at the manipulator's origin
- *              @eg `Vector(0, 0, 0) * meter`
+ *              @eg `vector(0, 0, 0) * meter`
  *      @field direction {Vector}: A 3d vector pointing in the unflipped direction
- *              @eg `Vector(0, 0, 1)` points manipulator along the z axis
+ *              @eg `vector(0, 0, 1)` points manipulator along the z axis
  *      @field flipped {boolean}:
  *              @eg `false` points the manipulator along +direction
  *              @eg `true`  points the manipulator along -direction, or otherDirection if defined

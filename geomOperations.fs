@@ -560,6 +560,22 @@ export function opFitSpline(context is Context, id is Id, definition is map)
 }
 
 /**
+ * Creates a full round fillet, replacing the center face(s) with circular profile face(s) of varying radius, joining the selected side faces.
+ * @param id : @autocomplete `id + "fullRoundFillet1"`
+ * @param definition {{
+ *      @field side1Face {Query} : A face on one side of the blend.
+ *      @field side2Face {Query} : A face on another side of the blend.
+ *      @field centerFaces {Query} : The face(s) to be replaced.
+ *      @field tangentPropagation {boolean} : @optional
+ *              `true` to propagate the fillet across side face tangencies. Default is `true`.
+ * }}
+ */
+export function opFullRoundFillet(context is Context, id is Id, definition is map)
+{
+    return @opFullRoundFillet(context, id, definition);
+}
+
+/**
  * Creates a helical and possibly spiral curve.
  * @param id : @autocomplete `id + "helix1"`
  * @param definition {{

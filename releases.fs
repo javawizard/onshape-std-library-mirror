@@ -244,7 +244,7 @@ precondition
  * @internal
  * Returns a metadata property of a Release candidate or item by its property id.
  */
-export function getPropertyById(rpOrItem is map, propertyId is string) returns MetadataProperty
+export function getPropertyById(rpOrItem is map, propertyId is string)
 precondition
 {
     canBeReleasePackage(rpOrItem) || canBeReleasePackageItem(rpOrItem);
