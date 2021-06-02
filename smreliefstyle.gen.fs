@@ -1,4 +1,4 @@
-FeatureScript 1511; /* Automatically generated version */
+FeatureScript 1521; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -11,23 +11,23 @@ FeatureScript 1511; /* Automatically generated version */
  */
 export enum SMReliefStyle
 {
-    annotation {"Name" : "Rectangle"}
+    annotation {"Name" : "Rectangle - Scaled"}
     RECTANGLE,
-    annotation {"Name" : "Round"}
+    annotation {"Name" : "Round - Scaled"}
     ROUND,
     annotation {"Name" : "Closed"}
     CLOSED,
-    annotation {"Name" : "Obround"}
+    annotation {"Name" : "Obround - Scaled"}
     OBROUND,
     annotation {"Name" : "Tear"}
     TEAR,
     annotation {"Name" : "Simple"}
     SIMPLE,
-    annotation {"Name" : "Sized rectangle"}
+    annotation {"Name" : "Square - Sized"}
     SIZED_RECTANGLE,
-    annotation {"Name" : "Sized round"}
+    annotation {"Name" : "Round - Sized"}
     SIZED_ROUND,
-    annotation {"Name" : "Sized obround"}
+    annotation {"Name" : "Obround - Sized"}
     SIZED_OBROUND
 }
 

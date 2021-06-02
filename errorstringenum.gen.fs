@@ -1,4 +1,4 @@
-FeatureScript 1511; /* Automatically generated version */
+FeatureScript 1521; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2038,7 +2038,13 @@ export enum ErrorStringEnum
     /* Cannot select separate center face sets. */
     FULL_ROUND_ADJACENT_CENTER_FACES,
     /* Cannot use faces from more than one part or surface. */
-    FULL_ROUND_COMMON_BODY
+    FULL_ROUND_COMMON_BODY,
+    /* Failed to create simulation. */
+    FAILED_TO_CREATE_ASSEMBLY_SIMULATION,
+    /* Context assembly workspace is deleted. Goto desired assembly workspace and update from assembly to switch context's workspace. */
+    IN_CONTEXT_UPDATE_DELETED_WORKSPACE,
+    /* Failed to build hole tool. */
+    HOLE_TOOL_CONSTRUCTION_FAILED
 }
 
 

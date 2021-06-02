@@ -1,4 +1,4 @@
-FeatureScript 1511; /* Automatically generated version */
+FeatureScript 1521; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,11 +10,11 @@ FeatureScript 1511; /* Automatically generated version */
  */
 export enum SMJointStyle
 {
-    annotation {"Name" : "Edge Joint"}
+    annotation {"Name" : "Edge joint"}
     EDGE,
-    annotation {"Name" : "Butt Joint - Primary"}
+    annotation {"Name" : "Butt joint - Direction 1"}
     BUTT,
-    annotation {"Name" : "Butt Joint - Secondary"}
+    annotation {"Name" : "Butt joint - Direction 2"}
     BUTT2
 }
 

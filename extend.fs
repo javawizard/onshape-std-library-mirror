@@ -1,26 +1,26 @@
-FeatureScript 1511; /* Automatically generated version */
+FeatureScript 1521; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1511.0");
-export import(path : "onshape/std/tool.fs", version : "1511.0");
+export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/tool.fs", version : "1521.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1511.0");
+export import(path : "onshape/std/manipulator.fs", version : "1521.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1511.0");
-import(path : "onshape/std/evaluate.fs", version : "1511.0");
-import(path : "onshape/std/feature.fs", version : "1511.0");
-import(path : "onshape/std/primitives.fs", version : "1511.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1511.0");
-import(path : "onshape/std/valueBounds.fs", version : "1511.0");
-import(path : "onshape/std/vector.fs", version : "1511.0");
+import(path : "onshape/std/containers.fs", version : "1521.0");
+import(path : "onshape/std/evaluate.fs", version : "1521.0");
+import(path : "onshape/std/feature.fs", version : "1521.0");
+import(path : "onshape/std/primitives.fs", version : "1521.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
+import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/vector.fs", version : "1521.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "1511.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1511.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1521.0");
 
 /**
  * Bounding type used with extend.
@@ -43,12 +43,12 @@ const targetBounds = 100 * meter;
 /**
  * Extends a surface body by calling [opExtendSheetBody].
  */
-annotation { "Feature Type Name" : "Extend surface", "Manipulator Change Function" : "extendManipulatorChange" }
+annotation { "Feature Type Name" : "Move boundary", "Manipulator Change Function" : "extendManipulatorChange" }
 export const extendSurface = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
 
-        annotation { "Name" : "Entities to extend", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
+        annotation { "Name" : "Surface or boundary edges", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
                                                                (EntityType.EDGE && EdgeTopology.LAMINAR)) &&
                                                                 ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
@@ -56,29 +56,29 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Tangent propagation", "Default" : true }
         definition.tangentPropagation is boolean;
 
-        annotation { "Name" : "Extend end condition" }
+        annotation { "Name" : "Move end condition" }
         definition.endCondition is ExtendBoundingType;
         if (definition.endCondition == ExtendBoundingType.BLIND)
         {
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
 
-            annotation { "Name" : "Extend distance" }
+            annotation { "Name" : "Distance" }
             isLength(definition.extendDistance, LENGTH_BOUNDS);
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_BODY)
         {
-            annotation { "Name" : "Extend target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO, "MaxNumberOfPicks" : 1 }
             definition.targetPart is Query;
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_FACE)
         {
-            annotation { "Name" : "Extend target", "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
             definition.targetFace is Query;
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_VERTEX)
         {
-            annotation { "Name" : "Extend target", "Filter" : QueryFilterCompound.ALLOWS_VERTEX, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : QueryFilterCompound.ALLOWS_VERTEX, "MaxNumberOfPicks" : 1 }
             definition.targetVertex is Query;
         }
 

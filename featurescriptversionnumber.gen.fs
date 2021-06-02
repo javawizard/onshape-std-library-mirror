@@ -1,4 +1,4 @@
-FeatureScript 1511; /* Automatically generated version */
+FeatureScript 1521; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -973,7 +973,11 @@ export enum FeatureScriptVersionNumber
     V1508_FULL_ROUND_FILLET_BUGFIXES,
     V1509_FULL_ROUND_QLV_SPELLING,
     V1510_FULL_ROUND_FILLET_BUGFIX_2,
-    V1511_FIX_WORKFLOW_PROPERTY_TYPES
+    V1511_FIX_WORKFLOW_PROPERTY_TYPES,
+    V1518_SPLIT_BODY_USE_SIDE,
+    V1519_INTERSECTION_EDGES,
+    V1520_VERSION_BUMP,
+    V1521_WORKFLOW_VWU_SUPPORT
 }
 
 /**
@@ -984,6 +988,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1511_FIX_WORKFLOW_PROPERTY_TYPES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1521_WORKFLOW_VWU_SUPPORT;
 
 
