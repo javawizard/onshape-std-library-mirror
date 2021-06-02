@@ -26,17 +26,17 @@ export enum CPlaneType
 {
     annotation { "Name" : "Offset" }
     OFFSET,
-    annotation { "Name" : "Plane Point" }
+    annotation { "Name" : "Plane point" }
     PLANE_POINT,
-    annotation { "Name" : "Line Angle" }
+    annotation { "Name" : "Line angle" }
     LINE_ANGLE,
-    annotation { "Name" : "Point Normal" }
+    annotation { "Name" : "Point normal" }
     LINE_POINT,
-    annotation { "Name" : "Three Point" }
+    annotation { "Name" : "Three point" }
     THREE_POINT,
-    annotation { "Name" : "Mid Plane" }
+    annotation { "Name" : "Mid plane" }
     MID_PLANE,
-    annotation { "Name" : "Curve Point" }
+    annotation { "Name" : "Curve point" }
     CURVE_POINT
 }
 

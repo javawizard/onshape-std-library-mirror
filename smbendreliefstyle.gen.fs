@@ -12,13 +12,13 @@ FeatureScript ✨; /* Automatically generated version */
  * See [SMReliefStyle] for the enum used in built-ins */
 export enum SMBendReliefStyle
 {
-    annotation {"Name" : "Sized rectangle"}
+    annotation {"Name" : "Square - Sized"}
     SIZED_RECTANGLE,
-    annotation {"Name" : "Rectangle"}
+    annotation {"Name" : "Rectangle - Scaled"}
     RECTANGLE,
-    annotation {"Name" : "Sized obround"}
+    annotation {"Name" : "Obround - Sized"}
     SIZED_OBROUND,
-    annotation {"Name" : "Obround"}
+    annotation {"Name" : "Obround - Scaled"}
     OBROUND,
     annotation {"Name" : "Tear"}
     TEAR

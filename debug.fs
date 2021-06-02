@@ -275,7 +275,6 @@ export function debug(context is Context, boundingBox is Box3d, cSys, color is D
     print("debug: Bounding box with corners: " ~ toString(boundingBox.minCorner) ~ " and " ~ toString(boundingBox.maxCorner));
     if (cSys == undefined)
     {
-        cSys = WORLD_COORD_SYSTEM;
         print("\n");
     }
     else
@@ -283,20 +282,49 @@ export function debug(context is Context, boundingBox is Box3d, cSys, color is D
         println(" in cSys: " ~ toString(cSys));
     }
 
-    const transform = toWorld(cSys);
+    const diagonal = boundingBox.maxCorner - boundingBox.minCorner;
+
     const boxId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "box";
 
     startFeature(context, boxId, {});
     try
     {
-        fCuboid(context, boxId + "cube", {
-                    "corner1" : boundingBox.minCorner,
-                    "corner2" : boundingBox.maxCorner
-                });
-        opTransform(context, boxId + "transform", {
-                    "bodies" : qCreatedBy(boxId + "cube", EntityType.BODY),
-                    "transform" : transform
-                });
+        for (var i in [0, 1, 2])
+        {
+            if (diagonal[i].value <= TOLERANCE.zeroLength)
+                continue;
+
+            var i1 = (i + 1) % 3;
+            var i2 = (i + 2) % 3;
+
+            var firstPoint = vector(0, 0, 0);
+            firstPoint[i] = boundingBox.minCorner[i];
+
+            for (var min1 in [false, true]) for (var min2 in [false, true])
+            {
+                // Skip redundant lines
+                if (min1 && diagonal[i1].value <= TOLERANCE.zeroLength)
+                    continue;
+                if (min2 && diagonal[i2].value <= TOLERANCE.zeroLength)
+                    continue;
+
+                // Draw a line parallel to axis i
+                firstPoint[i1] = min1 ? boundingBox.minCorner[i1] : boundingBox.maxCorner[i1];
+                firstPoint[i2] = min2 ? boundingBox.minCorner[i2] : boundingBox.maxCorner[i2];
+
+                var secondPoint = firstPoint;
+                secondPoint[i] = boundingBox.maxCorner[i];
+
+                opFitSpline(context, boxId + i + (min1 ~ min2), { "points" : [firstPoint, secondPoint] });
+            }
+        }
+        if (cSys != undefined)
+        {
+            opTransform(context, boxId + "transform", {
+                        "bodies" : qCreatedBy(boxId, EntityType.BODY),
+                        "transform" : toWorld(cSys)
+                    });
+        }
         addDebugEntities(context, qCreatedBy(boxId, EntityType.EDGE), color);
     }
     abortFeature(context, boxId);
@@ -396,7 +424,7 @@ export function addDebugArrow(context is Context, from is Vector, to is Vector, 
 
 export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits)
 {
-    addDebugArrow(context, from, to, .25 * centimeter, DebugColor.RED);
+    addDebugArrow(context, from, to, radius, DebugColor.RED);
 }
 
 // Timers for very basic profiling

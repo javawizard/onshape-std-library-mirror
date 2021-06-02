@@ -28,7 +28,7 @@ annotation { "Feature Type Name" : "Offset surface" ,
 export const offsetSurface = defineFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
-    annotation { "Name" : "Faces, surfaces, and sketch regions", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
+    annotation { "Name" : "Faces, surfaces, and sketch regions to offset", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                  "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO }
     definition.surfacesAndFaces is Query;
 

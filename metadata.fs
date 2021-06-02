@@ -36,7 +36,9 @@ export enum MetadataValueType {
     annotation { "Name" : "Category" }
     CATEGORY,
     annotation { "Name" : "Computed" }
-    COMPUTED
+    COMPUTED,
+    annotation { "Name" : "Value with units" }
+    VALUE_WITH_UNITS
 }
 
 /**
@@ -73,7 +75,8 @@ export predicate matchesMetadataValueType(value, valueType is MetadataValueType)
         }
         else if (valueType == MetadataValueType.OBJECT)
         {
-            value is map;
+            // Builtin properties come as objects, but custom OBJECT properties today come as JSON strings
+            value is map || value is string;
         }
         else if (valueType == MetadataValueType.USER)
         {
@@ -95,6 +98,10 @@ export predicate matchesMetadataValueType(value, valueType is MetadataValueType)
         else if (valueType == MetadataValueType.COMPUTED)
         {
             value is map;
+        }
+        else if (valueType == MetadataValueType.VALUE_WITH_UNITS)
+        {
+            value is string;    // Value with units comes in as a string like "42 inch"
         }
     }
 }

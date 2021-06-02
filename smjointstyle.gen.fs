@@ -10,11 +10,11 @@ FeatureScript ✨; /* Automatically generated version */
  */
 export enum SMJointStyle
 {
-    annotation {"Name" : "Edge Joint"}
+    annotation {"Name" : "Edge joint"}
     EDGE,
-    annotation {"Name" : "Butt Joint - Primary"}
+    annotation {"Name" : "Butt joint - Direction 1"}
     BUTT,
-    annotation {"Name" : "Butt Joint - Secondary"}
+    annotation {"Name" : "Butt joint - Direction 2"}
     BUTT2
 }
 

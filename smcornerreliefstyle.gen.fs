@@ -12,13 +12,13 @@ FeatureScript ✨; /* Automatically generated version */
  * See [SMReliefStyle] for the enum used in built-ins */
 export enum SMCornerReliefStyle
 {
-    annotation {"Name" : "Sized rectangle"}
+    annotation {"Name" : "Square - Sized"}
     SIZED_RECTANGLE,
-    annotation {"Name" : "Rectangle"}
+    annotation {"Name" : "Rectangle - Scaled"}
     RECTANGLE,
-    annotation {"Name" : "Sized round"}
+    annotation {"Name" : "Round - Sized"}
     SIZED_ROUND,
-    annotation {"Name" : "Round"}
+    annotation {"Name" : "Round - Scaled"}
     ROUND,
     annotation {"Name" : "Closed"}
     CLOSED,

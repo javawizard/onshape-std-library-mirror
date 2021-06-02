@@ -566,7 +566,7 @@ export enum EdgeTopology
  *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER || BodyType.MATE_CONNECTOR`
  *      and can be processed with [evAxis]
  * @value ALLOWS_DIRECTION : Equivalent to
- *      `QueryFilterCompound.ALLOWS_AXIS || GeometryType.PLANE`
+ *      `GeometryType.LINE || GeometryType.CIRCLE || GeometryType.ARC || GeometryType.CYLINDER || GeometryType.PLANE`
  *      and can be processed with [extractDirection]
  * @value ALLOWS_PLANE : Equivalent to
  *      `GeometryType.PLANE || BodyType.MATE_CONNECTOR`

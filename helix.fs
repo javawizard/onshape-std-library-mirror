@@ -52,11 +52,11 @@ export enum HelixType
     TURNS,
     annotation { "Name" : "Pitch" }
     PITCH,
-    annotation { "Name" : "Height and Turns" }
+    annotation { "Name" : "Height and turns" }
     HEIGHT_TURNS,
-    annotation { "Name" : "Height and Pitch" }
+    annotation { "Name" : "Height and pitch" }
     HEIGHT_PITCH,
-    annotation { "Name" : "Turns and Pitch" }
+    annotation { "Name" : "Turns and pitch" }
     TURNS_PITCH
 }
 

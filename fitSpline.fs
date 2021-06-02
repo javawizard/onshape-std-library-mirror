@@ -31,7 +31,7 @@ export enum FitSplineType
 /**
  * Feature performing either [opFitSpline] or [opSplineThroughEdges] depending on selection
  */
-annotation { "Feature Type Name" : "Fit spline",
+annotation { "Feature Type Name" : "3D fit spline",
         "Manipulator Change Function" : "fitSplineManipulatorChange",
         "Editing Logic Function" : "fitSplineEditLogic",
         "UIHint" : UIHint.NO_PREVIEW_PROVIDED }

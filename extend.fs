@@ -43,12 +43,12 @@ const targetBounds = 100 * meter;
 /**
  * Extends a surface body by calling [opExtendSheetBody].
  */
-annotation { "Feature Type Name" : "Extend surface", "Manipulator Change Function" : "extendManipulatorChange" }
+annotation { "Feature Type Name" : "Move boundary", "Manipulator Change Function" : "extendManipulatorChange" }
 export const extendSurface = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
 
-        annotation { "Name" : "Entities to extend", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
+        annotation { "Name" : "Surface or boundary edges", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
                                                                (EntityType.EDGE && EdgeTopology.LAMINAR)) &&
                                                                 ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
@@ -56,29 +56,29 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Tangent propagation", "Default" : true }
         definition.tangentPropagation is boolean;
 
-        annotation { "Name" : "Extend end condition" }
+        annotation { "Name" : "Move end condition" }
         definition.endCondition is ExtendBoundingType;
         if (definition.endCondition == ExtendBoundingType.BLIND)
         {
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.oppositeDirection is boolean;
 
-            annotation { "Name" : "Extend distance" }
+            annotation { "Name" : "Distance" }
             isLength(definition.extendDistance, LENGTH_BOUNDS);
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_BODY)
         {
-            annotation { "Name" : "Extend target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO, "MaxNumberOfPicks" : 1 }
             definition.targetPart is Query;
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_FACE)
         {
-            annotation { "Name" : "Extend target", "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
             definition.targetFace is Query;
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_VERTEX)
         {
-            annotation { "Name" : "Extend target", "Filter" : QueryFilterCompound.ALLOWS_VERTEX, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : QueryFilterCompound.ALLOWS_VERTEX, "MaxNumberOfPicks" : 1 }
             definition.targetVertex is Query;
         }
 

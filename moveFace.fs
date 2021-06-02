@@ -78,7 +78,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         }
         else
         {
-            annotation { "Name" : "Faces, surfaces, and sketch regions",
+            annotation { "Name" : "Faces, surfaces, and sketch regions to offset",
                          "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY))
                             && ConstructionObject.NO }

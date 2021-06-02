@@ -47,13 +47,13 @@ export enum SMProcessType
  */
 export enum SMCornerStrategyType
 {
-    annotation { "Name" : "Sized rectangle" }
+    annotation { "Name" : "Square - Sized" }
     SIZED_RECTANGLE,
-    annotation { "Name" : "Rectangle" }
+    annotation { "Name" : "Rectangle - Scaled" }
     RECTANGLE,
-    annotation { "Name" : "Sized round" }
+    annotation { "Name" : "Round - Sized" }
     SIZED_ROUND,
-    annotation { "Name" : "Round" }
+    annotation { "Name" : "Round - Scaled" }
     ROUND,
     annotation { "Name" : "Closed" }
     CLOSED,
@@ -66,9 +66,9 @@ export enum SMCornerStrategyType
  */
 export enum SMBendStrategyType
 {
-    annotation { "Name" : "Rectangle" }
+    annotation { "Name" : "Rectangle - Scaled" }
     RECTANGLE,
-    annotation { "Name" : "Obround" }
+    annotation { "Name" : "Obround - Scaled" }
     OBROUND,
     annotation { "Name" : "Tear" }
     TEAR
