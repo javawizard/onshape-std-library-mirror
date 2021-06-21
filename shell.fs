@@ -1,16 +1,16 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
 /**
  * Feature performing an [opShell].
@@ -47,7 +47,7 @@ export const shell = defineFeature(function(context is Context, id is Id, defini
         else
             definition.entities = qEntityFilter(definition.entities, EntityType.FACE);
 
-        if (evaluateQuery(context, definition.entities) == [])
+        if (isQueryEmpty(context, definition.entities))
         {
             if (definition.isHollow)
                 throw regenError(ErrorStringEnum.SHELL_SELECT_PARTS, ["parts"]);

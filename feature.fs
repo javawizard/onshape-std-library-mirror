@@ -1,22 +1,22 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1521.0");
-export import(path : "onshape/std/error.fs", version : "1521.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1521.0");
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1521.0");
+export import(path : "onshape/std/context.fs", version : "1540.0");
+export import(path : "onshape/std/error.fs", version : "1540.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1540.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/units.fs", version : "1521.0");
-import(path : "onshape/std/tabReferences.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
+import(path : "onshape/std/tabReferences.fs", version : "1540.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -158,6 +158,61 @@ export function endFeature(context is Context, id is Id)
     {
         @endFeature(context, id, {});
     }
+}
+
+/**
+ * This function can be used to call a subfeature or sub-operation (such as `extrude` or `opExtrude`, respectively). It
+ * will properly handle any statuses as if they came from the top level feature. That is, reported `INFO` will display
+ * as a blue message bubble, `WARNING` will turn the feature orange with a warning tooltip on hover, and `ERROR` will
+ * throw an error after status handling (aborting feature execution if it is not caught). Any error entities that the
+ * subfeature emits will also be displayed.
+ *
+ * @ex `callSubfeatureAndProcessStatus(id, booleanBodies, context, id + "boolean", booleanDefinition);` (where `id` is
+ *     the top-level feature id passed into the feature) will call
+ *     `booleanBodies(context, id + "boolean", booleanDefinition)`, propagate its status onto the current feature, and
+ *     show any error entities coming from the boolean.
+ *
+ * Internally, calls the supplied function, and attaches any status it produces to the `topLevelId` using
+ * [processSubfeatureStatus]. If calling the function produces an error, the error is re-thrown. If the function
+ * produces a return value, that value is returned.
+ *
+ * @param topLevelId   : @autocomplete `id`
+ * @param fn           : @autocomplete `booleanBodies`
+ * @param subfeatureId : @autocomplete `id + "boolean"`
+ * @param definition   : @autocomplete `booleanDefinition`
+ */
+export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id, definition is map)
+{
+    return callSubfeatureAndProcessStatus(topLevelId, fn, context, subfeatureId, definition, { "propagateErrorDisplay" : true });
+}
+
+/**
+ * See [callSubfeatureAndProcessStatus](callSubfeatureAndProcessStatus(Id, function, Context, Id, map)).
+ *
+ * @param topLevelId   : @autocomplete `id`
+ * @param fn           : @autocomplete `booleanBodies`
+ * @param subfeatureId : @autocomplete `id + "boolean"`
+ * @param definition   : @autocomplete `booleanDefinition`
+ * @param processSubfeatureStatusOptions : Passed as the `definition` argument to [processSubfeatureStatus]. Setting
+ *                                         `subfeatureId` in this map is not required, and will be ignored in favor of
+ *                                         the `subfeatureId` passed into this function.
+ *                                         @autocomplete `{ "propagateErrorDisplay" : true }`
+ */
+export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id,
+    definition is map, processSubfeatureStatusOptions is map)
+{
+    const returnValue = try(fn(context, subfeatureId, definition));
+    processSubfeatureStatusOptions.subfeatureId = subfeatureId;
+    processSubfeatureStatus(context, topLevelId, processSubfeatureStatusOptions);
+
+    // Re-throw if there is an error, but not a warn or info.
+    const error = getFeatureError(context, topLevelId);
+    if (error != undefined)
+    {
+        throw error;
+    }
+
+    return returnValue;
 }
 
 /**
@@ -720,7 +775,7 @@ function verifyNonemptyArrayInternal(context is Context, definition is map, para
 export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     parameterName is string, errorToReport is ErrorStringEnum)
 {
-    if (evaluateQuery(context, qSheetMetalFlatFilter(query, SMFlatType.YES)) != [])
+    if (!isQueryEmpty(context, qSheetMetalFlatFilter(query, SMFlatType.YES)))
     {
         throw regenError(errorToReport, [parameterName]);
     }

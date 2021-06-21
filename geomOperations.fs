@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,34 +15,34 @@ FeatureScript 1521; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/context.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/query.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/context.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/query.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1540.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1540.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1540.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1540.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1540.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1521.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1540.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1521.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1540.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1540.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1540.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -72,10 +72,10 @@ export import(path : "onshape/std/wraptype.gen.fs", version : "1521.0");
  * }}
  */
 /* TODO: describe `targetsAndToolsNeedGrouping` in fuller detail */
-export function opBoolean(context is Context, id is Id, definition is map)
+export const opBoolean = function(context is Context, id is Id, definition is map)
 {
     return @opBoolean(context, id, definition);
-}
+};
 
 /**
  * Generates a wire body given a [BSplineCurve] definition.
@@ -85,10 +85,10 @@ export function opBoolean(context is Context, id is Id, definition is map)
  *      @field bSplineCurve {BSplineCurve} : The definition of the spline.
  * }}
  */
-export function opCreateBSplineCurve(context is Context, id is Id, definition is map)
+export const opCreateBSplineCurve = function(context is Context, id is Id, definition is map)
 {
     return @opCreateBSplineCurve(context, id, definition);
-}
+};
 
 /**
  * Generates a sheet body given a [BSplineSurface] definition.
@@ -105,10 +105,10 @@ export function opCreateBSplineCurve(context is Context, id is Id, definition is
  *                  if the surface encloses a region.  Default is `false`.
  * }}
  */
-export function opCreateBSplineSurface(context is Context, id is Id, definition is map)
+export const opCreateBSplineSurface = function(context is Context, id is Id, definition is map)
 {
     return @opCreateBSplineSurface(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -122,10 +122,10 @@ export function opCreateBSplineSurface(context is Context, id is Id, definition 
  *              provided, the operation will fail if `target` is non-planar and there are not exactly two offset faces per tool.
  * }}
  */
-export function opCreateOutline(context is Context, id is Id, definition is map)
+export const opCreateOutline = function(context is Context, id is Id, definition is map)
 {
     return @opCreateOutline(context, id, definition);
-}
+};
 
 /**
  * Create a composite part.
@@ -136,10 +136,10 @@ export function opCreateOutline(context is Context, id is Id, definition is map)
  *              A `closed` composite part consumes its constituent bodies, so that they are not available interactively for individual selection. Default is `false`.
  * }}
  */
-export function opCreateCompositePart(context is Context, id is Id, definition is map)
+export const opCreateCompositePart = function(context is Context, id is Id, definition is map)
 {
   return @opCreateCompositePart(context, id, definition);
-}
+};
 
 /**
  * Modifies a composite part.
@@ -150,10 +150,10 @@ export function opCreateCompositePart(context is Context, id is Id, definition i
  *      @field toRemove {Query} : Bodies to remove from the composite part.
  * }}
  */
-export function opModifyCompositePart(context is Context, id is Id, definition is map)
+export const opModifyCompositePart = function(context is Context, id is Id, definition is map)
 {
     @opModifyCompositePart(context, id, definition);
-}
+};
 
 /**
  * Adds a chamfer to given edges and faces.
@@ -176,10 +176,10 @@ export function opModifyCompositePart(context is Context, id is Id, definition i
  * }}
  */
 /* TODO: make this interface more like an operation and less like a feature. */
-export function opChamfer(context is Context, id is Id, definition is map)
+export const opChamfer = function(context is Context, id is Id, definition is map)
 {
     return @opChamfer(context, id, definition);
-}
+};
 
 /**
  * Describes a set of isoparametric curves on a face.
@@ -265,10 +265,10 @@ export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCr
  *      @field curveDefinition {array} : An array of [CurveOnFaceDefinition]s that describe group of curves per face.
  * }}
  */
-export function opCreateCurvesOnFace(context is Context, id is Id, definition is map)
+export const opCreateCurvesOnFace = function(context is Context, id is Id, definition is map)
 {
     return @opCreateCurvesOnFace(context, id, definition);
-}
+};
 
 /**
  * Deletes bodies from the context.
@@ -277,10 +277,10 @@ export function opCreateCurvesOnFace(context is Context, id is Id, definition is
  *      @field entities {Query} : Entities to delete. Passing in entities other than bodies deletes their owning bodies.
  * }}
  */
-export function opDeleteBodies(context is Context, id is Id, definition is map)
+export const opDeleteBodies = function(context is Context, id is Id, definition is map)
 {
     return @opDeleteBodies(context, id, definition);
-}
+};
 
 /**
  * This is a direct editing operation that attempts to delete faces of a solid body and extend other faces to fill the hole.
@@ -299,10 +299,10 @@ export function opDeleteBodies(context is Context, id is Id, definition is map)
  *              @autocomplete `false`
  * }}
  */
-export function opDeleteFace(context is Context, id is Id, definition is map)
+export const opDeleteFace = function(context is Context, id is Id, definition is map)
 {
     return @opDeleteFace(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -312,10 +312,10 @@ export function opDeleteFace(context is Context, id is Id, definition is map)
  *      @field entities {Query} : Bodies and faces for enclosure.
  * }}
  */
-export function opEnclose(context is Context, id is Id, definition is map)
+export const opEnclose = function(context is Context, id is Id, definition is map)
 {
     return @opEnclose(context, id, definition);
-}
+};
 
 /**
  * Applies a given draft angle to faces.
@@ -356,10 +356,10 @@ export function opEnclose(context is Context, id is Id, definition is map)
  *              after. Default is `false`.
  * }}
  */
-export function opDraft(context is Context, id is Id, definition is map)
+export const opDraft = function(context is Context, id is Id, definition is map)
 {
     return @opDraft(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -372,10 +372,10 @@ export function opDraft(context is Context, id is Id, definition is map)
  *                                      If replaceFace is a face, the edge will be moved to that face.
  * }}
  */
-export function opEdgeChange(context is Context, id is Id, definition is map)
+export const opEdgeChange = function(context is Context, id is Id, definition is map)
 {
     return @opEdgeChange(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -391,10 +391,10 @@ export function opEdgeChange(context is Context, id is Id, definition is map)
  *    @field extensionShape {ExtendSheetShapeType} : @autocomplete `ExtendSheetShapeType.LINEAR`. Shape characteristic of extension, whether curvature continuity is maintained or not.
  * }}
  */
-export function opExtendSheetBody(context is Context, id is Id, definition is map)
+export const opExtendSheetBody = function(context is Context, id is Id, definition is map)
 {
     return @opExtendSheetBody(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -413,10 +413,10 @@ export function opExtendSheetBody(context is Context, id is Id, definition is ma
  *              `REMOVE_ADDED_REDUNDANCY` is the default.
  * }}
  */
-export function opExtractSurface(context is Context, id is Id, definition is map)
+export const opExtractSurface = function(context is Context, id is Id, definition is map)
 {
     @opExtractSurface(context, id, definition);
-}
+};
 
 /**
  * Generates wire bodies from the supplied edges.
@@ -427,10 +427,10 @@ export function opExtractSurface(context is Context, id is Id, definition is map
  *      @field edges {Query} : The edges to be extracted.
  * }}
  */
-export function opExtractWires(context is Context, id is Id, definition is map)
+export const opExtractWires = function(context is Context, id is Id, definition is map)
 {
     return @opExtractWires(context, id, definition);
-}
+};
 
 /**
  * Extrudes one or more edges or faces in a given direction with one or two end conditions.
@@ -470,10 +470,10 @@ export function opExtractWires(context is Context, id is Id, definition is map)
  *              `UP_TO_BODY`, or `UP_TO_NEXT`.
  * }}
  */
-export function opExtrude(context is Context, id is Id, definition is map)
+export const opExtrude = function(context is Context, id is Id, definition is map)
 {
     return @opExtrude(context, id, definition);
-}
+};
 
 /**
  * For edges, performs a fillet on the edge. For faces, performs a fillet on all edges adjacent to the face.
@@ -504,10 +504,10 @@ export function opExtrude(context is Context, id is Id, definition is map)
  *              Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
  * }}
  */
-export function opFillet(context is Context, id is Id, definition is map)
+export const opFillet = function(context is Context, id is Id, definition is map)
 {
     return @opFillet(context, id, definition);
-}
+};
 
 /**
  * Generates a surface body from supplied boundary and internal constraints. The boundaries are defined as
@@ -521,10 +521,10 @@ export function opFillet(context is Context, id is Id, definition is map)
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
  * }}
  */
-export function opFillSurface(context is Context, id is Id, definition is map)
+export const opFillSurface = function(context is Context, id is Id, definition is map)
 {
     return @opFillSurface(context, id, definition);
-}
+};
 
 /**
  * Creates a 3D cubic spline curve through an array of 3D points.
@@ -554,10 +554,10 @@ export function opFillSurface(context is Context, id is Id, definition is map)
  *          the resulting spline.  Ignored if spline is closed, or if `endDerivative` is not defined @optional
  * }}
  */
-export function opFitSpline(context is Context, id is Id, definition is map)
+export const opFitSpline = function(context is Context, id is Id, definition is map)
 {
     return @opFitSpline(context, id, definition);
-}
+};
 
 /**
  * Creates a full round fillet, replacing the center face(s) with circular profile face(s) of varying radius, joining the selected side faces.
@@ -570,10 +570,10 @@ export function opFitSpline(context is Context, id is Id, definition is map)
  *              `true` to propagate the fillet across side face tangencies. Default is `true`.
  * }}
  */
-export function opFullRoundFillet(context is Context, id is Id, definition is map)
+export const opFullRoundFillet = function(context is Context, id is Id, definition is map)
 {
     return @opFullRoundFillet(context, id, definition);
-}
+};
 
 /**
  * Creates a helical and possibly spiral curve.
@@ -597,10 +597,10 @@ export function opFullRoundFillet(context is Context, id is Id, definition is ma
  *          @eg `0 * inch` produces a helix that lies on a cylinder.
  * }}
  */
-export function opHelix(context is Context, id is Id, definition is map)
+export const opHelix = function(context is Context, id is Id, definition is map)
 {
     return @opHelix(context, id, definition);
-}
+};
 
 /* TODO: Example of importing from a blob tab */
 /**
@@ -614,10 +614,10 @@ export function opHelix(context is Context, id is Id, definition is map)
  *      @field isModifiable {boolean} : Whether the imported data is modifiable (default) or not. @optional
  * }}
  */
-export function opImportForeign(context is Context, id is Id, definition is map)
+export const opImportForeign = function(context is Context, id is Id, definition is map)
 {
     return @opImportForeign(context, id, definition);
-}
+};
 
 /**
  * Creates a surface or solid loft fitting an ordered set of profiles, optionally constrained by guide curves.
@@ -654,10 +654,10 @@ export function opImportForeign(context is Context, id is Id, definition is map)
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  * }}
  */
-export function opLoft(context is Context, id is Id, definition is map)
+export const opLoft = function(context is Context, id is Id, definition is map)
 {
     return @opLoft(context, id, definition);
-}
+};
 
 /**
  * Creates a mate connector, which represents a coordinate system in the context. Currently it is a special type of
@@ -670,10 +670,10 @@ export function opLoft(context is Context, id is Id, definition is map)
  *          first is taken as the owner.
  * }}
  */
-export function opMateConnector(context is Context, id is Id, definition is map)
+export const opMateConnector = function(context is Context, id is Id, definition is map)
 {
     return @opMateConnector(context, id, definition);
-}
+};
 
 /**
  * Bring all of the information from `contextFrom` into `context`.  This is used, for example, for the Derived feature.
@@ -688,7 +688,7 @@ export function opMateConnector(context is Context, id is Id, definition is map)
  * @return {array} : Returns array of the same size as trackThroughMerge
  *                   with evaluation results for each query(array of arrays of transient queries).
  */
-export function opMergeContexts(context is Context, id is Id, definition is map) returns array
+export const opMergeContexts = function(context is Context, id is Id, definition is map) returns array
 {
     const result = @opMergeContexts(context, id, definition);
     var out = [];
@@ -700,7 +700,7 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
         out = append(out, queryResult);
     }
     return out;
-}
+};
 
 /**
  * This is a direct editing operation that modifies or deletes fillets.
@@ -713,10 +713,10 @@ export function opMergeContexts(context is Context, id is Id, definition is map)
  *              `true` to reapply adjacent fillets. Default is `false`.
  * }}
  */
-export function opModifyFillet(context is Context, id is Id, definition is map)
+export const opModifyFillet = function(context is Context, id is Id, definition is map)
 {
     return @opModifyFillet(context, id, definition);
-}
+};
 
 /**
  * This is a direct editing operation that applies a transform to one or more faces.
@@ -732,10 +732,10 @@ export function opModifyFillet(context is Context, id is Id, definition is map)
  *              `true` to remove redundant edges from moveFaces. Default is `true`.
  * }}
  */
-export function opMoveFace(context is Context, id is Id, definition is map)
+export const opMoveFace = function(context is Context, id is Id, definition is map)
 {
     return @opMoveFace(context, id, definition);
-}
+};
 
 /**
  * @internal
@@ -750,10 +750,10 @@ export function opMoveFace(context is Context, id is Id, definition is map)
  *      @field entityName {string} : The name, should be unique in the part studio.
  * }}
 */
-export function opNameEntity(context is Context, id is Id, definition is map)
+export const opNameEntity = function(context is Context, id is Id, definition is map)
 {
     return @opNameEntity(context, id, definition);
-}
+};
 
 /**
  * This is a direct editing operation that offsets one or more faces.
@@ -769,10 +769,10 @@ export function opNameEntity(context is Context, id is Id, definition is map)
  *              `true` to remove redundant edges from moveFaces. Default is `true`.
  * }}
  */
-export function opOffsetFace(context is Context, id is Id, definition is map)
+export const opOffsetFace = function(context is Context, id is Id, definition is map)
 {
     return @opOffsetFace(context, id, definition);
-}
+};
 
 /**
  * Patterns input faces and/or bodies by applying transforms to them. The original faces and bodies are preserved.
@@ -786,19 +786,19 @@ export function opOffsetFace(context is Context, id is Id, definition is map)
  *      @field copyPropertiesAndAttributes {boolean} : If true (default), copies properties and attributes to patterned entities. @optional
  * }}
  */
-export function opPattern(context is Context, id is Id, definition is map)
+export const opPattern = function(context is Context, id is Id, definition is map)
 {
     return @opPattern(context, id, definition);
-}
+};
 
 /**
  * @internal
  * TODO!!
  */
-export function opBooleanedPattern(context is Context, id is Id, definition is map)
+export const opBooleanedPattern = function(context is Context, id is Id, definition is map)
 {
     return @opBooleanedPattern(context, id, definition);
-}
+};
 
 /**
  * Creates a construction plane.
@@ -813,10 +813,10 @@ export function opBooleanedPattern(context is Context, id is Id, definition is m
  *      @field defaultType @internalType {DefaultPlaneType} : For Onshape internal use. @optional
  * }}
  */
-export function opPlane(context is Context, id is Id, definition is map)
+export const opPlane = function(context is Context, id is Id, definition is map)
 {
     return @opPlane(context, id, definition);
-}
+};
 
 /**
  * Creates a sphere.
@@ -827,10 +827,10 @@ export function opPlane(context is Context, id is Id, definition is map)
             @eg `vector(1, 1, 1) * inch`
  * }}
  */
-export function opSphere(context is Context, id is Id, definition is map)
+export const opSphere = function(context is Context, id is Id, definition is map)
 {
     return @opSphere(context, id, definition);
-}
+};
 
 /**
  * Creates a 3D spline curve representing a sequence of edges.
@@ -840,10 +840,10 @@ export function opSphere(context is Context, id is Id, definition is map)
  *       @field edges {Query} : Edges to approximate.
  * }}
  */
-export function opSplineThroughEdges(context is Context, id is Id, definition is map)
+export const opSplineThroughEdges = function(context is Context, id is Id, definition is map)
 {
     return @opSplineThroughEdges(context, id, definition);
-}
+};
 
 /**
  * Creates a construction point (a `BodyType.POINT` with one vertex).
@@ -854,10 +854,10 @@ export function opSplineThroughEdges(context is Context, id is Id, definition is
  *      @field origin {boolean} : For Onshape internal use. @optional
  * }}
  */
-export function opPoint(context is Context, id is Id, definition is map)
+export const opPoint = function(context is Context, id is Id, definition is map)
 {
     return @opPoint(context, id, definition);
-}
+};
 
 /**
  * This is a direct editing operation that replaces the geometry one or more faces with that of another face, possibly
@@ -874,10 +874,10 @@ export function opPoint(context is Context, id is Id, definition is map)
  *              Default is `false`.
  * }}
  */
-export function opReplaceFace(context is Context, id is Id, definition is map)
+export const opReplaceFace = function(context is Context, id is Id, definition is map)
 {
     return @opReplaceFace(context, id, definition);
-}
+};
 
 /**
  * Revolves edges and faces about an axis to produce sheet and solid bodies. The edges and faces may abut, but not
@@ -893,10 +893,10 @@ export function opReplaceFace(context is Context, id is Id, definition is map)
  *          If `angleForward == angleBack`, the revolve is a full (360-degree) revolve. Defaults to `0`. @optional
  * }}
  */
-export function opRevolve(context is Context, id is Id, definition is map)
+export const opRevolve = function(context is Context, id is Id, definition is map)
 {
     return @opRevolve(context, id, definition);
-}
+};
 
 /**
  * Create a shell of a solid body with uniform thickness. The bodies that are passed
@@ -908,10 +908,10 @@ export function opRevolve(context is Context, id is Id, definition is map)
  *              means shell inward. @autocomplete `0.1 * inch`
  * }}
  */
-export function opShell(context is Context, id is Id, definition is map)
+export const opShell = function(context is Context, id is Id, definition is map)
 {
     return @opShell(context, id, definition);
-}
+};
 
 /**
  * Either adds or removes material from the flat.
@@ -922,10 +922,10 @@ export function opShell(context is Context, id is Id, definition is map)
  *      @field operationType {BooleanOperationType} : The boolean operation to perform. Must be union or subtraction.
  * }}
  */
-export function opSMFlatOperation(context is Context, id is Id, definition is map)
+export const opSMFlatOperation = function(context is Context, id is Id, definition is map)
 {
     return @opSMFlatOperation(context, id, definition);
-}
+};
 
 /**
  * Split solid and sheet bodies with the given sheet body.
@@ -940,10 +940,10 @@ export function opSMFlatOperation(context is Context, id is Id, definition is ma
  * }}
  */
 /* TODO: why not wires? */
-export function opSplitPart(context is Context, id is Id, definition is map)
+export const opSplitPart = function(context is Context, id is Id, definition is map)
 {
     return @opSplitPart(context, id, definition);
-}
+};
 
 /**
  * Split faces with the given edges or faces.
@@ -964,10 +964,10 @@ export function opSplitPart(context is Context, id is Id, definition is map)
  *              These planar faces are treated as infinite, rather than bounded to the face extents.
  * }}
  */
-export function opSplitFace(context is Context, id is Id, definition is map)
+export const opSplitFace = function(context is Context, id is Id, definition is map)
 {
     return @opSplitFace(context, id, definition);
-}
+};
 
 /**
  * Map containing the results of splitting faces by their isoclines. Some faces may have been split, others
@@ -1013,7 +1013,7 @@ export predicate canBeSplitByIsoclineResult(value)
  *      @field angle {ValueWithUnits} : The isocline angle with respect to the direction in the (-90, 90) degree range.
  * }}
  */
-export function opSplitByIsocline(context is Context, id is Id, definition is map) returns SplitByIsoclineResult
+export const opSplitByIsocline = function(context is Context, id is Id, definition is map) returns SplitByIsoclineResult
 {
     const data = @opSplitByIsocline(context, id, definition);
 
@@ -1032,7 +1032,7 @@ export function opSplitByIsocline(context is Context, id is Id, definition is ma
         "steepFaces": steepFaces,
         "nonSteepFaces": nonSteepFaces
     } as SplitByIsoclineResult;
-}
+};
 
 /**
  * Map containing the results of splitting bodies by their shadow curves. Some faces may have been split, others
@@ -1077,7 +1077,7 @@ export predicate canBeSplitBySelfShadowResult(value)
  *      @field viewDirection {Vector} : The viewing direction.
  * }}
  */
-export function opSplitBySelfShadow(context is Context, id is Id, definition is map) returns SplitBySelfShadowResult
+export const opSplitBySelfShadow = function(context is Context, id is Id, definition is map) returns SplitBySelfShadowResult
 {
     const data = @opSplitBySelfShadow(context, id, definition);
 
@@ -1096,7 +1096,7 @@ export function opSplitBySelfShadow(context is Context, id is Id, definition is 
         "visibleFaces": visibleFaces,
         "invisibleFaces": invisibleFaces
     } as SplitBySelfShadowResult;
-}
+};
 
 /**
  * Sweep the given edges and faces along a path resulting in solid and/or sheet bodies.
@@ -1110,10 +1110,10 @@ export function opSplitBySelfShadow(context is Context, id is Id, definition is 
  *      @field lockFaces {Query} : Keep profile aligned to the normals of these faces. @optional
  * }}
  */
-export function opSweep(context is Context, id is Id, definition is map)
+export const opSweep = function(context is Context, id is Id, definition is map)
 {
     return @opSweep(context, id, definition);
-}
+};
 
 /**
  * Thicken sheet bodies and faces into solid bodies.
@@ -1126,10 +1126,10 @@ export function opSweep(context is Context, id is Id, definition is map)
  *              @autocomplete `0.1 * inch`
  * }}
  */
-export function opThicken(context is Context, id is Id, definition is map)
+export const opThicken = function(context is Context, id is Id, definition is map)
 {
     return @opThicken(context, id, definition);
-}
+};
 
 /**
  * Applies a given transform to one or more bodies. To make transformed copies of bodies, use [opPattern].
@@ -1149,10 +1149,10 @@ export function opThicken(context is Context, id is Id, definition is map)
  *              @eg `transform2 * transform1` will perform `transform1`, followed by `transform2`.
  * }}
  */
-export function opTransform(context is Context, id is Id, definition is map)
+export const opTransform = function(context is Context, id is Id, definition is map)
 {
     return @opTransform(context, id, definition);
-}
+};
 
 /**
  * Wraps or unwraps faces from one surface onto another.  The location and orientation of the wrapped faces on the destination
@@ -1178,10 +1178,10 @@ export function opTransform(context is Context, id is Id, definition is map)
  *                                               [Cylinder] are always pointing outwards.
  * }}
  */
-export function opWrap(context is Context, id is Id, definition is map)
+export const opWrap = function(context is Context, id is Id, definition is map)
 {
     return @opWrap(context, id, definition);
-}
+};
 
 // NOTE: For documentation readability, new operations in this file should be sorted alphabetically
 

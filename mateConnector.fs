@@ -1,22 +1,22 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
 
 /**
  * @internal
@@ -254,7 +254,7 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery];
         // If there are no selections, reset owner part, don't try to recompute
-        if (size(evaluateQuery(context, qUnion(possiblePartOwners))) == 0)
+        if (isQueryEmpty(context, qUnion(possiblePartOwners)))
         {
             definition.ownerPart = qUnion([]);
             return definition;
@@ -268,7 +268,7 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
 
         var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
 
-        if (ownerPartQuery != undefined && size(evaluateQuery(context, ownerPartQuery)) > 0)
+        if (ownerPartQuery != undefined && !isQueryEmpty(context, ownerPartQuery))
             definition.ownerPart = qUnion(evaluateQuery(context, ownerPartQuery));
         else
             definition.ownerPart = qUnion([]);
@@ -282,14 +282,14 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     for (var possiblePartOwner in possiblePartOwners)
     {
         const meshQuery = qSourceMesh(possiblePartOwner);
-        if (evaluateQuery(context, meshQuery) != [])
+        if (!isQueryEmpty(context, meshQuery))
         {
             ownerPartQuery = meshQuery;
             break;
         }
 
         const solidQuery = qBodyType(qOwnerBody(possiblePartOwner), BodyType.SOLID);
-        if (evaluateQuery(context, solidQuery) != [])
+        if (!isQueryEmpty(context, solidQuery))
         {
             ownerPartQuery = solidQuery;
             break;
@@ -301,7 +301,7 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
         {
             const modifiableSurfaceQuery = qModifiableEntityFilter(qSketchFilter(qBodyType(qOwnerBody(possiblePartOwner), BodyType.SHEET), SketchObject.NO));
-            if (evaluateQuery(context, modifiableSurfaceQuery) != [])
+            if (!isQueryEmpty(context, modifiableSurfaceQuery))
             {
                 ownerPartQuery = modifiableSurfaceQuery;
                 break;

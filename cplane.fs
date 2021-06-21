@@ -1,23 +1,23 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1521.0");
+export import(path : "onshape/std/manipulator.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
 /**
  * The method of defining a construction plane.
@@ -403,7 +403,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
         // If after V1004, and this offset plane is not based on a face, return the default plane bounds
-        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        if (filterFaces && isQueryEmpty(context, qEntityFilter(definition.entities, EntityType.FACE)))
         {
             return planeBounds;
         }
@@ -440,7 +440,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
         // If after V1004, and this point-plane is not based on a face, return the default plane bounds
-        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        if (filterFaces && isQueryEmpty(context, qEntityFilter(definition.entities, EntityType.FACE)))
         {
             return planeBounds;
         }

@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,10 +9,10 @@ FeatureScript 1521; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
 
 /**
  * A three-dimensional bounding box.
@@ -125,7 +125,7 @@ precondition
     isLength(absoluteValue);
 }
 {
-    const midPoint is Vector = (bBox.minCorner + bBox.maxCorner) * 0.5;
+    const midPoint is Vector = box3dCenter(bBox);
     const halfDiagonal is Vector = (bBox.maxCorner - bBox.minCorner) * 0.5;
     const absoluteIncrement is Vector = vector(absoluteValue, absoluteValue, absoluteValue);
 
@@ -138,10 +138,18 @@ precondition
  * Return the center of the bounding box.
  * @param bBox {Box3d}
  */
- export function box3dCenter(bBox is Box3d) returns Vector
- {
+export function box3dCenter(bBox is Box3d) returns Vector
+{
     return ((bBox.maxCorner + bBox.minCorner) / 2);
- }
+}
+
+/**
+ * Return the length of the diagonal from the `minCorner` to the `maxCorner` of the bounding box.
+ */
+export function box3dDiagonalLength(bBox is Box3d) returns ValueWithUnits
+{
+    return norm(bBox.maxCorner - bBox.minCorner);
+}
 
 /**
  * Whether the specified point is within the bounding box.

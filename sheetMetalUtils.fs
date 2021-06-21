@@ -1,29 +1,29 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1521.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/manipulator.fs", version : "1521.0");
-import(path : "onshape/std/query.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1540.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/manipulator.fs", version : "1540.0");
+import(path : "onshape/std/query.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
 
 
 
@@ -44,12 +44,11 @@ export function defineSheetMetalFeature(feature is function, defaults is map) re
  *      @field associatedChanges{Query} : sheet metal definition entities representing the change of this feature
  * }}
  */
- export function updateSheetMetalGeometry(context is Context, id is Id, args is map)
- {
+export const updateSheetMetalGeometry = function(context is Context, id is Id, args is map)
+{
     adjustCornerBreakAttributes(context, args.entities);
     @updateSheetMetalGeometry(context, id, args);
- }
-
+};
 
 /**
 * Direction of material from definition body. For old models (before V629_SM_MODEL_FRONT_N_BACK)
@@ -410,7 +409,7 @@ function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edg
             ellipse.coordSystem.origin + (ellipse.coordSystem.xAxis * ellipse.majorRadius)
         ];
 
-    if ((evaluateQuery(context, qContainsPoint(edge, majorPoints[0])) != []) || (evaluateQuery(context, qContainsPoint(edge, majorPoints[1])) != []))
+    if ((!isQueryEmpty(context, qContainsPoint(edge, majorPoints[0]))) || (!isQueryEmpty(context, qContainsPoint(edge, majorPoints[1]))))
     {
         // If the range of the ellipse captures either of the major points, we can use the analytical solution
         return angleBetween(cylinders[0].coordSystem.zAxis, cylinders[1].coordSystem.zAxis);
@@ -458,7 +457,7 @@ export function edgeAngle(context is Context, edge is Query) returns ValueWithUn
     }
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V929_SM_ALIGN_UNROLLED))
     {
-        const edgeIsLinear = evaluateQuery(context, qGeometry(edge, GeometryType.LINE)) != [];
+        const edgeIsLinear = !isQueryEmpty(context, qGeometry(edge, GeometryType.LINE));
         if (edgeIsLinear)
         {
             // Edge angle will be the same all the way along the edge (as long as both faces are developable surfaces).
@@ -636,7 +635,7 @@ function computeReplacementAttribute(context is Context, id is Id, edgeOrFace is
     const edge = qEntityFilter(edgeOrFace, EntityType.EDGE);
     const cylinder = qGeometry(edgeOrFace, GeometryType.CYLINDER);
     // before V1047 we assumed an edge coming here
-    var isEdge = !recomputeForFaces || (evaluateQuery(context, edge) != []);
+    var isEdge = !recomputeForFaces || (!isQueryEmpty(context, edge));
     if (isEdge && !edgeIsTwoSided(context, edge)) // can not continue as joint
     {
         clearSmAttributes(context, edge);
@@ -655,7 +654,7 @@ function computeReplacementAttribute(context is Context, id is Id, edgeOrFace is
             angleVal = try silent(edgeAngle(context, edge));
         }
     }
-    else if (evaluateQuery(context, cylinder) != [])
+    else if (!isQueryEmpty(context, cylinder))
     {
         angleVal = cylinderAngle(context, cylinder);
     }
@@ -850,7 +849,7 @@ export function partitionSheetMetalParts(context is Context, allParts is Query)
 export function getActiveSheetMetalId(context is Context, query is Query)
 {
     const partQuery = qOwnerBody(query);
-    if (evaluateQuery(context, partQuery) == [])
+    if (isQueryEmpty(context, partQuery))
     {
         return undefined;
     }
@@ -883,7 +882,7 @@ export function queryContainsActiveSheetMetal(context is Context, query is Query
  */
 export function queryContainsNonSheetMetal(context is Context, query is Query) returns boolean
 {
-    return evaluateQuery(context, qActiveSheetMetalFilter(query, ActiveSheetMetal.NO)) != [];
+    return !isQueryEmpty(context, qActiveSheetMetalFilter(query, ActiveSheetMetal.NO));
 }
 
 /**
@@ -1473,7 +1472,7 @@ function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
     var adjacentFaces = qAdjacent(edgeQ, AdjacencyType.EDGE, EntityType.FACE);
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V589_STABLE_BREAK_REMOVAL))
     {
-        if (size(evaluateQuery(context, adjacentFaces)) == 0)
+        if (isQueryEmpty(context, adjacentFaces))
         {
             return;
         }
@@ -1510,16 +1509,16 @@ function removeCornerBreaksAtEnds(context is Context, edgeQ is Query)
 }
 
 /**
-*  Wrapper around opExtendSheetBody used in sheet metal operations to handle remapping of cornerBreak data
-*/
-export function sheetMetalExtendSheetBodyCall(context is Context, id is Id, definition is map)
+ *  Wrapper around opExtendSheetBody used in sheet metal operations to handle remapping of cornerBreak data
+ */
+export const sheetMetalExtendSheetBodyCall = function(context is Context, id is Id, definition is map)
 {
     var vertexToTrackingAndAttribute = collectAttributesOfAdjacentVertices(context, definition.entities);
     var edgeToTrackingAndAssociation = removeAssociationsFromFreeEdges(context, definition.entities);
     opExtendSheetBody(context, id, definition);
     restoreAssociations(context, edgeToTrackingAndAssociation);
     adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
-}
+};
 
 /**
 *  Wrapper around opEdgeChange used in sheet metal operations to handle remapping of cornerBreak data
@@ -1906,7 +1905,6 @@ precondition
     args.errorParameters is array;
     args.legacyId == undefined || args.legacyId is Id;
 }
-
 {
     const trackedFaces = trackAllFaces(context, args.surfacesToAdd, args.originalSurfaces);
     const nOriginalBodies = size(evaluateQuery(context, args.originalSurfaces));
@@ -1934,7 +1932,7 @@ precondition
 
     // we could check for no-op info here but it won't catch cases where some surfaces could be joined and others couldnt
     // also check if boolean created an extra body trying to avoid non-manifold geometry
-    if (size(evaluateQuery(context, allSurfaces)) != nOriginalBodies || size(evaluateQuery(context, qCreatedBy(booleanId, EntityType.BODY))) > 0)
+    if (size(evaluateQuery(context, allSurfaces)) != nOriginalBodies || !isQueryEmpty(context, qCreatedBy(booleanId, EntityType.BODY)))
     {
         const useId = (args.legacyId == undefined) ? args.topLevelId : args.legacyId;
         setErrorEntities(context, useId, { "entities" : allSurfaces });
@@ -2020,7 +2018,7 @@ precondition
 {
     args.improveConsistency = (args.improveConsistency == undefined) ? true : args.improveConsistency;
 
-    if (evaluateQuery(context, args.edges) == [])
+    if (isQueryEmpty(context, args.edges))
     {
         throw regenError(args.errorForNoEdges, ["edges"]);
     }
@@ -2035,7 +2033,7 @@ precondition
     // resolves to anything.
     const addToErrorArraysIfNecessary = function(errorEdgeQ is Query, errorMessage is ErrorStringEnum)
                                         {
-                                            if (evaluateQuery(context, errorEdgeQ) != [])
+                                            if (!isQueryEmpty(context, errorEdgeQ))
                                             {
                                                 errorEdges[] = append(errorEdges[], errorEdgeQ);
                                                 errorMessages[] = append(errorMessages[], errorMessage);

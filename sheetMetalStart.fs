@@ -1,33 +1,33 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "1521.0");
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1540.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/error.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/geomOperations.fs", version : "1521.0");
-import(path : "onshape/std/manipulator.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/sketch.fs", version : "1521.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/error.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/geomOperations.fs", version : "1540.0");
+import(path : "onshape/std/manipulator.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/sketch.fs", version : "1540.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * Method of initializing sheet metal model
@@ -142,15 +142,18 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
                 annotation { "Name" : "End type" }
                 definition.endBound is SMExtrudeBoundingType;
 
-                if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
-                {
-                    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-                    definition.oppositeExtrudeDirection is boolean;
-                }
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.oppositeExtrudeDirection is boolean;
 
                 extrudeBoundParametersPredicate(definition);
 
-                if (definition.endBound != SMExtrudeBoundingType.SYMMETRIC)
+                if (definition.endBound == SMExtrudeBoundingType.BLIND)
+                {
+                    annotation { "Name" : "Symmetric" }
+                    definition.symmetric is boolean;
+                }
+
+                if (!(definition.endBound == SMExtrudeBoundingType.BLIND && definition.symmetric))
                 {
                     annotation { "Name" : "Second end position" }
                     definition.hasSecondDirection is boolean;
@@ -158,7 +161,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
                     if (definition.hasSecondDirection)
                     {
                         annotation { "Name" : "End type", "Column Name" : "Second end type" }
-                        definition.secondDirectionBound is SMExtrudeSecondDirectionBoundingType;
+                        definition.secondDirectionBound is SMExtrudeBoundingType;
 
                         annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
                                      "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
@@ -307,7 +310,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "hasOffset" : false,
       "hasSecondDirectionOffset" : false,
       "offsetOppositeDirection" : false,
-      "secondDirectionOffsetOppositeDirection" : false
+      "secondDirectionOffsetOppositeDirection" : false,
+      "symmetric" : false
     });
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
@@ -381,7 +385,7 @@ function convertExistingPart(context is Context, id is Id, definition is map)
         // Let's be careful to screen out unwanted faces here, i.e. anything that isn't planar
         var planarFaces = qGeometry(complimentFacesQ, GeometryType.PLANE);
         var badFaces = qSubtraction(complimentFacesQ, planarFaces);
-        if (size(evaluateQuery(context, badFaces)) > 0)
+        if (!isQueryEmpty(context, badFaces))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CONVERT_PLANE, ["partToConvert", "facesToExclude"], badFaces);
         }
@@ -483,7 +487,7 @@ function computeSurfaceOffset(context is Context, definition is map) returns Val
             for (var edge in edges)
             {
                 var adjacentWalls = qSubtraction(qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), definition.facesToExclude);
-                if (size(evaluateQuery(context, adjacentWalls)) == 0)
+                if (isQueryEmpty(context, adjacentWalls))
                 {
                     continue;
                 }
@@ -707,19 +711,12 @@ function extrudeSketchCurves(context is Context, id is Id, definition is map) re
         definition = transformExtrudeDefinitionForOpExtrude(context, id, sketchCurves, extrudeAxis.direction, definition);
 
         const extrudeId = id + "extrude";
-        try {
-            opExtrude(context, extrudeId, definition);
-            cleanupTemporaryBoundaryPlanes(context, id, definition);
-        }
-        catch (error)
-        {
-            processSubfeatureStatus(context, id, {
-                    "subfeatureId" : extrudeId,
+        callSubfeatureAndProcessStatus(id, opExtrude, context, extrudeId, definition, {
                     "propagateErrorDisplay" : true,
-                    "featureParameterMap" : {"entities" : "sketchCurves"}
-                    });
-            throw error;
-        }
+                    "featureParameterMap" : { "entities" : "sketchCurves" }
+                });
+        cleanupTemporaryBoundaryPlanes(context, id, definition);
+
         return qCreatedBy(extrudeId, EntityType.BODY);
     }
     return qNothing();
@@ -900,7 +897,7 @@ function throwOnUnsupportedFaces(context is Context, faceQ is Query, parameterId
         allowedQs = append(allowedQs, qGeometry(faceQ, geom));
     }
     const unsupportedQ = qSubtraction(faceQ, qUnion(allowedQs));
-    if (size(evaluateQuery(context, unsupportedQ)) > 0)
+    if (!isQueryEmpty(context, unsupportedQ))
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_INVALID_FACE, parameterIds, unsupportedQ);
     }
@@ -1094,16 +1091,16 @@ export function sheetMetalStartEditLogic(context is Context, id is Id, oldDefini
         const faces = qEntityFilter(definition.initEntities, EntityType.FACE);
         const edges = qModifiableEntityFilter(qEntityFilter(definition.initEntities, EntityType.EDGE));
         definition.process = SMProcessType.CONVERT;
-        if (size(evaluateQuery(context, bodies)) > 0)
+        if (!isQueryEmpty(context, bodies))
         {
             definition.partToConvert = bodies;
         }
-        else if (size(evaluateQuery(context, faces)) > 0)
+        else if (!isQueryEmpty(context, faces))
         {
             definition.regions = faces;
             definition.process = SMProcessType.THICKEN;
         }
-        else if (size(evaluateQuery(context, edges)) > 0)
+        else if (!isQueryEmpty(context, edges))
         {
             definition.sketchCurves = edges;
             definition.process = SMProcessType.EXTRUDE;

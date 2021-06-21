@@ -1,26 +1,26 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1521.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1521.0");
+export import(path : "onshape/std/manipulator.fs", version : "1540.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -234,8 +234,8 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
 function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
-    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
+    var hasSheetMetalQueries = !isQueryEmpty(context, separatedQueries.sheetMetalQueries);
+    var hasNonSheetMetalQueries = !isQueryEmpty(context, separatedQueries.nonSheetMetalQueries);
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {
@@ -257,10 +257,7 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
             "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
             "range" : definition.radius
         };
-        try(sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition));
-        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smFillet", "propagateErrorDisplay" : true });
-        if (featureHasError(context, id))
-            return;
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smFillet", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)
@@ -350,7 +347,7 @@ function findManipulationEntity(context is Context, definition is map) returns Q
     if (@size(resolvedEntities) > 0)
     {
         var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
-        if (@size(evaluateQuery(context, qEntityFilter(operativeEntity, EntityType.FACE))) != 0)
+        if (!isQueryEmpty(context, qEntityFilter(operativeEntity, EntityType.FACE)))
         {
             operativeEntity = evaluateQuery(context, qAdjacent(operativeEntity, AdjacencyType.EDGE, EntityType.EDGE))[0];
         }

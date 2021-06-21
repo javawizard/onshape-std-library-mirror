@@ -1,14 +1,14 @@
-FeatureScript 1521; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/manipulator.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+FeatureScript 1540; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/manipulator.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -470,7 +470,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     var edges = qEntityFilter(side, EntityType.EDGE);
     var edgeCount = size(evaluateQuery(context, edges));
 
-    if (size(evaluateQuery(context, points)) == 0 && edgeCount == 1)
+    if (isQueryEmpty(context, points) && edgeCount == 1)
     {
         // The user hasn't selected a vertex but if they selected an edge we may be able to work out what they want from the other side selections
         points = inferVertex(context, edges, otherSide);

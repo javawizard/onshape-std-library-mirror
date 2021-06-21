@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1521; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/context.fs", version : "1521.0");
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/units.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/featureList.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/context.fs", version : "1540.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/featureList.fs", version : "1540.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1965,6 +1965,25 @@ export function evaluateQuery(context is Context, query is Query) returns array
         out = append(out, { "queryType" : QueryType.TRANSIENT, "transientId" : transientId } as Query);
     }
     return out;
+}
+
+/**
+ * Returns `true` if the supplied queries evaluate to the same set of entities. This function is order-invariant, so if
+ * the two queries evaluate to the same entities, but in a different order, the function will still return `true`.
+ */
+export function areQueriesEquivalent(context is Context, first is Query, second is Query) returns boolean
+{
+    return isQueryEmpty(context, qSubtraction(first, second)) && isQueryEmpty(context, qSubtraction(second, first));
+}
+
+/**
+ * Returns `true` if `query` evaluates to nothing. Equivalent to `evaluateQuery(context, query) == []` or
+ * `size(evaluateQuery(context, query)) == 0`, but faster than either of those approaches if the query is not empty.
+ */
+export function isQueryEmpty(context is Context, query is Query) returns boolean
+{
+    // Use @evaluateQuery builtin to avoid overhead of packing transient ids into transient queries
+    return @evaluateQuery(context, { "query" : query }) == [];
 }
 
 //==================

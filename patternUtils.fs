@@ -1,22 +1,22 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "1521.0");
+export import(path: "onshape/std/patternCommon.fs", version : "1540.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "1521.0");
-export import(path : "onshape/std/containers.fs", version : "1521.0");
-export import(path : "onshape/std/evaluate.fs", version : "1521.0");
-export import(path : "onshape/std/feature.fs", version : "1521.0");
-export import(path : "onshape/std/featureList.fs", version : "1521.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+export import(path : "onshape/std/boolean.fs", version : "1540.0");
+export import(path : "onshape/std/containers.fs", version : "1540.0");
+export import(path : "onshape/std/evaluate.fs", version : "1540.0");
+export import(path : "onshape/std/feature.fs", version : "1540.0");
+export import(path : "onshape/std/featureList.fs", version : "1540.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -139,7 +139,7 @@ function checkPatternInput(context is Context, definition is map, isMirror is bo
         if (size(definition.instanceFunction) == 0)
             throw regenError(isMirror ? ErrorStringEnum.MIRROR_SELECT_FEATURES : ErrorStringEnum.PATTERN_SELECT_FEATURES, ["instanceFunction"]);
     }
-    else if (size(evaluateQuery(context, definition.entities)) == 0)
+    else if (isQueryEmpty(context, definition.entities))
     {
         if (isFacePattern(definition.patternType))
             throw regenError(isMirror ? ErrorStringEnum.MIRROR_SELECT_FACES : ErrorStringEnum.PATTERN_SELECT_FACES, ["faces"]);
@@ -158,13 +158,13 @@ function processPatternBooleansIfNeededPreV1215(context is Context, id is Id, de
         {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE))
             {
-                if (evaluateQuery(context, qModifiableSurface(qUnion([definition.seed, qCreatedBy(id)]))) != [])
+                if (!isQueryEmpty(context, qModifiableSurface(qUnion([definition.seed, qCreatedBy(id)]))))
                 {
                     definition.defaultSurfaceScope = definition.defaultScope;
                     definition.booleanSurfaceScope = definition.booleanScope;
                     joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
                     // Pattern may have only one instance.
-                    if (evaluateQuery(context, qBodyType(qEntityFilter(definition.seed, EntityType.BODY), BodyType.SOLID)) == [])
+                    if (isQueryEmpty(context, qBodyType(qEntityFilter(definition.seed, EntityType.BODY), BodyType.SOLID)))
                     {
                        return;
                     }
@@ -173,7 +173,7 @@ function processPatternBooleansIfNeededPreV1215(context is Context, id is Id, de
             else if (undefined != definition.surfaceJoinMatches && size(definition.surfaceJoinMatches) > 0)
             {
                 joinSurfaceBodies(context, id, definition.surfaceJoinMatches, false, reconstructOp);
-                if (size(evaluateQuery(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID))) == 0)
+                if (isQueryEmpty(context, qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SOLID)))
                 {
                     return;
                 }
@@ -203,7 +203,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
         if (definition.operationType == NewBodyOperationType.REMOVE || definition.operationType == NewBodyOperationType.INTERSECT)
         {
             const qSurfaces = qModifiableSurface(qCreatedBy(id)); // No seed in mirror; BEL-131318
-            if (evaluateQuery(context, qSurfaces) != [])
+            if (!isQueryEmpty(context, qSurfaces))
             {
                 throw regenError(ErrorStringEnum.SURFACES_NOT_SUPPORTED_BY_PATTERN_REMOVE_AND_INTERSECT, qSurfaces);
             }
@@ -218,7 +218,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
         if (definition.operationType == NewBodyOperationType.ADD)
         {
             const patternSurfaces = qModifiableSurface(qUnion([decomposedSeed, qCreatedBy(id)]));
-            if (evaluateQuery(context, patternSurfaces) != [])
+            if (!isQueryEmpty(context, patternSurfaces))
             {
                 // preserve original definition
                 var definitionSurface = mergeMaps(definition, { seed : qModifiableSurface(decomposedSeed) });
@@ -238,7 +238,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
         // In case of a tie solid wins. Error graphics will show potentially both
         const seedSolids = qBodyType(qEntityFilter(decomposedSeed, EntityType.BODY), BodyType.SOLID);
         const newSolids = qBodyType(qEntityFilter(qCreatedBy(id), EntityType.BODY), BodyType.SOLID);
-        if (evaluateQuery(context, qUnion([seedSolids, newSolids])) != [])  // mirror has no seed
+        if (!isQueryEmpty(context, qUnion([seedSolids, newSolids])))  // mirror has no seed
         {
             const solidBooleanScope = definition.booleanScope == undefined ? qNothing() :
                         qBodyType(qEntityFilter(definition.booleanScope, EntityType.BODY), BodyType.SOLID);
@@ -309,7 +309,7 @@ export function applyPattern(context is Context, id is Id, definition is map, re
         }
         else
         {
-            if (evaluateQuery(context, qCreatedBy(definition.instanceFunction)) == [])
+            if (isQueryEmpty(context, qCreatedBy(definition.instanceFunction)))
             {
                 throw regenError(ErrorStringEnum.PATTERN_NO_GEOM_FROM_FEATURES, ["instanceFunction"]);
             }
@@ -367,7 +367,7 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     //handle parts to pattern
     const separatedSolids = separateSheetMetalQueries(context, allSolids);
     var partsToPattern = qUnion([separatedSolids.sheetMetalQueries, allWiresPointsAndComposites, qUnion(sketchSheets)]);
-    if (size(evaluateQuery(context, partsToPattern)) > 0)
+    if (!isQueryEmpty(context, partsToPattern))
     {
         definition.entities = partsToPattern;
         definition.patternType = PatternType.PART;
@@ -381,7 +381,7 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     //skip faces from sheets, sheetMetalQueries, and constituents of composites already handled
     const allFacesToSkip = qOwnedByBody(qUnion([qUnion(originalSketchSheets), separatedSolids.sheetMetalQueries, allBodiesInComposites]), EntityType.FACE);
     const facesToPattern = qSubtraction(allCreatedFaces, allFacesToSkip);
-    if (size(evaluateQuery(context, facesToPattern)) > 0)
+    if (!isQueryEmpty(context, facesToPattern))
     {
         definition.entities = facesToPattern;
         //these two options are only used in sheetMetalGeometryPattern
@@ -393,7 +393,7 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     }
 
     // An error occurs if we're expecting to create something (instance count > 1) but get nothing.
-    if (expectedToCreateGeometry(context, definition) && evaluateQuery(context, qCreatedBy(id)) == [])
+    if (expectedToCreateGeometry(context, definition) && isQueryEmpty(context, qCreatedBy(id)))
     {
         throw regenError(ErrorStringEnum.PATTERN_FEATURE_FAILED, ["instanceFunction"]);
     }
@@ -416,14 +416,14 @@ function getSketchSheetBodiesToPattern(context is Context, id is Id, sketchId is
     var result = { "bodiesToPattern" : [], "isUpdated" : false, "originalSketchSheets" : []};
 
     var allSketchSheets = qCreatedBy(sketchId + "imprint", EntityType.BODY);
-    if (size(evaluateQuery(context, allSketchSheets)) == 0)
+    if (isQueryEmpty(context, allSketchSheets))
     {
         return result;
     }
 
     const allFacesCreated = qCreatedBy(sketchId + "imprint", EntityType.FACE);
     const facesToBeDeleted = qSubtraction(allFacesCreated, qSketchRegion(sketchId));
-    if (size(evaluateQuery(context, facesToBeDeleted)) == 0)
+    if (isQueryEmpty(context, facesToBeDeleted))
     {
         return result;
     }
@@ -444,7 +444,7 @@ function getSketchSheetBodiesToPattern(context is Context, id is Id, sketchId is
     });
 
     const facesToDelete =  qIntersection([qCreatedBy(id  + "copiedSheets", EntityType.FACE), trackedFaces]);
-    if (size(evaluateQuery(context, facesToDelete)) > 0)
+    if (!isQueryEmpty(context, facesToDelete))
     {
         opDeleteFace(context, id + "delface", {
                 "deleteFaces" : facesToDelete,
@@ -475,8 +475,8 @@ function geometryPattern(context is Context, id is Id, definition is map, remain
 function sheetMetalAwareGeometryPattern(context is Context, id is Id, definition is map, remainingTransform is Transform, allowPartialResults is boolean)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasNonSheetMetalQueries = size(evaluateQuery(context, separatedQueries.nonSheetMetalQueries)) > 0;
-    var hasSheetMetalQueries = size(evaluateQuery(context, separatedQueries.sheetMetalQueries)) > 0;
+    var hasNonSheetMetalQueries = !isQueryEmpty(context, separatedQueries.nonSheetMetalQueries);
+    var hasSheetMetalQueries = !isQueryEmpty(context, separatedQueries.sheetMetalQueries);
 
     if (hasNonSheetMetalQueries)
     {

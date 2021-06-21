@@ -1,34 +1,34 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/boolean.fs", version : "1521.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1521.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1521.0");
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/revolve.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/sketch.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/boolean.fs", version : "1540.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1540.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1540.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/revolve.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/sketch.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1521.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1521.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1540.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1540.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -63,7 +63,7 @@ const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid ide
  *                --> createAttributesFromTracking, assignSheetMetalHoleAttributes
  *
  * // holeAtLocation creates hole body at location (and cuts if one-cut-at-a-time is on)
- * holeAtLocation --> computeCSys                                  // computeCSys figures out the coordinate system for the hole
+ * holeAtLocation --> computeCSysDeprecated     // computeCSysDeprecated figures out the coordinate system for the hole
  *                --> calculateStartPoint
  *                --> cylinderCastBiDirectional
  *                --> cutHole
@@ -489,7 +489,22 @@ function holeOp(context is Context, topLevelId is Id, locations is array, defini
     return result;
 }
 
-function computeCSys(context is Context, location is Query, definition is map) returns CoordSystem
+function computeAxes(context is Context, locations is array, oppositeDirection is boolean, xform is Transform) returns array
+{
+    const sign = oppositeDirection ? 1 : -1;
+    return mapArray(locations, function(location)
+        {
+            // This handles both sketch points and mate connectors
+            var axis = evAxis(context, {
+                    "axis" : location,
+                    "allowSketchPoints" : true
+                });
+            axis.direction *= sign;
+            return (xform * axis);
+        });
+}
+
+function computeCSysDeprecated(context is Context, location is Query, definition is map) returns CoordSystem
 {
     const sign = definition.oppositeDirection ? 1 : -1;
 
@@ -544,7 +559,7 @@ function computeCSys(context is Context, location is Query, definition is map) r
 
 function holeAtLocation(context is Context, id is Id, holeNumber is number, location is Query, definition is map, result is map) returns map
 {
-    var startPointCSys = computeCSys(context, location, definition);
+    var startPointCSys = computeCSysDeprecated(context, location, definition);
 
     const holeIdExtension = buildHoleIdExtension(holeNumber);
     const useUnstableComponent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V960_HOLE_IDENTITY);
@@ -1267,7 +1282,7 @@ precondition
 function scopeSize(context is Context, definition is map) returns map
 {
     const scopeBox = evBox3d(context, { "topology" : qUnion([definition.scope, definition.locations]) });
-    return norm(scopeBox.maxCorner - scopeBox.minCorner);
+    return box3dDiagonalLength(scopeBox);
 }
 
 function createTrackingObject(trackId is string, holeTrackType is HoleSectionFaceType) returns map
@@ -1779,12 +1794,9 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
 
     definition = adjustThreadDepth(oldDefinition, definition);
 
-    if (isCreating && (!specifiedParameters.scope || !specifiedParameters.oppositeDirection))
+    if (isCreating)
     {
-        try
-        {
-            definition = holeScopeFlipHeuristicsCall(context, id, definition, specifiedParameters, hiddenBodies);
-        }
+        definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
     }
     return definition;
 }
@@ -2024,196 +2036,269 @@ function shouldPropertyValueInvalidateStandard(table is map, propertyName is str
 /**
  * @internal
  */
-export function holeScopeFlipHeuristicsCall(context is Context, id is Id, holeDefinition is map, specifiedParameters is map, hiddenBodies is Query) returns map
+export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is map, definition is map, specifiedParameters is map, hiddenBodies is Query)
 {
-    // This takes about 70 ms per location for a 4 body model. It will probably take longer as the number of bodies goes up.
-    // It would be good if we could store and retrieve clash results from previous calls to avoid duplicate computations.
-    // All the work is done for this except storing/retrieving the result. There is no way to do that now.
-    var scopeIsSet = specifiedParameters.scope;
-    var oppositeDirectionSet = specifiedParameters.oppositeDirection;
-
-    var numberOfLocations = size(evaluateQuery(context, holeDefinition.locations));
-    if (numberOfLocations == 0 || (scopeIsSet && oppositeDirectionSet))
+    if (oldDefinition.locations == undefined)
     {
-        // If scope is not set and we have no locations,
-        // reset scope to empty.
-        if (!scopeIsSet && numberOfLocations == 0)
-            holeDefinition.scope = qUnion([]);
-
-        return holeDefinition;
+        // If this editing logic is running as the feature is first opening, there may be some selections in
+        // definition.locations due to a preselection, but the oldDefinition is completely blank.  Massage the
+        // oldDefinition a bit to make it easier to work with.
+        oldDefinition.locations = qNothing();
     }
 
-    var solidBodiesQuery is Query = qNothing();
-    if (scopeIsSet)
+    const locationsHaveChanged = (definition.locations != oldDefinition.locations);
+
+    // Raycast inputs represents the set of parameters required for deciding which targets should be included in the
+    // scope, and which direction the flip should be set to.  If the raycast inputs change, we must recalculate the
+    // scope and flip from scratch, because the existing scope and flip may be entirely wrong. Some examples are:
+    // changing the depth of a blind hole may add or remove some targets from the scope, switching from blind to
+    // through may add further targets, flipping the oppositeDirection flipper could change the scope to an entirely
+    // different set of bodies, or changing the scope manually could change the correct choice of oppositeDirection.
+    const raycastInputs = extractRaycastInputs(definition);
+    const oldRaycastInputs = extractRaycastInputs(oldDefinition);
+    const raycastInputsHaveChanged = !raycastInputs.isEquivalent(context, raycastInputs, oldRaycastInputs);
+
+    if (!locationsHaveChanged && !raycastInputsHaveChanged)
     {
-        solidBodiesQuery = holeDefinition.scope;
+        return definition;
+    }
+
+    // If the change that is being made is to incrementally add locations, just do a basic calculation to add necessary
+    // targets to the scope.  Otherwise, fully recalculate the scope and flip.
+    const allLocationsAreNew = (isQueryEmpty(context, qIntersection([oldDefinition.locations, definition.locations])));
+    const comprehensive = raycastInputsHaveChanged || allLocationsAreNew;
+
+    const canEditScope = !specifiedParameters.scope;
+
+    // If editing incrementally, we will only be raycasting for the new locations, so we will not have enough
+    // information to make a decision about the flip. Only attempt to edit the flip when running comprehensively.
+    const canEditFlip = (!specifiedParameters.oppositeDirection && comprehensive);
+
+    const noLocations = (isQueryEmpty(context, definition.locations));
+    if (noLocations || (!canEditScope && !canEditFlip))
+    {
+        // If scope is not set and we have no locations, reset scope to empty.
+        if (canEditScope && noLocations)
+        {
+            definition.scope = qNothing();
+        }
+
+        return definition;
+    }
+
+    const newLocations = comprehensive ? definition.locations : qSubtraction(definition.locations, oldDefinition.locations);
+    const newAxes = computeAxes(context, evaluateQuery(context, newLocations), definition.oppositeDirection, identityTransform());
+
+    // -- CAUTION: `definition` should not be passed into `raycastForScopeFlipResults`. Creating the barrier of
+    // -- `raycastInputs` allows for an abstraction where any `definition` inputs needed for ray casting are extracted
+    // -- in `extractRaycastInputs`, which exposes an `isEquivalent` function that allows us to see whether any of the
+    // -- raycast inputs are changing (and do a comprehensive heuristic if so). If any additional `definition`
+    // -- parameters are needed for `raycastForScopeFlipResults` they should be extracted in `extractRaycastInputs`
+    // -- and added to `isEquivalent`.
+    const scopeFlipResults = raycastForScopeFlipResults(context, raycastInputs, newAxes,
+            comprehensive, canEditScope, canEditFlip, hiddenBodies);
+    definition.scope = scopeFlipResults.scope;
+    definition.oppositeDirection = scopeFlipResults.oppositeDirection;
+    return definition;
+}
+
+function extractRaycastInputs(definition is map)
+{
+    // THROUGH and BLIND_IN_LAST can each go infinitely far.  BLIND has a limit to how far it can go.
+    const hasDepthLimit = (definition.endStyle == HoleEndStyle.BLIND);
+    return {
+            "oppositeDirection" : definition.oppositeDirection,
+            "hasDepthLimit" : hasDepthLimit,
+            "depthLimit" : (hasDepthLimit ? definition.holeDepth : undefined),
+            "scope" : definition.scope,
+            // `isEquivalent` is used to tell whether we need to do a comprehensive heuristic over all of the
+            // locations, or an incremental heuristic over just the new locations. If adding additional parameters to
+            // this map, the appropriate comparison should be added to `isEquivalent`.
+            "isEquivalent" :
+                function(context, self, other)
+                {
+                    return self.oppositeDirection == other.oppositeDirection
+                        && self.hasDepthLimit == other.hasDepthLimit
+                        && (!self.hasDepthLimit || tolerantEquals(self.depthLimit, other.depthLimit))
+                        && areQueriesEquivalent(context, self.scope, other.scope);
+                }
+        };
+}
+
+function raycastForScopeFlipResults(context is Context, raycastInputs is map, axes is array,
+    comprehensive is boolean, canEditScope is boolean, canEditFlip is boolean, hiddenBodies is Query)
+{
+    // If we are just adding locations incrementally, we should just be adding to the existing scope.  If running comprehensively,
+    // we should be rebuilding the scope from empty.
+    const baseScope = comprehensive ? qNothing() : raycastInputs.scope;
+
+    var possibleTargets;
+    if (canEditScope)
+    {
+        possibleTargets = qAllModifiableSolidBodies()->qSubtraction(hiddenBodies)->qSubtraction(baseScope);
     }
     else
     {
-        solidBodiesQuery = qAllModifiableSolidBodies();
-        solidBodiesQuery = qSubtraction(solidBodiesQuery, hiddenBodies);
+        // We can't change the scope, but we can change the flip. Check all existing targets to discern correct flip.
+        possibleTargets = raycastInputs.scope;
     }
 
-    var bbox = evBox3d(context, {
-            "topology" : qUnion([solidBodiesQuery, holeDefinition.locations])
-        });
-    var scopeSize = 1.1 * norm(bbox.maxCorner - bbox.minCorner);
-
-    var minSize = holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST ? 2 : 1;
-
-    var evaluatedDefinition = holeDefinition;
-    var table = getStandardTable(holeDefinition);
-    if (table != {})
+    // Use a set to avoid calling `evaluateQuery` inside the per-axis loop. If there are a large number of possible targets,
+    // the unpacking of transient ids into transient queries after calling @evaluateQuery can be a bottleneck.
+    var remainingPossibleTargetSet = {};
+    for (var possibleTarget in evaluateQuery(context, possibleTargets))
     {
-        for (var entry in table)
-        {
-            evaluatedDefinition[entry.key] = lookupTableGetValue(holeDefinition[entry.key]);
-        }
-    }
-    const locations = evaluateQuery(context, holeDefinition.locations);
-    var numOpposite = 0;
-    var numSame = 0;
-    var numAmbiguous = 0;
-    var scopeSetSame = {};
-    var scopeSetOpposite = {};
-    var holeNumber = -1;
-    var newCollisions = {};
-    var oldCollisions = {}; // TODO retrieve old collisions from local storage.
-    for (var location in locations)
-    {
-        holeNumber += 1;
-        if (oldCollisions[location] != undefined)
-        {
-            newCollisions[location] = oldCollisions[location];
-            continue;
-        }
-        var doSame = !oppositeDirectionSet || !holeDefinition.oppositeDirection;
-        var doOpposite = !oppositeDirectionSet || holeDefinition.oppositeDirection;
-        var resultSame = { "queries" : [], "scopeSet" : {} };
-        var resultOpposite = { "queries" : [], "scopeSet" : {} };
-
-        if (doSame)
-        {
-            resultSame = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, false, evaluatedDefinition);
-        }
-        if (doOpposite)
-        {
-            resultOpposite = findCollisions(context, id, holeNumber, solidBodiesQuery, location, scopeSize, true, evaluatedDefinition);
-        }
-        newCollisions[location] = {
-                "resultSame" : resultSame,
-                "resultOpposite" : resultOpposite
-            };
-    }
-    //    TODO store newCollisions in local storage
-    for (var location in locations)
-    {
-        var collisionResults = newCollisions[location];
-        const hasSame = size(collisionResults.resultSame.queries) >= minSize;
-        const hasOpposite = size(collisionResults.resultOpposite.queries) >= minSize;
-        if (hasSame && !hasOpposite)
-        {
-            numSame += 1;
-            scopeSetSame = mergeMaps(scopeSetSame, collisionResults.resultSame.scopeSet);
-        }
-        else if (!hasSame && hasOpposite)
-        {
-            numOpposite += 1;
-            scopeSetOpposite = mergeMaps(scopeSetOpposite, collisionResults.resultOpposite.scopeSet);
-        }
-        else if (hasSame && hasOpposite)
-        {
-            numAmbiguous += 1;
-        }
+        remainingPossibleTargetSet[possibleTarget] = true;
     }
 
-    // This collapses the list to only the unique queries.
-    if (!scopeIsSet)
+    var targetToTargetLocation = {};
+    for (var axis in axes)
     {
-        if (numAmbiguous != 0 || (numSame != 0 && numOpposite != 0) || (numSame == 0 && numOpposite == 0))
+        if (remainingPossibleTargetSet == {})
         {
-            holeDefinition.scope = qUnion([]);
+            // All possible targets have been consumed
+            break;
         }
-        else if (numSame != 0 || numOpposite != 0)
+        const targetToTargetLocationForAxis = raycastForViableTargets(context, raycastInputs, axis, qUnion(keys(remainingPossibleTargetSet)));
+        for (var targetAndTargetLocation in targetToTargetLocationForAxis)
         {
-            var scopeSet = (numSame > numOpposite) ? scopeSetSame : scopeSetOpposite;
-            var queries = [];
-            for (var entry in scopeSet)
+            const target = targetAndTargetLocation.key;
+            if (targetToTargetLocation[target] == undefined)
             {
-                queries = append(queries, entry.key);
+                targetToTargetLocation[target] = targetAndTargetLocation.value;
             }
-            holeDefinition.scope = qUnion(queries);
-        }
-    }
-    if (!oppositeDirectionSet)
-    {
-        holeDefinition.oppositeDirection = numOpposite > numSame;
-    }
-    return holeDefinition;
-}
+            else if (targetToTargetLocation[target] != targetAndTargetLocation.value)
+            {
+                targetToTargetLocation[target] = TargetLocationRelativeToAxisPoint.AMBIGUOUS;
+            }
 
-function processCollisions(context is Context, solidBodiesQuery is Query, collisions is array) returns map
-{
-    var scopeSet = {};
-    for (var collision in collisions)
-    {
-        if (collision["type"] == ClashType.INTERFERE)
-        {
-            scopeSet[collision.targetBody] = 1;
+            // Once the target is found to be both IN_FRONT and BEHIND, we can optimize by taking it out of the raycast
+            // pool, since there is no more information we can get for that target.
+            var shouldSkipTarget = targetToTargetLocation[target] == TargetLocationRelativeToAxisPoint.AMBIGUOUS;
+            if (!canEditFlip)
+            {
+                // If we can't edit the flip, then we will be taking all IN_FRONT and AMBIGUOUS targets into the scope;
+                // there is no point continuing to cast against this target just to try to upgrade it from IN_FRONT to
+                // AMBIGUOUS, since both will have the same effect later in the function.
+                shouldSkipTarget = shouldSkipTarget || (targetToTargetLocation[target] == TargetLocationRelativeToAxisPoint.IN_FRONT);
+            }
+
+            if (shouldSkipTarget)
+            {
+                remainingPossibleTargetSet[target] = undefined;
+            }
         }
     }
 
-    var queries = [];
-    for (var entry in scopeSet)
-    {
-        if (entry.key is Query)
-        {
-            queries = append(queries, entry.key);
-        }
-    }
-    var result = {
-        "queries" : evaluateQuery(context, qUnion(queries)),
-        "scopeSet" : scopeSet
+    var scopeAndFlip = {
+        "scope" : raycastInputs.scope,
+        "oppositeDirection" : raycastInputs.oppositeDirection
     };
-    return result;
+
+    var targetLocationToSkip = TargetLocationRelativeToAxisPoint.BEHIND;
+    if (canEditFlip)
+    {
+        var counts = {
+            TargetLocationRelativeToAxisPoint.IN_FRONT : 0,
+            TargetLocationRelativeToAxisPoint.BEHIND : 0,
+            TargetLocationRelativeToAxisPoint.AMBIGUOUS : 0
+        };
+        for (var targetAndTargetLocation in targetToTargetLocation)
+        {
+            counts[targetAndTargetLocation.value] += 1;
+        }
+
+        if (counts[TargetLocationRelativeToAxisPoint.BEHIND] > counts[TargetLocationRelativeToAxisPoint.IN_FRONT])
+        {
+            scopeAndFlip.oppositeDirection = !scopeAndFlip.oppositeDirection;
+            targetLocationToSkip = TargetLocationRelativeToAxisPoint.IN_FRONT;
+        }
+    }
+
+    if (canEditScope)
+    {
+        var toAdd = [];
+        for (var targetAndTargetLocation in targetToTargetLocation)
+        {
+            if (targetAndTargetLocation.value != targetLocationToSkip)
+            {
+                toAdd = append(toAdd, targetAndTargetLocation.key);
+            }
+        }
+        scopeAndFlip.scope = qUnion([baseScope, qUnion(toAdd)]);
+    }
+
+    return scopeAndFlip;
 }
 
-function findCollisions(context is Context, id is Id, holeNumber is number, solidBodiesQuery is Query, location is Query, scopeSize is ValueWithUnits, oppositeDirection is boolean, definition is map)
+enum TargetLocationRelativeToAxisPoint
 {
-    var tempDefinition = mergeMaps(definition, {
-            "heuristics" : true,
-            "startFromSketch" : true,
-            "style" : HoleStyle.SIMPLE,
-            "tipAngle" : 118 * degree,
-            "useTipDepth" : false,
-            "cSinkUseDepth" : false,
-            "cSinkDepth" : 0 * meter,
-            "generateErrorBodies" : false,
-            "oppositeDirection" : oppositeDirection
-        });
+    IN_FRONT,
+    BEHIND,
+    AMBIGUOUS
+}
 
-    if (tempDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+predicate intersectionIsTooFar(raycastInputs is map, intersectionDistance is ValueWithUnits)
+{
+    raycastInputs.hasDepthLimit; // If not, the intersection cannot be too far
+    intersectionDistance > (raycastInputs.depthLimit + (TOLERANCE.zeroLength * meter));
+}
+
+
+// Return a map from target query to TargetLocationRelativeToAxisPoint for all targets that are intersected
+// by a raycast, and are close enough to intersect (if endStyle is BLIND)
+function raycastForViableTargets(context is Context, raycastInputs is map, axis is Line, possibleTargets is Query)
+{
+    const raycastResults = evRaycast(context, {
+                "ray" : axis,
+                "entities" : possibleTargets,
+                "closest" : false,
+                "includeIntersectionsBehind" : true
+            });
+    var targetInfo = {};
+    for (var raycastResult in raycastResults)
     {
-        tempDefinition.endStyle = HoleEndStyle.THROUGH;
-    }
-    if (tempDefinition.endStyle == HoleEndStyle.THROUGH)
-    {
-        tempDefinition.scopeSize = scopeSize;
+        // Often hole locations are sketched right on the face they are going to cut. When this happens, we will get
+        // a result with a distance of 0, and another result with either a positive or negative distance (where the ray
+        // exits the part). Process `isCloseEnough` and `targetDirection` separately, because the former result will
+        // tell us that the body is close enough (but not be able give us any info about whether the body is in front
+        // of or behind the axis point), and the latter result will tell us the TargetDirection (even if the latter is
+        // technically "too far" for the blind to reach)
+
+        const body = evaluateQuery(context, qOwnerBody(raycastResult.entity))[0];
+        const isCloseEnough = !intersectionIsTooFar(raycastInputs, raycastResult.distance);
+        if (targetInfo[body] == undefined)
+        {
+            targetInfo[body] = { "isCloseEnough" : isCloseEnough };
+        }
+        else
+        {
+            targetInfo[body].isCloseEnough = (targetInfo[body].isCloseEnough || isCloseEnough);
+        }
+
+        if (abs(raycastResult.distance) > (TOLERANCE.zeroLength * meter))
+        {
+            const targetDirection = raycastResult.distance > 0 ? TargetLocationRelativeToAxisPoint.IN_FRONT : TargetLocationRelativeToAxisPoint.BEHIND;
+            if (targetInfo[body].targetDirection == undefined)
+            {
+                targetInfo[body].targetDirection = targetDirection;
+            }
+            else if (targetInfo[body].targetDirection != targetDirection)
+            {
+                targetInfo[body].targetDirection = TargetLocationRelativeToAxisPoint.AMBIGUOUS;
+            }
+        }
     }
 
-    var heuristicsId = id + (oppositeDirection ? "heuristics_opposite" : "heuristics_same");
-    var collisions = [];
-    startFeature(context, heuristicsId, tempDefinition);
-    try
+    var returnValue = {};
+    for (var targetAndInfo in targetInfo)
     {
-        var result = { "numSuccess" : 0 };
-        result = holeAtLocation(context, heuristicsId, holeNumber, location, tempDefinition, result);
-        var toolQuery = qCreatedBy(heuristicsId, EntityType.BODY);
-        collisions = evCollision(context, { "tools" : toolQuery, "targets" : qSubtraction(solidBodiesQuery, toolQuery) });
+        if (targetAndInfo.value.isCloseEnough)
+        {
+            returnValue[targetAndInfo.key] = targetAndInfo.value.targetDirection;
+        }
     }
-    abortFeature(context, heuristicsId);
-
-    return processCollisions(context, solidBodiesQuery, collisions);
+    return returnValue;
 }
 
 /**

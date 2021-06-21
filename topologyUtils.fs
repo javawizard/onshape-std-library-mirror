@@ -1,15 +1,15 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/context.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/query.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/context.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/query.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -51,7 +51,7 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
     const bodiesQ = qOwnerBody(query);
     const wireBodiesQ = qBodyType(bodiesQ, BodyType.WIRE);
     const nonWireBodies = qSubtraction(bodiesQ, wireBodiesQ);
-    var hasNonWireBodies = @size(evaluateQuery(context, nonWireBodies)) > 0;
+    var hasNonWireBodies = !isQueryEmpty(context, nonWireBodies);
     var handleNonWireEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V588_MERGE_IN_FILLET_FIX);
     if (!handleNonWireEdges)
     {
@@ -62,7 +62,7 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
             return query;
         }
     }
-    else if (@size(evaluateQuery(context, wireBodiesQ)) == 0) //there are no wire bodies, return query unchanged
+    else if (isQueryEmpty(context, wireBodiesQ)) //there are no wire bodies, return query unchanged
     {
         return query;
     }
@@ -80,7 +80,7 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
         {
             //if edge is not from a wire body, dont modify it
             var ownerBody = qBodyType(qOwnerBody(edges[index]), BodyType.WIRE);
-            var isOwnerBodyWire = @size(evaluateQuery(context, ownerBody)) > 0;
+            var isOwnerBodyWire = !isQueryEmpty(context, ownerBody);
             if (!isOwnerBodyWire)
                 continue;
         }
@@ -90,7 +90,7 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
                     "arcLengthParameterization" : false
                 }).origin;
         const sourceQ = qLaminarDependency(edges[index]);
-        if (size(evaluateQuery(context, qContainsPoint(sourceQ, edgePoint))) > 0)
+        if (!isQueryEmpty(context, qContainsPoint(sourceQ, edgePoint)))
         {
             edges[index] = sourceQ;
         }
@@ -134,11 +134,11 @@ export function connectedComponents(context is Context, entities is Query, adjac
 precondition
 {
     annotation { "Message" : "Bodies do not share edges or vertices with any other entities" }
-    evaluateQuery(context, qEntityFilter(entities, EntityType.BODY)) == [];
+    isQueryEmpty(context, qEntityFilter(entities, EntityType.BODY));
 
     // Vertices are not edge-adjacent to any other entities, so they would always fall into their own group. Instead, disallow this.
     annotation { "Message" : "Entities cannot have AdjacencyType.EDGE with vertices, use AdjacencyType.VERTEX instead" }
-    adjacencyType != AdjacencyType.EDGE || evaluateQuery(context, qEntityFilter(entities, EntityType.VERTEX)) == [];
+    adjacencyType != AdjacencyType.EDGE || isQueryEmpty(context, qEntityFilter(entities, EntityType.VERTEX));
 }
 {
     var groups = [];

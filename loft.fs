@@ -1,29 +1,29 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/tool.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/tool.fs", version : "1540.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1521.0");
+export import(path : "onshape/std/manipulator.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1521.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/units.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/boolean.fs", version : "1540.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -273,11 +273,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addSections)
         {
             var spineNoConstructionQuery = qConstructionFilter(definition.spine, ConstructionObject.NO);
-            if (evaluateQuery(context, spineNoConstructionQuery) == [] && evaluateQuery(context, definition.spine) != [])
+            if (isQueryEmpty(context, spineNoConstructionQuery) && !isQueryEmpty(context, definition.spine))
             {
                 throw regenError(ErrorStringEnum.SWEEP_PATH_NO_CONSTRUCTION, ["spine"]);
             }
-            if (definition.addGuides && evaluateQuery(context, definition.spine) != [] && size(definition.guideSubqueries) > 3 )
+            if (definition.addGuides && !isQueryEmpty(context, definition.spine) && size(definition.guideSubqueries) > 3 )
             {
                 throw regenError(ErrorStringEnum.LOFT_SPINE_TOO_MANY_GUIDES, ["spine", "guides"]);
             }
@@ -312,18 +312,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.connections[ii].connectionEdges =
                 evaluateQuery(context, definition.connections[ii].connectionEdgeQueries);
         }
-        try (opLoft(context, id, definition));
         // it is not a subfeature, but need to remap parameter ids
-        processSubfeatureStatus(context, id, {'subfeatureId' : id,
-                                              'featureParameterMappingFunction' :
-                                                function (arrayParameterId)
-                                                {
-                                                    return mapOpLoftArrayParameters(arrayParameterId, definition.bodyType == ToolBodyType.SOLID);
-                                                }});
-        if (getFeatureError(context, id) != undefined)
-        {
-            return;
-        }
+        callSubfeatureAndProcessStatus(id, opLoft, context, id, definition, {
+                    "featureParameterMappingFunction" :
+                        function(arrayParameterId)
+                        {
+                            return mapOpLoftArrayParameters(arrayParameterId, definition.bodyType == ToolBodyType.SOLID);
+                        }
+                });
+
         transformResultIfNecessary(context, id, remainingTransform);
 
         const reconstructOp = function(id) {
@@ -389,7 +386,7 @@ export function createProfileConditions(context is Context, endCondition is Loft
              endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
     {
         const adjacentFaceQuery = qAdjacent(profileQuery, AdjacencyType.EDGE, EntityType.FACE);
-        if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
+        if (isQueryEmpty(context, adjacentFaceQuery))
         {
             throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_FACE_FOR_START_CLAMP : ErrorStringEnum.LOFT_NO_FACE_FOR_END_CLAMP);
         }
@@ -617,7 +614,7 @@ function edgeMatchesChain(context is Context, edge is Query, edges is array) ret
                 });
     for (var line in edgeLines)
     {
-        if (evaluateQuery(context, qContainsPoint(testSetQ, line.origin)) == [])
+        if (isQueryEmpty(context, qContainsPoint(testSetQ, line.origin)))
         {
             return false;
         }
@@ -629,7 +626,7 @@ function edgeMatchesChain(context is Context, edge is Query, edges is array) ret
 function replaceSketchFaceWithWireEdges(context is Context, query is Query) returns Query
 {
     var sketchFaces = qSketchFilter(qEntityFilter(query, EntityType.FACE), SketchObject.YES);
-    if (size(evaluateQuery(context, sketchFaces)) == 0)
+    if (isQueryEmpty(context, sketchFaces))
     {
         return query;
     }
@@ -741,7 +738,7 @@ function collectGuideDerivatives(context is Context, definition is map) returns 
         if (parameter.guideDerivativeType != LoftGuideDerivativeType.DEFAULT)
         {
             const adjacentFaceQuery = qAdjacent(parameter.guideEntities, AdjacencyType.EDGE, EntityType.FACE);
-            if (@size(evaluateQuery(context, adjacentFaceQuery)) == 0)
+            if (isQueryEmpty(context, adjacentFaceQuery))
             {
                 throw regenError(ErrorStringEnum.LOFT_NO_FACE_FOR_GUIDE_CLAMP);
             }
@@ -814,7 +811,7 @@ function copyFaceOrVertexSelections(context is Context, profiles is array, array
     {
         const profileQ = profileFrom[arrayParameterMappingFrom.profileSubqueries[1]];
         const faceOrVertexQ = qUnion([qEntityFilter(profileQ, EntityType.FACE), qEntityFilter(profileQ, EntityType.VERTEX)]);
-        if (!(profileQ is Query) || evaluateQuery(context, faceOrVertexQ) == [])
+        if (!(profileQ is Query) || isQueryEmpty(context, faceOrVertexQ))
             continue;
         newProfiles = append(newProfiles, {arrayParameterMappingTo.profileSubqueries[1] : profileQ});
     }

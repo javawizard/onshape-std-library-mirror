@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -8,21 +8,21 @@ FeatureScript 1521; /* Automatically generated version */
  * Finds the projection of a cylinder against a part.
  */
 
-import(path : "onshape/std/boolean.fs", version : "1521.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/extrude.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/sketch.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/units.fs", version : "1521.0");
+import(path : "onshape/std/boolean.fs", version : "1540.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/extrude.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/sketch.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
 
 /**
  * @internal
@@ -404,7 +404,7 @@ function getBodyHitDistances(context is Context, id is Id, cSys is CoordSystem, 
         shotNum += 1;
         var d;
         var hasCollision is boolean = false;
-        try
+        try silent
         {
             var extrudeDefinition;
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V364_HOLE_FIX_FEATURE_MIRROR))

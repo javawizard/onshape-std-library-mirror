@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -977,7 +977,17 @@ export enum FeatureScriptVersionNumber
     V1518_SPLIT_BODY_USE_SIDE,
     V1519_INTERSECTION_EDGES,
     V1520_VERSION_BUMP,
-    V1521_WORKFLOW_VWU_SUPPORT
+    V1521_WORKFLOW_VWU_SUPPORT,
+    V1531_SWITCH_CREATE_FITTED,
+    V1532_CORRECT_Z_MID_COORDINATE,
+    V1533_CLEAR_SM_ATTRIBUTES,
+    V1534_NEW_EXTRUDE_SYMMETRIC,
+    V1535_EXTRUDE_REMOVE_SND_DIR_ENUMS,
+    V1536_RAYCAST_PER_BODY,
+    V1537_REL_BUMP,
+    V1538_SYM_CHANGE_BUMP,
+    V1539_HOLE_ERROR,
+    V1540_SYM_CHKBX_CHANGE_BUMP
 }
 
 /**
@@ -988,6 +998,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1521_WORKFLOW_VWU_SUPPORT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1540_SYM_CHKBX_CHANGE_BUMP;
 
 

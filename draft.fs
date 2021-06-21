@@ -1,23 +1,23 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/manipulator.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/manipulator.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -500,8 +500,8 @@ function getOrderedFaceData(context is Context, edge is Query, rawPullDirection 
             {
                 const neighborFirstFace = edgeToOrderedFaceData[processedAdjacentEdge][0].face;
 
-                const face0Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face0AndAdjacent]))) > 0;
-                const face1Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face1AndAdjacent]))) > 0;
+                const face0Matches = !isQueryEmpty(context, qIntersection([neighborFirstFace, face0AndAdjacent]));
+                const face1Matches = !isQueryEmpty(context, qIntersection([neighborFirstFace, face1AndAdjacent]));
 
                 if (face0Matches == face1Matches)
                 {
@@ -857,7 +857,7 @@ predicate canGenerateHintFaces(context is Context, oldDefinition is map, definit
     // faces when we go from no pull direction entity to some pull direction entity. `try silent` for old definition
     // because oldDefinition.pullDirectionEntity is undefined when first creating the feature.
     oldDefinition.partingEdges != definition.partingEdges ||
-        (try silent(size(evaluateQuery(context, oldDefinition.pullDirectionEntity))) == 0 && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
+        (try silent(isQueryEmpty(context, oldDefinition.pullDirectionEntity)) && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
 }
 
 function generateHintFaces(context is Context, edgeToOrderedFaceDataBox is box, definition is map) returns Query
@@ -897,7 +897,7 @@ predicate canFlipAlongPull(context is Context, oldDefinition is map, definition 
 {
     specifiedParameters.partingEdges;
     oldDefinition.partingEdges != definition.partingEdges;
-    size(evaluateQuery(context, oldDefinition.partingEdges)) == 0;
+    isQueryEmpty(context, oldDefinition.partingEdges);
     size(evaluateQuery(context, definition.partingEdges)) == 1;
 }
 

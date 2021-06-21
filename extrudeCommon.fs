@@ -1,64 +1,25 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/manipulator.fs", version : "1521.0");
-import(path : "onshape/std/query.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-
-/**
- * Similar to `BoundingType`, but made for the second direction of an `extrude`.
- * Thus, `SYMMETRIC` is not an option.
- */
-export enum SecondDirectionBoundingType
-{
-    annotation { "Name" : "Blind" }
-    BLIND,
-    annotation { "Name" : "Up to next" }
-    UP_TO_NEXT,
-    annotation { "Name" : "Up to face" }
-    UP_TO_SURFACE,
-    annotation { "Name" : "Up to part" }
-    UP_TO_BODY,
-    annotation { "Name" : "Up to vertex" }
-    UP_TO_VERTEX,
-    annotation { "Name" : "Through all" }
-    THROUGH_ALL
-}
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/manipulator.fs", version : "1540.0");
+import(path : "onshape/std/query.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
 
 /**
  * Bounding type used with SMProcessType.EXTRUDE
  */
 export enum SMExtrudeBoundingType
-{
-    annotation { "Name" : "Blind" }
-    BLIND,
-    annotation { "Name" : "Symmetric" }
-    SYMMETRIC,
-    annotation {"Name" : "Up to next"}
-    UP_TO_NEXT,
-    annotation {"Name" : "Up to face"}
-    UP_TO_SURFACE,
-    annotation {"Name" : "Up to part"}
-    UP_TO_BODY,
-    annotation {"Name" : "Up to vertex"}
-    UP_TO_VERTEX
-}
-
-/**
- * Second direction bounding type used with SMProcessType.EXTRUDE
- */
-export enum SMExtrudeSecondDirectionBoundingType
 {
     annotation { "Name" : "Blind" }
     BLIND,
@@ -83,9 +44,7 @@ export enum SMExtrudeSecondDirectionBoundingType
 export predicate extrudeBoundParametersPredicate(definition is map)
 {
     if (definition.endBound == BoundingType.BLIND ||
-        definition.endBound == BoundingType.SYMMETRIC ||
-        definition.endBound == SMExtrudeBoundingType.BLIND ||
-        definition.endBound == SMExtrudeBoundingType.SYMMETRIC)
+        definition.endBound == SMExtrudeBoundingType.BLIND)
     {
         annotation { "Name" : "Depth" }
         isLength(definition.depth, LENGTH_BOUNDS);
@@ -140,30 +99,30 @@ export predicate extrudeBoundParametersPredicate(definition is map)
 
 /**
  * @internal
- * Predicate which specifies fields depending on the [SecondDirectionBoundingType] for an extrude-type feature.
- * The definition in question should specify a `secondDirectionBound` of type [SecondDirectionBoundingType] or [SMExtrudeSecondDirectionBoundingType].
+ * Predicate which specifies fields depending on the [BoundingType] for an extrude-type feature.
+ * The definition in question should specify a `secondDirectionBound` of type [BoundingType] or [SMExtrudeBoundingType].
  *
- * When used in a precondition, this predicate creates the UI under the [SecondDirectionBoundingType] dropdown, such as `Depth` for
+ * When used in a precondition, this predicate creates the UI under the [BoundingType] dropdown, such as `Depth` for
  * `Blind` extrudes or `Up to surface or part` QLV for `Up to part` extrudes.
  */
 export predicate extrudeSecondDirectionBoundParametersPredicate(definition is map)
 {
-    if (definition.secondDirectionBound == SecondDirectionBoundingType.BLIND ||
-        definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.BLIND)
+    if (definition.secondDirectionBound == BoundingType.BLIND ||
+        definition.secondDirectionBound == SMExtrudeBoundingType.BLIND)
     {
         annotation { "Name" : "Depth", "Column Name" : "Second depth" }
         isLength(definition.secondDirectionDepth, LENGTH_BOUNDS);
     }
-    else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE ||
-             definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_SURFACE)
+    else if (definition.secondDirectionBound == BoundingType.UP_TO_SURFACE ||
+             definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face", "Column Name" : "Second up to face",
             "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityFace is Query;
     }
-    else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY ||
-             definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_BODY)
+    else if (definition.secondDirectionBound == BoundingType.UP_TO_BODY ||
+             definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_BODY)
     {
         annotation { "Name" : "Up to surface or part", "Column Name" : "Second up to surface or part",
                      "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
@@ -171,8 +130,8 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
         definition.secondDirectionBoundEntityBody is Query;
     }
 
-    else if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX ||
-             definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
+    else if (definition.secondDirectionBound == BoundingType.UP_TO_VERTEX ||
+             definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
         annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Second up to vertex or mate connector",
             "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
@@ -180,14 +139,14 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
         definition.secondDirectionBoundEntityVertex is Query;
     }
 
-    if (definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_NEXT ||
-        definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_SURFACE ||
-        definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_BODY ||
-        definition.secondDirectionBound == SecondDirectionBoundingType.UP_TO_VERTEX ||
-        definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_NEXT ||
-        definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_SURFACE ||
-        definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_BODY ||
-        definition.secondDirectionBound == SMExtrudeSecondDirectionBoundingType.UP_TO_VERTEX)
+    if (definition.secondDirectionBound == BoundingType.UP_TO_NEXT ||
+        definition.secondDirectionBound == BoundingType.UP_TO_SURFACE ||
+        definition.secondDirectionBound == BoundingType.UP_TO_BODY ||
+        definition.secondDirectionBound == BoundingType.UP_TO_VERTEX ||
+        definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_NEXT ||
+        definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_SURFACE ||
+        definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_BODY ||
+        definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_VERTEX)
     {
         annotation {"Name" : "Offset distance", "Column Name" : "Second direction has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasSecondDirectionOffset is boolean;
@@ -201,6 +160,14 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
             definition.secondDirectionOffsetOppositeDirection is boolean;
         }
     }
+}
+
+// ---------- SYMMETRIC ----------
+/** @internal */
+export predicate isSymmetricExtrude(definition is map)
+{
+    definition.symmetric;
+    (definition.endBound as BoundingType) == BoundingType.BLIND || (definition.endBound as BoundingType) == BoundingType.THROUGH_ALL;
 }
 
 // ---------- OPPOSITE_DIRECTION ----------
@@ -351,11 +318,24 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
     definition.startTranslationalOffset = 0;
     definition.endDepth = definition.depth;
 
-    if (isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+    if (isSymmetricExtrude(definition))
     {
-        definition.endBound = BoundingType.BLIND;
-        definition.startDepth = definition.depth * -0.5;
-        definition.endDepth = definition.depth * 0.5;
+        if (isFirstDirectionOfType(definition, BoundingType.BLIND))
+        {
+            definition.startBound = BoundingType.BLIND;
+            definition.endDepth = definition.depth * 0.5;
+            definition.startDepth = -definition.depth * 0.5;
+        }
+        else if (isFirstDirectionOfType(definition, BoundingType.THROUGH_ALL))
+        {
+
+            definition.isStartBoundOpposite = true;
+            definition.startBound = BoundingType.THROUGH_ALL;
+        }
+        else
+        {
+            throw "Unexpected bounding type for symmetric extrude: " ~ definition.endBound;
+        }
     }
     else if (definition.hasSecondDirection)
     {
@@ -390,7 +370,7 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
             definition.secondVertexPlaneId = secondTempPlaneId;
             definition.secondDirectionBoundEntity = createVertexBoundaryPlane(context, definition.secondVertexPlaneId,
                     definition.secondDirectionBoundEntityVertex, definition.direction);
-            definition.secondDirectionBound = SecondDirectionBoundingType.UP_TO_SURFACE;
+            definition.secondDirectionBound = BoundingType.UP_TO_SURFACE;
         }
 
         definition.startBound = definition.secondDirectionBound as BoundingType;
@@ -495,11 +475,15 @@ const SECOND_FLIP_MANIPULATOR = "secondDirectionFlipManipulator";
  */
 export function addExtrudeManipulator(context is Context, id is Id, definition is map, entities is Query, extrudeAxis is Line, showEntities is boolean)
 {
-    if (evaluateQuery(context, qSheetMetalFlatFilter(entities, SMFlatType.YES)) != [])
+    if (!isQueryEmpty(context, qSheetMetalFlatFilter(entities, SMFlatType.YES)))
     {
         return;
     }
-    if (!isFirstDirectionOfType(definition, BoundingType.BLIND) && !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+    if (isFirstDirectionOfType(definition, BoundingType.THROUGH_ALL) && definition.symmetric)
+    {
+        return;
+    }
+    if (!isFirstDirectionOfType(definition, BoundingType.BLIND))
     {
         addManipulators(context, id, {
                     (FLIP_MANIPULATOR) : flipManipulator({
@@ -512,9 +496,9 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
     else
     {
         var depthOffset = definition.depth;
-        if (isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+        if (isSymmetricExtrude(definition))
             depthOffset *= 0.5;
-        // Both BLIND and SYMMETRIC rely on oppositeDirection to determine the flip of the manipulator
+        // BLIND relies on oppositeDirection to determine the flip of the manipulator
         if (isOppositeDirection(definition))
             depthOffset *= -1;
         addManipulators(context, id, {
@@ -528,7 +512,7 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
                 });
     }
 
-    if (definition.hasSecondDirection && !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+    if (definition.hasSecondDirection && !isSymmetricExtrude(definition))
     {
         if (!isSecondDirectionOfType(definition, BoundingType.BLIND))
         {
@@ -567,23 +551,21 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
 export function extrudeManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
     if (newManipulators[DEPTH_MANIPULATOR] is map &&
-        (isFirstDirectionOfType(definition, BoundingType.BLIND) ||
-         isFirstDirectionOfType(definition, BoundingType.SYMMETRIC)))
+        (isFirstDirectionOfType(definition, BoundingType.BLIND)))
     {
         var newDepthOffset = newManipulators[DEPTH_MANIPULATOR].offset;
-        if (isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+        if (isSymmetricExtrude(definition))
             newDepthOffset *= 2;
         definition[oppositeDirectionField(definition)] = newDepthOffset < 0;
         definition.depth = abs(newDepthOffset);
     }
     else if (newManipulators[FLIP_MANIPULATOR] is map &&
-             !isFirstDirectionOfType(definition, BoundingType.BLIND) &&
-             !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+             !isFirstDirectionOfType(definition, BoundingType.BLIND))
     {
         definition[oppositeDirectionField(definition)] = newManipulators[FLIP_MANIPULATOR].flipped;
     }
 
-    if (definition.hasSecondDirection && !isFirstDirectionOfType(definition, BoundingType.SYMMETRIC))
+    if (definition.hasSecondDirection && !isSymmetricExtrude(definition))
     {
         if (newManipulators[SECOND_DEPTH_MANIPULATOR] is map &&
             isSecondDirectionOfType(definition, BoundingType.BLIND))
@@ -607,12 +589,12 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
 /**
  * @internal
  * Do not attempt to set any primary direction flips in [extrude] if there is a second direction, if the [extrude] is
- * `SYMMETRIC`, or if the user has already toggled the primary direction flipper.
+ * `symmetric`, or if the user has already toggled the primary direction flipper.
  */
 export function canSetExtrudeFlips(definition is map, specifiedParameters is map) returns boolean
 {
     return !definition.hasSecondDirection &&
-            definition.endBound != BoundingType.SYMMETRIC &&
+            !isSymmetricExtrude(definition) &&
             !specifiedParameters[oppositeDirectionField(definition)];
 }
 

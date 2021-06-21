@@ -1,31 +1,31 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/tool.fs", version : "1521.0");
-export import(path : "onshape/std/wraptype.gen.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/tool.fs", version : "1540.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1540.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "1521.0");
+export import(path : "onshape/std/manipulator.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1521.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
-import(path : "onshape/std/wrapSurface.fs", version : "1521.0");
+import(path : "onshape/std/boolean.fs", version : "1540.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/wrapSurface.fs", version : "1540.0");
 
 /**
  * Defines what type of output the Wrap feature should produce.
@@ -718,7 +718,7 @@ function getAngleManipulator(canonicalAngle is ValueWithUnits, sourceInfo is map
     const axisOrigin = destinationManipulatorInfo.shiftedAnchor;
     const axisNormal = destinationManipulatorInfo.shiftedSurfaceNormal;
     const zeroDirectionLine = rotationAround(line(axisOrigin, axisNormal), canonicalAngle) * line(axisOrigin, destinationManipulatorInfo.shiftedUDirection);
-    const angleManipulatorRadius = ANGLE_MANIPULATOR_RADIUS_SCALE * norm(sourceInfo.bbox.maxCorner - sourceInfo.bbox.minCorner);
+    const angleManipulatorRadius = ANGLE_MANIPULATOR_RADIUS_SCALE * box3dDiagonalLength(sourceInfo.bbox);
     const rotationOrigin = axisOrigin + zeroDirectionLine.direction * angleManipulatorRadius;
     return angularManipulator({
                 "axisOrigin" : axisOrigin,
@@ -835,7 +835,7 @@ export function wrapEditLogic(context is Context, id is Id, oldDefinition is map
         // If the user has not specified an operation type, assign an appropriate operation type
         if (!specifiedParameters.operationType)
         {
-            if (evaluateQuery(context, definition.booleanScope) != [])
+            if (!isQueryEmpty(context, definition.booleanScope))
             {
                 // We have a solid destination, remove or union depending on the direction of thickness
                 definition.operationType = definition.oppositeDirection ? NewBodyOperationType.REMOVE : NewBodyOperationType.ADD;

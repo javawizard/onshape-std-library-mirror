@@ -1,16 +1,16 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
 
 /**
  * Specifies how the void resulting from delete face should be closed, if at all.
@@ -63,10 +63,10 @@ export const deleteFace = defineFeature(function(context is Context, id is Id, d
  */
 export function deleteFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
-    if (!specifiedParameters.healType && oldDefinition.deleteFaces != definition.deleteFaces && evaluateQuery(context, definition.deleteFaces) != [])
+    if (!specifiedParameters.healType && oldDefinition.deleteFaces != definition.deleteFaces && !isQueryEmpty(context, definition.deleteFaces))
     {
-        const allSheetFaces = evaluateQuery(context, qSubtraction(definition.deleteFaces, qBodyType(definition.deleteFaces, BodyType.SHEET))) == [];
-        const oldFacesEmpty = oldDefinition.deleteFaces == undefined || evaluateQuery(context, oldDefinition.deleteFaces) == [];
+        const allSheetFaces = isQueryEmpty(context, qSubtraction(definition.deleteFaces, qBodyType(definition.deleteFaces, BodyType.SHEET)));
+        const oldFacesEmpty = oldDefinition.deleteFaces == undefined || isQueryEmpty(context, oldDefinition.deleteFaces);
         if (allSheetFaces && oldFacesEmpty)
         {
             //We only change the heal type if all of the selected faces are sheet faces.

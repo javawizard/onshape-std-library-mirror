@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2044,7 +2044,11 @@ export enum ErrorStringEnum
     /* Context assembly workspace is deleted. Goto desired assembly workspace and update from assembly to switch context's workspace. */
     IN_CONTEXT_UPDATE_DELETED_WORKSPACE,
     /* Failed to build hole tool. */
-    HOLE_TOOL_CONSTRUCTION_FAILED
+    HOLE_TOOL_CONSTRUCTION_FAILED,
+    /* Some selections did not produce holes. */
+    HOLE_PARTIAL_FAILURE,
+    /* Too many hole locations were selected, maximum: 500. */
+    HOLE_EXCEEDS_MAX_LOCATIONS_500
 }
 
 

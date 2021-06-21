@@ -1,27 +1,27 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/tool.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/tool.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/boolean.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/moveFace.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/boolean.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/moveFace.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
@@ -484,19 +484,11 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
     if (modelParameters is undefined)
         throw regenError(ErrorStringEnum.REGEN_ERROR);
 
-    try silent
-    {
-        opThicken(context, id + "thicken", {
-                    "entities" : qOwnedByBody(coincidentGrouping.tabs, EntityType.FACE),
-                    "thickness1" : modelParameters.frontThickness,
-                    "thickness2" : modelParameters.backThickness
-                });
-    }
-    catch (error)
-    {
-        processSubfeatureStatus(context, rootId, { "subfeatureId" : id + "thicken", "propagateErrorDisplay" : true });
-        throw error;
-    }
+    callSubfeatureAndProcessStatus(rootId, opThicken, context, id + "thicken", {
+                "entities" : qOwnedByBody(coincidentGrouping.tabs, EntityType.FACE),
+                "thickness1" : modelParameters.frontThickness,
+                "thickness2" : modelParameters.backThickness
+            });
 
     const tabPlane = evPlane(context, { "face" : qOwnedByBody(coincidentGrouping.tabs, EntityType.FACE) });
     applyPlaneToPlaneTransform(context, id, qCreatedBy(id + "thicken", EntityType.BODY), tabPlane, coincidentGrouping.plane);
@@ -520,7 +512,7 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
         subtractSMFaces = [];
     }
 
-    if (size(subtractSMFaces) != 0 || size(evaluateQuery(context, subtractQueries.nonSheetMetalQueries)) != 0)
+    if (size(subtractSMFaces) != 0 || !isQueryEmpty(context, subtractQueries.nonSheetMetalQueries))
     {
         if (definition.booleanOffset > 0 * meter)
         {
@@ -536,7 +528,7 @@ function subtractTab(context is Context, id is Id, definition is map, subtractQu
         solidSubtractTab(context, id + "solid", qCreatedBy(id + "thicken", EntityType.BODY), subtractQueries.nonSheetMetalQueries);
     }
 
-    if (modelParameters.minimalClearance > definition.booleanOffset && size(evaluateQuery(context, unionComplementTracking)) > 0)
+    if (modelParameters.minimalClearance > definition.booleanOffset && !isQueryEmpty(context, unionComplementTracking))
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_TAB_LOW_CLEARANCE, ["booleanOffset"], getSMCorrespondingInPart(context, unionComplementTracking, EntityType.FACE));
     }
@@ -725,7 +717,7 @@ export function sheetMetalTabEditingLogic(context is Context, id is Id, oldDefin
     const sheetMetalBodies = try silent(getOwnerSMModel(context, qOwnerBody(definition.booleanUnionScope)));
     if (sheetMetalBodies is undefined || size(sheetMetalBodies) != 1)
         return definition;
-    if (oldDefinition == {} || (tolerantEquals(definition.booleanOffset, 0 * meter) && size(evaluateQuery(context, oldDefinition.booleanUnionScope)) == 0))
+    if (oldDefinition == {} || (tolerantEquals(definition.booleanOffset, 0 * meter) && isQueryEmpty(context, oldDefinition.booleanUnionScope)))
     {
         const modelParameters = try silent(getModelParameters(context, sheetMetalBodies[0]));
         if (!(modelParameters is undefined))

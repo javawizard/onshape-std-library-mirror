@@ -1,29 +1,29 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1521.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/context.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/error.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/query.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/sketch.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1540.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/context.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/error.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/query.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/sketch.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
 
 /**
  * @internal
@@ -1863,7 +1863,7 @@ function constructOtherSheet(context is Context, id is Id, arcSheet is Query, he
 {
     const sketchEdges = qConstructionFilter(qCreatedBy(hemData.profileSketchId, EntityType.EDGE), ConstructionObject.NO);
     const otherSketchEdges = qSubtraction(sketchEdges, hemData.arcEdge);
-    if (evaluateQuery(context, otherSketchEdges) == [])
+    if (isQueryEmpty(context, otherSketchEdges))
     {
         return qNothing();
     }
@@ -1954,7 +1954,7 @@ function annotateHemSheets(context is Context, topLevelId is Id, arcSheet is Que
     }
     else if (definition.hemType == SMHemType.ROLLED)
     {
-        if (evaluateQuery(context, qOwnedByBody(otherSheet, EntityType.FACE)) != [])
+        if (!isQueryEmpty(context, qOwnedByBody(otherSheet, EntityType.FACE)))
         {
             // Did not expect rolled to have additional sheet
             throw regenError(ErrorStringEnum.SHEET_METAL_HEM_FAILED);
@@ -1984,7 +1984,7 @@ function createMatches(context is Context, edge is Query, arcSheet is Query, oth
             "matchType" : TopologyMatchType.COINCIDENT
         }];
 
-    if (evaluateQuery(context, otherSheet) == [])
+    if (isQueryEmpty(context, otherSheet))
     {
         // If there is no otherSheet, we are done
         return matches;

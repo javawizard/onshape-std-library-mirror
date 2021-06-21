@@ -1,30 +1,30 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/tool.fs", version : "1521.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/tool.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/patternCommon.fs", version : "1521.0");
-import(path : "onshape/std/primitives.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/string.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/patternCommon.fs", version : "1540.0");
+import(path : "onshape/std/primitives.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/string.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -80,7 +80,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
         {
-            const hasSheetsAsTools = evaluateQuery(context, qModifiableSurface(definition.tools)) != [];
+            const hasSheetsAsTools = !isQueryEmpty(context, qModifiableSurface(definition.tools));
 
             if (definition.operationType != BooleanOperationType.UNION)
             {
@@ -91,7 +91,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             }
             else if (hasSheetsAsTools)
             {
-                if (evaluateQuery(context, qBodyType(definition.tools, BodyType.SOLID)) != [])
+                if (!isQueryEmpty(context, qBodyType(definition.tools, BodyType.SOLID)))
                 {
                     throw regenError(ErrorStringEnum.BOOLEAN_CANNOT_MIX_SOLIDS_AND_SURFACES, ["tools"]);
                 }
@@ -133,7 +133,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             else
             {
                 faceQuery = wrapFaceQueryInCopy(definition.entitiesToOffset, id + suffix);
-                if (evaluateQuery(context, faceQuery) == [])
+                if (isQueryEmpty(context, faceQuery))
                     throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
             }
 
@@ -365,7 +365,7 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
     // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.
     // (This logic comes from the fact that grouping of tools/targets has a significant effect on output.)
     if (definition.operationType == NewBodyOperationType.ADD &&
-        size(evaluateQuery(context, output.targets)) == 0)
+        isQueryEmpty(context, output.targets))
     {
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V712_SKIP_TARGET_BOOLEAN))
         {
@@ -376,7 +376,7 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
         else
         {
             // Always keep the seed in the tools.  Do not group if we have seeds.
-            if (size(evaluateQuery(context, seedQuery)) > 0)
+            if (!isQueryEmpty(context, seedQuery))
             {
                 output.targetsAndToolsNeedGrouping = false;
             }
@@ -424,7 +424,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     booleanDefinition.operationType = convertNewBodyOpToBoolOp(definition.operationType);
     booleanDefinition.allowSheets = definition.allowSheets;
 
-    if (size(evaluateQuery(context, booleanDefinition.tools)) == 0)
+    if (isQueryEmpty(context, booleanDefinition.tools))
     {
         var errorEnum = ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V263_SURFACE_PATTERN_BOOLEAN))
@@ -433,7 +433,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         }
         throw regenError(errorEnum, solidsQuery);
     }
-    if (booleanDefinition.targetsAndToolsNeedGrouping && size(evaluateQuery(context, booleanDefinition.targets)) == 0)
+    if (booleanDefinition.targetsAndToolsNeedGrouping && isQueryEmpty(context, booleanDefinition.targets))
         throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"], solidsQuery);
 
     const boolId = id + "boolean";
@@ -600,7 +600,7 @@ export function surfaceOperationTypeEditLogic (context is Context, id is Id, def
             for (var i = 0; i < size(otherEdges); i += 1)
             {
                 var siblingEdges = getJoinableSurfaceEdgeFromParentEdge(context, id, otherEdges[i], identityTransform());
-                if (size(evaluateQuery(context, qSubtraction(siblingEdges, qOwnedByBody(hiddenBodies, EntityType.EDGE)))) > 0)
+                if (!isQueryEmpty(context, qSubtraction(siblingEdges, qOwnedByBody(hiddenBodies, EntityType.EDGE))))
                 {
                     anyJoinable = true;
                     break;
@@ -618,7 +618,7 @@ function filterByOwnerBody(context is Context, edges is Query, bodies is Query) 
     var filteredEdges = [];
     for (var edge in allEdges)
     {
-        if (size(evaluateQuery(context, qSubtraction(qOwnerBody(edge), bodies))) == 0)
+        if (isQueryEmpty(context, qSubtraction(qOwnerBody(edge), bodies)))
         {
             filteredEdges = append(filteredEdges, edge);
         }
@@ -660,7 +660,7 @@ export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id
 
     if (definition.defaultSurfaceScope == false)
     {
-        if (size(evaluateQuery(context, definition.booleanSurfaceScope)) == 0)
+        if (isQueryEmpty(context, definition.booleanSurfaceScope))
         {
             throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE, ["booleanSurfaceScope"], qCreatedBy(id, EntityType.BODY));
         }
@@ -733,7 +733,7 @@ export function checkForNotJoinableSurfacesInScope(context is Context, id is Id,
             allMatchTargets = append(allMatchTargets, qOwnerBody(matches[i].topology1));
         }
         var notJoinableSurfacesInScope = qSubtraction(definition.booleanSurfaceScope, qUnion(allMatchTargets));
-        if (size(evaluateQuery(context, notJoinableSurfacesInScope)) > 0)
+        if (!isQueryEmpty(context, notJoinableSurfacesInScope))
         {
              setErrorEntities(context, id, { "entities" : notJoinableSurfacesInScope });
              reportFeatureWarning(context, id, ErrorStringEnum.BOOLEAN_NO_SHARED_EDGE_WITH_SURFACE_IN_MERGE_SCOPE);
@@ -849,13 +849,13 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
     var targets = undefined;
     if (definition.defaultSurfaceScope != false)
     {
-        if (evaluateQuery(context, contextTargets) != [])
+        if (!isQueryEmpty(context, contextTargets))
         {
             targets = contextTargets;
         }
     }
     else if (definition.booleanSurfaceScope != undefined &&
-        evaluateQuery(context, qModifiableSurface(definition.booleanSurfaceScope)) != [])
+        !isQueryEmpty(context, qModifiableSurface(definition.booleanSurfaceScope)))
     {
         targets = qModifiableSurface(definition.booleanSurfaceScope);
     }
@@ -945,7 +945,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
         definition.keepTools = true;
         var evaluatedOriginalTools = qUnion(evaluateQuery(context, definition.tools));
         var booleanWasNoOp = true;
-        if (size(evaluateQuery(context, parts.nonSheetMetalPartsQuery)) > 0)
+        if (!isQueryEmpty(context, parts.nonSheetMetalPartsQuery))
         {
             definition.targets = parts.nonSheetMetalPartsQuery;
             performRegularBoolean(context, id, definition);
@@ -1082,12 +1082,12 @@ function eachSheetStillExists(context is Context, sheetTracking is array) return
     const wallAttributePattern = asSMAttribute({"objectType" : SMObjectType.WALL});
     for (var sheet in sheetTracking)
     {
-        if (evaluateQuery(context, sheet) == [])
+        if (isQueryEmpty(context, sheet))
         {
             return false;
         }
         const wallQ = qAttributeFilter(qOwnedByBody(sheet, EntityType.FACE), wallAttributePattern);
-        if (checkForWalls && evaluateQuery(context, wallQ) == [])
+        if (checkForWalls && isQueryEmpty(context, wallQ))
         {
             return false;
         }
@@ -1168,7 +1168,7 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
     if (toolsToCopy[] != {})
     {
         const toolsToCopyQ = qUnion(keys(toolsToCopy[]));
-        if (evaluateQuery(context, toolsToCopyQ) != [])
+        if (!isQueryEmpty(context, toolsToCopyQ))
         {
             const copies = copyBodies(context, id + "copyTools", toolsToCopyQ);
             return qUnion([outlineBodiesQ, copies]);
@@ -1198,7 +1198,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
     var outlines = [];
     var allTrimmed = [];
     var thickened = undefined;
-    const planarFace = (size(evaluateQuery(context, qGeometry(face, GeometryType.PLANE))) > 0);
+    const planarFace = (!isQueryEmpty(context, qGeometry(face, GeometryType.PLANE)));
     var capFacesQ = undefined;
     var skippedAll = true;
     const toolsArray = evaluateQuery(context, tools);
@@ -1420,7 +1420,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         }
     }
     const toolsToCopyQ = qUnion(keys(toolsToCopy[]));
-    if (evaluateQuery(context, toolsToCopyQ) != [])
+    if (!isQueryEmpty(context, toolsToCopyQ))
     {
         const copies = copyBodies(context, id + "copyTools", toolsToCopyQ);
         allToolBodies = append(allToolBodies, copies);

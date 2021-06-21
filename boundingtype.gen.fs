@@ -1,4 +1,4 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,7 +9,6 @@ FeatureScript 1521; /* Automatically generated version */
  * Specifies how an extrude should terminate.
  *
  * @value BLIND : Extrude a specific distance.
- * @value SYMMETRIC : Like `BLIND`, but extrudes equally in two directions.
  * @value UP_TO_NEXT : Extrude up to the next solid body or surface body in the
  *          context.
  * @value UP_TO_SURFACE : Extrude up to the specified face, construction plane,
@@ -23,8 +22,6 @@ export enum BoundingType
 {
     annotation {"Name" : "Blind"}
     BLIND,
-    annotation {"Name" : "Symmetric"}
-    SYMMETRIC,
     annotation {"Name" : "Up to next"}
     UP_TO_NEXT,
     annotation {"Name" : "Up to face"}

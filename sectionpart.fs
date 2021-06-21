@@ -1,29 +1,30 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/coordSystem.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/extrude.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/sketch.fs", version : "1521.0");
-import(path : "onshape/std/tool.fs", version : "1521.0");
-import(path : "onshape/std/transform.fs", version : "1521.0");
-import(path : "onshape/std/units.fs", version : "1521.0");
-import(path : "onshape/std/vector.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/coordSystem.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/extrude.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/sketch.fs", version : "1540.0");
+import(path : "onshape/std/tool.fs", version : "1540.0");
+import(path : "onshape/std/transform.fs", version : "1540.0");
+import(path : "onshape/std/units.fs", version : "1540.0");
+import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -88,9 +89,19 @@ function performSectionCutAndGetBodiesToDelete(context is Context, id is Id, pla
     const splitPartResultQ = qSplitBy(splitPartId, EntityType.BODY, true);
     //Split plane might miss the body because the box was not sufficiently accurate
     //check body location by midBox z coordinate
-    if (!useTightBox && evaluateQuery(context, splitPartResultQ) == [])
+    if (!useTightBox && isQueryEmpty(context, splitPartResultQ))
     {
-        var midBox = 0.5 * (boxResult.minCorner[2] + boxResult.maxCorner[0]);
+        // Correct middle z coordinate and version it
+        var midBox;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1532_CORRECT_Z_MID_COORDINATE))
+        {
+            midBox = 0.5 * (boxResult.minCorner[2] + boxResult.maxCorner[2]);
+        }
+        else
+        {
+            midBox = 0.5 * (boxResult.minCorner[2] + boxResult.maxCorner[0]);
+        }
+
         if (midBox < TOLERANCE.zeroLength * meter)
         {
             return qSubtraction(allBodies, partToSection);
@@ -178,7 +189,7 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         definition.jogPoints = convertToPointsArray(false, cutPoints, []);
         definition.sketchPlane = sketchPlane;
         jogSectionCut(context, id, definition);
-    }, {"isPartialSection" : false, "keepSketches" : false, "isBrokenOut" : false, "isCropView" : false});
+    }, {"isPartialSection" : false, "keepSketches" : false, "isBrokenOut" : false, "isCropView" : false, "isAlignedSection" : false });
 
 /**
  * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
@@ -195,6 +206,7 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
  *      @field brokenOutPointNumbers {array} : Array of the number of spline points of each broken-out section cut.
  *      @field brokenOutEndConditions {array} : Array of end conditions of each broken-out section cut.
  *      @field offsetPoints {array} : Array of points for offsetting the section lines.
+ *      @field isAlignedSection {boolean} : Whether or not it is an aligned section cut.
 * }}
  */
 export const jogSectionPart = defineFeature(function(context is Context, id is Id, definition is map)
@@ -221,6 +233,7 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         definition.brokenOutPointNumbers is array;
         definition.brokenOutEndConditions is array;
         definition.offsetPoints is array;
+        definition.isAlignedSection is boolean;
     }
     {
         const numberOfPoints = definition.jogPoints != undefined ? size(definition.jogPoints) : 0;
@@ -228,7 +241,8 @@ export const jogSectionPart = defineFeature(function(context is Context, id is I
         definition.jogPoints = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
         definition.offsetDistances = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
         jogSectionCut(context, id, definition);
-    }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+    }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [],
+              brokenOutEndConditions : [], offsetPoints : [], isAlignedSection : false });
 
 /**
  * @internal
@@ -299,6 +313,7 @@ export const sectionTransformedParts = defineFeature(function(context is Context
         definition.brokenOutPointNumbers is array;
         definition.brokenOutEndConditions is array;
         definition.offsetPoints is array;
+        definition.isAlignedSection is boolean;
     }
     {
         // remove sheet metal attributes and helper bodies
@@ -307,7 +322,7 @@ export const sectionTransformedParts = defineFeature(function(context is Context
         var allTargetParts = [];
         for (var i = 0; i < size(definition.targets); i += 1)
         {
-            allTargetParts = append(allTargetParts, patternTarget(context, id + unstableIdComponent(i), definition.targets[i]));
+            allTargetParts = append(allTargetParts, patternTarget(context, id, id + unstableIdComponent(i), definition.targets[i]));
         }
         //making a single array from array of arrays
         allTargetParts = concatenateArrays(allTargetParts);
@@ -325,12 +340,12 @@ export const sectionTransformedParts = defineFeature(function(context is Context
         // need to transform the cut results to their original posistion in the part studio
         for (var i = 0; i < size(definition.targets); i += 1)
         {
-            transformCutResult(context, id + unstableIdComponent(i), id + unstableIdComponent(i ~ "move"), definition.targets[i]);
+            transformCutResult(context, id, id + unstableIdComponent(i ~ "move"), definition.targets[i]);
         }
     }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : false,
-            brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+            brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [], isAlignedSection : false });
 
-function patternTarget(context is Context, id is Id, args is SectionTarget) returns array
+function patternTarget(context is Context, parentId is Id, id is Id, args is SectionTarget) returns array
 {
     // for [1188, 1237), unpack composites before pattern
     // for further versions, unpack composites after pattern
@@ -348,6 +363,16 @@ function patternTarget(context is Context, id is Id, args is SectionTarget) retu
             "instanceNames" : args.instanceNames
             });
     query = qCreatedBy(id, EntityType.BODY);
+    for (var i = 0; i < size(args.instanceNames); i += 1)
+    {
+        var instance = qPatternInstances(id, args.instanceNames[i], EntityType.BODY);
+        instance = qUnion([instance, startTracking(context, instance)]);
+        setAttribute(context, {
+                "entities" : instance,
+                "name" : parentId ~ args.instanceNames[i],
+                "attribute" : parentId ~ args.instanceNames[i]
+        });
+    }
     if (unpackAfterPattern)
     {
         query = qFlattenedCompositeParts(query);
@@ -355,13 +380,13 @@ function patternTarget(context is Context, id is Id, args is SectionTarget) retu
     return evaluateQuery(context, query);
 }
 
-function transformCutResult(context is Context, patternId is Id, moveId is Id, args is SectionTarget)
+function transformCutResult(context is Context, parentId is Id, moveId is Id, args is SectionTarget)
 {
     for (var i = 0; i < size(args.instanceNames); i += 1)
     {
-        var instanceQuery = qPatternInstances(patternId, args.instanceNames[i], EntityType.BODY);
+        var instanceQuery = qHasAttribute(parentId ~ args.instanceNames[i]);
         // it could be empty, i.e., the instance is not cut at all
-        if (size(evaluateQuery(context, instanceQuery)) == 0)
+        if (isQueryEmpty(context, instanceQuery))
         {
             continue;
         }
@@ -401,6 +426,7 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
         definition.brokenOutPointNumbers is array;
         definition.brokenOutEndConditions is array;
         definition.offsetPoints is array;
+        definition.isAlignedSection is boolean;
     }
     {
         // remove sheet metal attributes and helper bodies
@@ -409,7 +435,8 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
         definition.jogPoints = convertToPointsArray(definition.isBrokenOut || definition.isCropView, definition.jogPoints, brokenOutPointNumbers);
         definition.offsetDistances  = definition.brokenOutEndConditions != undefined ? getOffsetDistancesArray(definition.brokenOutEndConditions) : [];
         jogSectionCut(context, id, definition);
-    }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [] });
+    }, {isPartialSection : false, keepSketches : false, isBrokenOut : false, isCropView : false, brokenOutPointNumbers : [], brokenOutEndConditions : [],
+            offsetPoints : [], isAligendSection : false });
 
 /**
  * Collect the spline points and the depth point from each broken-out section and convert it into an array of array
@@ -499,6 +526,7 @@ function retainHoleAttributes(context is Context, bodies is Query)
 function jogSectionCut(context is Context, id is Id, definition is map)
 {
     const target = qUnion([qBodyType(definition.target, BodyType.SOLID), qBodyType(definition.target, BodyType.SHEET)]);
+    const targetTracking = qUnion([target, startTracking(context, target)]);
     const sketchPlane = definition.sketchPlane;
     const bboxIn = definition.bbox;
     const isPartialSection = definition.isPartialSection;
@@ -509,6 +537,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
     const isCropView = definition.isCropView;
     const offsetPoints = definition.offsetPoints;
     const versionOperationUse = (definition.versionOperationUse == true);
+    const isAlignedSection = definition.isAlignedSection;
 
     var toKeepQ = target;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1218_SECTION_PART_KEEP_COMPOSITES)) {
@@ -556,7 +585,10 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             {
                 projectedPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
             }
-            checkJogDirection(projectedPoints);
+            if (!isAlignedSection)
+            {
+                checkJogDirection(projectedPoints);
+            }
             // check if this is a section cut with offset
             var isOffsetCut = false;
             var offsetDistance = 0.0 * meter;
@@ -591,18 +623,26 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             {
                 polygon = createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane);
             }
+            else if (isAlignedSection)
+            {
+                polygon = createJogPolygonForAlignedSection(projectedPoints, boxResult, offsetPlane);
+            }
             else
             {
                 polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
             }
-            const sketchId = id + "sketch";
 
-            sketchPolyline(context, sketchId, polygon, offsetPlane);
-            const extrudeId = id + "extrude";
-            const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-            extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, boxResult.maxCorner[2], isOffsetCut,
-                        versionOperationUse);
-            opDeleteBodies(context, id + "deleteSketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
+            sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
+            if (isAlignedSection)
+            {
+                definition.target = targetTracking;
+                var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition);
+                setAttribute(context, {
+                        "entities" : sectionFacesQuery,
+                        "name" : id ~ "sectionFaces",
+                        "attribute" : id ~ "sectionFaces"
+                });
+            }
         }
     }
     catch
@@ -831,5 +871,150 @@ function sketchSplineSection(context is Context, sketchId is Id, points is array
                 "points" : points
             });
     skSolve(sketch);
+}
+
+function createJogPolygonForAlignedSection(points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
+{
+    const pointCount = size(points);
+    if (pointCount < 3)
+    {
+        return [];
+    }
+    var polygonVertices = concatenateArrays([points, makeArray(5)]);
+    const distanceXToBoxMinCorner = abs(points[pointCount-1][0] - boundingBox.minCorner[0]);
+    const distanceXToBoxMaxCorner = abs(points[pointCount-1][0] - boundingBox.maxCorner[0]);
+    const flipX = distanceXToBoxMinCorner > distanceXToBoxMaxCorner;
+
+    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
+    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
+    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
+
+    polygonVertices[pointCount] = vector(flipX ? boundingBox.maxCorner[0] : boundingBox.minCorner[0], points[pointCount - 1][1]);
+    polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
+    polygonVertices[pointCount + 2] = vector(boundingBox.minCorner[0], polygonVertices[pointCount + 1][1]);
+    polygonVertices[pointCount + 3] = vector(polygonVertices[pointCount + 2][0], points[0][1]);
+    polygonVertices[pointCount + 4] = polygonVertices[0];
+
+    return polygonVertices;
+}
+
+function createJogPolygonForSourceParts(points is array, boundingBox is Box3d) returns array
+{
+    var polygonVertices = makeArray(7);
+    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
+    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
+    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
+
+    polygonVertices[0] = points[0];
+    polygonVertices[1] = points[1];
+    polygonVertices[2] = vector(boundingBox.maxCorner[0], points[1][1]);
+    polygonVertices[3] = vector(boundingBox.maxCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
+    polygonVertices[4] = vector(boundingBox.minCorner[0], polygonVertices[3][1]);
+    polygonVertices[5] = vector(boundingBox.minCorner[0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
+    polygonVertices[6] = polygonVertices[0];
+
+    return polygonVertices;
+}
+
+function createJogPolygonForRotatedParts(points is array, boundingBox is Box3d) returns array
+{
+    var polygonVertices = makeArray(7);
+    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
+    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
+    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
+
+    polygonVertices[0] = vector(points[1][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
+    polygonVertices[1] = points[1];
+    polygonVertices[2] = vector(boundingBox.maxCorner[0], points[1][1]);
+    polygonVertices[3] = vector(boundingBox.maxCorner[0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
+    polygonVertices[4] = vector(boundingBox.minCorner[0], polygonVertices[3][1]);
+    polygonVertices[5] = vector(boundingBox.minCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
+    polygonVertices[6] = polygonVertices[0];
+
+    return polygonVertices;
+}
+
+function sketchAndExtrudeCut(context is Context, id is Id, target is Query, polygon is array, offsetPlane is Plane,
+                             sketchPlane is Plane, depth, versionOperationUse is boolean, isIntersect is boolean)
+{
+    const sketchId = id + "sketch";
+    const extrudeId = id + "extrude";
+    const deleteId = id + "deleteSketch";
+    sketchPolyline(context, sketchId, polygon, offsetPlane);
+    const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
+    extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, depth, isIntersect, versionOperationUse);
+    opDeleteBodies(context, deleteId, { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
+}
+
+// returned query resolves to section faces both in original and rotated parts
+function alignedSectionRotateAndCut(context is Context, id is Id, definition is map) returns Query
+{
+    // define rotation axis
+    const jogPoints = definition.jogPoints[0];
+    const sketchPlane = definition.sketchPlane;
+    const numberOfPoints = size(jogPoints);
+    var projected3DPoints = makeArray(numberOfPoints);
+    for (var i = 0; i < numberOfPoints; i = i + 1)
+    {
+        projected3DPoints[i] = project(sketchPlane, jogPoints[i]);
+    }
+    const normalizedStartLine = normalize(projected3DPoints[0] - projected3DPoints[1]);
+    const normalizedEndLine = normalize(projected3DPoints[numberOfPoints-1] - projected3DPoints[numberOfPoints-2]);
+    const rotationAngle = PI * radian - angleBetween(normalizedStartLine, normalizedEndLine);
+    var rotationDirection = cross(normalizedStartLine, normalizedEndLine);
+    // if the angle between two lines is 180 degree, set rotation direction as sketch plane normal
+    if (squaredNorm(rotationDirection) < TOLERANCE.zeroLength)
+    {
+        rotationDirection = sketchPlane.normal;
+    }
+    const rotationAxis = line(jogPoints[1], rotationDirection);
+     // tracking faces generated from extrude cut and divide them into two groups
+    const facesByExtrudeCut = qCreatedBy(id + "extrude", EntityType.FACE);
+    const facesAlignedWithViewPlane = qParallelPlanes(facesByExtrudeCut, sketchPlane.x, true);
+    const facesAlignedWithRevolvedPlane = rotationAngle < TOLERANCE.zeroAngle * radian
+                                      ? facesAlignedWithViewPlane
+                                      : qSubtraction(facesByExtrudeCut, facesAlignedWithViewPlane);
+    // for lines with 180 degree, tracking is needed because the section faces aligned with view plane could be split in the following
+    // sketch and extrude cut step, which could modify the original face query
+    const trackFacesAlignedWithViewPlane = qUnion([facesAlignedWithViewPlane, startTracking(context, facesAlignedWithViewPlane)]);
+    const trackFacesAlignedWithRevolvedPlane = startTracking(context, facesAlignedWithRevolvedPlane);
+    // make rotated copies
+    opPattern(context, id + "pattern", {
+            "entities" : definition.target,
+            "transforms" : [rotationAround(rotationAxis, rotationAngle)],
+            "instanceNames" : ['patternInstancesForPartStudio']
+    });
+
+    var sourceParts = qSubtraction(definition.target, qCreatedBy(id + "pattern", EntityType.BODY));
+    var rotatedParts = qBodyType(qCreatedBy(id + "pattern", EntityType.BODY), BodyType.SOLID);
+    const versionOperationUse = (definition.versionOperationUse == true);
+    const coordinateSystem = planeToCSys(sketchPlane);
+    var boxResult = evBox3d(context, {
+        'topology' : qUnion([sourceParts, rotatedParts]),
+        'cSys' : coordinateSystem,
+        'tight' : false
+    });
+    boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+    // Shift the plane and box to the box's min corner
+    var origin = toWorld(coordinateSystem, boxResult.minCorner);
+    const offsetPlane = plane(origin, sketchPlane.normal, sketchPlane.x);
+    boxResult.maxCorner = boxResult.maxCorner - boxResult.minCorner;
+    boxResult.minCorner = vector(0, 0, 0) * meter;
+    var projected2DPoints = makeArray(numberOfPoints);
+    for (var i = 0; i < numberOfPoints; i = i + 1)
+    {
+         projected2DPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
+    }
+
+    var polygonForSourceParts = createJogPolygonForSourceParts(projected2DPoints, boxResult);
+    var polygonForRotatedParts = createJogPolygonForRotatedParts(projected2DPoints, boxResult);
+
+    sketchAndExtrudeCut(context, id + "sourceParts", sourceParts, polygonForSourceParts, offsetPlane,
+                        sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
+
+    sketchAndExtrudeCut(context, id + "rotatedParts", rotatedParts, polygonForRotatedParts, offsetPlane,
+                        sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
+
+    return qUnion([qOwnedByBody(trackFacesAlignedWithViewPlane, sourceParts), qOwnedByBody(trackFacesAlignedWithRevolvedPlane, rotatedParts)]);
 }
 

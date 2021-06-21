@@ -1,28 +1,28 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1521.0");
-export import(path : "onshape/std/tool.fs", version : "1521.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
+export import(path : "onshape/std/tool.fs", version : "1540.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1521.0");
+export import(path : "onshape/std/manipulator.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1521.0");
-import(path : "onshape/std/box.fs", version : "1521.0");
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1521.0");
-import(path : "onshape/std/evaluate.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/mathUtils.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1521.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/attributes.fs", version : "1540.0");
+import(path : "onshape/std/box.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/evaluate.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/mathUtils.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
 
 /**
@@ -947,7 +947,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         const alwaysUpdateAngles = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1047_MOVE_FACE_JOINTS);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
-            if (size(evaluateQuery(context, allFaces)) > 0)
+            if (!isQueryEmpty(context, allFaces))
             {
                 opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : mergeFaces }));
             }
@@ -991,7 +991,7 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
                 processSubfeatureStatus(context, id, { "subfeatureId" : id + "edgeChange", "propagateErrorDisplay" : true });
                 throw regenError(ErrorStringEnum.DIRECT_EDIT_MOVE_FACE_FAILED);
             }
-            if (size(evaluateQuery(context, qCreatedBy(id + "edgeChange", EntityType.FACE))) != 0)
+            if (!isQueryEmpty(context, qCreatedBy(id + "edgeChange", EntityType.FACE)))
             {
                 throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL);
             }
@@ -1006,11 +1006,11 @@ const offsetSheetMetalFaces = defineSheetMetalFeature(function(context is Contex
         modifiedFaces = qUnion([modifiedFaces, qAdjacent(qGeometry(modifiedFaces, GeometryType.CYLINDER), AdjacencyType.EDGE, EntityType.FACE)]);
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, sheetMetalModels]), initialData, id);
 
-        try(updateSheetMetalGeometry(context, id + "smUpdate", {
-                        "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                        "deletedAttributes" : toUpdate.deletedAttributes,
-                        "associatedChanges" : associateChanges }));
-        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
+        callSubfeatureAndProcessStatus(id, updateSheetMetalGeometry, context, id + "smUpdate", {
+                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                    "deletedAttributes" : toUpdate.deletedAttributes,
+                    "associatedChanges" : associateChanges
+                });
     }, {});
 
 const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is Context, id is Id, definition)
@@ -1060,7 +1060,7 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
         const mergeFaces = (definition.moveFaceType != MoveFaceType.ROTATE) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V528_MOVE_FACE_MERGE);
         if (definition.moveFaceType != MoveFaceType.OFFSET)
         {
-            if (size(evaluateQuery(context, allFaces)) > 0)
+            if (!isQueryEmpty(context, allFaces))
             {
                 opMoveFace(context, id + "offset", mergeMaps(definition, { "moveFaces" : allFaces, "mergeFaces" : mergeFaces }));
             }
@@ -1083,22 +1083,16 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
         }
         if (size(edgeLimitOptions) > 0)
         {
-            try
-            {
-                sheetMetalExtendSheetBodyCall(context, id + "extend", {
-                            "entities" : qUnion(smEdges),
-                            "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
-                            "edgeLimitOptions" : edgeLimitOptions,
-                            "fence" : true });
-            }
-            catch (error)
-            {
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + "extend", "propagateErrorDisplay" : true });
-                throw error;
-            }
+            callSubfeatureAndProcessStatus(id, sheetMetalExtendSheetBodyCall, context, id + "extend", {
+                        "entities" : qUnion(smEdges),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : edgeLimitOptions,
+                        "fence" : true
+                    });
+
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V512_MOVE_FACE_OVERLAP))
             {
-                if (size(evaluateQuery(context, qCreatedBy(id + "extend", EntityType.FACE))) != 0)
+                if (!isQueryEmpty(context, qCreatedBy(id + "extend", EntityType.FACE)))
                 {
                     throw regenError(ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_MODEL);
                 }
@@ -1128,15 +1122,15 @@ const offsetSheetMetalFacesLegacy = defineSheetMetalFeature(function(context is 
 
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, qUnion([trackingSMModel, operationInfo.sheetMetalModels]), initialData, id);
 
+        callSubfeatureAndProcessStatus(id, updateSheetMetalGeometry, context, id + "smUpdate", {
+                    "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
+                    "deletedAttributes" : toUpdate.deletedAttributes,
+                    "associatedChanges" : associateChanges
+                });
 
-        try(updateSheetMetalGeometry(context, id + "smUpdate", {
-                        "entities" : qUnion([toUpdate.modifiedEntities, modifiedFaces]),
-                        "deletedAttributes" : toUpdate.deletedAttributes,
-                        "associatedChanges" : associateChanges }));
-        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
         try silent(opDeleteBodies(context, id + "delete", {
-                "entities" : qCreatedBy(toolId, EntityType.BODY)
-        }));
+                    "entities" : qCreatedBy(toolId, EntityType.BODY)
+                }));
     }, {});
 
 // Manipulator functions
@@ -1192,7 +1186,7 @@ function addRotateManipulator(context is Context, id is Id, axis is Line, facePl
         const faceBox = try(evBox3d(context, { topology : qNthElement(faceQuery, 0) }));
         var manipulatorRadius = 0.001 * meter; // default of 1 mm if we fail to get the box
         if (faceBox != undefined)
-            manipulatorRadius = norm(faceBox.maxCorner - faceBox.minCorner) * 0.5;
+            manipulatorRadius = (box3dDiagonalLength(faceBox) / 2);
         refPoint = rotateOrigin + orthoVec * manipulatorRadius;
     }
     var minValue = -2 * PI * radian;

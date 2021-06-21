@@ -1,21 +1,21 @@
-FeatureScript 1521; /* Automatically generated version */
+FeatureScript 1540; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "1521.0");
-export import(path : "onshape/std/query.fs", version : "1521.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/query.fs", version : "1540.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1521.0");
-import(path : "onshape/std/feature.fs", version : "1521.0");
-import(path : "onshape/std/math.fs", version : "1521.0");
-import(path : "onshape/std/matrix.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1521.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1521.0");
-import(path : "onshape/std/valueBounds.fs", version : "1521.0");
+import(path : "onshape/std/containers.fs", version : "1540.0");
+import(path : "onshape/std/feature.fs", version : "1540.0");
+import(path : "onshape/std/math.fs", version : "1540.0");
+import(path : "onshape/std/matrix.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1540.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
+import(path : "onshape/std/valueBounds.fs", version : "1540.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -98,8 +98,8 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
 function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
-    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
+    var hasSheetMetalQueries = !isQueryEmpty(context, separatedQueries.sheetMetalQueries);
+    var hasNonSheetMetalQueries = !isQueryEmpty(context, separatedQueries.nonSheetMetalQueries);
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {
@@ -129,10 +129,7 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
                     "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
                     "range" : definition.width
                 };
-        try(sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition));
-        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smChamfer", "propagateErrorDisplay" : true});
-        if (featureHasError(context, id))
-            return;
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smChamfer", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)
