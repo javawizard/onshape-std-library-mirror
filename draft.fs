@@ -500,8 +500,8 @@ function getOrderedFaceData(context is Context, edge is Query, rawPullDirection 
             {
                 const neighborFirstFace = edgeToOrderedFaceData[processedAdjacentEdge][0].face;
 
-                const face0Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face0AndAdjacent]))) > 0;
-                const face1Matches = size(evaluateQuery(context, qIntersection([neighborFirstFace, face1AndAdjacent]))) > 0;
+                const face0Matches = !isQueryEmpty(context, qIntersection([neighborFirstFace, face0AndAdjacent]));
+                const face1Matches = !isQueryEmpty(context, qIntersection([neighborFirstFace, face1AndAdjacent]));
 
                 if (face0Matches == face1Matches)
                 {
@@ -857,7 +857,7 @@ predicate canGenerateHintFaces(context is Context, oldDefinition is map, definit
     // faces when we go from no pull direction entity to some pull direction entity. `try silent` for old definition
     // because oldDefinition.pullDirectionEntity is undefined when first creating the feature.
     oldDefinition.partingEdges != definition.partingEdges ||
-        (try silent(size(evaluateQuery(context, oldDefinition.pullDirectionEntity))) == 0 && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
+        (try silent(isQueryEmpty(context, oldDefinition.pullDirectionEntity)) && size(evaluateQuery(context, definition.pullDirectionEntity)) == 1);
 }
 
 function generateHintFaces(context is Context, edgeToOrderedFaceDataBox is box, definition is map) returns Query
@@ -897,7 +897,7 @@ predicate canFlipAlongPull(context is Context, oldDefinition is map, definition 
 {
     specifiedParameters.partingEdges;
     oldDefinition.partingEdges != definition.partingEdges;
-    size(evaluateQuery(context, oldDefinition.partingEdges)) == 0;
+    isQueryEmpty(context, oldDefinition.partingEdges);
     size(evaluateQuery(context, definition.partingEdges)) == 1;
 }
 

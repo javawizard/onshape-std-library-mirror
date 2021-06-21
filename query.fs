@@ -1967,6 +1967,25 @@ export function evaluateQuery(context is Context, query is Query) returns array
     return out;
 }
 
+/**
+ * Returns `true` if the supplied queries evaluate to the same set of entities. This function is order-invariant, so if
+ * the two queries evaluate to the same entities, but in a different order, the function will still return `true`.
+ */
+export function areQueriesEquivalent(context is Context, first is Query, second is Query) returns boolean
+{
+    return isQueryEmpty(context, qSubtraction(first, second)) && isQueryEmpty(context, qSubtraction(second, first));
+}
+
+/**
+ * Returns `true` if `query` evaluates to nothing. Equivalent to `evaluateQuery(context, query) == []` or
+ * `size(evaluateQuery(context, query)) == 0`, but faster than either of those approaches if the query is not empty.
+ */
+export function isQueryEmpty(context is Context, query is Query) returns boolean
+{
+    // Use @evaluateQuery builtin to avoid overhead of packing transient ids into transient queries
+    return @evaluateQuery(context, { "query" : query }) == [];
+}
+
 //==================
 
 /**

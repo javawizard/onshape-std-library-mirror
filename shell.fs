@@ -47,7 +47,7 @@ export const shell = defineFeature(function(context is Context, id is Id, defini
         else
             definition.entities = qEntityFilter(definition.entities, EntityType.FACE);
 
-        if (evaluateQuery(context, definition.entities) == [])
+        if (isQueryEmpty(context, definition.entities))
         {
             if (definition.isHollow)
                 throw regenError(ErrorStringEnum.SHELL_SELECT_PARTS, ["parts"]);

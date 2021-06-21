@@ -313,7 +313,7 @@ export function instantiate(context is Context, instantiator is Instantiator)
 function instantiationCleanup(context is Context, id is Id, allDerivedId is Id )
 {
     const derivedQ = qCreatedBy(allDerivedId, EntityType.BODY);
-    if (evaluateQuery(context, derivedQ) != [])
+    if (!isQueryEmpty(context, derivedQ))
     {
         opDeleteBodies(context, id + "delete", { "entities" : derivedQ });
     }

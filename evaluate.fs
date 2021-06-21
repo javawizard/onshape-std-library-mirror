@@ -466,10 +466,15 @@ export predicate canBeRaycastResult(value)
  * Detect intersections between a ray and the given entities.
  * @param arg {{
  *      @field entities{Query} : A query for target entities. If bodies are provided, the result will contain intersections for individual entities owned by the body.
- *      @field ray{Line} : The ray to intersect the entities. Because the passed-in `Line` is interpreted as a ray, collisions with entities "behind" the ray origin are not detected.
+ *      @field ray{Line} : The ray to intersect the entities. Because the passed-in `Line` is interpreted as a ray,
+ *          by default, intersections with entities "behind" the ray origin are not detected. `includeIntersectionsBehind`
+ *          can be set to `true` if those intersections are desired.
  *          @eg `line(vector(0, 0, 0) * inch, vector(1, 0, 0))` specifies the positive x-axis
  *      @field closest{boolean} : Get only the closest intersection with any of the entities. Defaults to `true`.
  *          @autocomplete `true`
+ *          @optional
+ *      @field includeIntersectionsBehind{boolean} : Return intersections that are behind the ray origin.
+ *          Defaults to `false`. Cannot be set to `true` if `closest` is `true`.
  *          @optional
  * }}
  * @returns {array} : An array of [RaycastResult]s for each intersection in front of the ray, ordered from closest to farthest.
@@ -480,9 +485,10 @@ precondition
     arg.entities is Query;
     arg.ray is Line;
     arg.closest == undefined || arg.closest is boolean;
+    arg.includeIntersectionsBehind == undefined || arg.includeIntersectionsBehind is boolean;
 }
 {
-    var data = @evRaycast(context, { "entities" : arg.entities, "ray" : arg.ray, "closest" : arg.closest });
+    var data = @evRaycast(context, arg);
     var results = [];
 
     for (var i = 0; i < size(data); i += 1)

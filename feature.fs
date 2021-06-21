@@ -161,6 +161,61 @@ export function endFeature(context is Context, id is Id)
 }
 
 /**
+ * This function can be used to call a subfeature or sub-operation (such as `extrude` or `opExtrude`, respectively). It
+ * will properly handle any statuses as if they came from the top level feature. That is, reported `INFO` will display
+ * as a blue message bubble, `WARNING` will turn the feature orange with a warning tooltip on hover, and `ERROR` will
+ * throw an error after status handling (aborting feature execution if it is not caught). Any error entities that the
+ * subfeature emits will also be displayed.
+ *
+ * @ex `callSubfeatureAndProcessStatus(id, booleanBodies, context, id + "boolean", booleanDefinition);` (where `id` is
+ *     the top-level feature id passed into the feature) will call
+ *     `booleanBodies(context, id + "boolean", booleanDefinition)`, propagate its status onto the current feature, and
+ *     show any error entities coming from the boolean.
+ *
+ * Internally, calls the supplied function, and attaches any status it produces to the `topLevelId` using
+ * [processSubfeatureStatus]. If calling the function produces an error, the error is re-thrown. If the function
+ * produces a return value, that value is returned.
+ *
+ * @param topLevelId   : @autocomplete `id`
+ * @param fn           : @autocomplete `booleanBodies`
+ * @param subfeatureId : @autocomplete `id + "boolean"`
+ * @param definition   : @autocomplete `booleanDefinition`
+ */
+export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id, definition is map)
+{
+    return callSubfeatureAndProcessStatus(topLevelId, fn, context, subfeatureId, definition, { "propagateErrorDisplay" : true });
+}
+
+/**
+ * See [callSubfeatureAndProcessStatus](callSubfeatureAndProcessStatus(Id, function, Context, Id, map)).
+ *
+ * @param topLevelId   : @autocomplete `id`
+ * @param fn           : @autocomplete `booleanBodies`
+ * @param subfeatureId : @autocomplete `id + "boolean"`
+ * @param definition   : @autocomplete `booleanDefinition`
+ * @param processSubfeatureStatusOptions : Passed as the `definition` argument to [processSubfeatureStatus]. Setting
+ *                                         `subfeatureId` in this map is not required, and will be ignored in favor of
+ *                                         the `subfeatureId` passed into this function.
+ *                                         @autocomplete `{ "propagateErrorDisplay" : true }`
+ */
+export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id,
+    definition is map, processSubfeatureStatusOptions is map)
+{
+    const returnValue = try(fn(context, subfeatureId, definition));
+    processSubfeatureStatusOptions.subfeatureId = subfeatureId;
+    processSubfeatureStatus(context, topLevelId, processSubfeatureStatusOptions);
+
+    // Re-throw if there is an error, but not a warn or info.
+    const error = getFeatureError(context, topLevelId);
+    if (error != undefined)
+    {
+        throw error;
+    }
+
+    return returnValue;
+}
+
+/**
  * Iterate through all entities provided by a query, calling the provided function once for each geometric entity
  * resolved by the provided `query`.
  *
@@ -720,7 +775,7 @@ function verifyNonemptyArrayInternal(context is Context, definition is map, para
 export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     parameterName is string, errorToReport is ErrorStringEnum)
 {
-    if (evaluateQuery(context, qSheetMetalFlatFilter(query, SMFlatType.YES)) != [])
+    if (!isQueryEmpty(context, qSheetMetalFlatFilter(query, SMFlatType.YES)))
     {
         throw regenError(errorToReport, [parameterName]);
     }

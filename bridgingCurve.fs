@@ -470,7 +470,7 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     var edges = qEntityFilter(side, EntityType.EDGE);
     var edgeCount = size(evaluateQuery(context, edges));
 
-    if (size(evaluateQuery(context, points)) == 0 && edgeCount == 1)
+    if (isQueryEmpty(context, points) && edgeCount == 1)
     {
         // The user hasn't selected a vertex but if they selected an edge we may be able to work out what they want from the other side selections
         points = inferVertex(context, edges, otherSide);

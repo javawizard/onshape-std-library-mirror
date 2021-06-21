@@ -174,7 +174,7 @@ function collectReferenceEntities(context is Context, definition is map) returns
         }
         referenceEntities = qUnion(referenceEntityQueries);
 
-        if (evaluateQuery(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES)) != [])
+        if (!isQueryEmpty(context, qMeshGeometryFilter(referenceEntities, MeshGeometry.YES)))
             throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, ["instanceFunction"]);
     }
     else

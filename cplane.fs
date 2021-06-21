@@ -403,7 +403,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
         // If after V1004, and this offset plane is not based on a face, return the default plane bounds
-        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        if (filterFaces && isQueryEmpty(context, qEntityFilter(definition.entities, EntityType.FACE)))
         {
             return planeBounds;
         }
@@ -440,7 +440,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
     {
         const filterFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1004_MATE_CONNECTOR_AS_PLANE);
         // If after V1004, and this point-plane is not based on a face, return the default plane bounds
-        if (filterFaces && evaluateQuery(context, qEntityFilter(definition.entities, EntityType.FACE)) == [])
+        if (filterFaces && isQueryEmpty(context, qEntityFilter(definition.entities, EntityType.FACE)))
         {
             return planeBounds;
         }

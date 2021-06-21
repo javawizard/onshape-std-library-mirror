@@ -495,20 +495,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         else
         {
             const subId = validateInputs ? id : id + "transform";
-            try
-            {
-                opTransform(context, subId,
-                            { "bodies" : qOwnerBody(definition.entities),
-                              "transform" : transformMatrix });
-            }
-            catch
-            {
-                processSubfeatureStatus(context, id, {
-                            "subfeatureId" : subId,
-                            "propagateErrorDisplay" : true,
-                            "featureParameterMap" : { "bodies" : "entities" }
-                        });
-            }
+            callSubfeatureAndProcessStatus(id, opTransform, context, subId, {
+                        "bodies" : qOwnerBody(definition.entities),
+                        "transform" : transformMatrix
+                    }, {
+                        "propagateErrorDisplay" : true,
+                        "featureParameterMap" : { "bodies" : "entities" }
+                    });
         }
     }, { "oppositeDirection" : false, "scale" : 1.0, "uniform" : true });
 

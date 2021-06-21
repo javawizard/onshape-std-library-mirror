@@ -499,7 +499,7 @@ precondition
 function checkReferenceGeometryProvided(context is Context, referenceGeometry) returns boolean
 {
     // reference geometry is absent if referenceGeometry is an empty query or undefined
-    var isEmpty = ((referenceGeometry is Query) && (size(evaluateQuery(context, referenceGeometry)) == 0)) ||
+    var isEmpty = ((referenceGeometry is Query) && isQueryEmpty(context, referenceGeometry)) ||
                   (referenceGeometry == undefined);
 
     return !isEmpty;

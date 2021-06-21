@@ -716,7 +716,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits)
 {
     var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
-                        size(evaluateQuery(context, sideEdge)) == 0;
+                        isQueryEmpty(context, sideEdge);
     var sideEdgeIsBend = false;
     var jointAttribute;
     if (!ignoreSideEdge)
@@ -877,7 +877,7 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
 
     var failIfNotLines = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     var lineX;
-    if (size(evaluateQuery(context, edgeY)) != 0)
+    if (!isQueryEmpty(context, edgeY))
     {
         //if edgeY is collinear with edgeX,look for next edge on sideFace
         var line1 = (failIfNotLines) ? evLine(context, {"edge" : edgeX}) : try silent(evLine(context, {"edge" : edgeX}));

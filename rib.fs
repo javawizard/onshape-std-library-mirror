@@ -85,7 +85,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             throw regenError(ErrorStringEnum.RIB_NO_PROFILES, ["profiles"]);
         }
 
-        if (evaluateQuery(context, definition.parts) == [])
+        if (isQueryEmpty(context, definition.parts))
         {
             throw regenError(ErrorStringEnum.RIB_NO_PARTS);
         }
@@ -132,7 +132,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             }
 
             // Fail early if the rib body can't be created.
-            if (evaluateQuery(context, qCreatedBy(thickenId, EntityType.BODY)) == [])
+            if (isQueryEmpty(context, qCreatedBy(thickenId, EntityType.BODY)))
             {
                 throw regenError(ErrorStringEnum.RIB_BODY_FAILED, profile);
             }
@@ -210,7 +210,7 @@ function calculateLength(context is Context, parts is Query)
     const partBoundingBox = evBox3d(context, {
                 "topology" : parts
             });
-    return norm(partBoundingBox.maxCorner - partBoundingBox.minCorner);
+    return box3dDiagonalLength(partBoundingBox);
 }
 
 function createEntitiesToExtrude(context is Context, id is Id, profile is Query, remainingTransform is Transform, extendLength is ValueWithUnits, definition is map) returns map
@@ -273,7 +273,7 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
         else
         {
             // old method, test if the point is in or on one of the parts.
-            return evaluateQuery(context, qContainsPoint(definition.parts, remainingTransform * profileEndTangentLines[end].origin)) != [];
+            return !isQueryEmpty(context, qContainsPoint(definition.parts, remainingTransform * profileEndTangentLines[end].origin));
         }
     };
 
@@ -386,7 +386,7 @@ function extrudeRibs(context is Context,
                     "keepTools" : true
                 });
         var boolQuery = qCreatedBy(id + "splitOffRibExcess", EntityType.FACE);
-        if (size(evaluateQuery(context, boolQuery)) == 0 || size(evaluateQuery(context, ribPartsQuery)) == 1)
+        if (isQueryEmpty(context, boolQuery) || size(evaluateQuery(context, ribPartsQuery)) == 1)
         {
             badSubtractions = append(badSubtractions, ribPartsQuery);
             didBoolean = false;
@@ -470,7 +470,7 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
         }
 
         // If there are no targets remaining, break
-        if (size(evaluateQuery(context, targetQuery)) == 0)
+        if (isQueryEmpty(context, targetQuery))
         {
             break;
         }

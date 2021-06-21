@@ -42,7 +42,7 @@ export function booleanStepEditLogicAnalysis(context is Context, oldDefinition i
     if (!canDefineOperation && definition.booleanScope is Query)
     {
         // Only change scope if heuristics have not already filled scope
-        canDefineScope = (evaluateQuery(context, definition.booleanScope) == []);
+        canDefineScope = (isQueryEmpty(context, definition.booleanScope));
     }
     return { "canDefineOperation" : canDefineOperation, "canDefineScope" : canDefineScope };
 }

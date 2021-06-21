@@ -419,8 +419,9 @@ export function arrayParameterId(arrayParameter is string, itemIndex is number, 
     return arrayParameter ~ "[" ~ itemIndex ~ "]." ~ innerParameter;
 }
 
+// This should be left un-exported to ensure that all error handling is implemented in this file.
 /** @internal */
-enum StatusType {OK, ERROR, WARNING, INFO}
+enum StatusType { OK, ERROR, WARNING, INFO }
 
 /**
  * The status of a feature

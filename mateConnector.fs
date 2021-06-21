@@ -254,7 +254,7 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery];
         // If there are no selections, reset owner part, don't try to recompute
-        if (size(evaluateQuery(context, qUnion(possiblePartOwners))) == 0)
+        if (isQueryEmpty(context, qUnion(possiblePartOwners)))
         {
             definition.ownerPart = qUnion([]);
             return definition;
@@ -268,7 +268,7 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
 
         var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
 
-        if (ownerPartQuery != undefined && size(evaluateQuery(context, ownerPartQuery)) > 0)
+        if (ownerPartQuery != undefined && !isQueryEmpty(context, ownerPartQuery))
             definition.ownerPart = qUnion(evaluateQuery(context, ownerPartQuery));
         else
             definition.ownerPart = qUnion([]);
@@ -282,14 +282,14 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     for (var possiblePartOwner in possiblePartOwners)
     {
         const meshQuery = qSourceMesh(possiblePartOwner);
-        if (evaluateQuery(context, meshQuery) != [])
+        if (!isQueryEmpty(context, meshQuery))
         {
             ownerPartQuery = meshQuery;
             break;
         }
 
         const solidQuery = qBodyType(qOwnerBody(possiblePartOwner), BodyType.SOLID);
-        if (evaluateQuery(context, solidQuery) != [])
+        if (!isQueryEmpty(context, solidQuery))
         {
             ownerPartQuery = solidQuery;
             break;
@@ -301,7 +301,7 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
         {
             const modifiableSurfaceQuery = qModifiableEntityFilter(qSketchFilter(qBodyType(qOwnerBody(possiblePartOwner), BodyType.SHEET), SketchObject.NO));
-            if (evaluateQuery(context, modifiableSurfaceQuery) != [])
+            if (!isQueryEmpty(context, modifiableSurfaceQuery))
             {
                 ownerPartQuery = modifiableSurfaceQuery;
                 break;

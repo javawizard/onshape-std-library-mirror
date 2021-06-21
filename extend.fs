@@ -147,7 +147,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
                 errorEntityString = "targetVertex";
             }
 
-            if (evaluateQuery(context, definition.target) == [])
+            if (isQueryEmpty(context, definition.target))
             {
                 throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, [errorEntityString]);
             }
@@ -157,14 +157,14 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
             try
             {
                 extendToTarget(context, id, definition);
-                if (evaluateQuery(context, qUnion(toDelete)) != [])
+                if (!isQueryEmpty(context, qUnion(toDelete)))
                 {
                     opDeleteBodies(context, id + "deleteBodiesCleanup", { "entities" : qUnion(toDelete) });
                 }
             }
             catch(e)
             {
-                if (evaluateQuery(context, qUnion(toDelete)) != [])
+                if (!isQueryEmpty(context, qUnion(toDelete)))
                 {
                     opDeleteBodies(context, id + "deleteBodiesCleanup", { "entities" : qUnion(toDelete) });
                 }
@@ -375,7 +375,7 @@ function getEdgeToUse(context is Context, entities is Query, useLastSelected is 
         if (useLastSelected) //used in manipulator attachment
         {
             edgeToUse = resolvedEntities[@size(resolvedEntities) - 1];
-            if (@size(evaluateQuery(context, qEntityFilter(edgeToUse, EntityType.BODY))) != 0)
+            if (!isQueryEmpty(context, qEntityFilter(edgeToUse, EntityType.BODY)))
             {
                 edgeToUse = getFirstLaminarEdge(context, qOwnedByBody(edgeToUse, EntityType.EDGE));
             }

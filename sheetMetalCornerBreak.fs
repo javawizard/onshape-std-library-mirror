@@ -79,7 +79,7 @@ function getDefinitionVertices(context is Context, entityArray is array) returns
         var errorEntities = [];
         for (var i = 0; i < size(definitionEntities); i += 1)
         {
-            if (size(evaluateQuery(context, qEntityFilter(definitionEntities[i], EntityType.VERTEX))) == 0)
+            if (isQueryEmpty(context, qEntityFilter(definitionEntities[i], EntityType.VERTEX)))
             {
                 errorEntities = append(errorEntities, entityArray[i]);
             }

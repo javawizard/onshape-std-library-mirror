@@ -63,10 +63,10 @@ export const deleteFace = defineFeature(function(context is Context, id is Id, d
  */
 export function deleteFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
-    if (!specifiedParameters.healType && oldDefinition.deleteFaces != definition.deleteFaces && evaluateQuery(context, definition.deleteFaces) != [])
+    if (!specifiedParameters.healType && oldDefinition.deleteFaces != definition.deleteFaces && !isQueryEmpty(context, definition.deleteFaces))
     {
-        const allSheetFaces = evaluateQuery(context, qSubtraction(definition.deleteFaces, qBodyType(definition.deleteFaces, BodyType.SHEET))) == [];
-        const oldFacesEmpty = oldDefinition.deleteFaces == undefined || evaluateQuery(context, oldDefinition.deleteFaces) == [];
+        const allSheetFaces = isQueryEmpty(context, qSubtraction(definition.deleteFaces, qBodyType(definition.deleteFaces, BodyType.SHEET)));
+        const oldFacesEmpty = oldDefinition.deleteFaces == undefined || isQueryEmpty(context, oldDefinition.deleteFaces);
         if (allSheetFaces && oldFacesEmpty)
         {
             //We only change the heal type if all of the selected faces are sheet faces.

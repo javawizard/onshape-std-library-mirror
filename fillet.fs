@@ -234,8 +234,8 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
 function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
-    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
+    var hasSheetMetalQueries = !isQueryEmpty(context, separatedQueries.sheetMetalQueries);
+    var hasNonSheetMetalQueries = !isQueryEmpty(context, separatedQueries.nonSheetMetalQueries);
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {
@@ -257,10 +257,7 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
             "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
             "range" : definition.radius
         };
-        try(sheetMetalCornerBreak(context, id + "smFillet", cornerBreakDefinition));
-        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smFillet", "propagateErrorDisplay" : true });
-        if (featureHasError(context, id))
-            return;
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smFillet", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)
@@ -350,7 +347,7 @@ function findManipulationEntity(context is Context, definition is map) returns Q
     if (@size(resolvedEntities) > 0)
     {
         var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
-        if (@size(evaluateQuery(context, qEntityFilter(operativeEntity, EntityType.FACE))) != 0)
+        if (!isQueryEmpty(context, qEntityFilter(operativeEntity, EntityType.FACE)))
         {
             operativeEntity = evaluateQuery(context, qAdjacent(operativeEntity, AdjacencyType.EDGE, EntityType.EDGE))[0];
         }

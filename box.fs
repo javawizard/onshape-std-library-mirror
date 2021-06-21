@@ -125,7 +125,7 @@ precondition
     isLength(absoluteValue);
 }
 {
-    const midPoint is Vector = (bBox.minCorner + bBox.maxCorner) * 0.5;
+    const midPoint is Vector = box3dCenter(bBox);
     const halfDiagonal is Vector = (bBox.maxCorner - bBox.minCorner) * 0.5;
     const absoluteIncrement is Vector = vector(absoluteValue, absoluteValue, absoluteValue);
 
@@ -138,10 +138,18 @@ precondition
  * Return the center of the bounding box.
  * @param bBox {Box3d}
  */
- export function box3dCenter(bBox is Box3d) returns Vector
- {
+export function box3dCenter(bBox is Box3d) returns Vector
+{
     return ((bBox.maxCorner + bBox.minCorner) / 2);
- }
+}
+
+/**
+ * Return the length of the diagonal from the `minCorner` to the `maxCorner` of the bounding box.
+ */
+export function box3dDiagonalLength(bBox is Box3d) returns ValueWithUnits
+{
+    return norm(bBox.maxCorner - bBox.minCorner);
+}
 
 /**
  * Whether the specified point is within the bounding box.

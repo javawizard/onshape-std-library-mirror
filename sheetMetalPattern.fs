@@ -98,11 +98,10 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
 
         // Build out final sheet metal
         const smUpdateId = id + "smUpdate";
-        try(updateSheetMetalGeometry(context, smUpdateId, {
+        callSubfeatureAndProcessStatus(topLevelId, updateSheetMetalGeometry, context, smUpdateId, {
                     "entities" : updateMap.modifiedEntities,
                     "deletedAttributes" : updateMap.deletedAttributes
-                }));
-        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : smUpdateId, "propagateErrorDisplay" : true});
+                });
     }, { filterVertices: false });
 
 //////////////////// FACE PATTERN ENTITY SORTING ////////////////////
@@ -708,7 +707,7 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
             {
                 targets = qNothing();
 
-                if (evaluateQuery(context, definition.booleanScope) != [])
+                if (!isQueryEmpty(context, definition.booleanScope))
                 {
                     if (queryContainsNonSheetMetal(context, definition.booleanScope))
                     {
@@ -734,13 +733,13 @@ function booleanSMBodiesIfNecessary(context is Context, topLevelId is Id, id is 
                 var seedBodies = qOwnerBody(seedFaces);
                 tools = qUnion([seedBodies, tools]);
                 targets = qSubtraction(targets, seedBodies);
-                if (evaluateQuery(context, targets) == [])
+                if (isQueryEmpty(context, targets))
                 {
                     targetsAndToolsNeedGrouping = false;
                 }
             }
 
-            if (targetsAndToolsNeedGrouping && evaluateQuery(context, targets) == [])
+            if (targetsAndToolsNeedGrouping && isQueryEmpty(context, targets))
             {
                 setErrorEntities(context, topLevelId, { "entities" : bodiesToAttach });
                 throw regenError(ErrorStringEnum.BOOLEAN_NEED_ONE_SOLID, ["booleanScope"]);
@@ -1175,7 +1174,7 @@ function getRipSideFace(context is Context, ripEdge is Query, inBodies is Query,
     var associatedWallFacesQ = qEntityFilter(qAttributeQuery(wallAssociationAttributes[0]), EntityType.FACE);
 
     var adjacentWallQ = qAdjacent(candidateFaces[0], AdjacencyType.EDGE, EntityType.FACE);
-    if (size(evaluateQuery(context, qIntersection([associatedWallFacesQ, adjacentWallQ]))) == 0)
+    if (isQueryEmpty(context, qIntersection([associatedWallFacesQ, adjacentWallQ])))
         return candidateFaces[1];
     else
         return candidateFaces[0];
@@ -1324,7 +1323,7 @@ function patternSeeds(context is Context, id is Id, seeds is Query, definition i
  */
 function throwFacePatternError(context is Context, topLevelId is Id, errorEntities is Query, definition is map)
 {
-    if (size(evaluateQuery(context, errorEntities)) > 0)
+    if (!isQueryEmpty(context, errorEntities))
     {
         setErrorEntities(context, topLevelId, { "entities" : errorEntities });
     }

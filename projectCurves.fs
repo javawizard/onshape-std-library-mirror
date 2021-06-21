@@ -27,7 +27,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
         const edgeQ1 = qConstructionFilter(definition.sketchEdges1, ConstructionObject.NO);
         const edgeQ2 = qConstructionFilter(definition.sketchEdges2, ConstructionObject.NO);
 
-        if (evaluateQuery(context, edgeQ1) == [])
+        if (isQueryEmpty(context, edgeQ1))
         {
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges1"]);
         }
@@ -37,7 +37,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
             verifySameSketch(context, edgeQ1, "sketchEdges1");
         }
 
-        if (evaluateQuery(context, edgeQ2) == [])
+        if (isQueryEmpty(context, edgeQ2))
         {
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges2"]);
         }
@@ -63,7 +63,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
                     "tight" : false
                 });
 
-        const sizeAll = norm(boxAll.maxCorner - boxAll.minCorner);
+        const sizeAll = box3dDiagonalLength(boxAll);
 
         opExtrude(context, id + "extrude1", {
                     "entities" : edgeQ1,

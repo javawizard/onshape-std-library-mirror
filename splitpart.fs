@@ -119,7 +119,7 @@ function performSplitPart(context is Context, topLevelId is Id, definition is ma
         const toolIsSingleFace = (size(evaluateQuery(context, qEntityFilter(definition.tool, EntityType.FACE))) == 1);
         if (toolIsSingleFace && !definition.keepTools)
         {
-            const toolIsConstructionPlane = (evaluateQuery(context, qConstructionFilter(definition.tool, ConstructionObject.YES)) != []);
+            const toolIsConstructionPlane = (!isQueryEmpty(context, qConstructionFilter(definition.tool, ConstructionObject.YES)));
             if (toolIsConstructionPlane)
             {
                 reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS);
@@ -154,7 +154,7 @@ function performSplitFace(context is Context, topLevelId is Id, definition is ma
     const planeTools = qUnion(append(tempPlaneQueries, constructionPlaneQuery));
 
     // Split face doesn't delete construction planes or mate connectors
-    const hasConstructionTools = (evaluateQuery(context, planeTools) != []);
+    const hasConstructionTools = (!isQueryEmpty(context, planeTools));
     if (hasConstructionTools && !definition.keepToolSurfaces)
     {
         reportFeatureInfo(context, topLevelId, ErrorStringEnum.SPLIT_KEEP_PLANES_AND_MATE_CONNECTORS);

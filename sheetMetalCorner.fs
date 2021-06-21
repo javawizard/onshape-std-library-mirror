@@ -48,7 +48,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         }
     }
     {
-        if (size(evaluateQuery(context, definition.corner)) == 0)
+        if (isQueryEmpty(context, definition.corner))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_SELECT_ENTITIES, ['corner']);
         }
@@ -81,7 +81,7 @@ export const sheetMetalCorner = defineSheetMetalFeature(function(context is Cont
         {
             var facesQ = qAdjacent(qUnion(cornerInfo.allVertices), AdjacencyType.VERTEX, EntityType.FACE);
             var rolledQ = qSubtraction(facesQ, qGeometry(facesQ, GeometryType.PLANE));
-            if (size(evaluateQuery(context, rolledQ)) > 0)
+            if (!isQueryEmpty(context, rolledQ))
             {
                 throw regenError(ErrorStringEnum.SHEET_METAL_ROLLED_CORNER_RELIF, ['cornerStyle'], rolledQ);
             }

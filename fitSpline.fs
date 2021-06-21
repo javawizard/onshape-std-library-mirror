@@ -163,7 +163,7 @@ function getFitSplineThroughPointsDefinition(context is Context, id is Id, defin
                 "tight" : true
             });
 
-    const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
+    const totalSpan = box3dDiagonalLength(boundingBox);
     if (tolerantEquals(totalSpan, 0 * meter))
     {
         throw regenError(ErrorStringEnum.FIT_SPLINE_REPEATED_POINT, ['vertices']);
@@ -344,12 +344,12 @@ export function fitSplineEditLogic(context is Context, id is Id, oldDefinition i
     {
         const qEdges = qEntityFilter(definition.initEntities, EntityType.EDGE);
         const qVertices = qEntityFilter(definition.initEntities, EntityType.VERTEX);
-        if (evaluateQuery(context, qEdges) != [])
+        if (!isQueryEmpty(context, qEdges))
         {
             definition.fitType = FitSplineType.EDGES;
             definition.edges = qEdges;
         }
-        else if (evaluateQuery(context, qVertices) != [])
+        else if (!isQueryEmpty(context, qVertices))
         {
             definition.fitType = FitSplineType.VERTICES;
             definition.vertices = qEntityFilter(definition.initEntities, EntityType.VERTEX);
@@ -366,12 +366,12 @@ export function fitSplineEditLogic(context is Context, id is Id, oldDefinition i
     definition.hasStartDirection = false;
     definition.hasEndDirection = false;
 
-    if (specifiedParameters.startDirection && size(evaluateQuery(context, definition.startDirection)) > 0)
+    if (specifiedParameters.startDirection && !isQueryEmpty(context, definition.startDirection))
     {
         definition.hasStartDirection = true;
     }
 
-    if (specifiedParameters.endDirection && size(evaluateQuery(context, definition.endDirection)) > 0)
+    if (specifiedParameters.endDirection && !isQueryEmpty(context, definition.endDirection))
     {
         definition.hasEndDirection = true;
     }
@@ -451,7 +451,7 @@ export function fitSplineManipulatorChange(context is Context, definition is map
                 "tight" : true
             });
 
-    const totalSpan = norm(boundingBox.maxCorner - boundingBox.minCorner);
+    const totalSpan = box3dDiagonalLength(boundingBox);
     const oppositeDirectionStart = definition.oppositeDirectionStart ? -1 : 1;
     const oppositeDirectionEnd = definition.oppositeDirectionEnd ? -1 : 1;
 

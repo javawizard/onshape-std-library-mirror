@@ -333,10 +333,7 @@ export function filter(arr is array, filterFunction is function)
  */
 export function keys(container is map) returns array
 {
-    var result = [];
-    for (var entry in container)
-        result = @resize(result, @size(result) + 1, entry.key); // inlined append
-    return result;
+    return @keys(container);
 }
 
 /**
@@ -347,10 +344,7 @@ export function keys(container is map) returns array
  */
 export function values(container is map) returns array
 {
-    var result = [];
-    for (var entry in container)
-        result = @resize(result, @size(result) + 1, entry.value); // inlined append
-    return result;
+    return @values(container);
 }
 
 /**

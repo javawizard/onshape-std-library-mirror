@@ -98,8 +98,8 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
 function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
 {
     var separatedQueries = separateSheetMetalQueries(context, definition.entities);
-    var hasSheetMetalQueries = evaluateQuery(context, separatedQueries.sheetMetalQueries) != [];
-    var hasNonSheetMetalQueries = evaluateQuery(context, separatedQueries.nonSheetMetalQueries) != [];
+    var hasSheetMetalQueries = !isQueryEmpty(context, separatedQueries.sheetMetalQueries);
+    var hasNonSheetMetalQueries = !isQueryEmpty(context, separatedQueries.nonSheetMetalQueries);
 
     if (!hasSheetMetalQueries && !hasNonSheetMetalQueries)
     {
@@ -129,10 +129,7 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
                     "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
                     "range" : definition.width
                 };
-        try(sheetMetalCornerBreak(context, id + "smChamfer", cornerBreakDefinition));
-        processSubfeatureStatus(context, id, {"subfeatureId" : id + "smChamfer", "propagateErrorDisplay" : true});
-        if (featureHasError(context, id))
-            return;
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smChamfer", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)

@@ -1863,7 +1863,7 @@ function constructOtherSheet(context is Context, id is Id, arcSheet is Query, he
 {
     const sketchEdges = qConstructionFilter(qCreatedBy(hemData.profileSketchId, EntityType.EDGE), ConstructionObject.NO);
     const otherSketchEdges = qSubtraction(sketchEdges, hemData.arcEdge);
-    if (evaluateQuery(context, otherSketchEdges) == [])
+    if (isQueryEmpty(context, otherSketchEdges))
     {
         return qNothing();
     }
@@ -1954,7 +1954,7 @@ function annotateHemSheets(context is Context, topLevelId is Id, arcSheet is Que
     }
     else if (definition.hemType == SMHemType.ROLLED)
     {
-        if (evaluateQuery(context, qOwnedByBody(otherSheet, EntityType.FACE)) != [])
+        if (!isQueryEmpty(context, qOwnedByBody(otherSheet, EntityType.FACE)))
         {
             // Did not expect rolled to have additional sheet
             throw regenError(ErrorStringEnum.SHEET_METAL_HEM_FAILED);
@@ -1984,7 +1984,7 @@ function createMatches(context is Context, edge is Query, arcSheet is Query, oth
             "matchType" : TopologyMatchType.COINCIDENT
         }];
 
-    if (evaluateQuery(context, otherSheet) == [])
+    if (isQueryEmpty(context, otherSheet))
     {
         // If there is no otherSheet, we are done
         return matches;

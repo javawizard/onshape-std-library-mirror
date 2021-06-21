@@ -404,7 +404,7 @@ function getBodyHitDistances(context is Context, id is Id, cSys is CoordSystem, 
         shotNum += 1;
         var d;
         var hasCollision is boolean = false;
-        try
+        try silent
         {
             var extrudeDefinition;
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V364_HOLE_FIX_FEATURE_MIRROR))

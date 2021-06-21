@@ -76,10 +76,10 @@ export enum FlatOperationType
  *              @ex `true` to flip the direction of the extrude to point opposite the face/sketch
  *              normal.
  *
- *      @field depth {ValueWithUnits}: @requiredif {`endBound` is `BLIND` or `SYMMETRIC`}
- *              A length specifying the extrude depth. For a symmetric extrude, specifies the full
- *              extrude depth. For a blind extrude, specifies the depth of the first extrude
- *              direction.
+ *      @field depth {ValueWithUnits}: @requiredif {`endBound` is `BLIND`}
+ *              A length specifying the extrude depth. For a blind extrude,
+ *              specifies the depth of the first extrude direction.
+ *              For a symmetric extrude, specifies the full extrude depth.
  *              @eg `0.5 * inch`
  *      @field endBoundEntityFace {Query}: @requiredif {`endBound` is `UP_TO_SURFACE`}
  *              Specifies the face or surface to bound the extrude.
@@ -110,7 +110,7 @@ export enum FlatOperationType
  *      @field hasSecondDirection {boolean} : @optional
  *              @example `true` to specify a second direction.
  *
- *      @field secondDirectionBound {SecondDirectionBoundingType}: @optional
+ *      @field secondDirectionBound {BoundingType}: @optional
  *              The bounding type of the second direction. Can be different from the bounding type of the first direction.
  *      @field secondDirectionOppositeDirection {boolean} : @optional
  *              @ex `true` will flip the second end direction to align opposite the plane/face's normal.
@@ -202,7 +202,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         if (definition.bodyType == ToolBodyType.SOLID)
         {
             const modelEntities = qSheetMetalFlatFilter(definition.entities, SMFlatType.NO);
-            const containsModelEntities = (size(evaluateQuery(context, modelEntities)) > 0);
+            const containsModelEntities = (!isQueryEmpty(context, modelEntities));
             const containsFlattened = queryContainsFlattenedSheetMetal(context, definition.entities);
             if (definition.domain == OperationDomain.FLAT)
             {
@@ -212,9 +212,10 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                                                                         ErrorStringEnum.DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D;
                     throw regenError(errorString, ["entities"], modelEntities);
                 }
-                try(SMFlatOp(context, id + "flatOp", { "faces" : definition.entities,
-                                "flatOperationType" : definition.flatOperationType }));
-                processSubfeatureStatus(context, id, { "subfeatureId" : id + "flatOp", "propagateErrorDisplay" : true });
+                callSubfeatureAndProcessStatus(id, SMFlatOp, context, id + "flatOp", {
+                            "faces" : definition.entities,
+                            "flatOperationType" : definition.flatOperationType
+                        });
                 return;
             }
             else if (containsFlattened)
@@ -284,9 +285,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         cleanupTemporaryBoundaryPlanes(context, id, definition);
 
 
-    }, { endBound : BoundingType.BLIND, oppositeDirection : false,
+    }, { endBound : BoundingType.BLIND, oppositeDirection : false, symmetric : false,
             bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
-            secondDirectionBound : SecondDirectionBoundingType.BLIND,
+            secondDirectionBound : BoundingType.BLIND,
             secondDirectionOppositeDirection : true, hasSecondDirection : false,
             hasOffset: false, hasSecondDirectionOffset: false,
             offsetOppositeDirection: false, secondDirectionOffsetOppositeDirection: false,
@@ -312,12 +313,12 @@ predicate firstDirectionNeedsDraft(definition is map)
 predicate symmetricNeedsDraft(definition is map)
 {
     firstDirectionNeedsDraft(definition);
-    definition.endBound == BoundingType.SYMMETRIC;
+    isSymmetricExtrude(definition);
 }
 
 predicate hasSecondDirectionExtrude(definition is map)
 {
-    definition.endBound != BoundingType.SYMMETRIC;
+    !isSymmetricExtrude(definition);
     definition.hasSecondDirection;
 }
 
@@ -331,7 +332,7 @@ predicate secondDirectionNeedsDraft(definition is map)
 
 predicate needsSplit(definition is map)
 {
-    definition.endBound == BoundingType.SYMMETRIC || (hasSecondDirectionExtrude(definition) && definition.secondDirectionOppositeDirection != definition.oppositeDirection);
+    isSymmetricExtrude(definition) || (hasSecondDirectionExtrude(definition) && definition.secondDirectionOppositeDirection != definition.oppositeDirection);
 }
 
 predicate mainViewExtrudePredicate(definition is map)
@@ -339,13 +340,17 @@ predicate mainViewExtrudePredicate(definition is map)
     annotation { "Name" : "End type" }
     definition.endBound is BoundingType;
 
-    if (definition.endBound != BoundingType.SYMMETRIC)
-    {
-        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeDirection is boolean;
-    }
+    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+    definition.oppositeDirection is boolean;
+
 
     extrudeBoundParametersPredicate(definition);
+
+    if (definition.endBound == BoundingType.BLIND || definition.endBound == BoundingType.THROUGH_ALL)
+    {
+        annotation { "Name" : "Symmetric" }
+        definition.symmetric is boolean;
+    }
 
     if (definition.bodyType == ToolBodyType.SOLID)
     {
@@ -362,7 +367,7 @@ predicate mainViewExtrudePredicate(definition is map)
         }
     }
 
-    if (definition.endBound != BoundingType.SYMMETRIC)
+    if (!(definition.symmetric && (definition.endBound == BoundingType.BLIND || definition.endBound == BoundingType.THROUGH_ALL)))
     {
         annotation { "Name" : "Second end position",
                      "UIHint" : UIHint.FIRST_IN_ROW }
@@ -371,7 +376,7 @@ predicate mainViewExtrudePredicate(definition is map)
         if (definition.hasSecondDirection)
         {
             annotation { "Name" : "End type", "Column Name" : "Second end type" }
-            definition.secondDirectionBound is SecondDirectionBoundingType;
+            definition.secondDirectionBound is BoundingType;
 
             annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
                          "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
@@ -446,11 +451,11 @@ const SMFlatOp = defineSheetMetalFeature(function(context is Context, id is Id, 
         }
         const toUpdate = assignSMAttributesToNewOrSplitEntities(context, affectedBodyQ, initialData, id);
 
-        try (updateSheetMetalGeometry(context, id + "smUpdate", {
+        callSubfeatureAndProcessStatus(id, updateSheetMetalGeometry, context, id + "smUpdate", {
                     "entities" : toUpdate.modifiedEntities,
                     "deletedAttributes" : toUpdate.deletedAttributes,
-                    "associatedChanges" : tracking }));
-        processSubfeatureStatus(context, id, { "subfeatureId" : id + "smUpdate", "propagateErrorDisplay" : true });
+                    "associatedChanges" : tracking
+                });
     }, {});
 
 function extrudeWithDraft(context is Context, id is Id, definition is map, draftCondition is map)
@@ -724,8 +729,8 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 {
     if (definition.bodyType == ToolBodyType.SOLID)
     {
-        const hasFlatEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.YES))) > 0;
-        const hasModelEntities = size(evaluateQuery(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.NO))) > 0;
+        const hasFlatEntities = !isQueryEmpty(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.YES));
+        const hasModelEntities = !isQueryEmpty(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.NO));
         if (hasFlatEntities && !hasModelEntities)
         {
             definition.domain = OperationDomain.FLAT;

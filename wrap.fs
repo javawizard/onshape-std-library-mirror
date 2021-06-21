@@ -718,7 +718,7 @@ function getAngleManipulator(canonicalAngle is ValueWithUnits, sourceInfo is map
     const axisOrigin = destinationManipulatorInfo.shiftedAnchor;
     const axisNormal = destinationManipulatorInfo.shiftedSurfaceNormal;
     const zeroDirectionLine = rotationAround(line(axisOrigin, axisNormal), canonicalAngle) * line(axisOrigin, destinationManipulatorInfo.shiftedUDirection);
-    const angleManipulatorRadius = ANGLE_MANIPULATOR_RADIUS_SCALE * norm(sourceInfo.bbox.maxCorner - sourceInfo.bbox.minCorner);
+    const angleManipulatorRadius = ANGLE_MANIPULATOR_RADIUS_SCALE * box3dDiagonalLength(sourceInfo.bbox);
     const rotationOrigin = axisOrigin + zeroDirectionLine.direction * angleManipulatorRadius;
     return angularManipulator({
                 "axisOrigin" : axisOrigin,
@@ -835,7 +835,7 @@ export function wrapEditLogic(context is Context, id is Id, oldDefinition is map
         // If the user has not specified an operation type, assign an appropriate operation type
         if (!specifiedParameters.operationType)
         {
-            if (evaluateQuery(context, definition.booleanScope) != [])
+            if (!isQueryEmpty(context, definition.booleanScope))
             {
                 // We have a solid destination, remove or union depending on the direction of thickness
                 definition.operationType = definition.oppositeDirection ? NewBodyOperationType.REMOVE : NewBodyOperationType.ADD;

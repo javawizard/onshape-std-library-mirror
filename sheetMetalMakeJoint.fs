@@ -104,7 +104,7 @@ export function makeJointEditLogic(context is Context, id is Id, oldDefinition i
         return definition;
 
     var adjacentFace = qAdjacent(evaluatedEdgeQuery[0], AdjacencyType.EDGE, EntityType.FACE);
-    if (size(evaluateQuery(context, adjacentFace)) == 0)
+    if (isQueryEmpty(context, adjacentFace))
     {
         return definition;
     }

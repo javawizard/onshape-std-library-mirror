@@ -37,14 +37,14 @@ FeatureScript ✨; /* Automatically generated version */
  *
  * Attributes stay with the entity they are defined on, even as the Part Studio changes. An attribute on
  * a face, edge, or body which is split in two will be set with the same name and value on both split pieces.
- * An attribute on a patterned entity will be set on each patterened copy. If two or more entities are merged
+ * An attribute on a patterned entity will be set on each patterned copy. If two or more entities are merged
  * together (e.g. with a boolean union), then the attributes on both are kept on the result, though if they have
  * attributes with the same name, the value of the primary entity (e.g. the first resolved body in the
  * boolean `tools`) will be used.
  *
  * Legacy unnamed attributes:
  * A previous use of these attribute functions involved setting unnamed attributes by calling `setAttribute`
- * without a `"name"`. This workflow is still supported, but is no longer reccomended. Legacy unnamed attributes
+ * without a `"name"`. This workflow is still supported, but is no longer recommended. Legacy unnamed attributes
  * can be identified and retrieved only by type, and two attributes of the same type are not allowed on the same
  * entity. The behavior of these unnamed attributes, described in "Legacy unnamed attribute" notes like this one,
  * can be safely ignored if all your attributes are set with a `"name"`.

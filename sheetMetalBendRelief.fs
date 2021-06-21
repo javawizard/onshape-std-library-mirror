@@ -51,7 +51,7 @@ export const sheetMetalBendRelief = defineSheetMetalFeature(function(context is 
         }
     }
     {
-        if (size(evaluateQuery(context, definition.bendRelief)) == 0)
+        if (isQueryEmpty(context, definition.bendRelief))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_BEND_RELIEF_SELECT_ENTITIES, ['bendRelief']);
         }
