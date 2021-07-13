@@ -239,6 +239,7 @@ export function linearManipulator(base is Vector, direction is Vector, offset is
  *      @field axisDirection {Vector} : The direction of the axis to rotate around.
  *              @eg `axis.direction`
  *      @field rotationOrigin {Vector} : Point at the tip of the revolve manipulator.
+ *      @field angle {ValueWithUnits}  : Current angle value of the manipulator.
  *      @field sources : @optional For Onshape internal use.
  *      @field minValue {ValueWithUnits} : @optional The minimum angle allowed.
  *      @field maxValue {ValueWithUnits} : @optional The maximum angle allowed.

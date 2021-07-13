@@ -25,6 +25,7 @@ import(path : "onshape/std/valueBounds.fs", version : "✨");
  *      @field flipped {array}: An array of booleans corresponding to each edge in the path, set to `true` to traverse
  *          the edge backwards.
  *      @field closed {boolean}: Whether the Path is a closed path.
+ *      @field adjacentFaces {Query}: @optional All adjacent faces on one side of the Path.
  * }}
  */
 export type Path typecheck canBePath;
@@ -47,6 +48,8 @@ export predicate canBePath(value)
     }
 
     value.closed is boolean;
+
+    value.adjacentFaces == undefined || value.adjacentFaces is Query ;
 }
 
 /**
@@ -91,6 +94,42 @@ export function reverse(path is Path) returns Path
         });
 
     return path;
+}
+
+/**
+ * @internal
+ * Construct an array of [Path]s from a [Query] of edges.
+ *
+ * @param context {Context}
+ * @param edgesQuery {Query}: A [Query] of edges to form into a [Path].
+ * @param options {{
+ *      @field adjacentSeedFaces {Query}: @optional If adjacent faces to the path are provided, each [Path] returned will
+ *           include an `adjacentFaces` property that has all faces on the same side of the path as the seed faces. If there are seed
+ *           faces on both sides, constructPaths will error.
+ * }}
+ */
+export function constructPaths(context is Context, edgesQuery is Query, options is map) returns array
+{
+    var paths = @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
+    for (var j = 0; j < paths->size(); j += 1)
+    {
+        var path = paths[j];
+        for (var i = 0; i < path.edges->size(); i += 1)
+        {
+            path.edges[i] = qTransient(path.edges[i]);
+        }
+        if (path.adjacentFaces != undefined)
+        {
+            for (var i = 0; i < path.adjacentFaces->size(); i += 1)
+            {
+                path.adjacentFaces[i] = qTransient(path.adjacentFaces[i]);
+            }
+            path.adjacentFaces = qUnion(path.adjacentFaces);
+        }
+
+        paths[j] = path as Path;
+    }
+    return paths;
 }
 
 /**
@@ -532,5 +571,38 @@ function computeDistanceHeuristic(context is Context, pathGeometry, referenceGeo
             } as PathDistanceInformation;
 
     return {"distanceResult" : distanceResult, "pathDistanceInformation" : pathDistanceInformation};
+}
+
+/**
+ * Return query to end vertices of path if open or [qNothing] if closed.
+ *
+ * @param context {Context}
+ * @param path {Path}: The [Path] to use.
+ *
+ * @returns {Query}
+ */
+export function getPathEndVertices(context is Context, path is Path) returns Query
+{
+    const size = path.edges->size();
+    if (size == 0 || path.closed)
+    {
+        return qNothing();
+    }
+    const startVertices = qAdjacent(path.edges[0], AdjacencyType.VERTEX, EntityType.VERTEX);
+    const endVertices = qAdjacent(path.edges[size - 1], AdjacencyType.VERTEX, EntityType.VERTEX);
+    if (size == 1)
+    {
+        return startVertices;
+    }
+    else if (size == 2)
+    {
+        return qSubtraction(qUnion([startVertices, endVertices]), qIntersection([startVertices, endVertices]));
+    }
+    else
+    {
+        const secondVertices = qAdjacent(path.edges[1], AdjacencyType.VERTEX, EntityType.VERTEX);
+        const secondToLastVertices = qAdjacent(path.edges[size - 2], AdjacencyType.VERTEX, EntityType.VERTEX);
+        return qSubtraction(qUnion([startVertices, endVertices]), qUnion([secondVertices, secondToLastVertices]));
+    }
 }
 

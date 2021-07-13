@@ -367,7 +367,7 @@ predicate mainViewExtrudePredicate(definition is map)
         }
     }
 
-    if (!(definition.symmetric && (definition.endBound == BoundingType.BLIND || definition.endBound == BoundingType.THROUGH_ALL)))
+    if (!isSymmetricExtrude(definition))
     {
         annotation { "Name" : "Second end position",
                      "UIHint" : UIHint.FIRST_IN_ROW }

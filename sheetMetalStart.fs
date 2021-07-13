@@ -153,7 +153,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
                     definition.symmetric is boolean;
                 }
 
-                if (!(definition.endBound == SMExtrudeBoundingType.BLIND && definition.symmetric))
+                if (!isSymmetricExtrude(definition))
                 {
                     annotation { "Name" : "Second end position" }
                     definition.hasSecondDirection is boolean;

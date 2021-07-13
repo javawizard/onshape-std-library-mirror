@@ -334,13 +334,13 @@ precondition
  *          @eg `"OpenSans-Regular.ttf"`        Sans-serif font. Default if no match is found.
  *          @eg `"AllertaStencil-Regular.ttf"`  Stencil font. No bold/italic options.
  *          @eg `"Arimo-Regular.ttf"`           Sans-serif font.
- *          @eg `"DroidSansMono-Regular.ttf"`   Monospaced sans-serif font. No bold/italic options.
+ *          @eg `"DroidSansMono.ttf"`           Monospaced sans-serif font. No bold/italic options.
  *          @eg `"NotoSans-Regular.ttf"`        Sans-serif font.
  *          @eg `"NotoSansCJKjp-Regular.otf"`   Japanese font. No italic options.
  *          @eg `"NotoSansCJKkr-Regular.otf"`   Korean font. No italic options.
  *          @eg `"NotoSansCJKsc-Regular.otf"`   Chinese (simplified) font. No italic options.
  *          @eg `"NotoSansCJKtc-Regular.otf"`   Chinese (traditional) font. No italic options.
- *          @eg `"NotoSans-Regular.ttf"`        Serif font.
+ *          @eg `"NotoSerif-Regular.ttf"`       Serif font.
  *          @eg `"RobotoSlab-Regular.ttf"`      Sans-serif font. No italic options.
  *          @eg `"Tinos-Regular.ttf"`           Serif font. Metrically compatible with Times New Roman.
  *

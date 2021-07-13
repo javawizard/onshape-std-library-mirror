@@ -633,15 +633,18 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             }
 
             sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
-            if (isAlignedSection)
+            if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
                 var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition);
-                setAttribute(context, {
-                        "entities" : sectionFacesQuery,
-                        "name" : id ~ "sectionFaces",
-                        "attribute" : id ~ "sectionFaces"
-                });
+                if (!isQueryEmpty(context, sectionFacesQuery))
+                {
+                    setAttribute(context, {
+                            "entities" : sectionFacesQuery,
+                            "name" : id ~ "sectionFaces",
+                            "attribute" : id ~ "sectionFaces"
+                    });
+                }
             }
         }
     }

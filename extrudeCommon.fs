@@ -167,7 +167,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
 export predicate isSymmetricExtrude(definition is map)
 {
     definition.symmetric;
-    (definition.endBound as BoundingType) == BoundingType.BLIND || (definition.endBound as BoundingType) == BoundingType.THROUGH_ALL;
+    definition.endBound == BoundingType.BLIND || definition.endBound == BoundingType.THROUGH_ALL || definition.endBound == SMExtrudeBoundingType.BLIND;
 }
 
 // ---------- OPPOSITE_DIRECTION ----------
