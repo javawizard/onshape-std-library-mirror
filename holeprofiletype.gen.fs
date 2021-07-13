@@ -6,12 +6,15 @@ FeatureScript 1549; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the filter type when requesting inference mate connectors.
+ * Describes how a [HoleProfile] is constructed in relation to its [HolePositionReference].
+ *
+ * @value POSITIONED: See [holeProfile].
+ * @value MATCHED: See [matchedHoleProfile].
  */
-export enum CoordinateSystemInferenceSelectionFilter
+export enum HoleProfileType
 {
-    NONE,
-    HOLE_GEOMETRY
+    POSITIONED,
+    MATCHED
 }
 
 

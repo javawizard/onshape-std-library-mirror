@@ -1,4 +1,4 @@
-FeatureScript 1540; /* Automatically generated version */
+FeatureScript 1549; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1540; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1540.0");
-import(path : "onshape/std/context.fs", version : "1540.0");
-import(path : "onshape/std/mathUtils.fs", version : "1540.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
-import(path : "onshape/std/units.fs", version : "1540.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
-import(path : "onshape/std/featureList.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1549.0");
+import(path : "onshape/std/context.fs", version : "1549.0");
+import(path : "onshape/std/mathUtils.fs", version : "1549.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1549.0");
+import(path : "onshape/std/units.fs", version : "1549.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1549.0");
+import(path : "onshape/std/featureList.fs", version : "1549.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -82,6 +82,8 @@ export predicate canBeQuery(value)
  * @value SKETCH_REGION              : Used in [qSketchRegion]
  * @value UNIQUE_VERTICES            : Used in [qUniqueVertices]
  * @value TRANSIENT                  : Used in [qTransient]
+ * @value OP_HOLE_PROFILE            : Used in [qOpHoleProfile]
+ * @value OP_HOLE_FACE               : Used in [qOpHoleFace]
  * @value UNION                      : Used in [qUnion]
  * @value INTERSECTION               : Used in [qIntersection]
  * @value SUBTRACTION                : Used in [qSubtraction]
@@ -948,6 +950,58 @@ export function qNamed(name is string) returns Query
     return makeQuery({"queryType" : "NAMED",
                       "name" : name,
                       "historyType" : "CREATION"});
+}
+
+/**
+ * A query for the profile edges or vertices created by an [opHole] operation.
+ *
+ * @param featureId : The [Id] of the specified operation. @eg `id + "hole1"`
+ * @param filters {{
+ *     @field name {string} : @optional Filter the query for profiles with a given name.
+ *         See `name` field of [HoleProfile].
+ *     @field identity {Query} : @optional Filter the query for the hole associated with the given identity entity.
+ *         See `identities` parameter of [opHole].
+ * }}
+ */
+export function qOpHoleProfile(featureId is Id, filters is map) returns Query
+precondition
+{
+    filters.name is string || filters.name == undefined;
+    filters.identity is Query || filters.identity == undefined;
+}
+{
+    return { "queryType" : QueryType.OP_HOLE_PROFILE, "featureId" : featureId, "name" : filters.name, "identity" : filters.identity } as Query;
+}
+
+export function qOpHoleProfile(featureId is Id) returns Query
+{
+    return qOpHoleProfile(featureId, {});
+}
+
+/**
+ * A query for the hole faces created by an [opHole] operation.
+ *
+ * @param featureId : The [Id] of the specified operation. @eg `id + "hole1"`
+ * @param filters {{
+ *     @field name {string} : @optional Filter the query for faces with a given name.
+ *         See `faceNames` field of [HoleDefinition].
+ *     @field identity {Query} : @optional Filter the query for the hole associated with the given identity entity.
+ *         See `identities` parameter of [opHole].
+ * }}
+ */
+export function qOpHoleFace(featureId is Id, filters is map) returns Query
+precondition
+{
+    filters.name is string || filters.name == undefined;
+    filters.identity is Query || filters.identity == undefined;
+}
+{
+    return { "queryType" : QueryType.OP_HOLE_FACE, "featureId" : featureId, "name" : filters.name, "identity" : filters.identity } as Query;
+}
+
+export function qOpHoleFace(featureId is Id) returns Query
+{
+    return qOpHoleFace(featureId, {});
 }
 
 /** @internal */

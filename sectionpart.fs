@@ -1,30 +1,30 @@
-FeatureScript 1540; /* Automatically generated version */
+FeatureScript 1549; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1540.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
+export import(path : "onshape/std/query.fs", version : "1549.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1549.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1540.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1540.0");
-import(path : "onshape/std/box.fs", version : "1540.0");
-import(path : "onshape/std/containers.fs", version : "1540.0");
-import(path : "onshape/std/coordSystem.fs", version : "1540.0");
-import(path : "onshape/std/evaluate.fs", version : "1540.0");
-import(path : "onshape/std/extrude.fs", version : "1540.0");
-import(path : "onshape/std/feature.fs", version : "1540.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1540.0");
-import(path : "onshape/std/math.fs", version : "1540.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1540.0");
-import(path : "onshape/std/sketch.fs", version : "1540.0");
-import(path : "onshape/std/tool.fs", version : "1540.0");
-import(path : "onshape/std/transform.fs", version : "1540.0");
-import(path : "onshape/std/units.fs", version : "1540.0");
-import(path : "onshape/std/vector.fs", version : "1540.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
+import(path : "onshape/std/attributes.fs", version : "1549.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1549.0");
+import(path : "onshape/std/box.fs", version : "1549.0");
+import(path : "onshape/std/containers.fs", version : "1549.0");
+import(path : "onshape/std/coordSystem.fs", version : "1549.0");
+import(path : "onshape/std/evaluate.fs", version : "1549.0");
+import(path : "onshape/std/extrude.fs", version : "1549.0");
+import(path : "onshape/std/feature.fs", version : "1549.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1549.0");
+import(path : "onshape/std/math.fs", version : "1549.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1549.0");
+import(path : "onshape/std/sketch.fs", version : "1549.0");
+import(path : "onshape/std/tool.fs", version : "1549.0");
+import(path : "onshape/std/transform.fs", version : "1549.0");
+import(path : "onshape/std/units.fs", version : "1549.0");
+import(path : "onshape/std/vector.fs", version : "1549.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1549.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -633,15 +633,18 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             }
 
             sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
-            if (isAlignedSection)
+            if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
                 var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition);
-                setAttribute(context, {
-                        "entities" : sectionFacesQuery,
-                        "name" : id ~ "sectionFaces",
-                        "attribute" : id ~ "sectionFaces"
-                });
+                if (!isQueryEmpty(context, sectionFacesQuery))
+                {
+                    setAttribute(context, {
+                            "entities" : sectionFacesQuery,
+                            "name" : id ~ "sectionFaces",
+                            "attribute" : id ~ "sectionFaces"
+                    });
+                }
             }
         }
     }

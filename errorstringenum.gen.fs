@@ -1,4 +1,4 @@
-FeatureScript 1540; /* Automatically generated version */
+FeatureScript 1549; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2048,7 +2048,23 @@ export enum ErrorStringEnum
     /* Some selections did not produce holes. */
     HOLE_PARTIAL_FAILURE,
     /* Too many hole locations were selected, maximum: 500. */
-    HOLE_EXCEEDS_MAX_LOCATIONS_500
+    HOLE_EXCEEDS_MAX_LOCATIONS_500,
+    /* Cannot construct a path with overlapping edges. */
+    CONSTRUCT_PATH_EDGES_OVERLAP,
+    /* A path cannot contain branches. */
+    CONSTRUCT_PATH_NOT_MANIFOLD,
+    /* Failed to construct path. */
+    CONSTRUCT_PATH_FAILED,
+    /* Seed faces found on both sides of path. */
+    CONSTRUCT_PATH_FACES_OPPOSITE_SIDES,
+    /* Reference faces cannot be provided on both sides of a path.RULED_SURFACE_OVERRIDES_CLASH = Overrides cannot be provided for two coincident vertices. */
+    RULED_SURFACE_REFERENCE_FACES_BOTH_SIDES,
+    /* Could not find different targets for requested hole profiles. */
+    HOLE_TARGETS_DO_NOT_DIFFER,
+    /* Overrides cannot be provided for two coincident vertices. */
+    RULED_SURFACE_OVERRIDES_CLASH,
+    /* Error communicating with simulation service. */
+    FGS_STREAM_ERROR
 }
 
 

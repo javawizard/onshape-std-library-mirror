@@ -1,4 +1,4 @@
-FeatureScript 1540; /* Automatically generated version */
+FeatureScript 1549; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,34 +15,36 @@ FeatureScript 1540; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1540.0");
-import(path : "onshape/std/context.fs", version : "1540.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1540.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1540.0");
-import(path : "onshape/std/query.fs", version : "1540.0");
-import(path : "onshape/std/valueBounds.fs", version : "1540.0");
-import(path : "onshape/std/vector.fs", version : "1540.0");
+import(path : "onshape/std/containers.fs", version : "1549.0");
+import(path : "onshape/std/context.fs", version : "1549.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1549.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1549.0");
+import(path : "onshape/std/query.fs", version : "1549.0");
+import(path : "onshape/std/valueBounds.fs", version : "1549.0");
+import(path : "onshape/std/vector.fs", version : "1549.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1549.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1549.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1549.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1549.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1549.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1549.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1540.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1549.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1540.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1549.0");
+/* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
+export import(path : "onshape/std/holeUtils.fs", version : "1549.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1549.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1540.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1549.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -600,6 +602,140 @@ export const opFullRoundFillet = function(context is Context, id is Id, definiti
 export const opHelix = function(context is Context, id is Id, definition is map)
 {
     return @opHelix(context, id, definition);
+};
+
+/**
+ * Creates hole tools referencing a set of targets, optionally subtracting the tools from the targets. If some tools
+ * cannot be built, the operation will still succeed and indicate in its return value which holes failed to build. If no
+ * tools can be built, the operation will fail.
+ *
+ * @param id : @autocomplete `id + "hole1"`
+ * @param definition {{
+ *      @field holeDefinition {HoleDefinition} : The definition of the shape of the desired holes.
+ *          @eg `holeDefinition([holeProfile(HolePositionReference.AXIS_POINT, 0 * inch, 0.1 * inch), holeProfile(HolePositionReference.AXIS_POINT, 1 * inch, 0 * inch)])`
+ *      @field axes {array} : An array of [Line]s each of whose `origin` represents the start position of a hole, and whose
+ *          `direction` represents the drill direction of the hole.
+ *          @eg `[line(vector(-1, -1, 0) * inch, vector(0, 0, -1)), line(vector(1, 1, 0) * inch, vector(0, 0, -1))]`
+ *      @field identities {array} : @optional An array of queries, one per axis in `axes`, used to disambiguate each of
+ *          the created holes.  Each query should resolve to exactly one entity.  Providing this information does not change
+ *          the geometric outcome, but stabilizes references to the holes with respect to upstream changes to the model.
+ *      @field targets {Query} : @requiredif { `holeDefinition` contains any `profiles` that do not reference
+ *          `HolePositionReference.AXIS_POINT`, or if `subtractFromTargets` is `true` } A set of bodies to target. The
+ *          shape of the produced holes is dependent on the shape of these targets (as specified in the supplied
+ *          [HoleDefinition]), so the full set of targeted bodies should always be supplied, even if
+ *          `subtractFromTargets` is `false`.
+ *          @autocomplete `qAllModifiableSolidBodies()`
+ *      @field subtractFromTargets {boolean} : @optional `true` if the hole geometry should be subtracted from the targets.
+ *          `false` if the targets should not be modified, and the hole tools should be outputted as new solid bodies.  Default
+ *          is `true`. To subtract from a subset of targets, set this to `true` and supply a set of excluded targets as
+ *          `targetsToExcludeFromSubtraction`. Removing the set of excluded targets from `targets` instead of using
+ *          `targetsToExcludeFromSubtraction` is not the correct way to call this interface, and may result in the shape
+ *           of the hole changing.
+ *      @field targetsToExcludeFromSubtraction {Query} : @optional If supplied and `subtractFromTargets` is `true`,
+ *          the given targets are excluded from the subtraction. Ignored if `subtractFromTargets` is `false`
+ *      @field keepTools {boolean} : @optional If `subtractFromTargets` is `true`, controls whether the hole tools should
+ *          be outputted as new solid bodies. Default is `false`. Ignored if `subtractFromTargets` is `false`; in that
+ *          case hole tools are always outputted as new solid bodies.
+ * }}
+ *
+ * @return {array}: An array representing target intersection information for each hole. The array is aligned with the
+ *                  `axes` input. Each item in the array is a map containing a `boolean` field `success`, which
+ *                  indicates whether the tool was successfully built. If `success` is `true` the wap will contain
+ *                  two additional entries: `targetToDepthExtremes` and `positionReferenceToTarget`.
+ *
+ *                  The value of `targetToDepthExtremes` is a `map` mapping the `targets` that the given hole intersects
+ *                  to a map of intersection information for those targets. Only targets that are intersected by the
+ *                  hole will be present in the map. Each map key is a [Query] for one of the targets, and the
+ *                  corresponding value is itself a map of the form
+ *                  `{ "fullEntrance" : fullEntranceDistance, "fullExit" : fullExitDistance }`.
+ *
+ *                  `fullEntranceDistance` is a [ValueWithUnits] representing the distance, along the axis, from the
+ *                  [HolePositionReference] of the final [HoleProfile] of the [HoleDefinition] to the full entrance of
+ *                  the infinite hole cylinder into the part. `fullExitDistance` measures from the same position
+ *                  reference to the full exit of the infinite hole cylinder out of the part.
+ *
+ *                  For slanted (or otherwise irregular) entrance faces on the target, the full entrance of the hole is
+ *                  distinct from the first intersection of the axis with the target, and from the first coincidence of
+ *                  the infinite hole cylinder with the target; notably the full entrance is further into the target
+ *                  than either of those markers, and varies with the radius of the hole. The same is true for the full
+ *                  exit.
+ *
+ *                  The value of `positionReferenceToTarget` is a `map` mapping each [HolePositionReference] found in the
+ *                  `holeDefinition` to a [Query] for the `target` that defines that position reference.
+ *
+ *                  @example
+ * ```
+ * // For an opHole operation creating two holes, both going into two stacked parts,
+ * // the first of which being 1 inch thick and the second being 3 inches thick,
+ * // and the holeDefinition referencing both TARGET_START and LAST_TARGET_START
+ * // (such that the targetToDepthExtremes are in terms of LAST_TARGET_START, and the
+ * // positionReferenceToTarget contains both TARGET_START and LAST_TARGET_START)
+ * // the return value would look like:
+ * [
+ *     { // First hole (successful)
+ *         "success" : true,
+ *         "targetToDepthExtremes" : {
+ *                     (firstTargetQuery)  : { "fullEntrance" : -1 * inch, "fullExit" : 0 * inch },
+ *                     (secondTargetQuery) : { "fullEntrance" :  0 * inch, "fullExit" : 3 * inch }
+ *                 },
+ *         "positionReferenceToTarget" : {
+ *                     HolePositionReference.TARGET_START      : firstTargetQuery,
+ *                     HolePositionReference.LAST_TARGET_START : secondTargetQuery
+ *                 }
+ *     },
+ *     { // Second hole (successful)
+ *         "success" : true,
+ *         "targetToDepthExtremes" : {
+ *                     (firstTargetQuery)  : { "fullEntrance" : -1 * inch, "fullExit" : 0 * inch },
+ *                     (secondTargetQuery) : { "fullEntrance" :  0 * inch, "fullExit" : 3 * inch }
+ *                 },
+ *         "positionReferenceToTarget" : {
+ *                     HolePositionReference.TARGET_START      : firstTargetQuery,
+ *                     HolePositionReference.LAST_TARGET_START : secondTargetQuery
+ *                 }
+ *     },
+ *     { // Third hole (unsuccessful)
+ *         "success" : false
+ *     }
+ * ]
+ * ```
+ */
+export const opHole = function(context is Context, id is Id, definition is map) returns array
+{
+    const result = @opHole(context, id, definition);
+    var out = [];
+    for (var rawMap in result)
+    {
+        const success = rawMap.success;
+        var processedMap = { "success" : success };
+
+        if (success)
+        {
+            // The rest of the fields are only returned if the hole tool was successfully built
+
+            var transientQueryToDepthExtremes = {};
+            for (var transientIdAndRawDepthExtremes in rawMap["targetToDepthExtremes"])
+            {
+                const rawDepthExtremes = transientIdAndRawDepthExtremes.value;
+                const depthExtremes = {
+                        "fullEntrance" : rawDepthExtremes.fullEntrance * meter,
+                        "fullExit" : rawDepthExtremes.fullExit * meter
+                    };
+                transientQueryToDepthExtremes[qTransient(transientIdAndRawDepthExtremes.key)] = depthExtremes;
+            }
+            processedMap["targetToDepthExtremes"] = transientQueryToDepthExtremes;
+
+            var referenceEnumToTransientQuery = {};
+            for (var referenceStringAndTransientId in rawMap["positionReferenceToTarget"])
+            {
+                referenceEnumToTransientQuery[referenceStringAndTransientId.key as HolePositionReference] = qTransient(referenceStringAndTransientId.value);
+            }
+            processedMap["positionReferenceToTarget"] = referenceEnumToTransientQuery;
+        }
+
+        out = append(out, processedMap);
+    }
+    return out;
 };
 
 /* TODO: Example of importing from a blob tab */
