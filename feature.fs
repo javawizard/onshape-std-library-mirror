@@ -1,22 +1,22 @@
-FeatureScript 1549; /* Automatically generated version */
+FeatureScript 1560; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1549.0");
-export import(path : "onshape/std/error.fs", version : "1549.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1549.0");
-export import(path : "onshape/std/query.fs", version : "1549.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1549.0");
+export import(path : "onshape/std/context.fs", version : "1560.0");
+export import(path : "onshape/std/error.fs", version : "1560.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1560.0");
+export import(path : "onshape/std/query.fs", version : "1560.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1560.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1549.0");
-import(path : "onshape/std/math.fs", version : "1549.0");
-import(path : "onshape/std/string.fs", version : "1549.0");
-import(path : "onshape/std/transform.fs", version : "1549.0");
-import(path : "onshape/std/units.fs", version : "1549.0");
-import(path : "onshape/std/tabReferences.fs", version : "1549.0");
+import(path : "onshape/std/containers.fs", version : "1560.0");
+import(path : "onshape/std/math.fs", version : "1560.0");
+import(path : "onshape/std/string.fs", version : "1560.0");
+import(path : "onshape/std/transform.fs", version : "1560.0");
+import(path : "onshape/std/units.fs", version : "1560.0");
+import(path : "onshape/std/tabReferences.fs", version : "1560.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -201,15 +201,34 @@ export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function,
 export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id,
     definition is map, processSubfeatureStatusOptions is map)
 {
-    const returnValue = try(fn(context, subfeatureId, definition));
+    var returnValue;
+    var thrownError;
+    try
+    {
+        returnValue = fn(context, subfeatureId, definition);
+    }
+    catch (e)
+    {
+        thrownError = e;
+    }
+
     processSubfeatureStatusOptions.subfeatureId = subfeatureId;
     processSubfeatureStatus(context, topLevelId, processSubfeatureStatusOptions);
 
-    // Re-throw if there is an error, but not a warn or info.
-    const error = getFeatureError(context, topLevelId);
-    if (error != undefined)
+    // Re-throw feature error if it exists. Do not throw WARN or INFO level status. Important to do this before
+    // re-throwing `throwError` because `processSubfeatureStatus` may have changed the error in question (such as
+    // remapping the set of faulty parameters).
+    const featureError = getFeatureError(context, topLevelId);
+    if (featureError != undefined)
     {
-        throw error;
+        throw featureError;
+    }
+
+    // Re-throw any thrown error that did not create a ERROR level feature status.  This is rare, but could happen in
+    // cases where `fn` is not an operation, or not a true feature (a function created using `defineFeature`).
+    if (thrownError != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1560_STATUS_ON_THROW))
+    {
+        throw thrownError;
     }
 
     return returnValue;

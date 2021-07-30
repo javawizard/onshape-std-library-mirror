@@ -1,4 +1,4 @@
-FeatureScript 1549; /* Automatically generated version */
+FeatureScript 1560; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -990,7 +990,9 @@ export enum FeatureScriptVersionNumber
     V1540_SYM_CHKBX_CHANGE_BUMP,
     V1547_CLEAR_SM_ATTRIBUTES,
     V1548_OP_HOLE,
-    V1549_HOLE_REVERT_BUMP
+    V1549_HOLE_REVERT_BUMP,
+    V1559_LOFT_BUG_FIX,
+    V1560_STATUS_ON_THROW
 }
 
 /**
@@ -1001,6 +1003,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1549_HOLE_REVERT_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1560_STATUS_ON_THROW;
 
 

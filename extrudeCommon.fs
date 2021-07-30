@@ -1,20 +1,20 @@
-FeatureScript 1549; /* Automatically generated version */
+FeatureScript 1560; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1549.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1560.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1549.0");
-import(path : "onshape/std/evaluate.fs", version : "1549.0");
-import(path : "onshape/std/feature.fs", version : "1549.0");
-import(path : "onshape/std/manipulator.fs", version : "1549.0");
-import(path : "onshape/std/query.fs", version : "1549.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1549.0");
-import(path : "onshape/std/valueBounds.fs", version : "1549.0");
-import(path : "onshape/std/vector.fs", version : "1549.0");
-import(path : "onshape/std/coordSystem.fs", version : "1549.0");
-import(path : "onshape/std/containers.fs", version : "1549.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1560.0");
+import(path : "onshape/std/evaluate.fs", version : "1560.0");
+import(path : "onshape/std/feature.fs", version : "1560.0");
+import(path : "onshape/std/manipulator.fs", version : "1560.0");
+import(path : "onshape/std/query.fs", version : "1560.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1560.0");
+import(path : "onshape/std/valueBounds.fs", version : "1560.0");
+import(path : "onshape/std/vector.fs", version : "1560.0");
+import(path : "onshape/std/coordSystem.fs", version : "1560.0");
+import(path : "onshape/std/containers.fs", version : "1560.0");
 
 /**
  * Bounding type used with SMProcessType.EXTRUDE

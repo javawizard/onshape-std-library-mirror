@@ -1,29 +1,29 @@
-FeatureScript 1549; /* Automatically generated version */
+FeatureScript 1560; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1549.0");
-export import(path : "onshape/std/tool.fs", version : "1549.0");
+export import(path : "onshape/std/query.fs", version : "1560.0");
+export import(path : "onshape/std/tool.fs", version : "1560.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1549.0");
+export import(path : "onshape/std/manipulator.fs", version : "1560.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1549.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1549.0");
-import(path : "onshape/std/containers.fs", version : "1549.0");
-import(path : "onshape/std/evaluate.fs", version : "1549.0");
-import(path : "onshape/std/feature.fs", version : "1549.0");
-import(path : "onshape/std/math.fs", version : "1549.0");
-import(path : "onshape/std/string.fs", version : "1549.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1549.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1549.0");
-import(path : "onshape/std/transform.fs", version : "1549.0");
-import(path : "onshape/std/units.fs", version : "1549.0");
-import(path : "onshape/std/valueBounds.fs", version : "1549.0");
-import(path : "onshape/std/vector.fs", version : "1549.0");
+import(path : "onshape/std/boolean.fs", version : "1560.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1560.0");
+import(path : "onshape/std/containers.fs", version : "1560.0");
+import(path : "onshape/std/evaluate.fs", version : "1560.0");
+import(path : "onshape/std/feature.fs", version : "1560.0");
+import(path : "onshape/std/math.fs", version : "1560.0");
+import(path : "onshape/std/string.fs", version : "1560.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1560.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1560.0");
+import(path : "onshape/std/transform.fs", version : "1560.0");
+import(path : "onshape/std/units.fs", version : "1560.0");
+import(path : "onshape/std/valueBounds.fs", version : "1560.0");
+import(path : "onshape/std/vector.fs", version : "1560.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -306,12 +306,22 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion(queriesForTransform)});
 
-        // opLoft expects an array of individual connection edge queries
-        for ( var ii = 0; ii < size(definition.connections); ii += 1)
+        for (var ii = 0; ii < size(definition.connections); ii += 1)
         {
+            // opLoft expects an array of individual connection edge queries
             definition.connections[ii].connectionEdges =
                 evaluateQuery(context, definition.connections[ii].connectionEdgeQueries);
+
+            // Can happen is modeling changes happen upstream such that query evaluates to more or less entities, but
+            // editing logic does not have a chance to run
+            const hasEdgeParameterMismatch = size(definition.connections[ii].connectionEdges)
+                != size(definition.connections[ii].connectionEdgeParameters);
+            if (hasEdgeParameterMismatch && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1560_STATUS_ON_THROW))
+            {
+                throw regenError(ErrorStringEnum.LOFT_CONNECTION_MATCHING, ["connections[" ~ ii ~"].connectionEntities"]);
+            }
         }
+
         // it is not a subfeature, but need to remap parameter ids
         callSubfeatureAndProcessStatus(id, opLoft, context, id, definition, {
                     "featureParameterMappingFunction" :
