@@ -562,6 +562,18 @@ export const opFitSpline = function(context is Context, id is Id, definition is 
 };
 
 /**
+ * Reverses the orientation of sheet bodies.
+ * @param id : @autocomplete `id + "flipOrientation"`
+ * @param definition {{
+ *      @field bodies {Query} : Sheet bodies whose orientation should be flipped.
+ * }}
+ */
+export const opFlipOrientation = function(context is Context, id is Id, definition is map)
+{
+    return @opFlipOrientation(context, id, definition);
+};
+
+/**
  * Creates a full round fillet, replacing the center face(s) with circular profile face(s) of varying radius, joining the selected side faces.
  * @param id : @autocomplete `id + "fullRoundFillet1"`
  * @param definition {{

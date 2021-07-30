@@ -201,15 +201,34 @@ export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function,
 export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id,
     definition is map, processSubfeatureStatusOptions is map)
 {
-    const returnValue = try(fn(context, subfeatureId, definition));
+    var returnValue;
+    var thrownError;
+    try
+    {
+        returnValue = fn(context, subfeatureId, definition);
+    }
+    catch (e)
+    {
+        thrownError = e;
+    }
+
     processSubfeatureStatusOptions.subfeatureId = subfeatureId;
     processSubfeatureStatus(context, topLevelId, processSubfeatureStatusOptions);
 
-    // Re-throw if there is an error, but not a warn or info.
-    const error = getFeatureError(context, topLevelId);
-    if (error != undefined)
+    // Re-throw feature error if it exists. Do not throw WARN or INFO level status. Important to do this before
+    // re-throwing `throwError` because `processSubfeatureStatus` may have changed the error in question (such as
+    // remapping the set of faulty parameters).
+    const featureError = getFeatureError(context, topLevelId);
+    if (featureError != undefined)
     {
-        throw error;
+        throw featureError;
+    }
+
+    // Re-throw any thrown error that did not create a ERROR level feature status.  This is rare, but could happen in
+    // cases where `fn` is not an operation, or not a true feature (a function created using `defineFeature`).
+    if (thrownError != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1560_STATUS_ON_THROW))
+    {
+        throw thrownError;
     }
 
     return returnValue;

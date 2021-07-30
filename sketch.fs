@@ -140,6 +140,8 @@ export function isIdForSketch(context is Context, id is Id)
  * @param value {{
  *      @field sketchPlane {Query} : A Query for a single, planar entity.
  *              @eg `qCreatedBy(makeId("Top"), EntityType.FACE)` to sketch on default "Top" plane.
+ *      @field disableImprinting {boolean} : @optional
+ *              Prevents `sketchPlane` from imprinting on the sketch. Default is `false`.
  * }}
  */
 // TODO: Is there a nice way to combine this and newSketchOnPlane without upsetting precondition analysis?
@@ -151,6 +153,12 @@ precondition
                 "Filter" : (GeometryType.PLANE && AllowFlattenedGeometry.NO) || (SheetMetalDefinitionEntityType.FACE && AllowFlattenedGeometry.YES && GeometryType.PLANE) || BodyType.MATE_CONNECTOR,
                 "MaxNumberOfPicks" : 1 }
     value.sketchPlane is Query;
+
+    if (value.disableImprinting != undefined)
+    {
+        annotation { "Name" : "Disable imprinting" }
+        value.disableImprinting is boolean;
+    }
 }
 {
     recordParameters(context, id, value);

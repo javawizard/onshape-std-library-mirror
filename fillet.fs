@@ -89,7 +89,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
             definition.crossSection is FilletCrossSection;
 
-            annotation { "Name" : "Radius" }
+            annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.radius, BLEND_BOUNDS);
 
             if (definition.crossSection == FilletCrossSection.CONIC)

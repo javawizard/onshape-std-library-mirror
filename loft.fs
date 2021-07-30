@@ -306,12 +306,22 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion(queriesForTransform)});
 
-        // opLoft expects an array of individual connection edge queries
-        for ( var ii = 0; ii < size(definition.connections); ii += 1)
+        for (var ii = 0; ii < size(definition.connections); ii += 1)
         {
+            // opLoft expects an array of individual connection edge queries
             definition.connections[ii].connectionEdges =
                 evaluateQuery(context, definition.connections[ii].connectionEdgeQueries);
+
+            // Can happen is modeling changes happen upstream such that query evaluates to more or less entities, but
+            // editing logic does not have a chance to run
+            const hasEdgeParameterMismatch = size(definition.connections[ii].connectionEdges)
+                != size(definition.connections[ii].connectionEdgeParameters);
+            if (hasEdgeParameterMismatch && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1560_STATUS_ON_THROW))
+            {
+                throw regenError(ErrorStringEnum.LOFT_CONNECTION_MATCHING, ["connections[" ~ ii ~"].connectionEntities"]);
+            }
         }
+
         // it is not a subfeature, but need to remap parameter ids
         callSubfeatureAndProcessStatus(id, opLoft, context, id, definition, {
                     "featureParameterMappingFunction" :

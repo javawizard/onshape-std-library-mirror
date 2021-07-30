@@ -46,7 +46,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
         //first quantity input (length)
         if (definition.chamferType != ChamferType.TWO_OFFSETS)
         {
-            annotation { "Name" : "Distance" }
+            annotation { "Name" : "Distance", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.width, BLEND_BOUNDS);
         }
         else
