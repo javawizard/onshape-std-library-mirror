@@ -46,8 +46,8 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
         if (definition.splitType == SplitType.PART)
         {
-            annotation { "Name" : "Parts or surfaces to split",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && ModifiableEntityOnly.YES }
+            annotation { "Name" : "Parts, surfaces, or curves to split",
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",

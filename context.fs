@@ -56,9 +56,9 @@ export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber,
     // Enum sort order within maps is based on the ordinal
     const mapOfVersions = { (versionToCheck) : true, (versionToCompareAgainst) : true };
     var firstKey;
-    for (var entry in mapOfVersions)
+    for (var key, _ in mapOfVersions)
     {
-        firstKey = entry.key;
+        firstKey = key;
         return firstKey == versionToCompareAgainst;
     }
 }

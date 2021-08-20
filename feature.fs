@@ -310,11 +310,12 @@ export function forEachEntity(context is Context, id is Id, query is Query, oper
 /**
  * @internal
  *
- * Returns the id used by the innermost call to `startFeature`.  Temporary operations may be started by adding to this id.
+ * Returns a path in the id tree where an additional operation can be inserted without breaking feature execution.
+ * Temporary operations may be started by adding to this id.
  */
-export function getCurrentSubfeatureId(context is Context) returns Id
+export function getLastActiveId(context is Context) returns Id
 {
-    return @getCurrentSubfeatureId(context) as Id;
+    return @getLastActiveId(context) as Id;
 }
 
 /**
@@ -375,8 +376,8 @@ predicate isArrayParameter(value)
     {
         element is map;
         element as map == element; // no type tag
-        for (var entry in element)
-            entry.key is string;
+        for (var key, _ in element)
+            key is string;
     }
 }
 

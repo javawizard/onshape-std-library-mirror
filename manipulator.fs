@@ -246,6 +246,7 @@ export function linearManipulator(base is Vector, direction is Vector, offset is
  *      @field style {ManipulatorStyleEnum} : @optional
  *      @field primaryParameterId {string} : @optional The id of the `definition` field which is being manipulated.
  *          When set, the feature dialog focus will be shifted to the parameter in question when the manipulator is manipulated.
+ *      @field disableMinimumOffset {boolean} : @optional Removes the minimum offset between the arrow and `axisOrigin`.
  * }}
  */
 export function angularManipulator(definition is map) returns Manipulator
@@ -260,6 +261,7 @@ precondition
     definition.maxValue == undefined || isAngle(definition.maxValue);
     definition.style == undefined || definition.style is ManipulatorStyleEnum;
     definition.primaryParameterId == undefined || definition.primaryParameterId is string;
+    definition.disableMinimumOffset == undefined || definition.disableMinimumOffset is boolean;
 }
 {
     definition.manipulatorType = ManipulatorType.ANGULAR;

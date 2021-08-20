@@ -456,8 +456,8 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
             }
 
             const instanceProducedFaces = createAttributesFromQuery(context, topLevelId, opHoleId, definition,
-                    buildHoleAttributeId(topLevelId, i), faceTypeToSectionFaceType, locations[i], opHoleInfo.returnMapPerHole[i],
-                    i, opHoleInfo.holeDepth);
+                    opHoleInfo.finalPositionReference, buildHoleAttributeId(topLevelId, i), faceTypeToSectionFaceType,
+                    locations[i], opHoleInfo.returnMapPerHole[i], i, opHoleInfo.holeDepth);
             if (instanceProducedFaces)
             {
                 successfulHoles[][i] = true;
@@ -498,6 +498,7 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
             });
 
     return {
+            "finalPositionReference" : endProfileInfo.finalPositionReference,
             "holeDepth" : endProfileInfo.holeDepth,
             "faceTypes" : faceTypes,
             "returnMapPerHole" : returnMapPerHole
@@ -750,6 +751,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
 
     var profiles = [];
     var faceTypes = [HoleFaceType.SHAFT]; // The face before the end profiles is always the shaft
+    var finalPositionReference;
     var holeDepth = undefined;
     if (definition.endStyle == HoleEndStyle.THROUGH)
     {
@@ -761,6 +763,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
                 holeProfile(HolePositionReference.LAST_TARGET_END, padding, 0 * meter, { "name" : TIP_PROFILE_NAME })
             ];
         faceTypes = append(faceTypes, HoleFaceType.TIP);
+        finalPositionReference = HolePositionReference.LAST_TARGET_END;
     }
     else if (definition.endStyle == HoleEndStyle.BLIND)
     {
@@ -770,6 +773,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
                 holeProfile(firstPositionReference, definition.holeDepth + tipDepth, 0 * meter, { "name" : TIP_PROFILE_NAME })
             ];
         faceTypes = append(faceTypes, HoleFaceType.TIP);
+        finalPositionReference = firstPositionReference;
         holeDepth = definition.holeDepth;
     }
     else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -806,6 +810,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
                     holeProfile(HolePositionReference.LAST_TARGET_START, definition.holeDepth + tipDepth, 0 * meter, { "name" : TIP_PROFILE_NAME })
                 ]]);
         faceTypes = append(faceTypes, HoleFaceType.TIP);
+        finalPositionReference = HolePositionReference.LAST_TARGET_START;
         holeDepth = definition.holeDepth;
     }
     else
@@ -816,6 +821,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
     return {
             "profiles" : profiles,
             "faceTypes" : faceTypes,
+            "finalPositionReference" : finalPositionReference,
             "holeDepth" : holeDepth // may be undefined
         };
 }
@@ -1883,8 +1889,9 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
 
 // Create attributes for a single hole created using opHole.  `userDefinedHoleDepth` can be undefined for THROUGH holes.
 // Returns whether any faces were created by this hole.
-function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleId is Id, featureDefinition is map, attributeId is string,
-    faceTypeToSectionFaceType is map, holeIdentity is Query, singleHoleReturnValue is map, holeIndex is number, userDefinedHoleDepth) returns boolean
+function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleId is Id, featureDefinition is map,
+    finalPositionReference is HolePositionReference, attributeId is string, faceTypeToSectionFaceType is map,
+    holeIdentity is Query, singleHoleReturnValue is map, holeIndex is number, userDefinedHoleDepth) returns boolean
 {
     if (isQueryEmpty(context, qOpHoleFace(opHoleId, { "identity" : holeIdentity })))
     {
@@ -1918,14 +1925,22 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             }
         }
 
-        const depthExtremes = singleHoleReturnValue["targetToDepthExtremes"][target];
+        const finalPositionReferenceInfo = singleHoleReturnValue.positionReferenceInfo[finalPositionReference];
+        const depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        const fullEntranceInFinalPositionReferenceSpace = depthExtremes.fullEntrance - finalPositionReferenceInfo.referenceRootEnd;
+        const fullExitInFinalPositionReferenceSpace = depthExtremes.fullExit - finalPositionReferenceInfo.referenceRootEnd;
+
 
         var depthInPart;
         if (userDefinedHoleDepth != undefined)
         {
-            depthInPart = userDefinedHoleDepth - depthExtremes.fullEntrance;
+            depthInPart = userDefinedHoleDepth - fullEntranceInFinalPositionReferenceSpace;
         }
-        const isLastTarget = (target == singleHoleReturnValue["positionReferenceToTarget"][HolePositionReference.LAST_TARGET_START]);
+        var isLastTarget = false;
+        if (singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START] != undefined)
+        {
+            isLastTarget = (target == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target);
+        }
         var featureDefinitionForAttribute = adjustDefinitionForAttribute(featureDefinition, sectionFaceTypes, isLastTarget, depthInPart);
 
         // Adjust `partialThrough`
@@ -1939,7 +1954,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             else if (userDefinedHoleDepth != undefined)
             {
                 // Ensure that the hole goes all the way to the full exit, not just through a portion of the target
-                featureDefinitionForAttribute.partialThrough = userDefinedHoleDepth < (depthExtremes.fullExit - (TOLERANCE.zeroLength * meter));
+                featureDefinitionForAttribute.partialThrough = userDefinedHoleDepth < (fullExitInFinalPositionReferenceSpace - (TOLERANCE.zeroLength * meter));
             }
             else
             {
@@ -1959,7 +1974,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 if (holeAttribute.isTappedHole == true && featureDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
                 {
                     const userDefinedTappedDepth = featureDefinition.tappedDepth;
-                    holeAttribute.isTappedThrough = userDefinedTappedDepth > (depthExtremes.fullExit - (TOLERANCE.zeroLength * meter));
+                    holeAttribute.isTappedThrough = userDefinedTappedDepth > (fullExitInFinalPositionReferenceSpace - (TOLERANCE.zeroLength * meter));
                 }
 
                 setAttribute(context, { "entities" : face, "attribute" : holeAttribute });

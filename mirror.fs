@@ -132,10 +132,10 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     {
         var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.LAMINAR), mirrorPlane));
         matches = makeArray(size(edgesOnPlane));
-        for (var i = 0; i < size(edgesOnPlane); i += 1)
+        for (var i, edge in edgesOnPlane)
         {
-            var mirrorEdge = startTracking(context, edgesOnPlane[i]);
-            matches[i] = { "topology1" : edgesOnPlane[i], "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
+            var mirrorEdge = startTracking(context, edge);
+            matches[i] = { "topology1" : edge, "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
         }
         return matches;
     }

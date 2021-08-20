@@ -18,10 +18,10 @@ export type FeatureList typecheck canBeFeatureList;
 export predicate canBeFeatureList(value)
 {
     value is map;
-    for (var entry in value)
+    for (var key, currentValue in value)
     {
-        entry.key is Id;
-        entry.value is function;
+        key is Id;
+        currentValue is function;
     }
 }
 

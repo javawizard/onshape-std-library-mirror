@@ -1637,7 +1637,7 @@ export enum ErrorStringEnum
     DRAFT_SELECT_PARTING_EDGES,
     /* Conflicting edges in parting line. */
     DRAFT_CONFLICTING_OPPOSITION,
-    /* Select parts or surfaces to split. */
+    /* Select parts, surfaces, or curves to split. */
     SPLIT_SELECT_TARGETS,
     /* Select entity to split with. */
     SPLIT_SELECT_TOOL,
@@ -2017,15 +2017,15 @@ export enum ErrorStringEnum
     RULED_SURFACE_SELECT_UP_TO_ENTITY,
     /* Sketch edges can only meet at their ends, overlapping or crossing edges are prohibited. */
     RULED_SURFACE_OVERLAPPING_SKETCH_EDGES,
-    /* More than two edges cannot meet at a single point. */
+    /* Ruled surface path cannot branch. */
     RULED_SURFACE_EDGES_NOT_MANIFOLD,
     /* Could not create ruled surface. */
     RULED_SURFACE_FAILED,
-    /* A lock face must be provided for each path edge when maintaining orientation with faces. */
+    /* A reference face must be provided for each path edge when maintaining orientation with faces. */
     RULED_SURFACE_NO_LOCK_FACE,
     /* Select a vertex for vertex override. */
     RULED_SURFACE_VERTEX_SELECT_VERTEX,
-    /* Can only provide one lock face adjacent to an edge. */
+    /* Each edge can only have one reference face. */
     RULED_SURFACE_MULTIPLE_LOCK_FACES,
     /* Can only specify a boundary entity for vertex overrides. */
     RULED_SURFACE_TOP_LEVEL_BOUNDARY_ENTITY,
@@ -2057,14 +2057,16 @@ export enum ErrorStringEnum
     CONSTRUCT_PATH_FAILED,
     /* Seed faces found on both sides of path. */
     CONSTRUCT_PATH_FACES_OPPOSITE_SIDES,
-    /* Reference faces cannot be provided on both sides of a path.RULED_SURFACE_OVERRIDES_CLASH = Overrides cannot be provided for two coincident vertices. */
+    /* Reference faces cannot be provided on both sides of a path. */
     RULED_SURFACE_REFERENCE_FACES_BOTH_SIDES,
     /* Could not find different targets for requested hole profiles. */
     HOLE_TARGETS_DO_NOT_DIFFER,
     /* Overrides cannot be provided for two coincident vertices. */
     RULED_SURFACE_OVERRIDES_CLASH,
     /* Error communicating with simulation service. */
-    FGS_STREAM_ERROR
+    FGS_STREAM_ERROR,
+    /* Cannot compute mass. No material assigned to part. */
+    NO_MATERIAL_FOR_MASS_PROPERTY
 }
 
 

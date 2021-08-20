@@ -161,6 +161,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "active" : true,
                     "k-factor" : kFactorData,
                     "minimalClearance" : minimalClearanceData,
+                    "flipDirectionUp" : args.flipDirectionUp,
                     "defaultBendRadius" : {"value" : args.defaultRadius},
                     "defaultCornerReliefScale" : defaultCornerReliefScale,
                     "defaultRoundReliefDiameter" : defaultRoundReliefDiameter,

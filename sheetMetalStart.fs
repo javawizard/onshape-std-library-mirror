@@ -99,6 +99,11 @@ export const BEND_RELIEF_WIDTH_SCALE_BOUNDS =
 } as RealBoundSpec;
 
 /**
+ * Manipulator name for the "flip direction up" manipulator
+ */
+export const FLIP_DIRECTION_UP_MANIPULATOR_NAME = "flipDirectionUpManipulator";
+
+/**
  * Create and activate a sheet metal model by converting existing parts, extruding sketch curves or thickening.
  * All operations on an active sheet metal model will automatically be represented in the flat pattern and the table.
  * Sheet metal models may consist of multiple parts. Multiple sheet metal models can be active.
@@ -213,6 +218,9 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
             annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
+
+            annotation { "Name" : "Flip direction up", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition.flipDirectionUp is boolean;
         }
 
         annotation { "Group Name" : "Material", "Collapsed By Default" : true}
@@ -269,24 +277,28 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
     }
     {
+        var resultSheetBodies = undefined;
         definition.supportRolled = isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED);
         // tangentPropagation is meaningful only for Thicken option
         definition.tangentPropagation = (definition.tangentPropagation && definition.process == SMProcessType.THICKEN);
         if (definition.process == SMProcessType.CONVERT)
         {
             checkNotInFeaturePattern(context, definition.partToConvert, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            convertExistingPart(context, id, definition);
+            resultSheetBodies = convertExistingPart(context, id, definition);
         }
         else if (definition.process == SMProcessType.EXTRUDE)
         {
             checkNotInFeaturePattern(context, definition.sketchCurves, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            extrudeSheetMetal(context, id, definition);
+            resultSheetBodies = extrudeSheetMetal(context, id, definition);
         }
         else if (definition.process == SMProcessType.THICKEN)
         {
             checkNotInFeaturePattern(context, definition.regions, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
-            thickenToSheetMetal(context, id, definition);
+            resultSheetBodies = thickenToSheetMetal(context, id, definition);
         }
+
+        addFlipDirectionUpManipulator(resultSheetBodies, FLIP_DIRECTION_UP_MANIPULATOR_NAME, id, context, definition);
+
     }, { "kFactor" : 0.45,
       "kFactorRolled" : 0.5,
       "minimalClearance" : 2e-5 * meter,
@@ -311,7 +323,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "hasSecondDirectionOffset" : false,
       "offsetOppositeDirection" : false,
       "secondDirectionOffsetOppositeDirection" : false,
-      "symmetric" : false
+      "symmetric" : false,
+      "flipDirectionUp" : false
     });
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
@@ -342,6 +355,24 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
         }
+    }
+}
+
+function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is string, id is Id, context is Context, definition is map) {
+    if (!isQueryEmpty(context, qOwnedByBody(sheetBodies, EntityType.FACE)))
+    {
+        var tangentPlane = evFaceTangentPlane(context, {
+                "face" : qNthElement(qOwnedByBody(sheetBodies, EntityType.FACE), 0),
+                "parameter" : vector(0.5, 0.5)
+        });
+        var manipulator is Manipulator = flipManipulator({
+            "base" : tangentPlane.origin,
+            "direction" : -tangentPlane.normal,
+            "flipped" : definition.flipDirectionUp
+        });
+        addManipulators(context, id, {
+            (manipulatorName) : manipulator
+        });
     }
 }
 
@@ -394,6 +425,8 @@ function convertExistingPart(context is Context, id is Id, definition is map)
     var bendsQ = convertFaces(context, id, definition, complimentFacesQ, true);
     definition.remindToSelectBends = (nBends == 0 && nFacesToExclude > 0 && nComplimentFaces > 1);
     annotateConvertedFaces(context, id, definition, bendsQ);
+
+    return qCreatedBy(id, EntityType.BODY);
 }
 
 function convertFaces(context is Context, id is Id, definition, faces is Query, trimWithFacesAround is boolean) returns Query
@@ -434,6 +467,7 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendsQ
                     "minimalClearance" : definition.minimalClearance,
                     "kFactor" : definition.kFactor,
                     "kFactorRolled" : definition.kFactorRolled,
+                    "flipDirectionUp" : definition.flipDirectionUp,
                     "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
                     "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
                     "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
@@ -537,6 +571,7 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
     definition.trackingBendArcs = (definition.supportRolled == true) ? startTracking(context, definition.bendArcs) : qNothing();
     const sheetQuery = extrudeSketchCurves(context, id, definition);
     const createdSheetBodies = evaluateQuery(context, sheetQuery);
+
     if (createdSheetBodies == [])
     {
         throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["sketchCurves"]);
@@ -555,6 +590,8 @@ function extrudeSheetMetal(context is Context, id is Id, definition is map)
     }
     const facesAndEdges = addSheetMetalDataToSheet(context, id, sheetQuery, definition);
     finalizeSheetMetalGeometry(context, id, facesAndEdges);
+
+    return sheetQuery;
 }
 
 function offsetSheets(context is Context, id is Id, sheetQuery is Query, thickness is ValueWithUnits, oppositeDirection is boolean)
@@ -642,6 +679,8 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     definition.keepInputParts = true;
     definition.remindToSelectBends = (nFaces > 1 && nBends == 0);
     annotateConvertedFaces(context, id, definition, bendsQ);
+
+    return qCreatedBy(id, EntityType.BODY);
 }
 
 function convertRegion(context is Context, id is Id, definition is map)
@@ -775,6 +814,7 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "minimalClearance" : definition.minimalClearance,
         "kFactor" : definition.kFactor,
         "kFactorRolled" : definition.kFactorRolled,
+        "flipDirectionUp" : definition.flipDirectionUp,
         "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
         "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
         "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
@@ -1075,7 +1115,18 @@ function getThicknessDirection(context is Context, startModelDefinition is map) 
  */
 export function sheetMetalStartManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
-    return extrudeManipulatorChange(context, definition, newManipulators);
+    for (var manipulator in newManipulators)
+    {
+        if (manipulator.key == "flipDirectionUpManipulator")
+        {
+            definition.flipDirectionUp = manipulator.value.flipped;
+            return definition;
+        }
+        else
+        {
+            return extrudeManipulatorChange(context, definition, newManipulators);
+        }
+    }
 }
 
 /**

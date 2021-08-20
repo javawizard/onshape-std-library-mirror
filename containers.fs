@@ -73,9 +73,9 @@ export function isIn(value, container is array) returns boolean
  */
 export function isValueIn(value, container is map) returns boolean
 {
-    for (var entry in container)
+    for (var _, currentValue in container)
     {
-        if (entry.value == value)
+        if (currentValue == value)
             return true;
     }
     return false;

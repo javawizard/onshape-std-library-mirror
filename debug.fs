@@ -196,7 +196,7 @@ export function debug(context is Context, value is Plane, color is DebugColor)
     addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), color);
     addDebugArrow(context, value.origin, value.origin + value.normal * ARROW_LENGTH * 0.5, ARROW_RADIUS * 0.5, color);
 
-    const planeId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "plane";
+    const planeId = getLastActiveId(context) + DEBUG_ID_STRING + "plane";
     startFeature(context, planeId, {});
     try
     {
@@ -223,7 +223,7 @@ export function debug(context is Context, point1 is Vector, point2 is Vector, co
     if (is3dLengthVector(point1) && is3dLengthVector(point2))
     {
         println(", distance = " ~ toString(norm(point2 - point1)));
-        const lineId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "line";
+        const lineId = getLastActiveId(context) + DEBUG_ID_STRING + "line";
         startFeature(context, lineId, {});
         try
         {
@@ -284,7 +284,7 @@ export function debug(context is Context, boundingBox is Box3d, cSys, color is D
 
     const diagonal = boundingBox.maxCorner - boundingBox.minCorner;
 
-    const boxId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "box";
+    const boxId = getLastActiveId(context) + DEBUG_ID_STRING + "box";
 
     startFeature(context, boxId, {});
     try
@@ -363,7 +363,7 @@ precondition
     is3dLengthVector(point);
 }
 {
-    const pointId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "point";
+    const pointId = getLastActiveId(context) + DEBUG_ID_STRING + "point";
     startFeature(context, pointId, {});
     try
     {
@@ -388,7 +388,7 @@ export function addDebugPoint(context is Context, point is Vector)
  */
 export function addDebugArrow(context is Context, from is Vector, to is Vector, radius is ValueWithUnits, color is DebugColor)
 {
-    const arrowId = getCurrentSubfeatureId(context) + DEBUG_ID_STRING + "arrow";
+    const arrowId = getLastActiveId(context) + DEBUG_ID_STRING + "arrow";
     startFeature(context, arrowId, {});
     try
     {
