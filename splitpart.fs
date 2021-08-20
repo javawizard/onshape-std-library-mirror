@@ -1,25 +1,25 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1560.0");
+export import(path : "onshape/std/query.fs", version : "1576.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1560.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1560.0");
-import(path : "onshape/std/boolean.fs", version : "1560.0");
-import(path : "onshape/std/containers.fs", version : "1560.0");
-import(path : "onshape/std/evaluate.fs", version : "1560.0");
-import(path : "onshape/std/feature.fs", version : "1560.0");
-import(path : "onshape/std/math.fs", version : "1560.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1560.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1560.0");
-import(path : "onshape/std/sketch.fs", version : "1560.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1560.0");
-import(path : "onshape/std/tool.fs", version : "1560.0");
-import(path : "onshape/std/vector.fs", version : "1560.0");
+import(path : "onshape/std/attributes.fs", version : "1576.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1576.0");
+import(path : "onshape/std/boolean.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1576.0");
+import(path : "onshape/std/evaluate.fs", version : "1576.0");
+import(path : "onshape/std/feature.fs", version : "1576.0");
+import(path : "onshape/std/math.fs", version : "1576.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1576.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1576.0");
+import(path : "onshape/std/sketch.fs", version : "1576.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1576.0");
+import(path : "onshape/std/tool.fs", version : "1576.0");
+import(path : "onshape/std/vector.fs", version : "1576.0");
 
 /**
  * Defines whether a `split` should split whole parts, or just faces.
@@ -46,8 +46,8 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
         if (definition.splitType == SplitType.PART)
         {
-            annotation { "Name" : "Parts or surfaces to split",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && ModifiableEntityOnly.YES }
+            annotation { "Name" : "Parts, surfaces, or curves to split",
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",

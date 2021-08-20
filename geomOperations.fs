@@ -1,4 +1,4 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1560; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1560.0");
-import(path : "onshape/std/context.fs", version : "1560.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1560.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1560.0");
-import(path : "onshape/std/query.fs", version : "1560.0");
-import(path : "onshape/std/valueBounds.fs", version : "1560.0");
-import(path : "onshape/std/vector.fs", version : "1560.0");
+import(path : "onshape/std/containers.fs", version : "1576.0");
+import(path : "onshape/std/context.fs", version : "1576.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1576.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1576.0");
+import(path : "onshape/std/query.fs", version : "1576.0");
+import(path : "onshape/std/valueBounds.fs", version : "1576.0");
+import(path : "onshape/std/vector.fs", version : "1576.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1576.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1576.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1576.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1576.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1576.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1576.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1560.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1576.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1560.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1576.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1560.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1576.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1576.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1560.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1576.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -652,8 +652,8 @@ export const opHelix = function(context is Context, id is Id, definition is map)
  *
  * @return {array}: An array representing target intersection information for each hole. The array is aligned with the
  *                  `axes` input. Each item in the array is a map containing a `boolean` field `success`, which
- *                  indicates whether the tool was successfully built. If `success` is `true` the wap will contain
- *                  two additional entries: `targetToDepthExtremes` and `positionReferenceToTarget`.
+ *                  indicates whether the tool was successfully built. If `success` is `true` the map will contain
+ *                  two additional entries: `targetToDepthExtremes` and `positionReferenceInfo`.
  *
  *                  The value of `targetToDepthExtremes` is a `map` mapping the `targets` that the given hole intersects
  *                  to a map of intersection information for those targets. Only targets that are intersected by the
@@ -662,9 +662,8 @@ export const opHelix = function(context is Context, id is Id, definition is map)
  *                  `{ "fullEntrance" : fullEntranceDistance, "fullExit" : fullExitDistance }`.
  *
  *                  `fullEntranceDistance` is a [ValueWithUnits] representing the distance, along the axis, from the
- *                  [HolePositionReference] of the final [HoleProfile] of the [HoleDefinition] to the full entrance of
- *                  the infinite hole cylinder into the part. `fullExitDistance` measures from the same position
- *                  reference to the full exit of the infinite hole cylinder out of the part.
+ *                  origin point of the axis to the full entrance of the infinite hole cylinder into the part.
+ *                  `fullExitDistance` is a similar measurement to the full exit of the infinite hole cylinder out of the part.
  *
  *                  For slanted (or otherwise irregular) entrance faces on the target, the full entrance of the hole is
  *                  distinct from the first intersection of the axis with the target, and from the first coincidence of
@@ -672,38 +671,64 @@ export const opHelix = function(context is Context, id is Id, definition is map)
  *                  than either of those markers, and varies with the radius of the hole. The same is true for the full
  *                  exit.
  *
- *                  The value of `positionReferenceToTarget` is a `map` mapping each [HolePositionReference] found in the
- *                  `holeDefinition` to a [Query] for the `target` that defines that position reference.
+ *                  The value of `positionReferenceInfo` is a `map` whose keys are the [HolePositionReference]s found in
+ *                  the `holeDefinition` and whose value is a map of the form
+ *                  `{ "referenceRootStart" : referenceRootStartDistance, "referenceRootEnd" : referenceRootEndDistance, "target" : targetQuery }`.
+ *
+ *                  `referenceRootStartDistance` is a [ValueWithUnits] representing the distance, along the axis, from
+ *                  the origin point of the axis to the first coincidence between the infinite hole cylinder and the
+ *                  reference in question. `referenceRootEndDistance` is a similar measurement to the last coincidence
+ *                  between the infinite hole cylinder and the reference in question. For flat references, such as a
+ *                  `TARGET_START` referencing the top face of a cube, these two values will be the same. The values
+ *                  will differ for slanted (or otherwise irregular) references where the infinite hole cylinder
+ *                  interacts with the reference over a range, rather than at a single distance.
+ *
+ *                  `targetQuery` is a [Query] for the `target` that defines that position reference.
  *
  *                  @example
  * ```
- * // For an opHole operation creating two holes, both going into two stacked parts,
- * // the first of which being 1 inch thick and the second being 3 inches thick,
- * // and the holeDefinition referencing both TARGET_START and LAST_TARGET_START
- * // (such that the targetToDepthExtremes are in terms of LAST_TARGET_START, and the
- * // positionReferenceToTarget contains both TARGET_START and LAST_TARGET_START)
- * // the return value would look like:
+ * // For an opHole operation creating two holes, both going into two stacked
+ * // parts, the first of which being 1 inch thick with a slightly slanted top
+ * // and flat bottom and the second being 3 inches thick with a flat top and
+ * // bottom, and the holeDefinition referencing both TARGET_START and
+ * // LAST_TARGET_START the return value may look like:
  * [
  *     { // First hole (successful)
  *         "success" : true,
  *         "targetToDepthExtremes" : {
- *                     (firstTargetQuery)  : { "fullEntrance" : -1 * inch, "fullExit" : 0 * inch },
- *                     (secondTargetQuery) : { "fullEntrance" :  0 * inch, "fullExit" : 3 * inch }
+ *                     (firstTargetQuery)  : { "fullEntrance" : 0.3 * inch, "fullExit" : 1 * inch },
+ *                     (secondTargetQuery) : { "fullEntrance" :   1 * inch, "fullExit" : 4 * inch }
  *                 },
- *         "positionReferenceToTarget" : {
- *                     HolePositionReference.TARGET_START      : firstTargetQuery,
- *                     HolePositionReference.LAST_TARGET_START : secondTargetQuery
+ *         "positionReferenceInfo" : {
+ *                     HolePositionReference.TARGET_START : {
+ *                             "referenceRootStart" : 0.1 * inch,
+ *                             "referenceRootEnd" : 0.3 * inch,
+ *                             "target" : firstTargetQuery
+ *                         },
+ *                     HolePositionReference.LAST_TARGET_START : {
+ *                             "referenceRootStart" : 1 * inch,
+ *                             "referenceRootEnd" : 1 * inch,
+ *                             "target" : secondTargetQuery
+ *                         },
  *                 }
  *     },
  *     { // Second hole (successful)
  *         "success" : true,
  *         "targetToDepthExtremes" : {
- *                     (firstTargetQuery)  : { "fullEntrance" : -1 * inch, "fullExit" : 0 * inch },
- *                     (secondTargetQuery) : { "fullEntrance" :  0 * inch, "fullExit" : 3 * inch }
+ *                     (firstTargetQuery)  : { "fullEntrance" : 0.6 * inch, "fullExit" : 1 * inch },
+ *                     (secondTargetQuery) : { "fullEntrance" :   1 * inch, "fullExit" : 4 * inch }
  *                 },
- *         "positionReferenceToTarget" : {
- *                     HolePositionReference.TARGET_START      : firstTargetQuery,
- *                     HolePositionReference.LAST_TARGET_START : secondTargetQuery
+ *         "positionReferenceInfo" : {
+ *                     HolePositionReference.TARGET_START : {
+ *                             "referenceRootStart" : 0.4 * inch,
+ *                             "referenceRootEnd" : 0.6 * inch,
+ *                             "target" : firstTargetQuery
+ *                         },
+ *                     HolePositionReference.LAST_TARGET_START : {
+ *                             "referenceRootStart" : 1 * inch,
+ *                             "referenceRootEnd" : 1 * inch,
+ *                             "target" : secondTargetQuery
+ *                         },
  *                 }
  *     },
  *     { // Third hole (unsuccessful)
@@ -726,23 +751,26 @@ export const opHole = function(context is Context, id is Id, definition is map) 
             // The rest of the fields are only returned if the hole tool was successfully built
 
             var transientQueryToDepthExtremes = {};
-            for (var transientIdAndRawDepthExtremes in rawMap["targetToDepthExtremes"])
+            for (var transientId, rawDepthExtremes in rawMap.targetToDepthExtremes)
             {
-                const rawDepthExtremes = transientIdAndRawDepthExtremes.value;
                 const depthExtremes = {
                         "fullEntrance" : rawDepthExtremes.fullEntrance * meter,
                         "fullExit" : rawDepthExtremes.fullExit * meter
                     };
-                transientQueryToDepthExtremes[qTransient(transientIdAndRawDepthExtremes.key)] = depthExtremes;
+                transientQueryToDepthExtremes[qTransient(transientId)] = depthExtremes;
             }
-            processedMap["targetToDepthExtremes"] = transientQueryToDepthExtremes;
+            processedMap.targetToDepthExtremes = transientQueryToDepthExtremes;
 
-            var referenceEnumToTransientQuery = {};
-            for (var referenceStringAndTransientId in rawMap["positionReferenceToTarget"])
+            var referenceEnumToInfo = {};
+            for (var referenceString, rawInfo in rawMap.positionReferenceInfo)
             {
-                referenceEnumToTransientQuery[referenceStringAndTransientId.key as HolePositionReference] = qTransient(referenceStringAndTransientId.value);
+                referenceEnumToInfo[referenceString as HolePositionReference] = {
+                        "referenceRootStart" : rawInfo.referenceRootStart * meter,
+                        "referenceRootEnd" : rawInfo.referenceRootEnd * meter,
+                        "target" : rawInfo.target == undefined ? undefined : qTransient(rawInfo.target)
+                    };
             }
-            processedMap["positionReferenceToTarget"] = referenceEnumToTransientQuery;
+            processedMap.positionReferenceInfo = referenceEnumToInfo;
         }
 
         out = append(out, processedMap);
@@ -1076,10 +1104,10 @@ export const opSMFlatOperation = function(context is Context, id is Id, definiti
 };
 
 /**
- * Split solid and sheet bodies with the given sheet body.
+ * Split solid, sheet, and wire bodies with the given sheet body.
  * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
- *      @field targets {Query} : The solid and sheet bodies to split.
+ *      @field targets {Query} : The solid, sheet, and wire bodies to split.
  *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
  *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
  *      @field keepTools {boolean} : If false, the tool is deleted. Default is `false`. @optional
@@ -1087,7 +1115,6 @@ export const opSMFlatOperation = function(context is Context, id is Id, definiti
  *      @field useTrimmed {boolean} : If true, the trimmed face boundaries are used as the tool, rather than the underlying surface. Default is `false`. @optional
  * }}
  */
-/* TODO: why not wires? */
 export const opSplitPart = function(context is Context, id is Id, definition is map)
 {
     return @opSplitPart(context, id, definition);

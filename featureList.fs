@@ -1,11 +1,11 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 /** Support functions for feature lists (as used for featurePattern) */
 
-import(path : "onshape/std/context.fs", version : "1560.0");
+import(path : "onshape/std/context.fs", version : "1576.0");
 
 /**
  * Parameter type for inputting a list of features, stored as a map from
@@ -18,10 +18,10 @@ export type FeatureList typecheck canBeFeatureList;
 export predicate canBeFeatureList(value)
 {
     value is map;
-    for (var entry in value)
+    for (var key, currentValue in value)
     {
-        entry.key is Id;
-        entry.value is function;
+        key is Id;
+        currentValue is function;
     }
 }
 

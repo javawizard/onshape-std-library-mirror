@@ -1,11 +1,11 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1560.0");
-import(path : "onshape/std/containers.fs", version : "1560.0");
-import(path : "onshape/std/string.fs", version : "1560.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1576.0");
+import(path : "onshape/std/string.fs", version : "1576.0");
 
 //====================== Context ========================
 
@@ -56,9 +56,9 @@ export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber,
     // Enum sort order within maps is based on the ordinal
     const mapOfVersions = { (versionToCheck) : true, (versionToCompareAgainst) : true };
     var firstKey;
-    for (var entry in mapOfVersions)
+    for (var key, _ in mapOfVersions)
     {
-        firstKey = entry.key;
+        firstKey = key;
         return firstKey == versionToCompareAgainst;
     }
 }

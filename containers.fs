@@ -1,4 +1,4 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 1560; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1560.0");
-import(path : "onshape/std/string.fs", version : "1560.0");
+import(path : "onshape/std/math.fs", version : "1576.0");
+import(path : "onshape/std/string.fs", version : "1576.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -73,9 +73,9 @@ export function isIn(value, container is array) returns boolean
  */
 export function isValueIn(value, container is map) returns boolean
 {
-    for (var entry in container)
+    for (var _, currentValue in container)
     {
-        if (entry.value == value)
+        if (currentValue == value)
             return true;
     }
     return false;

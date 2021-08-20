@@ -1,11 +1,11 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "1560.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1560.0");
-import(path : "onshape/std/string.fs", version : "1560.0");
+import(path : "onshape/std/math.fs", version : "1576.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "1576.0");
+import(path : "onshape/std/string.fs", version : "1576.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -645,9 +645,9 @@ export function stripUnits(value is array) returns array
 /** @internal */
 export function stripUnits(value is map) returns map
 {
-    for (var entry in value)
+    for (var key, currentValue in value)
     {
-        value[entry.key] = stripUnits(entry.value);
+        value[key] = stripUnits(currentValue);
     }
     return value as map;
 }
@@ -681,9 +681,9 @@ export const REGEX_UNITS = buildRegexUnits();
 function buildRegexUnits() returns string
 {
   var result = "((?:";
-  for (var entry in STRING_TO_UNIT_MAP)
+  for (var key, _ in STRING_TO_UNIT_MAP)
   {
-      result = result ~ entry.key ~ "|";
+      result = result ~ key ~ "|";
   }
   result = replace(result, "\\|$", ")\\b)");
   return result;

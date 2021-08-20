@@ -1,21 +1,21 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1560.0");
-export import(path : "onshape/std/tool.fs", version : "1560.0");
-export import(path : "onshape/std/patternUtils.fs", version : "1560.0");
+export import(path : "onshape/std/query.fs", version : "1576.0");
+export import(path : "onshape/std/tool.fs", version : "1576.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1576.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1560.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1560.0");
-import(path : "onshape/std/containers.fs", version : "1560.0");
-import(path : "onshape/std/evaluate.fs", version : "1560.0");
-import(path : "onshape/std/feature.fs", version : "1560.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1560.0");
-import(path : "onshape/std/transform.fs", version : "1560.0");
+import(path : "onshape/std/boolean.fs", version : "1576.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1576.0");
+import(path : "onshape/std/evaluate.fs", version : "1576.0");
+import(path : "onshape/std/feature.fs", version : "1576.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1576.0");
+import(path : "onshape/std/transform.fs", version : "1576.0");
 
 
 /**
@@ -132,10 +132,10 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
     {
         var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.LAMINAR), mirrorPlane));
         matches = makeArray(size(edgesOnPlane));
-        for (var i = 0; i < size(edgesOnPlane); i += 1)
+        for (var i, edge in edgesOnPlane)
         {
-            var mirrorEdge = startTracking(context, edgesOnPlane[i]);
-            matches[i] = { "topology1" : edgesOnPlane[i], "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
+            var mirrorEdge = startTracking(context, edge);
+            matches[i] = { "topology1" : edge, "topology2" : mirrorEdge, "matchType" : TopologyMatchType.COINCIDENT };
         }
         return matches;
     }

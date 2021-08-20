@@ -1,22 +1,22 @@
-FeatureScript 1560; /* Automatically generated version */
+FeatureScript 1576; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1560.0");
-export import(path : "onshape/std/error.fs", version : "1560.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1560.0");
-export import(path : "onshape/std/query.fs", version : "1560.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1560.0");
+export import(path : "onshape/std/context.fs", version : "1576.0");
+export import(path : "onshape/std/error.fs", version : "1576.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1576.0");
+export import(path : "onshape/std/query.fs", version : "1576.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1576.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1560.0");
-import(path : "onshape/std/math.fs", version : "1560.0");
-import(path : "onshape/std/string.fs", version : "1560.0");
-import(path : "onshape/std/transform.fs", version : "1560.0");
-import(path : "onshape/std/units.fs", version : "1560.0");
-import(path : "onshape/std/tabReferences.fs", version : "1560.0");
+import(path : "onshape/std/containers.fs", version : "1576.0");
+import(path : "onshape/std/math.fs", version : "1576.0");
+import(path : "onshape/std/string.fs", version : "1576.0");
+import(path : "onshape/std/transform.fs", version : "1576.0");
+import(path : "onshape/std/units.fs", version : "1576.0");
+import(path : "onshape/std/tabReferences.fs", version : "1576.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -310,11 +310,12 @@ export function forEachEntity(context is Context, id is Id, query is Query, oper
 /**
  * @internal
  *
- * Returns the id used by the innermost call to `startFeature`.  Temporary operations may be started by adding to this id.
+ * Returns a path in the id tree where an additional operation can be inserted without breaking feature execution.
+ * Temporary operations may be started by adding to this id.
  */
-export function getCurrentSubfeatureId(context is Context) returns Id
+export function getLastActiveId(context is Context) returns Id
 {
-    return @getCurrentSubfeatureId(context) as Id;
+    return @getLastActiveId(context) as Id;
 }
 
 /**
@@ -375,8 +376,8 @@ predicate isArrayParameter(value)
     {
         element is map;
         element as map == element; // no type tag
-        for (var entry in element)
-            entry.key is string;
+        for (var key, _ in element)
+            key is string;
     }
 }
 
