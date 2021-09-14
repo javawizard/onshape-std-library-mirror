@@ -208,8 +208,11 @@ precondition
     if (numTolerant > 0)
     {
         // Try to find an existing set of instances with a sufficiently close tolerant configuration.
+        const splitVectorSize = @size(split.vector[0]);
         for ( ; i < numTolerantConfigurations; i += 1)
         {
+            if (@size(tolerantConfigurations[i].tolerantVector[0]) != splitVectorSize)
+                continue; // Different sizes are considered different configurations
             if (@matrixSquaredNorm(@matrixDifference(split.vector, tolerantConfigurations[i].tolerantVector)) < numTolerant)
                 break;
         }

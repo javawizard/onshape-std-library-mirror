@@ -51,6 +51,7 @@ export import(path : "onshape/std/projectCurves.fs", version : "✨");
 export import(path : "onshape/std/replaceFace.fs", version : "✨");
 export import(path : "onshape/std/revolve.fs", version : "✨");
 export import(path : "onshape/std/rib.fs", version : "✨");
+export import(path : "onshape/std/ruledSurface.fs", version : "✨");
 export import(path : "onshape/std/sectionpart.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalBendRelief.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalCorner.fs", version : "✨");

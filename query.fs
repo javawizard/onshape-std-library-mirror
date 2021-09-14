@@ -176,6 +176,7 @@ export enum QueryType
     LOOP_AROUND_FACE,
     SHELL_CONTAINING_FACE,
     EDGE_TOPOLOGY_FILTER,
+    EDGE_VERTEX,
     //Geometry types
     GEOMETRY,
     BODY_TYPE,
@@ -1275,6 +1276,14 @@ precondition
 export function qEdgeTopologyFilter(queryToFilter is Query, edgeTopologyType is EdgeTopology) returns Query
 {
     return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : queryToFilter } as Query;
+}
+
+/**
+ * A query for the start or end vertices of edges.
+ */
+export function qEdgeVertex(edgeQuery is Query, atStart is boolean)
+{
+    return { "queryType" : QueryType.EDGE_VERTEX, "query" : edgeQuery, "atStart" : atStart } as Query;
 }
 
 

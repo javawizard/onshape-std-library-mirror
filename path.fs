@@ -583,6 +583,10 @@ function computeDistanceHeuristic(context is Context, pathGeometry, referenceGeo
  */
 export function getPathEndVertices(context is Context, path is Path) returns Query
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1585_HOLE_NEW_PIPELINE))
+    {
+        return getPathEndVerticesNotTopologicallyConnected(context, path);
+    }
     const size = path.edges->size();
     if (size == 0 || path.closed)
     {
@@ -604,5 +608,20 @@ export function getPathEndVertices(context is Context, path is Path) returns Que
         const secondToLastVertices = qAdjacent(path.edges[size - 2], AdjacencyType.VERTEX, EntityType.VERTEX);
         return qSubtraction(qUnion([startVertices, endVertices]), qUnion([secondVertices, secondToLastVertices]));
     }
+}
+
+/**
+ * Unlike implemenation in `getPathEndVertices`, works for paths with edges that are not topologically connected.
+ */
+function getPathEndVerticesNotTopologicallyConnected(context is Context, path is Path) returns Query
+{
+    const size = path.edges->size();
+    if (size == 0 || path.closed)
+    {
+        return qNothing();
+    }
+    const firstEdgeVertex = path.edges[0]->qEdgeVertex(!path.flipped[0]);
+    const lastEdgeVertex = path.edges[size - 1]->qEdgeVertex(path.flipped[size - 1]);
+    return qUnion([firstEdgeVertex, lastEdgeVertex]);
 }
 

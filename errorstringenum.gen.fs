@@ -2011,17 +2011,17 @@ export enum ErrorStringEnum
     RULED_SURFACE_NO_TANGENT_DIR,
     /* Select a direction to create a ruled surface. */
     RULED_SURFACE_SELECT_DIRECTION,
-    /* Ruled surface would have a width of 0. */
+    /* Cannot create a zero length ruled surface. */
     RULED_SURFACE_ZERO_LENGTH,
-    /* Select entity to create ruled surface to. */
+    /* Select vertex to create ruled surface to. */
     RULED_SURFACE_SELECT_UP_TO_ENTITY,
     /* Sketch edges can only meet at their ends, overlapping or crossing edges are prohibited. */
     RULED_SURFACE_OVERLAPPING_SKETCH_EDGES,
     /* Ruled surface path cannot branch. */
     RULED_SURFACE_EDGES_NOT_MANIFOLD,
-    /* Could not create ruled surface. */
+    /* Cannot create ruled surface. */
     RULED_SURFACE_FAILED,
-    /* A reference face must be provided for each path edge when maintaining orientation with faces. */
+    /* Reference face must be adjacent to ruled surface path. */
     RULED_SURFACE_NO_LOCK_FACE,
     /* Select a vertex for vertex override. */
     RULED_SURFACE_VERTEX_SELECT_VERTEX,
@@ -2057,7 +2057,7 @@ export enum ErrorStringEnum
     CONSTRUCT_PATH_FAILED,
     /* Seed faces found on both sides of path. */
     CONSTRUCT_PATH_FACES_OPPOSITE_SIDES,
-    /* Reference faces cannot be provided on both sides of a path. */
+    /* Reference faces cannot be provided for both sides of the path. */
     RULED_SURFACE_REFERENCE_FACES_BOTH_SIDES,
     /* Could not find different targets for requested hole profiles. */
     HOLE_TARGETS_DO_NOT_DIFFER,
@@ -2066,7 +2066,17 @@ export enum ErrorStringEnum
     /* Error communicating with simulation service. */
     FGS_STREAM_ERROR,
     /* Cannot compute mass. No material assigned to part. */
-    NO_MATERIAL_FOR_MASS_PROPERTY
+    NO_MATERIAL_FOR_MASS_PROPERTY,
+    /* Specified simulation does not exist. */
+    SPECIFIED_SIMULATION_DOES_NOT_EXIST,
+    /* Assembly can only contain one modal simulation. */
+    MULTIPLE_MODAL_SIMULATIONS_PROHIBITED,
+    /* Cannot use normal-to-profile end condition with guides for point profiles. */
+    LOFT_POINT_PROFILE_NORMAL_TO_PROFILE_GUIDE,
+    /* Normal and tangent overrides not supported when top level is aligned with vector. */
+    RULED_SURFACE_GLOBAL_NORMAL_OVERRIDE,
+    /* A path edge cannot be parallel to the direction. */
+    RULED_SURFACE_EDGE_PARALLEL_REFERENCE
 }
 
 

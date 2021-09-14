@@ -25,7 +25,7 @@ export type HoleAttribute typecheck canBeHoleAttribute ;
  *  parameterIdInFeature : {string}
  *  }
  */
-export predicate canBeHoleAttribute (value)
+export predicate canBeHoleAttribute(value)
 {
     value is map;
     value.attributeId == undefined || value.attributeId is string;
@@ -46,12 +46,14 @@ export function asHoleAttribute(value is map) returns HoleAttribute
 }
 
 /**
-* @internal
-*/
+ * @internal
+ */
 export function makeHoleAttribute(attributeId is string, holeStyle is HoleStyle) returns HoleAttribute
 {
-    return asHoleAttribute({'holeType' : holeStyle,
-            'attributeId' : attributeId });
+    return asHoleAttribute({
+            "attributeId" : attributeId,
+            "holeType" : holeStyle
+        });
 }
 
 /**

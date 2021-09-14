@@ -282,6 +282,15 @@ export const ANGLE_360_FULL_DEFAULT_BOUNDS =
 } as AngleBoundSpec;
 
 /**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 90 degrees.
+ */
+export const ANGLE_360_90_DEFAULT_BOUNDS =
+{
+    (degree) : [-1e5, 90, 1e5],
+    (radian) : PI / 2
+} as AngleBoundSpec;
+
+/**
  * An `AngleBoundSpec` for an angle strictly less than 180 degrees.
  */
 export const ANGLE_STRICT_180_BOUNDS =

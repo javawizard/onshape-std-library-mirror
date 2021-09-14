@@ -1075,6 +1075,39 @@ export const opRevolve = function(context is Context, id is Id, definition is ma
 };
 
 /**
+ * Creates a ruled surface along a set of paths. Direction of ruled surface is specified with either `ruledDirection`
+ *      or `angleFromFaces`.
+ * @param id : @autocomplete `id + "ruledSurface1"`
+ * @param definition {{
+ *      @field path {Query} : The edges that form the paths for the ruled surface.
+ *      @field cornerType {RuledSurfaceCornerType} : How corners in the ruled surface are handled. Default is
+ *          `RuledSurfaceCornerType.SPUN`. @optional
+ *      @field useCubicInterpolation {boolean} : Ruled surface will use a cubic interpolation if `true`. Otherwise,
+ *          a linear interpolation will be used. Default is `true`. @optional
+ *      @field width {ValueWithUnits} : The width of the ruled surface.
+ *      @field ruledSurfaceType {RuledSurfaceType} : Specifies how the ruled surface is constructed.
+ *      @field ruledDirection {Vector} : @requiredIf { `ruledSurfaceType` is `ALIGNED_WITH_VECTOR` }
+ *          Ruled surface will be aligned with this vector.
+ *      @field angle {ValueWithUnits} : The angle at which the ruled surface meets reference faces or `ruledDirection`. Default is `0`.
+ *      @field referenceFaces {Query} : A set of faces from which to measure `angleFromFaces`. @requiredIf { `ruledSurfaceType` is `ANGLE_FROM_FACE` }
+ *      @field vertexOverrides {{
+ *          @field vertex {Query} : A vertex on the path where the override is applied.
+ *          @field ruledDirection {Vector} : If specified, override will specify local direction of ruled surface along
+ *              this vector.
+ *          @field width {ValueWithUnits} : @requiredIf { `ruledDirection` != undefined or `angleFromFaces` != undefined }
+ *              Width of ruled surface at this override.
+ *          @field angleFromFaces {ValueWithUnits} : If specified, override will specify direction as an angle to reference
+ *              faces. This is only applicable if angleFromFaces is also specified at the top level.
+ *          @field upToEntity {Query} : If specified, override will specify that ruled surface touches upToEntity at override.
+ *    }}
+ * }}
+ */
+export const opRuledSurface = function(context is Context, id is Id, definition is map)
+{
+    return @opRuledSurface(context, id, definition);
+};
+
+/**
  * Create a shell of a solid body with uniform thickness. The bodies that are passed
  * in are hollowed, omitting the walls on the `face` entities passed in.
  * @param id : @autocomplete `id + "shell1"`
