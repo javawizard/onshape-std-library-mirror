@@ -1,4 +1,4 @@
-FeatureScript 1576; /* Automatically generated version */
+FeatureScript 1589; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1576; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1576.0");
-import(path : "onshape/std/context.fs", version : "1576.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1576.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1576.0");
-import(path : "onshape/std/query.fs", version : "1576.0");
-import(path : "onshape/std/valueBounds.fs", version : "1576.0");
-import(path : "onshape/std/vector.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1589.0");
+import(path : "onshape/std/context.fs", version : "1589.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1589.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1589.0");
+import(path : "onshape/std/query.fs", version : "1589.0");
+import(path : "onshape/std/valueBounds.fs", version : "1589.0");
+import(path : "onshape/std/vector.fs", version : "1589.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1589.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1589.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1589.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1589.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1589.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1589.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1576.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1589.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1576.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1589.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1576.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1589.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1589.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1576.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1589.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -1072,6 +1072,39 @@ export const opReplaceFace = function(context is Context, id is Id, definition i
 export const opRevolve = function(context is Context, id is Id, definition is map)
 {
     return @opRevolve(context, id, definition);
+};
+
+/**
+ * Creates a ruled surface along a set of paths. Direction of ruled surface is specified with either `ruledDirection`
+ *      or `angleFromFaces`.
+ * @param id : @autocomplete `id + "ruledSurface1"`
+ * @param definition {{
+ *      @field path {Query} : The edges that form the paths for the ruled surface.
+ *      @field cornerType {RuledSurfaceCornerType} : How corners in the ruled surface are handled. Default is
+ *          `RuledSurfaceCornerType.SPUN`. @optional
+ *      @field useCubicInterpolation {boolean} : Ruled surface will use a cubic interpolation if `true`. Otherwise,
+ *          a linear interpolation will be used. Default is `true`. @optional
+ *      @field width {ValueWithUnits} : The width of the ruled surface.
+ *      @field ruledSurfaceType {RuledSurfaceType} : Specifies how the ruled surface is constructed.
+ *      @field ruledDirection {Vector} : @requiredIf { `ruledSurfaceType` is `ALIGNED_WITH_VECTOR` }
+ *          Ruled surface will be aligned with this vector.
+ *      @field angle {ValueWithUnits} : The angle at which the ruled surface meets reference faces or `ruledDirection`. Default is `0`.
+ *      @field referenceFaces {Query} : A set of faces from which to measure `angleFromFaces`. @requiredIf { `ruledSurfaceType` is `ANGLE_FROM_FACE` }
+ *      @field vertexOverrides {{
+ *          @field vertex {Query} : A vertex on the path where the override is applied.
+ *          @field ruledDirection {Vector} : If specified, override will specify local direction of ruled surface along
+ *              this vector.
+ *          @field width {ValueWithUnits} : @requiredIf { `ruledDirection` != undefined or `angleFromFaces` != undefined }
+ *              Width of ruled surface at this override.
+ *          @field angleFromFaces {ValueWithUnits} : If specified, override will specify direction as an angle to reference
+ *              faces. This is only applicable if angleFromFaces is also specified at the top level.
+ *          @field upToEntity {Query} : If specified, override will specify that ruled surface touches upToEntity at override.
+ *    }}
+ * }}
+ */
+export const opRuledSurface = function(context is Context, id is Id, definition is map)
+{
+    return @opRuledSurface(context, id, definition);
 };
 
 /**

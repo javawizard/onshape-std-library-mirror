@@ -1,11 +1,11 @@
-FeatureScript 1576; /* Automatically generated version */
+FeatureScript 1589; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1576.0");
-import(path : "onshape/std/hole.fs", version : "1576.0");
-import(path : "onshape/std/table.fs", version : "1576.0");
+import(path : "onshape/std/attributes.fs", version : "1589.0");
+import(path : "onshape/std/hole.fs", version : "1589.0");
+import(path : "onshape/std/table.fs", version : "1589.0");
 
 /** Computes one hole table for each part */
 annotation { "Table Type Name" : "Hole table" }

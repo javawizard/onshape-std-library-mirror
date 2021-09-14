@@ -1,4 +1,4 @@
-FeatureScript 1576; /* Automatically generated version */
+FeatureScript 1589; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 1576; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "1576.0");
-import(path : "onshape/std/math.fs", version : "1576.0");
-import(path : "onshape/std/error.fs", version : "1576.0");
-export import(path : "onshape/std/units.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1589.0");
+import(path : "onshape/std/math.fs", version : "1589.0");
+import(path : "onshape/std/error.fs", version : "1589.0");
+export import(path : "onshape/std/units.fs", version : "1589.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -279,6 +279,15 @@ export const ANGLE_360_FULL_DEFAULT_BOUNDS =
 {
     (degree) : [-1e5, 360, 1e5],
     (radian) : 2 * PI
+} as AngleBoundSpec;
+
+/**
+ * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 90 degrees.
+ */
+export const ANGLE_360_90_DEFAULT_BOUNDS =
+{
+    (degree) : [-1e5, 90, 1e5],
+    (radian) : PI / 2
 } as AngleBoundSpec;
 
 /**

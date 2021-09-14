@@ -1,4 +1,4 @@
-FeatureScript 1576; /* Automatically generated version */
+FeatureScript 1589; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1576; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1576.0");
-import(path : "onshape/std/context.fs", version : "1576.0");
-import(path : "onshape/std/mathUtils.fs", version : "1576.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1576.0");
-import(path : "onshape/std/units.fs", version : "1576.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1576.0");
-import(path : "onshape/std/featureList.fs", version : "1576.0");
+import(path : "onshape/std/containers.fs", version : "1589.0");
+import(path : "onshape/std/context.fs", version : "1589.0");
+import(path : "onshape/std/mathUtils.fs", version : "1589.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1589.0");
+import(path : "onshape/std/units.fs", version : "1589.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1589.0");
+import(path : "onshape/std/featureList.fs", version : "1589.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -176,6 +176,7 @@ export enum QueryType
     LOOP_AROUND_FACE,
     SHELL_CONTAINING_FACE,
     EDGE_TOPOLOGY_FILTER,
+    EDGE_VERTEX,
     //Geometry types
     GEOMETRY,
     BODY_TYPE,
@@ -1275,6 +1276,14 @@ precondition
 export function qEdgeTopologyFilter(queryToFilter is Query, edgeTopologyType is EdgeTopology) returns Query
 {
     return { queryType : QueryType.EDGE_TOPOLOGY_FILTER, "edgeTopologyType" : edgeTopologyType, "subquery" : queryToFilter } as Query;
+}
+
+/**
+ * A query for the start or end vertices of edges.
+ */
+export function qEdgeVertex(edgeQuery is Query, atStart is boolean)
+{
+    return { "queryType" : QueryType.EDGE_VERTEX, "query" : edgeQuery, "atStart" : atStart } as Query;
 }
 
 
