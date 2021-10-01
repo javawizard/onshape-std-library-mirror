@@ -2076,7 +2076,15 @@ export enum ErrorStringEnum
     /* Normal and tangent overrides not supported when top level is aligned with vector. */
     RULED_SURFACE_GLOBAL_NORMAL_OVERRIDE,
     /* A path edge cannot be parallel to the direction. */
-    RULED_SURFACE_EDGE_PARALLEL_REFERENCE
+    RULED_SURFACE_EDGE_PARALLEL_REFERENCE,
+    /* At least one fixed component is required. */
+    FIXED_PART_REQUIRED_FOR_SIMULATION,
+    /* All components must be assigned a material. */
+    MATERIAL_ASSIGNMENT_REQUIRED_FOR_SIMULATION,
+    /* At least one load required. */
+    LOAD_REQUIRED_FOR_LINEAR_STATIC_SIMULATION,
+    /* Required property is missing from material. */
+    MATERIAL_LACKS_REQUIRED_PROPERTY_FOR_SIMULATION
 }
 
 

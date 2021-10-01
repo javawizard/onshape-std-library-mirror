@@ -920,22 +920,70 @@ precondition
     arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
 }
 {
-    var edgeTangent = evEdgeTangentLine(context, {
-            "edge" : arg.edge,
-            "parameter" : arg.parameter,
-            "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined,
-            "arcLengthParameterization" : arg.arcLengthParameterization
-    });
-    var distData = evDistance(context, {
-            "side0" : arg.face,
-            "side1" : edgeTangent.origin
-    });
-    var parameter = distData.sides[0].parameter;
-    var faceTangent = evFaceTangentPlane(context, {
-            "face" : arg.face,
-            "parameter" : parameter
-    });
-    return faceTangent;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1602_TANGENT_PLANES_AT_EDGE_BUILTIN))
+    {
+        arg.parameters = [arg.parameter];
+        return evFaceTangentPlanesAtEdge(context, arg)[0];
+    }
+    else
+    {
+        var edgeTangent = evEdgeTangentLine(context, {
+                "edge" : arg.edge,
+                "parameter" : arg.parameter,
+                "face" : (arg.usingFaceOrientation == true) ? arg.face : undefined,
+                "arcLengthParameterization" : arg.arcLengthParameterization
+        });
+        var distData = evDistance(context, {
+                "side0" : arg.face,
+                "side1" : edgeTangent.origin
+        });
+        var parameter = distData.sides[0].parameter;
+        var faceTangent = evFaceTangentPlane(context, {
+                "face" : arg.face,
+                "parameter" : parameter
+        });
+        return faceTangent;
+    }
+}
+
+/**
+ * Return an array of [Plane]s tangent to a face at an array of parameters on one of its edges. The x-direction of the
+ *  plane is oriented with the tangent of the edge with respect to `usingFaceOrientation`.
+ *
+ * If the first result is not a face, throw an exception.
+ * @param arg {{
+ *      @field edge{Query}
+ *      @field face{Query}
+ *      @field parameters {array}:
+ *             An array of numbers in the range 0..1 indicating points along
+ *             the edge to evaluate the tangent at.
+ *      @field arcLengthParameterization {boolean} :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+  *          @optional
+ *      @field usingFaceOrientation{boolean}:
+ *             If true, the edge orientation used is such that walking along the edge with "up" being the `face`
+ *             normal will keep `face` to the left. If false, use the default orientation of the edge,
+ *             which is the same orientation used by [evEdgeTangentLine]. Default is `false`.
+ *          @optional
+ * }}
+ */
+export function evFaceTangentPlanesAtEdge(context is Context, arg is map)
+precondition
+{
+    arg is map;
+    arg.edge is Query;
+    arg.face is Query;
+    arg.parameters is array;
+    arg.arcLengthParameterization is undefined || arg.arcLengthParameterization is boolean;
+    arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
+}
+{
+    var result = @evFaceTangentPlanesAtEdge(context, arg);
+    for (var i = 0; i < @size(result); i += 1)
+        result[i] = planeFromBuiltin(result[i]);
+    return result;
 }
 
 /**

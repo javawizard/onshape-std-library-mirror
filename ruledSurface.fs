@@ -779,11 +779,17 @@ function addDistanceManipulator(context is Context, id is Id, manipulatorId is s
 function addAngularManipulator(context is Context, id is Id, manipulatorId is string, origin is Vector, baseDirection is Vector,
     distance is ValueWithUnits, angle is ValueWithUnits, tangentDirection is Vector, parameterId)
 {
+    // The sign of the angle is used for the direction of the manipulator arrow, so make sure it is preserved when bringing the angle into the bounds.
+    var adjustedAngle = angle % (2 * PI * radian);
+    if (angle < 0)
+    {
+        adjustedAngle = adjustedAngle - 2 * PI * radian;
+    }
     addManipulators(context, id, { (ANGLE_MANIPULATOR ~ manipulatorId) : angularManipulator({
                         "axisOrigin" : origin,
                         "axisDirection" : tangentDirection,
                         "rotationOrigin" : origin + baseDirection * distance,
-                        "angle" : adjustAngle(context, angle),
+                        "angle" : adjustedAngle,
                         "style" : ManipulatorStyleEnum.DEFAULT,
                         "minValue" : -2 * PI * radian,
                         "maxValue" : 2 * PI * radian,

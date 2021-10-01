@@ -989,7 +989,12 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
     });
 
     var sourceParts = qSubtraction(definition.target, qCreatedBy(id + "pattern", EntityType.BODY));
-    var rotatedParts = qBodyType(qCreatedBy(id + "pattern", EntityType.BODY), BodyType.SOLID);
+    var bodyTypes = [BodyType.SOLID];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1598_SHEET_BODY_ALIGNED_SECTION_VIEW_FIX))
+    {
+        bodyTypes = append(bodyTypes, BodyType.SHEET);
+    }
+    var rotatedParts = qBodyType(qCreatedBy(id + "pattern", EntityType.BODY), bodyTypes);
     const versionOperationUse = (definition.versionOperationUse == true);
     const coordinateSystem = planeToCSys(sketchPlane);
     var boxResult = evBox3d(context, {
