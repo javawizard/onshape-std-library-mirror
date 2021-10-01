@@ -1,4 +1,4 @@
-FeatureScript 1589; /* Automatically generated version */
+FeatureScript 1605; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1003,7 +1003,16 @@ export enum FeatureScriptVersionNumber
     V1586_PS_VERSION_34_0_135,
     V1587_MERGE_BACK_RULED_SURFACE,
     V1588_RULED_SURFACE_VERSION_BUMP,
-    V1589_RULED_SURFACE_136
+    V1589_RULED_SURFACE_136,
+    V1597_COMPOUND_UNITS_BUMP,
+    V1598_SHEET_BODY_ALIGNED_SECTION_VIEW_FIX,
+    V1599_SHEET_EXTEND_TRACKING,
+    V1600_COMPOUND_UNITS_BUMP,
+    V1601_MIGRATE_OLD_DOCS_TO_FILTER_HISTORY,
+    V1602_TANGENT_PLANES_AT_EDGE_BUILTIN,
+    V1603_LOFT_END_CONDITIONS_INNER_EDGE_FIX,
+    V1604_ORIGINAL_IN_RANGE,
+    V1605_RULED_SURFACE_BUMP
 }
 
 /**
@@ -1014,6 +1023,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1589_RULED_SURFACE_136;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1605_RULED_SURFACE_BUMP;
 
 

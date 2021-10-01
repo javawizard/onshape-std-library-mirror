@@ -1,29 +1,29 @@
-FeatureScript 1589; /* Automatically generated version */
+FeatureScript 1605; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1589.0");
-export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "1589.0");
-export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "1589.0");
-export import(path : "onshape/std/tool.fs", version : "1589.0");
+export import(path : "onshape/std/query.fs", version : "1605.0");
+export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "1605.0");
+export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "1605.0");
+export import(path : "onshape/std/tool.fs", version : "1605.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1589.0");
+export import(path : "onshape/std/manipulator.fs", version : "1605.0");
 
-import(path : "onshape/std/boolean.fs", version : "1589.0");
-import(path : "onshape/std/containers.fs", version : "1589.0");
-import(path : "onshape/std/error.fs", version : "1589.0");
-import(path : "onshape/std/evaluate.fs", version : "1589.0");
-import(path : "onshape/std/feature.fs", version : "1589.0");
-import(path : "onshape/std/path.fs", version : "1589.0");
-import(path : "onshape/std/string.fs", version : "1589.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1589.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1589.0");
-import(path : "onshape/std/transform.fs", version : "1589.0");
-import(path : "onshape/std/valueBounds.fs", version : "1589.0");
-import(path : "onshape/std/vector.fs", version : "1589.0");
+import(path : "onshape/std/boolean.fs", version : "1605.0");
+import(path : "onshape/std/containers.fs", version : "1605.0");
+import(path : "onshape/std/error.fs", version : "1605.0");
+import(path : "onshape/std/evaluate.fs", version : "1605.0");
+import(path : "onshape/std/feature.fs", version : "1605.0");
+import(path : "onshape/std/path.fs", version : "1605.0");
+import(path : "onshape/std/string.fs", version : "1605.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1605.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1605.0");
+import(path : "onshape/std/transform.fs", version : "1605.0");
+import(path : "onshape/std/valueBounds.fs", version : "1605.0");
+import(path : "onshape/std/vector.fs", version : "1605.0");
 
 /**
  * The type of ruled surface to apply at a specific vertex.
@@ -779,11 +779,17 @@ function addDistanceManipulator(context is Context, id is Id, manipulatorId is s
 function addAngularManipulator(context is Context, id is Id, manipulatorId is string, origin is Vector, baseDirection is Vector,
     distance is ValueWithUnits, angle is ValueWithUnits, tangentDirection is Vector, parameterId)
 {
+    // The sign of the angle is used for the direction of the manipulator arrow, so make sure it is preserved when bringing the angle into the bounds.
+    var adjustedAngle = angle % (2 * PI * radian);
+    if (angle < 0)
+    {
+        adjustedAngle = adjustedAngle - 2 * PI * radian;
+    }
     addManipulators(context, id, { (ANGLE_MANIPULATOR ~ manipulatorId) : angularManipulator({
                         "axisOrigin" : origin,
                         "axisDirection" : tangentDirection,
                         "rotationOrigin" : origin + baseDirection * distance,
-                        "angle" : adjustAngle(context, angle),
+                        "angle" : adjustedAngle,
                         "style" : ManipulatorStyleEnum.DEFAULT,
                         "minValue" : -2 * PI * radian,
                         "maxValue" : 2 * PI * radian,
