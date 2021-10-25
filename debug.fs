@@ -179,13 +179,23 @@ export function debug(context is Context, value is Line, color is DebugColor)
     addDebugArrow(context, value.origin + value.direction * ARROW_LENGTH, value.origin, ARROW_RADIUS * 0.5, color);
 }
 
+export function debug(context is Context, value is CoordSystem)
+{
+    debug(context, value, DebugColor.RED, DebugColor.GREEN, DebugColor.BLUE);
+}
+
 export function debug(context is Context, value is CoordSystem, color is DebugColor)
+{
+    debug(context, value, color, color, color);
+}
+
+export function debug(context is Context, value is CoordSystem, xColor is DebugColor, yColor is DebugColor, zColor is DebugColor)
 {
     print("debug: CoordSystem ");
     println(value);
-    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS, color);
-    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), color);
-    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, color);
+    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS, xColor);
+    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), yColor);
+    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, zColor);
 }
 
 export function debug(context is Context, value is Plane, color is DebugColor)

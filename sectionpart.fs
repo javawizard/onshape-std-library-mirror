@@ -665,7 +665,7 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
     var boxResult = bboxIn != undefined ? bboxIn : evBox3d(context, { 'topology' : target,
                                        'cSys' : coordinateSystem,
                                        'tight' : useTightBox });
-    if (bboxIn == undefined)
+    if (bboxIn == undefined || (isCropView && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1618_ENLARGE_CROP_VIEW_BBOX)))
     {
         boxResult = extendBox3d(boxResult, BOX_ABSOLUTE_TOLERANCE, BOX_TOLERANCE);
     }

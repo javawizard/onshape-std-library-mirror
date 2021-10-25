@@ -712,7 +712,7 @@ export function qEntityFilter(queryToFilter is Query, entityType is EntityType) 
  * Query for all entities marked with an attribute with name `name`
  * @seealso [setAttribute]
  */
-export function qHasAttribute(name is string)
+export function qHasAttribute(name is string) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name } as Query;
 }
@@ -721,7 +721,7 @@ export function qHasAttribute(name is string)
  * Query for all entities in `queryToFilter` marked with an attribute with name `name`
  * @seealso [setAttribute]
  */
-export function qHasAttribute(queryToFilter is Query, name is string)
+export function qHasAttribute(queryToFilter is Query, name is string) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name } as Query;
 }
@@ -730,7 +730,7 @@ export function qHasAttribute(queryToFilter is Query, name is string)
  * Query for all entities marked with an attribute with name `name` and value exactly equal to `value`
  * @seealso [setAttribute]
  */
-export function qHasAttributeWithValue(name is string, value)
+export function qHasAttributeWithValue(name is string, value) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name, "valueToMatchExactly" : value } as Query;
 }
@@ -739,7 +739,7 @@ export function qHasAttributeWithValue(name is string, value)
  * Query for all entities in `queryToFilter` marked with an attribute with name `name` and value exactly equal to `value`
  * @seealso [setAttribute]
  */
-export function qHasAttributeWithValue(queryToFilter is Query, name is string, value)
+export function qHasAttributeWithValue(queryToFilter is Query, name is string, value) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name, "valueToMatchExactly" : value } as Query;
 }
@@ -753,7 +753,7 @@ export function qHasAttributeWithValue(queryToFilter is Query, name is string, v
  *     "key1" : valueToMatch,
  * }```
  */
-export function qHasAttributeWithValueMatching(name is string, attributePattern is map)
+export function qHasAttributeWithValueMatching(name is string, attributePattern is map) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "name" : name, "attributePattern" : attributePattern } as Query;
 }
@@ -767,7 +767,7 @@ export function qHasAttributeWithValueMatching(name is string, attributePattern 
  *     "key1" : valueToMatch,
  * }```
  */
-export function qHasAttributeWithValueMatching(queryToFilter is Query, name is string, attributePattern is map)
+export function qHasAttributeWithValueMatching(queryToFilter is Query, name is string, attributePattern is map) returns Query
 {
     return { "queryType" : QueryType.ATTRIBUTE_FILTER, "subquery" : queryToFilter, "name" : name, "attributePattern" : attributePattern } as Query;
 }
@@ -1239,7 +1239,7 @@ precondition
     return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : seed, "entityType" : entityType } as Query;
 }
 
-export function qAdjacent(seed is Query, adjacencyType is AdjacencyType)
+export function qAdjacent(seed is Query, adjacencyType is AdjacencyType) returns Query
 {
     return { "queryType" : adjacencyTypeToQueryType[adjacencyType], "query" : seed } as Query;
 }
@@ -1345,7 +1345,7 @@ export function qConstructionFilter(queryToFilter is Query, constructionFilter i
  *
  * @seealso [ActiveSheetMetal]
  */
-export function qActiveSheetMetalFilter(queryToFilter is Query, activeSheetMetal is ActiveSheetMetal)
+export function qActiveSheetMetalFilter(queryToFilter is Query, activeSheetMetal is ActiveSheetMetal) returns Query
 {
     return { "queryType" : QueryType.ACTIVE_SM_FILTER, "activeSheetMetal" : activeSheetMetal, "subquery" : queryToFilter } as Query;
 }
@@ -1814,7 +1814,7 @@ export function qCoincidesWithPlane(queryToFilter is Query, plane is Plane) retu
  * @param point : The point from which to check distance from.
  * @param radius : The distance away from the point.
  */
-export function qWithinRadius(queryToFilter is Query, point is Vector, radius is ValueWithUnits)
+export function qWithinRadius(queryToFilter is Query, point is Vector, radius is ValueWithUnits) returns Query
 precondition
 {
     is3dLengthVector(point);
@@ -1844,7 +1844,7 @@ precondition
  *  In the case of a tie, resolves to all entities within `TOLERANCE.zeroLength` of being the farthest.
  *  @param direction : A vector for the direction to find the entity farthest away.
  */
-export function qFarthestAlong(queryToFilter is Query, direction is Vector)
+export function qFarthestAlong(queryToFilter is Query, direction is Vector) returns Query
 precondition
 {
     @size(direction) == 3;
@@ -1926,7 +1926,7 @@ export function dummyQuery(operationId is Id, entityType is EntityType) returns 
  *          @eg `false` indicates the entities in the front.
  *          @eg `true` indicates the entities in the back.
  */
-export function qSplitBy(featureId is Id, entityType, backBody is boolean)
+export function qSplitBy(featureId is Id, entityType, backBody is boolean) returns Query
 precondition
 {
     entityType == undefined || entityType is EntityType;

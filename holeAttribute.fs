@@ -28,6 +28,7 @@ export type HoleAttribute typecheck canBeHoleAttribute ;
 export predicate canBeHoleAttribute(value)
 {
     value is map;
+    value.createdUsingNewHolePipeline == undefined || value.createdUsingNewHolePipeline is boolean;
     value.attributeId == undefined || value.attributeId is string;
     value.holeType == undefined || value.holeType is HoleStyle;
 }
@@ -48,9 +49,11 @@ export function asHoleAttribute(value is map) returns HoleAttribute
 /**
  * @internal
  */
-export function makeHoleAttribute(attributeId is string, holeStyle is HoleStyle) returns HoleAttribute
+export function makeHoleAttribute(createdUsingNewHolePipeline is boolean, attributeId is string, holeStyle is HoleStyle)
+    returns HoleAttribute
 {
     return asHoleAttribute({
+            "createdUsingNewHolePipeline" : createdUsingNewHolePipeline,
             "attributeId" : attributeId,
             "holeType" : holeStyle
         });

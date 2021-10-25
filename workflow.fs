@@ -137,7 +137,7 @@ export enum TransitionType {
  * @type {{
  *      @field name {string} : Transition name (id)
  *      @field displayName {string} : Transition display name
- *      @field type {WorkflowTransition} : Transition type (SUBMIT, APPROVE, REJECT)
+ *      @field type {TransitionType} : Transition type (SUBMIT, APPROVE, REJECT)
  *      @field uiHint {string} : Bootstrap UI color (primary, success, danger)
  *      @field sourceState {string} : Transition source state
  *      @field targetState {string} : Transition target state
@@ -154,7 +154,7 @@ export predicate canBeWorkflowTransition(value)
     value is map;
     value.name is string;
     value.displayName is string;
-    value["type"] is WorkflowTransition;
+    value["type"] is TransitionType;
     value.uiHint is string;
 
     value.sourceState is string;
