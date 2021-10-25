@@ -1,11 +1,11 @@
-FeatureScript 1605; /* Automatically generated version */
+FeatureScript 1618; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1605.0");
-import(path : "onshape/std/feature.fs", version : "1605.0");
-import(path : "onshape/std/holeUtils.fs", version : "1605.0");
+import(path : "onshape/std/attributes.fs", version : "1618.0");
+import(path : "onshape/std/feature.fs", version : "1618.0");
+import(path : "onshape/std/holeUtils.fs", version : "1618.0");
 
 /**
  * @internal
@@ -28,6 +28,7 @@ export type HoleAttribute typecheck canBeHoleAttribute ;
 export predicate canBeHoleAttribute(value)
 {
     value is map;
+    value.createdUsingNewHolePipeline == undefined || value.createdUsingNewHolePipeline is boolean;
     value.attributeId == undefined || value.attributeId is string;
     value.holeType == undefined || value.holeType is HoleStyle;
 }
@@ -48,9 +49,11 @@ export function asHoleAttribute(value is map) returns HoleAttribute
 /**
  * @internal
  */
-export function makeHoleAttribute(attributeId is string, holeStyle is HoleStyle) returns HoleAttribute
+export function makeHoleAttribute(createdUsingNewHolePipeline is boolean, attributeId is string, holeStyle is HoleStyle)
+    returns HoleAttribute
 {
     return asHoleAttribute({
+            "createdUsingNewHolePipeline" : createdUsingNewHolePipeline,
             "attributeId" : attributeId,
             "holeType" : holeStyle
         });

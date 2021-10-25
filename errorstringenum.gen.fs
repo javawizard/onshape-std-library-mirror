@@ -1,4 +1,4 @@
-FeatureScript 1605; /* Automatically generated version */
+FeatureScript 1618; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2065,7 +2065,7 @@ export enum ErrorStringEnum
     RULED_SURFACE_OVERRIDES_CLASH,
     /* Error communicating with simulation service. */
     FGS_STREAM_ERROR,
-    /* Cannot compute mass. No material assigned to part. */
+    /* No material assigned. */
     NO_MATERIAL_FOR_MASS_PROPERTY,
     /* Specified simulation does not exist. */
     SPECIFIED_SIMULATION_DOES_NOT_EXIST,

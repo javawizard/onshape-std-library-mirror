@@ -1,20 +1,20 @@
-FeatureScript 1605; /* Automatically generated version */
+FeatureScript 1618; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/debugcolor.gen.fs", version : "1605.0");
-import(path : "onshape/std/box.fs", version : "1605.0");
-import(path : "onshape/std/containers.fs", version : "1605.0");
-import(path : "onshape/std/coordSystem.fs", version : "1605.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1605.0");
-import(path : "onshape/std/feature.fs", version : "1605.0");
-import(path : "onshape/std/mathUtils.fs", version : "1605.0");
-import(path : "onshape/std/primitives.fs", version : "1605.0");
-import(path : "onshape/std/sketch.fs", version : "1605.0");
-import(path : "onshape/std/string.fs", version : "1605.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1605.0");
-import(path : "onshape/std/units.fs", version : "1605.0");
+export import(path : "onshape/std/debugcolor.gen.fs", version : "1618.0");
+import(path : "onshape/std/box.fs", version : "1618.0");
+import(path : "onshape/std/containers.fs", version : "1618.0");
+import(path : "onshape/std/coordSystem.fs", version : "1618.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1618.0");
+import(path : "onshape/std/feature.fs", version : "1618.0");
+import(path : "onshape/std/mathUtils.fs", version : "1618.0");
+import(path : "onshape/std/primitives.fs", version : "1618.0");
+import(path : "onshape/std/sketch.fs", version : "1618.0");
+import(path : "onshape/std/string.fs", version : "1618.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1618.0");
+import(path : "onshape/std/units.fs", version : "1618.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
@@ -179,13 +179,23 @@ export function debug(context is Context, value is Line, color is DebugColor)
     addDebugArrow(context, value.origin + value.direction * ARROW_LENGTH, value.origin, ARROW_RADIUS * 0.5, color);
 }
 
+export function debug(context is Context, value is CoordSystem)
+{
+    debug(context, value, DebugColor.RED, DebugColor.GREEN, DebugColor.BLUE);
+}
+
 export function debug(context is Context, value is CoordSystem, color is DebugColor)
+{
+    debug(context, value, color, color, color);
+}
+
+export function debug(context is Context, value is CoordSystem, xColor is DebugColor, yColor is DebugColor, zColor is DebugColor)
 {
     print("debug: CoordSystem ");
     println(value);
-    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS, color);
-    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), color);
-    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, color);
+    addDebugArrow(context, value.origin, value.origin + value.xAxis * ARROW_LENGTH, ARROW_RADIUS, xColor);
+    addDebugArrow(context, value.origin, value.origin + yAxis(value) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), yColor);
+    addDebugArrow(context, value.origin, value.origin + value.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, zColor);
 }
 
 export function debug(context is Context, value is Plane, color is DebugColor)

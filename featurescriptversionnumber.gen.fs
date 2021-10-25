@@ -1,4 +1,4 @@
-FeatureScript 1605; /* Automatically generated version */
+FeatureScript 1618; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1012,7 +1012,11 @@ export enum FeatureScriptVersionNumber
     V1602_TANGENT_PLANES_AT_EDGE_BUILTIN,
     V1603_LOFT_END_CONDITIONS_INNER_EDGE_FIX,
     V1604_ORIGINAL_IN_RANGE,
-    V1605_RULED_SURFACE_BUMP
+    V1605_RULED_SURFACE_BUMP,
+    V1615_PS_VERSION_34_0_176,
+    V1616_FILTER_CONSTRUCTION_POINTS,
+    V1617_HOLE_NEW_PIPELINE_2,
+    V1618_ENLARGE_CROP_VIEW_BBOX
 }
 
 /**
@@ -1023,6 +1027,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1605_RULED_SURFACE_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1618_ENLARGE_CROP_VIEW_BBOX;
 
 

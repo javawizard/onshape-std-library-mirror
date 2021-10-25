@@ -1,13 +1,13 @@
-FeatureScript 1605; /* Automatically generated version */
+FeatureScript 1618; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1605.0");
+export import(path : "onshape/std/query.fs", version : "1618.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "1605.0");
+import(path : "onshape/std/feature.fs", version : "1618.0");
 
 /**
  * Feature performing an [opEnclose].
