@@ -40,8 +40,8 @@ export function defineComputedPartProperty(propertyFunction is function) returns
 {
     return function(context is Context, part is Query, definition is map)
     {
-        const id = newId() + "propertyRollbackId";
-        startFeature(context, id);
+        const id is Id = newId() + "propertyRollbackId";
+        const token is map = startFeature(context, id, definition);
         var returnValue;
         try
         {
@@ -49,10 +49,10 @@ export function defineComputedPartProperty(propertyFunction is function) returns
         }
         catch (e)
         {
-            abortFeature(context, id);
+            @abortFeature(context, id, token);  // roll back any side-effects of the propertyFunction
             throw e;
         }
-        abortFeature(context, id); // rolls back whatever changes to the context the property function might have made
+        @abortFeature(context, id, token);      // roll back any side-effects of the propertyFunction
         return returnValue;
     };
 }

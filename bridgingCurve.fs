@@ -46,8 +46,8 @@ const DEFAULT_G1G1_SCALE = 2 / 3;
  * Creates a curve between two points, optionally with matching of tangency or curvature to other curves at that point
  */
 annotation { "Feature Type Name" : "Bridging curve",
-        "Editing Logic Function" : "onFeatureChange",
-        "Manipulator Change Function" : "onManipulatorChange",
+        "Editing Logic Function" : "bridgingCurveEditingLogic",
+        "Manipulator Change Function" : "bridgingCurveManipulator",
         "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const bridgingCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -143,16 +143,15 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
 
 /**
  * @internal
- * The feature change function used in the `bridgingCurve` feature.
+ * The editing logic function used in the `bridgingCurve` feature.
  */
-export function onFeatureChange(context is Context, id is Id, oldDefinition is map, definition is map) returns map
+export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map
 {
     if (oldDefinition != {})
     {
         // We are only going to modify the definition on pre-selection
         return definition;
     }
-
 
     // We have a few things we want to do here but we're not going to be too clever. We could try to work out whether a point
     // is isolated and the user wants a non-default POSITION bridging but it is more likely that they pre-selected points and
@@ -349,7 +348,7 @@ function matchEdgesThatEndAtVertex(context is Context, vertex is Query, edges is
  * @internal
  * The manipulator change function used in the `bridgingCurve` feature.
  */
-export function onManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+export function bridgingCurveManipulator(context is Context, definition is map, newManipulators is map) returns map
 {
     const side1Data = getDataForSide(context, definition.side1, definition.match1, "side1", definition.side2);
     const side2Data = getDataForSide(context, definition.side2, definition.match2, "side2", definition.side1);

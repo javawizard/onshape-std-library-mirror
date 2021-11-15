@@ -1016,7 +1016,13 @@ export enum FeatureScriptVersionNumber
     V1615_PS_VERSION_34_0_176,
     V1616_FILTER_CONSTRUCTION_POINTS,
     V1617_HOLE_NEW_PIPELINE_2,
-    V1618_ENLARGE_CROP_VIEW_BBOX
+    V1618_ENLARGE_CROP_VIEW_BBOX,
+    V1629_LOFT_END_CONDITIONS_INNER_EDGE_FIX,
+    V1630_RULED_SURFACE_PRECISE_ARC_LENGTH,
+    V1631_COMPOUND_UNITS_ASSEMBLY_BUMP,
+    V1632_NEW_FEATURE_SCOPE,
+    V1633_CHORD_FILLET_BUMP,
+    V1634_ALIGNED_SECTION_BODY_MAP
 }
 
 /**
@@ -1027,6 +1033,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1618_ENLARGE_CROP_VIEW_BBOX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1634_ALIGNED_SECTION_BODY_MAP;
 
 

@@ -632,6 +632,25 @@ function jogSectionCut(context is Context, id is Id, definition is map)
                 polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
             }
 
+            // Only need to track single/multi parts in section/aligned section view generation for Part Studio because metadata can
+            // be linked to newly created bodies (eg., rotated body in aligned section view) in assemblies
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1634_ALIGNED_SECTION_BODY_MAP))
+            {
+                if (definition.targets == undefined)
+                {
+                    for (var partTarget in evaluateQuery(context, target))
+                    {
+                        // Encode the deterministic id in the attribute name, which can be used to find both the parent and children bodies
+                        var detId = partTarget.transientId;
+                        setAttribute(context, {
+                                "entities" : partTarget,
+                                "name" : id ~ detId,
+                                "attribute" : id ~ detId
+                        });
+                    }
+                }
+            }
+
             sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
             if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
