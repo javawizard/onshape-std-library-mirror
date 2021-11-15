@@ -1,30 +1,30 @@
-FeatureScript 1618; /* Automatically generated version */
+FeatureScript 1634; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1618.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1618.0");
+export import(path : "onshape/std/query.fs", version : "1634.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1618.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1618.0");
-import(path : "onshape/std/box.fs", version : "1618.0");
-import(path : "onshape/std/containers.fs", version : "1618.0");
-import(path : "onshape/std/coordSystem.fs", version : "1618.0");
-import(path : "onshape/std/evaluate.fs", version : "1618.0");
-import(path : "onshape/std/extrude.fs", version : "1618.0");
-import(path : "onshape/std/feature.fs", version : "1618.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1618.0");
-import(path : "onshape/std/math.fs", version : "1618.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1618.0");
-import(path : "onshape/std/sketch.fs", version : "1618.0");
-import(path : "onshape/std/tool.fs", version : "1618.0");
-import(path : "onshape/std/transform.fs", version : "1618.0");
-import(path : "onshape/std/units.fs", version : "1618.0");
-import(path : "onshape/std/vector.fs", version : "1618.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1618.0");
+import(path : "onshape/std/attributes.fs", version : "1634.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1634.0");
+import(path : "onshape/std/box.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1634.0");
+import(path : "onshape/std/coordSystem.fs", version : "1634.0");
+import(path : "onshape/std/evaluate.fs", version : "1634.0");
+import(path : "onshape/std/extrude.fs", version : "1634.0");
+import(path : "onshape/std/feature.fs", version : "1634.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1634.0");
+import(path : "onshape/std/math.fs", version : "1634.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1634.0");
+import(path : "onshape/std/sketch.fs", version : "1634.0");
+import(path : "onshape/std/tool.fs", version : "1634.0");
+import(path : "onshape/std/transform.fs", version : "1634.0");
+import(path : "onshape/std/units.fs", version : "1634.0");
+import(path : "onshape/std/vector.fs", version : "1634.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -630,6 +630,25 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             else
             {
                 polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
+            }
+
+            // Only need to track single/multi parts in section/aligned section view generation for Part Studio because metadata can
+            // be linked to newly created bodies (eg., rotated body in aligned section view) in assemblies
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1634_ALIGNED_SECTION_BODY_MAP))
+            {
+                if (definition.targets == undefined)
+                {
+                    for (var partTarget in evaluateQuery(context, target))
+                    {
+                        // Encode the deterministic id in the attribute name, which can be used to find both the parent and children bodies
+                        var detId = partTarget.transientId;
+                        setAttribute(context, {
+                                "entities" : partTarget,
+                                "name" : id ~ detId,
+                                "attribute" : id ~ detId
+                        });
+                    }
+                }
             }
 
             sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);

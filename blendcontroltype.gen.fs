@@ -6,12 +6,14 @@ FeatureScript 1634; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the filter type when requesting inference mate connectors.
+ * Specifies the controlled quantitiy for fillet operation.
  */
-export enum CoordinateSystemInferenceSelectionFilter
+export enum BlendControlType
 {
-    NONE,
-    HOLE_GEOMETRY
+    annotation {"Name" : "Radius"}
+    RADIUS,
+    annotation {"Name" : "Width"}
+    WIDTH
 }
 
 

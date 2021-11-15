@@ -1,26 +1,27 @@
-FeatureScript 1618; /* Automatically generated version */
+FeatureScript 1634; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1618.0");
+export import(path : "onshape/std/query.fs", version : "1634.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1618.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1618.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1634.0");
+export import(path : "onshape/std/manipulator.fs", version : "1634.0");
 
 // Imports used internally
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1618.0");
-import(path : "onshape/std/evaluate.fs", version : "1618.0");
-import(path : "onshape/std/feature.fs", version : "1618.0");
-import(path : "onshape/std/containers.fs", version : "1618.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1618.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1618.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1618.0");
-import(path : "onshape/std/tool.fs", version : "1618.0");
-import(path : "onshape/std/valueBounds.fs", version : "1618.0");
-import(path : "onshape/std/vector.fs", version : "1618.0");
+import(path : "onshape/std/containers.fs", version : "1634.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1634.0");
+import(path : "onshape/std/evaluate.fs", version : "1634.0");
+import(path : "onshape/std/feature.fs", version : "1634.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1634.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1634.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1634.0");
+import(path : "onshape/std/tool.fs", version : "1634.0");
+import(path : "onshape/std/valueBounds.fs", version : "1634.0");
+import(path : "onshape/std/vector.fs", version : "1634.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -86,11 +87,22 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.filletType == FilletType.EDGE)
         {
+            annotation { "Name" : "Measurement", "UIHint" : UIHint.SHOW_LABEL }
+            definition.blendControlType is BlendControlType;
+
             annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
             definition.crossSection is FilletCrossSection;
 
-            annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.radius, BLEND_BOUNDS);
+            if (definition.blendControlType == BlendControlType.RADIUS)
+            {
+                annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition.radius, BLEND_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition.width, BLEND_BOUNDS);
+            }
 
             if (definition.crossSection == FilletCrossSection.CONIC)
             {
@@ -107,46 +119,48 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.defaultsChanged is boolean;
 
-            if (definition.crossSection != FilletCrossSection.CURVATURE)
+            if (definition.crossSection != FilletCrossSection.CURVATURE && definition.blendControlType == BlendControlType.RADIUS)
             {
                 annotation { "Name" : "Allow edge overflow", "Default" : true }
                 definition.allowEdgeOverflow is boolean;
             }
 
-            annotation { "Name" : "Variable fillet" }
-            definition.isVariable is boolean;
-
-            if (definition.isVariable)
+            if (definition.blendControlType == BlendControlType.RADIUS)
             {
-                annotation { "Name" : "Vertices", "Item name" : "vertex",
-                            "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
-                            "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
-                definition.vertexSettings is array;
-                for (var setting in definition.vertexSettings)
+                annotation { "Name" : "Variable fillet" }
+                definition.isVariable is boolean;
+
+                if (definition.isVariable)
                 {
-                    annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
-                                "MaxNumberOfPicks" : 1,
-                                "UIHint" : UIHint.ALWAYS_HIDDEN }
-                    setting.vertex is Query;
-
-                    annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                    isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
-
-                    if (definition.crossSection == FilletCrossSection.CONIC)
+                    annotation { "Name" : "Vertices", "Item name" : "vertex",
+                                "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
+                                "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                    definition.vertexSettings is array;
+                    for (var setting in definition.vertexSettings)
                     {
-                        annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                        isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                        annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
+                                    "MaxNumberOfPicks" : 1,
+                                    "UIHint" : UIHint.ALWAYS_HIDDEN }
+                        setting.vertex is Query;
+
+                        annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                        isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
+
+                        if (definition.crossSection == FilletCrossSection.CONIC)
+                        {
+                            annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                            isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                        }
+                        else if (definition.crossSection == FilletCrossSection.CURVATURE)
+                        {
+                            annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                            isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
+                        }
                     }
-                    else if (definition.crossSection == FilletCrossSection.CURVATURE)
-                    {
-                        annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                        isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
-                    }
+                    annotation { "Name" : "Smooth transition" }
+                    definition.smoothTransition is boolean;
                 }
-                annotation { "Name" : "Smooth transition" }
-                definition.smoothTransition is boolean;
             }
-
         }
     }
     {
@@ -166,7 +180,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         smoothTransition : false,
         defaultsChanged : false,
         allowEdgeOverflow : true,
-        filletType : FilletType.EDGE
+        filletType : FilletType.EDGE,
+        blendControlType : BlendControlType.RADIUS
     });
 
 
@@ -244,6 +259,10 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 
     if (hasSheetMetalQueries)
     {
+        if (definition.blendControlType == BlendControlType.WIDTH)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_WIDTH, ["blendControlType"]);
+        }
         if (definition.crossSection != FilletCrossSection.CIRCULAR)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["crossSection"]);
@@ -268,6 +287,12 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 }
 
 const FILLET_RADIUS_MANIPULATOR = "filletRadiusManipulator";
+const FILLET_WIDTH_MANIPULATOR = "filletWidthManipulator";
+
+function getManipulatorId(definition is map) returns string
+{
+    return definition.blendControlType == BlendControlType.RADIUS ? FILLET_RADIUS_MANIPULATOR : FILLET_WIDTH_MANIPULATOR;
+}
 
 /*
  * Create a linear manipulator for the fillet
@@ -297,16 +322,27 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
                 maxDragValue = -tempMin;
             }
 
-            const offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
+            var offset;
+            if (definition.blendControlType == BlendControlType.RADIUS)
+            {
+                offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
+            }
+            else
+            {
+                offset = convexity * definition.width * findRadiusToOffsetRatio(normals) / (normals[0] - normals[1])->norm();
+            }
 
+            const primaryParameterId = definition.blendControlType == BlendControlType.RADIUS ? "radius" : "width";
+            // The undo stack entry is dependent on the manipulator id, so alter it based on the quantity being edited.
+            const manipulatorId = getManipulatorId(definition);
             addManipulators(context, id, {
-                        (FILLET_RADIUS_MANIPULATOR) : linearManipulator({
+                        (manipulatorId) : linearManipulator({
                                     "base" : origin,
                                     "direction" : direction,
                                     "offset" : offset,
                                     "minValue" : minDragValue,
                                     "maxValue" : maxDragValue,
-                                    "primaryParameterId" : "radius"
+                                    "primaryParameterId" : primaryParameterId
                                 })
                     });
         }
@@ -321,7 +357,8 @@ export function filletManipulatorChange(context is Context, definition is map, n
 {
     try
     {
-        if (newManipulators[FILLET_RADIUS_MANIPULATOR] is map)
+        const manipulatorId = getManipulatorId(definition);
+        if (newManipulators[manipulatorId] is map)
         {
             // convert given offset and edge topology into new radius
             const operativeEntity = findManipulationEntity(context, definition);
@@ -329,7 +366,15 @@ export function filletManipulatorChange(context is Context, definition is map, n
             const normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
             const convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
 
-            definition.radius = convexity * newManipulators[FILLET_RADIUS_MANIPULATOR].offset / findRadiusToOffsetRatio(normals);
+            const radius = convexity * newManipulators[manipulatorId].offset / findRadiusToOffsetRatio(normals);
+            if (definition.blendControlType == BlendControlType.RADIUS)
+            {
+                definition.radius = radius;
+            }
+            else
+            {
+                definition.width = radius * (normals[0] - normals[1])->norm();
+            }
         }
     }
 

@@ -1,12 +1,12 @@
-FeatureScript 1618; /* Automatically generated version */
+FeatureScript 1634; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2020-Present Onshape Inc.
 
-export import(path : "onshape/std/context.fs", version : "1618.0");
-export import(path : "onshape/std/feature.fs", version : "1618.0");
-export import(path : "onshape/std/query.fs", version : "1618.0");
-export import(path : "onshape/std/units.fs", version : "1618.0");
+export import(path : "onshape/std/context.fs", version : "1634.0");
+export import(path : "onshape/std/feature.fs", version : "1634.0");
+export import(path : "onshape/std/query.fs", version : "1634.0");
+export import(path : "onshape/std/units.fs", version : "1634.0");
 
 /**
  *
@@ -40,8 +40,8 @@ export function defineComputedPartProperty(propertyFunction is function) returns
 {
     return function(context is Context, part is Query, definition is map)
     {
-        const id = newId() + "propertyRollbackId";
-        startFeature(context, id);
+        const id is Id = newId() + "propertyRollbackId";
+        const token is map = startFeature(context, id, definition);
         var returnValue;
         try
         {
@@ -49,10 +49,10 @@ export function defineComputedPartProperty(propertyFunction is function) returns
         }
         catch (e)
         {
-            abortFeature(context, id);
+            @abortFeature(context, id, token);  // roll back any side-effects of the propertyFunction
             throw e;
         }
-        abortFeature(context, id); // rolls back whatever changes to the context the property function might have made
+        @abortFeature(context, id, token);      // roll back any side-effects of the propertyFunction
         return returnValue;
     };
 }

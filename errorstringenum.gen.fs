@@ -1,4 +1,4 @@
-FeatureScript 1618; /* Automatically generated version */
+FeatureScript 1634; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2084,7 +2084,11 @@ export enum ErrorStringEnum
     /* At least one load required. */
     LOAD_REQUIRED_FOR_LINEAR_STATIC_SIMULATION,
     /* Required property is missing from material. */
-    MATERIAL_LACKS_REQUIRED_PROPERTY_FOR_SIMULATION
+    MATERIAL_LACKS_REQUIRED_PROPERTY_FOR_SIMULATION,
+    /* Edges must form single chain per part. */
+    FILLET_EDGES_NOT_MANIFOLD,
+    /* Cannot create a constant width fillet on an active sheet metal model. */
+    SHEET_METAL_FILLET_NO_WIDTH
 }
 
 
