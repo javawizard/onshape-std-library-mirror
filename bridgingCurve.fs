@@ -56,11 +56,11 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         definition.preselectedEntities is Query;
         annotation { "Name" : "First side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;
-        annotation { "Name" : "Match", "Default" : BridgingCurveMatchType.TANGENCY }
+        annotation { "Name" : "Match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match1 is BridgingCurveMatchType;
         annotation { "Name" : "Second side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
-        annotation { "Name" : "Match", "Column Name" : "Second match", "Default" : BridgingCurveMatchType.TANGENCY }
+        annotation { "Name" : "Match", "Column Name" : "Second match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
         if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
         {

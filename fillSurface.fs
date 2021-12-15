@@ -29,15 +29,6 @@ export enum FillConstraintMode
 
 /**
  * @internal
- * The bounds for density of isocurves.
- */
-export const CURVE_BOUNDS =
-{
-    (unitless) : [1, 10, 50]
-} as IntegerBoundSpec;
-
-/**
- * @internal
  * The bounds for number of samples used in constraint sampling.
  */
 export const SAMPLE_BOUNDS =
@@ -96,7 +87,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         if (definition.showIsocurves)
         {
             annotation {"Name" : "Count" }
-            isInteger(definition.curveCount, CURVE_BOUNDS);
+            isInteger(definition.curveCount, ISO_GRID_BOUNDS);
         }
 
         surfaceJoinStepScopePredicate(definition);

@@ -46,7 +46,7 @@ annotation { "Feature Type Name" : "Revolve",
 export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
+        annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType != ToolBodyType.SURFACE)

@@ -78,7 +78,7 @@ export function plane(origin is Vector, normal is Vector, x is Vector) returns P
  * Create a [Plane] from a point and a normal.
  *
  * The x-axis of this [Plane]'s coordinate system will be an arbitrary vector
- * perpindicular to the `normal`.
+ * perpendicular to the `normal`.
  *
  * @param origin : A 3D point in world space.
  * @param normal : A 3D vector in world space. Need not be normalized.

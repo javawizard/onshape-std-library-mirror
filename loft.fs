@@ -80,8 +80,7 @@ annotation { "Feature Type Name" : "Loft",
 export const loft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-
-        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
+        annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -213,6 +212,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         else
         {
             surfaceJoinStepScopePredicate(definition);
+        }
+
+        annotation {"Name" : "Show iso curves"}
+        definition.showIsocurves is boolean;
+
+        if (definition.showIsocurves)
+        {
+            annotation {"Name" : "Count" }
+            isInteger(definition.curveCount, ISO_GRID_BOUNDS);
         }
     }
     {
@@ -362,7 +370,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
-        trimGuidesByProfiles : false, trimProfiles : false });
+        trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map

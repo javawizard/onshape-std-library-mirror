@@ -538,6 +538,15 @@ export const CURVE_PATTERN_BOUNDS =
     (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
+/**
+ * @internal
+ * The bounds for the density of an isocurve grid
+ */
+export const ISO_GRID_BOUNDS =
+{
+    (unitless) : [1, 10, 50]
+} as IntegerBoundSpec;
+
 /** @internal */
 export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 {
@@ -981,5 +990,4 @@ export predicate canBeEnergyBoundSpec(value)
     for (var entry in value)
         isEnergy(entry.key);
 }
-
 

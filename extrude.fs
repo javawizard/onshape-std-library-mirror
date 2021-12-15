@@ -160,7 +160,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         if (definition.domain != OperationDomain.FLAT)
         {
-            annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
+            annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.bodyType is ToolBodyType;
 
             if (definition.bodyType != ToolBodyType.SURFACE)

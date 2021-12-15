@@ -87,10 +87,10 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.filletType == FilletType.EDGE)
         {
-            annotation { "Name" : "Measurement", "UIHint" : UIHint.SHOW_LABEL }
+            annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.blendControlType is BlendControlType;
 
-            annotation { "Name" : "Cross section", "UIHint" : UIHint.SHOW_LABEL }
+            annotation { "Name" : "Cross section", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.crossSection is FilletCrossSection;
 
             if (definition.blendControlType == BlendControlType.RADIUS)

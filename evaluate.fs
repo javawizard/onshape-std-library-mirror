@@ -1035,6 +1035,34 @@ precondition
 }
 
 /**
+ * @internal
+ */
+export function evFaults(context is Context, arg is map) returns array
+precondition
+{
+    arg.entities is Query;
+}
+{
+    var result = @evFaults(context, arg);
+    for (var i = 0; i < size(result); i += 1)
+    {
+        if (result[i].entity != undefined)
+        {
+            result[i].entity = qTransient(result[i].entity);
+        }
+        if (result[i].secondaryEntity != undefined)
+        {
+            result[i].secondaryEntity = qTransient(result[i].secondaryEntity);
+        }
+        if (result[i].location != undefined)
+        {
+            result[i].location = vector(result[i].location) * meter;
+        }
+    }
+    return result;
+}
+
+/**
  * Given a face of a constant radius fillet, return the radius of fillet.
  * @param arg {{
  *      @field face{Query}
@@ -1185,6 +1213,21 @@ precondition
         }
     }
 
+    return result;
+}
+
+/**
+ * @internal
+ */
+export function evTolerances(context is Context, arg is map)
+{
+    const rawResult = @evTolerances(context, arg);
+
+    var result = {};
+    for (var transientId, rawTolerance in rawResult)
+    {
+        result[qTransient(transientId)] = rawTolerance * meter;
+    }
     return result;
 }
 

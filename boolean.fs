@@ -73,7 +73,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         }
         if (definition.operationType == BooleanOperationType.SUBTRACTION || definition.operationType == BooleanOperationType.INTERSECTION)
         {
-            annotation { "Name" : "Keep tools" }
+            annotation { "Name" : "Keep tools", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             definition.keepTools is boolean;
         }
     }

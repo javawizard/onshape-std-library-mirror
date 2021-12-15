@@ -42,7 +42,7 @@ export const deleteFace = defineFeature(function(context is Context, id is Id, d
                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.deleteFaces is Query;
 
-        annotation { "Name" : "Type" }
+        annotation { "Name" : "Type", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         definition.healType is DeleteFaceType;
 
         annotation { "Name" : "Delete fillet faces", "Default" : true }

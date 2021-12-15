@@ -45,6 +45,9 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         annotation { "Name" : "Direction 2" }
         isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
+        annotation { "Name" : "Keep tools", "Default" : false }
+        definition.keepTools is boolean;
+
         booleanStepScopePredicate(definition);
     }
     {
@@ -67,7 +70,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
             transformResultIfNecessary(context, id, remainingTransform);
         };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
-    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW });
+    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW, keepTools : true });
 
 /**
  * @internal

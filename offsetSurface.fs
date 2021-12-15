@@ -32,7 +32,7 @@ precondition
                  "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO }
     definition.surfacesAndFaces is Query;
 
-    annotation { "Name" : "Offset"}
+    annotation { "Name" : "Offset", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
     isLength(definition.offset, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
     annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }

@@ -521,6 +521,7 @@ export const opFillet = function(context is Context, id is Id, definition is map
  *      @field edgesG2 {Query} : The edges with curvature constraints.
  *      @field guideVertices {Query} : The vertices the resulting surface is expected to interpolate.
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of the grid. Default `10`. @optional
  * }}
  */
 export const opFillSurface = function(context is Context, id is Id, definition is map)
@@ -828,6 +829,8 @@ export const opImportForeign = function(context is Context, id is Id, definition
  *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces } ]`
  *              The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created loft. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
  * }}
  */
 export const opLoft = function(context is Context, id is Id, definition is map)
@@ -1170,6 +1173,8 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional
  *              These planar faces are treated as infinite, rather than bounded to the face extents.
+ *      @field extendToCompletion {boolean} : @optional
+ *             if `true`, imprinted edges are extended to complete split of faces. Default is `false`.
  * }}
  */
 export const opSplitFace = function(context is Context, id is Id, definition is map)
@@ -1332,6 +1337,9 @@ export const opSweep = function(context is Context, id is Id, definition is map)
  *              @autocomplete `0.1 * inch`
  *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction.
  *              @autocomplete `0.1 * inch`
+ *      @field keepTools {boolean} : @optional Default is `true`. If `false` the operation will attempt to delete the
+ *              `entities`. The operation will not delete sheet bodies unless the sheet body or all faces of
+ *              the sheet body are selected. The operation will not delete sketches or solid bodies.
  * }}
  */
 export const opThicken = function(context is Context, id is Id, definition is map)

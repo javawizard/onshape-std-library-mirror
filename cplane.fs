@@ -81,7 +81,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
                     "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
 
-        annotation { "Name" : "Plane type" }
+        annotation { "Name" : "Plane type", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         definition.cplaneType is CPlaneType;
 
                 if (definition.cplaneType == CPlaneType.OFFSET)
