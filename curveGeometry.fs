@@ -1,16 +1,16 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "1660.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/coordSystem.fs", version : "1634.0");
-import(path : "onshape/std/mathUtils.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/coordSystem.fs", version : "1660.0");
+import(path : "onshape/std/mathUtils.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
 
 // ===================================== Line ======================================
 

@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,20 @@ FeatureScript 1634; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-export import(path : "onshape/std/box.fs", version : "1634.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1634.0");
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/context.fs", version : "1634.0");
-import(path : "onshape/std/coordSystem.fs", version : "1634.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1634.0");
-import(path : "onshape/std/mathUtils.fs", version : "1634.0");
-import(path : "onshape/std/query.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/string.fs", version : "1634.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1634.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
+export import(path : "onshape/std/box.fs", version : "1660.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1660.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/context.fs", version : "1660.0");
+import(path : "onshape/std/coordSystem.fs", version : "1660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1660.0");
+import(path : "onshape/std/mathUtils.fs", version : "1660.0");
+import(path : "onshape/std/query.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/string.fs", version : "1660.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1035,6 +1035,34 @@ precondition
 }
 
 /**
+ * @internal
+ */
+export function evFaults(context is Context, arg is map) returns array
+precondition
+{
+    arg.entities is Query;
+}
+{
+    var result = @evFaults(context, arg);
+    for (var i = 0; i < size(result); i += 1)
+    {
+        if (result[i].entity != undefined)
+        {
+            result[i].entity = qTransient(result[i].entity);
+        }
+        if (result[i].secondaryEntity != undefined)
+        {
+            result[i].secondaryEntity = qTransient(result[i].secondaryEntity);
+        }
+        if (result[i].location != undefined)
+        {
+            result[i].location = vector(result[i].location) * meter;
+        }
+    }
+    return result;
+}
+
+/**
  * Given a face of a constant radius fillet, return the radius of fillet.
  * @param arg {{
  *      @field face{Query}
@@ -1185,6 +1213,21 @@ precondition
         }
     }
 
+    return result;
+}
+
+/**
+ * @internal
+ */
+export function evTolerances(context is Context, arg is map)
+{
+    const rawResult = @evTolerances(context, arg);
+
+    var result = {};
+    for (var transientId, rawTolerance in rawResult)
+    {
+        result[qTransient(transientId)] = rawTolerance * meter;
+    }
     return result;
 }
 

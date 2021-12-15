@@ -1,19 +1,19 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1634.0");
-export import(path : "onshape/std/tool.fs", version : "1634.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1660.0");
+export import(path : "onshape/std/tool.fs", version : "1660.0");
 
-import(path : "onshape/std/boolean.fs", version : "1634.0");
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/query.fs", version : "1634.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1634.0");
-import(path : "onshape/std/transform.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
+import(path : "onshape/std/boolean.fs", version : "1660.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/query.fs", version : "1660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1660.0");
+import(path : "onshape/std/transform.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
 
 /**
  * @internal
@@ -26,15 +26,6 @@ export enum FillConstraintMode
     annotation { "Name" : "Sampled" }
     SAMPLED
 }
-
-/**
- * @internal
- * The bounds for density of isocurves.
- */
-export const CURVE_BOUNDS =
-{
-    (unitless) : [1, 10, 50]
-} as IntegerBoundSpec;
 
 /**
  * @internal
@@ -96,7 +87,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         if (definition.showIsocurves)
         {
             annotation {"Name" : "Count" }
-            isInteger(definition.curveCount, CURVE_BOUNDS);
+            isInteger(definition.curveCount, ISO_GRID_BOUNDS);
         }
 
         surfaceJoinStepScopePredicate(definition);

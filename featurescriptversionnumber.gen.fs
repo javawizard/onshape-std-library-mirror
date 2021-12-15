@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1022,7 +1022,25 @@ export enum FeatureScriptVersionNumber
     V1631_COMPOUND_UNITS_ASSEMBLY_BUMP,
     V1632_NEW_FEATURE_SCOPE,
     V1633_CHORD_FILLET_BUMP,
-    V1634_ALIGNED_SECTION_BODY_MAP
+    V1634_ALIGNED_SECTION_BODY_MAP,
+    V1643_CREATED_BY,
+    V1644_SKETCH_ROLLBACK,
+    V1645_VERSION_BUMP_TO_CAPTURE_V1634,
+    V1646_VERSION_BUMP_FOR_CHAMFER_FIX,
+    V1647_TOLERANCE_BUMP,
+    V1648_LOFT_UV_BUMP,
+    V1649_ADD_THICKEN_DEFAULT_KEEP_TOOL,
+    V1650_MIGRATE_OLD_DOCS_TO_FILTER_HISTORY,
+    V1651_MODIFY_COMPOSITE_BY_ROTATED_BODY,
+    V1652_UNUSED,
+    V1653_UNUSED,
+    V1654_UNUSED,
+    V1655_UNUSED,
+    V1656_EMPTY_DISAMBIGUATION_SET,
+    V1657_BUMP_VERSION_TO_MODIFY_COMPOSITE,
+    V1658_MIGRATE_OLD_DOCS_TO_FILTER_HISTORY,
+    V1659_USE_ATTRIBUTE_QUERY_FOR_STANDARD_CONTENT,
+    V1660_FIX_DRAWING_MICROVERSION_ELEMENT_TYPE
 }
 
 /**
@@ -1033,6 +1051,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1634_ALIGNED_SECTION_BODY_MAP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1660_FIX_DRAWING_MICROVERSION_ELEMENT_TYPE;
 
 

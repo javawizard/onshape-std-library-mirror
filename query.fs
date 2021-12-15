@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,13 @@ FeatureScript 1634; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/context.fs", version : "1634.0");
-import(path : "onshape/std/mathUtils.fs", version : "1634.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
-import(path : "onshape/std/featureList.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/context.fs", version : "1660.0");
+import(path : "onshape/std/mathUtils.fs", version : "1660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+import(path : "onshape/std/featureList.fs", version : "1660.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -84,6 +84,7 @@ export predicate canBeQuery(value)
  * @value TRANSIENT                  : Used in [qTransient]
  * @value OP_HOLE_PROFILE            : Used in [qOpHoleProfile]
  * @value OP_HOLE_FACE               : Used in [qOpHoleFace]
+ * @value TOLERANCE_FILTER           : Used in [qToleranceFilter]
  * @value UNION                      : Used in [qUnion]
  * @value INTERSECTION               : Used in [qIntersection]
  * @value SUBTRACTION                : Used in [qSubtraction]
@@ -157,6 +158,7 @@ export enum QueryType
     PATTERN_INSTANCES,
     OP_HOLE_PROFILE,
     OP_HOLE_FACE,
+    TOLERANCE_FILTER,
     //Sheet metal
     ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,
@@ -1003,6 +1005,25 @@ precondition
 export function qOpHoleFace(featureId is Id) returns Query
 {
     return qOpHoleFace(featureId, {});
+}
+
+/**
+ * @internal
+ * A filter for edges and vertices that exceed a tolerance threshold.
+ * @param threshold: @optional Defaults to zero-length tolerance.
+ */
+export function qToleranceFilter(queryToFilter is Query, threshold is ValueWithUnits) returns Query
+precondition
+{
+    isLength(threshold);
+}
+{
+    return { "queryType" : QueryType.TOLERANCE_FILTER, "subquery" : queryToFilter, "threshold" : stripUnits(threshold) } as Query;
+}
+
+export function qToleranceFilter(queryToFilter is Query) returns Query
+{
+    return qToleranceFilter(queryToFilter, TOLERANCE.zeroLength * meter);
 }
 
 /** @internal */

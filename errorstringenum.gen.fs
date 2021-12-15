@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2088,7 +2088,25 @@ export enum ErrorStringEnum
     /* Edges must form single chain per part. */
     FILLET_EDGES_NOT_MANIFOLD,
     /* Cannot create a constant width fillet on an active sheet metal model. */
-    SHEET_METAL_FILLET_NO_WIDTH
+    SHEET_METAL_FILLET_NO_WIDTH,
+    /* Select a single sketch feature. The selected feature must create sketch regions. */
+    FRAME_TAG_PROFILE_SELECT_SKETCH,
+    /* Profile must be tagged with at least one column. */
+    FRAME_TAG_PROFILE_SPECIFY_COLUMNS,
+    /* Header cannot be blank. */
+    FRAME_TAG_PROFILE_HEADER_EMPTY,
+    /* Value cannot be blank. */
+    FRAME_TAG_PROFILE_VALUE_EMPTY,
+    /* Failed to find necessary geometry to compute beam characteristics. */
+    FRAME_MISSING_CAP_FACES,
+    /* Failed to find necessary geometry to compute beam characteristics. */
+    FRAME_MISSING_SWEPT_EDGES,
+    /* Failed to find necessary geometry to compute beam characteristics. */
+    FRAME_MISSING_SWEPT_FACES,
+    /* Failed to find necessary geometry to compute beam characteristics. */
+    FRAME_CUTLIST_NO_END_FACE_EDGE_GEOMETRY_PAIR,
+    /* Cannot insert item into publication. */
+    PUBLICATION_ITEM_INSERT_FAILED
 }
 
 

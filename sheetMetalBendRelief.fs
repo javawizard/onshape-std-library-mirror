@@ -1,20 +1,20 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 
-export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "1634.0");
+export import(path : "onshape/std/smbendreliefstyle.gen.fs", version : "1660.0");
 
-import(path : "onshape/std/attributes.fs", version : "1634.0");
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/evaluate.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1634.0");
-import(path : "onshape/std/sheetMetalStart.fs", version : "1634.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1634.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
+import(path : "onshape/std/attributes.fs", version : "1660.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/evaluate.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1660.0");
+import(path : "onshape/std/sheetMetalStart.fs", version : "1660.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1660.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
 
 /**
  * Bend relief feature is used to override default bend relief of sheet metal model

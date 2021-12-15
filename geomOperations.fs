@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1634; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/context.fs", version : "1634.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
-import(path : "onshape/std/query.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
-import(path : "onshape/std/vector.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/context.fs", version : "1660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+import(path : "onshape/std/query.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
+import(path : "onshape/std/vector.fs", version : "1660.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1660.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1660.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1660.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1660.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1660.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1660.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1634.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1660.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1634.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1660.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1634.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1660.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1660.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1634.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1660.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -521,6 +521,7 @@ export const opFillet = function(context is Context, id is Id, definition is map
  *      @field edgesG2 {Query} : The edges with curvature constraints.
  *      @field guideVertices {Query} : The vertices the resulting surface is expected to interpolate.
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of the grid. Default `10`. @optional
  * }}
  */
 export const opFillSurface = function(context is Context, id is Id, definition is map)
@@ -828,6 +829,8 @@ export const opImportForeign = function(context is Context, id is Id, definition
  *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "matchCurvature" : true, "adjacentFaces" : qFaces } ]`
  *              The first map would constrain the resulting loft at the start profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created loft. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
  * }}
  */
 export const opLoft = function(context is Context, id is Id, definition is map)
@@ -1170,6 +1173,8 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional
  *              These planar faces are treated as infinite, rather than bounded to the face extents.
+ *      @field extendToCompletion {boolean} : @optional
+ *             if `true`, imprinted edges are extended to complete split of faces. Default is `false`.
  * }}
  */
 export const opSplitFace = function(context is Context, id is Id, definition is map)
@@ -1332,6 +1337,9 @@ export const opSweep = function(context is Context, id is Id, definition is map)
  *              @autocomplete `0.1 * inch`
  *      @field thickness2 {ValueWithUnits} : The distance by which to thicken in the opposite direction.
  *              @autocomplete `0.1 * inch`
+ *      @field keepTools {boolean} : @optional Default is `true`. If `false` the operation will attempt to delete the
+ *              `entities`. The operation will not delete sheet bodies unless the sheet body or all faces of
+ *              the sheet body are selected. The operation will not delete sketches or solid bodies.
  * }}
  */
 export const opThicken = function(context is Context, id is Id, definition is map)

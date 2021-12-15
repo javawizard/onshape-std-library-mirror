@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 1634; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/math.fs", version : "1634.0");
-import(path : "onshape/std/error.fs", version : "1634.0");
-export import(path : "onshape/std/units.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/math.fs", version : "1660.0");
+import(path : "onshape/std/error.fs", version : "1660.0");
+export import(path : "onshape/std/units.fs", version : "1660.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -538,6 +538,15 @@ export const CURVE_PATTERN_BOUNDS =
     (unitless) : [1, 2, 2500]
 } as IntegerBoundSpec;
 
+/**
+ * @internal
+ * The bounds for the density of an isocurve grid
+ */
+export const ISO_GRID_BOUNDS =
+{
+    (unitless) : [1, 10, 50]
+} as IntegerBoundSpec;
+
 /** @internal */
 export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 {
@@ -981,5 +990,4 @@ export predicate canBeEnergyBoundSpec(value)
     for (var entry in value)
         isEnergy(entry.key);
 }
-
 

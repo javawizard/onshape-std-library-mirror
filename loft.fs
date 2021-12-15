@@ -1,29 +1,29 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1634.0");
-export import(path : "onshape/std/tool.fs", version : "1634.0");
+export import(path : "onshape/std/query.fs", version : "1660.0");
+export import(path : "onshape/std/tool.fs", version : "1660.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1634.0");
+export import(path : "onshape/std/manipulator.fs", version : "1660.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1634.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1634.0");
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/evaluate.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/math.fs", version : "1634.0");
-import(path : "onshape/std/string.fs", version : "1634.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1634.0");
-import(path : "onshape/std/transform.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
-import(path : "onshape/std/vector.fs", version : "1634.0");
+import(path : "onshape/std/boolean.fs", version : "1660.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1660.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/evaluate.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/math.fs", version : "1660.0");
+import(path : "onshape/std/string.fs", version : "1660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1660.0");
+import(path : "onshape/std/transform.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
+import(path : "onshape/std/vector.fs", version : "1660.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -80,8 +80,7 @@ annotation { "Feature Type Name" : "Loft",
 export const loft = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-
-        annotation { "Name" : "Creation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
+        annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
         definition.bodyType is ToolBodyType;
 
         if (definition.bodyType == ToolBodyType.SOLID)
@@ -213,6 +212,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         else
         {
             surfaceJoinStepScopePredicate(definition);
+        }
+
+        annotation {"Name" : "Show iso curves"}
+        definition.showIsocurves is boolean;
+
+        if (definition.showIsocurves)
+        {
+            annotation {"Name" : "Count" }
+            isInteger(definition.curveCount, ISO_GRID_BOUNDS);
         }
     }
     {
@@ -362,7 +370,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
-        trimGuidesByProfiles : false, trimProfiles : false });
+        trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map

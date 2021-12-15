@@ -1,4 +1,4 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,14 +7,14 @@ FeatureScript 1634; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/context.fs", version : "1634.0");
-import(path : "onshape/std/coordSystem.fs", version : "1634.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
-import(path : "onshape/std/mathUtils.fs", version : "1634.0");
-import(path : "onshape/std/string.fs", version : "1634.0");
-import(path : "onshape/std/units.fs", version : "1634.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "1634.0");
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/context.fs", version : "1660.0");
+import(path : "onshape/std/coordSystem.fs", version : "1660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+import(path : "onshape/std/mathUtils.fs", version : "1660.0");
+import(path : "onshape/std/string.fs", version : "1660.0");
+import(path : "onshape/std/units.fs", version : "1660.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "1660.0");
 
 //===================================== Plane ======================================
 
@@ -78,7 +78,7 @@ export function plane(origin is Vector, normal is Vector, x is Vector) returns P
  * Create a [Plane] from a point and a normal.
  *
  * The x-axis of this [Plane]'s coordinate system will be an arbitrary vector
- * perpindicular to the `normal`.
+ * perpendicular to the `normal`.
  *
  * @param origin : A 3D point in world space.
  * @param normal : A 3D vector in world space. Need not be normalized.

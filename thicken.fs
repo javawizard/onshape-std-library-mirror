@@ -1,22 +1,22 @@
-FeatureScript 1634; /* Automatically generated version */
+FeatureScript 1660; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1634.0");
-export import(path : "onshape/std/tool.fs", version : "1634.0");
+export import(path : "onshape/std/query.fs", version : "1660.0");
+export import(path : "onshape/std/tool.fs", version : "1660.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "1634.0");
-export import(path : "onshape/std/tool.fs", version : "1634.0");
+export import(path : "onshape/std/manipulator.fs", version : "1660.0");
+export import(path : "onshape/std/tool.fs", version : "1660.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1634.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1634.0");
-import(path : "onshape/std/evaluate.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
+import(path : "onshape/std/boolean.fs", version : "1660.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1660.0");
+import(path : "onshape/std/evaluate.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
 
 
 /**
@@ -45,6 +45,9 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         annotation { "Name" : "Direction 2" }
         isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
+        annotation { "Name" : "Keep tools", "Default" : false }
+        definition.keepTools is boolean;
+
         booleanStepScopePredicate(definition);
     }
     {
@@ -67,7 +70,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
             transformResultIfNecessary(context, id, remainingTransform);
         };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
-    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW });
+    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW, keepTools : true });
 
 /**
  * @internal

@@ -1,14 +1,14 @@
-FeatureScript 1634; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1634.0");
-import(path : "onshape/std/coordSystem.fs", version : "1634.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1634.0");
-import(path : "onshape/std/evaluate.fs", version : "1634.0");
-import(path : "onshape/std/feature.fs", version : "1634.0");
-import(path : "onshape/std/manipulator.fs", version : "1634.0");
-import(path : "onshape/std/math.fs", version : "1634.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1634.0");
-import(path : "onshape/std/valueBounds.fs", version : "1634.0");
-import(path : "onshape/std/vector.fs", version : "1634.0");
+FeatureScript 1660; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1660.0");
+import(path : "onshape/std/coordSystem.fs", version : "1660.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+import(path : "onshape/std/evaluate.fs", version : "1660.0");
+import(path : "onshape/std/feature.fs", version : "1660.0");
+import(path : "onshape/std/manipulator.fs", version : "1660.0");
+import(path : "onshape/std/math.fs", version : "1660.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+import(path : "onshape/std/valueBounds.fs", version : "1660.0");
+import(path : "onshape/std/vector.fs", version : "1660.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -56,11 +56,11 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         definition.preselectedEntities is Query;
         annotation { "Name" : "First side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;
-        annotation { "Name" : "Match", "Default" : BridgingCurveMatchType.TANGENCY }
+        annotation { "Name" : "Match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match1 is BridgingCurveMatchType;
         annotation { "Name" : "Second side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
-        annotation { "Name" : "Match", "Column Name" : "Second match", "Default" : BridgingCurveMatchType.TANGENCY }
+        annotation { "Name" : "Match", "Column Name" : "Second match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
         if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
         {
