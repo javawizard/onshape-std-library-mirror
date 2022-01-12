@@ -1,4 +1,4 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2106,7 +2106,19 @@ export enum ErrorStringEnum
     /* Failed to find necessary geometry to compute beam characteristics. */
     FRAME_CUTLIST_NO_END_FACE_EDGE_GEOMETRY_PAIR,
     /* Cannot insert item into publication. */
-    PUBLICATION_ITEM_INSERT_FAILED
+    PUBLICATION_ITEM_INSERT_FAILED,
+    /* Radius value is required at each point. */
+    VRFILLET_RADIUS_REQUIRED_AT_POINT,
+    /* Edge parameter value is required at each point. */
+    VRFILLET_PARAMETER_REQUIRED_AT_POINT,
+    /* Rho value is required at each point of conic section. */
+    VRFILLET_RHO_REQUIRED_AT_POINT,
+    /* Magnitude is required at each point of curvature matched cross section. */
+    VRFILLET_MAG_REQUIRED_AT_POINT,
+    /* Select edges on fillet chain. */
+    VRFILLET_SELECT_EDGES,
+    /* Some selected edges are not on an edge chain. */
+    VRFILLET_EDGE_NOT_ON_CHAIN
 }
 
 

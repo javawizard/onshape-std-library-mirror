@@ -1,12 +1,12 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2020-Present Onshape Inc.
 
-export import(path : "onshape/std/context.fs", version : "1660.0");
-export import(path : "onshape/std/feature.fs", version : "1660.0");
-export import(path : "onshape/std/query.fs", version : "1660.0");
-export import(path : "onshape/std/units.fs", version : "1660.0");
+export import(path : "onshape/std/context.fs", version : "1675.0");
+export import(path : "onshape/std/feature.fs", version : "1675.0");
+export import(path : "onshape/std/query.fs", version : "1675.0");
+export import(path : "onshape/std/units.fs", version : "1675.0");
 
 /**
  *
@@ -22,8 +22,7 @@ export import(path : "onshape/std/units.fs", version : "1660.0");
  *     });
  * ```
  *
- * For more information on writing computed part properties, see `FeatureScript Computed Part Properties` (TODO) in the
- * language guide.
+ * For more information on writing computed part properties, see [`Computed part properties`](./computed-part-properties.html) in the FeatureScript guide.
  *
  * @param propertyFunction : A function that takes a `context`, a `part` Query that returns a single Part, and a `definition`, and that returns a value such as a number or a string or a ValueWithUnits.
  *

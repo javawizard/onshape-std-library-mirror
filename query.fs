@@ -1,4 +1,4 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,13 +31,15 @@ FeatureScript 1660; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/context.fs", version : "1660.0");
-import(path : "onshape/std/mathUtils.fs", version : "1660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
-import(path : "onshape/std/units.fs", version : "1660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
-import(path : "onshape/std/featureList.fs", version : "1660.0");
+
+export import(path : "onshape/std/edgetopology.gen.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/context.fs", version : "1675.0");
+import(path : "onshape/std/mathUtils.fs", version : "1675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
+import(path : "onshape/std/units.fs", version : "1675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
+import(path : "onshape/std/featureList.fs", version : "1675.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -535,28 +537,6 @@ export enum SketchObject
 {
     YES,
     NO
-}
-
-/**
- * Specifies the topology of an edge entity.
- *
- * Can be used in a filter on a query parameter to only allow certain selections:
- * ```
- * annotation { "Name" : "Surface edges", "Filter" : EntityType.EDGE && EdgeTopology.LAMINAR }
- * definition.edges is Query;
- * ```
- *
- * @seeAlso [qEdgeTopologyFilter]
- *
- * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
- * @default @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
- */
-// TODO: rename LAMINAR to "boundary" or somesuch that sounds less like we're
-// talking about fluid dynamics...
-export enum EdgeTopology
-{
-    LAMINAR,
-    TWO_SIDED
 }
 
 /**

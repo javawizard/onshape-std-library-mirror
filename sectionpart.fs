@@ -1,30 +1,30 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1660.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
+export import(path : "onshape/std/query.fs", version : "1675.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1660.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1660.0");
-import(path : "onshape/std/box.fs", version : "1660.0");
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/coordSystem.fs", version : "1660.0");
-import(path : "onshape/std/evaluate.fs", version : "1660.0");
-import(path : "onshape/std/extrude.fs", version : "1660.0");
-import(path : "onshape/std/feature.fs", version : "1660.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1660.0");
-import(path : "onshape/std/math.fs", version : "1660.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1660.0");
-import(path : "onshape/std/sketch.fs", version : "1660.0");
-import(path : "onshape/std/tool.fs", version : "1660.0");
-import(path : "onshape/std/transform.fs", version : "1660.0");
-import(path : "onshape/std/units.fs", version : "1660.0");
-import(path : "onshape/std/vector.fs", version : "1660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
+import(path : "onshape/std/attributes.fs", version : "1675.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1675.0");
+import(path : "onshape/std/box.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/coordSystem.fs", version : "1675.0");
+import(path : "onshape/std/evaluate.fs", version : "1675.0");
+import(path : "onshape/std/extrude.fs", version : "1675.0");
+import(path : "onshape/std/feature.fs", version : "1675.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1675.0");
+import(path : "onshape/std/math.fs", version : "1675.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1675.0");
+import(path : "onshape/std/sketch.fs", version : "1675.0");
+import(path : "onshape/std/tool.fs", version : "1675.0");
+import(path : "onshape/std/transform.fs", version : "1675.0");
+import(path : "onshape/std/units.fs", version : "1675.0");
+import(path : "onshape/std/vector.fs", version : "1675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -676,7 +676,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
-                var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition);
+                var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition, partIds);
                 if (!isQueryEmpty(context, sectionFacesQuery))
                 {
                     setAttribute(context, {
@@ -686,7 +686,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
                             }
                     });
                 }
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1651_MODIFY_COMPOSITE_BY_ROTATED_BODY))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1651_MODIFY_COMPOSITE_BY_ROTATED_BODY) &&
+                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
                 {
                     addToComposites(context, id, partIds);
                 }
@@ -995,7 +996,7 @@ function sketchAndExtrudeCut(context is Context, id is Id, target is Query, poly
 }
 
 // returned query resolves to section faces both in original and rotated parts
-function alignedSectionRotateAndCut(context is Context, id is Id, definition is map) returns Query
+function alignedSectionRotateAndCut(context is Context, id is Id, definition is map, partIds is array) returns Query
 {
     // define rotation axis
     const jogPoints = definition.jogPoints[0];
@@ -1032,7 +1033,10 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
             "transforms" : [rotationAround(rotationAxis, rotationAngle)],
             "instanceNames" : ['patternInstancesForPartStudio']
     });
-
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
+    {
+        addToComposites(context, id, partIds);
+    }
     var sourceParts = qSubtraction(definition.target, qCreatedBy(id + "pattern", EntityType.BODY));
     var bodyTypes = [BodyType.SOLID];
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1598_SHEET_BODY_ALIGNED_SECTION_VIEW_FIX))

@@ -1,21 +1,21 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1660.0");
-export import(path : "onshape/std/tool.fs", version : "1660.0");
-export import(path : "onshape/std/patternUtils.fs", version : "1660.0");
+export import(path : "onshape/std/query.fs", version : "1675.0");
+export import(path : "onshape/std/tool.fs", version : "1675.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1675.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1660.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1660.0");
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/evaluate.fs", version : "1660.0");
-import(path : "onshape/std/feature.fs", version : "1660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
-import(path : "onshape/std/transform.fs", version : "1660.0");
+import(path : "onshape/std/boolean.fs", version : "1675.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/evaluate.fs", version : "1675.0");
+import(path : "onshape/std/feature.fs", version : "1675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
+import(path : "onshape/std/transform.fs", version : "1675.0");
 
 
 /**
@@ -130,7 +130,7 @@ function createMatchesForSurfaceJoin(context is Context, id is Id, definition is
 
     if (definition.patternType == MirrorType.PART)
     {
-        var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.LAMINAR), mirrorPlane));
+        var edgesOnPlane = evaluateQuery(context, qCoincidesWithPlane(qEdgeTopologyFilter(qOwnedByBody(definition.entities, EntityType.EDGE), EdgeTopology.ONE_SIDED), mirrorPlane));
         matches = makeArray(size(edgesOnPlane));
         for (var i, edge in edgesOnPlane)
         {

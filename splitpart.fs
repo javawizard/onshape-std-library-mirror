@@ -1,25 +1,27 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1660.0");
+export import(path : "onshape/std/query.fs", version : "1675.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1660.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1660.0");
-import(path : "onshape/std/boolean.fs", version : "1660.0");
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/evaluate.fs", version : "1660.0");
-import(path : "onshape/std/feature.fs", version : "1660.0");
-import(path : "onshape/std/math.fs", version : "1660.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1660.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1660.0");
-import(path : "onshape/std/sketch.fs", version : "1660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
-import(path : "onshape/std/tool.fs", version : "1660.0");
-import(path : "onshape/std/vector.fs", version : "1660.0");
+import(path : "onshape/std/attributes.fs", version : "1675.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1675.0");
+import(path : "onshape/std/boolean.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/evaluate.fs", version : "1675.0");
+import(path : "onshape/std/feature.fs", version : "1675.0");
+import(path : "onshape/std/manipulator.fs", version : "1675.0");
+import(path : "onshape/std/math.fs", version : "1675.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1675.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1675.0");
+import(path : "onshape/std/sketch.fs", version : "1675.0");
+import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
+import(path : "onshape/std/tool.fs", version : "1675.0");
+import(path : "onshape/std/vector.fs", version : "1675.0");
 
 /**
  * Defines whether a `split` should split whole parts, or just faces.
@@ -37,7 +39,8 @@ export enum SplitType
  * Feature performing an [opSplitPart].
  */
 annotation { "Feature Type Name" : "Split", "Filter Selector" : "allparts",
-             "Editing Logic Function" : "splitEditLogic" }
+             "Editing Logic Function" : "splitEditLogic",
+             "Manipulator Change Function" : "splitManipulatorChange" }
 export const splitPart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -60,6 +63,14 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
             annotation { "Name" : "Trim to face boundaries" }
             definition.useTrimmed is boolean;
+
+            annotation { "Name" : "Keep both sides", "Default" : true}
+            definition.keepBothSides is boolean;
+            if (!definition.keepBothSides)
+            {
+                annotation { "Name" : "Opposite direction", "Default" : true, "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.keepFront is boolean;
+            }
         }
         else
         {
@@ -84,7 +95,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             SplitType.PART : performSplitPart(context, id, definition),
             SplitType.FACE : performSplitFace(context, id, definition)
         };
-    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepToolSurfaces : true });
+    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepBothSides : true, keepFront : true, keepToolSurfaces : true });
 
 function performSplitPart(context is Context, topLevelId is Id, definition is map)
 {
@@ -130,6 +141,10 @@ function performSplitPart(context is Context, topLevelId is Id, definition is ma
             }
         }
     }
+
+    definition.keepType = definition.keepBothSides ? SplitOperationKeepType.KEEP_ALL : (definition.keepFront ? SplitOperationKeepType.KEEP_FRONT : SplitOperationKeepType.KEEP_BACK);
+    addKeepSideManipulator(context, topLevelId, definition);
+
     opSplitPart(context, topLevelId, definition);
     // `opSplitPart` doesn't delete planes regardless of `keepToolSurfaces` so we delete them here.
     if (tempPlaneQueries != [])
@@ -238,3 +253,66 @@ export function splitEditLogic(context is Context, id is Id, oldDefinition is ma
     return definition;
 }
 
+
+/**
+ * @internal
+ * Manipulator to keep front/back side of split
+ */
+function addKeepSideManipulator(context is Context, id is Id, definition is map)
+{
+    if (!definition.keepBothSides)
+    {
+        var toolFaces;
+        if (!isQueryEmpty(context, qOwnedByBody(definition.tool, EntityType.FACE)))
+        {
+            toolFaces = qOwnedByBody(definition.tool, EntityType.FACE);
+        }
+        else if (!isQueryEmpty(context, qEntityFilter(definition.tool, EntityType.FACE)))
+        {
+            toolFaces = qEntityFilter(definition.tool, EntityType.FACE);
+        }
+        else
+        {
+            return;
+        }
+        if (isQueryEmpty(context, definition.targets))
+        {
+            return;
+        }
+        const distResult = try silent(evDistance(context, {
+            "side0" : toolFaces,
+            "side1" : definition.targets
+        }));
+        if (distResult == undefined)
+        {
+            return;
+        }
+        const tangentPlane = evFaceTangentPlane(context, {
+            "face" : qNthElement(toolFaces, distResult.sides[0].index),
+            "parameter" : distResult.sides[0].parameter
+        });
+        var manipulator is Manipulator = flipManipulator({
+            "base" : tangentPlane.origin,
+            "direction" : tangentPlane.normal,
+            "flipped" : !definition.keepFront
+        });
+        addManipulators(context, id, {
+            "flipManipulator" : manipulator
+        });
+    }
+}
+
+/**
+ * @internal
+ */
+export function splitManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    for (var manipulator in newManipulators)
+    {
+        if (manipulator.key == "flipManipulator")
+        {
+            definition.keepFront = !manipulator.value.flipped;
+            return definition;
+        }
+    }
+}

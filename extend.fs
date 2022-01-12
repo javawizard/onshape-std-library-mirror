@@ -1,26 +1,26 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1660.0");
-export import(path : "onshape/std/tool.fs", version : "1660.0");
+export import(path : "onshape/std/query.fs", version : "1675.0");
+export import(path : "onshape/std/tool.fs", version : "1675.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1660.0");
+export import(path : "onshape/std/manipulator.fs", version : "1675.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/evaluate.fs", version : "1660.0");
-import(path : "onshape/std/feature.fs", version : "1660.0");
-import(path : "onshape/std/primitives.fs", version : "1660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
-import(path : "onshape/std/valueBounds.fs", version : "1660.0");
-import(path : "onshape/std/vector.fs", version : "1660.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/evaluate.fs", version : "1675.0");
+import(path : "onshape/std/feature.fs", version : "1675.0");
+import(path : "onshape/std/primitives.fs", version : "1675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
+import(path : "onshape/std/valueBounds.fs", version : "1675.0");
+import(path : "onshape/std/vector.fs", version : "1675.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "1660.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1660.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "1675.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "1675.0");
 
 /**
  * Bounding type used with extend.
@@ -49,7 +49,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
     {
 
         annotation { "Name" : "Surface or boundary edges", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
-                                                               (EntityType.EDGE && EdgeTopology.LAMINAR)) &&
+                                                               (EntityType.EDGE && EdgeTopology.ONE_SIDED)) &&
                                                                 ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
 
@@ -269,7 +269,7 @@ function getTrackedEdges(context is Context, definition is map) returns array
     {
         selectedEdges = qUnion([selectedEdges, qTangentConnectedEdges(selectedEdges)]);
     }
-    var allEdges = qEdgeTopologyFilter(qUnion([selectedEdges, qOwnedByBody(definition.entities, EntityType.EDGE)]), EdgeTopology.LAMINAR);
+    var allEdges = qEdgeTopologyFilter(qUnion([selectedEdges, qOwnedByBody(definition.entities, EntityType.EDGE)]), EdgeTopology.ONE_SIDED);
 
     var trackedEdges = [];
     for (var edge in evaluateQuery(context, allEdges))
@@ -357,7 +357,7 @@ function addExtendManipulator(context is Context, id is Id, definition is map)
 
 function getFirstLaminarEdge(context is Context, query is Query)
 {
-    const laminarEdges = qEdgeTopologyFilter(query, EdgeTopology.LAMINAR);
+    const laminarEdges = qEdgeTopologyFilter(query, EdgeTopology.ONE_SIDED);
     const laminarQ = evaluateQuery(context, laminarEdges);
     if (laminarQ == [])
     {

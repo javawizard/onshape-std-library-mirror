@@ -1,29 +1,29 @@
-FeatureScript 1660; /* Automatically generated version */
+FeatureScript 1675; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1660.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1660.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1660.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1660.0");
-import(path : "onshape/std/containers.fs", version : "1660.0");
-import(path : "onshape/std/coordSystem.fs", version : "1660.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1660.0");
-import(path : "onshape/std/evaluate.fs", version : "1660.0");
-import(path : "onshape/std/feature.fs", version : "1660.0");
-import(path : "onshape/std/math.fs", version : "1660.0");
-import(path : "onshape/std/manipulator.fs", version : "1660.0");
-import(path : "onshape/std/query.fs", version : "1660.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1660.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1660.0");
-import(path : "onshape/std/string.fs", version : "1660.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1660.0");
-import(path : "onshape/std/tool.fs", version : "1660.0");
-import(path : "onshape/std/valueBounds.fs", version : "1660.0");
-import(path : "onshape/std/vector.fs", version : "1660.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1660.0");
-import(path : "onshape/std/transform.fs", version : "1660.0");
+import(path : "onshape/std/attributes.fs", version : "1675.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1675.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1675.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1675.0");
+import(path : "onshape/std/coordSystem.fs", version : "1675.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
+import(path : "onshape/std/evaluate.fs", version : "1675.0");
+import(path : "onshape/std/feature.fs", version : "1675.0");
+import(path : "onshape/std/math.fs", version : "1675.0");
+import(path : "onshape/std/manipulator.fs", version : "1675.0");
+import(path : "onshape/std/query.fs", version : "1675.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1675.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1675.0");
+import(path : "onshape/std/string.fs", version : "1675.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
+import(path : "onshape/std/tool.fs", version : "1675.0");
+import(path : "onshape/std/valueBounds.fs", version : "1675.0");
+import(path : "onshape/std/vector.fs", version : "1675.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1675.0");
+import(path : "onshape/std/transform.fs", version : "1675.0");
 
 
 
@@ -1852,7 +1852,7 @@ export function remapCornerBreaks(context is Context, cornerBreakTracking is map
 export function removeJointAttributesFromOneSidedEdges(context is Context, sheetMetalModels is Query) returns array
 {
     var modifiedEdges = [];
-    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(sheetMetalModels, EntityType.EDGE), EdgeTopology.LAMINAR)))
+    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(sheetMetalModels, EntityType.EDGE), EdgeTopology.ONE_SIDED)))
     {
         if (size(getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT)) > 0)
         {
