@@ -49,7 +49,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
     {
 
         annotation { "Name" : "Surface or boundary edges", "Filter" : ((EntityType.BODY && BodyType.SHEET) ||
-                                                               (EntityType.EDGE && EdgeTopology.LAMINAR)) &&
+                                                               (EntityType.EDGE && EdgeTopology.ONE_SIDED)) &&
                                                                 ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.entities is Query;
 
@@ -269,7 +269,7 @@ function getTrackedEdges(context is Context, definition is map) returns array
     {
         selectedEdges = qUnion([selectedEdges, qTangentConnectedEdges(selectedEdges)]);
     }
-    var allEdges = qEdgeTopologyFilter(qUnion([selectedEdges, qOwnedByBody(definition.entities, EntityType.EDGE)]), EdgeTopology.LAMINAR);
+    var allEdges = qEdgeTopologyFilter(qUnion([selectedEdges, qOwnedByBody(definition.entities, EntityType.EDGE)]), EdgeTopology.ONE_SIDED);
 
     var trackedEdges = [];
     for (var edge in evaluateQuery(context, allEdges))
@@ -357,7 +357,7 @@ function addExtendManipulator(context is Context, id is Id, definition is map)
 
 function getFirstLaminarEdge(context is Context, query is Query)
 {
-    const laminarEdges = qEdgeTopologyFilter(query, EdgeTopology.LAMINAR);
+    const laminarEdges = qEdgeTopologyFilter(query, EdgeTopology.ONE_SIDED);
     const laminarQ = evaluateQuery(context, laminarEdges);
     if (laminarQ == [])
     {

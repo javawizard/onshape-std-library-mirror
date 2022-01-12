@@ -1852,7 +1852,7 @@ export function remapCornerBreaks(context is Context, cornerBreakTracking is map
 export function removeJointAttributesFromOneSidedEdges(context is Context, sheetMetalModels is Query) returns array
 {
     var modifiedEdges = [];
-    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(sheetMetalModels, EntityType.EDGE), EdgeTopology.LAMINAR)))
+    for (var edge in evaluateQuery(context, qEdgeTopologyFilter(qOwnedByBody(sheetMetalModels, EntityType.EDGE), EdgeTopology.ONE_SIDED)))
     {
         if (size(getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT)) > 0)
         {

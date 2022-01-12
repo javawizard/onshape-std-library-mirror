@@ -31,6 +31,8 @@ FeatureScript ✨; /* Automatically generated version */
  * been deleted. Most automatically-generated queries are historical, while
  * queries more commonly used in manually written code are state-based.
  */
+
+export import(path : "onshape/std/edgetopology.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
@@ -535,28 +537,6 @@ export enum SketchObject
 {
     YES,
     NO
-}
-
-/**
- * Specifies the topology of an edge entity.
- *
- * Can be used in a filter on a query parameter to only allow certain selections:
- * ```
- * annotation { "Name" : "Surface edges", "Filter" : EntityType.EDGE && EdgeTopology.LAMINAR }
- * definition.edges is Query;
- * ```
- *
- * @seeAlso [qEdgeTopologyFilter]
- *
- * @value LAMINAR : An edge adjacent to one surface (e.g. the edge of a surface extrude).
- * @default @value TWO_SIDED : An edge which joins two faces (e.g. the edge of a cube).
- */
-// TODO: rename LAMINAR to "boundary" or somesuch that sounds less like we're
-// talking about fluid dynamics...
-export enum EdgeTopology
-{
-    LAMINAR,
-    TWO_SIDED
 }
 
 /**

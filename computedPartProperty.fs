@@ -22,8 +22,7 @@ export import(path : "onshape/std/units.fs", version : "✨");
  *     });
  * ```
  *
- * For more information on writing computed part properties, see `FeatureScript Computed Part Properties` (TODO) in the
- * language guide.
+ * For more information on writing computed part properties, see [`Computed part properties`](./computed-part-properties.html) in the FeatureScript guide.
  *
  * @param propertyFunction : A function that takes a `context`, a `part` Query that returns a single Part, and a `definition`, and that returns a value such as a number or a string or a ValueWithUnits.
  *

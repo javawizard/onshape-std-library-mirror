@@ -517,7 +517,7 @@ export predicate surfaceJoinStepScopePredicate(definition is map)
  */
 export function filterJoinableSurfaceEdges(edges is Query) returns Query
 {
-    return qEdgeTopologyFilter(qSketchFilter(edges, SketchObject.NO), EdgeTopology.LAMINAR);
+    return qEdgeTopologyFilter(qSketchFilter(edges, SketchObject.NO), EdgeTopology.ONE_SIDED);
 }
 
 /**
@@ -645,7 +645,7 @@ function filterByOwnerBody(context is Context, edges is Query, bodies is Query) 
  */
 export function createTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, created is Query, originating is Query, transform is Transform) returns array
 {
-    var createdEdges = evaluateQuery(context, qEdgeTopologyFilter(created, EdgeTopology.LAMINAR));
+    var createdEdges = evaluateQuery(context, qEdgeTopologyFilter(created, EdgeTopology.ONE_SIDED));
     var originatingEdges = filterJoinableSurfaceEdges(originating);
     var nonMatchedOriginatingEdges;
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
@@ -1012,7 +1012,7 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 
                                 if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1050_HEM_REATED_FIXES))
                                 {
-                                    const newlyLaminarEdges = evaluateQuery(context, qEdgeTopologyFilter(trackedTwoSidedEdges, EdgeTopology.LAMINAR));
+                                    const newlyLaminarEdges = evaluateQuery(context, qEdgeTopologyFilter(trackedTwoSidedEdges, EdgeTopology.ONE_SIDED));
                                     modifiedEntityArray = concatenateArrays([modifiedEntityArray, newlyLaminarEdges]);
                                 }
 

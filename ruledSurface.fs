@@ -236,7 +236,7 @@ function createRuledSurface(context is Context, id is Id, definition is map)
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
     const vertexOverrides = unpackVertexOverrides(context, definition);
-    const referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.LAMINAR), AdjacencyType.EDGE, EntityType.FACE)]);
+    const referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.ONE_SIDED), AdjacencyType.EDGE, EntityType.FACE)]);
 
     if (isAlignedType(definition))
     {

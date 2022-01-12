@@ -21,6 +21,7 @@ export import(path : "onshape/std/path.fs", version : "✨");
 
 export import(path : "onshape/std/evaluate.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "✨");
 export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "✨");
 
 export import(path : "onshape/std/units.fs", version : "✨");

@@ -676,7 +676,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
-                var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition);
+                var sectionFacesQuery = alignedSectionRotateAndCut(context, id, definition, partIds);
                 if (!isQueryEmpty(context, sectionFacesQuery))
                 {
                     setAttribute(context, {
@@ -686,7 +686,8 @@ function jogSectionCut(context is Context, id is Id, definition is map)
                             }
                     });
                 }
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1651_MODIFY_COMPOSITE_BY_ROTATED_BODY))
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1651_MODIFY_COMPOSITE_BY_ROTATED_BODY) &&
+                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
                 {
                     addToComposites(context, id, partIds);
                 }
@@ -995,7 +996,7 @@ function sketchAndExtrudeCut(context is Context, id is Id, target is Query, poly
 }
 
 // returned query resolves to section faces both in original and rotated parts
-function alignedSectionRotateAndCut(context is Context, id is Id, definition is map) returns Query
+function alignedSectionRotateAndCut(context is Context, id is Id, definition is map, partIds is array) returns Query
 {
     // define rotation axis
     const jogPoints = definition.jogPoints[0];
@@ -1032,7 +1033,10 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
             "transforms" : [rotationAround(rotationAxis, rotationAngle)],
             "instanceNames" : ['patternInstancesForPartStudio']
     });
-
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
+    {
+        addToComposites(context, id, partIds);
+    }
     var sourceParts = qSubtraction(definition.target, qCreatedBy(id + "pattern", EntityType.BODY));
     var bodyTypes = [BodyType.SOLID];
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1598_SHEET_BODY_ALIGNED_SECTION_VIEW_FIX))

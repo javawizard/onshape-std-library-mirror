@@ -205,15 +205,6 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         annotation { "Name" : "Make periodic", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.makePeriodic is boolean;
 
-        if (definition.bodyType == ToolBodyType.SOLID)
-        {
-            booleanStepScopePredicate(definition);
-        }
-        else
-        {
-            surfaceJoinStepScopePredicate(definition);
-        }
-
         annotation {"Name" : "Show iso curves"}
         definition.showIsocurves is boolean;
 
@@ -221,6 +212,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             annotation {"Name" : "Count" }
             isInteger(definition.curveCount, ISO_GRID_BOUNDS);
+        }
+
+        if (definition.bodyType == ToolBodyType.SOLID)
+        {
+            booleanStepScopePredicate(definition);
+        }
+        else
+        {
+            surfaceJoinStepScopePredicate(definition);
         }
     }
     {
