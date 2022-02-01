@@ -757,6 +757,29 @@ function updateControlPointsAndKnots(controlPoints is box, weights is box, knots
 }
 
 /**
+ * @internal
+ *
+ * Create a `BSplineSurface` from the result of a builtin call.
+ */
+export function bSplineSurfaceFromBuiltin(definition is map) returns BSplineSurface
+{
+    definition.uKnots = definition.uKnots as KnotArray;
+    definition.vKnots = definition.vKnots as KnotArray;
+    definition.surfaceType = SurfaceType.SPLINE;
+    definition.controlPoints = mapArray(definition.controlPoints, function(row)
+            {
+                return mapArray(row, function(controlPoint)
+                    {
+                        // Unrolled / inlined for performance
+                        return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
+                    });
+            }) as ControlPointMatrix;
+    if (definition.isRational)
+        definition.weights = definition.weights as Matrix;
+    return definition as BSplineSurface;
+}
+
+/**
  * Returns a new [BSplineSurface], adding knot padding and control point overlap as necessary.
  * @example
  * ```

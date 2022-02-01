@@ -18,7 +18,8 @@ export enum SurfaceType
     OTHER,
     REVOLVED,
     EXTRUDED,
-    MESH
+    MESH,
+    SPLINE
 }
 
 

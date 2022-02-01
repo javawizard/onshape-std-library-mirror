@@ -1175,6 +1175,9 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *              These planar faces are treated as infinite, rather than bounded to the face extents.
  *      @field extendToCompletion {boolean} : @optional
  *             if `true`, imprinted edges are extended to complete split of faces. Default is `false`.
+ *      @field mutualImprint {boolean} : @optional
+ *             if `true` and only `bodyTools` are supplied target faces are used to split faces of `bodyTools`.
+ *             Default is `false`.
  * }}
  */
 export const opSplitFace = function(context is Context, id is Id, definition is map)

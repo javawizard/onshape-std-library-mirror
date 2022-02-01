@@ -425,7 +425,7 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
         const edgeQueries = evaluateQuery(context, qEntityFilter(definition.entities, EntityType.EDGE));
         if (edgeQueries != undefined && @size(edgeQueries) > 0)
         {
-            var curveDefinition = evCurveDefinition(context, { "edge" : edgeQueries[0] });
+            var curveDefinition = evCurveDefinition(context, { "edge" : edgeQueries[0], "returnBSplinesAsOther" : true });
             var size;
             if (curveDefinition is Circle)
                 size = curveDefinition.radius * 2;

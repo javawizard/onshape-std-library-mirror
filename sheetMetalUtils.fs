@@ -403,7 +403,8 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
 function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edge is Query, faces is array, cylinders is array) returns ValueWithUnits
 {
     const ellipse = evCurveDefinition(context, {
-                "edge" : edge
+                "edge" : edge,
+                "returnBSplinesAsOther" : true
             });
     const majorPoints = [
             ellipse.coordSystem.origin - (ellipse.coordSystem.xAxis * ellipse.majorRadius),

@@ -699,6 +699,23 @@ precondition
     } as BSplineCurve;
 }
 
+/**
+ * @internal
+ *
+ * Create a `BSplineCurve` from the result of a builtin call.
+ */
+export function bSplineCurveFromBuiltin(definition is map) returns BSplineCurve
+{
+    definition.knots = definition.knots as KnotArray;
+    definition.curveType = CurveType.SPLINE;
+    definition.controlPoints = mapArray(definition.controlPoints, function(controlPoint)
+        {
+            // Unrolled / inlined for performance
+            return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
+        });
+    return definition as BSplineCurve;
+}
+
 annotation { "Deprecated" : "Use [bSplineCurve(map)]" }
 export function bSplineCurve(degree is number, isPeriodic is boolean, controlPoints is array, knots is KnotArray) returns BSplineCurve
 {

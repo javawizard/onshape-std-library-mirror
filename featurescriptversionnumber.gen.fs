@@ -1050,7 +1050,18 @@ export enum FeatureScriptVersionNumber
     V1672_FIX_MV_CAUSE_ELEMENT_ASSOCIATION,
     V1673_VARIABLE_FILLET_BUG_FIXES,
     V1674_VERSION_BUMP_TO_SPLIT_SIDE_MANIPULATOR_FIX,
-    V1675_VERSION_BUMP_FOR_COMPUTED_PROPERTIES_DOC
+    V1675_VERSION_BUMP_FOR_COMPUTED_PROPERTIES_DOC,
+    V1681_NEW_BRIDGING_CURVE,
+    V1682_SPLIT_FACE_SIDES,
+    V1683_CLEAR_SM_ATTRIBUTE_BY_RECORD,
+    V1684_SM_RECORD_SWAP,
+    V1685_SPLIT_AUTO_MATCH,
+    V1686_FACE_BLEND_WARNING,
+    V1687_BODY_NET_START,
+    V1688_EXTRACT_SURFACE_BODY_PROCESSING,
+    V1689_PS_VERSION_34_0_235,
+    V1690_BRIDGING_CURVE_FIXES,
+    V1691_REPAIR_MICROVERSION_CAUSES
 }
 
 /**
@@ -1061,6 +1072,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1675_VERSION_BUMP_FOR_COMPUTED_PROPERTIES_DOC;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1691_REPAIR_MICROVERSION_CAUSES;
 
 

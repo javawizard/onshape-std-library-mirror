@@ -207,7 +207,7 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
         else
         {
             remainingTransform = getRemainderPatternTransform(context, {"references" : definition.edge});
-            var edge = evCurveDefinition(context, { "edge" : definition.edge });
+            var edge = evCurveDefinition(context, { "edge" : definition.edge, "returnBSplinesAsOther" : true });
             if (!(edge is Circle))
             {
                 throw regenError(needCircleMessage, ["entities"]);
