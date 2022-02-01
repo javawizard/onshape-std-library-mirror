@@ -1,29 +1,29 @@
-FeatureScript 1675; /* Automatically generated version */
+FeatureScript 1691; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1675.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1675.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1675.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1675.0");
-import(path : "onshape/std/containers.fs", version : "1675.0");
-import(path : "onshape/std/coordSystem.fs", version : "1675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
-import(path : "onshape/std/evaluate.fs", version : "1675.0");
-import(path : "onshape/std/feature.fs", version : "1675.0");
-import(path : "onshape/std/math.fs", version : "1675.0");
-import(path : "onshape/std/manipulator.fs", version : "1675.0");
-import(path : "onshape/std/query.fs", version : "1675.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1675.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1675.0");
-import(path : "onshape/std/string.fs", version : "1675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
-import(path : "onshape/std/tool.fs", version : "1675.0");
-import(path : "onshape/std/valueBounds.fs", version : "1675.0");
-import(path : "onshape/std/vector.fs", version : "1675.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1675.0");
-import(path : "onshape/std/transform.fs", version : "1675.0");
+import(path : "onshape/std/attributes.fs", version : "1691.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1691.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1691.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1691.0");
+import(path : "onshape/std/containers.fs", version : "1691.0");
+import(path : "onshape/std/coordSystem.fs", version : "1691.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1691.0");
+import(path : "onshape/std/evaluate.fs", version : "1691.0");
+import(path : "onshape/std/feature.fs", version : "1691.0");
+import(path : "onshape/std/math.fs", version : "1691.0");
+import(path : "onshape/std/manipulator.fs", version : "1691.0");
+import(path : "onshape/std/query.fs", version : "1691.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1691.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1691.0");
+import(path : "onshape/std/string.fs", version : "1691.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1691.0");
+import(path : "onshape/std/tool.fs", version : "1691.0");
+import(path : "onshape/std/valueBounds.fs", version : "1691.0");
+import(path : "onshape/std/vector.fs", version : "1691.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1691.0");
+import(path : "onshape/std/transform.fs", version : "1691.0");
 
 
 
@@ -403,7 +403,8 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
 function edgeAngleBetweenIntersectingEquivalentCylinders(context is Context, edge is Query, faces is array, cylinders is array) returns ValueWithUnits
 {
     const ellipse = evCurveDefinition(context, {
-                "edge" : edge
+                "edge" : edge,
+                "returnBSplinesAsOther" : true
             });
     const majorPoints = [
             ellipse.coordSystem.origin - (ellipse.coordSystem.xAxis * ellipse.majorRadius),

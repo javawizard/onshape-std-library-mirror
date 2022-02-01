@@ -1,4 +1,4 @@
-FeatureScript 1675; /* Automatically generated version */
+FeatureScript 1691; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,14 +7,14 @@ FeatureScript 1675; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/containers.fs", version : "1675.0");
-import(path : "onshape/std/context.fs", version : "1675.0");
-import(path : "onshape/std/coordSystem.fs", version : "1675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
-import(path : "onshape/std/mathUtils.fs", version : "1675.0");
-import(path : "onshape/std/string.fs", version : "1675.0");
-import(path : "onshape/std/units.fs", version : "1675.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1691.0");
+import(path : "onshape/std/context.fs", version : "1691.0");
+import(path : "onshape/std/coordSystem.fs", version : "1691.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1691.0");
+import(path : "onshape/std/mathUtils.fs", version : "1691.0");
+import(path : "onshape/std/string.fs", version : "1691.0");
+import(path : "onshape/std/units.fs", version : "1691.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "1691.0");
 
 //===================================== Plane ======================================
 
@@ -754,6 +754,29 @@ function updateControlPointsAndKnots(controlPoints is box, weights is box, knots
 
     // -- Update knots --
     knots[] = createOrAdjustKnotArray(knots[], degree, controlPointCount, isPeriodic);
+}
+
+/**
+ * @internal
+ *
+ * Create a `BSplineSurface` from the result of a builtin call.
+ */
+export function bSplineSurfaceFromBuiltin(definition is map) returns BSplineSurface
+{
+    definition.uKnots = definition.uKnots as KnotArray;
+    definition.vKnots = definition.vKnots as KnotArray;
+    definition.surfaceType = SurfaceType.SPLINE;
+    definition.controlPoints = mapArray(definition.controlPoints, function(row)
+            {
+                return mapArray(row, function(controlPoint)
+                    {
+                        // Unrolled / inlined for performance
+                        return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
+                    });
+            }) as ControlPointMatrix;
+    if (definition.isRational)
+        definition.weights = definition.weights as Matrix;
+    return definition as BSplineSurface;
 }
 
 /**

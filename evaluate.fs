@@ -1,4 +1,4 @@
-FeatureScript 1675; /* Automatically generated version */
+FeatureScript 1691; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,20 +9,21 @@ FeatureScript 1675; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-export import(path : "onshape/std/box.fs", version : "1675.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1675.0");
-import(path : "onshape/std/containers.fs", version : "1675.0");
-import(path : "onshape/std/context.fs", version : "1675.0");
-import(path : "onshape/std/coordSystem.fs", version : "1675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1675.0");
-import(path : "onshape/std/mathUtils.fs", version : "1675.0");
-import(path : "onshape/std/query.fs", version : "1675.0");
-import(path : "onshape/std/feature.fs", version : "1675.0");
-import(path : "onshape/std/string.fs", version : "1675.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
-import(path : "onshape/std/units.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1691.0");
+import(path : "onshape/std/context.fs", version : "1691.0");
+import(path : "onshape/std/coordSystem.fs", version : "1691.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1691.0");
+import(path : "onshape/std/feature.fs", version : "1691.0");
+import(path : "onshape/std/mathUtils.fs", version : "1691.0");
+import(path : "onshape/std/query.fs", version : "1691.0");
+import(path : "onshape/std/string.fs", version : "1691.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1691.0");
+import(path : "onshape/std/units.fs", version : "1691.0");
+
+export import(path : "onshape/std/box.fs", version : "1691.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1691.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1691.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1691.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -288,11 +289,13 @@ precondition
 }
 
 /**
- * Given a query for a curve, return a [Circle], [Ellipse], or [Line]
+ * Given a query for a curve, return a [Circle], [Ellipse], [Line], or [BSplineCurve]
  * value for the curve.  If the curve is none of these types, return
  * a map with unspecified contents.
  * @param arg {{
  *      @field edge{Query} : The curve to evaluate.
+ *      @field returnBSplinesAsOther{boolean} : If true, do not return B-spline curves (to avoid the associated time
+ *                                              cost).  Default is false. @optional
  * }}
  * @throws {GBTErrorStringEnum.INVALID_INPUT} : The first resolved entity was not an edge.
  * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_ENTITIES} : Input entities are invalid or there are no input entities.
@@ -301,26 +304,47 @@ export function evCurveDefinition(context is Context, arg is map) returns map
 precondition
 {
     arg.edge is Query;
+    arg.returnBSplinesAsOther == undefined || arg.returnBSplinesAsOther is boolean;
 }
 {
     var result = @evCurveDefinition(context, arg);
     if (result is map)
     {
-        if (result.curveType == (CurveType.CIRCLE as string))
-        {
-            result = circleFromBuiltin(result);
-        }
-        else if (result.curveType == (CurveType.ELLIPSE as string))
-        {
-            result = ellipseFromBuiltin(result);
-        }
-        else if (result.curveType == (CurveType.LINE as string))
-        {
-            result = lineFromBuiltin(result);
-        }
+        result = switch(result.curveType) {
+            CurveType.CIRCLE as string  : circleFromBuiltin(result),
+            CurveType.ELLIPSE as string : ellipseFromBuiltin(result),
+            CurveType.LINE as string    : lineFromBuiltin(result),
+            CurveType.SPLINE as string  : bSplineCurveFromBuiltin(result),
+            CurveType.OTHER as string   : result
+        };
     }
 
     return result;
+}
+
+/**
+ * Given a query for a curve, return its approximation (or exact representation if possible) as a B-spline.
+ * The options `forceCubic` and `forceNonRational` may be used to restrict the type of spline that is returned,
+ * but even if these options are false, a cubic non-rational spline may be returned.
+ * @param arg {{
+ *      @field edge{Query} : The curve to approximate.
+ *      @field forceCubic{boolean} : If true, a cubic spline will be returned.  Defaults to false.  @optional
+ *      @field forceNonRational{boolean} : If true, a non-rational spline will be returned.  Defaults to false.  @optional
+ *      @field tolerance{number} : Specifies the desired approximation tolerance: the maximum distance (in meters) between
+ *                                 the original curve and the returned spline representation.  Default is 1e-6, minimum is
+ *                                 1e-8, and maximum is 1e-2. @optional
+ * }}
+ */
+export function evApproximateBSplineCurve(context is Context, arg is map) returns BSplineCurve
+precondition
+{
+    arg.edge is Query;
+    arg.forceCubic == undefined || arg.forceCubic is boolean;
+    arg.forceNonRational == undefined || arg.forceNonRational is boolean;
+    arg.tolerance == undefined || (arg.tolerance is number && arg.tolerance >= 1e-8 && arg.tolerance <= 1e-2);
+}
+{
+    return bSplineCurveFromBuiltin(@evApproximateBSplineCurve(context, arg));
 }
 
 // =========== evDistance stuff ===========
@@ -1171,10 +1195,12 @@ precondition
 /**
  * Return a descriptive value for a face, or the first face if the query
  * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
- * or [Torus] as appropriate for the face, or an unspecified map value
- * if the face is none of these with surfaceType filled of type SurfaceType
+ * [Torus], or [BSplineSurface] as appropriate for the face, or an unspecified map
+ * value if the face is none of these with surfaceType filled of type SurfaceType
  * @param arg {{
  *      @field face{Query}
+ *      @field returnBSplinesAsOther{boolean} : If true, do not return B-spline surfaces (to avoid the associated time
+ *                                              cost).  Default is false. @optional
  * }}
  * @throws {"GBTErrorStringEnum.CANNOT_RESOLVE_PLANE"} : The first result is not a face.
  */
@@ -1182,30 +1208,24 @@ export function evSurfaceDefinition(context is Context, arg is map) returns map
 precondition
 {
     arg.face is Query;
+    arg.returnBSplinesAsOther == undefined || arg.returnBSplinesAsOther is boolean;
 }
 {
     var result = @evSurfaceDefinition(context, arg);
     if (result is map)
     {
-        if (result.surfaceType == (SurfaceType.CYLINDER as string))
+        var typedResult = switch(result.surfaceType) {
+            SurfaceType.CYLINDER as string : cylinderFromBuiltin(result),
+            SurfaceType.CONE as string     : coneFromBuiltin(result),
+            SurfaceType.TORUS as string    : torusFromBuiltin(result),
+            SurfaceType.SPHERE as string   : sphereFromBuiltin(result),
+            SurfaceType.PLANE as string    : planeFromBuiltin(result),
+            SurfaceType.SPLINE as string   : bSplineSurfaceFromBuiltin(result)
+        };
+
+        if (typedResult != undefined)
         {
-            result = cylinderFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.CONE as string))
-        {
-            result = coneFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.TORUS as string))
-        {
-            result = torusFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.SPHERE as string))
-        {
-            result = sphereFromBuiltin(result);
-        }
-        else if (result.surfaceType == (SurfaceType.PLANE as string))
-        {
-            result = planeFromBuiltin(result);
+            result = typedResult;
         }
         else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
         {

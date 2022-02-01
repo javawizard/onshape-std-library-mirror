@@ -1,14 +1,15 @@
-FeatureScript 1675; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1675.0");
-import(path : "onshape/std/coordSystem.fs", version : "1675.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1675.0");
-import(path : "onshape/std/evaluate.fs", version : "1675.0");
-import(path : "onshape/std/feature.fs", version : "1675.0");
-import(path : "onshape/std/manipulator.fs", version : "1675.0");
-import(path : "onshape/std/math.fs", version : "1675.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1675.0");
-import(path : "onshape/std/valueBounds.fs", version : "1675.0");
-import(path : "onshape/std/vector.fs", version : "1675.0");
+FeatureScript 1691; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1691.0");
+import(path : "onshape/std/coordSystem.fs", version : "1691.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1691.0");
+import(path : "onshape/std/evaluate.fs", version : "1691.0");
+import(path : "onshape/std/feature.fs", version : "1691.0");
+import(path : "onshape/std/manipulator.fs", version : "1691.0");
+import(path : "onshape/std/math.fs", version : "1691.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1691.0");
+import(path : "onshape/std/valueBounds.fs", version : "1691.0");
+import(path : "onshape/std/vector.fs", version : "1691.0");
+import(path : "onshape/std/debug.fs", version : "1691.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -24,6 +25,15 @@ export enum BridgingCurveMatchType
     TANGENCY,
     annotation { "Name" : "Match curvature" }
     CURVATURE
+}
+
+/** @internal */
+export enum BridgingCurveMethod
+{
+    annotation { "Name" : "Magnitude/bias" }
+    MAGNITUDE_BIAS, // The legacy method
+    annotation { "Name" : "Control points" }
+    CONTROL_POINTS
 }
 
 /**
@@ -42,6 +52,16 @@ const BIAS_MANIPULATOR = "biasManipulator";
 const DEFAULT_BIAS_MINIMUM = 0.25;
 const DEFAULT_G1G1_SCALE = 2 / 3;
 
+function magnitudeManipulatorId(side is number) returns string
+{
+    return (side == 1 ? "Start" : "End") ~ " magnitude";
+}
+
+function curvatureManipulatorId(side is number) returns string
+{
+    return (side == 1 ? "Start" : "End") ~ " curvature offset";
+}
+
 /**
  * Creates a curve between two points, optionally with matching of tangency or curvature to other curves at that point
  */
@@ -54,23 +74,72 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
     {
         annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX }
         definition.preselectedEntities is Query;
-        annotation { "Name" : "First side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
+        annotation { "Name" : "Start", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;
         annotation { "Name" : "Match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match1 is BridgingCurveMatchType;
-        annotation { "Name" : "Second side", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
+        if (definition.match1 != BridgingCurveMatchType.POSITION)
+        {
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.flip1 is boolean;
+        }
+        annotation { "Name" : "End", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
         annotation { "Name" : "Match", "Column Name" : "Second match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
+        if (definition.match2 != BridgingCurveMatchType.POSITION)
+        {
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.flip2 is boolean;
+        }
+
         if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
         {
-            annotation { "Name" : "Magnitude" }
-            isReal(definition.magnitude, POSITIVE_REAL_BOUNDS);
-        }
-        if (definition.match1 != BridgingCurveMatchType.POSITION && definition.match2 != BridgingCurveMatchType.POSITION)
-        {
-            annotation { "Name" : "Bias" }
-            isReal(definition.bias, BIAS_BOUNDS);
+            annotation { "Name" : "Method", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE], "Default" : BridgingCurveMethod.CONTROL_POINTS }
+            definition.method is BridgingCurveMethod;
+
+            if (definition.method == BridgingCurveMethod.CONTROL_POINTS)
+            {
+                annotation { "Name" : "Edit control points", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                definition.editControlPoints is boolean;
+
+                if (definition.editControlPoints)
+                {
+                    if (definition.match1 != BridgingCurveMatchType.POSITION)
+                    {
+                        annotation { "Name" : "Start magnitude" }
+                        isReal(definition.side1Magnitude, POSITIVE_REAL_BOUNDS);
+                        if (definition.match1 == BridgingCurveMatchType.CURVATURE)
+                        {
+                            annotation { "Name" : "Start curvature offset" }
+                            isReal(definition.side1CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                        }
+                    }
+                    if (definition.match2 != BridgingCurveMatchType.POSITION)
+                    {
+                        annotation { "Name" : "End magnitude" }
+                        isReal(definition.side2Magnitude, POSITIVE_REAL_BOUNDS);
+                        if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+                        {
+                            annotation { "Name" : "End curvature offset" }
+                            isReal(definition.side2CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                        }
+                    }
+                }
+            }
+            else // Legacy controls
+            {
+                if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
+                {
+                    annotation { "Name" : "Magnitude" }
+                    isReal(definition.magnitude, POSITIVE_REAL_BOUNDS);
+                }
+                if (definition.match1 != BridgingCurveMatchType.POSITION && definition.match2 != BridgingCurveMatchType.POSITION)
+                {
+                    annotation { "Name" : "Bias" }
+                    isReal(definition.bias, BIAS_BOUNDS);
+                }
+            }
         }
     }
     {
@@ -84,62 +153,269 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
                 "references" : qUnion([definition.side1, definition.side2])
             });
 
-        const side1Data = getDataForSide(context, definition.side1, definition.match1, "side1", definition.side2);
-        const side2Data = getDataForSide(context, definition.side2, definition.match2, "side2", definition.side1);
+        const side1Data = getDataForSide(context, definition.side1, definition.match1, definition.flip1, "side1", definition.side2);
+        const side2Data = getDataForSide(context, definition.side2, definition.match2, definition.flip2, "side2", definition.side1);
 
-        if (definition.match1 == BridgingCurveMatchType.POSITION)
+        if (definition.method == BridgingCurveMethod.MAGNITUDE_BIAS)
         {
-            if (definition.match2 == BridgingCurveMatchType.POSITION)
-            {
-                createG0G0BridgingCurve(context, id, side1Data.point, side2Data.point);
-            }
-            else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
-            {
-                createG0G1BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
-            }
-            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
-            {
-                createG0G2BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
-            }
+            legacyBridgingCurve(context, id, definition, side1Data, side2Data);
         }
-        else if (definition.match1 == BridgingCurveMatchType.TANGENCY)
+        else // Current code path
         {
-            if (definition.match2 == BridgingCurveMatchType.POSITION)
+            var side1 is BridgingSideData = getBridgingSideData(side1Data, definition.match1);
+            var side2 is BridgingSideData = getBridgingSideData(side2Data, definition.match2);
+            side1.speedScaleName = "side1Magnitude";
+            side2.speedScaleName = "side2Magnitude";
+            side1.speedScale = definition.side1Magnitude;
+            side2.speedScale = definition.side2Magnitude;
+            side1.curvatureOffsetScale = definition.side1CurvatureOffset;
+            side2.curvatureOffsetScale = definition.side2CurvatureOffset;
+
+            const controlPoints = computeBridgingControlPoints(side1, side2);
+            if (definition.editControlPoints &&
+                (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION))
             {
-                createG0G1BridgingCurve(context, id, side2Data.point, side1Data.frame, definition.magnitude, true);
+                addManipulatorsForSide(context, id, controlPoints, 1, side1.degree, definition.flip1);
+                addManipulatorsForSide(context, id, controlPoints, 2, side2.degree, definition.flip2);
+                showControlPoints(context, id, controlPoints);
             }
-            else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
-            {
-                createG1G1BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
-            }
-            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
-            {
-                createG1G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias, false);
-            }
+
+            createBezierCurve(context, id, controlPoints);
         }
-        else if (definition.match1 == BridgingCurveMatchType.CURVATURE)
-        {
-            if (definition.match2 == BridgingCurveMatchType.POSITION)
-            {
-                createG0G2BridgingCurve(context, id, side2Data.point, side1Data.frame, definition.magnitude, true);
-            }
-            else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
-            {
-                createG1G2BridgingCurve(context, id, side2Data.frame, side1Data.frame, definition.magnitude, definition.bias, true);
-            }
-            else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
-            {
-                createG2G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
-            }
-        }
+
         transformResultIfNecessary(context, id, remainingTransform);
     }, {
             'match1' : BridgingCurveMatchType.TANGENCY,
             'match2' : BridgingCurveMatchType.TANGENCY,
+            'flip1' : false,
+            'flip2' : false,
+            'method' : BridgingCurveMethod.MAGNITUDE_BIAS,
             'preselectedEntities' : qNothing()
         }
     );
 
+/**
+ * Data type for unified control points computation
+ *
+ *  @type {{
+ *      @field degree {number} : 0 for positional continuity (G0), 1 for tangent continuity (G1), 2 for curvature continuity (G2)
+ *      @field position {Vector} : The position
+ *      @field tangent {Vector} : @requiredif { `degree` >= 1 } The tangent direction vector
+ *      @field speedScale {number} : How much to scale the default speed @optional
+ *      @field curvatureDirection {Vector} : @requiredif { `degree` == 2 } The curvature direction vector
+ *      @field curvature {ValueWithUnits} : @requiredif { `degree` == 2 } The curvature magnitude (inverse length units)
+ *      @field curvatureOffsetScale {number} : How much to scale the default third control point offset @optional
+ * }}
+ */
+export type BridgingSideData typecheck canBeBridgingSideData;
+
+predicate canBeBridgingSideData(value)
+{
+    value is map;
+    value.degree == 0 || value.degree == 1 || value.degree == 2;
+    isLengthVector(value.position);
+    if (value.degree >= 1) // G1 or higher
+    {
+        is3dDirection(value.tangent);
+        value.speedScale == undefined || value.speedScale is number;
+    }
+    if (value.degree >= 2) // G2
+    {
+        is3dDirection(value.curvatureDirection);
+        value.curvature is ValueWithUnits;
+        value.curvatureOffsetScale == undefined || value.curvatureOffsetScale is number;
+    }
+}
+
+function getBridgingSideData(sideData is map, match is BridgingCurveMatchType) returns BridgingSideData
+{
+    var result = { "position" : sideData.point };
+    result.degree = switch(match) { BridgingCurveMatchType.POSITION : 0, BridgingCurveMatchType.TANGENCY : 1, BridgingCurveMatchType.CURVATURE : 2 };
+    if (result.degree >= 1)
+    {
+        result.tangent = curvatureFrameTangent(sideData.frame);
+    }
+    if (result.degree >= 2)
+    {
+        result.curvature = sideData.frame.curvature;
+        result.curvatureDirection = curvatureFrameNormal(sideData.frame);
+    }
+
+    return result as BridgingSideData;
+}
+
+/** Returns an array of control points for a bridigng bezier curve given two side constraints */
+export function computeBridgingControlPoints(side1 is BridgingSideData, side2 is BridgingSideData) returns array
+{
+    const degree = side1.degree + side2.degree + 1;
+
+    if (tolerantEquals(side1.position, side2.position))
+        throw regenError(ErrorStringEnum.BRIDGING_CURVE_POSITIONS_IDENTICAL);
+
+    if (degree == 1)
+        return [side1.position, side2.position];
+
+    const positionDiff = side2.position - side1.position;
+    const positionDistance = norm(positionDiff);
+    const positionDiffNormalized = positionDiff / positionDistance;
+
+    var targetSpeed;
+
+    if (degree == 2) // G0 - G1 case
+    {
+        if (side1.degree == 0)
+            targetSpeed = determineDefaultG0G1Speed(side1.position, side2.position, side2.tangent);
+        else
+            targetSpeed = determineDefaultG0G1Speed(side2.position, side1.position, side1.tangent);
+    }
+    else // All other cases
+    {
+        // Compute the tangent speeds using approachSpeed - how quickly two particles moving along the tangents
+        // approach each other (maximum of 2 if they go towards each other, min of -2 if they go away from each other)
+        var approachSpeed = 2;
+        if (side1.degree > 0)
+            approachSpeed += dot(side1.tangent, positionDiffNormalized) - 1;
+        if (side2.degree > 0)
+            approachSpeed += dot(side2.tangent, -positionDiffNormalized) - 1;
+        approachSpeed = max(0, approachSpeed);
+
+        // If approachSpeed is maximal, targetSpeed is positionDistance / degree (which gives the correct answer for a line),
+        // and approachSpeed is 0, targetSpeed is 2 * positionDistance / degree (which gets you close to a semicircle for degree 3
+        // with appropriate tangent constraints).
+        targetSpeed = positionDistance * (2 - approachSpeed / 2) / degree;
+    }
+    var side1Control = computeSideControlPoints(side1, degree, targetSpeed, side2);
+    var side2Control = computeSideControlPoints(side2, degree, targetSpeed, side1);
+
+    return concatenateArrays([side1Control, reverse(side2Control)]);
+}
+
+function computeSideControlPoints(side is BridgingSideData, degree is number, targetSpeed is ValueWithUnits, otherSide is BridgingSideData) returns array
+{
+    if (side.degree == 0)
+        return [side.position];
+
+    if (side.speedScale == undefined)
+        side.speedScale = 1;
+    else if (abs(side.speedScale) < TOLERANCE.zeroLength)
+        throw regenError(ErrorStringEnum.BRIDGING_CURVE_ZERO_SPEED_SCALE, [side.speedScaleName]);
+
+    const defaultSpeed = side.degree == 2 ? speedForCurvature(targetSpeed, side.curvature, degree) : targetSpeed;
+    const speed = defaultSpeed * side.speedScale;
+
+    var control = [side.position, side.position + side.tangent * speed];
+    if (side.degree == 1)
+        return control;
+
+    // Curvature case
+    if (side.curvatureOffsetScale == undefined)
+        side.curvatureOffsetScale = 1;
+
+    // using k = ((degree - 1) / degree) * h / |t| ^ 2, where k is curvature, t is tangent vector, h is the minimum distance
+    var distance = (degree / (degree - 1)) * side.curvature * speed * speed;
+    var curvaturePoint = control[1] + distance * side.curvatureDirection;
+
+    var curvatureSpeed = defaultSpeed * sqrt(side.speedScale);
+
+    if (otherSide.degree == 0) // G0-G2 adjustment
+    {
+        const scale = 1.13041336; // Chosen so that a bridging curve between a line and a point 45 degrees off stays in the square
+        var d = dot(side.tangent, normalize(otherSide.position - (control[1] + scale * side.tangent * curvatureSpeed)));
+        d = clamp(d, -0.5, 0);
+        curvatureSpeed *= 1 + d;
+    }
+
+    curvaturePoint += side.tangent * curvatureSpeed * side.curvatureOffsetScale;
+
+    return append(control, curvaturePoint);
+}
+
+/**
+ * Given a curvature and a target distance, and a spline degree, figure out how far to go for the second control point
+ * so the third control point ends up 2 * targetDistance away from the first
+ */
+function speedForCurvature(targetDistance is ValueWithUnits, curvature is ValueWithUnits, degree is number) returns ValueWithUnits
+{
+    if (tolerantEquals(curvature, 0 / meter))
+        return targetDistance;
+
+    // Perpendicular distance for second point is d/(d-1) * curvature * speed^2.
+    // Let x be the speed and assume the tangent spacing of first and second control points is the same.
+    // Then the squared distance from point2 to the second control point is:
+    // (2 * x)^2 + d^2/(d-1)^2 * k^2 x^4
+    // And we would like that to be (2 * targetDistance)^2.
+    // So, letting y = x^2, we have a quadratic equation in y with:
+    const a = (curvature * degree / (degree - 1)) ^ 2;
+    const b = 4;
+    const c = -4 * targetDistance ^ 2;
+    const y = solveQuadratic(a, b, c)[0];
+
+    return sqrt(y);
+}
+
+function solveQuadratic(a, b, c) returns array
+{
+    const discriminant = b ^ 2 - 4 * a * c;
+    if (discriminant < 0)
+        return [];
+    return [(-b + sqrt(discriminant)) / (2 * a), (-b - sqrt(discriminant)) / (2 * a)];
+}
+
+function addManipulatorsForSide(context is Context, id is Id, controlPoints is array, side is number, degree is number, flip is boolean)
+{
+    if (degree == 0)
+        return;
+    if (side == 2)
+        controlPoints = reverse(controlPoints);
+
+    const direction = normalize(controlPoints[1] - controlPoints[0]);
+
+    var magnitudeManipulator is Manipulator = linearManipulator({
+                "base" : controlPoints[0],
+                "direction" : direction * (flip ? -1 : 1),
+                "offset" : norm(controlPoints[1] - controlPoints[0]) * (flip ? -1 : 1),
+                "primaryParameterId" : "side" ~ side ~ "Magnitude"
+            });
+    addManipulators(context, id, {
+                magnitudeManipulatorId(side) : magnitudeManipulator
+            });
+
+    if (degree == 1)
+        return;
+
+    const base = controlPoints[2] - direction * dot(direction, controlPoints[2] - controlPoints[1]);
+
+    var curvatureManipulator is Manipulator = linearManipulator({
+                "base" : base,
+                "direction" : direction,
+                "offset" : dot(direction, controlPoints[2] - base),
+                "style" : ManipulatorStyleEnum.SECONDARY,
+                "primaryParameterId" : "side" ~ side ~ "CurvatureOffset"
+            });
+    addManipulators(context, id, {
+                curvatureManipulatorId(side) : curvatureManipulator
+            });
+
+}
+
+function showControlPoints(context is Context, id is Id, controlPoints is array)
+{
+    const controlId = id + "controlPoints";
+    startFeature(context, controlId, {});
+    try
+    {
+        opPoint(context, controlId + 0 + "point", { "point" : controlPoints[0] });
+        for (var i = 1; i < size(controlPoints); i += 1)
+        {
+            opPoint(context, controlId + i + "point", { "point" : controlPoints[i] });
+            opFitSpline(context, controlId + i + "line", { "points" : [ controlPoints[i - 1], controlPoints[i] ] });
+        }
+        const edges = qCreatedBy(controlId, EntityType.EDGE);
+        const vertices = qCreatedBy(controlId, EntityType.VERTEX)->qBodyType(BodyType.POINT);
+        addDebugEntities(context, qUnion([vertices, edges]), DebugColor.MAGENTA);
+    }
+    abortFeature(context, controlId);
+}
 
 /**
  * @internal
@@ -350,9 +626,40 @@ function matchEdgesThatEndAtVertex(context is Context, vertex is Query, edges is
  */
 export function bridgingCurveManipulator(context is Context, definition is map, newManipulators is map) returns map
 {
-    const side1Data = getDataForSide(context, definition.side1, definition.match1, "side1", definition.side2);
-    const side2Data = getDataForSide(context, definition.side2, definition.match2, "side2", definition.side1);
+    const side1Data = getDataForSide(context, definition.side1, definition.match1, definition.flip1, "side1", definition.side2);
+    const side2Data = getDataForSide(context, definition.side2, definition.match2, definition.flip2, "side2", definition.side1);
 
+    var side1 is BridgingSideData = getBridgingSideData(side1Data, definition.match1);
+    var side2 is BridgingSideData = getBridgingSideData(side2Data, definition.match2);
+
+    if (newManipulators[curvatureManipulatorId(1)] is map || newManipulators[curvatureManipulatorId(2)] is map)
+    {
+        side1.speedScale = definition.side1Magnitude;
+        side2.speedScale = definition.side2Magnitude;
+    }
+    var controlPoints = computeBridgingControlPoints(side1, side2);
+    for (var side in [1, 2])
+    {
+        if (side == 2)
+            controlPoints = reverse(controlPoints);
+
+        const magnitudeManipulator = newManipulators[magnitudeManipulatorId(side)];
+        if (magnitudeManipulator is map)
+        {
+            const defaultSpeed = norm(controlPoints[1] - controlPoints[0]);
+            definition["side" ~ side ~ "Magnitude"] = abs(magnitudeManipulator.offset) / defaultSpeed;
+            definition["flip" ~ side] = magnitudeManipulator.offset < 0;
+        }
+        const curvatureManipulator = newManipulators[curvatureManipulatorId(side)];
+        if (curvatureManipulator is map)
+        {
+            const direction = normalize(controlPoints[1] - controlPoints[0]);
+            const defaultSpeed = dot(direction, controlPoints[2] - controlPoints[1]);
+            definition["side" ~ side ~ "CurvatureOffset"] = curvatureManipulator.offset / defaultSpeed;
+        }
+    }
+
+    // ==== Legacy manipulator code ====
     if (newManipulators[MAGNITUDE_MANIPULATOR] is map)
     {
         const manipulator = newManipulators[MAGNITUDE_MANIPULATOR];
@@ -463,7 +770,7 @@ function findClosestEndFrame(point is Vector, startFrame is EdgeCurvatureResult,
     }
 }
 
-function getDataForSide(context is Context, side is Query, match is BridgingCurveMatchType, sideName is string, otherSide is Query) returns map
+function getDataForSide(context is Context, side is Query, match is BridgingCurveMatchType, flip is boolean, sideName is string, otherSide is Query) returns map
 {
     var points = qEntityFilter(side, EntityType.VERTEX);
     var edges = qEntityFilter(side, EntityType.EDGE);
@@ -512,6 +819,10 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
         {
             throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_AT_END_OF_EDGE, [sideName]);
         }
+        if (flip)
+        {
+            frame.frame.zAxis = -frame.frame.zAxis;
+        }
     }
 
     return
@@ -519,6 +830,57 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
             "point" : point,
             "frame" : frame
         };
+}
+
+// ======================================= Legacy-only functions below =====================================================
+
+function legacyBridgingCurve(context is Context, id is Id, definition is map, side1Data, side2Data)
+{
+    if (definition.match1 == BridgingCurveMatchType.POSITION)
+    {
+        if (definition.match2 == BridgingCurveMatchType.POSITION)
+        {
+            createG0G0BridgingCurve(context, id, side1Data.point, side2Data.point);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
+        {
+            createG0G1BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+        {
+            createG0G2BridgingCurve(context, id, side1Data.point, side2Data.frame, definition.magnitude, false);
+        }
+    }
+    else if (definition.match1 == BridgingCurveMatchType.TANGENCY)
+    {
+        if (definition.match2 == BridgingCurveMatchType.POSITION)
+        {
+            createG0G1BridgingCurve(context, id, side2Data.point, side1Data.frame, definition.magnitude, true);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
+        {
+            createG1G1BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+        {
+            createG1G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias, false);
+        }
+    }
+    else if (definition.match1 == BridgingCurveMatchType.CURVATURE)
+    {
+        if (definition.match2 == BridgingCurveMatchType.POSITION)
+        {
+            createG0G2BridgingCurve(context, id, side2Data.point, side1Data.frame, definition.magnitude, true);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.TANGENCY)
+        {
+            createG1G2BridgingCurve(context, id, side2Data.frame, side1Data.frame, definition.magnitude, definition.bias, true);
+        }
+        else if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+        {
+            createG2G2BridgingCurve(context, id, side1Data.frame, side2Data.frame, definition.magnitude, definition.bias);
+        }
+    }
 }
 
 function createG0G0BridgingCurve(context is Context, id is Id, point1 is Vector, point2 is Vector)
@@ -535,7 +897,7 @@ function determineDefaultG0G1Speed(point1 is Vector, point2 is Vector, direction
     // 1. If the points are the same then there is nothing we can do
     if (tolerantEquals(point1, point2))
     {
-        throw regenError(ErrorStringEnum.REGEN_ERROR);
+        throw regenError(ErrorStringEnum.BRIDGING_CURVE_POSITIONS_IDENTICAL);
     }
 
     // 2. First look at the intersection of the tangent vector with the bisecting plane of the points.

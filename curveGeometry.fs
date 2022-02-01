@@ -1,16 +1,16 @@
-FeatureScript 1675; /* Automatically generated version */
+FeatureScript 1691; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "1675.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "1691.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1675.0");
-import(path : "onshape/std/coordSystem.fs", version : "1675.0");
-import(path : "onshape/std/mathUtils.fs", version : "1675.0");
-import(path : "onshape/std/units.fs", version : "1675.0");
+import(path : "onshape/std/containers.fs", version : "1691.0");
+import(path : "onshape/std/coordSystem.fs", version : "1691.0");
+import(path : "onshape/std/mathUtils.fs", version : "1691.0");
+import(path : "onshape/std/units.fs", version : "1691.0");
 
 // ===================================== Line ======================================
 
@@ -697,6 +697,23 @@ precondition
         'weights' : weights,
         'knots' : knots
     } as BSplineCurve;
+}
+
+/**
+ * @internal
+ *
+ * Create a `BSplineCurve` from the result of a builtin call.
+ */
+export function bSplineCurveFromBuiltin(definition is map) returns BSplineCurve
+{
+    definition.knots = definition.knots as KnotArray;
+    definition.curveType = CurveType.SPLINE;
+    definition.controlPoints = mapArray(definition.controlPoints, function(controlPoint)
+        {
+            // Unrolled / inlined for performance
+            return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
+        });
+    return definition as BSplineCurve;
 }
 
 annotation { "Deprecated" : "Use [bSplineCurve(map)]" }

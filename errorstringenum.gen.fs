@@ -1,4 +1,4 @@
-FeatureScript 1675; /* Automatically generated version */
+FeatureScript 1691; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2118,7 +2118,13 @@ export enum ErrorStringEnum
     /* Select edges on fillet chain. */
     VRFILLET_SELECT_EDGES,
     /* Some selected edges are not on an edge chain. */
-    VRFILLET_EDGE_NOT_ON_CHAIN
+    VRFILLET_EDGE_NOT_ON_CHAIN,
+    /* Bridging curve start and end points must be distinct. */
+    BRIDGING_CURVE_POSITIONS_IDENTICAL,
+    /* Mutual imprint is only allowed when tools are surfaces. */
+    SPLIT_FACE_MUTUAL_IMPRINT,
+    /* Bridging curve magnitude cannot be zero. */
+    BRIDGING_CURVE_ZERO_SPEED_SCALE
 }
 
 
