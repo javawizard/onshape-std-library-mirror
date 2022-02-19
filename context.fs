@@ -1,11 +1,11 @@
-FeatureScript 1691; /* Automatically generated version */
+FeatureScript 1711; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1691.0");
-import(path : "onshape/std/containers.fs", version : "1691.0");
-import(path : "onshape/std/string.fs", version : "1691.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1711.0");
+import(path : "onshape/std/containers.fs", version : "1711.0");
+import(path : "onshape/std/string.fs", version : "1711.0");
 
 //====================== Context ========================
 
@@ -251,7 +251,23 @@ export operator+(id is Id, addend is Id) returns Id
  */
 export function setVariable(context is Context, name is string, value)
 {
-    @setVariable(context, { "name" : name, "value" : value });
+    @setVariable(context, { "name" : name, "value" : value, "description" : "" });
+}
+
+/**
+ * Attach a variable with a description to the context, which can be retrieved by another feature
+ * defined later. If a variable of the same name already exists, this function
+ * will overwrite it.
+ *
+ * @example `setVariable(context, "foo", 1, "the foo")` attaches a variable named `"foo"`,
+ *      with value set to `1` and the description set to "the foo", on the context.
+ *
+ * @param value : Can be any value, including an array or map with many elements.
+ * @param description : A string describing the use or purpose of the variable.
+ */
+export function setVariable(context is Context, name is string, value, description is string)
+{
+    @setVariable(context, { "name" : name, "value" : value, "description" : description });
 }
 
 /**

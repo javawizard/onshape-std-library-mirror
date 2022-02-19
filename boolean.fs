@@ -1,30 +1,30 @@
-FeatureScript 1691; /* Automatically generated version */
+FeatureScript 1711; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1691.0");
-export import(path : "onshape/std/query.fs", version : "1691.0");
-export import(path : "onshape/std/tool.fs", version : "1691.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/query.fs", version : "1711.0");
+export import(path : "onshape/std/tool.fs", version : "1711.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1691.0");
-import(path : "onshape/std/box.fs", version : "1691.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1691.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1691.0");
-import(path : "onshape/std/containers.fs", version : "1691.0");
-import(path : "onshape/std/evaluate.fs", version : "1691.0");
-import(path : "onshape/std/feature.fs", version : "1691.0");
-import(path : "onshape/std/math.fs", version : "1691.0");
-import(path : "onshape/std/patternCommon.fs", version : "1691.0");
-import(path : "onshape/std/primitives.fs", version : "1691.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1691.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1691.0");
-import(path : "onshape/std/string.fs", version : "1691.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1691.0");
-import(path : "onshape/std/transform.fs", version : "1691.0");
-import(path : "onshape/std/valueBounds.fs", version : "1691.0");
+import(path : "onshape/std/attributes.fs", version : "1711.0");
+import(path : "onshape/std/box.fs", version : "1711.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1711.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1711.0");
+import(path : "onshape/std/containers.fs", version : "1711.0");
+import(path : "onshape/std/evaluate.fs", version : "1711.0");
+import(path : "onshape/std/feature.fs", version : "1711.0");
+import(path : "onshape/std/math.fs", version : "1711.0");
+import(path : "onshape/std/patternCommon.fs", version : "1711.0");
+import(path : "onshape/std/primitives.fs", version : "1711.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1711.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1711.0");
+import(path : "onshape/std/string.fs", version : "1711.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1711.0");
+import(path : "onshape/std/transform.fs", version : "1711.0");
+import(path : "onshape/std/valueBounds.fs", version : "1711.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -62,7 +62,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 }
 
                 annotation { "Name" : "Offset distance" }
-                isLength(definition.offsetDistance, SHELL_OFFSET_BOUNDS);
+                isLength(definition.offsetDistance, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.oppositeDirection is boolean;
@@ -112,7 +112,20 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             }
         }
 
-        if (definition.offset && definition.operationType == BooleanOperationType.SUBTRACTION)
+        var doOffset = definition.offset && definition.operationType == BooleanOperationType.SUBTRACTION;
+        if (doOffset && tolerantEquals(definition.offsetDistance, 0 * meter))
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1700_BOOLEAN_ZERO_OFFSET))
+            {
+                doOffset = false;
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.DIRECT_EDIT_NO_OFFSET, ["offsetDistance"]);
+            }
+        }
+
+        if (doOffset)
         {
             if (definition.oppositeDirection)
             {

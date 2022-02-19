@@ -1,16 +1,16 @@
-FeatureScript 1691; /* Automatically generated version */
+FeatureScript 1711; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1691.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "1691.0");
+export import(path : "onshape/std/query.fs", version : "1711.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "1711.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "1691.0");
-import(path : "onshape/std/containers.fs", version : "1691.0");
-import(path : "onshape/std/string.fs", version : "1691.0");
+import(path : "onshape/std/context.fs", version : "1711.0");
+import(path : "onshape/std/containers.fs", version : "1711.0");
+import(path : "onshape/std/string.fs", version : "1711.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -23,7 +23,7 @@ import(path : "onshape/std/string.fs", version : "1691.0");
  *
  * @param customMessage : @autocomplete `"message"`
  */
-export function regenError(customMessage is string)
+export function regenError(customMessage is string) returns map
 {
     return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage };
 }
@@ -35,7 +35,7 @@ export function regenError(customMessage is string)
  *      map. Throwing a regenError with faultyParameters will highlight them in red inside the
  *      feature dialog.
  */
-export function regenError(customMessage is string, faultyParameters is array)
+export function regenError(customMessage is string, faultyParameters is array) returns map
 {
     return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "faultyParameters" : faultyParameters };
 }
@@ -45,7 +45,7 @@ export function regenError(customMessage is string, faultyParameters is array)
  *      when the feature dialog is open.
  * @param customMessage : @autocomplete `"message"`
  */
-export function regenError(customMessage is string, entities is Query)
+export function regenError(customMessage is string, entities is Query) returns map
 {
     return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "entities" : entities };
 }
@@ -60,7 +60,7 @@ export function regenError(customMessage is string, entities is Query)
  *      combined and highlighted using the `qUnion` function. The entities are only highlighted
  *      when the feature dialog is open.
  */
-export function regenError(customMessage is string, faultyParameters is array, entities is Query)
+export function regenError(customMessage is string, faultyParameters is array, entities is Query) returns map
 {
     return { "message" : ErrorStringEnum.CUSTOM_ERROR, "customMessage" : customMessage, "faultyParameters" : faultyParameters, "entities" : entities };
 }
@@ -71,7 +71,7 @@ export function regenError(customMessage is string, faultyParameters is array, e
  * The enum values correspond to messages which can be translated into multiple
  * languages.
  */
-export function regenError(message is ErrorStringEnum)
+export function regenError(message is ErrorStringEnum) returns map
 {
     return { "message" : message };
 }
@@ -82,7 +82,7 @@ export function regenError(message is ErrorStringEnum)
  *      map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
  *      feature dialog.
  */
-export function regenError(message is ErrorStringEnum, faultyParameters is array)
+export function regenError(message is ErrorStringEnum, faultyParameters is array) returns map
 {
     return { "message" : message, "faultyParameters" : faultyParameters };
 }
@@ -92,7 +92,7 @@ export function regenError(message is ErrorStringEnum, faultyParameters is array
  *      combined and highlighted using the `qUnion` function. The entities are only highlighted
  *      when the feature dialog is open.
  */
-export function regenError(message is ErrorStringEnum, entities is Query)
+export function regenError(message is ErrorStringEnum, entities is Query) returns map
 {
     return { "message" : message, "entities" : entities };
 }
@@ -106,9 +106,32 @@ export function regenError(message is ErrorStringEnum, entities is Query)
  *      combined and highlighted using the `qUnion` function. The entities are only highlighted
  *      when the feature dialog is open.
  */
-export function regenError(message is ErrorStringEnum, faultyParameters is array, entities is Query)
+export function regenError(message is ErrorStringEnum, faultyParameters is array, entities is Query) returns map
 {
     return { "message" : message, "faultyParameters" : faultyParameters, "entities" : entities };
+}
+
+/**
+ * @param regenErrorOptions {{
+ *     @field faultyParameters : An array of strings that correspond to keys in the feature definition
+ *         map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *         feature dialog.
+ *     @field entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *         combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *         when the feature dialog is open.
+ * }}
+ */
+export function regenError(message is ErrorStringEnum, regenErrorOptions is map) returns map
+precondition
+{
+    regenErrorOptions.message == undefined;
+    regenErrorOptions.customMessage == undefined;
+    regenErrorOptions.faultyParameters == undefined || regenErrorOptions.faultyParameters is array;
+    regenErrorOptions.entities == undefined || regenErrorOptions.entities is Query;
+}
+{
+    regenErrorOptions.message = message;
+    return regenErrorOptions;
 }
 
 /**
@@ -238,27 +261,43 @@ export function reportFeatureInfo(context is Context, id is Id, customMessage is
 
 /**
  * Propagate the status of a subfeature to a feature.
- * @param definition {{
+ * @param options {{
  *      @field subfeatureId {Id} : The Id of the subfeature.
+ *      @field overrideStatus {ErrorStringEnum} : A status enum to use instead of the subfeature status enum if the
+ *                                                subfeature has an info, warning, or error status. @optional
  *      @field featureParameterMap {map} : A mapping of the field names from subfeature to feature. @optional
  *      @field featureParameterMappingFunction {function} : A function to map field names from subfeature to feature. @optional
  *      @field propagateErrorDisplay {boolean} : Use subfeature error display when present.  Default is false. @optional
+ *      @field additionalErrorEntities {Query} : Additional error entities to display if the subfeature has an info,
+ *                                               warning, or error status. @optional
  * }}
  */
-export function processSubfeatureStatus(context is Context, id is Id, definition is map) returns boolean
+export function processSubfeatureStatus(context is Context, id is Id, options is map) returns boolean
 {
-    var subStatus is FeatureStatus = getFeatureStatus(context, definition.subfeatureId);
-    if (subStatus == undefined)
+    const subStatus is FeatureStatus = getFeatureStatus(context, options.subfeatureId);
+    if (subStatus == undefined) // Should never happen, even status from nonexistent id returns OK status
     {
         return false;
     }
     var status = subStatus;
+    const statusIsOk = (status.statusType == StatusType.OK);
+
+    // = status enum =
+    // Only have to check `statusEnum` because when a custom `statusMsg` is provided, the `statusEnum` is also set to
+    // ErrorStringEnum.CUSTOM_ERROR
+    if (!statusIsOk && options.overrideStatus != undefined)
+    {
+        status.statusMsg = undefined; // Unset custom message if the status is a string rather than an enum
+        status.statusEnum = options.overrideStatus;
+    }
+
+    // = faulty parameters =
     status.faultyParameters = undefined;
     if (subStatus.faultyParameters != undefined)
     {
         var faultyParameters = [];
-        const featureParameterMap = definition.featureParameterMap;
-        const mappingFunction = definition.featureParameterMappingFunction;
+        const featureParameterMap = options.featureParameterMap;
+        const mappingFunction = options.featureParameterMappingFunction;
         if (featureParameterMap != undefined || mappingFunction != undefined)
         {
             for (var param in subStatus.faultyParameters)
@@ -283,11 +322,20 @@ export function processSubfeatureStatus(context is Context, id is Id, definition
             }
         }
     }
+
+    // = commit the status =
     reportFeatureStatus(context, id, status);
-    if (definition.propagateErrorDisplay == true)
+
+    // = error display =
+    if (options.propagateErrorDisplay == true)
     {
-        @transferSubfeatureErrorDisplay(context, id, {"subfeatureId" : definition.subfeatureId});
+        @transferSubfeatureErrorDisplay(context, id, { "subfeatureId" : options.subfeatureId });
     }
+    if (!statusIsOk && options.additionalErrorEntities != undefined)
+    {
+        setErrorEntities(context, id, { "entities" : options.additionalErrorEntities });
+    }
+
     return true;
 }
 
@@ -468,5 +516,46 @@ export predicate canBeFeatureStatus(value)
 function featureStatus(status is map)
 {
     return status as FeatureStatus;
+}
+
+/**
+ * If the condition check fails, this function throws the error.
+ * @param condition {boolean} : The condition to test.
+ * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ */
+export function verify(condition is boolean, error)
+precondition
+{
+    error is string || error is ErrorStringEnum;
+}
+{
+    if (!condition)
+    {
+        // If a raw string is provided as the error this is thrown as a raw string
+        // rather than wrapping the string in a generic ErrorStringEnum
+        if (error is ErrorStringEnum)
+        {
+            throw regenError(error);
+        }
+        else
+        {
+            throw error;
+        }
+    }
+}
+
+/**
+ * If the condition check fails, this function throws the error.
+ * @param condition {boolean} : The condition to test.
+ * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ * @param regenErrorOptions {map} : The key-value pairs to pass to the thrown `regenError`, e.g.
+ *     `entities` or `faultyParameters`.
+ */
+export function verify(condition is boolean, error is ErrorStringEnum, regenErrorOptions is map)
+{
+    if (!condition)
+    {
+        throw regenError(error, regenErrorOptions);
+    }
 }
 
