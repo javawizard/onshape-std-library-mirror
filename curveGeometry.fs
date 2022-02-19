@@ -699,6 +699,17 @@ precondition
     } as BSplineCurve;
 }
 
+const controlPointFromBuiltin2d = function(controlPoint)
+        {
+            return controlPoint as Vector; // control points in UV space do not have units
+        };
+
+const controlPointFromBuiltin3d = function(controlPoint)
+        {
+            // Unrolled / inlined for performance
+            return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
+        };
+
 /**
  * @internal
  *
@@ -708,11 +719,8 @@ export function bSplineCurveFromBuiltin(definition is map) returns BSplineCurve
 {
     definition.knots = definition.knots as KnotArray;
     definition.curveType = CurveType.SPLINE;
-    definition.controlPoints = mapArray(definition.controlPoints, function(controlPoint)
-        {
-            // Unrolled / inlined for performance
-            return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
-        });
+    definition.controlPoints = mapArray(definition.controlPoints,
+                                        definition.dimension == 2 ? controlPointFromBuiltin2d : controlPointFromBuiltin3d);
     return definition as BSplineCurve;
 }
 

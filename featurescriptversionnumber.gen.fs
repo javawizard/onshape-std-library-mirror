@@ -1061,7 +1061,20 @@ export enum FeatureScriptVersionNumber
     V1688_EXTRACT_SURFACE_BODY_PROCESSING,
     V1689_PS_VERSION_34_0_235,
     V1690_BRIDGING_CURVE_FIXES,
-    V1691_REPAIR_MICROVERSION_CAUSES
+    V1691_REPAIR_MICROVERSION_CAUSES,
+    V1699_RESTRICT_LOFT_NORMAL_TO_PROFILE_FIX,
+    V1700_BOOLEAN_ZERO_OFFSET,
+    V1701_THICKEN_BODY_TRACKING,
+    V1702_FS_TEMPLATE_STRINGS_UNQUOTED,
+    V1703_UPDATE_MASS_PROPERTY_FS,
+    V1704_FRAMES,
+    V1705_CURVE_AND_FLICKER_FIXES,
+    V1706_FRAME_STRINGS,
+    V1707_ADD_UNUSED_ERROR_STRINGS,
+    V1708_FILTER_COMPOSITES_AND_CURVES,
+    V1709_FRAME_SELECTION_NO_EDGE_POINTS,
+    V1710_CUTLIST_BUMP,
+    V1711_TRACKING_ISSUE_AND_STRINGFIX
 }
 
 /**
@@ -1072,6 +1085,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1691_REPAIR_MICROVERSION_CAUSES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1711_TRACKING_ISSUE_AND_STRINGFIX;
 
 

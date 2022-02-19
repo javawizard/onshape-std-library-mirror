@@ -28,7 +28,14 @@ export const computeMass = defineComputedPartProperty(function(context is Contex
         }
         catch
         {
-            throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_MASS_PROPERTY);
+            if (isQueryEmpty(context, qBodyType(part, BodyType.COMPOSITE)))
+            {
+                throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_MASS_PROPERTY);
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_COMPOSITE_PART_COMPUTED_MASS);
+            }
         }
     });
 

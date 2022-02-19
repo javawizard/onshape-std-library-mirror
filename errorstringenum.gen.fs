@@ -2097,13 +2097,13 @@ export enum ErrorStringEnum
     FRAME_TAG_PROFILE_HEADER_EMPTY,
     /* Value cannot be blank. */
     FRAME_TAG_PROFILE_VALUE_EMPTY,
-    /* Failed to find necessary geometry to compute beam characteristics. */
+    /* Failed to find frame start and end faces. */
     FRAME_MISSING_CAP_FACES,
-    /* Failed to find necessary geometry to compute beam characteristics. */
+    /* Failed to find necessary geometry to compute frame segment characteristics. */
     FRAME_MISSING_SWEPT_EDGES,
-    /* Failed to find necessary geometry to compute beam characteristics. */
+    /* Failed to find necessary geometry to compute frame segment characteristics. */
     FRAME_MISSING_SWEPT_FACES,
-    /* Failed to find necessary geometry to compute beam characteristics. */
+    /* Failed to find necessary geometry to compute segment characteristics. */
     FRAME_CUTLIST_NO_END_FACE_EDGE_GEOMETRY_PAIR,
     /* Cannot insert item into publication. */
     PUBLICATION_ITEM_INSERT_FAILED,
@@ -2124,7 +2124,69 @@ export enum ErrorStringEnum
     /* Mutual imprint is only allowed when tools are surfaces. */
     SPLIT_FACE_MUTUAL_IMPRINT,
     /* Bridging curve magnitude cannot be zero. */
-    BRIDGING_CURVE_ZERO_SPEED_SCALE
+    BRIDGING_CURVE_ZERO_SPEED_SCALE,
+    /* Variable description cannot exceed 256 characters. */
+    VARIABLE_DESCRIPTION_TOO_LONG,
+    /* Unable to create frame sweep path from selections. */
+    FRAME_BAD_PATH,
+    /* Failed to sweep along specified path. */
+    FRAME_SWEEP_FAILED,
+    /* Failed to trim some segments. */
+    FRAME_TRIM_FAILED,
+    /* Only one start and end face allowed per segment. */
+    FRAME_MALFORMED_BEAM,
+    /* Bad corner type specified. */
+    FRAME_BAD_CORNER_TYPE,
+    /* Select profile. */
+    FRAME_SELECT_PROFILE,
+    /* Profile should have at least one region. */
+    FRAME_PROFILE_REGION,
+    /* Can only trim start and end of frame. */
+    FRAME_NO_INTERNAL_TRIM,
+    /* Selected planes cannot trim the same frame end. Use Trim feature instead. */
+    FRAME_MULTIPLE_TRIM_PLANES,
+    /* Unable to pick single largest remaining frame segment to keep. */
+    FRAME_MULTIPLE_EQUAL_BEAMS_AFTER_SPLIT,
+    /* Select at least two frame groups. */
+    FRAME_TRIM_GROUPS,
+    /* Different frame groups cannot contain the same frames. */
+    FRAME_DISJOINT_GROUPS,
+    /* Cannot identify frame segment start and end faces. */
+    FRAME_CANDIDATE_FACES,
+    /* Trim produces start face adjacent to an end face. */
+    FRAME_LENGTHWISE_TRIM,
+    /* Select frame segments to trim. */
+    FRAME_TRIM_SELECT_TARGETS,
+    /* Select face or plane to trim to. */
+    FRAME_TRIM_SELECT_TOOL,
+    /* Select sweep paths. */
+    FRAME_SELECT_PATH,
+    /* Header cannot be "Standard" or "Description". */
+    FRAME_TAG_PROFILE_HEADER_RESERVED,
+    /* Column cannot be blank. */
+    FRAME_CUTLIST_COLUMN_EMPTY,
+    /* Tag profile feature cannot be patterned. */
+    FRAME_TAG_PROFILE_NO_FEATURE_PATTERN,
+    /* Cut list feature cannot be patterned. */
+    FRAME_CUTLIST_NO_FEATURE_PATTERN,
+    /* Select edges to split. */
+    SPLIT_EDGE_SELECT_EDGES,
+    /* Parameter array size must match the number of edges. */
+    SPLIT_EDGE_SIZES_MISMATCH,
+    /* Split parameter is not within bounds. */
+    SPLIT_EDGE_PARAMETER_BOUND,
+    /* Cannot split edges. */
+    SPLIT_EDGE_FAILED,
+    /* A closed edge must be split at at least two parameters. */
+    SPLIT_CLOSED_EDGE_ONE_POINT,
+    /* Split parameters cannot be empty. */
+    SPLIT_EDGE_PROVIDE_PARAMETERS,
+    /* Computed Mass not supported for composite part with no assigned material. */
+    NO_MATERIAL_FOR_COMPOSITE_PART_COMPUTED_MASS,
+    /* Unable to pick single largest remaining frame segment to keep. */
+    FRAME_MULTIPLE_EQUAL_SEGMENTS_AFTER_SPLIT,
+    /* Only one start and end face allowed per segment. */
+    FRAME_MALFORMED_SEGMENT
 }
 
 

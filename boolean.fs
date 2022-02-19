@@ -62,7 +62,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 }
 
                 annotation { "Name" : "Offset distance" }
-                isLength(definition.offsetDistance, SHELL_OFFSET_BOUNDS);
+                isLength(definition.offsetDistance, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.oppositeDirection is boolean;
@@ -112,7 +112,20 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             }
         }
 
-        if (definition.offset && definition.operationType == BooleanOperationType.SUBTRACTION)
+        var doOffset = definition.offset && definition.operationType == BooleanOperationType.SUBTRACTION;
+        if (doOffset && tolerantEquals(definition.offsetDistance, 0 * meter))
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1700_BOOLEAN_ZERO_OFFSET))
+            {
+                doOffset = false;
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.DIRECT_EDIT_NO_OFFSET, ["offsetDistance"]);
+            }
+        }
+
+        if (doOffset)
         {
             if (definition.oppositeDirection)
             {

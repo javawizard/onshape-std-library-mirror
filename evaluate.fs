@@ -250,10 +250,10 @@ precondition
  * }}
  * @throws {GBTErrorStringEnum.BAD_GEOMETRY} : The query does not evaluate to a single vertex
  * @returns {{
-  *      @field cornerType {SMCornerType} : the type of the corner
-  *      @field primaryVertex {Query} : the vertex that defines the corner
-  *      @field allVertices {array} : array of transient queries for all definition vertices associated with the corner
-  * }}
+ *      @field cornerType {SMCornerType} : the type of the corner
+ *      @field primaryVertex {Query} : the vertex that defines the corner
+ *      @field allVertices {array} : array of transient queries for all definition vertices associated with the corner
+ * }}
  */
 export function evCornerType(context is Context, arg is map) returns map
 precondition
@@ -1232,6 +1232,50 @@ precondition
             result.surfaceType = result.surfaceType as SurfaceType;
         }
     }
+
+    return result;
+}
+
+/**
+ * Given a query for a face, return its approximation as a B-spline, including trim boundaries.
+ * The options `forceCubic` and `forceNonRational` may be used to restrict the type of spline that is returned for the surface,
+ * but even if these options are false, a cubic non-rational spline may be returned.
+ *
+ * The returned representation includes a surface, the boundary loop as 2D splines in UV space, and any interior
+ * loops. The returned UV curves are typically degree 1 or 2 and non-rational. For periodic surfaces, outer and
+ * inner loops are not clearly defined and relying on them is not recommended.
+ * @param arg {{
+ *      @field face{Query} : The curve to approximate.
+ *      @field forceCubic{boolean} : If true, the returned surface will be a cubic spline.  This does not affect the trim curves.
+ *                                   Defaults to false.  @optional
+ *      @field forceNonRational{boolean} : If true, the returned surface will be non-rational.  Defaults to false.  @optional
+ *      @field tolerance{number} : Specifies the desired approximation tolerance: the maximum distance (in meters) between
+ *                                 the original face and the returned spline representation.  Default is 1e-6, minimum is
+ *                                 1e-8, and maximum is 1e-4. The tolerance for trim curves is 10x the specified value. @optional
+ * }}
+ * @returns {{
+ *      @field bSplineSurface {BSplineSurface} : the underlying 3D surface
+ *      @field boundaryBSplineCurves {array} : array of 2D [BSplineCurve]s representing the trimming boundary of the face.
+ *                                             May be empty if the face is the entirety of the surface.
+ *      @field innerLoopBSplineCurves {array} : array of arrays of 2D [BSplineCurve]s representing the inner loops (if any) of the trimming boundary of the face.
+ * }}
+ */
+export function evApproximateBSplineSurface(context is Context, arg is map) returns map
+precondition
+{
+    arg.face is Query;
+    arg.forceCubic == undefined || arg.forceCubic is boolean;
+    arg.forceNonRational == undefined || arg.forceNonRational is boolean;
+    arg.tolerance == undefined || (arg.tolerance is number && arg.tolerance >= 1e-8 && arg.tolerance <= 1e-4);
+}
+{
+    var result = @evApproximateBSplineSurface(context, arg);
+    result.bSplineSurface = bSplineSurfaceFromBuiltin(result.bSplineSurface);
+    result.boundaryBSplineCurves = mapArray(result.boundaryBSplineCurves, function(curve) { return bSplineCurveFromBuiltin(curve); });
+    result.innerLoopBSplineCurves = mapArray(result.innerLoopBSplineCurves, function(loop)
+        {
+            return mapArray(loop, function(curve) { return bSplineCurveFromBuiltin(curve); });
+        });
 
     return result;
 }

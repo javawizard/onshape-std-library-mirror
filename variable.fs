@@ -50,7 +50,9 @@ export enum VariableType
  *      @field anyValue : Used if `variableType` is `ANY`.  Can be any immutable FeatureScript value, including a length, an array, or a function.
  * }}
  */
-annotation {"Feature Type Name" : "Variable", "Feature Name Template": "###name = #value", "UIHint" : UIHint.NO_PREVIEW_PROVIDED, "Editing Logic Function" : "variableEditLogic"}
+annotation {"Feature Type Name" : "Variable", "Feature Name Template": "###name = #value", "UIHint" : UIHint.NO_PREVIEW_PROVIDED,
+            "Tooltip Template" : "###name = #value #description",
+            "Editing Logic Function" : "variableEditLogic"}
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -83,6 +85,9 @@ export const assignVariable = defineFeature(function(context is Context, id is I
 
         annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
         isAnything(definition.value);
+
+        annotation { "Name" : "Description", "MaxLength": 256, "Default" : "" }
+        definition.description is string;
     }
     {
         verifyVariableName(definition.name, "name");
@@ -104,7 +109,8 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         else if (definition.variableType == VariableType.ANY)
             value = definition.anyValue;
 
-        setFeatureComputedParameter(context, id, { "name" : "value", "value" : value });
+        const quotedValue = (value is string) ? ('"' ~ value ~ '"') : value;
+        setFeatureComputedParameter(context, id, { "name" : "value", "value" : quotedValue });
 
         setVariable(context, definition.name, value);
 
@@ -115,7 +121,11 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                 reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
             }
         }
-    }, { variableType : VariableType.ANY });
+    },
+    {
+        variableType : VariableType.ANY,
+        description : ""
+    });
 
 /**
  * Throws an error if `name` is not a valid identifier.
