@@ -2186,7 +2186,9 @@ export enum ErrorStringEnum
     /* Unable to pick single largest remaining frame segment to keep. */
     FRAME_MULTIPLE_EQUAL_SEGMENTS_AFTER_SPLIT,
     /* Only one start and end face allowed per segment. */
-    FRAME_MALFORMED_SEGMENT
+    FRAME_MALFORMED_SEGMENT,
+    /* Assembly contains unsupported instance in simulation (composite part or sketch instance) */
+    SIMULATION_UNSUPPORTED_INSTANCE
 }
 
 

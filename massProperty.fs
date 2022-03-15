@@ -16,26 +16,24 @@ import(path : "onshape/std/computedPartProperty.fs", version : "✨");
 annotation { "Property Function Name" : "computeMass" }
 export const computeMass = defineComputedPartProperty(function(context is Context, part is Query, definition is map) returns ValueWithUnits
     {
-        // calculate the volume outside the try block so that any geometry errors will be passed through
-        const volume is ValueWithUnits = evVolume(context, { "entities" : part });
+        var density is ValueWithUnits = 0 * kilogram / meter ^ 3;
         try
         {
-            const material is Material = getProperty(context, {
+            density = getProperty(context, {
                 "entity" : part,
                 "propertyType" : PropertyType.MATERIAL
-            });
-            return material.density * volume;
+            }).density;
         }
         catch
         {
-            if (isQueryEmpty(context, qBodyType(part, BodyType.COMPOSITE)))
-            {
-                throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_MASS_PROPERTY);
-            }
-            else
+            if (!isQueryEmpty(context, qBodyType(part, BodyType.COMPOSITE)))
             {
                 throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_COMPOSITE_PART_COMPUTED_MASS);
             }
+            throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_MASS_PROPERTY);
         }
+        // calculate the volume outside the try block so that any geometry errors will be passed through. Expensive, so only do if there's material.
+        const volume is ValueWithUnits = evVolume(context, { "entities" : part });
+        return density * volume;
     });
 

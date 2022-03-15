@@ -831,6 +831,7 @@ export const opImportForeign = function(context is Context, id is Id, definition
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created loft. Default `false`. @optional
  *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
+ *      @field loftTopology {LoftTopology} : Specifies topology of lofted body. Default is `MINIMAL`. @optional
  * }}
  */
 export const opLoft = function(context is Context, id is Id, definition is map)

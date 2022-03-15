@@ -260,3 +260,17 @@ function extrudedSurfaceDirection(context is Context, face is Query)
     return normalize(planes[1].origin - planes[0].origin);
 }
 
+/**
+ * Groups bodies into clusters of identical topology and identical geometry (up to a relative tolerance), allowing
+ * arbitrary 3D rotations (but not reflection).
+ * @param definition {{
+ *      @field bodies {Query} : The bodies to cluster
+ *      @field relativeTolerance {number} : A tolerance, expressed as a decimal value, to compare bodies with.
+ *                                          @eg `0.01` to cluster bodies that have a 1% similarity
+ * }}
+ */
+export function clusterBodies(context is Context, definition is map) returns array
+{
+    return @clusterBodies(context, definition);
+}
+

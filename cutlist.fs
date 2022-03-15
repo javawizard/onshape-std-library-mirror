@@ -9,6 +9,7 @@ import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/frameAttributes.fs", version : "✨");
 import(path : "onshape/std/frameUtils.fs", version : "✨");
 import(path : "onshape/std/table.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 
 /**
  * @internal
@@ -352,7 +353,7 @@ function finalizeGroupMembership(context is Context, ungroupables is array, cand
 function groupFramesByGeometry(context is Context, frames is array) returns array
 {
     var groups = [];
-    const clusters = @clusterBodies(context, { "bodies" : qUnion(frames), "relativeTolerance" : 0.01 });
+    const clusters = clusterBodies(context, { "bodies" : qUnion(frames), "relativeTolerance" : 0.01 });
     for (var cluster in clusters)
     {
         const groupedParts = mapArray(cluster, function(x)

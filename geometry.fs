@@ -44,6 +44,7 @@ export import(path : "onshape/std/holeTable.fs", version : "✨");
 export import(path : "onshape/std/importDerived.fs", version : "✨");
 export import(path : "onshape/std/importForeign.fs", version : "✨");
 export import(path : "onshape/std/loft.fs", version : "✨");
+export import(path : "onshape/std/lofttopology.gen.fs",  version : "✨");
 export import(path : "onshape/std/massProperty.fs", version : "✨");
 export import(path : "onshape/std/mateConnector.fs", version : "✨");
 export import(path : "onshape/std/mirror.fs", version : "✨");

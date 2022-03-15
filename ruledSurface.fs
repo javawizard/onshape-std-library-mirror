@@ -117,8 +117,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
-        if (definition.ruledType == RuledSurfaceInterfaceType.TANGENT ||
-            definition.ruledType == RuledSurfaceInterfaceType.NORMAL)
+        if (!isAlignedType(definition))
         {
             annotation { "Name" : "Reference faces", "Filter" : EntityType.FACE && SketchObject.NO && ConstructionObject.NO }
             definition.referenceFaces is Query;
@@ -236,7 +235,12 @@ function createRuledSurface(context is Context, id is Id, definition is map)
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
     const vertexOverrides = unpackVertexOverrides(context, definition);
-    const referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.ONE_SIDED), AdjacencyType.EDGE, EntityType.FACE)]);
+    var referenceFaces = qNothing();
+    if (!isAlignedType(definition) || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1714_RULED_SURFACE_IGNORE_UNUSED))
+    {
+        // Before V1714 reference faces were being tested for validity even when they were unused.
+        referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.ONE_SIDED), AdjacencyType.EDGE, EntityType.FACE)]);
+    }
 
     if (isAlignedType(definition))
     {
