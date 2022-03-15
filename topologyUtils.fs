@@ -1,15 +1,15 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1711.0");
-import(path : "onshape/std/context.fs", version : "1711.0");
-import(path : "onshape/std/evaluate.fs", version : "1711.0");
-import(path : "onshape/std/feature.fs", version : "1711.0");
-import(path : "onshape/std/query.fs", version : "1711.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1711.0");
-import(path : "onshape/std/vector.fs", version : "1711.0");
+import(path : "onshape/std/containers.fs", version : "1717.0");
+import(path : "onshape/std/context.fs", version : "1717.0");
+import(path : "onshape/std/evaluate.fs", version : "1717.0");
+import(path : "onshape/std/feature.fs", version : "1717.0");
+import(path : "onshape/std/query.fs", version : "1717.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
+import(path : "onshape/std/vector.fs", version : "1717.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -258,5 +258,19 @@ function extrudedSurfaceDirection(context is Context, face is Query)
     });
 
     return normalize(planes[1].origin - planes[0].origin);
+}
+
+/**
+ * Groups bodies into clusters of identical topology and identical geometry (up to a relative tolerance), allowing
+ * arbitrary 3D rotations (but not reflection).
+ * @param definition {{
+ *      @field bodies {Query} : The bodies to cluster
+ *      @field relativeTolerance {number} : A tolerance, expressed as a decimal value, to compare bodies with.
+ *                                          @eg `0.01` to cluster bodies that have a 1% similarity
+ * }}
+ */
+export function clusterBodies(context is Context, definition is map) returns array
+{
+    return @clusterBodies(context, definition);
 }
 

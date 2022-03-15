@@ -1,29 +1,29 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1711.0");
-export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "1711.0");
-export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "1711.0");
-export import(path : "onshape/std/tool.fs", version : "1711.0");
+export import(path : "onshape/std/query.fs", version : "1717.0");
+export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/tool.fs", version : "1717.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1711.0");
+export import(path : "onshape/std/manipulator.fs", version : "1717.0");
 
-import(path : "onshape/std/boolean.fs", version : "1711.0");
-import(path : "onshape/std/containers.fs", version : "1711.0");
-import(path : "onshape/std/error.fs", version : "1711.0");
-import(path : "onshape/std/evaluate.fs", version : "1711.0");
-import(path : "onshape/std/feature.fs", version : "1711.0");
-import(path : "onshape/std/path.fs", version : "1711.0");
-import(path : "onshape/std/string.fs", version : "1711.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1711.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1711.0");
-import(path : "onshape/std/transform.fs", version : "1711.0");
-import(path : "onshape/std/valueBounds.fs", version : "1711.0");
-import(path : "onshape/std/vector.fs", version : "1711.0");
+import(path : "onshape/std/boolean.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1717.0");
+import(path : "onshape/std/error.fs", version : "1717.0");
+import(path : "onshape/std/evaluate.fs", version : "1717.0");
+import(path : "onshape/std/feature.fs", version : "1717.0");
+import(path : "onshape/std/path.fs", version : "1717.0");
+import(path : "onshape/std/string.fs", version : "1717.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
+import(path : "onshape/std/transform.fs", version : "1717.0");
+import(path : "onshape/std/valueBounds.fs", version : "1717.0");
+import(path : "onshape/std/vector.fs", version : "1717.0");
 
 /**
  * The type of ruled surface to apply at a specific vertex.
@@ -117,8 +117,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
-        if (definition.ruledType == RuledSurfaceInterfaceType.TANGENT ||
-            definition.ruledType == RuledSurfaceInterfaceType.NORMAL)
+        if (!isAlignedType(definition))
         {
             annotation { "Name" : "Reference faces", "Filter" : EntityType.FACE && SketchObject.NO && ConstructionObject.NO }
             definition.referenceFaces is Query;
@@ -236,7 +235,12 @@ function createRuledSurface(context is Context, id is Id, definition is map)
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
     const vertexOverrides = unpackVertexOverrides(context, definition);
-    const referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.ONE_SIDED), AdjacencyType.EDGE, EntityType.FACE)]);
+    var referenceFaces = qNothing();
+    if (!isAlignedType(definition) || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1714_RULED_SURFACE_IGNORE_UNUSED))
+    {
+        // Before V1714 reference faces were being tested for validity even when they were unused.
+        referenceFaces = qUnion([definition.referenceFaces, qAdjacent(qEdgeTopologyFilter(definition.edges, EdgeTopology.ONE_SIDED), AdjacencyType.EDGE, EntityType.FACE)]);
+    }
 
     if (isAlignedType(definition))
     {

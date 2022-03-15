@@ -1,14 +1,15 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/cutlistMath.fs", version : "1711.0");
-import(path : "onshape/std/error.fs", version : "1711.0");
-import(path : "onshape/std/feature.fs", version : "1711.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1711.0");
-import(path : "onshape/std/frameUtils.fs", version : "1711.0");
-import(path : "onshape/std/table.fs", version : "1711.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1717.0");
+import(path : "onshape/std/error.fs", version : "1717.0");
+import(path : "onshape/std/feature.fs", version : "1717.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1717.0");
+import(path : "onshape/std/frameUtils.fs", version : "1717.0");
+import(path : "onshape/std/table.fs", version : "1717.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
 
 /**
  * @internal
@@ -352,7 +353,7 @@ function finalizeGroupMembership(context is Context, ungroupables is array, cand
 function groupFramesByGeometry(context is Context, frames is array) returns array
 {
     var groups = [];
-    const clusters = @clusterBodies(context, { "bodies" : qUnion(frames), "relativeTolerance" : 0.01 });
+    const clusters = clusterBodies(context, { "bodies" : qUnion(frames), "relativeTolerance" : 0.01 });
     for (var cluster in clusters)
     {
         const groupedParts = mapArray(cluster, function(x)

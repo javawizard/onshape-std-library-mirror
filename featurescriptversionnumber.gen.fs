@@ -1,4 +1,4 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1074,7 +1074,12 @@ export enum FeatureScriptVersionNumber
     V1708_FILTER_COMPOSITES_AND_CURVES,
     V1709_FRAME_SELECTION_NO_EDGE_POINTS,
     V1710_CUTLIST_BUMP,
-    V1711_TRACKING_ISSUE_AND_STRINGFIX
+    V1711_TRACKING_ISSUE_AND_STRINGFIX,
+    V1713_DRAFT_ORDERED_FACES,
+    V1714_RULED_SURFACE_IGNORE_UNUSED,
+    V1715_EV_FAULTS_UPDATE,
+    V1716_SM_CLEANUP,
+    V1717_BUMP
 }
 
 /**
@@ -1085,6 +1090,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1711_TRACKING_ISSUE_AND_STRINGFIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1717_BUMP;
 
 

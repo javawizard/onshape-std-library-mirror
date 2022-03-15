@@ -1,4 +1,4 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1711; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1711.0");
-import(path : "onshape/std/context.fs", version : "1711.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1711.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1711.0");
-import(path : "onshape/std/query.fs", version : "1711.0");
-import(path : "onshape/std/valueBounds.fs", version : "1711.0");
-import(path : "onshape/std/vector.fs", version : "1711.0");
+import(path : "onshape/std/containers.fs", version : "1717.0");
+import(path : "onshape/std/context.fs", version : "1717.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
+import(path : "onshape/std/query.fs", version : "1717.0");
+import(path : "onshape/std/valueBounds.fs", version : "1717.0");
+import(path : "onshape/std/vector.fs", version : "1717.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1717.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1717.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1717.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1717.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1717.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1711.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1717.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1711.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1717.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1711.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1717.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1717.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1711.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1717.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -831,6 +831,7 @@ export const opImportForeign = function(context is Context, id is Id, definition
  *              The second map constrains the loft at the end profile to match the curvature of faces defined by the query qFaces.
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created loft. Default `false`. @optional
  *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
+ *      @field loftTopology {LoftTopology} : Specifies topology of lofted body. Default is `MINIMAL`. @optional
  * }}
  */
 export const opLoft = function(context is Context, id is Id, definition is map)

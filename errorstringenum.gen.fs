@@ -1,4 +1,4 @@
-FeatureScript 1711; /* Automatically generated version */
+FeatureScript 1717; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2186,7 +2186,9 @@ export enum ErrorStringEnum
     /* Unable to pick single largest remaining frame segment to keep. */
     FRAME_MULTIPLE_EQUAL_SEGMENTS_AFTER_SPLIT,
     /* Only one start and end face allowed per segment. */
-    FRAME_MALFORMED_SEGMENT
+    FRAME_MALFORMED_SEGMENT,
+    /* Assembly contains unsupported instance in simulation (composite part or sketch instance) */
+    SIMULATION_UNSUPPORTED_INSTANCE
 }
 
 
