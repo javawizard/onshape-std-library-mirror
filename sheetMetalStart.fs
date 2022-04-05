@@ -1,33 +1,33 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "1717.0");
-export import(path : "onshape/std/query.fs", version : "1717.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1732.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
 
-import(path : "onshape/std/attributes.fs", version : "1717.0");
-import(path : "onshape/std/box.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/coordSystem.fs", version : "1717.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/error.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/geomOperations.fs", version : "1717.0");
-import(path : "onshape/std/manipulator.fs", version : "1717.0");
-import(path : "onshape/std/math.fs", version : "1717.0");
-import(path : "onshape/std/modifyFillet.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1717.0");
-import(path : "onshape/std/sketch.fs", version : "1717.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/tool.fs", version : "1717.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+import(path : "onshape/std/attributes.fs", version : "1732.0");
+import(path : "onshape/std/box.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/coordSystem.fs", version : "1732.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/error.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/geomOperations.fs", version : "1732.0");
+import(path : "onshape/std/manipulator.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1732.0");
+import(path : "onshape/std/modifyFillet.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1732.0");
+import(path : "onshape/std/sketch.fs", version : "1732.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/tool.fs", version : "1732.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 /**
  * Method of initializing sheet metal model
@@ -128,10 +128,10 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             if (definition.process == SMProcessType.CONVERT)
             {
                 annotation { "Name" : "Parts and surfaces to convert",
-                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
+                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO && AllowMeshGeometry.YES }
                 definition.partToConvert is Query;
 
-                annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+                annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && AllowMeshGeometry.YES }
                 definition.facesToExclude is Query;
             }
             else if (definition.process == SMProcessType.EXTRUDE)
@@ -277,6 +277,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
     }
     {
+        verifyNoMeshSheetMetalStart(context, definition);
+
         var resultSheetBodies = undefined;
         definition.supportRolled = isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED);
         // tangentPropagation is meaningful only for Thicken option
@@ -326,6 +328,28 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "symmetric" : false,
       "flipDirectionUp" : false
     });
+
+function verifyNoMeshSheetMetalStart(context is Context, definition is map)
+{
+    if (definition.process == SMProcessType.CONVERT)
+    {
+        // A model that contains mesh faces can still be converted if those mesh faces are excluded.
+        verifyNoMesh(context, { "partToConvert" : qSubtraction(qOwnedByBody(definition.partToConvert, EntityType.FACE), definition.facesToExclude)}, "partToConvert");
+    }
+    else if (definition.process == SMProcessType.EXTRUDE)
+    {
+        verifyNoMesh(context, definition, "sketchCurves");
+        verifyNoMesh(context, definition, "bendArcs");
+    }
+    else if (definition.process == SMProcessType.THICKEN)
+    {
+        verifyNoMesh(context, definition, "regions");
+    }
+    if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
+    {
+        verifyNoMesh(context, definition, "bends");
+    }
+}
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
 {

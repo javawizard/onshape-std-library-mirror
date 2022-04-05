@@ -1,15 +1,15 @@
-FeatureScript 1717; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/coordSystem.fs", version : "1717.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/manipulator.fs", version : "1717.0");
-import(path : "onshape/std/math.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
-import(path : "onshape/std/debug.fs", version : "1717.0");
+FeatureScript 1732; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/coordSystem.fs", version : "1732.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/manipulator.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
+import(path : "onshape/std/debug.fs", version : "1732.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -143,6 +143,8 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         }
     }
     {
+        verifyNoMesh(context, definition, "side1");
+        verifyNoMesh(context, definition, "side2");
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {
             verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);

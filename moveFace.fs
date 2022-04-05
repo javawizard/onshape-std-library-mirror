@@ -1,28 +1,28 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/tool.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/tool.fs", version : "1732.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1717.0");
+export import(path : "onshape/std/manipulator.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1717.0");
-import(path : "onshape/std/box.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/mathUtils.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
+import(path : "onshape/std/attributes.fs", version : "1732.0");
+import(path : "onshape/std/box.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/mathUtils.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
 
 
 /**
@@ -73,7 +73,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             annotation { "Name" : "Faces to move",
                          "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                          "Filter" : (EntityType.FACE && (ActiveSheetMetal.NO || SheetMetalDefinitionEntityType.EDGE || SheetMetalDefinitionEntityType.FACE))
-                                    && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                                    && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
             definition.moveFaces is Query;
         }
         else
@@ -134,13 +134,13 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         {
             if (definition.moveFaceType == MoveFaceType.TRANSLATE)
             {
-                annotation { "Name" : "Up to entity", "Filter" : (EntityType.FACE && GeometryType.PLANE) || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+                annotation { "Name" : "Up to entity", "Filter" : (EntityType.FACE && GeometryType.PLANE ) || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
                 definition.limitEntity is Query;
             }
             else
             {
                 // Can accept anything that evDistance will take.
-                annotation { "Name" : "Up to entity", "Filter" : EntityType.VERTEX || EntityType.EDGE || EntityType.FACE || EntityType.BODY, "MaxNumberOfPicks" : 1 }
+                annotation { "Name" : "Up to entity", "Filter" : (EntityType.VERTEX || EntityType.EDGE || EntityType.FACE || EntityType.BODY) && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
                 definition.limitQuery is Query;
             }
 
@@ -168,6 +168,19 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
     }
     //============================ Body =============================
     {
+        if (definition.moveFaceType == MoveFaceType.TRANSLATE)
+        {
+            verifyNoMesh(context, definition, "direction");
+            if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && !isAtInitialMixedModelingReleaseVersionOrLater(context))
+            {
+                verifyNoMesh(context, definition, "limitEntity");
+            }
+        }
+        else if (definition.moveFaceType == MoveFaceType.ROTATE)
+        {
+            verifyNoMesh(context, definition, "axis");
+        }
+
         if (definition.angle != undefined)
             definition.angle = adjustAngle(context, definition.angle);
 
@@ -217,16 +230,19 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         }
 
         // Extract an axis defined by the moved face for use in the manipulators.
-        var facePlane = try silent(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
-        if (facePlane == undefined)
+        var firstFace = resolvedEntities[0];
+        var manipulatorPlane = try(getDirectEditManipulatorPlane(context, firstFace));
+        if (manipulatorPlane == undefined)
+        {
             throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.queryParameter]);
-        const associatedSMEntities = getSMDefinitionEntities(context, resolvedEntities[0], EntityType.FACE);
+        }
+        const associatedSMEntities = getSMDefinitionEntities(context, firstFace, EntityType.FACE);
         if (size(associatedSMEntities) == 1)
         {
             const sheetMetalModelPlane = try silent(evFaceTangentPlane(context, { "face" : associatedSMEntities[0], "parameter" : vector(0.5, 0.5) }));
             if (sheetMetalModelPlane != undefined)
             {
-                facePlane.origin = sheetMetalModelPlane.origin;
+                manipulatorPlane.origin = sheetMetalModelPlane.origin;
             }
         }
 
@@ -234,12 +250,12 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         {
             if (definition.limitType != MoveFaceBoundingType.BLIND)
             {
-                definition.offsetDistance = getOffsetToEntity(context, resolvedEntities[0], definition, id, facePlane);
+                    definition.offsetDistance = getOffsetToEntity(context, firstFace, definition, id, manipulatorPlane);
             }
             else
             {
                 definition.offsetDistance = definition.offsetDistance * directionSign;
-                addOffsetManipulator(context, id, definition.offsetDistance, facePlane, "offsetDistance");
+                addOffsetManipulator(context, id, definition.offsetDistance, manipulatorPlane, "offsetDistance");
             }
 
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
@@ -265,14 +281,13 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
 
                 if (definition.limitType != MoveFaceBoundingType.BLIND)
                 {
-                    definition.transform = getTranslationTransformToEntity(context, resolvedEntities[0], definition, id, translationDirection, facePlane);
+                    definition.transform = getTranslationTransformToEntity(context, firstFace, definition, id, translationDirection, manipulatorPlane);
                 }
                 else
                 {
                     var translation = translationDirection * definition.translationDistance * directionSign;
                     definition.transform = transform(translation);
-                    addTranslateManipulator(context, id, facePlane.origin, translationDirection, definition.translationDistance * directionSign, "translationDistance");
-
+                    addTranslateManipulator(context, id, manipulatorPlane.origin, translationDirection, definition.translationDistance * directionSign, "translationDistance");
                     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                     {
                         if (tolerantEquals(definition.translationDistance, 0 * meter))
@@ -286,7 +301,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
             if (definition.moveFaceType == MoveFaceType.ROTATE)
             {
                 const axisResult = evAxis(context, { "axis" : getAssociatedAxis(context, definition) });
-                addRotateManipulator(context, id, axisResult, facePlane, definition.angle * directionSign, definition.moveFaces);
+                addRotateManipulator(context, id, axisResult, manipulatorPlane, definition.angle * directionSign, definition.moveFaces);
                 if (definition.outputType == MoveFaceOutputType.MOVE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V484_MOVE_FACE_0_DISTANCE))
                 {
                     if (tolerantEquals(definition.angle, 0 * radian))
@@ -319,7 +334,7 @@ export const moveFace = defineFeature(function(context is Context, id is Id, def
         }
     }, {outputType : MoveFaceOutputType.MOVE, oppositeDirection : false, reFillet : false, limitType : MoveFaceBoundingType.BLIND, hasOffset : false});
 
-function getOffsetToEntity(context is Context, face is Query, definition is map, id is Id, faceTangentPlane is Plane) returns ValueWithUnits
+function getOffsetToEntity(context is Context, face is Query, definition is map, id is Id, manipulatorPlane is Plane) returns ValueWithUnits
 {
     // If moving up to a construction plane, treat it as an infinite plane rather than a ~6 in square.
     const limitPlaneEntity = evaluateQuery(context, qGeometry(qConstructionFilter(definition.limitQuery, ConstructionObject.YES), GeometryType.PLANE));
@@ -337,7 +352,7 @@ function getOffsetToEntity(context is Context, face is Query, definition is map,
         throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["limitEntity"]);
     }
 
-    // faceTangentPlane is at the parametric center of the face and is used for placing the manipulator.
+    // manipulatorPlane is at the parametric center of the face and is used for placing the manipulator.
     // tangentPlane could be anywhere on the surface and is used to very that the offset is correct.
     const tangentPlane = evFaceTangentPlane(context, {
                 "face" : face,
@@ -356,17 +371,17 @@ function getOffsetToEntity(context is Context, face is Query, definition is map,
     }
 
     const offsetDistance = dot(tangentPlane.normal, limitPoint - facePoint);
-    if ((definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY) && definition.hasOffset)
+    if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
     {
         // Move the manipulator plane by the offset distance so it will line up with the preview.
-        faceTangentPlane.origin = faceTangentPlane.origin + offsetDistance * faceTangentPlane.normal;
-        addOffsetManipulator(context, id, definition.offset, faceTangentPlane, "offset");
+        manipulatorPlane.origin = manipulatorPlane.origin + offsetDistance * manipulatorPlane.normal;
+        addOffsetManipulator(context, id, definition.offset, manipulatorPlane, "offset");
     }
 
     return offsetDistance + definition.offset;
 }
 
-function getTranslationTransformToEntity(context is Context, face is Query, definition is map, id is Id, translationDirection is Vector, faceTangentPlane is Plane) returns Transform
+function getTranslationTransformToEntity(context is Context, face is Query, definition is map, id is Id, translationDirection is Vector, manipulatorPlane is Plane) returns Transform
 {
     var limitPoint = try silent(evVertexPoint(context, { "vertex" : definition.limitEntity }));
     if (limitPoint == undefined)
@@ -426,7 +441,7 @@ function getTranslationTransformToEntity(context is Context, face is Query, defi
     const translation = translationDirection * definition.offset + (limitPoint - intersectionPoint);
     if (definition.limitType == MoveFaceBoundingType.UP_TO_ENTITY && definition.hasOffset)
     {
-        addTranslateManipulator(context, id, faceTangentPlane.origin + (limitPoint - intersectionPoint), translationDirection, definition.offset, "offset");
+        addTranslateManipulator(context, id, manipulatorPlane.origin + (limitPoint - intersectionPoint), translationDirection, definition.offset, "offset");
     }
     return transform(translation);
 }

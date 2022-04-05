@@ -1,28 +1,28 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1717.0");
-export import(path : "onshape/std/manipulator.fs", version : "1717.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1732.0");
+export import(path : "onshape/std/manipulator.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/tool.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/tool.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 const FILLET_RHO_BOUNDS =
 {
@@ -133,12 +133,6 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.defaultsChanged is boolean;
 
-            if (definition.crossSection != FilletCrossSection.CURVATURE && definition.blendControlType == BlendControlType.RADIUS)
-            {
-                annotation { "Name" : "Allow edge overflow", "Default" : true }
-                definition.allowEdgeOverflow is boolean;
-            }
-
             if (definition.blendControlType == BlendControlType.RADIUS)
             {
                 annotation { "Name" : "Variable fillet" }
@@ -146,68 +140,103 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                 if (definition.isVariable)
                 {
-                    annotation { "Name" : "Vertices", "Item name" : "vertex",
-                                "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
-                                "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
-                    definition.vertexSettings is array;
-                    for (var setting in definition.vertexSettings)
+                    annotation { "Group Name" : "Variable fillet", "Driving Parameter" : "isVariable", "Collapsed By Default" : false }
                     {
-                        annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
-                                    "MaxNumberOfPicks" : 1,
-                                    "UIHint" : UIHint.ALWAYS_HIDDEN }
-                        setting.vertex is Query;
-
-                        annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                        isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
-
-                        if (definition.crossSection == FilletCrossSection.CONIC)
+                        annotation { "Name" : "Vertices", "Item name" : "vertex",
+                                    "Driven query" : "vertex", "Item label template" : "[#vertexRadius] #vertex",
+                                    "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                        definition.vertexSettings is array;
+                        for (var setting in definition.vertexSettings)
                         {
-                            annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                            isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                            annotation { "Name" : "Vertex", "Filter" : ModifiableEntityOnly.YES && EntityType.VERTEX,
+                                        "MaxNumberOfPicks" : 1,
+                                        "UIHint" : UIHint.ALWAYS_HIDDEN }
+                            setting.vertex is Query;
+
+                            annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                            isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
+
+                            if (definition.crossSection == FilletCrossSection.CONIC)
+                            {
+                                annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                                isReal(setting.variableRho, FILLET_RHO_BOUNDS);
+                            }
+                            else if (definition.crossSection == FilletCrossSection.CURVATURE)
+                            {
+                                annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                                isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
+                            }
                         }
-                        else if (definition.crossSection == FilletCrossSection.CURVATURE)
+
+                        annotation { "Name" : "Points on edges", "Item name" : "point on edge",
+                                    "Item label template" : "[#pointOnEdgeRadius] #edge",
+                                    "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                        definition.pointOnEdgeSettings is array;
+                        for (var setting in definition.pointOnEdgeSettings)
                         {
-                            annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                            isReal(setting.variableMagnitude, FILLET_RHO_BOUNDS);
+                            annotation { "Name" : "Edge",
+                                        "Filter" : ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
+                                        "MaxNumberOfPicks" : 1 }
+                            setting.edge is Query;
+
+                            // Edge parameter (number) defined in accordance with FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION
+                            annotation { "Name" : "Location" }
+                            isReal(setting.edgeParameter, EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
+
+                            annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                            isLength(setting.pointOnEdgeRadius, VR_BLEND_BOUNDS);
+
+                            if (definition.crossSection == FilletCrossSection.CONIC)
+                            {
+                                annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                                isReal(setting.pointOnEdgeVariableRho, FILLET_RHO_BOUNDS);
+                            }
+                            else if (definition.crossSection == FilletCrossSection.CURVATURE)
+                            {
+                                annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
+                                isReal(setting.pointOnEdgeVariableMagnitude, FILLET_RHO_BOUNDS);
+                            }
                         }
+                        annotation { "Name" : "Smooth transition" }
+                        definition.smoothTransition is boolean;
+                    }
+                }
+
+                if (definition.crossSection != FilletCrossSection.CURVATURE)
+                {
+                    annotation { "Name" : "Allow edge overflow", "Default" : true }
+                    definition.allowEdgeOverflow is boolean;
+
+                    if (definition.allowEdgeOverflow)
+                    {
+                       annotation { "Group Name" : "Edge overflow", "Driving Parameter" : "allowEdgeOverflow" }
+                       {
+                           annotation { "Name" : "Edges to keep",
+                                        "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && ConstructionObject.NO &&
+                                                   SketchObject.NO && ModifiableEntityOnly.YES }
+                           definition.keepEdges is Query;
+                       }
                     }
 
-                    annotation { "Name" : "Points on edges", "Item name" : "point on edge",
-                                "Item label template" : "[#pointOnEdgeRadius] #edge",
-                                "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
-                    definition.pointOnEdgeSettings is array;
-                    for (var setting in definition.pointOnEdgeSettings)
+                    annotation { "Name" : "Smooth fillet corners" }
+                    definition.smoothCorners is boolean;
+
+                    if (definition.smoothCorners)
                     {
-                        annotation { "Name" : "Edge",
-                                    "Filter" : ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
-                                    "MaxNumberOfPicks" : 1 }
-                        setting.edge is Query;
-
-                        // Edge parameter (number) defined in accordance with FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION
-                        annotation { "Name" : "Location" }
-                        isReal(setting.edgeParameter, EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
-
-                        annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                        isLength(setting.pointOnEdgeRadius, VR_BLEND_BOUNDS);
-
-                        if (definition.crossSection == FilletCrossSection.CONIC)
+                        annotation { "Group Name" : "Smooth fillet corners", "Driving Parameter" : "smoothCorners", "Collapsed By Default" : false }
                         {
-                            annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                            isReal(setting.pointOnEdgeVariableRho, FILLET_RHO_BOUNDS);
-                        }
-                        else if (definition.crossSection == FilletCrossSection.CURVATURE)
-                        {
-                            annotation { "Name" : "Magnitude", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
-                            isReal(setting.pointOnEdgeVariableMagnitude, FILLET_RHO_BOUNDS);
+                            annotation { "Name" : "Corners to exclude",
+                                         "Filter" : EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                            definition.smoothCornerExceptions is Query;
                         }
                     }
-                    annotation { "Name" : "Smooth transition" }
-                    definition.smoothTransition is boolean;
                 }
             }
         }
     }
     {
+        verifyNoMesh(context, definition, "entities");
+
         if (definition.filletType == FilletType.EDGE)
         {
             performEdgeFillet(context, id, definition);
@@ -224,10 +253,13 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         smoothTransition : false,
         defaultsChanged : false,
         allowEdgeOverflow : true,
+        keepEdges : qNothing(),
         filletType : FilletType.EDGE,
         blendControlType : BlendControlType.RADIUS,
         vertexSettings : [],
-        pointOnEdgeSettings : []
+        pointOnEdgeSettings : [],
+        smoothCorners : false,
+        smoothCornerExceptions : qNothing()
     });
 
 

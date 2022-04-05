@@ -1,15 +1,15 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/context.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/query.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/context.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/query.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -272,5 +272,39 @@ function extrudedSurfaceDirection(context is Context, face is Query)
 export function clusterBodies(context is Context, definition is map) returns array
 {
     return @clusterBodies(context, definition);
+}
+
+function getTerminalNonMeshFace(context is Context, topologies is Query, firstFace is boolean)
+{
+    const nonMeshFaces = evaluateQuery(context, qMeshGeometryFilter(qEntityFilter(topologies, EntityType.FACE), MeshGeometry.NO));
+    if (nonMeshFaces == [])
+    {
+        return qNothing();
+    }
+    else
+    {
+        return nonMeshFaces[firstFace ? 0 : size(nonMeshFaces) - 1];
+    }
+}
+
+/**
+ * @internal
+ * Returns the last non-mesh face of a query.
+ * When using evFaceTangentPlane to create a manipulator, we want it to be on the last non-mesh face the user selected.
+ * This is not bundled with actual manipulator creation because some features (eg. Move Face) modify the plane before creating the manipulator.
+ */
+export function getLastNonMeshFace(context is Context, topologies is Query) returns Query
+{
+    return getTerminalNonMeshFace(context, topologies, false);
+}
+
+/**
+ * @internal
+ * Returns the first non-mesh face of a query.
+ * When dealing with mesh and non-mesh faces, we should prioritize non-mesh faces if any.
+ */
+export function getFirstNonMeshFace(context is Context, topologies is Query) returns Query
+{
+    return getTerminalNonMeshFace(context, topologies, true);
 }
 

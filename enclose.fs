@@ -1,13 +1,13 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "1717.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
 
 /**
  * Feature performing an [opEnclose].
@@ -16,7 +16,7 @@ annotation { "Feature Type Name" : "Enclose" }
 export const enclose = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities", "Filter" : (EntityType.BODY && (BodyType.SHEET || BodyType.SOLID)) || EntityType.FACE }
+        annotation { "Name" : "Entities", "Filter" : ((EntityType.BODY && (BodyType.SHEET || BodyType.SOLID)) || EntityType.FACE) && AllowMeshGeometry.YES }
         definition.entities is Query;
 
         annotation {"Name" : "Keep tools"}

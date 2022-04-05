@@ -1,22 +1,22 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1717.0");
-export import(path : "onshape/std/error.fs", version : "1717.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1717.0");
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1717.0");
+export import(path : "onshape/std/context.fs", version : "1732.0");
+export import(path : "onshape/std/error.fs", version : "1732.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1732.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/math.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/transform.fs", version : "1717.0");
-import(path : "onshape/std/units.fs", version : "1717.0");
-import(path : "onshape/std/tabReferences.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/transform.fs", version : "1732.0");
+import(path : "onshape/std/units.fs", version : "1732.0");
+import(path : "onshape/std/tabReferences.fs", version : "1732.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -240,7 +240,7 @@ export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function,
  *
  * `forEachEntity` behaves much like the code:
  * ```
- * const evaluated = evaluteQuery(context, query);
+ * const evaluated = evaluateQuery(context, query);
  * for (var i = 0; i < size(evaluated); i += 1)
  * {
  *     operationToPerform(id + i, evaluated[i]);
@@ -798,6 +798,23 @@ export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     if (!isQueryEmpty(context, qSheetMetalFlatFilter(query, SMFlatType.YES)))
     {
         throw regenError(errorToReport, [parameterName]);
+    }
+}
+
+/**
+ * Verifies that the `definition[parameterName]` [Query] does not contain mesh or mixed entities.
+ * Throws a [regenError] if `definition[parameterName]` references mesh topologies.
+ */
+export function verifyNoMesh(context is Context, definition is map, parameterName is string)
+{
+    var query = definition[parameterName];
+    if (query != undefined)
+    {
+        var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
+        if (evaluateQuery(context, meshEntities) != [])
+        {
+            throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
+        }
     }
 }
 

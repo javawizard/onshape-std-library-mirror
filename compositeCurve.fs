@@ -1,6 +1,6 @@
-FeatureScript 1717; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
+FeatureScript 1732; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1732.0");
 
 /**
  * Creates one or more Curves that are a combination of edges from various sources, be they parts, surfaces,
@@ -15,6 +15,7 @@ export const compositeCurve = defineFeature(function(context is Context, id is I
         definition.edges is Query;
     }
     {
+        verifyNoMesh(context, definition, "edges");
         definition.edges = dissolveWires(definition.edges);
 
         var remainingTransform = getRemainderPatternTransform(context,

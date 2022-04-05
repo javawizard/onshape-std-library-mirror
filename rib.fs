@@ -1,19 +1,19 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/math.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
-import(path : "onshape/std/transform.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1732.0");
+import(path : "onshape/std/transform.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -58,7 +58,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Sketch profiles", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
         definition.profiles is Query;
 
-        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
+        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
@@ -77,6 +77,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         definition.mergeRibs is boolean;
     }
     {
+        verifyNoMesh(context, definition, "profiles");
+
         const useRobustProfilesQ = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY);
         const profiles = (useRobustProfilesQ) ? makeRobustQueriesBatched(context, definition.profiles) : evaluateQuery(context, definition.profiles);
         const numberOfRibs = size(profiles);

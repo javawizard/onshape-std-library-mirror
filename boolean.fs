@@ -1,30 +1,30 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/tool.fs", version : "1717.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/tool.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1717.0");
-import(path : "onshape/std/box.fs", version : "1717.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/math.fs", version : "1717.0");
-import(path : "onshape/std/patternCommon.fs", version : "1717.0");
-import(path : "onshape/std/primitives.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1717.0");
-import(path : "onshape/std/transform.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
+import(path : "onshape/std/attributes.fs", version : "1732.0");
+import(path : "onshape/std/box.fs", version : "1732.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1732.0");
+import(path : "onshape/std/patternCommon.fs", version : "1732.0");
+import(path : "onshape/std/primitives.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1732.0");
+import(path : "onshape/std/transform.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -36,14 +36,14 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Operation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.operationType is BooleanOperationType;
         annotation { "Name" : "Tools", "Filter" : EntityType.BODY &&
-            (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO)),
+            (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO)) && AllowMeshGeometry.YES,
              "UIHint" : UIHint.ALLOW_QUERY_ORDER }
         definition.tools is Query;
 
         if (definition.operationType == BooleanOperationType.SUBTRACTION)
         {
             annotation { "Name" : "Targets", "Filter" : EntityType.BODY && ModifiableEntityOnly.YES &&
-                (BodyType. SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))}
+                (BodyType. SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))  && AllowMeshGeometry.YES}
             definition.targets is Query;
 
             annotation { "Name" : "Offset" }
@@ -308,7 +308,7 @@ export predicate booleanStepScopePredicate(booleanDefinition is map)
             booleanDefinition.defaultScope is boolean;
             if (booleanDefinition.defaultScope != true)
             {
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
                 booleanDefinition.booleanScope is Query;
             }
         }
@@ -335,7 +335,7 @@ export predicate booleanPatternScopePredicate(booleanDefinition is map)
                 // surface + surfaces and surface - solid.
                 // Unfortunately, we can't check for that in precondition
                 // It will be enforced during execution
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY &&
+                annotation { "Name" : "Merge scope", "Filter" : (EntityType.BODY && AllowMeshGeometry.YES) &&
                     (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))
                     && ModifiableEntityOnly.YES }
                 booleanDefinition.booleanScope is Query;
@@ -371,7 +371,22 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
 
     var output = {};
     output.tools = defaultTools;
-    output.targets = (definition.defaultScope != false) ? qAllModifiableSolidBodies() : definition.booleanScope;
+
+    if (definition.defaultScope != false)
+    {
+        if (isAtInitialMixedModelingReleaseVersionOrLater(context))
+        {
+            output.targets = qAllModifiableSolidBodiesWithMesh();
+        }
+        else
+        {
+            output.targets = qAllModifiableSolidBodies();
+        }
+    }
+    else
+    {
+        output.targets = definition.booleanScope;
+    }
     output.targets = qSubtraction(output.targets, defaultTools);
     output.targetsAndToolsNeedGrouping = true;
 
@@ -517,7 +532,7 @@ export predicate surfaceJoinStepScopePredicate(definition is map)
             definition.defaultSurfaceScope is boolean;
             if (definition.defaultSurfaceScope != true)
             {
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES }
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
                 definition.booleanSurfaceScope is Query;
             }
         }

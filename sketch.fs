@@ -1,4 +1,4 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -46,28 +46,28 @@ FeatureScript 1717; /* Automatically generated version */
  * all subsequent operations and features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/mathUtils.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1717.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/tool.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/matrix.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/mathUtils.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1732.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/tool.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/matrix.fs", version : "1732.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "1717.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "1717.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "1717.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "1717.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/fixedparameterposition.gen.fs", version : "1717.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "1732.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "1732.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "1732.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "1732.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/fixedparameterposition.gen.fs", version : "1732.0");
 
 /**
  * @internal
@@ -165,6 +165,8 @@ precondition
 
     startFeature(context, id + "sketchPlane", { asVersion : value.asVersion });
 
+    var initialPlane = value.sketchPlane;
+
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
 
@@ -192,6 +194,14 @@ precondition
     if (value.sketchPlane == undefined)
     {
         reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
+        value.sketchPlane = XY_PLANE;
+        value.planeReference = qNothing();
+    }
+
+    var meshEntities = qMeshGeometryFilter(initialPlane, MeshGeometry.YES);
+    if (evaluateQuery(context, meshEntities) != [])
+    {
+        reportFeatureError(context, id, ErrorStringEnum.MESH_NOT_SUPPORTED);
         value.sketchPlane = XY_PLANE;
         value.planeReference = qNothing();
     }

@@ -1,21 +1,21 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/tool.fs", version : "1717.0");
-export import(path : "onshape/std/patternUtils.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/tool.fs", version : "1732.0");
+export import(path : "onshape/std/patternUtils.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1717.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/transform.fs", version : "1717.0");
+import(path : "onshape/std/boolean.fs", version : "1732.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/transform.fs", version : "1732.0");
 
 
 /**
@@ -37,7 +37,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
             definition.entities is Query;
         }
         else if (definition.patternType == MirrorType.FACE)
@@ -62,6 +62,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
     }
     {
+        verifyNoMesh(context, definition, "mirrorPlane");
+        if (definition.patternType == MirrorType.FACE)
+        {
+            verifyNoMesh(context, definition, "faces");
+        }
+
         definition = adjustPatternDefinitionEntities(context, definition, true);
 
         if (definition.patternType == MirrorType.FEATURE)

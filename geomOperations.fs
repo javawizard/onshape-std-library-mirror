@@ -1,4 +1,4 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1717; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/context.fs", version : "1717.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/query.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/context.fs", version : "1732.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/query.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1732.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1732.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1732.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1732.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1732.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1732.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1717.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1732.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1717.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1732.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1717.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1732.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1732.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1732.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -495,13 +495,20 @@ export const opExtrude = function(context is Context, id is Id, definition is ma
  *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
  *              A number between 0 and 1, specifying the magnitude of curvature match.
  *      @field isVariable {boolean} : @optional Fillet controls can be varied at vertices via `vertexSettings`. Default is `false`.
- *      @field allowEdgeOverflow {boolean} : @optional Allow `opFillet` to modify nearby edges to maintain the fillet profile. Default is `true`.
  *      @field vertexSettings {array} : @optional An array of maps representing fillet settings at specified vertices.  Each map should
  *              contain a `vertex` query, a `vertexRadius` value, a `variableMagnitude` if the `crossSection` is
  *              `FilletCrossSection.CURVATURE`, and a `variableRho` if the `crossSection` is `FilletCrossSection.CONIC`.
  *              @ex `[{ "vertex" : vertexQuery0, "vertexRadius" : 1 * inch, "variableRho" : 0.2 }, { "vertex" : vertexQuery1, "vertexRadius" : 2 * inch, "variableRho" : 0.8 }]`
+ *      @field pointOnEdgeSettings {array} : @optional An array of maps representing fillet settings at specified points on edges.  Each map should
+ *              contain an `edge` query, an `edgeParameter` value, a `pointOnEdgeRadius` value, a `pointOnEdgeVariablMagnitude` if the `crossSection` is
+ *              `FilletCrossSection.CURVATURE`, and a `pointOnEdgeVariableRho` if the `crossSection` is `FilletCrossSection.CONIC`.
+ *              @ex `[{ "edge" : edgeQuery0, "edgeParameter" : 0.3, "pointOnEdgeRadius" : 1 * inch }, { "edge" : edgeQuery1, "edgeParameter" : 0.6, "pointOnEdgeRadius" : 2 * inch }]`
  *      @field smoothTransition {boolean} : @requiredif { `isVariable` is `true` }  Whether to create a smoother transition
  *              between each vertex.
+ *      @field allowEdgeOverflow {boolean} : @optional Allow `opFillet` to modify nearby edges to maintain the fillet profile. Default is `true`.
+ *      @field keepEdges {Query} : @optional Edges you do not want `opFillet` to modify if `allowEdgeOverflow` is `true`.
+ *      @field smoothCorners {boolean} : @optional Allow `opFillet` to smooth all suitable corners and prevent creation of sharp edges. Default is `false`.
+ *      @field smoothCornerExceptions {Query} : @optional Vertices you do not want `opFillet` to smooth if `smoothCorners` is `true`.
  *      @field createDetachedSurface {boolean} : @optional
  *              Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
  * }}

@@ -1,20 +1,20 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1732.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/manipulator.fs", version : "1717.0");
-import(path : "onshape/std/query.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
-import(path : "onshape/std/coordSystem.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/manipulator.fs", version : "1732.0");
+import(path : "onshape/std/query.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
+import(path : "onshape/std/coordSystem.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
 
 /**
  * Bounding type used with SMProcessType.EXTRUDE
@@ -53,7 +53,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face",
-            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
+            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityFace is Query;
     }
@@ -61,7 +61,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_BODY)
     {
         annotation { "Name" : "Up to surface or part",
-                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
+                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityBody is Query;
     }
@@ -117,7 +117,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face", "Column Name" : "Second up to face",
-            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
+            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityFace is Query;
     }
@@ -125,7 +125,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_BODY)
     {
         annotation { "Name" : "Up to surface or part", "Column Name" : "Second up to surface or part",
-                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
+                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityBody is Query;
     }

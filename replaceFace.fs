@@ -1,22 +1,22 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/tool.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/tool.fs", version : "1732.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1717.0");
+export import(path : "onshape/std/manipulator.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
 
 /**
  * Feature performing an [opReplaceFace].
@@ -27,10 +27,10 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
     {
         annotation { "Name" : "Faces to replace",
                      "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.replaceFaces is Query;
 
-        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
         definition.templateFace is Query;
 
         // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the

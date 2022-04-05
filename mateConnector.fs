@@ -1,22 +1,22 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1717.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "1717.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "1717.0");
+export import(path : "onshape/std/query.fs", version : "1732.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "1732.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "1732.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/tool.fs", version : "1717.0");
-import(path : "onshape/std/valueBounds.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/tool.fs", version : "1732.0");
+import(path : "onshape/std/valueBounds.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
 
 /**
  * @internal
@@ -78,7 +78,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         definition.originType is OriginCreationType;
 
         annotation { "Name" : "Origin entity",
-                     "Filter" : (EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO),
+                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
                      "UIHint" : UIHint.UNCONFIGURABLE }
         definition.originQuery is Query;
@@ -91,7 +91,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
             definition.originAdditionalQuery is Query;
         }
 
@@ -281,8 +281,8 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     var ownerPartQuery;
     for (var possiblePartOwner in possiblePartOwners)
     {
-        const meshQuery = qSourceMesh(possiblePartOwner);
-        if (!isQueryEmpty(context, meshQuery))
+        const meshQuery = qSourceMesh(possiblePartOwner, EntityType.BODY);
+        if (evaluateQuery(context, meshQuery) != [])
         {
             ownerPartQuery = meshQuery;
             break;

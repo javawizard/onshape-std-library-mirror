@@ -1,10 +1,10 @@
-FeatureScript 1717; /* Automatically generated version */
-import(path : "onshape/std/boundingtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1717.0");
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/feature.fs", version : "1717.0");
-import(path : "onshape/std/evaluate.fs", version : "1717.0");
-import(path : "onshape/std/vector.fs", version : "1717.0");
+FeatureScript 1732; /* Automatically generated version */
+import(path : "onshape/std/boundingtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1732.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/feature.fs", version : "1732.0");
+import(path : "onshape/std/evaluate.fs", version : "1732.0");
+import(path : "onshape/std/vector.fs", version : "1732.0");
 
 /**
  *  Performs [opExtrude] twice to extrude two sketches and then [opBoolean] to produce the intersection of the extruded surfaces

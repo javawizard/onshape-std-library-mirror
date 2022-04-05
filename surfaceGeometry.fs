@@ -1,4 +1,4 @@
-FeatureScript 1717; /* Automatically generated version */
+FeatureScript 1732; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -7,14 +7,14 @@ FeatureScript 1717; /* Automatically generated version */
  * This module contains methods for creating and working with primitive
  * surfaces: planes, cylinders, cones, spheres, and tori.
  */
-import(path : "onshape/std/containers.fs", version : "1717.0");
-import(path : "onshape/std/context.fs", version : "1717.0");
-import(path : "onshape/std/coordSystem.fs", version : "1717.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1717.0");
-import(path : "onshape/std/mathUtils.fs", version : "1717.0");
-import(path : "onshape/std/string.fs", version : "1717.0");
-import(path : "onshape/std/units.fs", version : "1717.0");
-export import(path : "onshape/std/surfacetype.gen.fs", version : "1717.0");
+import(path : "onshape/std/containers.fs", version : "1732.0");
+import(path : "onshape/std/context.fs", version : "1732.0");
+import(path : "onshape/std/coordSystem.fs", version : "1732.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
+import(path : "onshape/std/mathUtils.fs", version : "1732.0");
+import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/units.fs", version : "1732.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "1732.0");
 
 //===================================== Plane ======================================
 
@@ -890,3 +890,34 @@ precondition
     } as BSplineSurface;
 }
 
+// ===================================== Mesh ======================================
+
+/**
+ * A `MeshFaceParameter` is a 2D array unitless array.
+ * It is functionnally indentical to a 2D vector but because there is no guarantee of continuity for mesh parameters,
+ * it does not make sense to expose vector math for it.
+ */
+export type MeshFaceParameter typecheck canBeMeshFaceParameter;
+
+/** Typecheck for [MeshFaceParameter] */
+export predicate canBeMeshFaceParameter(value)
+{
+    value is array;
+    @size(value) == 2;
+    value[0] is number;
+    value[1] is number;
+}
+
+/**
+ * Make a [MeshFaceParameter] from an array.
+ */
+export function meshFaceParameter(value is array) returns MeshFaceParameter
+precondition
+{
+    @size(value) == 2;
+    value[0] is number;
+    value[1] is number;
+}
+{
+    return value as MeshFaceParameter;
+}
