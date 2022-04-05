@@ -81,6 +81,8 @@ import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 
 /**
  * A `Manipulator` is a type which can be passed into `addManipulators`,
@@ -481,3 +483,27 @@ function evaluateQueries(context is Context, definition is map) returns map
     return parameterId as CopyParameter;
  }
 
+/**
+ * @internal
+ *
+ * If a manipulator needs to be placed on a face that could be mesh, we need to preprocess the parameters
+ * before computing the tangent plane.
+ */
+ export function getDirectEditManipulatorPlane(context is Context, face is Query) returns Plane
+ {
+    var parameter;
+    if (isQueryEmpty(context, qMeshGeometryFilter(face, MeshGeometry.YES)))
+    {
+        parameter = vector(0.5, 0.5);
+    }
+    else
+    {
+        const approximateCentroid = evApproximateCentroid(context, {"entities" : face});
+        const distanceResult = evDistance(context, {
+                    "side0" : face,
+                    "side1" : approximateCentroid
+        });
+        parameter = distanceResult.sides[0].parameter;
+    }
+    return evFaceTangentPlane(context, { "face" : face, "parameter" : parameter });
+ }

@@ -58,7 +58,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Sketch profiles", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
         definition.profiles is Query;
 
-        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES }
+        annotation { "Name" : "Parts", "Filter" : EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.parts is Query;
 
         annotation { "Name" : "Thickness" }
@@ -77,6 +77,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         definition.mergeRibs is boolean;
     }
     {
+        verifyNoMesh(context, definition, "profiles");
+
         const useRobustProfilesQ = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1076_TRANSIENT_QUERY);
         const profiles = (useRobustProfilesQ) ? makeRobustQueriesBatched(context, definition.profiles) : evaluateQuery(context, definition.profiles);
         const numberOfRibs = size(profiles);

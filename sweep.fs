@@ -89,7 +89,13 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             {
                 definition.profiles = followWireEdgesToLaminarSource(context, definition.profiles);
             }
+            verifyNoMesh(context, { "surfaceProfiles" : definition.profiles }, "surfaceProfiles");
         }
+        else
+        {
+            verifyNoMesh(context, definition, "profiles");
+        }
+        verifyNoMesh(context, definition, "path");
 
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion([definition.profiles, definition.path])});

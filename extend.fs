@@ -68,7 +68,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_BODY)
         {
-            annotation { "Name" : "Target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Target", "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
             definition.targetPart is Query;
         }
         else if (definition.endCondition == ExtendBoundingType.UP_TO_FACE)
@@ -86,6 +86,8 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         definition.maintainCurvature is boolean;
     }
     {
+        verifyNoMesh(context, definition, "entities");
+
         if (definition.maintainCurvature)
             definition.extensionShape = ExtendSheetShapeType.SOFT;
         else

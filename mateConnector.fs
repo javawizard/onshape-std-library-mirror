@@ -78,7 +78,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         definition.originType is OriginCreationType;
 
         annotation { "Name" : "Origin entity",
-                     "Filter" : (EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO),
+                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
                      "UIHint" : UIHint.UNCONFIGURABLE }
         definition.originQuery is Query;
@@ -91,7 +91,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
             definition.originAdditionalQuery is Query;
         }
 
@@ -281,8 +281,8 @@ function findOwnerPart(context is Context, definition is map, possiblePartOwners
     var ownerPartQuery;
     for (var possiblePartOwner in possiblePartOwners)
     {
-        const meshQuery = qSourceMesh(possiblePartOwner);
-        if (!isQueryEmpty(context, meshQuery))
+        const meshQuery = qSourceMesh(possiblePartOwner, EntityType.BODY);
+        if (evaluateQuery(context, meshQuery) != [])
         {
             ownerPartQuery = meshQuery;
             break;

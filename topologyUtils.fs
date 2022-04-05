@@ -274,3 +274,37 @@ export function clusterBodies(context is Context, definition is map) returns arr
     return @clusterBodies(context, definition);
 }
 
+function getTerminalNonMeshFace(context is Context, topologies is Query, firstFace is boolean)
+{
+    const nonMeshFaces = evaluateQuery(context, qMeshGeometryFilter(qEntityFilter(topologies, EntityType.FACE), MeshGeometry.NO));
+    if (nonMeshFaces == [])
+    {
+        return qNothing();
+    }
+    else
+    {
+        return nonMeshFaces[firstFace ? 0 : size(nonMeshFaces) - 1];
+    }
+}
+
+/**
+ * @internal
+ * Returns the last non-mesh face of a query.
+ * When using evFaceTangentPlane to create a manipulator, we want it to be on the last non-mesh face the user selected.
+ * This is not bundled with actual manipulator creation because some features (eg. Move Face) modify the plane before creating the manipulator.
+ */
+export function getLastNonMeshFace(context is Context, topologies is Query) returns Query
+{
+    return getTerminalNonMeshFace(context, topologies, false);
+}
+
+/**
+ * @internal
+ * Returns the first non-mesh face of a query.
+ * When dealing with mesh and non-mesh faces, we should prioritize non-mesh faces if any.
+ */
+export function getFirstNonMeshFace(context is Context, topologies is Query) returns Query
+{
+    return getTerminalNonMeshFace(context, topologies, true);
+}
+

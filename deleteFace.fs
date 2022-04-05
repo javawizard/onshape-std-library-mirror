@@ -39,7 +39,7 @@ export const deleteFace = defineFeature(function(context is Context, id is Id, d
     {
         annotation { "Name" : "Delete faces",
                     "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                    "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                    "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.deleteFaces is Query;
 
         annotation { "Name" : "Type", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }

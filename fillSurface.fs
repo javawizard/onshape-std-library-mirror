@@ -93,12 +93,19 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         surfaceJoinStepScopePredicate(definition);
     }
     {
+        if (definition.addGuides)
+        {
+            verifyNoMesh(context, definition, "guideEntities");
+        }
+
         verifyNonemptyArray(context, definition, "edges", ErrorStringEnum.FILL_SURFACE_NO_EDGES);
         if (!definition.addGuides)
             definition.guideEntities = qNothing();
 
         definition.useSampling = (definition.constraintMode == FillConstraintMode.SAMPLED);
         definition = updateEdgeSelections(context, definition);
+
+        verifyNoMesh(context, {"edges" : definition.allEdges}, "edges");
 
         var remainingTransform = getRemainderPatternTransform(context,
             {"references" : definition.allEdges });

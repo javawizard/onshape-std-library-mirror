@@ -240,7 +240,7 @@ export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function,
  *
  * `forEachEntity` behaves much like the code:
  * ```
- * const evaluated = evaluteQuery(context, query);
+ * const evaluated = evaluateQuery(context, query);
  * for (var i = 0; i < size(evaluated); i += 1)
  * {
  *     operationToPerform(id + i, evaluated[i]);
@@ -798,6 +798,23 @@ export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     if (!isQueryEmpty(context, qSheetMetalFlatFilter(query, SMFlatType.YES)))
     {
         throw regenError(errorToReport, [parameterName]);
+    }
+}
+
+/**
+ * Verifies that the `definition[parameterName]` [Query] does not contain mesh or mixed entities.
+ * Throws a [regenError] if `definition[parameterName]` references mesh topologies.
+ */
+export function verifyNoMesh(context is Context, definition is map, parameterName is string)
+{
+    var query = definition[parameterName];
+    if (query != undefined)
+    {
+        var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
+        if (evaluateQuery(context, meshEntities) != [])
+        {
+            throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
+        }
     }
 }
 

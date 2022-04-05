@@ -278,6 +278,13 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
         }
     }
     {
+        switch (definition.transformType)
+        {
+            TransformType.TRANSLATION_ENTITY : verifyNoMesh(context, definition, "transformLine"),
+            TransformType.ROTATION : verifyNoMesh(context, definition, "transformAxis"),
+            TransformType.TRANSLATION_DISTANCE : verifyNoMesh(context, definition, "transformDirection")
+        };
+
         if (definition.transformType == TransformType.ROTATION)
             definition.angle = adjustAngle(context, definition.angle);
 

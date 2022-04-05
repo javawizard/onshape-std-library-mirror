@@ -119,6 +119,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     }
     //============================ Body =============================
     {
+        verifyNoMesh(context, definition, "entities");
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {

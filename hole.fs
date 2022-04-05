@@ -242,7 +242,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
-                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES) }
+                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES) }
         definition.scope is Query;
     }
     {

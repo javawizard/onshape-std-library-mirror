@@ -50,11 +50,11 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         if (definition.splitType == SplitType.PART)
         {
             annotation { "Name" : "Parts, surfaces, or curves to split",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES }
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",
-                        "Filter" : (EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR,
+                        "Filter" : ((EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
                         "MaxNumberOfPicks" : 1 }
             definition.tool is Query;
 
@@ -74,7 +74,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         }
         else
         {
-            annotation { "Name" : "Faces to split", "Filter" : (EntityType.FACE && SketchObject.NO && ConstructionObject.NO && ModifiableEntityOnly.YES) }
+            annotation { "Name" : "Faces to split", "Filter" : EntityType.FACE && SketchObject.NO && ConstructionObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
@@ -82,6 +82,7 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
                             (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) || //Sheet Body (surface)
                             EntityType.FACE || //Face or Construction Plane
                             BodyType.MATE_CONNECTOR
+                            && AllowMeshGeometry.YES
                     }
             definition.faceTools is Query;
 

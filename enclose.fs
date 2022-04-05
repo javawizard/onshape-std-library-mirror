@@ -16,7 +16,7 @@ annotation { "Feature Type Name" : "Enclose" }
 export const enclose = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities", "Filter" : (EntityType.BODY && (BodyType.SHEET || BodyType.SOLID)) || EntityType.FACE }
+        annotation { "Name" : "Entities", "Filter" : ((EntityType.BODY && (BodyType.SHEET || BodyType.SOLID)) || EntityType.FACE) && AllowMeshGeometry.YES }
         definition.entities is Query;
 
         annotation {"Name" : "Keep tools"}

@@ -123,6 +123,9 @@ export const wrap = defineFeature(function(context is Context, id is Id, definit
         }
     }
     {
+        verifyNoMesh(context, definition, "destination");
+        verifyNoMesh(context, definition, "source");
+
         // ----- Source and Destination -----
         verifyNonemptyQuery(context, definition, "source", ErrorStringEnum.WRAP_SELECT_TOOLS);
         if (size(evaluateQuery(context, definition.destination)) != 1)

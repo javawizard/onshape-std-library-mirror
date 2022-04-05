@@ -321,7 +321,9 @@ export enum AdjacencyType
  * @value REVOLVED : A surface constructed by revolving a curve around an axis (unless it is simplified to one of the types above)
  * @value EXTRUDED : A surface constructed by extruding or sweeping a curve along a line (unless it is simplified to one of the types above)
  * @value OTHER_SURFACE : Any two-dimensional entity which is not described above (e.g. the side of an arbitrary loft)
- * @value MESH : A surface or a body that contains surface that is a mesh
+ * @value ALL_MESH : A surface or a body that is fully mesh or an edge between two mesh surfaces.
+ * @value MIXED_MESH : A body that contains both mesh and non-mesh surfaces or an edge between a mesh and a non-mesh surfaces.
+ * @value MESH : A surface that is mesh, a body that contains mesh surfaces or an edge bordering a mesh surface.
  */
 export enum GeometryType
 {
@@ -337,6 +339,8 @@ export enum GeometryType
     REVOLVED,
     EXTRUDED,
     OTHER_SURFACE,
+    ALL_MESH,
+    MIXED_MESH,
     MESH
 }
 
@@ -657,12 +661,30 @@ export function qAllNonMeshSolidBodies() returns Query
 }
 
 /**
- * A query for all solid bodies that do not have mesh geometry or in context geometry, i.e. every part
+ * A query for all solid bodies.
+ */
+export function qAllSolidBodies() returns Query
+{
+    return qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
+}
+
+/**
+ * A query for all solid bodies that do not have mesh geometry or in context geometry, i.e. every non-mesh-containing part
  * displayed in the Part Studio's "Parts" list.
+ * @seealso [qAllModifiableSolidBodiesWithMesh]
  */
 export function qAllModifiableSolidBodies() returns Query
 {
     return qModifiableEntityFilter(qAllNonMeshSolidBodies());
+}
+
+/**
+ * A query for all modifiable solid bodies, including mesh-containing bodies.
+ * @seealso [qAllModifiableSolidBodies]
+ */
+export function qAllModifiableSolidBodiesWithMesh() returns Query
+{
+    return qModifiableEntityFilter(qAllSolidBodies());
 }
 
 /**
@@ -1207,14 +1229,28 @@ export function qCompositePartTypeFilter(queryToFilter is Query, compositePartTy
 }
 
 /**
- * A query for each mesh that any `selectedMeshVertices` belong to.
- *
+ * A query for each mesh element that any `selectedMeshVertices` belong to.
  * `selectedMeshVertices` should be the point bodies created when a user selects a mesh vertex. Mesh vertices
  * which have not been selected cannot be queried in FeatureScript
+ *
+ * @param selectedMeshVertices: One or more mesh vertices whose owning elements are queried.
+ * @param entityType: The type of resulting entities. Can be EntityType.BODY, EntityType.FACE or EntityType.EDGE.
+ *                    @autocomplete `EntityType.BODY`
  */
+export function qSourceMesh(selectedMeshVertices is Query, entityType is EntityType) returns Query
+precondition
+{
+    annotation { "Message" : "EntityType.VERTEX is not supported" }
+    entityType == EntityType.BODY || entityType == EntityType.FACE || entityType == EntityType.EDGE;
+}
+{
+    return { "queryType" : QueryType.SOURCE_MESH, "query" : selectedMeshVertices, "entityType" : entityType } as Query;
+}
+
+annotation { "Deprecated" : "Use `qSourceMesh` with `EntityType.BODY`" }
 export function qSourceMesh(selectedMeshVertices is Query) returns Query
 {
- return { "queryType" : QueryType.SOURCE_MESH, "query" : selectedMeshVertices } as Query;
+    return { "queryType" : QueryType.SOURCE_MESH, "query" : selectedMeshVertices, "entityType" : EntityType.BODY } as Query;
 }
 
 /**

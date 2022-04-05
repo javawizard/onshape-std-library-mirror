@@ -165,6 +165,8 @@ precondition
 
     startFeature(context, id + "sketchPlane", { asVersion : value.asVersion });
 
+    var initialPlane = value.sketchPlane;
+
     var remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([value.sketchPlane])});
     var fullTransform = getFullPatternTransform(context);
 
@@ -192,6 +194,14 @@ precondition
     if (value.sketchPlane == undefined)
     {
         reportFeatureError(context, id, ErrorStringEnum.SKETCH_NO_PLANE);
+        value.sketchPlane = XY_PLANE;
+        value.planeReference = qNothing();
+    }
+
+    var meshEntities = qMeshGeometryFilter(initialPlane, MeshGeometry.YES);
+    if (evaluateQuery(context, meshEntities) != [])
+    {
+        reportFeatureError(context, id, ErrorStringEnum.MESH_NOT_SUPPORTED);
         value.sketchPlane = XY_PLANE;
         value.planeReference = qNothing();
     }

@@ -495,13 +495,20 @@ export const opExtrude = function(context is Context, id is Id, definition is ma
  *      @field magnitude {number} : @requiredif {`crossSection` is `CURVATURE`.}
  *              A number between 0 and 1, specifying the magnitude of curvature match.
  *      @field isVariable {boolean} : @optional Fillet controls can be varied at vertices via `vertexSettings`. Default is `false`.
- *      @field allowEdgeOverflow {boolean} : @optional Allow `opFillet` to modify nearby edges to maintain the fillet profile. Default is `true`.
  *      @field vertexSettings {array} : @optional An array of maps representing fillet settings at specified vertices.  Each map should
  *              contain a `vertex` query, a `vertexRadius` value, a `variableMagnitude` if the `crossSection` is
  *              `FilletCrossSection.CURVATURE`, and a `variableRho` if the `crossSection` is `FilletCrossSection.CONIC`.
  *              @ex `[{ "vertex" : vertexQuery0, "vertexRadius" : 1 * inch, "variableRho" : 0.2 }, { "vertex" : vertexQuery1, "vertexRadius" : 2 * inch, "variableRho" : 0.8 }]`
+ *      @field pointOnEdgeSettings {array} : @optional An array of maps representing fillet settings at specified points on edges.  Each map should
+ *              contain an `edge` query, an `edgeParameter` value, a `pointOnEdgeRadius` value, a `pointOnEdgeVariablMagnitude` if the `crossSection` is
+ *              `FilletCrossSection.CURVATURE`, and a `pointOnEdgeVariableRho` if the `crossSection` is `FilletCrossSection.CONIC`.
+ *              @ex `[{ "edge" : edgeQuery0, "edgeParameter" : 0.3, "pointOnEdgeRadius" : 1 * inch }, { "edge" : edgeQuery1, "edgeParameter" : 0.6, "pointOnEdgeRadius" : 2 * inch }]`
  *      @field smoothTransition {boolean} : @requiredif { `isVariable` is `true` }  Whether to create a smoother transition
  *              between each vertex.
+ *      @field allowEdgeOverflow {boolean} : @optional Allow `opFillet` to modify nearby edges to maintain the fillet profile. Default is `true`.
+ *      @field keepEdges {Query} : @optional Edges you do not want `opFillet` to modify if `allowEdgeOverflow` is `true`.
+ *      @field smoothCorners {boolean} : @optional Allow `opFillet` to smooth all suitable corners and prevent creation of sharp edges. Default is `false`.
+ *      @field smoothCornerExceptions {Query} : @optional Vertices you do not want `opFillet` to smooth if `smoothCorners` is `true`.
  *      @field createDetachedSurface {boolean} : @optional
  *              Operation does not modify the body of the selected edges, but results in surface geometry of fillet. Default is `false`.
  * }}

@@ -11,6 +11,7 @@ import(path : "onshape/std/properties.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/computedPartProperty.fs", version : "✨");
+import(path : "onshape/std/volumeaccuracy.gen.fs", version : "✨");
 
 /** @internal */
 annotation { "Property Function Name" : "computeMass" }
@@ -32,8 +33,9 @@ export const computeMass = defineComputedPartProperty(function(context is Contex
             }
             throw regenError(ErrorStringEnum.NO_MATERIAL_FOR_MASS_PROPERTY);
         }
-        // calculate the volume outside the try block so that any geometry errors will be passed through. Expensive, so only do if there's material.
-        const volume is ValueWithUnits = evVolume(context, { "entities" : part });
+        // Calculate the volume outside the try block so that any geometry errors will be passed through.
+        // Expensive, so only do if there's material, and use the same accuracy used by the Mass properties dialog.
+        const volume is ValueWithUnits = evVolume(context, { "entities" : part, "accuracy" : VolumeAccuracy.LOW });
         return density * volume;
     });
 

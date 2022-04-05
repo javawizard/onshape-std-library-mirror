@@ -64,6 +64,14 @@ export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber,
 }
 
 /**
+ * Returns true if at or after mixed modeling release version.
+ */
+export function isAtInitialMixedModelingReleaseVersionOrLater(context is Context)  returns boolean
+{
+    return false;
+}
+
+/**
  * @internal
  * Returns version at which the active feature of `context` is running
  */

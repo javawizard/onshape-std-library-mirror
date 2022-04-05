@@ -138,6 +138,14 @@ export const helix = defineFeature(function(context is Context, id is Id, defini
     }
     //===================================================<body>=======================================================
     {
+        if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
+        {
+            verifyNoMesh(context, definition, "entities");
+        }
+        else
+        {
+            verifyNoMesh(context, definition, "edge");
+        }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {

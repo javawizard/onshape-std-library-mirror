@@ -143,6 +143,8 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         }
     }
     {
+        verifyNoMesh(context, definition, "side1");
+        verifyNoMesh(context, definition, "side2");
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {
             verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);

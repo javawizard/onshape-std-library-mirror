@@ -46,6 +46,7 @@ export const modifyFillet = defineFeature(function(context is Context, id is Id,
         }
     }
     {
+        verifyNoMesh(context, definition, "faces");
         opModifyFillet(context, id, definition);
     }, { reFillet : false });
 

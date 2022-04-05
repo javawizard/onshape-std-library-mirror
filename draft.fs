@@ -191,6 +191,16 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
         definition.reFillet is boolean;
     }
     {
+        if (definition.draftFeatureType == DraftFeatureType.NEUTRAL_PLANE)
+        {
+            verifyNoMesh(context, definition, "neutralPlane");
+            verifyNoMesh(context, definition, "draftFaces");
+        }
+        else if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
+        {
+            verifyNoMesh(context, definition, "pullDirectionEntity");
+            verifyNoMesh(context, definition, "partingEdges");
+        }
         definition = switch (definition.draftFeatureType)
         {
             DraftFeatureType.NEUTRAL_PLANE : initReferenceSurfaceDraft(context, id, definition),

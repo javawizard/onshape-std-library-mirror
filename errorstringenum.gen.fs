@@ -2188,7 +2188,15 @@ export enum ErrorStringEnum
     /* Only one start and end face allowed per segment. */
     FRAME_MALFORMED_SEGMENT,
     /* Assembly contains unsupported instance in simulation (composite part or sketch instance) */
-    SIMULATION_UNSUPPORTED_INSTANCE
+    SIMULATION_UNSUPPORTED_INSTANCE,
+    /* The operation failed due to the layout of adjacent mesh and non-mesh geometry. */
+    MIXED_MODEL_LAYOUT,
+    /* Could not heal/cap selected faces that are adjacent to mesh faces. */
+    ADJACENT_MESH_FACES_FOR_CAP_OR_HEAL,
+    /* To pattern mesh faces, all faces of the body must be selected. */
+    NOT_ALL_MESH_FACES_PATTERN,
+    /* Accuracy option is not available during regeneration. */
+    VOLUME_ACCURACY_MUST_BE_HIGH_FOR_REGEN
 }
 
 

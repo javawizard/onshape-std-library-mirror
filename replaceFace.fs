@@ -27,10 +27,10 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
     {
         annotation { "Name" : "Faces to replace",
                      "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                     "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.replaceFaces is Query;
 
-        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
         definition.templateFace is Query;
 
         // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the

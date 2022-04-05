@@ -37,7 +37,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         {
             booleanStepTypePredicate(definition);
 
-            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY }
+            annotation { "Name" : "Entities to mirror", "Filter" : EntityType.BODY && AllowMeshGeometry.YES }
             definition.entities is Query;
         }
         else if (definition.patternType == MirrorType.FACE)
@@ -62,6 +62,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         }
     }
     {
+        verifyNoMesh(context, definition, "mirrorPlane");
+        if (definition.patternType == MirrorType.FACE)
+        {
+            verifyNoMesh(context, definition, "faces");
+        }
+
         definition = adjustPatternDefinitionEntities(context, definition, true);
 
         if (definition.patternType == MirrorType.FEATURE)

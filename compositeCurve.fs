@@ -15,6 +15,7 @@ export const compositeCurve = defineFeature(function(context is Context, id is I
         definition.edges is Query;
     }
     {
+        verifyNoMesh(context, definition, "edges");
         definition.edges = dissolveWires(definition.edges);
 
         var remainingTransform = getRemainderPatternTransform(context,

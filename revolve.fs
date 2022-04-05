@@ -114,6 +114,10 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             definition.angleBack = adjustAngle(context, definition.angleBack);
 
         definition.entities = getEntitiesToUse(context, definition);
+
+        verifyNoMesh(context, definition, "entities");
+        verifyNoMesh(context, definition, "axis");
+
         const resolvedEntities = evaluateQuery(context, definition.entities);
         if (resolvedEntities == [])
         {
@@ -411,6 +415,4 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
 
     return definition;
 }
-
-
 

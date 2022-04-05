@@ -92,6 +92,8 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         }
     }
     {
+        verifyNoMesh(context, definition, "axis");
+
         definition.angle = adjustAngle(context, definition.angle);
 
         definition = adjustPatternDefinitionEntities(context, definition, false);

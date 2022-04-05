@@ -128,10 +128,10 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             if (definition.process == SMProcessType.CONVERT)
             {
                 annotation { "Name" : "Parts and surfaces to convert",
-                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO }
+                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && ConstructionObject.NO && AllowMeshGeometry.YES }
                 definition.partToConvert is Query;
 
-                annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO }
+                annotation { "Name" : "Faces to exclude", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && AllowMeshGeometry.YES }
                 definition.facesToExclude is Query;
             }
             else if (definition.process == SMProcessType.EXTRUDE)
@@ -277,6 +277,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         }
     }
     {
+        verifyNoMeshSheetMetalStart(context, definition);
+
         var resultSheetBodies = undefined;
         definition.supportRolled = isAtVersionOrLater(context, FeatureScriptVersionNumber.V727_SM_SUPPORT_ROLLED);
         // tangentPropagation is meaningful only for Thicken option
@@ -326,6 +328,28 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "symmetric" : false,
       "flipDirectionUp" : false
     });
+
+function verifyNoMeshSheetMetalStart(context is Context, definition is map)
+{
+    if (definition.process == SMProcessType.CONVERT)
+    {
+        // A model that contains mesh faces can still be converted if those mesh faces are excluded.
+        verifyNoMesh(context, { "partToConvert" : qSubtraction(qOwnedByBody(definition.partToConvert, EntityType.FACE), definition.facesToExclude)}, "partToConvert");
+    }
+    else if (definition.process == SMProcessType.EXTRUDE)
+    {
+        verifyNoMesh(context, definition, "sketchCurves");
+        verifyNoMesh(context, definition, "bendArcs");
+    }
+    else if (definition.process == SMProcessType.THICKEN)
+    {
+        verifyNoMesh(context, definition, "regions");
+    }
+    if (definition.process == SMProcessType.THICKEN || definition.process == SMProcessType.CONVERT)
+    {
+        verifyNoMesh(context, definition, "bends");
+    }
+}
 
 function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Query)
 {

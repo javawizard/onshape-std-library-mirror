@@ -231,10 +231,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.profileSubqueries = replaceWireQueriesWithDependencies(context, definition.profileSubqueries, true);
             // Replace sketch faces with sketch wire edges so that created loft cap edges can be traced back easily and joined with other surfaces created from the same sketch.
             definition.profileSubqueries = replaceEndSketchFacesWithWireEdges(context, definition.profileSubqueries);
+            verifyNoMesh(context, { "wireProfileEntities" : qUnion(definition.profileSubqueries) }, "wireProfileEntities");
         }
         else
         {
             definition.profileSubqueries = collectSubParameters(definition.sheetProfilesArray, "sheetProfileEntities");
+            verifyNoMesh(context, { "sheetProfileEntities" : qUnion(definition.profileSubqueries) }, "sheetProfileEntities");
         }
 
         const allowConstructionVerticesAsProfiles = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1103_CONSTRUCTION_VERTEX_CHANGE);
@@ -258,12 +260,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
             }
             definition.guideSubqueries = wrapSubqueriesInConstructionFilter(context, definition.guideSubqueries, false);
+            verifyNoMesh(context, { "guideEntities" : qUnion(definition.guideSubqueries) }, "guideEntities");
             if (setQueriesForTransformAfterConstructionFilter)
             {
                 queriesForTransform = concatenateArrays([queriesForTransform, definition.guideSubqueries]);
             }
             derivatives = concatenateArrays([derivatives, collectGuideDerivatives(context, definition)]);
         }
+
+        verifyNoMesh(context, definition, "spine");
 
         if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
         {

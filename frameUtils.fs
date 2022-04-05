@@ -43,8 +43,7 @@ export const CUTLIST_ANGLE_1 = "Angle 1";
 export const CUTLIST_ANGLE_2 = "Angle 2";
 
 // Default descriptions for various cutlist entries
-/** @internal */
-export const CUTLIST_DESCRIPTION_CUSTOM_PROFILE = "Custom profile";
+const CUTLIST_DESCRIPTION_CUSTOM_PROFILE = "Custom profile";
 /** @internal */
 export const CUTLIST_DESCRIPTION_CUTLIST_ENTRY = "Cutlist entry";
 
@@ -165,19 +164,24 @@ precondition
         return profileAttribute;
     }
 
-    // For profiles without an attribute, introduce a description that includes the configuration names.  Notably, as
-    // long as there is an attribute, this information is not added (even if the attribute does not contain a
-    // description).  As long as the user has introduced an attribute using the Tag profile feature (even if the
-    // attribute is completely blank), we will not alter what the user has (and has not) put into their tag.
-    var description = CUTLIST_DESCRIPTION_CUSTOM_PROFILE;
-    if (configuration != undefined)
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1730_NO_CUSTOM_DESCRIPTION))
     {
-        for (var _, value in configuration)
-        {
-            description = description ~ " - " ~ value;
-        }
+        return frameProfileAttribute({});
     }
-    return frameProfileAttribute({ (CUTLIST_DESCRIPTION) : description });
+    else
+    {
+        // Old functionality: create a default description based off of configuration. Disabled because it does not play
+        // well with config booleans and config variables.
+        var description = CUTLIST_DESCRIPTION_CUSTOM_PROFILE;
+        if (configuration != undefined)
+        {
+            for (var _, value in configuration)
+            {
+                description = description ~ " - " ~ value;
+            }
+        }
+        return frameProfileAttribute({ (CUTLIST_DESCRIPTION) : description });
+    }
 }
 
 /** @internal */

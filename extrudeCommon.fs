@@ -53,7 +53,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face",
-            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
+            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityFace is Query;
     }
@@ -61,7 +61,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
              definition.endBound == SMExtrudeBoundingType.UP_TO_BODY)
     {
         annotation { "Name" : "Up to surface or part",
-                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
+                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1 }
         definition.endBoundEntityBody is Query;
     }
@@ -117,7 +117,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_SURFACE)
     {
         annotation { "Name" : "Up to face", "Column Name" : "Second up to face",
-            "Filter" : (EntityType.FACE && SketchObject.NO) || BodyType.MATE_CONNECTOR,
+            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
             "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityFace is Query;
     }
@@ -125,7 +125,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
              definition.secondDirectionBound == SMExtrudeBoundingType.UP_TO_BODY)
     {
         annotation { "Name" : "Up to surface or part", "Column Name" : "Second up to surface or part",
-                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO,
+                     "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1 }
         definition.secondDirectionBoundEntityBody is Query;
     }

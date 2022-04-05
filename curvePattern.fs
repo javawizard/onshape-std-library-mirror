@@ -78,6 +78,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
     }
     {
+        verifyNoMesh(context, definition, "edges");
+
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
         // must be done before transforming definition.instanceFunction with valuesSortedById(...)

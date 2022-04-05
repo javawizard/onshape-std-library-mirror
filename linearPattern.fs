@@ -125,6 +125,12 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         }
     }
     {
+        verifyNoMesh(context, definition, "directionOne");
+        if (definition.hasSecondDir)
+        {
+            verifyNoMesh(context, definition, "directionTwo");
+        }
+
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : getReferencesForRemainderTransform(definition)});

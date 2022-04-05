@@ -9,11 +9,13 @@ export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/manipulator.fs", version : "✨");
 
 // Imports used internally
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/geomOperations.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
@@ -29,7 +31,7 @@ export const offsetSurface = defineFeature(function(context is Context, id is Id
 precondition
 {
     annotation { "Name" : "Faces, surfaces, and sketch regions to offset", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO }
+                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO && AllowMeshGeometry.YES }
     definition.surfacesAndFaces is Query;
 
     annotation { "Name" : "Offset", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
@@ -52,7 +54,14 @@ precondition
     definition.offset = definition.offset * (definition.oppositeDirection ? -1 : 1);
 
     // Extract an axis defined by the offset face for use in the manipulators.
-    var facePlane = try(evFaceTangentPlane(context, { "face" : resolvedEntities[0], "parameter" : vector(0.5, 0.5) }));
+    // We want our manipulator to be on the last selected non-mesh face if available.
+    // Otherwise it will be on the last selected face.
+    var lastFace = getLastNonMeshFace(context, qUnion(resolvedEntities));
+    if (isQueryEmpty(context, lastFace))
+    {
+        lastFace = resolvedEntities[size(resolvedEntities) - 1];
+    }
+    var facePlane = try(getDirectEditManipulatorPlane(context, lastFace));
     if (facePlane == undefined)
         throw regenError(ErrorStringEnum.NO_TANGENT_PLANE, [definition.surfacesAndFaces]);
     addOffsetManipulator(context, id, definition.offset, facePlane);

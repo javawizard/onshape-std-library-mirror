@@ -37,7 +37,7 @@ export predicate patternTypePredicate(definition is map)
     {
         booleanStepTypePredicate(definition);
 
-        annotation { "Name" : "Entities to pattern", "Filter" : EntityType.BODY || BodyType.MATE_CONNECTOR,
+        annotation { "Name" : "Entities to pattern", "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
             "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
     }
@@ -521,3 +521,4 @@ function expectedToCreateGeometry(context is Context, definition is map) returns
 {
     return !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1128_PATTERN_OF_ONE) || definition.transforms != [];
 }
+

@@ -51,6 +51,8 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         booleanStepScopePredicate(definition);
     }
     {
+        verifyNoMesh(context, definition, "entities");
+
         // ------------- Determine the direction ---------------
         if (definition.oppositeDirection)
         {

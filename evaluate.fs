@@ -24,6 +24,7 @@ export import(path : "onshape/std/box.fs", version : "✨");
 export import(path : "onshape/std/clashtype.gen.fs", version : "✨");
 export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "✨");
 export import(path : "onshape/std/smcornertype.gen.fs", version : "✨");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "✨");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -390,7 +391,7 @@ predicate canBeDistanceResult(value)
         // For lines, the parameter is a length representing the distance along the direction.
         if (!(sideResult.parameter is number || isLength(sideResult.parameter) || is2dPoint(sideResult.parameter)))
         {
-            sideResult.parameter is Vector;
+            sideResult.parameter is Vector || sideResult.parameter is MeshFaceParameter;
             size(sideResult.parameter) == 2;
             sideResult.parameter[0] is number;
             sideResult.parameter[1] is number;
@@ -440,11 +441,18 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
         result.sides[side].point = vector(result.sides[side].point) * meter;
         if (result.sides[side].parameter is array)
         {
-            result.sides[side].parameter = result.sides[side].parameter as Vector;
+            if (result.sides[side].isMesh)
+            {
+                result.sides[side].parameter = result.sides[side].parameter as MeshFaceParameter;
+            }
+            else
+            {
+                result.sides[side].parameter = result.sides[side].parameter as Vector;
 
-            var argSide = arg["side" ~ side];
-            if (argSide is Plane || (argSide is array && argSide[result.sides[side].index] is Plane))
-                result.sides[side].parameter *= meter;
+                var argSide = arg["side" ~ side];
+                if (argSide is Plane || (argSide is array && argSide[result.sides[side].index] is Plane))
+                    result.sides[side].parameter *= meter;
+            }
         }
         else
         {
@@ -452,6 +460,7 @@ export function evDistance(context is Context, arg is map) returns DistanceResul
             if (argSide is Line || (argSide is array && argSide[result.sides[side].index] is Line))
                 result.sides[side].parameter *= meter;
         }
+        result.sides[side].isMesh = undefined;
     }
     return result as DistanceResult;
 }
@@ -872,7 +881,7 @@ precondition
     arg.parameters is array;
     for (var uv in arg.parameters)
     {
-        uv is Vector;
+        uv is Vector || uv is MeshFaceParameter;
         @size(uv) == 2;
     }
 }
@@ -1047,7 +1056,7 @@ precondition
     arg.parameters is array;
     for (var uv in arg.parameters)
     {
-        uv is Vector;
+        uv is Vector || uv is MeshFaceParameter;
         @size(uv) == 2;
     }
 }
@@ -1315,15 +1324,17 @@ precondition
  * If no matching 3D bodies are found, the total volume will be zero.
  * @param arg {{
  *      @field entities{Query}
+ *      @field accuracy{VolumeAccuracy}
  * }}
  */
 export function evVolume(context is Context, arg is map) returns ValueWithUnits
 precondition
 {
     arg.entities is Query;
+    arg.accuracy == undefined || arg.accuracy is string;
 }
 {
-    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY) }) * meter ^ 3;
+    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY), "accuracy" : arg.accuracy }) * meter ^ 3;
 }
 
 // ========================= Internal stuff follows ==========================

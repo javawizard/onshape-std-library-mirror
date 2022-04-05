@@ -890,3 +890,34 @@ precondition
     } as BSplineSurface;
 }
 
+// ===================================== Mesh ======================================
+
+/**
+ * A `MeshFaceParameter` is a 2D array unitless array.
+ * It is functionnally indentical to a 2D vector but because there is no guarantee of continuity for mesh parameters,
+ * it does not make sense to expose vector math for it.
+ */
+export type MeshFaceParameter typecheck canBeMeshFaceParameter;
+
+/** Typecheck for [MeshFaceParameter] */
+export predicate canBeMeshFaceParameter(value)
+{
+    value is array;
+    @size(value) == 2;
+    value[0] is number;
+    value[1] is number;
+}
+
+/**
+ * Make a [MeshFaceParameter] from an array.
+ */
+export function meshFaceParameter(value is array) returns MeshFaceParameter
+precondition
+{
+    @size(value) == 2;
+    value[0] is number;
+    value[1] is number;
+}
+{
+    return value as MeshFaceParameter;
+}

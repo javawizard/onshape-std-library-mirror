@@ -94,6 +94,11 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
         }
     }
     {
+        if (!definition.closed)
+        {
+            verifyNoMesh(context, definition, "startDirection");
+            verifyNoMesh(context, definition, "endDirection");
+        }
 
         if (definition.fitType == FitSplineType.EDGES)
         {

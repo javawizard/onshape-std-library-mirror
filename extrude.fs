@@ -230,7 +230,6 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         definition = adjustExtrudeDirectionForBlind(definition);
 
         const entities = getEntitiesToUse(context, definition);
-
         const resolvedEntities = evaluateQuery(context, entities);
         if (resolvedEntities == [])
         {
@@ -614,10 +613,12 @@ function getEntitiesToUse(context is Context, definition is map) returns Query
 {
     if (definition.bodyType == ToolBodyType.SOLID)
     {
+        verifyNoMesh(context, definition, "entities");
         return definition.entities;
     }
     else
     {
+        verifyNoMesh(context, definition, "surfaceEntities");
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
         {
             return qConstructionFilter(definition.surfaceEntities, ConstructionObject.NO);

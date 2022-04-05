@@ -81,6 +81,8 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
         definition.tangentPropagation is boolean;
     }
     {
+        verifyNoMesh(context, definition, "entities");
+
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
         {
             sheetMetalAwareChamfer(context, id, definition);
