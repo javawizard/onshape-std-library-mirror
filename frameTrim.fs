@@ -1,16 +1,16 @@
-FeatureScript 1732; /* Automatically generated version */
+FeatureScript 1746; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1732.0");
-import(path : "onshape/std/containers.fs", version : "1732.0");
-import(path : "onshape/std/error.fs", version : "1732.0");
-import(path : "onshape/std/evaluate.fs", version : "1732.0");
-import(path : "onshape/std/feature.fs", version : "1732.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1732.0");
-import(path : "onshape/std/frameUtils.fs", version : "1732.0");
-import(path : "onshape/std/manipulator.fs", version : "1732.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1746.0");
+import(path : "onshape/std/containers.fs", version : "1746.0");
+import(path : "onshape/std/error.fs", version : "1746.0");
+import(path : "onshape/std/evaluate.fs", version : "1746.0");
+import(path : "onshape/std/feature.fs", version : "1746.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1746.0");
+import(path : "onshape/std/frameUtils.fs", version : "1746.0");
+import(path : "onshape/std/manipulator.fs", version : "1746.0");
 
 /** @internal */
 export enum FrameTrimType
@@ -124,7 +124,7 @@ function doAllGroupTrims(context is Context, topLevelId is Id, frameGroups is ar
     // The second boolean is: [c] - [a,b]
     const allTools = aggregateTools(frameGroups);
     const numBooleans = size(frameGroups) - 1;
-    const trimId = getIncrementingId(topLevelId + "groupTrim");
+    const trimId = getUnstableIncrementingId(topLevelId + "groupTrim");
     for (var i = numBooleans; i > 0; i -= 1)
     {
         const targets = frameGroups[i].frames;

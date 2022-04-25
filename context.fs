@@ -1,11 +1,11 @@
-FeatureScript 1732; /* Automatically generated version */
+FeatureScript 1746; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1732.0");
-import(path : "onshape/std/containers.fs", version : "1732.0");
-import(path : "onshape/std/string.fs", version : "1732.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "1746.0");
+import(path : "onshape/std/containers.fs", version : "1746.0");
+import(path : "onshape/std/string.fs", version : "1746.0");
 
 //====================== Context ========================
 
@@ -68,7 +68,7 @@ export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber,
  */
 export function isAtInitialMixedModelingReleaseVersionOrLater(context is Context)  returns boolean
 {
-    return false;
+    return isAtVersionOrLater(context, FeatureScriptVersionNumber.V1745_MIXED_MODELING_RELEASE);
 }
 
 /**

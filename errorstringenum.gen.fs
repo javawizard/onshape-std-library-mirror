@@ -1,4 +1,4 @@
-FeatureScript 1732; /* Automatically generated version */
+FeatureScript 1746; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2196,7 +2196,11 @@ export enum ErrorStringEnum
     /* To pattern mesh faces, all faces of the body must be selected. */
     NOT_ALL_MESH_FACES_PATTERN,
     /* Accuracy option is not available during regeneration. */
-    VOLUME_ACCURACY_MUST_BE_HIGH_FOR_REGEN
+    VOLUME_ACCURACY_MUST_BE_HIGH_FOR_REGEN,
+    /* Invalid mate to be matched. */
+    ASSEMBLY_REPLICATE_INVALID_SEED_MATE,
+    /* Missing mate to be matched. */
+    ASSEMBLY_REPLICATE_MISSING_SEED_MATE
 }
 
 

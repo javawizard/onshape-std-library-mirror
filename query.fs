@@ -1,4 +1,4 @@
-FeatureScript 1732; /* Automatically generated version */
+FeatureScript 1746; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,14 +32,14 @@ FeatureScript 1732; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "1732.0");
-import(path : "onshape/std/containers.fs", version : "1732.0");
-import(path : "onshape/std/context.fs", version : "1732.0");
-import(path : "onshape/std/mathUtils.fs", version : "1732.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1732.0");
-import(path : "onshape/std/units.fs", version : "1732.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1732.0");
-import(path : "onshape/std/featureList.fs", version : "1732.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "1746.0");
+import(path : "onshape/std/containers.fs", version : "1746.0");
+import(path : "onshape/std/context.fs", version : "1746.0");
+import(path : "onshape/std/mathUtils.fs", version : "1746.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1746.0");
+import(path : "onshape/std/units.fs", version : "1746.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1746.0");
+import(path : "onshape/std/featureList.fs", version : "1746.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -671,18 +671,18 @@ export function qAllSolidBodies() returns Query
 /**
  * A query for all solid bodies that do not have mesh geometry or in context geometry, i.e. every non-mesh-containing part
  * displayed in the Part Studio's "Parts" list.
- * @seealso [qAllModifiableSolidBodiesWithMesh]
+ * @seealso [qAllModifiableSolidBodies]
  */
-export function qAllModifiableSolidBodies() returns Query
+export function qAllModifiableSolidBodiesNoMesh() returns Query
 {
     return qModifiableEntityFilter(qAllNonMeshSolidBodies());
 }
 
 /**
  * A query for all modifiable solid bodies, including mesh-containing bodies.
- * @seealso [qAllModifiableSolidBodies]
+ * @seealso [qAllModifiableSolidBodiesNoMesh]
  */
-export function qAllModifiableSolidBodiesWithMesh() returns Query
+export function qAllModifiableSolidBodies() returns Query
 {
     return qModifiableEntityFilter(qAllSolidBodies());
 }

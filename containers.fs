@@ -1,4 +1,4 @@
-FeatureScript 1732; /* Automatically generated version */
+FeatureScript 1746; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 1732; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1732.0");
-import(path : "onshape/std/string.fs", version : "1732.0");
+import(path : "onshape/std/math.fs", version : "1746.0");
+import(path : "onshape/std/string.fs", version : "1746.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -372,5 +372,47 @@ export function insertIntoMapOfArrays(mapToInsertInto is map, key, value) return
         mapToInsertInto[key] = append(mapToInsertInto[key], value);
     }
     return mapToInsertInto;
+}
+
+/**
+ * Returns last element of array.
+ */
+export function last(elements is array)
+{
+    return elements[@size(elements) - 1];
+}
+
+/**
+ * Returns a rotated array of the same elements.
+ * `step` less than zero moves elements towards the front.
+ * `step` greater than zero moves elements towards the back.
+ * @example `rotateArray([0, 1, 2], -1)`
+ *          returns `[1, 2, 0]`
+ */
+function rotateArray(elements is array, step is number) returns array
+{
+    const length = @size(elements);
+    if (length == 0)
+    {
+        return elements;
+    }
+    step = step % length;
+    if (step == 0)
+    {
+        return elements;
+    }
+
+    const head = subArray(elements, length - step, length);
+    const tail = @resize(elements, length - step);
+    const rotatedArray = concatenateArrays([head, tail]);
+    return rotatedArray;
+}
+
+/**
+ * Returns an array with the element at `index` removed.
+ */
+export function removeElementAt(arr is array, index is number) returns array
+{
+    return concatenateArrays([subArray(arr, 0, index), subArray(arr, index + 1, size(arr))]);
 }
 
