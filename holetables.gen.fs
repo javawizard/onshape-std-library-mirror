@@ -562,7 +562,417 @@ const ANSI_ClearanceHoleTable = {
     }
 };
 
-const ANSI_TappedHoleTable = {
+/** @internal */
+export const ANSI_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "1/4",
+    "entries" : {
+        "#0" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "80 tpi",
+            "entries" : {
+                "80 tpi" : {
+                }
+            }
+        },
+        "#1" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "64 tpi",
+            "entries" : {
+                "64 tpi" : {
+                },
+                "72 tpi" : {
+                }
+            }
+        },
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                },
+                "64 tpi" : {
+                }
+            }
+        },
+        "#3" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "48 tpi",
+            "entries" : {
+                "48 tpi" : {
+                },
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                },
+                "48 tpi" : {
+                }
+            }
+        },
+        "#5" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                },
+                "44 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                },
+                "40 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                },
+                "36 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "#12" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "28 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                },
+                "28 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                },
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                },
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "7/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "14 tpi",
+            "entries" : {
+                "14 tpi" : {
+                },
+                "20 tpi" : {
+                },
+                "28 tpi" : {
+                }
+            }
+        },
+        "1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "13 tpi",
+            "entries" : {
+                "13 tpi" : {
+                },
+                "20 tpi" : {
+                },
+                "28 tpi" : {
+                }
+            }
+        },
+        "9/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "12 tpi",
+            "entries" : {
+                "12 tpi" : {
+                },
+                "18 tpi" : {
+                },
+                "24 tpi" : {
+                }
+            }
+        },
+        "5/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "11 tpi",
+            "entries" : {
+                "11 tpi" : {
+                },
+                "18 tpi" : {
+                },
+                "24 tpi" : {
+                }
+            }
+        },
+        "3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "10 tpi",
+            "entries" : {
+                "10 tpi" : {
+                },
+                "16 tpi" : {
+                },
+                "20 tpi" : {
+                }
+            }
+        },
+        "7/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "9 tpi",
+            "entries" : {
+                "9 tpi" : {
+                },
+                "14 tpi" : {
+                },
+                "20 tpi" : {
+                }
+            }
+        },
+        "1" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "8 tpi",
+            "entries" : {
+                "8 tpi" : {
+                },
+                "12 tpi" : {
+                },
+                "20 tpi" : {
+                }
+            }
+        },
+        "1 1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "7 tpi",
+            "entries" : {
+                "7 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "1 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "7 tpi",
+            "entries" : {
+                "7 tpi" : {
+                },
+                "12 tpi" : {
+                },
+                "18 tpi" : {
+                }
+            }
+        },
+        "1 3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "1 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {
+                },
+                "12 tpi" : {
+                },
+                "18 tpi" : {
+                }
+            }
+        },
+        "1 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "5 tpi",
+            "entries" : {
+                "5 tpi" : {
+                },
+                "12 tpi" : {
+                },
+                "16 tpi" : {
+                }
+            }
+        },
+        "2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 1/2 tpi",
+            "entries" : {
+                "4 1/2 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "2 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 1/2 tpi",
+            "entries" : {
+                "4 1/2 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "2 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "2 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "3 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "3 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "3 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {
+                },
+                "12 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const ANSI_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "default" : "1/4",
@@ -5809,7 +6219,436 @@ const DIN_ClearanceHoleTable = {
     }
 };
 
-const DIN_TappedHoleTable = {
+/** @internal */
+export const DIN_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M5",
+    "entries" : {
+        "M1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.30 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.30 mm" : {
+                }
+            }
+        },
+        "M1.6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.35 mm" : {
+                }
+            }
+        },
+        "M1.8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.35 mm" : {
+                }
+            }
+        },
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.25 mm" : {
+                },
+                "0.40 mm" : {
+                }
+            }
+        },
+        "M2.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.25 mm" : {
+                },
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.35 mm" : {
+                },
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.35 mm" : {
+                },
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.50 mm" : {
+                },
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M4.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.75 mm",
+            "entries" : {
+                "0.50 mm" : {
+                },
+                "0.75 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.5 mm" : {
+                },
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M7" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.0 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.0 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.00 mm" : {
+                },
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.00 mm" : {
+                },
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                }
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                },
+                "1.75 mm" : {
+                }
+            }
+        },
+        "M14" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                }
+            }
+        },
+        "M16" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                }
+            }
+        },
+        "M18" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.0 mm" : {
+                },
+                "2.5 mm" : {
+                }
+            }
+        },
+        "M20" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                },
+                "2.50 mm" : {
+                }
+            }
+        },
+        "M22" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.0 mm" : {
+                },
+                "2.5 mm" : {
+                }
+            }
+        },
+        "M24" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.0 mm" : {
+                }
+            }
+        },
+        "M27" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.0 mm" : {
+                }
+            }
+        },
+        "M30" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.5 mm" : {
+                }
+            }
+        },
+        "M33" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.5 mm" : {
+                }
+            }
+        },
+        "M36" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.0 mm" : {
+                }
+            }
+        },
+        "M39" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.0 mm" : {
+                }
+            }
+        },
+        "M42" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.5 mm" : {
+                }
+            }
+        },
+        "M45" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.5 mm" : {
+                }
+            }
+        },
+        "M48" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "5.0 mm" : {
+                }
+            }
+        },
+        "M52" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.0 mm" : {
+                }
+            }
+        },
+        "M56" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.5 mm" : {
+                }
+            }
+        },
+        "M60" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.5 mm" : {
+                }
+            }
+        },
+        "M64" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "6.0 mm" : {
+                }
+            }
+        },
+        "M68" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "6.0 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const DIN_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "default" : "M5",
@@ -10006,7 +10845,436 @@ const ISO_ClearanceHoleTable = {
     }
 };
 
-const ISO_TappedHoleTable = {
+/** @internal */
+export const ISO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "default" : "M5",
+    "entries" : {
+        "M1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.25 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.25 mm" : {
+                }
+            }
+        },
+        "M1.4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.30 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.30 mm" : {
+                }
+            }
+        },
+        "M1.6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.35 mm" : {
+                }
+            }
+        },
+        "M1.8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.35 mm",
+            "entries" : {
+                "0.20 mm" : {
+                },
+                "0.35 mm" : {
+                }
+            }
+        },
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.25 mm" : {
+                },
+                "0.40 mm" : {
+                }
+            }
+        },
+        "M2.2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.25 mm" : {
+                },
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.35 mm" : {
+                },
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.35 mm" : {
+                },
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.50 mm" : {
+                },
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M4.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.75 mm",
+            "entries" : {
+                "0.50 mm" : {
+                },
+                "0.75 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.5 mm" : {
+                },
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M7" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.0 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.0 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "0.75 mm" : {
+                },
+                "1.00 mm" : {
+                },
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.00 mm" : {
+                },
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                }
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                },
+                "1.75 mm" : {
+                }
+            }
+        },
+        "M14" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.25 mm" : {
+                },
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                }
+            }
+        },
+        "M16" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.00 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                }
+            }
+        },
+        "M18" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.0 mm" : {
+                },
+                "2.5 mm" : {
+                }
+            }
+        },
+        "M20" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.00 mm" : {
+                },
+                "2.50 mm" : {
+                }
+            }
+        },
+        "M22" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "1.50 mm" : {
+                },
+                "2.0 mm" : {
+                },
+                "2.5 mm" : {
+                }
+            }
+        },
+        "M24" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.0 mm" : {
+                }
+            }
+        },
+        "M27" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.0 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.0 mm" : {
+                }
+            }
+        },
+        "M30" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.5 mm" : {
+                }
+            }
+        },
+        "M33" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5 mm",
+            "entries" : {
+                "2.0 mm" : {
+                },
+                "3.5 mm" : {
+                }
+            }
+        },
+        "M36" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.0 mm" : {
+                }
+            }
+        },
+        "M39" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.0 mm" : {
+                }
+            }
+        },
+        "M42" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.5 mm" : {
+                }
+            }
+        },
+        "M45" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "4.5 mm" : {
+                }
+            }
+        },
+        "M48" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "3.0 mm" : {
+                },
+                "5.0 mm" : {
+                }
+            }
+        },
+        "M52" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.0 mm" : {
+                }
+            }
+        },
+        "M56" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.5 mm" : {
+                }
+            }
+        },
+        "M60" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "5.5 mm" : {
+                }
+            }
+        },
+        "M64" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "4.0 mm" : {
+                },
+                "6.0 mm" : {
+                }
+            }
+        },
+        "M68" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.0 mm",
+            "entries" : {
+                "6.0 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const ISO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "default" : "M5",
@@ -14028,7 +15296,61 @@ const PEM_Metric_BSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_BSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_BSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.7 mm",
+            "entries" : {
+                "0.7 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.8 mm",
+            "entries" : {
+                "0.8 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_BSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -14278,7 +15600,70 @@ const PEM_Metric_CLA_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_CLA_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_CLA_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.40 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_CLA_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -14596,7 +15981,106 @@ const PEM_Metric_CLS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_CLS_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_CLS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.40 mm",
+            "entries" : {
+                "0.40 mm" : {
+                }
+            }
+        },
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                }
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.75 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_CLS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -14986,7 +16470,25 @@ const PEM_Metric_DSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_DSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_DSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_DSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -15076,7 +16578,52 @@ const PEM_Metric_FH4_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_FH4_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_FH4_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_FH4_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -15282,7 +16829,61 @@ const PEM_Metric_FHL_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_FHL_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_FHL_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_FHL_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -15500,7 +17101,34 @@ const PEM_Metric_FHX_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_FHX_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_FHX_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.6 mm",
+            "entries" : {
+                "1.6 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_FHX_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -15618,7 +17246,43 @@ const PEM_Metric_FH_Pin_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_FH_Pin_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_FH_Pin_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.1",
+            "entries" : {
+                "4.1" : {
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_FH_Pin_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -15804,7 +17468,79 @@ const PEM_Metric_FH_Stud_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_FH_Stud_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_FH_Stud_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_FH_Stud_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -16102,7 +17838,43 @@ const PEM_Metric_H_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_H_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_H_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_H_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -16272,7 +18044,61 @@ const PEM_Metric_SGPC_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SGPC_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SGPC_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SGPC_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -16498,7 +18324,43 @@ const PEM_Metric_SH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SH_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -16668,7 +18530,61 @@ const PEM_Metric_SL_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SL_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SL_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SL_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -16894,7 +18810,43 @@ const PEM_Metric_SMPS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SMPS_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SMPS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SMPS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -17032,7 +18984,25 @@ const PEM_Metric_SOSG_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SOSG_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SOSG_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SOSG_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -17130,7 +19100,61 @@ const PEM_Metric_SO_Threaded_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SO_Threaded_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SO_Threaded_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.7 mm",
+            "entries" : {
+                "0.7 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.8 mm",
+            "entries" : {
+                "0.8 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SO_Threaded_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -17380,7 +19404,70 @@ const PEM_Metric_SO_Unthreaded_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SO_Unthreaded_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SO_Unthreaded_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.22",
+            "entries" : {
+                "4.22" : {
+                }
+            }
+        },
+        "3.1 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.41",
+            "entries" : {
+                "5.41" : {
+                }
+            }
+        },
+        "3.6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.41",
+            "entries" : {
+                "5.41" : {
+                }
+            }
+        },
+        "3.6 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "7.14",
+            "entries" : {
+                "7.14" : {
+                }
+            }
+        },
+        "4.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "7.14",
+            "entries" : {
+                "7.14" : {
+                }
+            }
+        },
+        "5.1" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "7.14",
+            "entries" : {
+                "7.14" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SO_Unthreaded_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -17658,7 +19745,61 @@ const PEM_Metric_SRT_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_SRT_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_SRT_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_SRT_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -17883,7 +20024,43 @@ const PEM_Metric_Stud_HF109_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_Stud_HF109_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_Stud_HF109_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_Stud_HF109_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18037,7 +20214,43 @@ const PEM_Metric_Stud_HFE_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_Stud_HFE_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_Stud_HFE_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_Stud_HFE_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18199,7 +20412,52 @@ const PEM_Metric_Stud_HFH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_Stud_HFH_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_Stud_HFH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.50 mm",
+            "entries" : {
+                "1.50 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_Stud_HFH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18389,7 +20647,43 @@ const PEM_Metric_Stud_HFLH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_Stud_HFLH_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_Stud_HFLH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.00 mm",
+            "entries" : {
+                "1.00 mm" : {
+                }
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_Stud_HFLH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18543,7 +20837,43 @@ const PEM_Metric_TFH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_TFH_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_TFH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.70 mm",
+            "entries" : {
+                "0.70 mm" : {
+                }
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.80 mm",
+            "entries" : {
+                "0.80 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_TFH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18705,7 +21035,52 @@ const PEM_Metric_TPS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_TPS_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_TPS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                }
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "4.5",
+            "entries" : {
+                "4.5" : {
+                }
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "5.5",
+            "entries" : {
+                "5.5" : {
+                }
+            }
+        },
+        "6" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "6.5",
+            "entries" : {
+                "6.5" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_TPS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18879,7 +21254,25 @@ const PEM_Metric_TPXS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_TPXS_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_TPXS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "3.5",
+            "entries" : {
+                "3.5" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_TPXS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -18977,7 +21370,61 @@ const PEM_Metric_TSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Metric_TSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Metric_TSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "M2.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M2.5 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.45 mm",
+            "entries" : {
+                "0.45 mm" : {
+                }
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.50 mm",
+            "entries" : {
+                "0.50 mm" : {
+                }
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "Pitch",
+            "default" : "0.60 mm",
+            "entries" : {
+                "0.60 mm" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Metric_TSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -19227,7 +21674,70 @@ const PEM_Unified_BSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_BSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_BSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#4 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#6 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_BSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -19513,7 +22023,72 @@ const PEM_Unified_CLA_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_CLA_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_CLA_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_CLA_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -19869,7 +22444,134 @@ const PEM_Unified_CLS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_CLS_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_CLS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#3" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "48 tpi",
+            "entries" : {
+                "48 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "#12" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                },
+                "28 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                },
+                "24 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                },
+                "24 tpi" : {
+                }
+            }
+        },
+        "7/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "13 tpi",
+            "entries" : {
+                "13 tpi" : {
+                },
+                "20 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_CLS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -20441,7 +23143,25 @@ const PEM_Unified_DSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_DSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_DSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_DSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -20539,7 +23259,61 @@ const PEM_Unified_FH4_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_FH4_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_FH4_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_FH4_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -20781,7 +23555,61 @@ const PEM_Unified_FHL_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_FHL_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_FHL_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_FHL_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -21119,7 +23947,169 @@ const PEM_Unified_FH_Pin_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_FH_Pin_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_FH_Pin_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.073" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.085",
+            "entries" : {
+                "0.085" : {
+                }
+            }
+        },
+        "0.084" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.099",
+            "entries" : {
+                "0.099" : {
+                }
+            }
+        },
+        "0.094" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.111",
+            "entries" : {
+                "0.111" : {
+                }
+            }
+        },
+        "0.103" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.118",
+            "entries" : {
+                "0.118" : {
+                }
+            }
+        },
+        "0.106" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.125",
+            "entries" : {
+                "0.125" : {
+                }
+            }
+        },
+        "0.116" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                }
+            }
+        },
+        "0.120" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.137",
+            "entries" : {
+                "0.137" : {
+                }
+            }
+        },
+        "0.137" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.157",
+            "entries" : {
+                "0.157" : {
+                }
+            }
+        },
+        "0.141" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.163",
+            "entries" : {
+                "0.163" : {
+                }
+            }
+        },
+        "0.160" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                }
+            }
+        },
+        "0.167" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.189",
+            "entries" : {
+                "0.189" : {
+                }
+            }
+        },
+        "0.173" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.197",
+            "entries" : {
+                "0.197" : {
+                }
+            }
+        },
+        "0.207" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.236",
+            "entries" : {
+                "0.236" : {
+                }
+            }
+        },
+        "0.215" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                }
+            }
+        },
+        "0.223" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.250",
+            "entries" : {
+                "0.250" : {
+                }
+            }
+        },
+        "0.273" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                }
+            }
+        },
+        "0.281" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.312",
+            "entries" : {
+                "0.312" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_FH_Pin_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -21809,7 +24799,81 @@ const PEM_Unified_FH_Stud_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_FH_Stud_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_FH_Stud_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_FH_Stud_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -22129,7 +25193,43 @@ const PEM_Unified_H_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_H_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_H_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_H_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -22307,7 +25407,70 @@ const PEM_Unified_SGPC_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SGPC_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SGPC_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SGPC_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -22569,7 +25732,43 @@ const PEM_Unified_SH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SH_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -22755,7 +25954,79 @@ const PEM_Unified_SL_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SL_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SL_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SL_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -23053,7 +26324,43 @@ const PEM_Unified_SMPS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SMPS_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SMPS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SMPS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -23199,7 +26506,34 @@ const PEM_Unified_SOSG_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SOSG_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SOSG_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SOSG_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -23341,7 +26675,70 @@ const PEM_Unified_SO_Threaded_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SO_Threaded_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SO_Threaded_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#4 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#6 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SO_Threaded_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -23627,7 +27024,70 @@ const PEM_Unified_SO_Unthreaded_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SO_Unthreaded_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SO_Unthreaded_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.116" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.166",
+            "entries" : {
+                "0.166" : {
+                }
+            }
+        },
+        "0.116 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.213",
+            "entries" : {
+                "0.213" : {
+                }
+            }
+        },
+        "0.143" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.213",
+            "entries" : {
+                "0.213" : {
+                }
+            }
+        },
+        "0.143 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.281",
+            "entries" : {
+                "0.281" : {
+                }
+            }
+        },
+        "0.169" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.281",
+            "entries" : {
+                "0.281" : {
+                }
+            }
+        },
+        "0.194" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.281",
+            "entries" : {
+                "0.281" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SO_Unthreaded_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -23913,7 +27373,70 @@ const PEM_Unified_SRT_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_SRT_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_SRT_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_SRT_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -24175,7 +27698,43 @@ const PEM_Unified_Stud_HFE_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_Stud_HFE_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_Stud_HFE_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_Stud_HFE_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -24329,7 +27888,43 @@ const PEM_Unified_Stud_HFG8_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_Stud_HFG8_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_Stud_HFG8_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_Stud_HFG8_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -24491,7 +28086,52 @@ const PEM_Unified_Stud_HFH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_Stud_HFH_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_Stud_HFH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_Stud_HFH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -24681,7 +28321,43 @@ const PEM_Unified_Stud_HFLH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_Stud_HFLH_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_Stud_HFLH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "20 tpi",
+            "entries" : {
+                "20 tpi" : {
+                }
+            }
+        },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_Stud_HFLH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -24851,7 +28527,63 @@ const PEM_Unified_TFH_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_TFH_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_TFH_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        },
+        "#10" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "24 tpi",
+            "entries" : {
+                "24 tpi" : {
+                },
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_TFH_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -25099,7 +28831,43 @@ const PEM_Unified_TPS_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_TPS_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_TPS_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "0.125" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.144",
+            "entries" : {
+                "0.144" : {
+                }
+            }
+        },
+        "0.185" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.205",
+            "entries" : {
+                "0.205" : {
+                }
+            }
+        },
+        "0.25" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "0.272",
+            "entries" : {
+                "0.272" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_TPS_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {
@@ -25269,7 +29037,61 @@ const PEM_Unified_TSO_ClearanceHoleTable = {
     }
 };
 
-const PEM_Unified_TSO_TappedHoleTable = {
+/** @internal */
+export const PEM_Unified_TSO_TappedExternalThreadTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "#2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#2 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "56 tpi",
+            "entries" : {
+                "56 tpi" : {
+                }
+            }
+        },
+        "#4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#4 (thick walled)" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "40 tpi",
+            "entries" : {
+                "40 tpi" : {
+                }
+            }
+        },
+        "#6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "32 tpi",
+            "entries" : {
+                "32 tpi" : {
+                }
+            }
+        }
+    }
+};
+
+/** @internal */
+export const PEM_Unified_TSO_TappedHoleTable = {
     "name" : "size",
     "displayName" : "Size",
     "entries" : {

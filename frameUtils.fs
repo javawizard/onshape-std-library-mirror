@@ -185,18 +185,6 @@ precondition
 }
 
 /** @internal */
-export function getIncrementingId(prefix is Id) returns function
-{
-    var index = new box(-1);
-    return function()
-        {
-            index[] += 1;
-            const newId = prefix + unstableIdComponent(index[]);
-            return newId;
-        };
-}
-
-/** @internal */
 export function max(elements is array, lessThan is function)
 {
     var max = undefined;

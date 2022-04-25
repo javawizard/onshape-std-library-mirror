@@ -202,7 +202,7 @@ function handleNewCornerOverride(context is Context, oldDefinition is map, defin
     const oldOverrideSize = size(oldDefinition.cornerOverrides);
     if (newOverrideSize == oldOverrideSize + 1)
     {
-        var newOverride = definition.cornerOverrides[newOverrideSize - 1];
+        var newOverride = last(definition.cornerOverrides);
         newOverride.cornerType = definition.defaultCornerType;
         if (isButtCorner(newOverride.cornerType))
         {
@@ -217,7 +217,11 @@ function doFrame(context is Context, id is Id, definition is map)
 {
     var bodiesToDelete = new box([]);
     const profileData = getProfile(context, id, definition, bodiesToDelete);
-    const sweepData = sweepFrames(context, id, definition, profileData, bodiesToDelete);
+
+    const sweepData = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1742_STABLE_FRAME_SWEEP))
+        ? sweepFrames(context, id, definition, profileData, bodiesToDelete)
+        : sweepFrames_PRE_V1742(context, id, definition, profileData, bodiesToDelete);
+
     addManipulators(context, id, sweepData.manipulators);
     trimFrame(context, id, definition, sweepData.trimEnds, sweepData.sweepBodies, bodiesToDelete);
     cleanUpBodies(context, id, bodiesToDelete);
@@ -229,67 +233,328 @@ function sweepFrames(context is Context, topLevelId is Id, definition is map, pr
 {
     verify(!isQueryEmpty(context, definition.selections), ErrorStringEnum.FRAME_SELECT_PATH, { "faultyParameters" : ["selections"] });
 
-    var trimEnds = [];
-    var sweepBodies = [];
+    const cornerOverrides = gatherCornerOverrides(context, definition.cornerOverrides);
+    const selectionData = createPathsFromSelections(context, topLevelId, definition.selections, bodiesToDelete);
     var manipulators = {};
 
-    const cornerOverrides = gatherCornerOverrides(context, definition.cornerOverrides);
-    const pathData = createPathsFromSelections(context, topLevelId, definition.selections, bodiesToDelete);
-    const paths = pathData.paths;
+    const sweepData = doStablePaths(context, topLevelId, definition, profileData, cornerOverrides, selectionData.paths, selectionData.stableEdges, bodiesToDelete);
+    manipulators = updateManipulators(manipulators, sweepData.manipulators);
 
+    const frameManipulators = createStableFrameManipulators(context, definition, selectionData.manipulatorEdge, profileData);
+
+    return {
+            "trimEnds" : sweepData.trimEnds,
+            "manipulators" : mergeMaps(manipulators, frameManipulators),
+            "sweepBodies" : sweepData.sweepBodies
+        };
+}
+
+function createStableFrameManipulators(context is Context, definition is map, manipulatorEdge is Query, profileData is map) returns map
+{
+    //Desired behavior is to set the frames manipulator at the middle of the first user-selected swept segment.
+    //Due to the heuristic for creating planes the manipulators can lose correct orientation with the frame.
+    //Detect this case and use the mid-segment manipulator plane if possible.
+    //Otherwise use the start of the manipulator edge which is always correct.
+    const manipulatorStart = evaluatePathEdge(context, manipulatorEdge, false, 0);
+    const manipulatorMid = evaluatePathEdge(context, manipulatorEdge, false, 0.5);
+    const startXDir = getXDirFromHeuristic(manipulatorStart);
+    const midXDir = getXDirFromHeuristic(manipulatorMid);
+    return tolerantEquals(startXDir, midXDir)
+        ? createFrameManipulators(context, definition, manipulatorMid, profileData)
+        : createFrameManipulators(context, definition, manipulatorStart, profileData);
+}
+
+function doStablePaths(context is Context, topLevelId is Id, definition is map, profileData is map, cornerOverrides is array,
+    paths is array, stableEdges is array, bodiesToDelete is box) returns map
+{
+    const createPathId = getUnstableIncrementingId(topLevelId);
+
+    var allManipulators = {};
+    var allTrimEnds = [];
+    var allSweepBodies = [];
     for (var pathIndex = 0; pathIndex < size(paths); pathIndex += 1)
     {
-        const pathId = topLevelId + unstableIdComponent(pathIndex);
-        const edgePath = paths[pathIndex];
-        var pathSweepData = [];
-        var pathCornerData = [];
-        var pathFrameData = [];
-
-        const numPathSegments = size(edgePath.edges);
-        for (var edgeIndex = 0; edgeIndex < numPathSegments; edgeIndex += 1)
-        {
-            const edgeId = pathId + unstableIdComponent(edgeIndex);
-            setExternalDisambiguation(context, edgeId, edgePath.edges[edgeIndex]);
-            const profileId = edgeId + "profile";
-            const edgeResult = (edgeIndex == 0) ?
-                handleStartingEdge(context, definition, edgeId, profileId, edgePath, profileData) :
-                handleContinuingEdge(context, definition, pathSweepData, edgeId, profileId, edgePath, edgeIndex, cornerOverrides, bodiesToDelete);
-
-            manipulators = updateManipulators(manipulators, edgeResult.manipulators);
-            pathCornerData = updateCornerData(pathCornerData, edgeResult.cornerData);
-            const sweepId = edgeId + "sweep";
-            const sweepData = sweepOneEdge(context, topLevelId, sweepId, edgeResult);
-            sweepBodies = append(sweepBodies, sweepData.body);
-            pathSweepData = append(pathSweepData, sweepData);
-            //make additional corner for closed loop
-            const closedLoopCornerData = handleCornerForClosedLoop(context, definition, cornerOverrides, pathSweepData, edgePath, edgeIndex);
-            manipulators = updateManipulators(manipulators, closedLoopCornerData.manipulator);
-            pathCornerData = updateCornerData(pathCornerData, closedLoopCornerData);
-            cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
-            const frameData = getFrameData(context, sweepId, sweepData);
-
-            const frameQ = qCreatedBy(sweepId, EntityType.BODY);
-            setFrameAttributes(context, frameQ, profileData, frameData);
-            pathFrameData = append(pathFrameData, frameData);
-        }
-        //we allow trimming of first segments's startFace and last segment's endFace only
-        //for paths of only one segment, this will be both ends of that single beam
-        setFrameTerminusAttributes(context, pathFrameData[0].startFace, pathFrameData[numPathSegments - 1].endFace);
-        trimEnds = concatenateArrays([trimEnds, [pathFrameData[0].startFace, pathFrameData[numPathSegments - 1].endFace]]);
-        createCorners(context, topLevelId, pathId, pathSweepData, pathCornerData, bodiesToDelete);
+        const path = paths[pathIndex];
+        const stableEdge = stableEdges[pathIndex];
+        const pathData = doStablePath(context, topLevelId, createPathId(), definition, profileData, cornerOverrides, path, stableEdge, bodiesToDelete);
+        //aggregate data
+        allTrimEnds = concatenateArrays([allTrimEnds, pathData.trimEnds]);
+        allSweepBodies = concatenateArrays([allSweepBodies, pathData.sweepBodies]);
+        allManipulators = mergeMaps(allManipulators, pathData.manipulators);
     }
-    //we always attach the frame manipulator to the first edge of the first path
-    //this keeps the manipulator oriented correctly to the frame orientation (even though this orientation may change based on edge selection)
-    const manipulatorEdgePath = paths[0];
-    const manipulatorEdge = manipulatorEdgePath.edges[0];
-    const manipulatorFlipped = manipulatorEdgePath.flipped[0];
-    const frameManipulators = createFrameManipulators(context, definition, manipulatorEdge, manipulatorFlipped, profileData);
-    manipulators = updateManipulators(frameManipulators, manipulators);
+
     return {
-            "trimEnds" : trimEnds,
+            "trimEnds" : allTrimEnds,
+            "manipulators" : allManipulators,
+            "sweepBodies" : allSweepBodies
+        };
+}
+
+function doStablePath(context is Context, topLevelId is Id, pathId is Id, definition is map, profileData is map,
+    cornerOverrides is array, path is Path, stableEdge is map, bodiesToDelete is box) returns map
+{
+    //A "stable path" is geometrically stable while the user edits the path.
+    //If the user selects additional segments, the path can grow but it won't twist or change orientation.
+    //This is needed to prevent BEL-179102 (downstream trim fails after editing upstream frames).
+    //To achieve this, each frame is "stabilized" around the first selected edge.
+
+    //case 1: path is closed
+    //rotate path till stable edge becomes 1st element of the path then sweep as normal
+    if (path.closed)
+    {
+        const currentIndex = stableEdge.pathIndex;
+        verify(currentIndex >= 0, "Can't find manipulator index");
+        path.edges = rotateArray(path.edges, -currentIndex);
+        path.flipped = rotateArray(path.flipped, -currentIndex);
+        return doOneStablePath(context, topLevelId, definition, pathId, profileData, cornerOverrides, path, bodiesToDelete);
+    }
+
+    //case 2: stableEdge is first segment of path
+    //sweep as normal
+    if (path.edges[0] == stableEdge.edge)
+    {
+        return doOneStablePath(context, topLevelId, definition, pathId, profileData, cornerOverrides, path, bodiesToDelete);
+    }
+
+    //case 3: stableEdge is intermediate segment along an open path
+    return doSplitPath(context, topLevelId, pathId, definition, profileData, cornerOverrides, path, stableEdge, bodiesToDelete);
+}
+
+function doOneStablePath(context is Context, topLevelId is Id, definition is map, pathId is Id, profileData is map, cornerOverrides is array, path is Path, bodiesToDelete is box) returns map
+{
+    const createSweepId = getDisambiguatedIncrementingId(context, pathId);
+    const pathData = sweepOnePath(context, topLevelId, createSweepId, definition, profileData, cornerOverrides, path, bodiesToDelete);
+    setAttributesOnPath(context, profileData, pathData.sweepData);
+    const createCornerId = getIncrementingId(pathId + "corner");
+    createCorners(context, topLevelId, createCornerId, pathData.sweepData, pathData.cornerData, bodiesToDelete);
+
+    return {
+            "trimEnds" : [pathData.sweepData[0].startFace, last(pathData.sweepData).endFace],
+            "manipulators" : pathData.manipulators,
+            "sweepBodies" : getSweepBodies(pathData)
+        };
+}
+
+function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definition is map, profileData is map, cornerOverrides is array, path is Path, stableEdge is map, bodiesToDelete is box) returns map
+{
+    //1. The path is split in to a frontPath and a backPath, both starting at the stable edge start.
+    //frontPath is subpath [stableEdge.pathIndex, last segment of path)
+    //backPath is subpath [0, stableEdge.pathIndex)
+    //2. sweep frontPath as normal
+    //3. sweep backPath in reverse from first face of frontPath
+    //4. fix up attribution so frame appears as if it was a swept from start to finish segment.
+    const splitPaths = splitPathAtEdge(path, stableEdge);
+    const createSweepId = getDisambiguatedIncrementingId(context, pathId);
+
+    const frontPathData = sweepOnePath(context, topLevelId, createSweepId, definition, profileData, cornerOverrides, splitPaths.frontPath, bodiesToDelete);
+
+    for (var sweepData in frontPathData.sweepData)
+    {
+        const frameData = getFrameData(context, sweepData.id, sweepData);
+        setFrameAttributes(context, qCreatedBy(sweepData.id, EntityType.BODY), profileData, frameData);
+    }
+
+    const backPath = splitPaths.backPath;
+    //the backPath needs a starting face and direction
+    const previousFace = frontPathData.sweepData[0].startFace;
+    var previousEdgeEnd = evaluatePathEdge(context, stableEdge.edge, false, 0);
+    previousEdgeEnd.direction = -previousEdgeEnd.direction;
+    var backPathSweepData = sweepContinuingPath(context, definition, createSweepId, backPath.edges, backPath.flipped, previousEdgeEnd, previousFace, cornerOverrides, profileData, bodiesToDelete);
+    //because the backPath was swept backward, swap the attribution on the ends.
+    for (var sweepData in backPathSweepData.sweepData)
+    {
+        var frameData = getFrameData(context, sweepData.id, sweepData);
+        const temp = frameData.endFace;
+        frameData.endFace = frameData.startFace;
+        frameData.startFace = temp;
+        setFrameAttributes(context, qCreatedBy(sweepData.id, EntityType.BODY), profileData, frameData);
+    }
+
+    //the last face of the last element of the backpath is the 'start' of the frame
+    setFrameTerminusAttributes(context, last(backPathSweepData.sweepData).endFace, last(frontPathData.sweepData).endFace);
+
+    //the createCorners function requires the 'previous face' so insert it at the front of the array here
+    backPathSweepData.sweepData = concatenateArrays([
+                [{ "endFace" : frontPathData.sweepData[0].startFace }],
+                backPathSweepData.sweepData]);
+
+    const createCornerId = getIncrementingId(pathId + "corner");
+    createCorners(context, topLevelId, createCornerId, frontPathData.sweepData, frontPathData.cornerData, bodiesToDelete);
+    createCorners(context, topLevelId, createCornerId, backPathSweepData.sweepData, backPathSweepData.cornerData, bodiesToDelete);
+
+    return {
+            "trimEnds" : [previousFace, last(frontPathData.sweepData).endFace],
+            "manipulators" : mergeMaps(frontPathData.manipulators, backPathSweepData.manipulators),
+            "sweepBodies" : concatenateArrays([getSweepBodies(frontPathData), backPathSweepData.sweepBodies])
+        };
+}
+
+function sweepOnePath(context is Context, topLevelId is Id, createSweepId is function, definition is map, profileData is map, cornerOverrides is array, path is Path, bodiesToDelete is box) returns map
+{
+    //sweep start edge
+    var sweepData = [];
+    const startEdgeSweepData = sweepStartingEdge(context, definition, createSweepId(path.edges[0]), path, profileData, bodiesToDelete);
+    sweepData = append(sweepData, startEdgeSweepData);
+    const previousEdgeEnd = evaluatePathEdge(context, path.edges[0], path.flipped[0], 1);
+    const previousFace = startEdgeSweepData.endFace;
+
+    //sweep continuing edges
+    const continuingEdges = subArray(path.edges, 1, size(path.edges));
+    const continuingFlips = subArray(path.flipped, 1, size(path.flipped));
+    const continuingData = sweepContinuingPath(context, definition, createSweepId, continuingEdges, continuingFlips, previousEdgeEnd, previousFace, cornerOverrides, profileData, bodiesToDelete);
+    sweepData = concatenateArrays([sweepData, continuingData.sweepData]);
+    var manipulators = continuingData.manipulators;
+    var cornerData = continuingData.cornerData;
+
+    if (path.closed)
+    {
+        const closedLoopCornerData = handleCornerForClosedLoop(context, definition, cornerOverrides, sweepData, path, size(path.edges) - 1);
+        manipulators = updateManipulators(manipulators, closedLoopCornerData.manipulator);
+        cornerData = updateCornerData(cornerData, closedLoopCornerData);
+    }
+
+    return {
+            "sweepData" : sweepData,
+            "cornerData" : cornerData,
+            "manipulators" : manipulators
+        };
+}
+
+function sweepContinuingPath(context is Context, definition is map, createSweepId is function, edges is array, flips is array,
+    previousEdgeEnd is Line, previousFace is Query, cornerOverrides is array, profileData is map, bodiesToDelete is box) returns map
+{
+    verify(size(edges) == size(flips), "Bad path data");
+
+    var sweepData = [];
+    var cornerData = [];
+    var manipulators = {};
+    var sweepBodies = [];
+
+    for (var index = 0; index < size(edges); index += 1)
+    {
+        const edge = edges[index];
+        const flipped = flips[index];
+        const edgeStart = evaluatePathEdge(context, edge, flipped, 0);
+        const currentEdgeData = sweepContinuingEdge(context, definition, createSweepId(edge), edge, edgeStart, previousEdgeEnd, previousFace, cornerOverrides, profileData, bodiesToDelete);
+        previousEdgeEnd = evaluatePathEdge(context, edge, flipped, 1);
+        previousFace = currentEdgeData.sweepData.endFace;
+        //aggregation
+        sweepData = append(sweepData, currentEdgeData.sweepData);
+        cornerData = append(cornerData, currentEdgeData.cornerData);
+        manipulators = updateManipulators(manipulators, currentEdgeData.cornerData.manipulator);
+        sweepBodies = append(sweepBodies, currentEdgeData.sweepData.body);
+    }
+
+    return {
+            "sweepData" : sweepData,
+            "cornerData" : cornerData,
             "manipulators" : manipulators,
             "sweepBodies" : sweepBodies
         };
+}
+
+
+function sweepStartingEdge(context is Context, definition is map, edgeId is Id, edgePath is Path, profileData is map, bodiesToDelete is box) returns map
+{
+    const edge = edgePath.edges[0]; //by definition the starting edge has index 0
+    const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[0], 0);
+    const planeAtEdgeStart = getPlaneAtLineStart(edgeLine);
+    const profilePlane = getProfilePlane(profileData, definition);
+    const mirrorAndAngleTransform = getMirrorAndAngleTransform(definition.mirrorProfile, edgeLine, planeAtEdgeStart, definition.angle);
+    const profileTransform = mirrorAndAngleTransform * transform(profilePlane, planeAtEdgeStart);
+
+    const profileId = edgeId + "profile";
+    opPattern(context, profileId, {
+                "entities" : profileData.profileBody,
+                "transforms" : [profileTransform],
+                "instanceNames" : ["1"]
+            });
+
+    cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
+    const sweepId = edgeId + "sweep";
+    const sweepData = sweepOneEdge(context, sweepId, qCreatedBy(profileId, EntityType.FACE), edge);
+    return sweepData;
+    }
+
+function sweepContinuingEdge(context, definition, edgeId, edge is Query, edgeStart is Line, previousEdgeEnd is Line, previousFace, cornerOverrides is array, profileData is map, bodiesToDelete is box)
+{
+    opExtractSurface(context, edgeId + "extract", { "faces" : previousFace });
+    const extractedBody = qCreatedBy(edgeId + "extract", EntityType.BODY);
+    cleanUpAtEndOfFeature(bodiesToDelete, extractedBody);
+    const sweepProfileTransform = transform(line(previousEdgeEnd.origin, previousEdgeEnd.direction), line(edgeStart.origin,
+            edgeStart.direction));
+
+    const profileId = edgeId + "profile";
+    opTransform(context, profileId, {
+                "bodies" : extractedBody,
+                "transform" : sweepProfileTransform
+            });
+    cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
+    const faceToSweep = qOwnedByBody(extractedBody, EntityType.FACE);
+    const cornerData = getCurrentCornerData(context, previousEdgeEnd, edgeStart, cornerOverrides, definition, faceToSweep, previousFace);
+    const sweepId = edgeId + "sweep";
+    const sweepData = sweepOneEdge(context, sweepId, faceToSweep, edge);
+    return {
+            "sweepData" : sweepData,
+            "cornerData" : cornerData
+        };
+}
+
+function splitPathAtEdge(path is Path, stableEdge is map) returns map
+{
+    //split the path path in to two paths.
+    //This creates two paths that both start at the start point of the path edge.
+    //backPath: path.edges[0, splitIndex)
+    //frontPath: path.edges[splitIndex, N)
+    //backPath is then reversed.
+    const pathLength = size(path.edges);
+    verify(pathLength > 0, "Can't split a zero length path");
+    verify(!path.closed, "Can't split a closed path");
+    const splitIndex = stableEdge.pathIndex;
+    var backPath = {
+            "edges" : subArray(path.edges, 0, splitIndex),
+            "flipped" : subArray(path.flipped, 0, splitIndex),
+            "closed" : false
+        } as Path;
+    backPath = reverse(backPath);
+
+    const frontPath = {
+                "edges" : subArray(path.edges, splitIndex, pathLength),
+                "flipped" : subArray(path.flipped, splitIndex, pathLength),
+                "closed" : false
+            } as Path;
+
+    return {
+            "frontPath" : frontPath,
+            "backPath" : backPath
+        };
+}
+
+function createFrameManipulators(context is Context, definition is map, manipulatorLine is Line, profileData is map) returns map
+{
+    var manipulatorPlane = getPlaneAtLineStart(manipulatorLine);
+
+    //The manipulator plane "x" is the base of the manipulator widget so we dont want to "rotate" the manipulator plane.
+    //We also want to keep the "y" axis in the same direction after the flip so that the "drag" behaves properly.
+    //To achieve both requirements with a mirrored profile we reverse both the X and Z axis.
+    if (definition.mirrorProfile)
+    {
+        manipulatorPlane = plane(manipulatorPlane.origin, -manipulatorPlane.normal, -manipulatorPlane.x);
+    }
+
+    const angleManipulator = angularManipulator({
+                "primaryParameterId" : "angle",
+                "axisOrigin" : manipulatorPlane.origin,
+                "axisDirection" : manipulatorPlane.normal,
+                "angle" : definition.angle,
+                "minValue" : 0 * degree,
+                "maxValue" : 360 * degree,
+                "rotationOrigin" : manipulatorPlane.origin + manipulatorPlane.x * profileData.xInc * 2
+            });
+
+    const pointsManipulator = createPointsManipulator(definition.index, profileData, manipulatorPlane, definition.angle);
+
+    return { "angleManipulator" : angleManipulator, "points" : pointsManipulator };
 }
 
 function getProfilePlane(profileData is map, definition is map) returns Plane
@@ -321,131 +586,48 @@ function evaluatePathEdge(context is Context, edge is Query, isFlipped is boolea
     return edgeLine;
 }
 
-function evaluatePathEdge(context is Context, path is Path, edgeIndex is number, parameter is number) returns Line
+
+function evaluatePathEdgeFromIndex(context is Context, path is Path, edgeIndex is number, parameter is number) returns Line
 {
     const edge = path.edges[edgeIndex];
     const isFlipped = path.flipped[edgeIndex];
     return evaluatePathEdge(context, edge, isFlipped, parameter);
 }
 
-function handleStartingEdge(context is Context, definition is map, edgeId is Id, profileId is Id,
-    edgePath is Path, profileData is map) returns map
-{
-    //by definition the starting edge has index 0
-    const edge = edgePath.edges[0];
-    const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[0], 0);
-    const planeAtEdgeStart = getPlaneAtLineStart(edgeLine);
-    const profilePlane = getProfilePlane(profileData, definition);
 
-    var profileTransform;
-    if (definition.mirrorProfile)
+function getMirrorAndAngleTransform(mirrorProfile is boolean, edgeLine is Line, planeAtEdgeStart is Plane, angle is ValueWithUnits) returns Transform
+{
+    if (mirrorProfile)
     {
         //the desired behavior is to mirror the profile sketch across its Y-axis.
         //But to keep the "twist" direction correct, we also negate the angle.
         const mirrorPlane = plane(edgeLine.origin, planeAtEdgeStart.x);
-        profileTransform = rotationAround(edgeLine, -definition.angle) * mirrorAcross(mirrorPlane);
+        return rotationAround(edgeLine, -angle) * mirrorAcross(mirrorPlane);
     }
     else
     {
-        profileTransform = rotationAround(edgeLine, definition.angle);
+        return rotationAround(edgeLine, angle);
     }
-
-    profileTransform = profileTransform * transform(profilePlane, planeAtEdgeStart);
-    opPattern(context, profileId, {
-                "entities" : profileData.profileBody,
-                "transforms" : [profileTransform],
-                "instanceNames" : ["1"]
-            });
-
-    return {
-            "edge" : edge,
-            "faceToSweep" : qCreatedBy(profileId, EntityType.FACE),
-            "manipulators" : {},
-            "cornerData" : {}
-        };
 }
 
-
-function createFrameManipulators(context is Context, definition is map, edge is Query, isFlipped is boolean, profileData is map) returns map
-{
-    const midPointLine = evaluatePathEdge(context, edge, isFlipped, 0.5);
-    var manipulatorPlane = getPlaneAtLineStart(midPointLine);
-
-    //The manipulator plane "x" is the base of the manipulator widget so we dont want to "rotate" the manipulator plane.
-    //We also want to keep the "y" axis in the same direction after the flip so that the "drag" behaves properly.
-    //To achieve both requirements with a mirrored profile we reverse both the X and Z axis.
-    if (definition.mirrorProfile)
-    {
-        manipulatorPlane = plane(manipulatorPlane.origin, -manipulatorPlane.normal, -manipulatorPlane.x);
-    }
-
-    const angleManipulator = angularManipulator({
-                "primaryParameterId" : "angle",
-                "axisOrigin" : manipulatorPlane.origin,
-                "axisDirection" : manipulatorPlane.normal,
-                "angle" : definition.angle,
-                "minValue" : 0 * degree,
-                "maxValue" : 360 * degree,
-                "rotationOrigin" : manipulatorPlane.origin + manipulatorPlane.x * profileData.xInc * 2
-            });
-
-    const pointsManipulator = createPointsManipulator(definition.index, profileData, manipulatorPlane, definition.angle);
-
-    return { "angleManipulator" : angleManipulator, "points" : pointsManipulator };
-}
-
-
-
-function handleContinuingEdge(context is Context, definition is map, sweepData is array, edgeId is Id, profileId is Id,
-    edgePath is Path, edgeIndex is number, cornerOverrides is array, bodiesToDelete is box) returns map
-{
-    // We transform the end face of the previous sweep to the start of new edge
-    // rather than transforming from original plane to start of new edge.
-    // BEL-168513: Fixes geometric problems for spline paths but causes tracking problems.
-    const edge = edgePath.edges[edgeIndex];
-    const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[edgeIndex], 0);
-
-    const endFace = sweepData[edgeIndex - 1].endFace;
-    opExtractSurface(context, edgeId + "extract", { "faces" : endFace });
-    const extractedBody = qCreatedBy(edgeId + "extract", EntityType.BODY);
-    cleanUpAtEndOfFeature(bodiesToDelete, extractedBody);
-    var prevEdgeEnd = evaluatePathEdge(context, edgePath, edgeIndex - 1, 1);
-
-    const sweepProfileTransform = transform(line(prevEdgeEnd.origin, prevEdgeEnd.direction), line(edgeLine.origin,
-            edgeLine.direction));
-    opTransform(context, profileId, {
-                "bodies" : extractedBody,
-                "transform" : sweepProfileTransform
-            });
-    const faceToSweep = qOwnedByBody(extractedBody, EntityType.FACE);
-    const cornerData = getCurrentCornerData(context, prevEdgeEnd, edgeLine, cornerOverrides, definition, faceToSweep,
-        endFace);
-
-    return ({
-                "edge" : edge,
-                "faceToSweep" : faceToSweep,
-                "manipulators" : cornerData.manipulator,
-                "cornerData" : cornerData
-            });
-}
-
-function sweepOneEdge(context is Context, topLevelId is Id, sweepId is Id, edgeResult is map) returns map
+function sweepOneEdge(context is Context, sweepId is Id, face is Query, edge is Query) returns map
 {
     try silent
     {
-        opSweep(context, sweepId, { "profiles" : edgeResult.faceToSweep, "path" : edgeResult.edge });
+        opSweep(context, sweepId, { "profiles" : face, "path" : edge });
     }
     catch
     {
-        throw regenError(ErrorStringEnum.FRAME_SWEEP_FAILED, edgeResult.edge);
+        throw regenError(ErrorStringEnum.FRAME_SWEEP_FAILED, edge);
     }
 
     const startFaceQuery = qCapEntity(sweepId, CapType.START, EntityType.FACE);
     const endFaceQuery = qCapEntity(sweepId, CapType.END, EntityType.FACE);
     verify(!isQueryEmpty(context, startFaceQuery) && !isQueryEmpty(context, endFaceQuery),
-        ErrorStringEnum.FRAME_CANDIDATE_FACES, { "entities" : edgeResult.edge });
+        ErrorStringEnum.FRAME_CANDIDATE_FACES, { "entities" : edge });
 
     const sweepData = {
+            "id" : sweepId,
             "startFace" : startFaceQuery,
             "endFace" : endFaceQuery,
             "body" : qCreatedBy(sweepId, EntityType.BODY)
@@ -470,8 +652,8 @@ function handleCornerForClosedLoop(context is Context, definition is map, corner
 function createAdditionalCornerForClosedLoop(context is Context, definition is map, cornerOverrides is array,
     sweepData is array, edgePath is Path, edgeIndex is number) returns map
 {
-    const prevEdgeEnd = evaluatePathEdge(context, edgePath, edgeIndex, 1);
-    const lineAtStart = evaluatePathEdge(context, edgePath, 0, 0);
+    const prevEdgeEnd = evaluatePathEdgeFromIndex(context, edgePath, edgeIndex, 1);
+    const lineAtStart = evaluatePathEdgeFromIndex(context, edgePath, 0, 0);
     return getCurrentCornerData(context, prevEdgeEnd, lineAtStart, cornerOverrides, definition, sweepData[0].startFace, sweepData[edgeIndex].endFace);
 }
 
@@ -605,7 +787,7 @@ function preprocessForTrim(context is Context, id is Id, definition is map, trim
 
 function trimFramesByPlanes(context is Context, topLevelId is Id, capFaceToTrimPlane is map)
 {
-    const trimId = getIncrementingId(topLevelId + "planeTrim");
+    const trimId = getUnstableIncrementingId(topLevelId + "planeTrim");
     for (var entry in capFaceToTrimPlane)
     {
         const trimPlane = evPlane(context, { "face" : entry.value });
@@ -642,7 +824,7 @@ function trimFramesByBodies(context is Context, topLevelId is Id, frameToTrimDat
     //delete the other bodies
     //reapply the trimmed attributes to any newly created faces.
     //our trims may change the beam detid so we have to pass back the 'new' target.
-    const trimId = getIncrementingId(topLevelId + "trimFrame");
+    const trimId = getUnstableIncrementingId(topLevelId + "trimFrame");
     for (var entry in frameToTrimData)
     {
         //BEL-172580: Ended trims fail for circular tools
@@ -670,7 +852,7 @@ function doOneEndTrim(context is Context, topLevelId is Id, trimId is Id, target
     }
 
     //qUnion handles cases where trimmed end is not entirely removed (coped joints, partial trim, etc)
-    var trackedTarget = qUnion(target, startTracking(context, target));
+    const trackedTarget = qUnion(target, startTracking(context, target));
 
     var keptFaceQuery;
     var cutFaceQuery;
@@ -684,9 +866,11 @@ function doOneEndTrim(context is Context, topLevelId is Id, trimId is Id, target
         cutFaceQuery = qFrameEndFace(target);
         keptFaceQuery = qFrameStartFace(target);
     }
+
     //body will not survive trim operation so we evaluate the keptFaceQuery now
     const attributesToReapply = getFrameTopologyAttribute(context, cutFaceQuery);
     const keptFace = evaluateQuery(context, keptFaceQuery);
+
     verify(keptFace != [], ErrorStringEnum.FRAME_TRIM_FAILED, { "entities" : target });
     doTrim(context, topLevelId, trimId, target, tools);
     const keptBody = qOwnerBody(keptFace[0]);
@@ -816,6 +1000,7 @@ function getOneGeometryCollision(context is Context, planeQuery is Query, target
     }
     return collisions;
 }
+
 function groupEntitiesBySide(context is Context, capFaces is map, toolBodiesQuery is Query) returns map
 {
     var startEntities = [];
@@ -863,7 +1048,7 @@ function getTrimmableCapFaces(context is Context, frame is Query, trimEnds is ar
 //extend frames for better booleans/trims
 function extendFrames(context is Context, id is Id, capFaceToToolBodies is map)
 {
-    const offsetId = getIncrementingId(id + "extendFrame");
+    const offsetId = getUnstableIncrementingId(id + "extendFrame");
     for (var entry in capFaceToToolBodies)
     {
         var toolsQ = qUnion(entry.value);
@@ -986,12 +1171,12 @@ function flipPlaneIfNeeded(plane1 is Plane, plane2 is Plane) returns Plane
     return plane2;
 }
 
-function createCorners(context is Context, topLevelId is Id, wireId is Id, sweepData is array, cornerData is array, bodiesToDelete is box)
+function createCorners(context is Context, topLevelId is Id, createCornerId is function, sweepData is array, cornerData is array, bodiesToDelete is box)
 {
     for (var i = 0; i < size(cornerData); i += 1)
     {
         const corner = cornerData[i];
-        const cornerId = wireId + i;
+        const cornerId = createCornerId();
         const face = sweepData[(i + 1) % size(sweepData)].startFace;
         const facePlane = evPlane(context, { "face" : face });
         const prevFace = sweepData[i].endFace;
@@ -1072,9 +1257,13 @@ function createPathsFromSelections(context is Context, id is Id, selections is Q
     const allEdges = evaluateQuery(context, allEdgesQ);
     const paths = constructPaths(context, allEdgesQ, {});
     verify(pathsAreValid(paths), ErrorStringEnum.FRAME_BAD_PATH);
-    const unflippedFirstEdgePaths = enforceFirstEdgeUnflipped(paths, allEdges);
+    const pathData = enforceFirstSelectedEdgeUnflipped(paths, allEdges);
 
-    return { "paths" : unflippedFirstEdgePaths, "manipulatorEdge" : allEdges[0] };
+    return {
+            "paths" : pathData.correctedPaths,
+            "stableEdges" : pathData.firstSelectedEdges,
+            "manipulatorEdge" : allEdges[0]
+        };
 }
 
 function getProfile(context is Context, id is Id, definition is map, bodiesToDelete is box) returns map
@@ -1158,20 +1347,17 @@ function getProfile(context is Context, id is Id, definition is map, bodiesToDel
 }
 
 //Creates a plane with the Z-axis along the line's direction.
-//For consistency we use a heuristic to select the X-axis.
-//When the path has a Z-component, use global Y as x. Otherwise use global Z as x.
-function getPlaneAtLineStart(edgePoint is map)
+function getPlaneAtLineStart(edgeLine is Line)
 {
-    var xVec;
-    if (abs(edgePoint.direction[2]) > TOLERANCE.computational)
-    {
-        xVec = cross(vector(0, 1, 0), edgePoint.direction);
-    }
-    else
-    {
-        xVec = cross(vector(0, 0, 1), edgePoint.direction);
-    }
-    return plane(edgePoint.origin, edgePoint.direction, xVec);
+    const xDir = getXDirFromHeuristic(edgeLine);
+    return plane(edgeLine.origin, edgeLine.direction, cross(xDir, edgeLine.direction));
+}
+
+//For consistency we use a heuristic to select the X-axis.
+//When the path has no Z-component, use global Z. Otherwise use global Y.
+function getXDirFromHeuristic(edgeLine is Line) returns Vector
+{
+    return (abs(edgeLine.direction[2]) > TOLERANCE.computational) ? Y_DIRECTION : Z_DIRECTION;
 }
 
 function createPointsManipulator(index is number, profileData is map, manipulatorPlane is Plane,
@@ -1237,22 +1423,30 @@ function pathsAreValid(paths is array) returns boolean
 // constructPaths creates contiguous paths and sets arbitrary edge direction.
 // For simplifying downstream logic we enforce the following convention:
 // The first selected segment of any path will be unflipped.
-function enforceFirstEdgeUnflipped(paths is array, allEdges is array) returns array
+// NB: The first selected segment may or may not be the first segment of the path.
+function enforceFirstSelectedEdgeUnflipped(paths is array, allEdges is array) returns map
 {
     var correctedPaths = [];
+    var firstSelectedEdges = [];
     const edgeSelectionToIndexMap = getValueToIndexMap(allEdges);
     for (var path in paths)
     {
-        correctedPaths = append(correctedPaths, correctOnePath(path, edgeSelectionToIndexMap));
+        const correctedPathData = correctOnePath(path, edgeSelectionToIndexMap);
+        correctedPaths = append(correctedPaths, correctedPathData.path);
+        firstSelectedEdges = append(firstSelectedEdges, correctedPathData.firstSelectedEdge);
     }
-    return correctedPaths;
+    return {
+            "correctedPaths" : correctedPaths,
+            "firstSelectedEdges" : firstSelectedEdges
+        };
 }
 
-function correctOnePath(path is Path, edgeSelectionToIndexMap is map) returns Path
+function correctOnePath(path is Path, edgeSelectionToIndexMap is map) returns map
 {
     var lowestSelectionIndex = inf;
     var edgeIndexInPath = undefined;
-    for (var edgeIndex = 0; edgeIndex < size(path.edges); edgeIndex += 1)
+    const numEdges = size(path.edges);
+    for (var edgeIndex = 0; edgeIndex < numEdges; edgeIndex += 1)
     {
         const edge = path.edges[edgeIndex];
         const selectionIndex = edgeSelectionToIndexMap[edge];
@@ -1262,13 +1456,22 @@ function correctOnePath(path is Path, edgeSelectionToIndexMap is map) returns Pa
             edgeIndexInPath = edgeIndex;
         }
     }
-    const isFlipped = path.flipped[edgeIndexInPath];
-    return (isFlipped) ? reverse(path) : path;
+    if (path.flipped[edgeIndexInPath])
+    {
+        path = reverse(path);
+        edgeIndexInPath = (numEdges - 1) - edgeIndexInPath;
+    }
+    return {
+            "path" : path,
+            "firstSelectedEdge" : {
+                "edge" : path.edges[edgeIndexInPath],
+                "pathIndex" : edgeIndexInPath
+            }
+        };
 }
 
 function groupToolsPerSide(context is Context, capFaces is map, tools is array) returns map
 {
-
     const toolBodiesQuery = qUnion(tools);
 
     var toolsPerSide = {
@@ -1327,7 +1530,7 @@ function copeButtCorner(context is Context, topLevelId is Id, cornerId is Id, co
     face is Query, bodiesToDelete is box)
 {
     const faceOnTarget = corner.cornerFlip ? prevFace : face;
-    const targetBody = qOwnerBody(faceOnTarget);
+    const targetBody = evaluateQuery(context, qOwnerBody(faceOnTarget))[0];
     const toolBody = qOwnerBody(corner.cornerFlip ? face : prevFace);
     const isStart = isStartFace(context, faceOnTarget);
     const newTarget = doOneEndTrim(context, topLevelId, cornerId, targetBody, toolBody, isStart, bodiesToDelete);
@@ -1467,3 +1670,161 @@ function isButtCorner(cornerType is FrameCornerType) returns boolean
     return (cornerType == FrameCornerType.BUTT || cornerType == FrameCornerType.COPED_BUTT);
 }
 
+function rotateArray(elements is array, step is number) returns array
+{
+    const size = size(elements);
+    var outputArray = makeArray(size);
+    for (var index = 0; index < size; index += 1)
+    {
+        const newIndex = (index + step) % size;
+        outputArray[newIndex] = elements[index];
+    }
+    return outputArray;
+}
+
+function getSweepBodies(pathData is map) returns array
+{
+    const bodies = mapArray(pathData.sweepData, function(sweepData)
+        {
+            return sweepData.body;
+        });
+    return bodies;
+}
+
+function setAttributesOnPath(context is Context, profileData is map, pathSweepData is array)
+{
+    for (var sweepData in pathSweepData)
+    {
+        const frameData = getFrameData(context, sweepData.id, sweepData);
+        setFrameAttributes(context, qCreatedBy(sweepData.id, EntityType.BODY), profileData, frameData);
+    }
+    setFrameTerminusAttributes(context, pathSweepData[0].startFace, last(pathSweepData).endFace);
+}
+
+// NB: Functions below are used in downversion frames operations only.
+function sweepFrames_PRE_V1742(context is Context, topLevelId is Id, definition is map, profileData is map, bodiesToDelete is box) returns map
+{
+    verify(!isQueryEmpty(context, definition.selections), ErrorStringEnum.FRAME_SELECT_PATH, { "faultyParameters" : ["selections"] });
+
+    var trimEnds = [];
+    var sweepBodies = [];
+    var manipulators = {};
+
+    const cornerOverrides = gatherCornerOverrides(context, definition.cornerOverrides);
+    const pathData = createPathsFromSelections(context, topLevelId, definition.selections, bodiesToDelete);
+    const paths = pathData.paths;
+
+    for (var pathIndex = 0; pathIndex < size(paths); pathIndex += 1)
+    {
+        const pathId = topLevelId + unstableIdComponent(pathIndex);
+        const edgePath = paths[pathIndex];
+        var pathSweepData = [];
+        var pathCornerData = [];
+        var pathFrameData = [];
+
+        const numPathSegments = size(edgePath.edges);
+        for (var edgeIndex = 0; edgeIndex < numPathSegments; edgeIndex += 1)
+        {
+            const edgeId = pathId + unstableIdComponent(edgeIndex);
+            setExternalDisambiguation(context, edgeId, edgePath.edges[edgeIndex]);
+            const profileId = edgeId + "profile";
+            const edgeResult = (edgeIndex == 0) ?
+                handleStartingEdge(context, definition, edgeId, edgePath, profileData) :
+                handleContinuingEdge(context, definition, pathSweepData, edgeId, edgePath, edgeIndex, cornerOverrides, bodiesToDelete);
+
+            manipulators = updateManipulators(manipulators, edgeResult.manipulators);
+            pathCornerData = updateCornerData(pathCornerData, edgeResult.cornerData);
+            const sweepId = edgeId + "sweep";
+            const sweepData = sweepOneEdge(context, sweepId, edgeResult.faceToSweep, edgeResult.edge);
+            sweepBodies = append(sweepBodies, sweepData.body);
+            pathSweepData = append(pathSweepData, sweepData);
+            //make additional corner for closed loop
+            const closedLoopCornerData = handleCornerForClosedLoop(context, definition, cornerOverrides, pathSweepData, edgePath, edgeIndex);
+            manipulators = updateManipulators(manipulators, closedLoopCornerData.manipulator);
+            pathCornerData = updateCornerData(pathCornerData, closedLoopCornerData);
+            cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
+            const frameData = getFrameData(context, sweepId, sweepData);
+
+            const frameQ = qCreatedBy(sweepId, EntityType.BODY);
+            setFrameAttributes(context, frameQ, profileData, frameData);
+            pathFrameData = append(pathFrameData, frameData);
+        }
+        //Only allow trimming of first segments's startFace and last segment's endFace
+        //for paths of only one segment, this will be both ends of that single beam
+        const lastPathSegment = last(pathFrameData);
+        setFrameTerminusAttributes(context, pathFrameData[0].startFace, lastPathSegment.endFace);
+        trimEnds = concatenateArrays([trimEnds, [pathFrameData[0].startFace, lastPathSegment.endFace]]);
+        const createCornerId = getIncrementingId(pathId);
+        createCorners(context, topLevelId, createCornerId, pathSweepData, pathCornerData, bodiesToDelete);
+    }
+    //Always attach the frame manipulator to the first edge of the first path
+    //this keeps the manipulator oriented correctly to the frame orientation (even though this orientation may change based on edge selection)
+    const manipulatorEdge = paths[0].edges[0];
+    const manipulatorFlipped = paths[0].flipped[0];
+    const manipulatorLine = evaluatePathEdge(context, manipulatorEdge, manipulatorFlipped, 0.5);
+    const frameManipulators = createFrameManipulators(context, definition, manipulatorLine, profileData);
+
+    manipulators = updateManipulators(frameManipulators, manipulators);
+    return {
+            "trimEnds" : trimEnds,
+            "manipulators" : manipulators,
+            "sweepBodies" : sweepBodies
+        };
+}
+
+function handleStartingEdge(context is Context, definition is map, edgeId is Id,
+    edgePath is Path, profileData is map) returns map
+{
+    const profileId = edgeId + "profile";
+    //by definition the starting edge has index 0
+    const edge = edgePath.edges[0];
+    const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[0], 0);
+    const planeAtEdgeStart = getPlaneAtLineStart(edgeLine);
+    const profilePlane = getProfilePlane(profileData, definition);
+
+    const mirrorAndAngleTransform = getMirrorAndAngleTransform(definition.mirrorProfile, edgeLine, planeAtEdgeStart, definition.angle);
+    const profileTransform = mirrorAndAngleTransform * transform(profilePlane, planeAtEdgeStart);
+    opPattern(context, profileId, {
+                "entities" : profileData.profileBody,
+                "transforms" : [profileTransform],
+                "instanceNames" : ["1"]
+            });
+
+    return {
+            "edge" : edge,
+            "faceToSweep" : qCreatedBy(profileId, EntityType.FACE),
+            "manipulators" : {},
+            "cornerData" : {}
+        };
+}
+
+function handleContinuingEdge(context is Context, definition is map, sweepData is array, edgeId is Id,
+    edgePath is Path, edgeIndex is number, cornerOverrides is array, bodiesToDelete is box) returns map
+{
+    const profileId = edgeId + "profile";
+    // We transform the end face of the previous sweep to the start of new edge
+    // rather than transforming from original plane to start of new edge.
+    // BEL-168513: Fixes geometric problems for spline paths but causes tracking problems.
+    const edge = edgePath.edges[edgeIndex];
+    const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[edgeIndex], 0);
+
+    const endFace = sweepData[edgeIndex - 1].endFace;
+    opExtractSurface(context, edgeId + "extract", { "faces" : endFace });
+    const extractedBody = qCreatedBy(edgeId + "extract", EntityType.BODY);
+    cleanUpAtEndOfFeature(bodiesToDelete, extractedBody);
+    var prevEdgeEnd = evaluatePathEdgeFromIndex(context, edgePath, edgeIndex - 1, 1);
+    const sweepProfileTransform = transform(line(prevEdgeEnd.origin, prevEdgeEnd.direction), line(edgeLine.origin, edgeLine.direction));
+    opTransform(context, profileId, {
+                "bodies" : extractedBody,
+                "transform" : sweepProfileTransform
+            });
+    const faceToSweep = qOwnedByBody(extractedBody, EntityType.FACE);
+    const cornerData = getCurrentCornerData(context, prevEdgeEnd, edgeLine, cornerOverrides, definition, faceToSweep,
+        endFace);
+    return ({
+                "edge" : edge,
+                "faceToSweep" : faceToSweep,
+                "manipulators" : cornerData.manipulator,
+                "cornerData" : cornerData
+            });
+}

@@ -68,7 +68,7 @@ export function isAtVersionOrLater(versionToCheck is FeatureScriptVersionNumber,
  */
 export function isAtInitialMixedModelingReleaseVersionOrLater(context is Context)  returns boolean
 {
-    return false;
+    return isAtVersionOrLater(context, FeatureScriptVersionNumber.V1745_MIXED_MODELING_RELEASE);
 }
 
 /**

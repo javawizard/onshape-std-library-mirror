@@ -124,7 +124,7 @@ function doAllGroupTrims(context is Context, topLevelId is Id, frameGroups is ar
     // The second boolean is: [c] - [a,b]
     const allTools = aggregateTools(frameGroups);
     const numBooleans = size(frameGroups) - 1;
-    const trimId = getIncrementingId(topLevelId + "groupTrim");
+    const trimId = getUnstableIncrementingId(topLevelId + "groupTrim");
     for (var i = numBooleans; i > 0; i -= 1)
     {
         const targets = frameGroups[i].frames;

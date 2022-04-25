@@ -374,3 +374,45 @@ export function insertIntoMapOfArrays(mapToInsertInto is map, key, value) return
     return mapToInsertInto;
 }
 
+/**
+ * Returns last element of array.
+ */
+export function last(elements is array)
+{
+    return elements[@size(elements) - 1];
+}
+
+/**
+ * Returns a rotated array of the same elements.
+ * `step` less than zero moves elements towards the front.
+ * `step` greater than zero moves elements towards the back.
+ * @example `rotateArray([0, 1, 2], -1)`
+ *          returns `[1, 2, 0]`
+ */
+function rotateArray(elements is array, step is number) returns array
+{
+    const length = @size(elements);
+    if (length == 0)
+    {
+        return elements;
+    }
+    step = step % length;
+    if (step == 0)
+    {
+        return elements;
+    }
+
+    const head = subArray(elements, length - step, length);
+    const tail = @resize(elements, length - step);
+    const rotatedArray = concatenateArrays([head, tail]);
+    return rotatedArray;
+}
+
+/**
+ * Returns an array with the element at `index` removed.
+ */
+export function removeElementAt(arr is array, index is number) returns array
+{
+    return concatenateArrays([subArray(arr, 0, index), subArray(arr, index + 1, size(arr))]);
+}
+

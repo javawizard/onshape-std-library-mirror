@@ -2196,7 +2196,11 @@ export enum ErrorStringEnum
     /* To pattern mesh faces, all faces of the body must be selected. */
     NOT_ALL_MESH_FACES_PATTERN,
     /* Accuracy option is not available during regeneration. */
-    VOLUME_ACCURACY_MUST_BE_HIGH_FOR_REGEN
+    VOLUME_ACCURACY_MUST_BE_HIGH_FOR_REGEN,
+    /* Invalid mate to be matched. */
+    ASSEMBLY_REPLICATE_INVALID_SEED_MATE,
+    /* Missing mate to be matched. */
+    ASSEMBLY_REPLICATE_MISSING_SEED_MATE
 }
 
 

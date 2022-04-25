@@ -671,18 +671,18 @@ export function qAllSolidBodies() returns Query
 /**
  * A query for all solid bodies that do not have mesh geometry or in context geometry, i.e. every non-mesh-containing part
  * displayed in the Part Studio's "Parts" list.
- * @seealso [qAllModifiableSolidBodiesWithMesh]
+ * @seealso [qAllModifiableSolidBodies]
  */
-export function qAllModifiableSolidBodies() returns Query
+export function qAllModifiableSolidBodiesNoMesh() returns Query
 {
     return qModifiableEntityFilter(qAllNonMeshSolidBodies());
 }
 
 /**
  * A query for all modifiable solid bodies, including mesh-containing bodies.
- * @seealso [qAllModifiableSolidBodies]
+ * @seealso [qAllModifiableSolidBodiesNoMesh]
  */
-export function qAllModifiableSolidBodiesWithMesh() returns Query
+export function qAllModifiableSolidBodies() returns Query
 {
     return qModifiableEntityFilter(qAllSolidBodies());
 }

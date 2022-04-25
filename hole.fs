@@ -1606,6 +1606,8 @@ function assignSheetMetalHoleAttributes(context is Context, createdUsingNewHoleP
 function createAttributesForSheetMetalHole(context is Context, createdUsingNewHolePipeline is boolean,
     attributeId is string, holeEdge is Query, holeFaces is Query, featureDefinition is map, holeNumber is number)
 {
+    const tappedFixes = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1743_SM_BLIND_IN_LAST_HOLE);
+
     clearHoleAttributes(context, holeFaces);
     var holeAttribute;
     var cylinder = evSurfaceDefinition(context, {
@@ -1615,16 +1617,39 @@ function createAttributesForSheetMetalHole(context is Context, createdUsingNewHo
     {
         // Sheet metal holes are always simple and through
         const diameter = cylinder.radius * 2;
+        var isLastTarget = false;
         // If the cylinder is not exactly the same as the definition diameter, make sure the definition is used (BEL-152781)
         if (!tolerantEquals(featureDefinition.holeDiameter, diameter))
         {
+            featureDefinition.holeDiameter = diameter;
             if (featureDefinition.style == HoleStyle.C_BORE && tolerantEquals(featureDefinition.cBoreDiameter, diameter))
+            {
+                // Set to exactly the cBoreDiameter
                 featureDefinition.holeDiameter = featureDefinition.cBoreDiameter;
-            else
-                featureDefinition.holeDiameter = diameter;
+            }
+            else if (featureDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST && tolerantEquals(featureDefinition.tapDrillDiameter, diameter))
+            {
+                isLastTarget = true;
+                if (tappedFixes)
+                {
+                    // Set to exactly tapDrillDiameter
+                    featureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
+                }
+            }
         }
         featureDefinition.style = HoleStyle.SIMPLE;
+        if (tappedFixes && featureDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+        {
+            // We are going to use THROUGH instead of BLIND_IN_LAST as the endStyle, so migrate the appropriate data to
+            // standardTappedOrClearance depending on whether this is the last target (the tapped target) or not.
+            featureDefinition.standardTappedOrClearance = isLastTarget ? featureDefinition.standardBlindInLast : undefined;
+        }
         featureDefinition.endStyle = HoleEndStyle.THROUGH;
+        if (tappedFixes)
+        {
+            // In addition to endStyle THROUGH, we need to tell the hole attribute that the tap goes all the way through.
+            featureDefinition.isTappedThrough = true;
+        }
         holeAttribute = createHoleAttribute(createdUsingNewHolePipeline, attributeId, featureDefinition,
             HoleSectionFaceType.THROUGH_FACE, holeNumber);
         setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });

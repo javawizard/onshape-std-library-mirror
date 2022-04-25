@@ -907,3 +907,87 @@ export const dummyFeature = defineFeature(function(context is Context, id is Id,
     {
     });
 
+/**
+ * @internal
+ * Returns an id-generating function that auto-increments each time it is called.
+ * @example ```
+ * const idGenerator = getIncrementingId(id + "plane");
+ * //at each call to idGenerator() a new ID is created, eg:
+ * //const id1 = idGenerator(); //id1 equals "FxbNP1KoQHJVVjC_1.plane.0"
+ * //const id2 = idGenerator(); //id2 equals "FxbNP1KoQHJVVjC_1.plane.1"
+ * for (var point in evaluateQuery(context, definition.points))
+ * {
+ *     const origin = evVertexPoint(context, { "vertex" : point });
+ *     const planeId = idGenerator(); //creates an id with an unstable component
+ *     opPlane(context, planeId, { "plane" : plane(origin, Z_DIRECTION) });
+ * }
+ * ```
+ */
+export function getIncrementingId(prefix is Id) returns function
+{
+    var index = new box(0);
+    return function()
+        {
+            const newId = prefix + index[];
+            index[] += 1;
+            return newId;
+        };
+}
+
+/**
+ * @internal
+ * Returns an unstable id-generating function that auto-increments each time it is called.
+ * @example ```
+ * const idGenerator = getUnstableIncrementingId(id + "plane");
+ * //at each call to idGenerator() a new ID is created, eg:
+ * //const id1 = idGenerator(); //id1 equals "FxbNP1KoQHJVVjC_1.plane.*0"
+ * //const id2 = idGenerator(); //id2 equals "FxbNP1KoQHJVVjC_1.plane.*1"
+ * for (var point in evaluateQuery(context, definition.points))
+ * {
+ *     const origin = evVertexPoint(context, { "vertex" : point });
+ *     const planeId = idGenerator(); //creates an id with an unstable component
+ *     opPlane(context, planeId, { "plane" : plane(origin, Z_DIRECTION) });
+ * }
+ * ```
+ */
+export function getUnstableIncrementingId(prefix is Id) returns function
+{
+    var index = new box(0);
+    return function()
+        {
+            const newId = prefix + unstableIdComponent(index[]);
+            index[] += 1;
+            return newId;
+        };
+}
+
+/**
+ * @internal
+ * Returns an unstable id-generating function that auto-increments each time it is called.
+ * The id-generating function requires a disambiguation query as argument.
+
+ * @example ```
+ * const idGenerator = getDisambiguatedIncrementingId(context, id + "plane");
+ * //at each call to idGenerator() a new ID is created, eg:
+ * //const id1 = idGenerator(point1); //id1 equals "FxbNP1KoQHJVVjC_1.plane.*0"
+ * //const id2 = idGenerator(point2); //id1 equals "FxbNP1KoQHJVVjC_1.plane.*1"
+ * for (var point in evaluateQuery(context, definition.points))
+ * {
+ *     const origin = evVertexPoint(context, { "vertex" : point });
+ *     const planeId = idGenerator(point); //uses point transient query to disambiguate
+ *     opPlane(context, planeId, { "plane" : plane(origin, Z_DIRECTION) });
+ * }
+ * ```
+ */
+export function getDisambiguatedIncrementingId(context is Context, prefix is Id) returns function
+{
+    var index = new box(0);
+    return function(query)
+        {
+            const newId = prefix + unstableIdComponent(index[]);
+            setExternalDisambiguation(context, newId, query);
+            index[] += 1;
+            return newId;
+        };
+}
+

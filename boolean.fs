@@ -376,11 +376,11 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
     {
         if (isAtInitialMixedModelingReleaseVersionOrLater(context))
         {
-            output.targets = qAllModifiableSolidBodiesWithMesh();
+            output.targets = qAllModifiableSolidBodies();
         }
         else
         {
-            output.targets = qAllModifiableSolidBodies();
+            output.targets = qAllModifiableSolidBodiesNoMesh();
         }
     }
     else
