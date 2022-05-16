@@ -1,4 +1,4 @@
-FeatureScript 1746; /* Automatically generated version */
+FeatureScript 1758; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2200,7 +2200,23 @@ export enum ErrorStringEnum
     /* Invalid mate to be matched. */
     ASSEMBLY_REPLICATE_INVALID_SEED_MATE,
     /* Missing mate to be matched. */
-    ASSEMBLY_REPLICATE_MISSING_SEED_MATE
+    ASSEMBLY_REPLICATE_MISSING_SEED_MATE,
+    /* Could not import unrecognized entity. */
+    DXF_UNKNOWN_ENTITY,
+    /* Only uniform block scaling is supported. */
+    DXF_NONUNIFORM_SCALING,
+    /* Could not open file. */
+    DXF_COULD_NOT_READ_FILE,
+    /* Hatching is not supported. */
+    DXF_COULD_NOT_CONVERT_HATCH,
+    /* Cannot import solid bodies into sketches. */
+    DXF_COULD_NOT_CONVERT_BODY,
+    /* Regions are not supported. */
+    DXF_COULD_NOT_CONVERT_REGION,
+    /* Bad spline data. */
+    DXF_BAD_SPLINE_DATA,
+    /* Load instance is suppressed. */
+    SIMULATION_LOAD_INSTANCE_SUPPRESSED
 }
 
 

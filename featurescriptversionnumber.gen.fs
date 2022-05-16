@@ -1,4 +1,4 @@
-FeatureScript 1746; /* Automatically generated version */
+FeatureScript 1758; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1092,7 +1092,11 @@ export enum FeatureScriptVersionNumber
     V1743_SM_BLIND_IN_LAST_HOLE,
     V1744_PS_VERSION_34_1_198,
     V1745_MIXED_MODELING_RELEASE,
-    V1746_CHANGES_IN_BTERRORSTRINGRESOURCES
+    V1746_CHANGES_IN_BTERRORSTRINGRESOURCES,
+    V1755_LOFT_MIXED_TOPOLOGY,
+    V1756_EDGE_INTERSECTION,
+    V1757_IMPRINT_PARAMETER,
+    V1758_SWEPT_ANGLE_FIX
 }
 
 /**
@@ -1103,6 +1107,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1746_CHANGES_IN_BTERRORSTRINGRESOURCES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1758_SWEPT_ANGLE_FIX;
 
 
