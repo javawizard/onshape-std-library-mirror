@@ -383,23 +383,36 @@ function getAngle(capPlaneNormal is Vector, beamTangent is Vector)
 }
 
 //This calculates the sweep angle, the angle subtended by the beam.
-//angle between start and end box centers is available from the cross product.
-//this produces the angle between two vectors using the right-hand-rule.
-function getSweptAngle(startWCS is Vector, endWCS is Vector, startBeamDirectionWCS is Vector, maxEdge is map) returns ValueWithUnits
+//From the `startWCS` point, the frame segment is in the `startBeamDirectionWCS` direction
+function getSweptAngle(context is Context, startWCS is Vector, endWCS is Vector, startBeamDirectionWCS is Vector, maxEdge is map) returns ValueWithUnits
 {
-    const arcCenterWCS = maxEdge.coordSystem.origin;
-    //convert points in space to directions
+    //If the cross products are codirectional the angle is the minor arc angle.
     const startInPlaneWCS = project(plane(maxEdge.coordSystem), startWCS);
     const endInPlaneWCS = project(plane(maxEdge.coordSystem), endWCS);
-
+    const arcCenterWCS = maxEdge.coordSystem.origin;
+    //convert points in space to direction vectors
     const toStartInPlaneWCS = startInPlaneWCS - arcCenterWCS;
     const toEndInPlaneWCS = endInPlaneWCS - arcCenterWCS;
-    //compare cross products to determine if the swept angle is the major or minor arc.
-    //if the z-components are aligned, their product will be positive, and the angle is the minor arc angle.
+    //there are three cases: 0 degree sweep, 360 degree sweep, and 180 degree sweep
+    //the first two are impossible so we early-exit here
+    if (parallelVectors(toStartInPlaneWCS, toEndInPlaneWCS))
+    {
+        return 180 * degree;
+    }
     const startCrossEnd = cross(toStartInPlaneWCS, toEndInPlaneWCS);
     const startCrossBeamDir = cross(toStartInPlaneWCS, startBeamDirectionWCS);
+    //dot is stable directional indication IFF:
+    //1. cross products are non-zero (startCrossBeamDir is always non-zero)
+    //2. cross products are collinear (either parallel or antiparallel)
     const minorSweptAngle = angleBetween(toStartInPlaneWCS, toEndInPlaneWCS);
-    const isAligned = (startCrossEnd[2] * startCrossBeamDir[2]) > 0;
+    //assumption 1 was already handled by the 180-degree early exit case
+    //check assumption 2 and error if beams are malformed
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1758_SWEPT_ANGLE_FIX))
+    {
+        verify(parallelVectors(startCrossEnd, startCrossBeamDir), "Non-collinear cross products");
+    }
+    //use dot product to determine if sweptASngle is major or minor
+    const isAligned = dot(startCrossEnd, startCrossBeamDir) > 0;
     const sweptAngle = isAligned ? minorSweptAngle : (2 * PI * radian) - minorSweptAngle;
     return sweptAngle;
 }
@@ -423,11 +436,19 @@ function getCircularArcBeamLength(context is Context, topLevelId is Id, startFac
     }
     const maxStartPointWCS = getApproximateFarthestPointAlongArc(context, startInPlaneWCS, startFaceQuery, startBeamDirectionWCS,
         maxEdge);
-
     const maxEndPointWCS = getApproximateFarthestPointAlongArc(context, endInPlaneWCS, endFaceQuery, endBeamDirectionWCS,
         maxEdge);
 
-    const sweptAngle = getSweptAngle(maxStartPointWCS, maxEndPointWCS, startBeamDirectionWCS, maxEdge);
+    var sweptAngle;
+    try silent
+    {
+        sweptAngle = getSweptAngle(context, maxStartPointWCS, maxEndPointWCS, startBeamDirectionWCS, maxEdge);
+    }
+    catch
+    {
+        reportFeatureWarning(context, topLevelId, ErrorStringEnum.FRAME_CUTLIST_NO_END_FACE_EDGE_GEOMETRY_PAIR);
+        return undefined;
+    }
     const sweptLength = maxEdge.radius * sweptAngle.value;
     return sweptLength;
 }

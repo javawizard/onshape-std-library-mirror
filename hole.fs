@@ -3077,4 +3077,3 @@ function clusterVertexQueries(context is Context, selected is Query) returns arr
     }
     return evaluateQuery(context, qIntersection([selected, qUnion(clusterQueries)]));
 }
-
