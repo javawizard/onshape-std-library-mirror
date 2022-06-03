@@ -1,29 +1,29 @@
-FeatureScript 1758; /* Automatically generated version */
+FeatureScript 1777; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1758.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1758.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1758.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1758.0");
-import(path : "onshape/std/containers.fs", version : "1758.0");
-import(path : "onshape/std/coordSystem.fs", version : "1758.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1758.0");
-import(path : "onshape/std/evaluate.fs", version : "1758.0");
-import(path : "onshape/std/feature.fs", version : "1758.0");
-import(path : "onshape/std/math.fs", version : "1758.0");
-import(path : "onshape/std/manipulator.fs", version : "1758.0");
-import(path : "onshape/std/query.fs", version : "1758.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1758.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "1758.0");
-import(path : "onshape/std/string.fs", version : "1758.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1758.0");
-import(path : "onshape/std/tool.fs", version : "1758.0");
-import(path : "onshape/std/valueBounds.fs", version : "1758.0");
-import(path : "onshape/std/vector.fs", version : "1758.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1758.0");
-import(path : "onshape/std/transform.fs", version : "1758.0");
+import(path : "onshape/std/attributes.fs", version : "1777.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "1777.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1777.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1777.0");
+import(path : "onshape/std/containers.fs", version : "1777.0");
+import(path : "onshape/std/coordSystem.fs", version : "1777.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1777.0");
+import(path : "onshape/std/evaluate.fs", version : "1777.0");
+import(path : "onshape/std/feature.fs", version : "1777.0");
+import(path : "onshape/std/math.fs", version : "1777.0");
+import(path : "onshape/std/manipulator.fs", version : "1777.0");
+import(path : "onshape/std/query.fs", version : "1777.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1777.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "1777.0");
+import(path : "onshape/std/string.fs", version : "1777.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
+import(path : "onshape/std/tool.fs", version : "1777.0");
+import(path : "onshape/std/valueBounds.fs", version : "1777.0");
+import(path : "onshape/std/vector.fs", version : "1777.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
+import(path : "onshape/std/transform.fs", version : "1777.0");
 
 
 
@@ -286,7 +286,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             {
                 bendRadius = args.defaultRadius;
             }
-            var bendAttribute = createBendAttribute(context, id, edge, attributeId, bendRadius, false);
+            const holdAdjacentEdges = false;
+            var bendAttribute = createBendAttribute(context, id, edge, attributeId, bendRadius, false, holdAdjacentEdges);
             if (bendAttribute == undefined)
             {
                 setErrorEntities(context, id, {"entities" : edge});
@@ -1392,7 +1393,11 @@ export function createRipAttribute(context is Context, entity is Query, ripId is
  * @internal
  */
 export function createBendAttribute(context is Context, id is Id, edge is Query, bendId is string,
-                                    bendRadius is ValueWithUnits, allowNoAngle is boolean)
+                                    bendRadius is ValueWithUnits, allowNoAngle is boolean, holdAdjacentEdges)
+precondition
+{
+    holdAdjacentEdges == undefined || holdAdjacentEdges is boolean;
+}
 {
     var bendAttribute = makeSMJointAttribute(bendId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
@@ -1410,6 +1415,9 @@ export function createBendAttribute(context is Context, id is Id, edge is Query,
     {
         bendAttribute.angle = {"value" : angle, "canBeEdited" : false};
     }
+
+    bendAttribute.holdAdjacentEdges = {"value" : holdAdjacentEdges, "canBeEdited" : true};
+
     return bendAttribute;
 }
 
@@ -1906,6 +1914,7 @@ precondition
     args.error is ErrorStringEnum;
     args.errorParameters is array;
     args.legacyId == undefined || args.legacyId is Id;
+    args.holdBendAdjacentEdges == undefined || args.holdBendAdjacentEdges is boolean;
 }
 {
     const trackedFaces = trackAllFaces(context, args.surfacesToAdd, args.originalSurfaces);
@@ -1960,7 +1969,8 @@ precondition
         for (var bendEdge in args.trackingBendEdges)
         {
             var bendAttribute = createBendAttribute(context, args.topLevelId, bendEdge,
-                                                    toAttributeId(args.topLevelId + args.attributeIdCounter[]), args.bendRadius, false);
+                                                    toAttributeId(args.topLevelId + args.attributeIdCounter[]), args.bendRadius, false,
+                                                    args.holdBendAdjacentEdges);
             if (bendAttribute != undefined)
             {
                 setAttribute(context, {"entities" : bendEdge, "attribute" : bendAttribute});

@@ -1,17 +1,18 @@
-FeatureScript 1758; /* Automatically generated version */
+FeatureScript 1777; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1758.0");
+export import(path : "onshape/std/query.fs", version : "1777.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1758.0");
-import(path : "onshape/std/feature.fs", version : "1758.0");
-import(path : "onshape/std/tool.fs", version : "1758.0");
-import(path : "onshape/std/transform.fs", version : "1758.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1758.0");
+import(path : "onshape/std/containers.fs", version : "1777.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "1777.0");
+import(path : "onshape/std/feature.fs", version : "1777.0");
+import(path : "onshape/std/tool.fs", version : "1777.0");
+import(path : "onshape/std/transform.fs", version : "1777.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1777.0");
 
 /**
  * A special type for functions defined as the `build` function for a Part
@@ -81,14 +82,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             // remove sheet metal attributes and helper bodies
             var smPartsQ = clearSheetMetalData(otherContext, otherContextId + "sheetMetal", undefined, false);
 
-            //don't want to merge default bodies
-            const defaultBodies = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
-                                          qCreatedBy(makeId("Front"), EntityType.BODY),
-                                          qCreatedBy(makeId("Top"), EntityType.BODY),
-                                          qCreatedBy(makeId("Right"), EntityType.BODY)]);
-
             var flattenedParts = qUnion([definition.parts, qContainedInCompositeParts(definition.parts)]);
-            var bodiesToKeep = qSubtraction(qUnion([flattenedParts, qMateConnectorsOfParts(flattenedParts)]), defaultBodies);
+            var bodiesToKeep = qSubtraction(qUnion([flattenedParts, qMateConnectorsOfParts(flattenedParts)]), qDefaultBodies());
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V566_MODIFIABLE_ONLY_IN_DERIVED))
             {
                 bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);

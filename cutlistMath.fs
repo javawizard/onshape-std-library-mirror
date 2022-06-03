@@ -1,20 +1,20 @@
-FeatureScript 1758; /* Automatically generated version */
+FeatureScript 1777; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "1758.0");
-import(path : "onshape/std/containers.fs", version : "1758.0");
-import(path : "onshape/std/context.fs", version : "1758.0");
-import(path : "onshape/std/coordSystem.fs", version : "1758.0");
-import(path : "onshape/std/error.fs", version : "1758.0");
-import(path : "onshape/std/evaluate.fs", version : "1758.0");
-import(path : "onshape/std/frameUtils.fs", version : "1758.0");
-import(path : "onshape/std/geomOperations.fs", version : "1758.0");
-import(path : "onshape/std/math.fs", version : "1758.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1758.0");
-import(path : "onshape/std/units.fs", version : "1758.0");
-import(path : "onshape/std/vector.fs", version : "1758.0");
+import(path : "onshape/std/box.fs", version : "1777.0");
+import(path : "onshape/std/containers.fs", version : "1777.0");
+import(path : "onshape/std/context.fs", version : "1777.0");
+import(path : "onshape/std/coordSystem.fs", version : "1777.0");
+import(path : "onshape/std/error.fs", version : "1777.0");
+import(path : "onshape/std/evaluate.fs", version : "1777.0");
+import(path : "onshape/std/frameUtils.fs", version : "1777.0");
+import(path : "onshape/std/geomOperations.fs", version : "1777.0");
+import(path : "onshape/std/math.fs", version : "1777.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
+import(path : "onshape/std/units.fs", version : "1777.0");
+import(path : "onshape/std/vector.fs", version : "1777.0");
 
 const CUTLIST_MATCH_TOLERANCE = 1e-6 * meter;
 const NUM_ISOPARAM_CURVES = 7;
@@ -31,17 +31,20 @@ export function getCutlistLengthAndAngles(context is Context, topLevelId is Id, 
     const startFaceQuery = qFrameStartFace(beam);
     const endFaceQuery = qFrameEndFace(beam);
 
-    //early exit for spline path bodies
-    //compute an approximate length if possible and return with no error
-    const splineQuery = qGeometry(qFrameSweptFace(beam), GeometryType.OTHER_SURFACE);
-    if (!isQueryEmpty(context, splineQuery))
+    // early exit for spline path bodies
+    // versioned improvement: possible to create spline surfaces from flat profile so use edge information if available
+    // if unavailable, use faces
+    const splinePathQuery = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1772_STRAIGHT_SEGMENT_IDENTIFICATION_FIX) && !isQueryEmpty(context, sweptEdgeQuery)
+    ? qGeometry(sweptEdgeQuery, GeometryType.OTHER_CURVE)
+    : qGeometry(sweptFaceQuery, GeometryType.OTHER_SURFACE);
+    if (!isQueryEmpty(context, splinePathQuery))
     {
         const approximateLength = getApproximateLengthForSplines(context, topLevelId, createdCurveId, sweptEdgeQuery,
             sweptFaceQuery, startFaceQuery, endFaceQuery, bodiesToDelete);
         return buildBeamCutlistData(approximateLength, undefined, undefined);
     }
 
-    //can't get anywhere without end attribution
+    // can't get anywhere without end attribution
     if (isQueryEmpty(context, startFaceQuery) || isQueryEmpty(context, endFaceQuery))
     {
         reportFeatureWarning(context, topLevelId, ErrorStringEnum.FRAME_MISSING_CAP_FACES);
@@ -68,7 +71,7 @@ function buildBeamCutlistData(length, angle1, angle2) returns map
 function getApproximateLengthForSplines(context is Context, topLevelId is Id, createdCurveId is Id, sweptEdgeQuery is Query,
     sweptFaceQuery is Query, startFaceQuery is Query, endFaceQuery is Query, bodiesToDelete is box)
 {
-    //first look for any real swept edges that touch a start and end face
+    // first look for any real swept edges that touch a start and end face
     const maxRealEdge = getMaxLengthEdge(context, sweptEdgeQuery);
     var startFaceAdjacentPair;
     var endFaceAdjacentPair;
@@ -84,7 +87,7 @@ function getApproximateLengthForSplines(context is Context, topLevelId is Id, cr
         return maxRealEdge.length;
     }
 
-    //if that fails attempt to create edges
+    // if that fails attempt to create edges
     const constructedSweptEdgeQuery = createIsoParamCurves(context, createdCurveId + "curves", sweptFaceQuery,
         bodiesToDelete);
     const maxProxyEdge = getMaxLengthEdge(context, constructedSweptEdgeQuery);
@@ -148,7 +151,7 @@ function getStraightCylinderDirection(context is Context, sweptFaceQuery is Quer
     {
         return undefined;
     }
-    //handle tube and extrusions with multiple lumens
+    // handle tube and extrusions with multiple lumens
     const firstCylinder = evSurfaceDefinition(context, { "face" : cylinderFaces[0] });
     const cylinderDirectionWCS = firstCylinder.coordSystem.zAxis;
 
@@ -158,36 +161,36 @@ function getStraightCylinderDirection(context is Context, sweptFaceQuery is Quer
 
         if (!parallelVectors(cylinderDirectionWCS, otherCylinder.coordSystem.zAxis))
         {
-            return undefined; //not a straight cylinder
+            return undefined; // not a straight cylinder
         }
     }
     return cylinderDirectionWCS;
 }
 
-//There are two possible cases for finding no swept edges:
-//1. the beam never had swept edges (pipe or tube). This case is acceptable.
-//2. geometric operations have removed them. This case is an error.
+// There are two possible cases for finding no swept edges:
+// 1. the beam never had swept edges (pipe or tube). This case is acceptable.
+// 2. geometric operations have removed them. This case is an error.
 function getLengthAndAnglesWithoutEdges(context is Context, topLevelId is Id, createdCurveId is Id, beam is Query,
     startFaceQuery is Query, endFaceQuery is Query, sweptFaceQuery is Query, bodiesToDelete is box) returns map
 {
-    //handle straight cylinder pipe or tube
+    // handle straight cylinder pipe or tube
     const cylinderDirectionWCS = getStraightCylinderDirection(context, sweptFaceQuery);
     if (cylinderDirectionWCS != undefined)
     {
         return getDimensionsForStraightBeam(context, beam, startFaceQuery, endFaceQuery, cylinderDirectionWCS);
     }
 
-    //handle circular swept pipe or tube
+    // handle circular swept pipe or tube
     const constructedSweptEdgeQuery = createIsoParamCurves(context, createdCurveId + "curves", sweptFaceQuery, bodiesToDelete);
     var result = {};
     if (constructedSweptEdgeQuery != undefined)
     {
-        //use the constructed edges as proxy
+        // use the constructed edges as proxy
         result = getCircularArcBeamDimensions(context, topLevelId, beam, startFaceQuery, endFaceQuery, constructedSweptEdgeQuery);
     }
     else
     {
-        //report failure case
+        // report failure case
         reportFeatureWarning(context, topLevelId, ErrorStringEnum.FRAME_MISSING_SWEPT_EDGES);
         result = buildBeamCutlistData(undefined, undefined, undefined);
     }
@@ -215,8 +218,8 @@ function getLengthAndAnglesWithEdges(context is Context, topLevelId is Id, beam 
     return result;
 }
 
-//assumes beam is straight so uses the bounding box to determine total length
-//use cap faces to compute angles.
+// assumes beam is straight so uses the bounding box to determine total length
+// use cap faces to compute angles.
 function getDimensionsForStraightBeam(context is Context, beam is Query, startFaceQuery is Query,
     endFaceQuery is Query, direction is Vector) returns map
 {
@@ -229,14 +232,14 @@ function getDimensionsForStraightBeam(context is Context, beam is Query, startFa
     return buildBeamCutlistData(length, startAngle, endAngle);
 }
 
-//our heuristic is to use the LARGEST RADIUS edge to compute our lengths.
-//use attribute information to determine where the swept body lies in space.
-//use cap faces to compute angles.
+// our heuristic is to use the LARGEST RADIUS edge to compute our lengths.
+// use attribute information to determine where the swept body lies in space.
+// use cap faces to compute angles.
 function getCircularArcBeamDimensions(context is Context, topLevelId is Id, beam is Query, startFaceQuery is Query,
     endFaceQuery is Query, sweptEdgeQuery is Query) returns map
 {
-    //get our max radius edge
-    //modify it to have a transform-invariant coordinate system
+    // get our max radius edge
+    // modify it to have a transform-invariant coordinate system
     var maxEdge = getMaxRadiusEdge(context, sweptEdgeQuery);
     if (maxEdge == undefined)
     {
@@ -276,35 +279,35 @@ function getCircularArcBeamDimensions(context is Context, topLevelId is Id, beam
 function getCircularArcBeamFaceAngleAtClosestBoundingBoxCorner(context is Context, maxEdge is map,
     faceCenterInPlaneWCS is Vector, faceQuery is Query)
 {
-    //WCS: world coordinate system
-    //arcCoordinateSystem: The arc sits in the x-y plane of the is coordinate system, with origin at arc center
-    //point.
-    //edgeAlignedCoordinateSystem: edge This coordinate system has its z-axis as the beam tangent, centered on the
-    //face bounding box.
+    // WCS: world coordinate system
+    // arcCoordinateSystem: The arc sits in the x-y plane of the is coordinate system, with origin at arc center
+    // point.
+    // edgeAlignedCoordinateSystem: edge This coordinate system has its z-axis as the beam tangent, centered on the
+    // face bounding box.
     const arcCoordinateSystem = maxEdge.coordSystem;
-    //only report angles for cut faces where the cutface normal is in the plane of the arc (ie clean cut along arc
-    //axis)
+    // only report angles for cut faces where the cutface normal is in the plane of the arc (ie clean cut along arc
+    // axis)
     const facePlaneWCS = getPlaneFromCapFace(context, faceQuery);
     if (facePlaneWCS == undefined || !perpendicularVectors(facePlaneWCS.normal, arcCoordinateSystem.zAxis))
     {
         return undefined;
     }
 
-    //this bounding box simplifies finding points in the cut face plane closest to arc central axis.
+    // this bounding box simplifies finding points in the cut face plane closest to arc central axis.
     const edgeAlignedCoordinateSystem = coordSystem(faceCenterInPlaneWCS, arcCoordinateSystem.zAxis, facePlaneWCS.normal);
     const boundingBoxECS = evBox3d(context, {
                 "topology" : faceQuery,
                 "tight" : true,
                 "cSys" : edgeAlignedCoordinateSystem
             });
-    //Ths finds the point of the cut face bounding box that is closest to the arc axis.
-    //First, construct an edge aligned bounding box around the cut faces. The min and max lie in the cut plane.
+    // Ths finds the point of the cut face bounding box that is closest to the arc axis.
+    // First, construct an edge aligned bounding box around the cut faces. The min and max lie in the cut plane.
     const candidatePointsECS = [
             boundingBoxECS.minCorner,
             boundingBoxECS.maxCorner
         ];
-    //convert the points to WCS and project the corner points in to the arc plane.
-    //Find the shortest vector between arc center and point. This is the closer corner in the cut face plane.
+    // convert the points to WCS and project the corner points in to the arc plane.
+    // Find the shortest vector between arc center and point. This is the closer corner in the cut face plane.
     const toCornersInPlaneWCS = mapArray(candidatePointsECS, function(point)
         {
             return arcCoordinateSystem.origin - project(plane(arcCoordinateSystem), toWorld(edgeAlignedCoordinateSystem, point));
@@ -313,15 +316,15 @@ function getCircularArcBeamFaceAngleAtClosestBoundingBoxCorner(context is Contex
     const toClosestCornerInPlaneWCS = norm(toCornersInPlaneWCS[0]) < norm(toCornersInPlaneWCS[1]) ?
         toCornersInPlaneWCS[0] :
         toCornersInPlaneWCS[1];
-    //use the cross product to get the beam tangent
+    // use the cross product to get the beam tangent
     const tangentAtClosestCornerWCS = cross(arcCoordinateSystem.zAxis, toClosestCornerInPlaneWCS);
     const angle = getAngle(facePlaneWCS.normal, tangentAtClosestCornerWCS);
     return angle;
 }
 
-//attempts to create `NUM_ISOPARAM_CURVES` on the surface of a body
-//these can be used as swept edge proxies for subsequent calculations
-//returns undefined if surface is too complex to create curves
+// attempts to create `NUM_ISOPARAM_CURVES` on the surface of a body
+// these can be used as swept edge proxies for subsequent calculations
+// returns undefined if surface is too complex to create curves
 function createIsoParamCurves(context is Context, createdCurveId is Id, sweptFaceQuery is Query, bodiesToDelete is box)
 {
     var curveNames = [];
@@ -337,7 +340,7 @@ function createIsoParamCurves(context is Context, createdCurveId is Id, sweptFac
         const curveType = getCurveType(periodicity);
         if (curveType == undefined)
         {
-            //fail immediately if there is any unusable surface
+            // fail immediately if there is any unusable surface
             return undefined;
         }
         const curveDef = curveOnFaceDefinition(face, curveType, curveNames, NUM_ISOPARAM_CURVES);
@@ -362,19 +365,19 @@ function getCurveType(periodicity is array)
     return undefined;
 }
 
-//A note on convention: Report the angle between the beam direction and the face normal.
-//Reported value will be in [0,90] even if plane and tangent normals are misaligned.
-//An uncut beam is 0 degrees. An angle "nearly" zero means the cap face is "nearly" perpendicular.
+// A note on convention: Report the angle between the beam direction and the face normal.
+// Reported value will be in [0,90] even if plane and tangent normals are misaligned.
+// An uncut beam is 0 degrees. An angle "nearly" zero means the cap face is "nearly" perpendicular.
 function getAngle(capPlaneNormal is Vector, beamTangent is Vector)
 {
-    //this corrects for (anti) direction or (anti) face normal
+    // this corrects for (anti) direction or (anti) face normal
     var angle = angleBetween(capPlaneNormal, beamTangent);
     if (angle > 90 * degree)
     {
         angle = 180 * degree - angle;
     }
 
-    //return exactly zero if near zero
+    // return exactly zero if near zero
     if (angle < TOLERANCE.zeroAngle * degree)
     {
         angle = 0 * degree;
@@ -382,43 +385,43 @@ function getAngle(capPlaneNormal is Vector, beamTangent is Vector)
     return angle;
 }
 
-//This calculates the sweep angle, the angle subtended by the beam.
-//From the `startWCS` point, the frame segment is in the `startBeamDirectionWCS` direction
+// This calculates the sweep angle, the angle subtended by the beam.
+// From the `startWCS` point, the frame segment is in the `startBeamDirectionWCS` direction
 function getSweptAngle(context is Context, startWCS is Vector, endWCS is Vector, startBeamDirectionWCS is Vector, maxEdge is map) returns ValueWithUnits
 {
-    //If the cross products are codirectional the angle is the minor arc angle.
+    // If the cross products are codirectional the angle is the minor arc angle.
     const startInPlaneWCS = project(plane(maxEdge.coordSystem), startWCS);
     const endInPlaneWCS = project(plane(maxEdge.coordSystem), endWCS);
     const arcCenterWCS = maxEdge.coordSystem.origin;
-    //convert points in space to direction vectors
+    // convert points in space to direction vectors
     const toStartInPlaneWCS = startInPlaneWCS - arcCenterWCS;
     const toEndInPlaneWCS = endInPlaneWCS - arcCenterWCS;
-    //there are three cases: 0 degree sweep, 360 degree sweep, and 180 degree sweep
-    //the first two are impossible so we early-exit here
+    // there are three cases: 0 degree sweep, 360 degree sweep, and 180 degree sweep
+    // the first two are impossible so we early-exit here
     if (parallelVectors(toStartInPlaneWCS, toEndInPlaneWCS))
     {
         return 180 * degree;
     }
     const startCrossEnd = cross(toStartInPlaneWCS, toEndInPlaneWCS);
     const startCrossBeamDir = cross(toStartInPlaneWCS, startBeamDirectionWCS);
-    //dot is stable directional indication IFF:
-    //1. cross products are non-zero (startCrossBeamDir is always non-zero)
-    //2. cross products are collinear (either parallel or antiparallel)
+    // dot is stable directional indication IFF:
+    // 1. cross products are non-zero (startCrossBeamDir is always non-zero)
+    // 2. cross products are collinear (either parallel or antiparallel)
     const minorSweptAngle = angleBetween(toStartInPlaneWCS, toEndInPlaneWCS);
-    //assumption 1 was already handled by the 180-degree early exit case
-    //check assumption 2 and error if beams are malformed
+    // assumption 1 was already handled by the 180-degree early exit case
+    // check assumption 2 and error if beams are malformed
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1758_SWEPT_ANGLE_FIX))
     {
         verify(parallelVectors(startCrossEnd, startCrossBeamDir), "Non-collinear cross products");
     }
-    //use dot product to determine if sweptASngle is major or minor
+    // use dot product to determine if sweptASngle is major or minor
     const isAligned = dot(startCrossEnd, startCrossBeamDir) > 0;
     const sweptAngle = isAligned ? minorSweptAngle : (2 * PI * radian) - minorSweptAngle;
     return sweptAngle;
 }
 
-//uses bounding boxes at edges to find the "max extent bounding box point" then uses that to compute largest possible
-//sweep.
+// uses bounding boxes at edges to find the "max extent bounding box point" then uses that to compute largest possible
+// sweep.
 function getCircularArcBeamLength(context is Context, topLevelId is Id, startFaceQuery is Query, endFaceQuery is Query,
     sweptEdgeQuery is Query, startInPlaneWCS is Vector, endInPlaneWCS is Vector, maxEdge is map)
 {
@@ -458,7 +461,7 @@ function getApproximateFarthestPointAlongArc(context is Context, faceCenterInPla
 {
     const xAxis = faceCenterInPlaneWCS - maxEdge.coordSystem.origin;
     const zAxis = maxEdge.coordSystem.zAxis;
-    //This coordinate system is "ECS".
+    // This coordinate system is "ECS".
     const edgeAlignedCoordinateSystem = coordSystem(faceCenterInPlaneWCS, xAxis, zAxis);
     const edgeAlignedBB = evBox3d(context, {
                 "topology" : faceQuery,
@@ -466,10 +469,10 @@ function getApproximateFarthestPointAlongArc(context is Context, faceCenterInPla
                 "cSys" : edgeAlignedCoordinateSystem
             });
 
-    //There are ways to iteratively converge to an exact solution, but users only need a strict overestimate.
-    //A simple strict overestimate comes from the bounding box around the end faces.
-    //The "near" corners are the corners closer to the center.
-    //Of the near corners, use the one that is opposite the beam direction.
+    // There are ways to iteratively converge to an exact solution, but users only need a strict overestimate.
+    // A simple strict overestimate comes from the bounding box around the end faces.
+    // The "near" corners are the corners closer to the center.
+    // Of the near corners, use the one that is opposite the beam direction.
     const minPoint = edgeAlignedBB.minCorner;
     const maxPoint = edgeAlignedBB.maxCorner;
     const nearCornersECS = [vector(minPoint[0], minPoint[1], minPoint[2]), vector(minPoint[0], maxPoint[1], minPoint[2])];
@@ -480,8 +483,8 @@ function getApproximateFarthestPointAlongArc(context is Context, faceCenterInPla
     return nearPointWCS;
 }
 
-//real swept edges would have adjacency information but created curves do not.
-//Use proximity instead of topology and find the first pair with distance = 0.
+// real swept edges would have adjacency information but created curves do not.
+// Use proximity instead of topology and find the first pair with distance = 0.
 function getFaceEdgeAdjacentPair(context is Context, faceQuery is Query, sweptEdgeQuery is Query) returns map
 {
     const edges = evaluateQuery(context, sweptEdgeQuery);
@@ -504,7 +507,7 @@ function getFaceEdgeAdjacentPair(context is Context, faceQuery is Query, sweptEd
             if (tolerantEquals(0 * meter, distanceResult.distance))
             {
                 const parameter = distanceResult.sides[0].parameter;
-                //verify at a line endpoint
+                // verify at a line endpoint
                 verify(tolerantEquals(parameter, 0) || tolerantEquals(parameter, 1), "Didn't find edge end point");
                 return { "face" : face, "edge" : edge, "parameter" : parameter };
             }
@@ -518,7 +521,7 @@ predicate tolerantEquals(left is number, right is number)
     abs(left - right) < TOLERANCE.computational;
 }
 
-//uses a face-edge adjacent pair (in terms of distance, not topology) to the direction 'towards' the beam body
+// uses a face-edge adjacent pair (in terms of distance, not topology) to the direction 'towards' the beam body
 function getBeamDirectionAtFace(context is Context, faceQuery is Query, sweptEdgeQuery is Query) returns Vector
 {
     const adjacentPair = getFaceEdgeAdjacentPair(context, faceQuery, sweptEdgeQuery);
@@ -537,7 +540,7 @@ function getPlaneFromCapFace(context is Context, capFaceQuery is Query)
     const capFaces = evaluateQuery(context, capFaceQuery);
     const capPlane = try silent(evPlane(context, { "face" : capFaces[0] }));
 
-    //if multiple faces they must all be coplanar
+    // if multiple faces they must all be coplanar
     for (var i = 1; i < size(capFaces); i += 1)
     {
         const otherPlane = try silent(evPlane(context, { "face" : capFaces[i] }));

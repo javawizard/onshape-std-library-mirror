@@ -5,15 +5,17 @@ FeatureScript 1777; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** Specifies an axis for rotation. */
-export enum RotationType
+/** See [assignVariable]. */
+export enum VariableType
 {
-    annotation {"Name" : "Rotate about X"}
-    ABOUT_X,
-    annotation {"Name" : "Rotate about Y"}
-    ABOUT_Y,
-    annotation {"Name" : "Rotate about Z"}
-    ABOUT_Z
+    annotation {"Name" : "Length"}
+    LENGTH,
+    annotation {"Name" : "Angle"}
+    ANGLE,
+    annotation {"Name" : "Number"}
+    NUMBER,
+    annotation {"Name" : "Any"}
+    ANY
 }
 
 

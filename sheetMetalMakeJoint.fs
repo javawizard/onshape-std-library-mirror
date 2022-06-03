@@ -1,26 +1,26 @@
-FeatureScript 1758; /* Automatically generated version */
+FeatureScript 1777; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "1758.0");
-export import(path: "onshape/std/smjointtype.gen.fs", version: "1758.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "1777.0");
+export import(path: "onshape/std/smjointtype.gen.fs", version: "1777.0");
 
-import(path : "onshape/std/attributes.fs", version : "1758.0");
-import(path : "onshape/std/boolean.fs", version : "1758.0");
-import(path : "onshape/std/containers.fs", version : "1758.0");
-import(path : "onshape/std/error.fs", version : "1758.0");
-import(path : "onshape/std/feature.fs", version : "1758.0");
-import(path : "onshape/std/evaluate.fs", version : "1758.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1758.0");
-import(path : "onshape/std/geomOperations.fs", version : "1758.0");
-import(path : "onshape/std/query.fs", version : "1758.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1758.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1758.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1758.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1758.0");
-import(path : "onshape/std/units.fs", version : "1758.0");
-import(path : "onshape/std/valueBounds.fs", version : "1758.0");
+import(path : "onshape/std/attributes.fs", version : "1777.0");
+import(path : "onshape/std/boolean.fs", version : "1777.0");
+import(path : "onshape/std/containers.fs", version : "1777.0");
+import(path : "onshape/std/error.fs", version : "1777.0");
+import(path : "onshape/std/feature.fs", version : "1777.0");
+import(path : "onshape/std/evaluate.fs", version : "1777.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1777.0");
+import(path : "onshape/std/geomOperations.fs", version : "1777.0");
+import(path : "onshape/std/query.fs", version : "1777.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1777.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1777.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
+import(path : "onshape/std/units.fs", version : "1777.0");
+import(path : "onshape/std/valueBounds.fs", version : "1777.0");
 
 /**
 * MakeJointType is a subset of SMJointType to restrict options visible in sheetMetalMakeJoint
@@ -239,8 +239,9 @@ function setRipAttribute(context is Context, entity is Query, id is string, join
 
 function setBendAttribute(context is Context, id is Id, entity is Query, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
 {
+    const holdAdjacentEdges = false;
     var bendAttribute = createBendAttribute(context, id, entity, toAttributeId(id), bendRadius,
-                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT));
+                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT), holdAdjacentEdges);
     if (bendAttribute == undefined)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND, ["entities"]);

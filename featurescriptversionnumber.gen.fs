@@ -1,4 +1,4 @@
-FeatureScript 1758; /* Automatically generated version */
+FeatureScript 1777; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1096,7 +1096,16 @@ export enum FeatureScriptVersionNumber
     V1755_LOFT_MIXED_TOPOLOGY,
     V1756_EDGE_INTERSECTION,
     V1757_IMPRINT_PARAMETER,
-    V1758_SWEPT_ANGLE_FIX
+    V1758_SWEPT_ANGLE_FIX,
+    V1769_BOOLEAN_INPUTS,
+    V1770_TRIM_END_FIX,
+    V1771_SM_TRANSFORM_CONFLICT_TOLERANCE,
+    V1772_STRAIGHT_SEGMENT_IDENTIFICATION_FIX,
+    V1773_QUERY_FOR_SECTION_TOUCHING_EDGES,
+    V1774_TRACKING_SOURCE,
+    V1775_FILL_EDGE_VERTEX_CHECK,
+    V1776_LOFT_GEO_SIMPLIFICATION,
+    V1777_FRAME_SPLINE_PATH_FIX
 }
 
 /**
@@ -1107,6 +1116,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1758_SWEPT_ANGLE_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1777_FRAME_SPLINE_PATH_FIX;
 
 
