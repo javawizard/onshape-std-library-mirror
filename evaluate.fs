@@ -1305,6 +1305,17 @@ export function evTolerances(context is Context, arg is map)
 }
 
 /**
+ * @internal
+ */
+export function evMaxTolerance(context is Context, arg is map)
+{
+    var result = @evMaxTolerance(context, arg);
+    result.entity = qTransient(result.entity);
+    result.tolerance = result.tolerance * meter;
+    return result;
+}
+
+/**
  * Return the coordinates of a point, or the origin of a mate connector.
  * @param arg {{
  *      @field vertex {Query}

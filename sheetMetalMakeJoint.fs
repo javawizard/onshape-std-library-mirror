@@ -239,8 +239,9 @@ function setRipAttribute(context is Context, entity is Query, id is string, join
 
 function setBendAttribute(context is Context, id is Id, entity is Query, bendRadius is ValueWithUnits, isDefaultRadius is boolean)
 {
+    const holdAdjacentEdges = false;
     var bendAttribute = createBendAttribute(context, id, entity, toAttributeId(id), bendRadius,
-                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT));
+                 isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT), holdAdjacentEdges);
     if (bendAttribute == undefined)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_NO_0_ANGLE_BEND, ["entities"]);

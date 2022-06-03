@@ -286,7 +286,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
             {
                 bendRadius = args.defaultRadius;
             }
-            var bendAttribute = createBendAttribute(context, id, edge, attributeId, bendRadius, false);
+            const holdAdjacentEdges = false;
+            var bendAttribute = createBendAttribute(context, id, edge, attributeId, bendRadius, false, holdAdjacentEdges);
             if (bendAttribute == undefined)
             {
                 setErrorEntities(context, id, {"entities" : edge});
@@ -1392,7 +1393,11 @@ export function createRipAttribute(context is Context, entity is Query, ripId is
  * @internal
  */
 export function createBendAttribute(context is Context, id is Id, edge is Query, bendId is string,
-                                    bendRadius is ValueWithUnits, allowNoAngle is boolean)
+                                    bendRadius is ValueWithUnits, allowNoAngle is boolean, holdAdjacentEdges)
+precondition
+{
+    holdAdjacentEdges == undefined || holdAdjacentEdges is boolean;
+}
 {
     var bendAttribute = makeSMJointAttribute(bendId);
     bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
@@ -1410,6 +1415,9 @@ export function createBendAttribute(context is Context, id is Id, edge is Query,
     {
         bendAttribute.angle = {"value" : angle, "canBeEdited" : false};
     }
+
+    bendAttribute.holdAdjacentEdges = {"value" : holdAdjacentEdges, "canBeEdited" : true};
+
     return bendAttribute;
 }
 
@@ -1906,6 +1914,7 @@ precondition
     args.error is ErrorStringEnum;
     args.errorParameters is array;
     args.legacyId == undefined || args.legacyId is Id;
+    args.holdBendAdjacentEdges == undefined || args.holdBendAdjacentEdges is boolean;
 }
 {
     const trackedFaces = trackAllFaces(context, args.surfacesToAdd, args.originalSurfaces);
@@ -1960,7 +1969,8 @@ precondition
         for (var bendEdge in args.trackingBendEdges)
         {
             var bendAttribute = createBendAttribute(context, args.topLevelId, bendEdge,
-                                                    toAttributeId(args.topLevelId + args.attributeIdCounter[]), args.bendRadius, false);
+                                                    toAttributeId(args.topLevelId + args.attributeIdCounter[]), args.bendRadius, false,
+                                                    args.holdBendAdjacentEdges);
             if (bendAttribute != undefined)
             {
                 setAttribute(context, {"entities" : bendEdge, "attribute" : bendAttribute});

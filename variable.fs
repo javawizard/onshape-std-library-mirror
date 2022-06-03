@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 // Imports used in interface
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/variabletype.gen.fs", version : "✨");
 
 // Imports used internally
 import(path : "onshape/std/containers.fs", version : "✨");
@@ -14,23 +15,6 @@ import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/manipulator.fs", version : "✨");
-
-/**
- * Specifies the type of values `assignVariable` is allowed to set.
- *
- * @value ANY : The variable can be any immutable FeatureScript value; boxes and builtins are not allowed.
- */
-export enum VariableType
-{
-    annotation { "Name" : "Length" }
-    LENGTH,
-    annotation { "Name" : "Angle" }
-    ANGLE,
-    annotation { "Name" : "Number" }
-    NUMBER,
-    annotation { "Name" : "Any" }
-    ANY
-}
 
 /**
  * Feature performing a `setVariable` allowing a user to assign a FeatureScript

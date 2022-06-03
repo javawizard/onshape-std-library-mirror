@@ -1072,7 +1072,23 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
     sketchAndExtrudeCut(context, id + "rotatedParts", rotatedParts, polygonForRotatedParts, offsetPlane,
                         sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
 
-    return qUnion([qOwnedByBody(trackFacesAlignedWithViewPlane, sourceParts), qOwnedByBody(trackFacesAlignedWithRevolvedPlane, rotatedParts)]);
+    var sectionFacesParallelToViewPlane = qUnion([qOwnedByBody(trackFacesAlignedWithViewPlane, sourceParts), qOwnedByBody(trackFacesAlignedWithRevolvedPlane, rotatedParts)]);
+    var sectionFacesPerpendicularToViewPlane = qUnion([qCreatedBy(id + "sourceParts", EntityType.FACE), qCreatedBy(id + "rotatedParts", EntityType.FACE)]);
+    var sectionEdgesPerpendicularToViewPlane = qLoopEdges(sectionFacesPerpendicularToViewPlane);
+    var sectionEdgesParallelToViewPlane = qLoopEdges(sectionFacesParallelToViewPlane);
+    var planePerpendicularToViewPlane = plane(jogPoints[1], cross(sketchPlane.normal, sketchPlane.x));
+    var touchingEdges = qUnion([qCoincidesWithPlane(sectionEdgesPerpendicularToViewPlane, planePerpendicularToViewPlane),
+                                qCoincidesWithPlane(sectionEdgesParallelToViewPlane, planePerpendicularToViewPlane)]);
+    if (!isQueryEmpty(context, touchingEdges))
+    {
+        setAttribute(context, {
+                "entities" : touchingEdges,
+                "attribute" : {
+                    "name" : id ~ "sectionTouchingEdges"
+                }
+        });
+    }
+    return sectionFacesParallelToViewPlane;
 }
 
 function addToComposites(context is Context, id is Id, partIds is array)

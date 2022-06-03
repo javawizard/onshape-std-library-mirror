@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/context.fs", version : "✨");
+import(path : "onshape/std/defaultFeatures.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
@@ -13,10 +14,7 @@ import(path : "onshape/std/geomOperations.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 
-const neverKeep = qUnion([qCreatedBy(makeId("Origin"), EntityType.BODY),
-            qCreatedBy(makeId("Front"), EntityType.BODY),
-            qCreatedBy(makeId("Top"), EntityType.BODY),
-            qCreatedBy(makeId("Right"), EntityType.BODY)]);
+const neverKeep = qDefaultBodies();
 const allBodies = qEverything(EntityType.BODY);
 
 /**
