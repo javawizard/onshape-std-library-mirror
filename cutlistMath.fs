@@ -59,12 +59,12 @@ export function getCutlistLengthAndAngles(context is Context, topLevelId is Id, 
     return result;
 }
 
-function buildBeamCutlistData(length, angle1, angle2) returns map
+function buildBeamCutlistData(length, startAngle, endAngle) returns map
 {
     return {
             "length" : length,
-            "angle1" : angle1,
-            "angle2" : angle2
+            "angle1" : startAngle,
+            "angle2" : endAngle
         };
 }
 

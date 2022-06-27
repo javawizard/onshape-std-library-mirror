@@ -1033,6 +1033,26 @@ export const opSplineThroughEdges = function(context is Context, id is Id, defin
 };
 
 /**
+ * Splits an array of edges at specified parameters.
+ * @param id : @autocomplete `id + "splitEdges1"`
+ * @param definition {{
+ *       @field edges {Query} : Edges to split.
+ *       @field parameters {array} :
+ *              An array of array of parameters. Each edge gets split at the parameter values at the matching index
+ *              in this array.
+ *       @field arcLengthParameterization {boolean} : @optional
+ *              If true (default), the parameter returned for edges measures distance
+ *              along the edge, so `0.5` is the midpoint.
+ *              If false, use an arbitrary but faster-to-calculate parameterization.
+ *              Default is `true`.
+ * }}
+ */
+export const opSplitEdges = function(context is Context, id is Id, definition is map)
+{
+    return @opSplitEdges(context, id, definition);
+};
+
+/**
  * Creates a construction point (a `BodyType.POINT` with one vertex).
  * @param id : @autocomplete `id + "point1"`
  * @param definition {{

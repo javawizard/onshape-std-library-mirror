@@ -1079,7 +1079,6 @@ export enum ErrorStringEnum
     RIB_MERGE_FAILED,
     /* Failed to save named position. */
     ASSEMBLY_NAMED_POSITIONS_SAVE_FAILED,
-    /* Instance position or mate has changed. */
     ASSEMBLY_NAMED_POSITIONS_LOAD_FAILED,
     /* Assembly must not be empty. */
     ASSEMBLY_NAMED_POSITIONS_NO_MATES_TO_SAVE,
@@ -2216,7 +2215,31 @@ export enum ErrorStringEnum
     /* Bad spline data. */
     DXF_BAD_SPLINE_DATA,
     /* Load instance is suppressed. */
-    SIMULATION_LOAD_INSTANCE_SUPPRESSED
+    SIMULATION_LOAD_INSTANCE_SUPPRESSED,
+    /* Diameters must be equal. */
+    DIAMETERS_MUST_BE_EQUAL,
+    /* Not a convex surface. */
+    NOT_CONVEX,
+    /* Select one or more cylinder edges. */
+    SELECT_CYLINDER_EDGES,
+    /* Not cylinder or cone. */
+    NOT_CYLINDER_OR_CONE,
+    /* Unable to find a thread boundary. */
+    UNABLE_TO_FIND_THREAD_BOUNDARY,
+    /* Counterbore and countersink values are non standard for tapered holes. */
+    HOLE_CBORE_CSINK_VALUES_NON_STD,
+    /* Cannot extend partial flange beyond base edge. */
+    SHEET_METAL_FLANGE_PARAMETER_BOUND,
+    /* Cannot create zero width partial flange. */
+    SHEET_METAL_FLANGE_ZERO_WIDTH,
+    /* Select a limit entity for flange bound. */
+    SHEET_METAL_FLANGE_NO_BOUNDING_ENTITY,
+    /* Limit entity for flange bound cannot be parallel to flange edge. */
+    SHEET_METAL_FLANGE_BOUNDING_ENTITY_PARALLEL,
+    /* Limit entity for flange bound must be a vertex or plane. */
+    SHEET_METAL_FLANGE_BOUNDING_ENTITY_NOT_SUPPORTED,
+    /* Composite frame segments must form a single body. */
+    FRAME_BAD_COMPOSITE_SEGMENT
 }
 
 

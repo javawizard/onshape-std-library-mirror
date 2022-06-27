@@ -114,19 +114,22 @@ function computeSize(attribute is HoleAttribute) returns TemplateString
         result.cSinkAngle = attribute.cSinkAngle;
     }
 
-    // Tapped
-    if (attribute.isTappedHole)
+    // Tapped or tapered pipe tap
+    if (attribute.isTappedHole || attribute.isTaperedPipeTapHole)
     {
         template ~= "\n#tapSize";
         result.tapSize = attribute.tapSize;
-        if (attribute.isTappedThrough)
+        if (!attribute.isTaperedPipeTapHole)
         {
-            template ~= " THRU";
-        }
-        else
-        {
-            template ~= "↧#tappedDepth";
-            result.tappedDepth = attribute.tappedDepth;
+            if (attribute.isTappedThrough)
+            {
+                template ~= " THRU";
+            }
+            else
+            {
+                template ~= "↧#tappedDepth";
+                result.tappedDepth = attribute.tappedDepth;
+            }
         }
     }
 

@@ -111,6 +111,7 @@ predicate canBeFrameTopologyAttribute(value)
     {
         value.isStart is boolean;
         value.isFrameTerminus is boolean;
+        value.isCompositeTerminus is boolean;
     }
 }
 
@@ -133,12 +134,13 @@ precondition
  * Construct a [FrameTopologyAttribute] for `CAP_FACE`.
  * @seealso [frameTopologyAttributeForSwept]
  */
-export function frameTopologyAttributeForCapFace(isStartFace is boolean, isFrameTerminus is boolean) returns FrameTopologyAttribute
+export function frameTopologyAttributeForCapFace(isStartFace is boolean, isFrameTerminus is boolean, isCompositeTerminus is boolean) returns FrameTopologyAttribute
 {
     return {
         "topologyType" : FrameTopologyType.CAP_FACE,
         "isStart" : isStartFace,
-        "isFrameTerminus" : isFrameTerminus
+        "isFrameTerminus" : isFrameTerminus,
+        "isCompositeTerminus" : isCompositeTerminus
     } as FrameTopologyAttribute;
 }
 
@@ -236,4 +238,5 @@ export function setCutlistAttribute(context is Context, composite is Query, attr
         "attribute" : attribute
     });
 }
+
 

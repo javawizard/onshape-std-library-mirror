@@ -161,7 +161,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             }
         }
 
-        annotation { "Name" : "Draft angle" }
+        annotation { "Name" : "Draft angle",  "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : false }
@@ -169,7 +169,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
 
         if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE && definition.partingLineSides == PartingLineSides.TWO_SIDED)
         {
-            annotation { "Name" : "Second draft angle" }
+            annotation { "Name" : "Second draft angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isAngle(definition.secondAngle, ANGLE_STRICT_90_BOUNDS);
 
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : true }

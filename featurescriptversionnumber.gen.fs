@@ -1105,7 +1105,14 @@ export enum FeatureScriptVersionNumber
     V1774_TRACKING_SOURCE,
     V1775_FILL_EDGE_VERTEX_CHECK,
     V1776_LOFT_GEO_SIMPLIFICATION,
-    V1777_FRAME_SPLINE_PATH_FIX
+    V1777_FRAME_SPLINE_PATH_FIX,
+    V1787_DERIVED_FACE_IN_COPY,
+    V1788_MERGE_G1_SEGMENTS,
+    V1789_HOLE_TABLE_EXTERNAL_THREAD_CONSISTENT_ORDERING,
+    V1790_ATTRIBUTE_CLOSED_COMPOSITE_SEGMENTS,
+    V1791_RESOURCE_CHANGE_IN_RELEASE,
+    V1792_INC_HOLE_CLEARANCE_BOUNDS_UPPER_LIMIT,
+    V1793_PARTIAL_FLANGE_FIXES
 }
 
 /**
@@ -1116,6 +1123,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1777_FRAME_SPLINE_PATH_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1793_PARTIAL_FLANGE_FIXES;
 
 

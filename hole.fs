@@ -198,7 +198,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
 
         /*
-         * showTappedDepth, tappedDepth and tapClearance are for hole annotations;
+         * showTappedDepth, tappedDepth, tappedAngle and tapClearance are for hole annotations;
          * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
          * threads, then they would have an effect.
          */
@@ -222,6 +222,12 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             {
                 annotation { "Name" : "Tapped depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+            }
+
+            if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
+            {
+                annotation { "Name" : "Tapped angle", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                isAngle(definition.tappedAngle, HOLE_TAPPED_ANGLE_BOUNDS);
             }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
@@ -283,6 +289,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth - TOLERANCE.zeroLength * meter)
                     throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
             }
+        }
+
+        if ((definition.style == HoleStyle.C_BORE || definition.style == HoleStyle.C_SINK) && isTaperedPipeTapHole(definition))
+        {
+            reportFeatureInfo(context, id, ErrorStringEnum.HOLE_CBORE_CSINK_VALUES_NON_STD);
         }
 
         // ------------- Definition adjustment -------------
@@ -348,9 +359,15 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             startFromSketch : false,
             showTappedDepth : false,
             tappedDepth : 0.5 * inch,
+            tappedAngle : 0.0 * degree,
             tapClearance : 3,
             isTappedThrough : false
         });
+
+function isTaperedPipeTapHole(definition is map) returns boolean
+{
+    return definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined && definition.standardTappedOrClearance["type"] == "Tapered Pipe Tap";
+}
 
 function reportingStatus(context is Context, id is Id) returns boolean
 {
@@ -1220,7 +1237,7 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 
 const HOLE_CLEARANCE_BOUNDS =
 {
-            (unitless) : [0, 3, 100]
+            (unitless) : [0, 3, 500]
         } as RealBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
@@ -1272,6 +1289,18 @@ const HOLE_BORE_DEPTH_BOUNDS =
             (foot) : 0.02,
             (yard) : 0.007
         } as LengthBoundSpec;
+
+const HOLE_TAPERED_PIPE_TAP_ANGLE = 1.789911;
+const HOLE_TAPERED_PIPE_TAP_CLEARANCE = 5;
+
+/**
+ * Angle bounds for a tapered pipe tap angle.
+ */
+const HOLE_TAPPED_ANGLE_BOUNDS =
+{
+            (degree) : [0.0, HOLE_TAPERED_PIPE_TAP_ANGLE, 9.9],
+            (radian) : 0.0 * PI
+        } as AngleBoundSpec;
 
 /**
  * Angle bounds for a hole countersink.
@@ -2252,9 +2281,12 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
 
     // initialize tapped hole information
     resultAttribute.isTappedHole = false;
+    resultAttribute.isTaperedPipeTapHole = false;
+    resultAttribute.tappedAngle = 0.0;
     resultAttribute.tapSize = "";
     var tapSize;
     var tapPitch;
+    var standard;
     var isStandardComponentBasedHole = false;
     var isStandardDrillBasedHole = false;
     var standardSizeDesignation = undefined;
@@ -2270,7 +2302,11 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
     {
         for (var entry in standardSpec)
         {
-            if (entry.key == "type")
+            if (entry.key == "standard")
+            {
+                standard = entry.value;
+            }
+            else if (entry.key == "type")
             {
                 var matchResult = match(entry.value, ".*[Tt]apped.*");
                 resultAttribute.isTappedHole = matchResult.hasMatch;
@@ -2284,6 +2320,11 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
                     {
                         isStandardComponentBasedHole = false;
                         isStandardDrillBasedHole = true;
+                    }
+                    else
+                    {
+                        matchResult = match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*");
+                        resultAttribute.isTaperedPipeTapHole = matchResult.hasMatch;
                     }
                 }
             }
@@ -2311,8 +2352,8 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
         }
     }
 
-    // is this a tapped hole and we found its size?
-    if (resultAttribute.isTappedHole && tapSize != undefined && tapPitch != undefined)
+    // is this a tapped or tapered pipe tap hole and we found its size?
+    if ((resultAttribute.isTappedHole || resultAttribute.isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
     {
         // format tap pitch based upon units
         var pitch = tapPitch;
@@ -2338,10 +2379,15 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
 
         // set tap size
         resultAttribute.tapSize = tapSize ~ delimiter ~ pitch;
+        if (resultAttribute.isTaperedPipeTapHole)
+            resultAttribute.tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
         if (holeDefinition.tappedDepth != undefined)
             resultAttribute.tappedDepth = holeDefinition.tappedDepth;
         else if (holeDefinition.isTappedThrough)
             resultAttribute.tappedDepth = 0 * meter; // it doesn't really matter, just not undefined
+
+        if (resultAttribute.isTaperedPipeTapHole && holeDefinition.tappedAngle != undefined)
+            resultAttribute.tappedAngle = holeDefinition.tappedAngle;
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH && holeDefinition.tapClearance != undefined)
             resultAttribute.tapClearance = holeDefinition.tapClearance;
@@ -2519,9 +2565,10 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
     }
-    definition = setToCustomIfStandardViolated(definition);
-
     definition = adjustThreadDepth(oldDefinition, definition);
+    /* For Tapered Pipe Tap, the holeDepth and tappedDepth are also specified by the standard(ANSI, ISO).
+       So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
+    definition = setToCustomIfStandardViolated(definition);
 
     if (isCreating)
     {
@@ -2673,8 +2720,21 @@ export function updateHoleDefinitionWithStandard(oldDefinition is map, definitio
     var table = getStandardTable(definition);
     for (var entry in table)
     {
-        definition[entry.key] = lookupTableFixExpression(entry.value);
+        if (entry.key == "tappedDepth" || entry.key == "holeDepth")
+        {
+            definition[entry.key] = lookupTableEvaluate(entry.value);
+        }
+        else
+        {
+            definition[entry.key] = lookupTableFixExpression(entry.value);
+        }
         evaluatedDefinition[entry.key] = lookupTableGetValue(definition[entry.key]);
+    }
+
+    if (isTaperedPipeTapHole(definition))
+    {
+        definition.tapClearance = HOLE_TAPERED_PIPE_TAP_CLEARANCE;
+        definition.tappedAngle = HOLE_TAPERED_PIPE_TAP_ANGLE * degree;
     }
 
     if (evaluatedDefinition.tapDrillDiameter > evaluatedDefinition.holeDiameter)
@@ -2713,6 +2773,7 @@ function setToCustomIfStandardViolated(definition is map) returns map
     {
         definition.standardTappedOrClearance = lookupTablePath({ "standard" : "Custom" });
         definition.standardBlindInLast = lookupTablePath({ "standard" : "Custom" });
+        definition.showTappedDepth = false;
     }
 
     return definition;
@@ -3077,3 +3138,4 @@ function clusterVertexQueries(context is Context, selected is Query) returns arr
     }
     return evaluateQuery(context, qIntersection([selected, qUnion(clusterQueries)]));
 }
+
