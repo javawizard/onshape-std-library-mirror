@@ -1,31 +1,31 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1777.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1777.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "1777.0");
-import(path : "onshape/std/containers.fs", version : "1777.0");
-import(path : "onshape/std/coordSystem.fs", version : "1777.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1777.0");
-import(path : "onshape/std/error.fs", version : "1777.0");
-import(path : "onshape/std/evaluate.fs", version : "1777.0");
-import(path : "onshape/std/feature.fs", version : "1777.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1777.0");
-import(path : "onshape/std/instantiator.fs", version : "1777.0");
-import(path : "onshape/std/manipulator.fs", version : "1777.0");
-import(path : "onshape/std/path.fs", version : "1777.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
-import(path : "onshape/std/tabReferences.fs", version : "1777.0");
-import(path : "onshape/std/tagProfile.fs", version : "1777.0");
-import(path : "onshape/std/tool.fs", version : "1777.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
-import(path : "onshape/std/transform.fs", version : "1777.0");
-import(path : "onshape/std/valueBounds.fs", version : "1777.0");
-import(path : "onshape/std/vector.fs", version : "1777.0");
+import(path : "onshape/std/attributes.fs", version : "1793.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1793.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "1793.0");
+import(path : "onshape/std/containers.fs", version : "1793.0");
+import(path : "onshape/std/coordSystem.fs", version : "1793.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1793.0");
+import(path : "onshape/std/error.fs", version : "1793.0");
+import(path : "onshape/std/evaluate.fs", version : "1793.0");
+import(path : "onshape/std/feature.fs", version : "1793.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1793.0");
+import(path : "onshape/std/instantiator.fs", version : "1793.0");
+import(path : "onshape/std/manipulator.fs", version : "1793.0");
+import(path : "onshape/std/path.fs", version : "1793.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
+import(path : "onshape/std/tabReferences.fs", version : "1793.0");
+import(path : "onshape/std/tagProfile.fs", version : "1793.0");
+import(path : "onshape/std/tool.fs", version : "1793.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1793.0");
+import(path : "onshape/std/transform.fs", version : "1793.0");
+import(path : "onshape/std/valueBounds.fs", version : "1793.0");
+import(path : "onshape/std/vector.fs", version : "1793.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "1777.0");
+export import(path : "onshape/std/frameUtils.fs", version : "1793.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -64,6 +64,9 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
                     "Filter" : ((EntityType.FACE && ConstructionObject.NO) || EntityType.EDGE || (EntityType.VERTEX && AllowEdgePoint.NO) || (EntityType.BODY && BodyType.WIRE))
                 }
         definition.selections is Query;
+
+        annotation { "Name" : "Merge tangent segments", "Default" : true }
+        definition.mergeTangentSegments is boolean;
 
         annotation { "Name" : "Angle" }
         isAngle(definition.angle, ANGLE_360_ZERO_DEFAULT_BOUNDS);
@@ -160,7 +163,8 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
             index : 4,
             angle : 0 * degree,
             cornerOverrides : [],
-            trim : false
+            trim : false,
+            mergeTangentSegments : true
         });
 
 /** @internal */
@@ -195,6 +199,26 @@ export function frameManipulators(context is Context, definition is map, newMani
     return definition;
 }
 
+/** @internal */
+export function setFrameAttributes(context is Context, frame is Query, profileData is map, frameData is map)
+{
+    setFrameProfileAttribute(context, frame, profileData.profileAttribute);
+    setFrameTopologyAttribute(context, frameData.sweptFaces, frameTopologyAttributeForSwept(FrameTopologyType.SWEPT_FACE));
+    if (!isQueryEmpty(context, frameData.sweptEdges))
+    {
+        setFrameTopologyAttribute(context, frameData.sweptEdges, frameTopologyAttributeForSwept(FrameTopologyType.SWEPT_EDGE));
+    }
+    setFrameTopologyAttribute(context, frameData.startFace, frameTopologyAttributeForCapFace(true, false, false));
+    setFrameTopologyAttribute(context, frameData.endFace, frameTopologyAttributeForCapFace(false, false, false));
+}
+
+/** @internal */
+export function setFrameTerminusAttributes(context is Context, startFace is Query, endFace is Query)
+{
+    setFrameTopologyAttribute(context, startFace, frameTopologyAttributeForCapFace(true, true, false));
+    setFrameTopologyAttribute(context, endFace, frameTopologyAttributeForCapFace(false, true, false));
+}
+
 function handleNewCornerOverride(context is Context, oldDefinition is map, definition is map) returns map
 {
     // on joint override creation, set the starting value to the global default
@@ -219,14 +243,54 @@ function doFrame(context is Context, id is Id, definition is map)
     const profileData = getProfile(context, id, definition, bodiesToDelete);
 
     const sweepData = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1742_STABLE_FRAME_SWEEP))
-        ? sweepFrames(context, id, definition, profileData, bodiesToDelete)
-        : sweepFrames_PRE_V1742(context, id, definition, profileData, bodiesToDelete);
+       ? sweepFrames(context, id, definition, profileData, bodiesToDelete)
+       : sweepFrames_PRE_V1742(context, id, definition, profileData, bodiesToDelete);
 
     addManipulators(context, id, sweepData.manipulators);
     trimFrame(context, id, definition, sweepData.trimEnds, sweepData.sweepBodies, bodiesToDelete);
+    createComposites(context, id, definition.mergeTangentSegments, sweepData.compositeGroups, profileData);
     cleanUpBodies(context, id, bodiesToDelete);
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.selections });
     transformResultIfNecessary(context, id, remainingTransform);
+}
+
+function createComposites(context is Context, id is Id, mergeSegments is boolean, compositeGroups is array, profileData is map)
+{
+    if (!mergeSegments)
+    {
+        return;
+    }
+    const createCompositeId = getIncrementingId(id + "compositePart");
+    for (var group in compositeGroups)
+    {
+        //skip groups of size 1
+        if (size(group.segments) < 2)
+        {
+            continue;
+        }
+
+        const compositeId = createCompositeId();
+        opCreateCompositePart(context, compositeId, {
+                "bodies" : qUnion(group.segments),
+                "closed" : true
+        });
+
+        //update composite frame segment terminus attributes
+        const startFaceQuery = qFrameStartFace(group.startTerminus);
+        var startFaceAttributes = getFrameTopologyAttribute(context, startFaceQuery);
+        startFaceAttributes.isCompositeTerminus = true;
+        setFrameTopologyAttribute(context, startFaceQuery, startFaceAttributes);
+
+        //update end attributes
+        const endFaceQuery = qFrameEndFace(group.endTerminus);
+        var endFaceAttributes = getFrameTopologyAttribute(context, endFaceQuery);
+        endFaceAttributes.isCompositeTerminus = true;
+        setFrameTopologyAttribute(context, endFaceQuery, endFaceAttributes);
+
+        //set composite body attribute
+        const closedCompositeBodyQuery = qCreatedBy(compositeId, EntityType.BODY) -> qCompositePartTypeFilter(CompositePartType.CLOSED);
+        setFrameProfileAttribute(context, closedCompositeBodyQuery, profileData.profileAttribute);
+    }
 }
 
 function sweepFrames(context is Context, topLevelId is Id, definition is map, profileData is map, bodiesToDelete is box) returns map
@@ -245,7 +309,8 @@ function sweepFrames(context is Context, topLevelId is Id, definition is map, pr
     return {
             "trimEnds" : sweepData.trimEnds,
             "manipulators" : mergeMaps(manipulators, frameManipulators),
-            "sweepBodies" : sweepData.sweepBodies
+            "sweepBodies" : sweepData.sweepBodies,
+            "compositeGroups" : sweepData.compositeGroups
         };
 }
 
@@ -272,6 +337,7 @@ function doStablePaths(context is Context, topLevelId is Id, definition is map, 
     var allManipulators = {};
     var allTrimEnds = [];
     var allSweepBodies = [];
+    var allCompositeGroups = [];
     for (var pathIndex = 0; pathIndex < size(paths); pathIndex += 1)
     {
         const path = paths[pathIndex];
@@ -281,12 +347,14 @@ function doStablePaths(context is Context, topLevelId is Id, definition is map, 
         allTrimEnds = concatenateArrays([allTrimEnds, pathData.trimEnds]);
         allSweepBodies = concatenateArrays([allSweepBodies, pathData.sweepBodies]);
         allManipulators = mergeMaps(allManipulators, pathData.manipulators);
+        allCompositeGroups = concatenateArrays([allCompositeGroups, pathData.compositeGroups]);
     }
 
     return {
             "trimEnds" : allTrimEnds,
             "manipulators" : allManipulators,
-            "sweepBodies" : allSweepBodies
+            "sweepBodies" : allSweepBodies,
+            "compositeGroups" : allCompositeGroups
         };
 }
 
@@ -327,12 +395,126 @@ function doOneStablePath(context is Context, topLevelId is Id, definition is map
     setAttributesOnPath(context, profileData, pathData.sweepData);
     const createCornerId = getIncrementingId(pathId + "corner");
     createCorners(context, topLevelId, createCornerId, pathData.sweepData, pathData.cornerData, bodiesToDelete);
+    const compositeGroups = groupTangentSegments(context, pathData.sweepData, pathData.cornerData);
 
     return {
             "trimEnds" : [pathData.sweepData[0].startFace, last(pathData.sweepData).endFace],
             "manipulators" : pathData.manipulators,
-            "sweepBodies" : getSweepBodies(pathData)
+            "sweepBodies" : getSweepBodies(pathData),
+            "compositeGroups" : compositeGroups
         };
+}
+
+function groupTangentSegments(context, sweepData is array, cornerData is array) returns array
+{
+    const numCorners = size(cornerData);
+    const numSegments = size(sweepData);
+    const isClosed = (numCorners == numSegments);
+
+    //create lookup for checking if a beam is ungrouped.
+    //the value doesnt matter - only key existence is used.
+    var ungroupedSegment = {};
+    for (var index = 0; index < numSegments; index += 1)
+    {
+        ungroupedSegment[index] = true;
+    }
+
+    var allGroups = [];
+    while (size(ungroupedSegment) > 0)
+    {
+        // this algorithm starts at and index and explores segments "before" (lower index) and "after" (higher index)
+        // to find the extents of the composite segment group.
+        //it also tracks the starting and ending indexes of the composite beam for later attribution.
+        const startBeamIndex = getFirstKey(ungroupedSegment);
+        var compositeSegments = [];
+        var startTerminus;
+        var endTerminus;
+
+        //search lower index to limit
+        var beamIndex = startBeamIndex;
+        while (true)
+        {
+            ungroupedSegment[beamIndex] = undefined;
+            compositeSegments = append(compositeSegments, beamIndex);
+
+            var cornerIndex = beamIndex - 1;
+            if (cornerIndex < 0)
+            {
+                //handles wrap case for closed beams
+                if (isClosed)
+                {
+                    cornerIndex = numCorners - 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (cornerData[cornerIndex].cornerType == FrameCornerType.TANGENT && ungroupedSegment[cornerIndex] != undefined)
+            {
+                beamIndex = cornerIndex;
+                continue;
+            }
+            else
+            {
+                break;
+            }
+        }
+        startTerminus = beamIndex;
+
+        //search upper indexes
+        beamIndex = startBeamIndex;
+        while (true)
+        {
+            var cornerIndex = beamIndex;
+            // the closed path wraparound is handled in the lower index loop so if now encountered just exit
+            if (cornerIndex == numCorners)
+            {
+                break;
+            }
+
+            if (cornerData[cornerIndex].cornerType != FrameCornerType.TANGENT)
+            {
+                //not a tangent corner - end of composite segment
+                break;
+            }
+
+            beamIndex = (beamIndex + 1) % numSegments;
+            if (ungroupedSegment[beamIndex] != undefined)
+            {
+                //add to current composite group
+                compositeSegments = append(compositeSegments, beamIndex);
+                ungroupedSegment[beamIndex] = undefined;
+                continue;
+            }
+            else
+            {
+                //already a part of this composite segment (in event of closed path)
+                break;
+            }
+        }
+        endTerminus = beamIndex;
+
+        const compositeBodies = mapArray(compositeSegments, function(index) { return sweepData[index].body; });
+        const currentGroup = {
+                "segments" : compositeBodies,
+                "startTerminus" : sweepData[startTerminus].body,
+                "endTerminus" : sweepData[endTerminus].body
+            };
+        allGroups = append(allGroups, currentGroup);
+    }
+    return allGroups;
+}
+
+// This function retrieves the first available key in a map.
+function getFirstKey(keys is map)
+{
+    for (var k, _ in keys)
+    {
+        return k;
+    }
+    return undefined;
 }
 
 function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definition is map, profileData is map, cornerOverrides is array, path is Path, stableEdge is map, bodiesToDelete is box) returns map
@@ -354,6 +536,9 @@ function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definit
         setFrameAttributes(context, qCreatedBy(sweepData.id, EntityType.BODY), profileData, frameData);
     }
 
+    // Backpath sweep is complicated.
+    // The backpath is swept from some intermediate segment "backward" to its end.
+    // This then requires some manual reorganization of the attribution to make the beam appear to be swept in one continuous sequence.
     const backPath = splitPaths.backPath;
     // the backPath needs a starting face and direction
     const previousFace = frontPathData.sweepData[0].startFace;
@@ -374,13 +559,16 @@ function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definit
     setFrameTerminusAttributes(context, last(backPathSweepData.sweepData).endFace, last(frontPathData.sweepData).endFace);
 
     // the createCorners function requires the 'previous face' so insert it at the front of the array here
-    backPathSweepData.sweepData = concatenateArrays([
+    const tempBackSweepData = concatenateArrays([
                 [{ "endFace" : frontPathData.sweepData[0].startFace }],
                 backPathSweepData.sweepData]);
-
     const createCornerId = getIncrementingId(pathId + "corner");
     createCorners(context, topLevelId, createCornerId, frontPathData.sweepData, frontPathData.cornerData, bodiesToDelete);
-    createCorners(context, topLevelId, createCornerId, backPathSweepData.sweepData, backPathSweepData.cornerData, bodiesToDelete);
+    createCorners(context, topLevelId, createCornerId, tempBackSweepData, backPathSweepData.cornerData, bodiesToDelete);
+    // to create composite groups, the cornerData and sweepPath data need to be ordered correctly
+    const totalPathSweepData = concatenateArrays([reverse(backPathSweepData.sweepData), frontPathData.sweepData]);
+    const totalPathCornerData = concatenateArrays([reverse(backPathSweepData.cornerData), frontPathData.cornerData]);
+    const compositeGroups = groupTangentSegments(context, totalPathSweepData, totalPathCornerData);
 
     // Versioned bugfix: Selecting wrong trim ends during frame trims
     const trimEnds = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1770_TRIM_END_FIX)
@@ -390,7 +578,8 @@ function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definit
     return {
             "trimEnds" : trimEnds,
             "manipulators" : mergeMaps(frontPathData.manipulators, backPathSweepData.manipulators),
-            "sweepBodies" : concatenateArrays([getSweepBodies(frontPathData), backPathSweepData.sweepBodies])
+            "sweepBodies" : concatenateArrays([getSweepBodies(frontPathData), backPathSweepData.sweepBodies]),
+            "compositeGroups" : compositeGroups
         };
 }
 
@@ -479,7 +668,7 @@ function sweepStartingEdge(context is Context, definition is map, edgeId is Id, 
     const sweepId = edgeId + "sweep";
     const sweepData = sweepOneEdge(context, sweepId, qCreatedBy(profileId, EntityType.FACE), edge);
     return sweepData;
-    }
+}
 
 function sweepContinuingEdge(context, definition, edgeId, edge is Query, edgeStart is Line, previousEdgeEnd is Line, previousFace, cornerOverrides is array, profileData is map, bodiesToDelete is box)
 {
@@ -1119,8 +1308,7 @@ function getCurrentCornerData(context is Context, prevEdgeEnd is map, edgeStart 
 
     if (abs(sin(angle)) <= TOLERANCE.zeroLength)
     {
-        // no meaningful joint here so don't do anything
-        cornerType = FrameCornerType.NONE;
+        cornerType = FrameCornerType.TANGENT;
     }
 
     if (isButtCorner(cornerType))
@@ -1131,9 +1319,9 @@ function getCurrentCornerData(context is Context, prevEdgeEnd is map, edgeStart 
     {
         return getMiterCornerData(prevEdgeEnd, edgeStart, position);
     }
-    else if (cornerType == FrameCornerType.NONE)
+    else if (cornerType == FrameCornerType.NONE || cornerType == FrameCornerType.TANGENT)
     {
-        return { "cornerType" : FrameCornerType.NONE };
+        return { "cornerType" : cornerType };
     }
     else
     {
@@ -1639,26 +1827,6 @@ function getButtCornerData(context is Context, definition is map, prevEdgeEnd is
     return corner;
 }
 
-/** @internal */
-export function setFrameAttributes(context is Context, frame is Query, profileData is map, frameData is map)
-{
-    setFrameProfileAttribute(context, frame, profileData.profileAttribute);
-    setFrameTopologyAttribute(context, frameData.sweptFaces, frameTopologyAttributeForSwept(FrameTopologyType.SWEPT_FACE));
-    if (!isQueryEmpty(context, frameData.sweptEdges))
-    {
-        setFrameTopologyAttribute(context, frameData.sweptEdges, frameTopologyAttributeForSwept(FrameTopologyType.SWEPT_EDGE));
-    }
-    setFrameTopologyAttribute(context, frameData.startFace, frameTopologyAttributeForCapFace(true, false));
-    setFrameTopologyAttribute(context, frameData.endFace, frameTopologyAttributeForCapFace(false, false));
-}
-
-/** @internal */
-export function setFrameTerminusAttributes(context is Context, startFace is Query, endFace is Query)
-{
-    setFrameTopologyAttribute(context, startFace, frameTopologyAttributeForCapFace(true, true));
-    setFrameTopologyAttribute(context, endFace, frameTopologyAttributeForCapFace(false, true));
-}
-
 function getFrameData(context is Context, sweepId is Id, sweepData is map) returns map
 {
     const frameData = {
@@ -1773,7 +1941,8 @@ function sweepFrames_PRE_V1742(context is Context, topLevelId is Id, definition 
     return {
             "trimEnds" : trimEnds,
             "manipulators" : manipulators,
-            "sweepBodies" : sweepBodies
+            "sweepBodies" : sweepBodies,
+            "compositeGroups" : []
         };
 }
 

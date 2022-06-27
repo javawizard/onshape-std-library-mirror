@@ -1,17 +1,17 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/containers.fs", version : "1777.0");
-export import(path : "onshape/std/context.fs", version : "1777.0");
-export import(path : "onshape/std/evaluate.fs", version : "1777.0");
-export import(path : "onshape/std/math.fs", version : "1777.0");
-export import(path : "onshape/std/properties.fs", version : "1777.0");
-export import(path : "onshape/std/query.fs", version : "1777.0");
-export import(path : "onshape/std/string.fs", version : "1777.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1777.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1777.0");
+export import(path : "onshape/std/containers.fs", version : "1793.0");
+export import(path : "onshape/std/context.fs", version : "1793.0");
+export import(path : "onshape/std/evaluate.fs", version : "1793.0");
+export import(path : "onshape/std/math.fs", version : "1793.0");
+export import(path : "onshape/std/properties.fs", version : "1793.0");
+export import(path : "onshape/std/query.fs", version : "1793.0");
+export import(path : "onshape/std/string.fs", version : "1793.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1793.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1793.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -198,10 +198,12 @@ export function tableRow(columnIdToCell is map, entities is Query) returns Table
 
 // ----------------------------------- Table Values -----------------------------------
 
+
+
 /** Returns `true` if the input is a table value, that is a string, a number, a [ValueWithUnits] or a [TemplateString]. */
 export predicate isTableValue(value)
 {
-    value is string || value is number || value is ValueWithUnits || value is TemplateString;
+    value is string || value is number || value is ValueWithUnits || value is TemplateString || value is StringWithTolerances;
 }
 
 // ----------------------------------- Table Array -----------------------------------
@@ -298,6 +300,75 @@ export predicate canBeTemplateString(value)
 export function templateString(value is map) returns TemplateString
 {
     return value as TemplateString;
+}
+
+// ----------------------------------- Tolerance strings -----------------------------------
+
+/**
+ * @internal
+ * Determines whether or not a value is string-like
+ */
+predicate isStringOrTemplateString(value)
+{
+    value is string || value is TemplateString;
+}
+
+/**
+ * Represents a component with an inline part followed by stacked upper and lower components.
+ * @type {{
+ *      @field value : A value to be displayed as a regular row of text.
+ *      @field upper : The upper component of the tolerance.
+ *      @field lower : The lower component of the tolerance.
+ * }}
+ */
+export type StringToleranceComponent typecheck canBeStringToleranceComponent;
+
+/**
+ * @internal
+ * Typecheck for StringToleranceComponent
+ */
+export predicate canBeStringToleranceComponent(value)
+{
+    value is map;
+    isStringOrTemplateString(value.value);
+    isStringOrTemplateString(value.upper);
+    isStringOrTemplateString(value.lower);
+}
+
+/** Constructor for StringToleranceComponent */
+export function stringToleranceComponent(value is map) returns StringToleranceComponent
+precondition canBeStringToleranceComponent(value);
+{
+    return value as StringToleranceComponent;
+}
+
+/**
+ * Represents a compound string which may contain toleranced components.
+ * @type {{
+ *     @field components : An array of either strings, TemplateStrings, or StringToleranceComponents.
+ * }}
+ */
+export type StringWithTolerances typecheck canBeStringWithTolerances;
+
+/**
+ * @internal
+ * Typecheck for StringWithTolerances
+ */
+export predicate canBeStringWithTolerances(value)
+{
+    value is map;
+    value.components is array;
+    for (var component in value.components)
+    {
+        canBeStringToleranceComponent(component) || isStringOrTemplateString(component);
+    }
+}
+
+/** Constructor for StringWithTolerances */
+export function stringWithTolerances(value is map)
+precondition canBeStringWithTolerances(value);
+{
+    return value as StringWithTolerances;
 }
 
 // ----------------------------------- All parts query -----------------------------------

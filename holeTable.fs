@@ -1,11 +1,11 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1777.0");
-import(path : "onshape/std/hole.fs", version : "1777.0");
-import(path : "onshape/std/table.fs", version : "1777.0");
+import(path : "onshape/std/attributes.fs", version : "1793.0");
+import(path : "onshape/std/hole.fs", version : "1793.0");
+import(path : "onshape/std/table.fs", version : "1793.0");
 
 /** Computes one hole table for each part */
 annotation { "Table Type Name" : "Hole table" }
@@ -114,19 +114,22 @@ function computeSize(attribute is HoleAttribute) returns TemplateString
         result.cSinkAngle = attribute.cSinkAngle;
     }
 
-    // Tapped
-    if (attribute.isTappedHole)
+    // Tapped or tapered pipe tap
+    if (attribute.isTappedHole || attribute.isTaperedPipeTapHole)
     {
         template ~= "\n#tapSize";
         result.tapSize = attribute.tapSize;
-        if (attribute.isTappedThrough)
+        if (!attribute.isTaperedPipeTapHole)
         {
-            template ~= " THRU";
-        }
-        else
-        {
-            template ~= "↧#tappedDepth";
-            result.tappedDepth = attribute.tappedDepth;
+            if (attribute.isTappedThrough)
+            {
+                template ~= " THRU";
+            }
+            else
+            {
+                template ~= "↧#tappedDepth";
+                result.tappedDepth = attribute.tappedDepth;
+            }
         }
     }
 

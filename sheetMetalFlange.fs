@@ -1,28 +1,30 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1777.0");
-import(path : "onshape/std/boolean.fs", version : "1777.0");
-import(path : "onshape/std/containers.fs", version : "1777.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1777.0");
-import(path : "onshape/std/extrude.fs", version : "1777.0");
-import(path : "onshape/std/evaluate.fs", version : "1777.0");
-import(path : "onshape/std/feature.fs", version : "1777.0");
-import(path : "onshape/std/math.fs", version : "1777.0");
-import(path : "onshape/std/matrix.fs", version : "1777.0");
-import(path : "onshape/std/query.fs", version : "1777.0");
-import(path : "onshape/std/sketch.fs", version : "1777.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1777.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1777.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1777.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
-import(path : "onshape/std/units.fs", version : "1777.0");
-import(path : "onshape/std/valueBounds.fs", version : "1777.0");
-import(path : "onshape/std/vector.fs", version : "1777.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1777.0");
+import(path : "onshape/std/attributes.fs", version : "1793.0");
+import(path : "onshape/std/boolean.fs", version : "1793.0");
+import(path : "onshape/std/containers.fs", version : "1793.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1793.0");
+import(path : "onshape/std/debug.fs", version : "1793.0");
+import(path : "onshape/std/extrude.fs", version : "1793.0");
+import(path : "onshape/std/evaluate.fs", version : "1793.0");
+import(path : "onshape/std/feature.fs", version : "1793.0");
+import(path : "onshape/std/math.fs", version : "1793.0");
+import(path : "onshape/std/matrix.fs", version : "1793.0");
+import(path : "onshape/std/path.fs", version : "1793.0");
+import(path : "onshape/std/query.fs", version : "1793.0");
+import(path : "onshape/std/sketch.fs", version : "1793.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1793.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1793.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1793.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1793.0");
+import(path : "onshape/std/units.fs", version : "1793.0");
+import(path : "onshape/std/valueBounds.fs", version : "1793.0");
+import(path : "onshape/std/vector.fs", version : "1793.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1793.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -96,6 +98,21 @@ export enum SMFlangeAlignment
     MIDDLE
 }
 
+
+
+/**
+ * Sets the handling for chains of edges while creating a partial flange.
+ * @value PER_EDGE: The partial flange conditions will be applied to the ends of each individual edge.
+ * @value PER_CHAIN: The partial flange conditions will be applied to the ends of each chain of selected edges.
+ */
+export enum SMPartialFlangeChainType
+{
+    annotation { "Name" : "Per edge" }
+    PER_EDGE,
+    annotation { "Name" : "Per chain" }
+    PER_CHAIN
+}
+
 const SURFACE_SUFFIX = "surface";
 
 /**
@@ -112,11 +129,11 @@ precondition
 {
     // This should match sheetMetalHem
     annotation { "Name" : "Edges or side faces to flange",
-                 "Filter" : ModifiableEntityOnly.YES && SheetMetalDefinitionEntityType.EDGE
-                    && ((GeometryType.LINE && AllowFlattenedGeometry.YES) || (GeometryType.PLANE && AllowFlattenedGeometry.NO)) }
+                "Filter" : ModifiableEntityOnly.YES && SheetMetalDefinitionEntityType.EDGE
+                && ((GeometryType.LINE && AllowFlattenedGeometry.YES) || (GeometryType.PLANE && AllowFlattenedGeometry.NO)) }
     definition.edges is Query;
 
-    annotation {"Name" : "Flange alignment", "UIHint" : UIHint.SHOW_LABEL}
+    annotation { "Name" : "Flange alignment", "UIHint" : UIHint.SHOW_LABEL }
     definition.flangeAlignment is SMFlangeAlignment;
 
     annotation { "Name" : "End type", "UIHint" : UIHint.SHOW_LABEL }
@@ -124,16 +141,16 @@ precondition
 
     if (definition.limitType == SMFlangeBoundingType.BLIND)
     {
-        annotation { "Name" : "Distance"}
+        annotation { "Name" : "Distance" }
         isLength(definition.distance, NONNEGATIVE_LENGTH_BOUNDS);
     }
     else if (definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY || definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
     {
-        annotation {"Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1}
+        annotation { "Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
         definition.limitEntity is Query;
         if (definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
         {
-            annotation { "Name" : "Offset"}
+            annotation { "Name" : "Offset" }
             isLength(definition.offset, NONNEGATIVE_LENGTH_BOUNDS);
 
             annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
@@ -184,6 +201,8 @@ precondition
         annotation { "Name" : "Bend radius" }
         isLength(definition.bendRadius, SM_BEND_RADIUS_BOUNDS);
     }
+
+    partialFlangePredicate(definition);
 }
 {
     // this is not necessary but helps with correct error reporting in feature pattern
@@ -229,10 +248,12 @@ precondition
     // Add association attributes where needed and compute deleted attributes
     var toUpdate = assignSMAttributesToNewOrSplitEntities(context, robustSMBodiesQ, initialData, id);
     updateSheetMetalGeometry(context, id, { "entities" : toUpdate.modifiedEntities,
-                                           "deletedAttributes" : toUpdate.deletedAttributes});
+                "deletedAttributes" : toUpdate.deletedAttributes });
 
-}, { oppositeDirection : false, limitType : SMFlangeBoundingType.BLIND,  flangeAlignment : SMFlangeAlignment.INNER,
-     angleControlType : SMFlangeAngleControlType.BEND_ANGLE, autoMiter : true, useDefaultRadius : true, oppositeOffsetDirection: false});
+}, { oppositeDirection : false, limitType : SMFlangeBoundingType.BLIND, flangeAlignment : SMFlangeAlignment.INNER,
+        angleControlType : SMFlangeAngleControlType.BEND_ANGLE, autoMiter : true, useDefaultRadius : true, oppositeOffsetDirection : false,
+        isPartialFlange : false, hasSecondBound : false, firstBoundingEntityOppositeOffsetDirection : false,
+        secondBoundingEntityOppositeOffsetDirection : false });
 
 
 function groupEdgesByBodyOrModel(context is Context, edges is array) returns map
@@ -262,14 +283,14 @@ function groupEdgesByBodyOrModel(context is Context, edges is array) returns map
         }
     }
 
-    return {"modelToEdgeMap" : modelToEdgeMap, "bodyToEdgeMap" : bodyToEdgeMap};
+    return { "modelToEdgeMap" : modelToEdgeMap, "bodyToEdgeMap" : bodyToEdgeMap };
 }
 
 /**
-* @internal
-*  Editing logic makes sure that when the user deselects default radius option, we default to the default radius
-*  in the input field (if the user didn't already change it)
-*/
+ * @internal
+ *  Editing logic makes sure that when the user deselects default radius option, we default to the default radius
+ *  in the input field (if the user didn't already change it)
+ */
 export function flangeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
@@ -295,7 +316,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     if (!definition.useDefaultRadius && !specifiedParameters.bendRadius &&
         definition.useDefaultRadius != oldDefinition.useDefaultRadius) // do this only once
     {
-        definition.bendRadius =  modelParams.defaultBendRadius;
+        definition.bendRadius = modelParams.defaultBendRadius;
     }
     if (isCreating && !specifiedParameters.offset)
         definition.offset = modelParams.minimalClearance;
@@ -306,10 +327,10 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
         var flangeData = getFlangeData(context, id, evaluatedEdgeQuery[0], definition);
         const edgePoint = flangeData.edgeEndPoints[0].origin;
         var pointOnLimit = undefined;
-        var planeResult = try silent(evPlane(context, {"face" : definition.limitEntity}));
+        var planeResult = try silent(evPlane(context, { "face" : definition.limitEntity }));
         if (planeResult == undefined)
         {
-            pointOnLimit = try silent(evVertexPoint(context, {"vertex" : definition.limitEntity}));
+            pointOnLimit = try silent(evVertexPoint(context, { "vertex" : definition.limitEntity }));
         }
         else
         {
@@ -321,7 +342,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
         var upToDirection = pointOnLimit - edgePoint;
         if (dot(upToDirection, flangeData.direction) < TOLERANCE.zeroLength * meter)
         {
-           definition.oppositeDirection = true;
+            definition.oppositeDirection = true;
         }
     }
     return definition;
@@ -329,7 +350,15 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
 
 function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map) returns number
 {
-    const originalFlangeEdges = evaluateQuery(context, edges);
+    var reprocessedEdges = edges;
+    var flangeDataOverrides = {};
+    if (definition.isPartialFlange)
+    {
+        const limitEntitiesAndSplitEdges = splitAllEdgesForPartialFlange(context, topLevelId + unstableIdComponent(objectCounter) + "split", definition, edges);
+        flangeDataOverrides = limitEntitiesAndSplitEdges.limitEntities;
+        reprocessedEdges = limitEntitiesAndSplitEdges.splitEdgeQueries;
+    }
+    const originalFlangeEdges = evaluateQuery(context, reprocessedEdges);
 
     // add thickness, minimalClearance and defaultBendRadius to definition.
     // Flange uses thickness, minimalClearance and potentially defaultBendRadius derived from underlying sheet metal model
@@ -350,28 +379,28 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     }
 
     // Extend or retract each wall that is receiving a flange to comply with user specified SMFlangeAlignment.
-    var edgeToExtensionDistance = collectEdgeToExtensionDistance(context, topLevelId, edges, edgeToFlangeData, definition);
+    var edgeToExtensionDistance = collectEdgeToExtensionDistance(context, topLevelId, reprocessedEdges, edgeToFlangeData, definition);
 
     var alignmentChanges = changeUnderlyingSheetForAlignment(context, topLevelId, topLevelId + unstableIdComponent(objectCounter),
-            definition.useExternalDisambiguation, edges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
+    definition.useExternalDisambiguation, reprocessedEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
     var originalCornerVertices = alignmentChanges.cornerVertices;
     var modifiedEntities = alignmentChanges.modifiedEntities;
-    edges = alignmentChanges.updatedEdges;
+    reprocessedEdges = alignmentChanges.updatedEdges;
 
     edgeToFlangeData = updateEdgeToFlangeDataAfterAlignmentChange(context, topLevelId, originalFlangeEdges, edgeToFlangeData,
         oldEdgeToNewEdge, edgeToExtensionDistance);
 
     // Collect information about the shape of each flange
-    var edgeToSideAndBase = collectEdgeToSideAndBase(context, topLevelId, definition.useExternalDisambiguation, edges,
-        originalCornerVertices, edgeToFlangeData, definition);
-    var edgeToFlangeDistance = collectEdgeToFlangeDistance(context, topLevelId, edges, edgeToFlangeData, edgeToSideAndBase, definition);
+    var edgeToSideAndBase = collectEdgeToSideAndBase(context, topLevelId, definition.useExternalDisambiguation, reprocessedEdges,
+    originalCornerVertices, edgeToFlangeData, definition, flangeDataOverrides);
+    var edgeToFlangeDistance = collectEdgeToFlangeDistance(context, topLevelId, reprocessedEdges, edgeToFlangeData, edgeToSideAndBase, definition);
 
     // Sketch each flange and add it to the underlying sheet body
     var surfaceBodies = [];
     var originalEntities = [];
     var trackingBendEdges = [];
     var setBendAttributesAfterBoolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
-    for (var edge in evaluateQuery(context,edges))
+    for (var edge in evaluateQuery(context, reprocessedEdges))
     {
         var ownerBody = qOwnerBody(edge);
         originalEntities = append(originalEntities, qSubtraction(qOwnedByBody(ownerBody), modifiedEntities));
@@ -383,7 +412,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
         var surfaceId = indexedId + SURFACE_SUFFIX;
 
         var bendEdge = createFlangeSurfaceReturnBendEdge(context, topLevelId, indexedId, edge, edgeToFlangeData[edge],
-                edgeToSideAndBase[edge], edgeToFlangeDistance[edge], definition);
+        edgeToSideAndBase[edge], edgeToFlangeDistance[edge], definition);
         if (setBendAttributesAfterBoolean)
         {
             trackingBendEdges = append(trackingBendEdges, qUnion([bendEdge, startTracking(context, bendEdge)]));
@@ -397,9 +426,9 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
         for (var face in evaluateQuery(context, qCreatedBy(surfaceId, EntityType.FACE)))
         {
             setAttribute(context, {
-                    "entities" : face,
-                    "attribute" : makeSMWallAttribute(toAttributeId(topLevelId + objectCounter))
-            });
+                        "entities" : face,
+                        "attribute" : makeSMWallAttribute(toAttributeId(topLevelId + objectCounter))
+                    });
             objectCounter += 1;
         }
         surfaceBodies = append(surfaceBodies, qCreatedBy(surfaceId, EntityType.BODY));
@@ -409,16 +438,17 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     var indexedId = topLevelId + unstableIdComponent(objectCounter);
     var attributeIdCounter = new box(objectCounter);
 
-     mergeSheetMetal(context, indexedId + ("flange_boolean"), {
-                        "topLevelId" : topLevelId,
-                        "surfacesToAdd" :  qUnion(surfaceBodies),
-                        "originalSurfaces" : originalBodies,
-                        "trackingBendEdges" : trackingBendEdges,
-                        "bendRadius" : definition.bendRadius,
-                        "attributeIdCounter" : attributeIdCounter,
-                        "error" : ErrorStringEnum.SHEET_METAL_FLANGE_FAIL,
-                        "errorParameters" : ["edges"],
-                        "legacyId" : (definition.useExternalDisambiguation) ? topLevelId : indexedId } );
+    mergeSheetMetal(context, indexedId + ("flange_boolean"), {
+                "topLevelId" : topLevelId,
+                "surfacesToAdd" : qUnion(surfaceBodies),
+                "originalSurfaces" : originalBodies,
+                "trackingBendEdges" : trackingBendEdges,
+                "bendRadius" : definition.bendRadius,
+                "attributeIdCounter" : attributeIdCounter,
+                "error" : ErrorStringEnum.SHEET_METAL_FLANGE_FAIL,
+                "errorParameters" : ["edges"],
+                "legacyId" : (definition.useExternalDisambiguation) ? topLevelId : indexedId,
+                "holdBendAdjacentEdges" : definition.isPartialFlange && definition.holdAdjacentEdges });
 
     return attributeIdCounter[];
 }
@@ -433,7 +463,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
  *                   need tweaking to find corresponding vertices after alignment.
  */
 function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean,
-        edges is Query, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map)
+    edges is Query, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map)
 {
     var originalCornerVertices = trackCornerVertices(context, edges);
 
@@ -442,12 +472,12 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V744_SM_FLANGE_PATTERN_EDGE_CHANGE))
     {
         changedEntitiesQ = changeUnderlyingSheetBatched(context, topLevelId, id, originalFlangeEdges,
-                edgeToFlangeData, edgeToExtensionDistance);
+            edgeToFlangeData, edgeToExtensionDistance);
     }
     else
     {
         changedEntitiesQ = changeUnderlyingSheetUnbatched(context, topLevelId, id, useExternalDisambiguation,
-                originalFlangeEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
+            originalFlangeEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
     }
 
     var updatedEdges = [];
@@ -465,14 +495,14 @@ function changeUnderlyingSheetForAlignment(context is Context, topLevelId is Id,
     }
 
     return {
-        "updatedEdges" : qUnion(updatedEdges),
-        "modifiedEntities" : changedEntitiesQ,
-        "cornerVertices" : evaluateQuery(context, qUnion(originalCornerVertices))
-    };
+            "updatedEdges" : qUnion(updatedEdges),
+            "modifiedEntities" : changedEntitiesQ,
+            "cornerVertices" : evaluateQuery(context, qUnion(originalCornerVertices))
+        };
 }
 
 function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id is Id, flangeEdges is array,
-        edgeToFlangeData is map, edgeToExtensionDistance is map) returns Query
+    edgeToFlangeData is map, edgeToExtensionDistance is map) returns Query
 {
     var edgesForEdgeChange = [];
     var edgesForExtendSheetBody = [];
@@ -498,10 +528,10 @@ function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id i
     for (var edge in edgesForEdgeChange)
     {
         edgeChangeOptions = append(edgeChangeOptions, {
-                "edge" : edge,
-                "face" : edgeToFlangeData[edge].adjacentFace,
-                "offset" : edgeToExtensionDistance[edge]
-        });
+                    "edge" : edge,
+                    "face" : edgeToFlangeData[edge].adjacentFace,
+                    "offset" : edgeToExtensionDistance[edge]
+                });
     }
 
     var extendSheetBodyOptions = [];
@@ -521,10 +551,10 @@ function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id i
         const trackedEdge = qUnion([edge, startTracking(context, edge)]);
         trackedEdgesForExtendSheetBody = append(trackedEdgesForExtendSheetBody, trackedEdge);
         extendSheetBodyOptions = append(extendSheetBodyOptions, {
-                "edge" : trackedEdge,
-                "limitEntity" : extensionPlane,
-                "faceToExtend" : flangeData.adjacentFace
-        });
+                    "edge" : trackedEdge,
+                    "limitEntity" : extensionPlane,
+                    "faceToExtend" : flangeData.adjacentFace
+                });
     }
 
     const edgeChangeId = id + "edgeChange";
@@ -533,10 +563,10 @@ function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id i
         try
         {
             sheetMetalEdgeChangeCall(context, edgeChangeId, qUnion(edgesForEdgeChange), {
-                    "edgeChangeOptions" : edgeChangeOptions
-            });
+                        "edgeChangeOptions" : edgeChangeOptions
+                    });
         }
-        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : edgeChangeId, "propagateErrorDisplay" : true});
+        processSubfeatureStatus(context, topLevelId, { "subfeatureId" : edgeChangeId, "propagateErrorDisplay" : true });
         if (featureHasError(context, topLevelId))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
@@ -558,12 +588,12 @@ function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id i
         try
         {
             sheetMetalExtendSheetBodyCall(context, extendSheetBodyId, {
-                    "entities" : qUnion(trackedEdgesForExtendSheetBody),
-                    "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
-                    "edgeLimitOptions" : extendSheetBodyOptions
-            });
+                        "entities" : qUnion(trackedEdgesForExtendSheetBody),
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "edgeLimitOptions" : extendSheetBodyOptions
+                    });
         }
-        processSubfeatureStatus(context, topLevelId, {"subfeatureId" : extendSheetBodyId, "propagateErrorDisplay" : true});
+        processSubfeatureStatus(context, topLevelId, { "subfeatureId" : extendSheetBodyId, "propagateErrorDisplay" : true });
         if (featureHasError(context, topLevelId))
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
@@ -575,7 +605,7 @@ function changeUnderlyingSheetBatched(context is Context, topLevelId is Id, id i
 
 // Deprecated.  Use changeUnderlyingSheetBatched(...) instead
 function changeUnderlyingSheetUnbatched(context is Context, topLevelId is Id, id is Id, useExternalDisambiguation is boolean,
-        originalFlangeEdges is array, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns Query
+    originalFlangeEdges is array, edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns Query
 {
     var index = 0;
     var changedEntities = [];
@@ -601,16 +631,16 @@ function changeUnderlyingSheetUnbatched(context is Context, topLevelId is Id, id
         try
         {
             sheetMetalExtendSheetBodyCall(context, extendIndexedId, {
-                    "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
-                    "entities" : updatedEdge,
-                    "limitEntity" : plane(origin, planeNormal),
-                    "fence" : true
-            });
+                        "extendMethod" : ExtendSheetBoundingType.EXTEND_TO_SURFACE,
+                        "entities" : updatedEdge,
+                        "limitEntity" : plane(origin, planeNormal),
+                        "fence" : true
+                    });
         }
         catch
         {
             // Error display
-            processSubfeatureStatus(context, topLevelId, {"subfeatureId" : extendIndexedId, "propagateErrorDisplay" : true});
+            processSubfeatureStatus(context, topLevelId, { "subfeatureId" : extendIndexedId, "propagateErrorDisplay" : true });
             setErrorEntities(context, topLevelId, { "entities" : updatedEdge });
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
         }
@@ -652,7 +682,7 @@ function trackCornerVertices(context is Context, edges is Query) returns array
     return originalCornerVertices;
 }
 
-function getSideAndBase(context is Context, topLevelId is Id, edge is Query, definition is map, edgeToFlangeData is map, cornerVertices is array) returns map
+function getSideAndBase(context is Context, topLevelId is Id, edge is Query, definition is map, edgeToFlangeData is map, cornerVertices is array, overridesForEdge is map) returns map
 {
     var edgeVertices = getOrderedEdgeVertices(context, edge);
     var flangeData = edgeToFlangeData[edge];
@@ -662,27 +692,58 @@ function getSideAndBase(context is Context, topLevelId is Id, edge is Query, def
     }
     var flangeSideDirs = [flangeData.direction, flangeData.direction];
     var flangeBasePoints = [edgeVertices.points[0].origin, edgeVertices.points[1].origin];
-    for (var i = 0; i < size(edgeVertices.vertices); i += 1 )
+    for (var i = 0; i < size(edgeVertices.vertices); i += 1)
     {
-        var vertexData = getVertexData(context, topLevelId, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices);
+        const vertexOverride = overridesForEdge[edgeVertices.vertices[i].transientId];
+        var vertexData = getVertexData(context, topLevelId, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices, vertexOverride);
         if (vertexData != undefined)
         {
             flangeSideDirs[i] = vertexData.flangeSideDir;
             flangeBasePoints[i] = vertexData.flangeBasePoint;
         }
     }
-    return {"sideDirections" : flangeSideDirs, "basePoints" : flangeBasePoints};
+    return { "sideDirections" : flangeSideDirs, "basePoints" : flangeBasePoints };
+}
+
+// The keys of the map holding partial flange side position data are queries because the sheet is altered for flange
+// alignment between production and consumption of the data. This converts the queries to transient ids for consumption.
+function convertOverrideMapToTransientIds(context is Context, overridesAtEdges is map) returns map
+{
+    var convertedOverrides = {};
+    for (var edgeQuery, vertexMap in overridesAtEdges)
+    {
+        var convertedVertexMap = {};
+        for (var vertexQuery, limitPlanes in vertexMap)
+        {
+            const evaluatedVertex = evaluateQuery(context, vertexQuery);
+            if (evaluatedVertex->size() != 1)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, vertexQuery);
+            }
+            convertedVertexMap[evaluatedVertex[0].transientId] = limitPlanes;
+        }
+        const evaluatedEdge = evaluateQuery(context, edgeQuery);
+        if (evaluatedEdge->size() != 1)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+        }
+        convertedOverrides[evaluatedEdge[0].transientId] = convertedVertexMap;
+    }
+    return convertedOverrides;
 }
 
 function collectEdgeToSideAndBase(context is Context, topLevelId is Id, useExternalDisambiguation is boolean, edges is Query,
-        originalCornerVertices is array, edgeToFlangeData is map, definition is map) returns map
+    originalCornerVertices is array, edgeToFlangeData is map, definition is map, overridesAtEdges) returns map
 {
     var edgeToSideAndBase = {};
+    const convertedOverrides = convertOverrideMapToTransientIds(context, overridesAtEdges);
     for (var edge in evaluateQuery(context, edges))
     {
         try
         {
-            edgeToSideAndBase[edge] = getSideAndBase(context, topLevelId, edge, definition, edgeToFlangeData, originalCornerVertices);
+            var overridesForOneEdge = convertedOverrides[edge.transientId];
+            overridesForOneEdge = overridesForOneEdge == undefined ? {} : overridesForOneEdge;
+            edgeToSideAndBase[edge] = getSideAndBase(context, topLevelId, edge, definition, edgeToFlangeData, originalCornerVertices, overridesForOneEdge);
         }
         catch (error)
         {
@@ -716,7 +777,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits)
 {
     var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
-                        isQueryEmpty(context, sideEdge);
+    isQueryEmpty(context, sideEdge);
     var sideEdgeIsBend = false;
     var jointAttribute;
     if (!ignoreSideEdge)
@@ -726,8 +787,8 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
             return vertexPoint;
         sideEdgeIsBend = (jointAttribute.jointType.value == SMJointType.BEND);
     }
-    var edgeLine = evLine(context, {"edge" : flangeEdge});
-    var offsetFromClearance = getOffsetForClearance(context , sidePlane, clearance, definition, flangeData.plane);
+    var edgeLine = evLine(context, { "edge" : flangeEdge });
+    var offsetFromClearance = getOffsetForClearance(context, sidePlane, clearance, definition, flangeData.plane);
     if (!sideEdgeIsBend)
     {
         //use the minimal clearance to shift by
@@ -738,14 +799,14 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     var edgeBendAngle = jointAttribute.angle.value;
 
     //find direction of side edge on the adjacent plane
-    const sideEdgeMidPt = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0.5] , "face": flangeData.adjacentFace});
-    var adjacentPlane = evPlane(context, {"face" : flangeData.adjacentFace});
+    const sideEdgeMidPt = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0.5], "face" : flangeData.adjacentFace });
+    var adjacentPlane = evPlane(context, { "face" : flangeData.adjacentFace });
     var thickness = 0;
-    var convexity = evEdgeConvexity(context, {"edge" : sideEdge});
+    var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
     if (convexity == EdgeConvexityType.CONVEX)
-       thickness = definition.backThickness;
+        thickness = definition.backThickness;
     else if (convexity == EdgeConvexityType.CONCAVE)
-       thickness = definition.frontThickness;
+        thickness = definition.frontThickness;
 
     var offset = (thickness + edgeBendRadius) * tan(.5 * edgeBendAngle);
     // "move" side edge towards the inside of adjacent plane by offset (based on side edge bend info)
@@ -753,7 +814,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     var planeFromSideEdge = plane(vertexPoint + directionToMoveEdgeBy * offset, directionToMoveEdgeBy);
 
     //find flange edge direction on adjacent plane
-    const flangeEdgeMidPt = evEdgeTangentLines(context, {"edge": flangeEdge, "parameters" : [0.5], "face": flangeData.adjacentFace});
+    const flangeEdgeMidPt = evEdgeTangentLines(context, { "edge" : flangeEdge, "parameters" : [0.5], "face" : flangeData.adjacentFace });
     offset = (thickness + definition.bendRadius) * tan(.5 * flangeData.bendAngle);
     // "move" flange edge towards the inside of adjacent plane by offset (based on flange bend info)
     directionToMoveEdgeBy = cross(adjacentPlane.normal, flangeEdgeMidPt[0].direction);
@@ -776,7 +837,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         // We want to project the point onto the bent edge on the flange plane, then use that to do plane shift
         // See review request #40859 for images
 
-        if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX) && edgeBendAngle < 90 * degree)
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX) && edgeBendAngle < 90 * degree)
         {
             //just use the original planeFromSideEdge for base shift
             return computeBaseFromShiftedPlane(context, 0.0 * meter, planeFromSideEdge, edgeLine);
@@ -807,19 +868,19 @@ function getOrderedEdgeVertices(context is Context, edge is Query) returns map
     if (size(edgeVertices) != 2)
         throw "Edge to flange has wrong number of vertices";
 
-    var p0 = evVertexPoint(context, {"vertex" : edgeVertices[0]});
+    var p0 = evVertexPoint(context, { "vertex" : edgeVertices[0] });
 
     const adjacentFace = qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE);
     if (size(evaluateQuery(context, adjacentFace)) != 1)
     {
         throw "Edge to flange is not laminar";
     }
-    const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
+    const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "face" : adjacentFace });
     if (!tolerantEquals(edgeEndPoints[0].origin, p0))
     {
         return { "vertices" : reverse(edgeVertices), "points" : edgeEndPoints };
     }
-    return { "vertices" : edgeVertices, "points" :edgeEndPoints };
+    return { "vertices" : edgeVertices, "points" : edgeEndPoints };
 }
 
 /*
@@ -844,8 +905,9 @@ function getVectorForEdge(context is Context, edge is Query, position is Vector)
 function filterSmoothEdges(context is Context, inputEdges is Query) returns array
 {
     var evaluatedInputEdges = evaluateQuery(context, inputEdges);
-    var resultingEdges = filter(evaluatedInputEdges, function(edge){
-        return (!edgeIsTwoSided(context, edge)) || (evEdgeConvexity(context, {"edge" : edge}) != EdgeConvexityType.SMOOTH);
+    var resultingEdges = filter(evaluatedInputEdges, function(edge)
+    {
+        return (!edgeIsTwoSided(context, edge)) || (evEdgeConvexity(context, { "edge" : edge }) != EdgeConvexityType.SMOOTH);
     });
     return resultingEdges;
 }
@@ -860,7 +922,7 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         // There is only one non-smooth edge besides `edge` extending from `vertex`.  This edge is also part of this
         // flange operation, so it must be laminar and linear.  Due to these constraints, the edge must lie on the
         // same face as `edge`, and therefore qualifies as `edgeX`
-        return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertexToUse}) };
+        return { "edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, { "vertex" : vertexToUse }) };
     }
 
     vertexEdges = qUnion(vertexEdgesArray);
@@ -869,7 +931,7 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     var edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
 
     //sideFace is adjacent to flangeAdjacentFace, and edgeX
-    var sideFace =  qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
+    var sideFace = qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
 
     //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
     // e.g. if the edgeY is a bendEdge of a flange with angled miter.
@@ -880,8 +942,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     if (!isQueryEmpty(context, edgeY))
     {
         //if edgeY is collinear with edgeX,look for next edge on sideFace
-        var line1 = (failIfNotLines) ? evLine(context, {"edge" : edgeX}) : try silent(evLine(context, {"edge" : edgeX}));
-        var line2 = (failIfNotLines) ? evLine(context, {"edge" : edgeY}) : try silent(evLine(context, {"edge" : edgeY}));
+        var line1 = (failIfNotLines) ? evLine(context, { "edge" : edgeX }) : try silent(evLine(context, { "edge" : edgeX }));
+        var line2 = (failIfNotLines) ? evLine(context, { "edge" : edgeY }) : try silent(evLine(context, { "edge" : edgeY }));
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
         {
@@ -907,13 +969,13 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     }
     else
     {
-        var lineOrigX = try silent(evLine(context, {"edge" : edgeX}));
+        var lineOrigX = try silent(evLine(context, { "edge" : edgeX }));
         if (lineOrigX == undefined)
         {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V489_FLANGE_BUGS))
             {
                 //flange is adjacent to a non-linear edge, move along.
-                return {"edgeX" : edgeX, "position" : evVertexPoint(context, {"vertex" : vertex}) };
+                return { "edgeX" : edgeX, "position" : evVertexPoint(context, { "vertex" : vertex }) };
             }
             return undefined;
         }
@@ -922,17 +984,17 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
         if (size(vertexEdgesArray) == 1)
         {
-            return {"edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, {"vertex" : vertex}) };
+            return { "edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, { "vertex" : vertex }) };
         }
         vertexEdges = qUnion(vertexEdgesArray);
         //find Edge among vertexEdges also adjacent to adjacentFace
         edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
         //check for sanity that the newly found edgeX is collinear with the one we found initially
         var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
-                            try silent(evLine(context, {"edge" : edgeX})) : evLine(context, {"edge" : edgeX});
+        try silent(evLine(context, { "edge" : edgeX })) : evLine(context, { "edge" : edgeX });
         if (lineNewX == undefined || !tolerantCollinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
             return undefined;
-        sideFace =  qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
+        sideFace = qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
         edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
         lineX = lineNewX;
     }
@@ -946,16 +1008,16 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     {
         var edgeLine = evLine(context, {
                 "edge" : edge
-        });
+            });
         if (parallelVectors(lineX.direction, edgeLine.direction))
         {
             return undefined;
         }
     }
     return { "edgeX" : edgeXEvaluated[0],
-             "edgeY" : edgeYEvaluated[0],
-             "sideFace" : evaluateQuery(context, sideFace)[0],
-             "position" : evVertexPoint(context, {"vertex" : vertexToUse})};
+            "edgeY" : edgeYEvaluated[0],
+            "sideFace" : evaluateQuery(context, sideFace)[0],
+            "position" : evVertexPoint(context, { "vertex" : vertexToUse }) };
 }
 
 function createPlaneForManualMiter(flangeData is map, sidePlane is Plane, position is Vector, index is number, miterAngle is ValueWithUnits) returns Plane
@@ -972,7 +1034,7 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
     // if sideEdge is a bend, don't miter if flaps are on the "outside"
     if (sideEdgeIsBend)
     {
-        var convexity = evEdgeConvexity(context, {"edge" : sideEdge});
+        var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
         if (convexity == EdgeConvexityType.CONCAVE && dot(flangeData.direction, adjPlane.normal) < TOLERANCE.zeroAngle)
         {
             return undefined;
@@ -1015,9 +1077,9 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
                 // Cut the auto-miter along the line from the shared base point and this intersection. This ensures that
                 // The flanges meet at a shared point at their far end.
                 var flangeEndPlane = plane(flangeData.edgeEndPoints[0].origin + (flangeData.direction * flangeData.alignedDistance),
-                        flangeData.direction);
+                flangeData.direction);
                 var flangeEndOther = line(flangeDataOther.edgeEndPoints[0].origin + (flangeDataOther.direction * flangeDataOther.alignedDistance),
-                        flangeDataOther.edgeEndPoints[0].direction);
+                flangeDataOther.edgeEndPoints[0].direction);
 
                 var linePlaneResult = intersection(flangeEndPlane, flangeEndOther);
                 if (linePlaneResult.dim != 0)
@@ -1065,11 +1127,11 @@ function representInVectors(context is Context, vector1 is Vector, vector2 is Ve
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V992_FLANGE_END_FIX) &&
         parallelVectors(vector1, vector2))
     {
-         return undefined;
+        return undefined;
     }
 
     var matrixM is Matrix = matrix([[squaredNorm(vector1), dot(vector2, vector1)],
-                                    [dot(vector1, vector2), squaredNorm(vector2)]]);
+            [dot(vector1, vector2), squaredNorm(vector2)]]);
     var rhs = vector(dot(inVector, vector1), dot(inVector, vector2));
 
     var components = inverse(matrixM) * rhs;
@@ -1105,26 +1167,34 @@ function determineBaseUpdateForAutoMiter(flangePlane1 is Plane, flangePlane2 is 
     return needsBaseUpdate;
 }
 
-function getVertexData(context is Context, topLevelId is Id, edge is Query, vertex is Query, edgeToFlangeData is map, definition is map, i is number, cornerVertices) returns map
+function getVertexData(context is Context, topLevelId is Id, edge is Query, vertex is Query, edgeToFlangeData is map, definition is map, i is number, cornerVertices, vertexOverride) returns map
 {
-    var position = evVertexPoint(context, {"vertex" : vertex});
+    var position = evVertexPoint(context, { "vertex" : vertex });
     var result = {
         "flangeBasePoint" : position,
         "flangeSideDir" : undefined
     };
 
-    var needsSideDirUpdate = false;
     var flangeData = edgeToFlangeData[edge];
+    if (vertexOverride != undefined)
+    {
+        const sidePlane = vertexOverride;
+        const forceResult = true; // Use the automiter flag to use the plane direction even if it adds material.
+        result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, forceResult, definition);
+        return result;
+    }
+
+    var needsSideDirUpdate = false;
     var vertexAndEdges = getXYAtVertex(context, vertex, edge, edgeToFlangeData);
-    if (vertexAndEdges == undefined || (isIn(vertex, cornerVertices) && vertexAndEdges.edgeY == undefined ))
+    if (vertexAndEdges == undefined || (isIn(vertex, cornerVertices) && vertexAndEdges.edgeY == undefined))
     {
         if (!definition.autoMiter)
         {
             var computeMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V569_FLANGE_NEXT_TO_RIP);
             if (!computeMiter)
             {
-               var vertexEdges = evaluateQuery(context, qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge));
-               computeMiter = (size(vertexEdges) == 1);
+                var vertexEdges = evaluateQuery(context, qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge));
+                computeMiter = (size(vertexEdges) == 1);
             }
             if (computeMiter)
             {
@@ -1133,7 +1203,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
                 result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, false, definition);
             }
         }
-        return  result;
+        return result;
     }
     var sideEdge = vertexAndEdges.edgeX;
     var edgeY = vertexAndEdges.edgeY;
@@ -1153,7 +1223,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     {
         if (edgeToFlangeData[sideEdge] != undefined)
             sidePlane = edgeToFlangeData[sideEdge].plane;
-       else
+        else
             sidePlane = plane(position, edgeEndDirection);
         adjPlane = edgeToFlangeData[edge].plane;
         if (!alignFlippedFlange)
@@ -1171,7 +1241,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
         }
         adjPlane = getFacePlane(context, flangeData.adjacentFace, edge);
 
-        if ( dot(sidePlane.normal, edgeEndDirection) > 0)
+        if (dot(sidePlane.normal, edgeEndDirection) > 0)
         {
             clearanceFromSide += definition.frontThickness;
         }
@@ -1203,7 +1273,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     {
         var originalSidePlane = sidePlane;
         sidePlane = createPlaneForAutoMiter(context, topLevelId, definition.angleControlType, edge, flangeData, edgeY, edgeToFlangeData[edgeY],
-                adjPlane, sidePlane, sideEdge, sideEdgeIsBend, vertexAndEdges.position, i);
+            adjPlane, sidePlane, sideEdge, sideEdgeIsBend, vertexAndEdges.position, i);
         if (sidePlane != undefined)
         {
             needsSideDirUpdate = true;
@@ -1229,7 +1299,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
                 needsBaseUpdate = true;
             }
             const components = representInVectors(context, getVectorForEdge(context, edgeY, position),
-                                                           getVectorForEdge(context, sideEdge, position), flangeData.direction);
+                getVectorForEdge(context, sideEdge, position), flangeData.direction);
             if (components != undefined)
             {
                 if (components[0] > TOLERANCE.zeroLength)
@@ -1267,9 +1337,9 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
 
         // If we're not trimming and the projection for position falls outside of existing edges we return vertexPositionToUse.
         // So we need to make sure it points to the original vertex location, and not the adjusted location. (BEL-57722)
-        var vertexPositionToUse = needsTrimChanges ?  vertexAndEdges.position : position;
+        var vertexPositionToUse = needsTrimChanges ? vertexAndEdges.position : position;
         result.flangeBasePoint = getFlangeBasePoint(context, edge, useAsSideEdge, definition, flangeData, vertexPositionToUse, needsTrimChanges,
-                                sidePlane, clearanceFromSide);
+            sidePlane, clearanceFromSide);
     }
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
     {
@@ -1283,14 +1353,14 @@ function getFlangeSideDir(flangeData is map, sidePlane is Plane, i is number, au
     var intersectionDirection = normalize(cross(flangeData.plane.normal, sidePlane.normal));
     var isOppositeFlangedir = dot(flangeData.direction, intersectionDirection) < 0;
     var flangeSideDirection = isOppositeFlangedir ? -1 * intersectionDirection : intersectionDirection;
-    var edgeDirection =  (i == 0) ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
+    var edgeDirection = (i == 0) ? flangeData.edgeEndPoints[i].direction : -1 * flangeData.edgeEndPoints[i].direction;
 
     //if angle between edge and computed side dir is > 90 then flange will add material
     var edgeToComputedSideDirAngle = angleBetween(edgeDirection, flangeSideDirection);
 
     var miterAddsMaterial = !definition.autoMiter && (definition.miterAngle - 90 * degree) > TOLERANCE.zeroAngle * degree;
 
-    if (autoMitered || miterAddsMaterial ||  edgeToComputedSideDirAngle < (90 + TOLERANCE.zeroAngle) * degree)
+    if (autoMitered || miterAddsMaterial || edgeToComputedSideDirAngle < (90 + TOLERANCE.zeroAngle) * degree)
         return flangeSideDirection;
     else //make sure we don't add material when we shouldn't
         return flangeData.direction;
@@ -1300,17 +1370,17 @@ function addBendAttribute(context is Context, edge is Query, flangeData is map, 
 {
     var attributeId = toAttributeId(topLevelId + index);
     var bendAttribute = makeSMJointAttribute(attributeId);
-    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited": true };
+    bendAttribute.jointType = { "value" : SMJointType.BEND, "canBeEdited" : true };
     bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     bendAttribute.radius = {
-        "value" : definition.bendRadius,
-        "canBeEdited" : true
-    };
+            "value" : definition.bendRadius,
+            "canBeEdited" : true
+        };
     bendAttribute.angle = {
-        "value" : flangeData.bendAngle,
-        "canBeEdited" : true
-    };
-    setAttribute(context, {"entities" : edge, "attribute" : bendAttribute});
+            "value" : flangeData.bendAngle,
+            "canBeEdited" : true
+        };
+    setAttribute(context, { "entities" : edge, "attribute" : bendAttribute });
 }
 
 function createSketchPlane(context is Context, topLevelId is Id, edge is Query, edgeLine is Line, sidePlaneNormal is Vector, definition is map) returns Plane
@@ -1378,7 +1448,7 @@ function createSketchPlane(context is Context, topLevelId is Id, edge is Query, 
 function getOffsetsForSideEdgesUpToPlane(context is Context, flangeSideDirections is array, flangeDirection is Vector, basePoints is array, planeResult is Plane)
 {
     var offsets = makeArray(2);
-    for (var i = 0; i < 2; i +=1)
+    for (var i = 0; i < 2; i += 1)
     {
         var offsetDir = flangeSideDirections[i];
         if (offsetDir == undefined)
@@ -1423,7 +1493,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
         throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_INTERNAL, ["edges"]);
     }
     const adjacentFace = adjacentFaces[0];
-    const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": adjacentFace});
+    const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "face" : adjacentFace });
     const sidePlane = getFacePlane(context, adjacentFace, edge);
     var sketchPlane = createSketchPlane(context, topLevelId, edge, edgeEndPoints[0], sidePlane.normal, definition);
     var direction = cross(edgeEndPoints[0].direction, sketchPlane.normal);
@@ -1438,19 +1508,19 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
     {
         // The extension distance of a flange must be adjusted based on its flange angle
         var thickness = (definition.oppositeDirection) ? definition.backThickness : definition.frontThickness;
-        alignedDistance = definition.distance  - thickness * tan(.5 * bendAngle);
+        alignedDistance = definition.distance - thickness * tan(.5 * bendAngle);
     }
 
     return {
-        "bendAngle" : bendAngle,
-        "alignedDistance" : alignedDistance,
-        "direction" : direction,
-        "plane" : sketchPlane,
-        "wallExtendDirection" : cross(edgeEndPoints[0].direction, sidePlane.normal),
-        "wallPlane" : sidePlane,
-        "edgeEndPoints" : edgeEndPoints,
-        "adjacentFace" : qUnion([adjacentFace, startTracking(context, adjacentFace)])
-    };
+            "bendAngle" : bendAngle,
+            "alignedDistance" : alignedDistance,
+            "direction" : direction,
+            "plane" : sketchPlane,
+            "wallExtendDirection" : cross(edgeEndPoints[0].direction, sidePlane.normal),
+            "wallPlane" : sidePlane,
+            "edgeEndPoints" : edgeEndPoints,
+            "adjacentFace" : qUnion([adjacentFace, startTracking(context, adjacentFace)])
+        };
 }
 
 function throwNoBendError(context is Context, topLevelId is Id, edge is Query, definition is map)
@@ -1480,10 +1550,10 @@ function getExtendedFlangePlane(flangeData is map, extensionDistance is ValueWit
 
 // Update flange data after the wall attaching to the flange is moved extensionDistance along flangeData.wallExtendDirection
 function updateFlangeDataAfterAlignmentChange(context is Context, topLevelId is Id, edge is Query, flangeData is map,
-        extensionDistance is ValueWithUnits) returns map
+    extensionDistance is ValueWithUnits) returns map
 {
     flangeData.plane = getExtendedFlangePlane(flangeData, extensionDistance);
-    flangeData.edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1] , "face": flangeData.adjacentFace});
+    flangeData.edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "face" : flangeData.adjacentFace });
 
     // Ensure that plane was extended correctly
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
@@ -1501,7 +1571,7 @@ function updateFlangeDataAfterAlignmentChange(context is Context, topLevelId is 
 }
 
 function updateEdgeToFlangeDataAfterAlignmentChange(context is Context, topLevelId is Id, originalFlangeEdges is array,
-        edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns map
+    edgeToFlangeData is map, oldEdgeToNewEdge is map, edgeToExtensionDistance is map) returns map
 {
     var newEdgeToFlangeData = edgeToFlangeData;
 
@@ -1538,10 +1608,10 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     const entity = entities[0];
 
     //see if it's a plane:
-    var planeResult = try silent(evPlane(context, {"face" : entity}));
+    var planeResult = try silent(evPlane(context, { "face" : entity }));
     if (planeResult == undefined)
-    {   //see if it's an vertex
-        var limitVertex = try silent(evVertexPoint(context, {"vertex" : entity}));
+    { //see if it's an vertex
+        var limitVertex = try silent(evVertexPoint(context, { "vertex" : entity }));
         if (limitVertex == undefined)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_UP_TO_ENTITY, ["limitEntity"]);
@@ -1563,15 +1633,15 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
     }
 
     //we don't need to add half thickness here because the limit entity cannot be the underlying surface
-    var  minDelta = 0.0 * meter;
+    var minDelta = 0.0 * meter;
     if (definition.limitType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
     {
         minDelta += definition.offset;
     }
 
     var withPlaneNormal = isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK) ?
-                            dot(flangeDirection, planeResult.normal) < 0 : true;
-    planeResult = movePlaneForFlangeClearance(flangePlane, planeResult, withPlaneNormal , thickness, minDelta);
+    dot(flangeDirection, planeResult.normal) < 0 : true;
+    planeResult = movePlaneForFlangeClearance(flangePlane, planeResult, withPlaneNormal, thickness, minDelta);
     return planeResult;
 }
 
@@ -1592,7 +1662,7 @@ function movePlaneForFlangeClearance(flangePlane is Plane, otherPlane is Plane, 
 }
 
 function createAndSolveSketch(context is Context, topLevelId is Id, id is Id, edge is Query, flangeData is map,
-        sideAndBase is map, flangeDistance, definition is map)
+    sideAndBase is map, flangeDistance, definition is map)
 {
     var flangeDirection = flangeData.direction;
     var basePoints = sideAndBase.basePoints;
@@ -1611,14 +1681,14 @@ function createAndSolveSketch(context is Context, topLevelId is Id, id is Id, ed
     }
 
     var sketchPlane = flangeData.plane;
-    var points = [  worldToPlane(sketchPlane, basePoints[0]),
-                    worldToPlane(sketchPlane, basePoints[1]),
-                    worldToPlane(sketchPlane, basePoints[1] + offsets[1]),
-                    worldToPlane(sketchPlane, basePoints[0] + offsets[0]) ];
+    var points = [worldToPlane(sketchPlane, basePoints[0]),
+        worldToPlane(sketchPlane, basePoints[1]),
+        worldToPlane(sketchPlane, basePoints[1] + offsets[1]),
+        worldToPlane(sketchPlane, basePoints[0] + offsets[0])];
     points = append(points, points[0]);
 
-    var sketch = newSketchOnPlane(context, id, {"sketchPlane" : sketchPlane});
-    skPolyline(sketch, "polyline", {"points" : points });
+    var sketch = newSketchOnPlane(context, id, { "sketchPlane" : sketchPlane });
+    skPolyline(sketch, "polyline", { "points" : points });
     skSolve(sketch);
 
     var regions = evaluateQuery(context, qCreatedBy(id, EntityType.FACE));
@@ -1630,13 +1700,13 @@ function createAndSolveSketch(context is Context, topLevelId is Id, id is Id, ed
     }
 }
 
-function createFlangeSurfaceReturnBendEdge(context is Context, topLevelId is Id,  indexedId is Id, edge is Query,
-        flangeData is map, sideAndBase is map, flangeDistance, definition is map) returns Query
+function createFlangeSurfaceReturnBendEdge(context is Context, topLevelId is Id, indexedId is Id, edge is Query,
+    flangeData is map, sideAndBase is map, flangeDistance, definition is map) returns Query
 {
     var sketchId = indexedId + "sketch";
     createAndSolveSketch(context, topLevelId, sketchId, edge, flangeData, sideAndBase, flangeDistance, definition);
     var bendLine = startTracking(context, sketchId, "polyline.line0");
-    opExtractSurface(context, indexedId + SURFACE_SUFFIX, {"faces" : qSketchRegion(sketchId, false)});
+    opExtractSurface(context, indexedId + SURFACE_SUFFIX, { "faces" : qSketchRegion(sketchId, false) });
 
     opDeleteBodies(context, indexedId + "delete_sketch", { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
 
@@ -1677,16 +1747,16 @@ function inFlangeThickness(definition is map)
 {
     if (definition.flangeAlignment == SMFlangeAlignment.OUTER)
     {
-       return (definition.oppositeDirection) ? -definition.backThickness : -definition.frontThickness;
+        return (definition.oppositeDirection) ? -definition.backThickness : -definition.frontThickness;
     }
     else if (definition.flangeAlignment == SMFlangeAlignment.MIDDLE)
     {
-       var sign = (definition.oppositeDirection) ? -1 : 1;
-       return sign * 0.5 * (definition.backThickness - definition.frontThickness);
+        var sign = (definition.oppositeDirection) ? -1 : 1;
+        return sign * 0.5 * (definition.backThickness - definition.frontThickness);
     }
     else if (definition.flangeAlignment == SMFlangeAlignment.INNER)
     {
-       return (definition.oppositeDirection) ? definition.frontThickness : definition.backThickness;
+        return (definition.oppositeDirection) ? definition.frontThickness : definition.backThickness;
     }
 }
 
@@ -1741,7 +1811,7 @@ function processParallelEntity(context is Context, definition is map) returns ma
         if (direction == undefined)
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NO_DIRECTION_ENTITY, ["directionEntity"]);
 
-        return {"parallelDirection" : direction};
+        return { "parallelDirection" : direction };
     }
 
     return {};
@@ -1819,9 +1889,9 @@ const calculateMatchedFlangeDistance = function(context is Context, currEdge is 
     }
 
     return {
-        "success" : success,
-        "data" : flangeDistance
-    };
+            "success" : success,
+            "data" : flangeDistance
+        };
 };
 
 
@@ -1873,8 +1943,8 @@ const calculateMatchedExtensionDistance = function(context is Context, currEdge 
 
         var parentFlangeData = args.edgeToFlangeData[parentEdge];
         var samePlane = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT)) ?
-                        versionedCoplanarPlanes(context, parentFlangeData.wallPlane, currFlangeData.wallPlane) :
-                        tolerantEquals(parentFlangeData.wallPlane, currFlangeData.wallPlane);
+        versionedCoplanarPlanes(context, parentFlangeData.wallPlane, currFlangeData.wallPlane) :
+        tolerantEquals(parentFlangeData.wallPlane, currFlangeData.wallPlane);
 
         if (samePlane)
         {
@@ -1905,9 +1975,9 @@ const calculateMatchedExtensionDistance = function(context is Context, currEdge 
     }
 
     return {
-        "success" : true,
-        "data" : extensionLength
-    };
+            "success" : true,
+            "data" : extensionLength
+        };
 };
 
 function collectEdgeToExtensionDistance(context is Context, topLevelId is Id, edges is Query, edgeToFlangeData is map, definition is map) returns map
@@ -1963,7 +2033,7 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
     var edgeGroups = connectedComponents(context, edges, AdjacencyType.VERTEX);
     for (var group in edgeGroups)
     {
-        var queue = [{"edge" : group[0]}];
+        var queue = [{ "edge" : group[0] }];
         var queueIndex = 0;
         var anomalousQueue = [];
         var anomalousQueueIndex = 0;
@@ -1986,7 +2056,7 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
                     var edgesToProcess = qSubtraction(qIntersection([adjacentEdges, qUnion(group)]), qUnion(keys(edgeToData)));
                     for (var edgeToProcess in evaluateQuery(context, edgesToProcess))
                     {
-                        queue = append(queue, {"edge" : edgeToProcess, "parent" : currEdge});
+                        queue = append(queue, { "edge" : edgeToProcess, "parent" : currEdge });
                     }
                 }
                 else
@@ -2000,7 +2070,7 @@ function collectEdgeDataFromOrderedTraversal(context is Context, edges is Query,
             queueIndex += 1;
             if (queueIndex == size(queue) && anomalousQueueIndex != size(anomalousQueue))
             {
-                queue = append(queue, {"edge" : anomalousQueue[anomalousQueueIndex]});
+                queue = append(queue, { "edge" : anomalousQueue[anomalousQueueIndex] });
                 anomalousQueueIndex += 1;
             }
         }
@@ -2027,13 +2097,439 @@ function getFacePlane(context is Context, face is Query, edge is Query) returns 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
     {
         return evFaceTangentPlaneAtEdge(context, {
-                                "face" : face,
-                                "edge" : edge,
-                                "parameter" : 0.5 });
+                    "face" : face,
+                    "edge" : edge,
+                    "parameter" : 0.5 });
     }
     else
     {
-        return evPlane(context, {"face" : face});
+        return evPlane(context, { "face" : face });
     }
+}
+
+predicate partialFlangePredicate(flangeDefinition is map)
+{
+    annotation { "Name" : "Partial flange", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    flangeDefinition.isPartialFlange is boolean;
+
+    if (flangeDefinition.isPartialFlange)
+    {
+        annotation { "Group Name" : "Overall parameters", "Collapsed By Default" : false }
+        {
+            annotation { "Name" : "Chain type" }
+            flangeDefinition.chainType is SMPartialFlangeChainType;
+
+            annotation { "Name" : "Flip sides", "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : false }
+            flangeDefinition.flipFlangeBounds is boolean;
+
+            annotation { "Name" : "Hold adjacent edges", "Default" : true }
+            flangeDefinition.holdAdjacentEdges is boolean;
+        }
+
+        annotation { "Group Name" : "End conditions", "Collapsed By Default" : false }
+        {
+            annotation { "Name" : "Bound type" }
+            flangeDefinition.firstBoundType is SMFlangeBoundingType;
+            if (flangeDefinition.firstBoundType == SMFlangeBoundingType.BLIND)
+            {
+                annotation { "Name" : "Distance" }
+                isLength(flangeDefinition.firstBoundOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+            }
+            else if (flangeDefinition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY || flangeDefinition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+            {
+                annotation { "Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+                flangeDefinition.firstBoundingEntity is Query;
+
+                if (flangeDefinition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+                {
+                    annotation { "Name" : "Distance" }
+                    isLength(flangeDefinition.firstBoundingEntityOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+
+                    annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                    flangeDefinition.firstBoundingEntityOppositeOffsetDirection is boolean;
+                }
+            }
+
+            annotation { "Name" : "Second bound" }
+            flangeDefinition.hasSecondBound is boolean;
+            if (flangeDefinition.hasSecondBound)
+            {
+                annotation { "Name" : "Bound type" }
+                flangeDefinition.secondBoundType is SMFlangeBoundingType;
+                if (flangeDefinition.secondBoundType == SMFlangeBoundingType.BLIND)
+                {
+                    annotation { "Name" : "Distance" }
+                    isLength(flangeDefinition.secondBoundOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+                }
+                else if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY || flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+                {
+                    annotation { "Name" : "Up to face", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+                    flangeDefinition.secondBoundingEntity is Query;
+
+                    if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+                    {
+                        annotation { "Name" : "Distance" }
+                        isLength(flangeDefinition.secondBoundingEntityOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
+
+                        annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                        flangeDefinition.secondBoundingEntityOppositeOffsetDirection is boolean;
+                    }
+                }
+            }
+        }
+    }
+}
+
+type PartialFlangeBound typecheck canBePartialFlangeBound;
+
+predicate canBePartialFlangeBound(value)
+{
+    value is map;
+    value.partialFlangeType is SMFlangeBoundingType;
+    if (value.partialFlangeType == SMFlangeBoundingType.BLIND)
+    {
+        value.offset is ValueWithUnits;
+    }
+    else if (value.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY || value.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+    {
+        value.boundEntity is Query;
+        if (value.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+        {
+            value.offset is ValueWithUnits;
+        }
+    }
+}
+
+// Take the user definition and convert it to a consistent type for typechecks. Workaround for
+// precondition limitations on parameter ids.
+function convertDefinitionToFlangeBound(definition is map) returns array
+{
+    var bounds = [];
+    if (definition.isPartialFlange)
+    {
+        var firstFlangeBound = {
+            "partialFlangeType" : definition.firstBoundType
+        };
+        if (definition.firstBoundType == SMFlangeBoundingType.BLIND)
+        {
+            firstFlangeBound.offset = definition.firstBoundOffset;
+        }
+        else if (definition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY ||
+            definition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+        {
+            firstFlangeBound.boundEntity = definition.firstBoundingEntity;
+            if (definition.firstBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+            {
+                firstFlangeBound.offset = definition.firstBoundingEntityOppositeOffsetDirection ? -definition.firstBoundingEntityOffset : definition.firstBoundingEntityOffset;
+            }
+        }
+        bounds = bounds->append(firstFlangeBound as PartialFlangeBound);
+        if (definition.hasSecondBound)
+        {
+            var secondFlangeBound = {
+                "partialFlangeType" : definition.secondBoundType
+            };
+            if (definition.secondBoundType == SMFlangeBoundingType.BLIND)
+            {
+                secondFlangeBound.offset = definition.secondBoundOffset;
+            }
+            else if (definition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY ||
+                definition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+            {
+                secondFlangeBound.boundEntity = definition.secondBoundingEntity;
+                if (definition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+                {
+                    secondFlangeBound.offset = definition.secondBoundingEntityOppositeOffsetDirection ? -definition.secondBoundingEntityOffset : definition.secondBoundingEntityOffset;
+                }
+            }
+
+            bounds = bounds->append(secondFlangeBound as PartialFlangeBound);
+        }
+    }
+    return bounds;
+}
+
+function getUpToEntityParameter(boundIndex is number)
+{
+    return boundIndex == 0 ? "firstBoundingEntity" : "secondBoundingEntity";
+}
+
+// Take a flange bound and apply it to a particular edge from the start or the end.
+// Return the parameter that the bound needs to split the edge at.
+function processOneFlangeBound(context is Context, flangeBound is PartialFlangeBound, edgeLength is ValueWithUnits,
+    modelEdge is Query, trimFromEdgeStart is boolean, boundIndex is number) returns map
+{
+    if (flangeBound.partialFlangeType == SMFlangeBoundingType.BLIND)
+    {
+        var parameter = flangeBound.offset / edgeLength;
+        if (!trimFromEdgeStart)
+        {
+            parameter = 1 - parameter;
+        }
+        return { "parameter" : parameter };
+    }
+    else if (flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY ||
+        flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+    {
+        const distanceResult = try silent(evDistance(context, {
+                        "side0" : modelEdge,
+                        "side1" : flangeBound.boundEntity
+                    }));
+        if (distanceResult == undefined)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NO_BOUNDING_ENTITY, [getUpToEntityParameter(boundIndex)]);
+        }
+        var parameter = distanceResult.sides[0].parameter;
+        if (flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+        {
+            var parameterOffset = flangeBound.offset / edgeLength;
+            parameterOffset = trimFromEdgeStart ? -parameterOffset : parameterOffset;
+            parameter += parameterOffset;
+        }
+        const plane = getPlaneForLimitEntity(context, modelEdge, flangeBound.boundEntity, parameter, boundIndex);
+        return { "parameter" : parameter, "limitPlane" : plane };
+    }
+}
+
+function getPlaneForLimitEntity(context is Context, edge is Query, limitEntity is Query, splitParameter is number, boundIndex is number)
+{
+    if (isQueryEmpty(context, limitEntity))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_NO_BOUNDING_ENTITY, [getUpToEntityParameter(boundIndex)]);
+    }
+
+    const tangent = try silent(evEdgeTangentLine(context, {
+                    "edge" : edge,
+                    "parameter" : splitParameter
+                }));
+
+    if (tangent == undefined)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+    }
+
+    const vertex = try silent(evVertexPoint(context, {
+                    "vertex" : limitEntity
+                }));
+    if (vertex == undefined)
+    {
+        const plane = try silent(evPlane(context, {
+                        "face" : limitEntity
+                    }));
+        if (plane == undefined)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_BOUNDING_ENTITY_NOT_SUPPORTED, [getUpToEntityParameter(boundIndex)]);
+        }
+        if (perpendicularVectors(plane.normal, tangent.direction))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_BOUNDING_ENTITY_PARALLEL, [getUpToEntityParameter(boundIndex)]);
+        }
+        return plane;
+    }
+    else
+    {
+        return plane(tangent.origin, tangent.direction);
+    }
+}
+
+function showSplitErrorLocations(context is Context, modelEdge is Query, splitParameters is array, length)
+{
+    const tangent = evEdgeTangentLine(context, {
+                "edge" : modelEdge,
+                "parameter" : 0
+            });
+    var points = [];
+    for (var parameter in splitParameters)
+    {
+        const point = tangent.origin + tangent.direction * parameter * length;
+        addDebugPoint(context, point, DebugColor.RED);
+        points = points->append(point);
+    }
+    if (points->size() == 2)
+    {
+        const arrowSize = 0 * meter; // Do not show arrowhead.
+        addDebugArrow(context, points[0], points[1], arrowSize, DebugColor.RED);
+    }
+}
+
+// Divide an edge for the given bounds in order to localize a flange.
+// Returns a query for the split edge that the flange should be attached to.
+function splitEdgeForPartialFlange(context is Context, operationId is Id, modelEdge is Query, bounds is array, isAlignedWithEdge is boolean) returns map
+{
+    var limitEntities = {};
+    const length = try silent(evLength(context, {
+                    "entities" : modelEdge
+                }));
+    if (length == undefined)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, "edges");
+    }
+
+    var splitParameters = [];
+    for (var index, flangeBound in bounds)
+    {
+        const trimAtStart = (index == 0) == isAlignedWithEdge;
+        const parameterAndLimitPlane = processOneFlangeBound(context, flangeBound, length, modelEdge, trimAtStart, index);
+        if (parameterAndLimitPlane.limitPlane != undefined)
+        {
+            const vertexIndex = trimAtStart ? 0 : 1;
+            limitEntities[vertexIndex] = parameterAndLimitPlane.limitPlane;
+        }
+        splitParameters = splitParameters->append(parameterAndLimitPlane.parameter);
+    }
+
+    if (splitParameters->size() == 1)
+    {
+        splitParameters = splitParameters->append(isAlignedWithEdge ? 1 : 0);
+    }
+
+    const lowerParameterIndex = isAlignedWithEdge ? 0 : 1;
+    const higherParameterIndex = 1 - lowerParameterIndex;
+    if (length * (splitParameters[higherParameterIndex] - splitParameters[lowerParameterIndex]) < TOLERANCE.zeroLength * meter)
+    {
+        showSplitErrorLocations(context, modelEdge, splitParameters, length);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_ZERO_WIDTH);
+    }
+
+    if (splitParameters[lowerParameterIndex] * length < -TOLERANCE.zeroLength * meter ||
+        (splitParameters[higherParameterIndex] - 1) * length > TOLERANCE.zeroLength * meter)
+    {
+        showSplitErrorLocations(context, modelEdge, splitParameters, length);
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_PARAMETER_BOUND);
+    }
+
+    if (abs(splitParameters[lowerParameterIndex]) * length < TOLERANCE.zeroLength * meter &&
+        abs(splitParameters[1 - lowerParameterIndex] - 1) * length < TOLERANCE.zeroLength * meter)
+    {
+        var convertedLimits = {};
+        for (var index, limit in limitEntities)
+        {
+            // Use a query for the key that will work whether or not the edge is moved as part of flange alignment.
+            // This will be converted into a transient query before the map is consumed.
+            const vertexQuery = makeRobustQuery(context, qEdgeVertex(modelEdge, index == 0));
+            convertedLimits[vertexQuery] = limit;
+        }
+        return {
+                "splitEdgeQuery" : modelEdge,
+                "limitEntities" : convertedLimits
+            };
+    }
+    const midSplitPoint = evEdgeTangentLine(context, {
+                    "edge" : modelEdge,
+                    "parameter" : (splitParameters[0] + splitParameters[1]) / 2
+                }).origin;
+
+    try
+    {
+        @opSplitEdges(context, operationId, {
+                    "edges" : modelEdge,
+                    "parameters" : [splitParameters]
+                });
+
+    }
+    catch (error)
+    {
+        showSplitErrorLocations(context, modelEdge, splitParameters, length);
+        if (error == ErrorStringEnum.SPLIT_EDGE_PARAMETER_BOUND)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_PARAMETER_BOUND);
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+        }
+    }
+    var convertedLimits = {};
+    for (var index, limit in limitEntities)
+    {
+        const vertexQuery = makeRobustQuery(context, qEdgeVertex(qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint), index == 0));
+        convertedLimits[vertexQuery] = limit;
+    }
+    return {
+            "splitEdgeQuery" : qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint),
+            "limitEntities" : convertedLimits
+        };
+}
+
+function splitAllEdgesForPartialFlange(context is Context, operationId, definition is map, modelEdges is Query) returns map
+{
+    var splitEdgeQueries = [];
+    var limitEntities = {};
+    const bounds = convertDefinitionToFlangeBound(definition);
+    const paths = constructPaths(context, modelEdges, {});
+    var operationIndex = 0;
+    if (definition.chainType == SMPartialFlangeChainType.PER_EDGE)
+    {
+        // SMPartialFlangeChainType.PER_EDGE => bounds are applied to every edge identically.
+        for (var path in paths)
+        {
+            for (var index, edge in path.edges)
+            {
+                const alignedWithEdge = definition.flipFlangeBounds == path.flipped[index];
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), edge, bounds, alignedWithEdge);
+                if (splitQueryAndLimitEntity.limitEntities != undefined)
+                {
+                    limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
+                }
+                splitEdgeQueries = splitEdgeQueries->append(splitQueryAndLimitEntity.splitEdgeQuery);
+                operationIndex += 1;
+            }
+        }
+    }
+    else
+    {
+        // SMPartialFlangeChainType.PER_CHAIN => bounds are applied to the start and ends of chains.
+        for (var path in paths)
+        {
+            // If a path has more than one edge, apply bounds to the first and last edges in the path.
+            // Otherwise, apply all bounds to the only edge.
+            if (path.edges->size() == 1)
+            {
+                // Use path direction since it is stabilized by vertex deterministic id.
+                const alignedWithEdge = definition.flipFlangeBounds == path.flipped[0];
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), path.edges[0], bounds, alignedWithEdge);
+                if (splitQueryAndLimitEntity.limitEntities != undefined)
+                {
+                    limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
+                }
+                splitEdgeQueries = splitEdgeQueries->append(splitQueryAndLimitEntity.splitEdgeQuery);
+                operationIndex += 1;
+            }
+            else
+            {
+                // Options for a closed path are to either not do a partial flange at all or fail.
+                if (path.closed)
+                {
+                    splitEdgeQueries = splitEdgeQueries->append(qUnion(path.edges));
+                    continue;
+                }
+                const startOffset = (bounds->size() == 1) && definition.flipFlangeBounds ? 0 : 1;
+                const endOffset = (bounds->size() == 1) && !definition.flipFlangeBounds ? 0 : 1;
+                // Middle edges of the path get added unchanged.
+                for (var i = startOffset; i < path.edges->size() - endOffset; i += 1)
+                {
+                    splitEdgeQueries = splitEdgeQueries->append(path.edges[i]);
+                }
+                // Bounds get applied to the end edges
+                for (var boundIndex, bound in bounds)
+                {
+                    const applyToStart = boundIndex == (definition.flipFlangeBounds ? 1 : 0);
+                    const edgeIndex = applyToStart ? 0 : path.edges->size() - 1;
+                    const alignedWithEdge = path.flipped[edgeIndex] != applyToStart;
+                    const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), path.edges[edgeIndex], [bound], alignedWithEdge);
+                    if (splitQueryAndLimitEntity.limitEntities != undefined)
+                    {
+                        limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
+                    }
+                    splitEdgeQueries = splitEdgeQueries->append(splitQueryAndLimitEntity.splitEdgeQuery);
+                    operationIndex += 1;
+                }
+            }
+        }
+    }
+    return {
+            "splitEdgeQueries" : qUnion(splitEdgeQueries),
+            "limitEntities" : limitEntities
+        };
 }
 

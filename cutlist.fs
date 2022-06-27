@@ -1,15 +1,18 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/cutlistMath.fs", version : "1777.0");
-import(path : "onshape/std/error.fs", version : "1777.0");
-import(path : "onshape/std/feature.fs", version : "1777.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1777.0");
-import(path : "onshape/std/frameUtils.fs", version : "1777.0");
-import(path : "onshape/std/table.fs", version : "1777.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1793.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1793.0");
+import(path : "onshape/std/deleteBodies.fs", version : "1793.0");
+import(path : "onshape/std/error.fs", version : "1793.0");
+import(path : "onshape/std/feature.fs", version : "1793.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1793.0");
+import(path : "onshape/std/frameUtils.fs", version : "1793.0");
+import(path : "onshape/std/table.fs", version : "1793.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1793.0");
+import(path : "onshape/std/transform.fs", version : "1793.0");
 
 /**
  * @internal
@@ -42,7 +45,7 @@ export const cutlist = defineFeature(function(context is Context, id is Id, defi
             // BEL-172690: add filter for frames
             annotation {
                         "Name" : "Frames",
-                        "Filter" : EntityType.BODY && BodyType.SOLID
+                        "Filter" : (EntityType.BODY && BodyType.SOLID) || BodyType.COMPOSITE
                     }
             definition.frames is Query;
         }
@@ -85,7 +88,7 @@ export const cutlist = defineFeature(function(context is Context, id is Id, defi
                 {
                     annotation {
                                 "Name" : "Frames",
-                                "Filter" : EntityType.BODY
+                                "Filter" : (EntityType.BODY && BodyType.SOLID) || BodyType.COMPOSITE
                             }
                     columnOverride.overrideFrames is Query;
                 }
@@ -107,19 +110,74 @@ export const cutlist = defineFeature(function(context is Context, id is Id, defi
     {
         doOneCutlist(context, id, definition);
     },
-    { selectAllFrames : false, columnOverrides : [] });
+    {
+            selectAllFrames : false,
+            columnOverrides : []
+        });
 
 function doOneCutlist(context is Context, id is Id, definition is map)
 {
     verify(!isInFeaturePattern(context), ErrorStringEnum.FRAME_CUTLIST_NO_FEATURE_PATTERN);
-
+    var bodiesToDelete = new box([]);
+    definition = modifyFramesSelection(context, definition);
     definition = adjustFramesAndOverrides(context, definition);
-    const rows = getRows(context, id, definition);
+    const rows = getRows(context, id, definition, bodiesToDelete);
     const columns = getColumns(context, definition, rows);
     createOpenComposite(context, id, definition.frames, { "rows" : rows, "columns" : columns });
+    cleanUpBodies(context, id + "cleanup", bodiesToDelete);
 }
 
 // ========== Adjust inputs ==========
+function modifyFramesSelection(context is Context, definition is map) returns map
+{
+    // Expand and decompose base frames selection
+    if (definition.selectAllFrames)
+    {
+        // filter carefully to get only the composite body of closed composite frame segments
+        const frameClosedCompositeSegments = qFrameAllClosedCompositeSegments();
+        const frameBodiesInClosedComposites = qContainedInCompositeParts(frameClosedCompositeSegments);
+        const allFrameBodies = qFrameAllBodies();
+        const nonCompositeFrameBodies = qSubtraction(allFrameBodies, frameBodiesInClosedComposites);
+        const segments = qUnion(frameClosedCompositeSegments, nonCompositeFrameBodies);
+        definition.frames = segments;
+    }
+    verifyNonemptyQuery(context, definition, "frames", "Select frames to create a cutlist");
+    return definition;
+}
+
+// NB: Returns the aggregate length as ValueWithUnits or undefined if any segment has an uncalculatable length (eg spline sweep path with no swept edges)
+function getClosedCompositeFrameLengthAndAngles(context is Context, topLevelId is Id, createCurveId is function, frame is Query, bodiesToDelete is box) returns map
+{
+    const frameSegments = qContainedInCompositeParts(frame);
+    var aggregateLength = 0 * meter;
+    var startAngle = undefined;
+    var endAngle = undefined;
+    for (var segment in evaluateQuery(context, frameSegments))
+    {
+        var lengthAndAngle = getCutlistLengthAndAngles(context, topLevelId, createCurveId(), segment, bodiesToDelete);
+        // if any length is undefined, aggregate length is undefined
+        aggregateLength = (aggregateLength == undefined || lengthAndAngle.length == undefined)
+            ? undefined
+            : aggregateLength + lengthAndAngle.length;
+
+        const startCompositeFrameTerminusQuery = qFrameCompositeTerminusStartFace(segment);
+        if (!isQueryEmpty(context, startCompositeFrameTerminusQuery))
+        {
+            startAngle = lengthAndAngle.angle1;
+        }
+        const endCompositeFrameTerminusQuery = qFrameCompositeTerminusEndFace(segment);
+        if (!isQueryEmpty(context, endCompositeFrameTerminusQuery))
+        {
+            endAngle = lengthAndAngle.angle2;
+        }
+    }
+
+    return {
+            "length" : aggregateLength,
+            "angle1" : startAngle,
+            "angle2" : endAngle
+        };
+}
 
 predicate columnOverrideIsSameFramesAsPrevious(overrideIndex is number, override is map)
 {
@@ -131,14 +189,7 @@ predicate columnOverrideIsSameFramesAsPrevious(overrideIndex is number, override
 // downstream code does not need understand all the parameters in question.
 function adjustFramesAndOverrides(context is Context, definition is map)
 {
-    // Expand and decompose base frames selection
-    if (definition.selectAllFrames)
-    {
-        definition.frames = qFrameAllBodies();
-    }
-    verifyNonemptyQuery(context, definition, "frames", "Select frames to create a cutlist");
     definition.frames = decomposeNonCutlistCompositesOrderDependent(context, definition.frames);
-
     // Scan through manual override selections, adding them to the `definition.frames` in case these selections were
     // only made in override and not base selection.
     var explicitFrameSelections = [];
@@ -178,6 +229,12 @@ function decomposeNonCutlistCompositesOrderDependent(context is Context, frames 
     var framesToUse = [];
     for (var frame in evaluateQuery(context, frames))
     {
+        if (isFrameCompositeSegment(context, frame))
+        {
+            // closed composite frame segments should not be decomposed
+            framesToUse = append(framesToUse, frame);
+            continue;
+        }
         // Decompose non-cutlist composites into their constituent parts. Cutlists should remain a single line-item in
         // this cutlist.  Note that both a cutlist and some of its consituents could both be selected into the frames
         // QLV; in  this case there should be line items for both the cutlist and the frames themselves.
@@ -207,10 +264,10 @@ function decomposeNonCutlistCompositesOrderIndependent(frames is Query) returns 
 
 // ========== Gather rows ==========
 
-function getRows(context is Context, topLevelId is Id, definition is map)
+function getRows(context is Context, topLevelId is Id, definition is map, bodiesToDelete is box)
 {
     const frameToRowInfo = buildUngroupedRows(context, definition);
-    return groupRows(context, topLevelId, definition, frameToRowInfo);
+    return groupRows(context, topLevelId, definition, frameToRowInfo, bodiesToDelete);
 }
 
 // Returns a map from individual frames to their row info.  Incorporates information from both the attributes attached
@@ -266,7 +323,7 @@ function buildUngroupedRows(context is Context, definition is map) returns map
 }
 
 // frameToRowInfo comes from `buildUngroupedRows`
-function groupRows(context is Context, topLevelId is Id, definition is map, frameToRowInfo is map) returns array
+function groupRows(context is Context, topLevelId is Id, definition is map, frameToRowInfo is map, bodiesToDelete is box) returns array
 {
     // == Create candidate groups ==
     // reverse the map to pre-group by similar row data
@@ -288,28 +345,38 @@ function groupRows(context is Context, topLevelId is Id, definition is map, fram
     }
 
     // == Determine group membership and sort ==
-    const unorderedGroups = finalizeGroupMembership(context, ungroupables, values(groupableRowDataToFrames));
+    const unorderedGroups = finalizeGroupMembership(context, topLevelId, ungroupables, values(groupableRowDataToFrames), bodiesToDelete);
     const orderedGroups = sortGroups(frameToRowInfo, unorderedGroups);
 
     // == Transform into table rows ==
     var tableRows = [];
-    var bodiesToDelete = new box([]);
+    const createCurveId = getUnstableIncrementingId(topLevelId + "lengthAndAngle");
+
     for (var index, group in orderedGroups)
     {
         var rowData = frameToRowInfo[group[0]].data; // Safe to use 0 because we partitioned groups by matching row data
 
         // = Add additional row data
         const rowIndex = index + 1;
+
         rowData[CUTLIST_ITEM] = (index + 1);
         rowData[CUTLIST_QTY] = size(group);
         // Length and angle data
         for (var frame in group)
         {
             // Pull length and angle data from the first beam that we find in the group, skip if there are no frames
-            if (try silent(getFrameProfileAttribute(context, frame) != undefined))
+            var lengthAndAngle = undefined;
+            if (isFrameCompositeSegment(context, frame))
             {
-                const createdCurveId = topLevelId + "lengthAndAngle" + unstableIdComponent(rowIndex);
-                var lengthAndAngle = getCutlistLengthAndAngles(context, topLevelId, createdCurveId, frame, bodiesToDelete);
+                lengthAndAngle = getClosedCompositeFrameLengthAndAngles(context, topLevelId, createCurveId, frame, bodiesToDelete);
+            }
+            else if (try silent(getFrameProfileAttribute(context, frame) != undefined))
+            {
+                lengthAndAngle = getCutlistLengthAndAngles(context, topLevelId, createCurveId(), frame, bodiesToDelete);
+            }
+
+            if (lengthAndAngle != undefined)
+            {
                 rowData[CUTLIST_LENGTH] = lengthAndAngle.length;
                 rowData[CUTLIST_ANGLE_1] = lengthAndAngle.angle1;
                 rowData[CUTLIST_ANGLE_2] = lengthAndAngle.angle2;
@@ -320,13 +387,10 @@ function groupRows(context is Context, topLevelId is Id, definition is map, fram
         // = Create row with entities from group
         tableRows = append(tableRows, tableRow(rowData, qUnion(group)));
     }
-
-    // delete any temporary isoparam curves that may have been created
-    cleanUpBodies(context, topLevelId + "cleanup", bodiesToDelete);
     return tableRows;
 }
 
-function finalizeGroupMembership(context is Context, ungroupables is array, candidateGroups is array) returns array
+function finalizeGroupMembership(context is Context, topLevelId is Id, ungroupables is array, candidateGroups is array, bodiesToDelete is box) returns array
 {
     var groups = [];
 
@@ -339,7 +403,7 @@ function finalizeGroupMembership(context is Context, ungroupables is array, cand
     // take the candidate groups and group by geometry
     for (var frames in candidateGroups)
     {
-        const groupsFromRowCandidate = groupFramesByGeometry(context, frames);
+        const groupsFromRowCandidate = groupFramesByGeometry(context, topLevelId, frames, bodiesToDelete);
         for (var groupFromRowCandidate in groupsFromRowCandidate)
         {
             groups = append(groups, groupFromRowCandidate);
@@ -349,11 +413,61 @@ function finalizeGroupMembership(context is Context, ungroupables is array, cand
     return groups;
 }
 
+function replaceCompositeSegmentsWithBooleanBodies(context is Context, topLevelId is Id, frames is array, bodiesToDelete is box) returns array
+{
+    const booleanId = getDisambiguatedIncrementingId(context, topLevelId + "tempBooleanBody");
+    var modifiedFrames = [];
+    for (var frame in frames)
+    {
+        if (isFrameCompositeSegment(context, frame))
+        {
+            frame = createClosedCompositeFrameTemporaryBody(context, booleanId(frame), frame, bodiesToDelete);
+        }
+        modifiedFrames = append(modifiedFrames, frame);
+    }
+    return modifiedFrames;
+}
+
+function createClosedCompositeFrameTemporaryBody(context is Context, tempId is Id, frame is Query, bodiesToDelete is box)
+{
+    // create a copy
+    // this creates a copy of the composite body and the constituent bodies
+    const patternId = tempId + "pattern";
+    opPattern(context, patternId, {
+                "entities" : frame,
+                "transforms" : [identityTransform()],
+                "instanceNames" : ["copy"]
+            });
+    // opDeleteBodies dissolves composite bodies but it deletes consituent bodies, so first filter.
+    const dissolveId = tempId + "dissolve";
+    const compositeCopy = qCreatedBy(patternId, EntityType.BODY)->qCompositePartTypeFilter(CompositePartType.CLOSED);
+    const segmentCopy = qUnion(evaluateQuery(context, qContainedInCompositeParts(compositeCopy)));
+
+    opDeleteBodies(context, dissolveId, {
+                "entities" : compositeCopy,
+                "compositePartOption" : CompositePartDeleteOptions.DISSOLVE
+            });
+
+    // boolean the tracked bodies
+    const booleanId = tempId + "boolean";
+    opBoolean(context, booleanId, {
+                "tools" : segmentCopy,
+                "operationType" : BooleanOperationType.UNION
+            });
+
+    const resultingBodies = evaluateQuery(context, segmentCopy);
+    verify(size(resultingBodies) == 1, ErrorStringEnum.FRAME_BAD_COMPOSITE_SEGMENT, { "entities" : qContainedInCompositeParts(frame) });
+    bodiesToDelete[] = append(bodiesToDelete[], resultingBodies[0]);
+    return resultingBodies[0];
+}
+
+
 // Returns an array of arrays where each entry is an array of parts that are geometrically matched to each other.
-function groupFramesByGeometry(context is Context, frames is array) returns array
+function groupFramesByGeometry(context is Context, topLevelId is Id, frames is array, bodiesToDelete is box) returns array
 {
     var groups = [];
-    const clusters = clusterBodies(context, { "bodies" : qUnion(frames), "relativeTolerance" : 0.01 });
+    const substitutedFrames = replaceCompositeSegmentsWithBooleanBodies(context, topLevelId, frames, bodiesToDelete);
+    const clusters = clusterBodies(context, { "bodies" : qUnion(substitutedFrames), "relativeTolerance" : 0.01 });
     for (var cluster in clusters)
     {
         const groupedParts = mapArray(cluster, function(x)
@@ -477,11 +591,12 @@ function getColumns(context is Context, definition is map, rows is array) return
 }
 
 // ========== Finalize ===========
-
 function createOpenComposite(context is Context, compositePartId is Id, frames is Query, tableData is map)
 {
+    // create open composite containing the frames
     opCreateCompositePart(context, compositePartId, { "bodies" : frames, "closed" : false });
     const compositePartQuery = qCreatedBy(compositePartId, EntityType.BODY)->qCompositePartTypeFilter(CompositePartType.OPEN);
+
     const bodyQuery = qCreatedBy(compositePartId, EntityType.BODY);
     const attribute = cutlistAttribute(compositePartId, table("Cutlist", tableData.columns, tableData.rows, compositePartQuery));
     setCutlistAttribute(context, bodyQuery, attribute);

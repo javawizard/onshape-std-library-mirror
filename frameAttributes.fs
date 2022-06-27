@@ -1,15 +1,15 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import (path : "onshape/std/attributes.fs", version : "1777.0");
-import (path : "onshape/std/containers.fs", version : "1777.0");
-import (path : "onshape/std/context.fs", version : "1777.0");
-import (path : "onshape/std/evaluate.fs", version : "1777.0");
-import (path : "onshape/std/feature.fs", version : "1777.0");
-import (path : "onshape/std/query.fs", version : "1777.0");
-import (path : "onshape/std/table.fs", version : "1777.0");
+import (path : "onshape/std/attributes.fs", version : "1793.0");
+import (path : "onshape/std/containers.fs", version : "1793.0");
+import (path : "onshape/std/context.fs", version : "1793.0");
+import (path : "onshape/std/evaluate.fs", version : "1793.0");
+import (path : "onshape/std/feature.fs", version : "1793.0");
+import (path : "onshape/std/query.fs", version : "1793.0");
+import (path : "onshape/std/table.fs", version : "1793.0");
 
 /**
  * The possible types of a [FrameTopologyAttribute].
@@ -111,6 +111,7 @@ predicate canBeFrameTopologyAttribute(value)
     {
         value.isStart is boolean;
         value.isFrameTerminus is boolean;
+        value.isCompositeTerminus is boolean;
     }
 }
 
@@ -133,12 +134,13 @@ precondition
  * Construct a [FrameTopologyAttribute] for `CAP_FACE`.
  * @seealso [frameTopologyAttributeForSwept]
  */
-export function frameTopologyAttributeForCapFace(isStartFace is boolean, isFrameTerminus is boolean) returns FrameTopologyAttribute
+export function frameTopologyAttributeForCapFace(isStartFace is boolean, isFrameTerminus is boolean, isCompositeTerminus is boolean) returns FrameTopologyAttribute
 {
     return {
         "topologyType" : FrameTopologyType.CAP_FACE,
         "isStart" : isStartFace,
-        "isFrameTerminus" : isFrameTerminus
+        "isFrameTerminus" : isFrameTerminus,
+        "isCompositeTerminus" : isCompositeTerminus
     } as FrameTopologyAttribute;
 }
 
@@ -236,4 +238,5 @@ export function setCutlistAttribute(context is Context, composite is Query, attr
         "attribute" : attribute
     });
 }
+
 

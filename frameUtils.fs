@@ -1,17 +1,17 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import (path : "onshape/std/attributes.fs", version : "1777.0");
-import (path : "onshape/std/containers.fs", version : "1777.0");
-import (path : "onshape/std/context.fs", version : "1777.0");
-import (path : "onshape/std/evaluate.fs", version : "1777.0");
-import (path : "onshape/std/feature.fs", version : "1777.0");
-import (path : "onshape/std/frameAttributes.fs", version : "1777.0");
-import (path : "onshape/std/query.fs", version : "1777.0");
-import (path : "onshape/std/units.fs", version : "1777.0");
-import (path : "onshape/std/valueBounds.fs", version : "1777.0");
+import (path : "onshape/std/attributes.fs", version : "1793.0");
+import (path : "onshape/std/containers.fs", version : "1793.0");
+import (path : "onshape/std/context.fs", version : "1793.0");
+import (path : "onshape/std/evaluate.fs", version : "1793.0");
+import (path : "onshape/std/feature.fs", version : "1793.0");
+import (path : "onshape/std/frameAttributes.fs", version : "1793.0");
+import (path : "onshape/std/query.fs", version : "1793.0");
+import (path : "onshape/std/units.fs", version : "1793.0");
+import (path : "onshape/std/valueBounds.fs", version : "1793.0");
 
 /** @internal */
 export enum FrameCornerType
@@ -23,7 +23,10 @@ export enum FrameCornerType
     annotation { "Name" : "Coped Butt" }
     COPED_BUTT,
     annotation { "Name" : "None" }
-    NONE
+    NONE,
+    // TANGENT type is not intended for UI or manual control. It aids in tagging G1 continuous frame segments for compositing.
+    annotation { "Name" : "Tangent", "Hidden" : true }
+    TANGENT
 }
 
 // Default cutlist table column ids/headers
@@ -47,70 +50,79 @@ const CUTLIST_DESCRIPTION_CUSTOM_PROFILE = "Custom profile";
 /** @internal */
 export const CUTLIST_DESCRIPTION_CUTLIST_ENTRY = "Cutlist entry";
 
-function qFrameTopology(queryToFilter is Query, topologyType is FrameTopologyType, isStart, isFrameTerminus)
+function qFrameTopology(queryToFilter is Query, topologyType is FrameTopologyType, isStart, isFrameTerminus, isCompositeTerminus)
 {
     const attributeQuery = qHasAttributeWithValueMatching(queryToFilter, FRAME_ATTRIBUTE_TOPOLOGY_NAME, {
                 "topologyType" : topologyType,
                 "isStart" : isStart,
-                "isFrameTerminus" : isFrameTerminus
+                "isFrameTerminus" : isFrameTerminus,
+                "isCompositeTerminus" : isCompositeTerminus
             });
     return attributeQuery;
 }
 
 function isFaceOfTopologyType(context is Context, face is Query, topologyType is FrameTopologyType, isStart,
-    isFrameTerminus) returns boolean
+    isFrameTerminus, isCompositeTerminus) returns boolean
 {
-    const attributeQuery = qFrameTopology(face, topologyType, isStart, isFrameTerminus);
+    const attributeQuery = qFrameTopology(face, topologyType, isStart, isFrameTerminus, isCompositeTerminus);
     return !isQueryEmpty(context, attributeQuery);
 }
 
 /** @internal */
 export function isCapFace(context is Context, face is Query) returns boolean
 {
-    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, undefined);
+    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, undefined, undefined);
 }
 
 /** @internal */
 export function isStartFace(context is Context, face is Query) returns boolean
 {
-    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, true, undefined);
+    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, true, undefined, undefined);
 }
 
 /** @internal */
 export function isSweptFace(context is Context, face is Query) returns boolean
 {
-    return isFaceOfTopologyType(context, face, FrameTopologyType.SWEPT_FACE, undefined, undefined);
+    return isFaceOfTopologyType(context, face, FrameTopologyType.SWEPT_FACE, undefined, undefined, undefined);
 }
 
 /** @internal */
 export function isInternalCapFace(context is Context, face is Query) returns boolean
 {
-    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, false);
+    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, false, undefined);
 }
 
 /** @internal */
 export function isFrameCapFace(context is Context, face is Query) returns boolean
 {
-    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, true);
+    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, true, undefined);
 }
 
 /** @internal */
+export function isCompositeFrameCapFace(context is Context, face is Query) returns boolean
+{
+    return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, true, undefined);
+}
+/** @internal */
 export function qFrameStartFace(frame is Query) returns Query
 {
-    const faceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, true, undefined);
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const faceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, true, undefined, undefined);
     return faceQuery;
 }
 
 /** @internal */
 export function qFrameEndFace(frame is Query) returns Query
 {
-    const faceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, false, undefined);
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const faceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, false, undefined, undefined);
     return faceQuery;
 }
 
 /** @internal */
 export function qFrameOppositeFace(context is Context, frame is Query, face is Query) returns Query
 {
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
     const allFaces = qOwnedByBody(frame, EntityType.FACE);
     const sweptFaces = qFrameSweptFace(frame);
     const oppositeFace = qSubtraction(allFaces, qUnion([sweptFaces, face]));
@@ -120,20 +132,47 @@ export function qFrameOppositeFace(context is Context, frame is Query, face is Q
 /** @internal */
 export function qFrameSweptEdge(frame is Query) returns Query
 {
-    const edgeQuery = qFrameTopology(qOwnedByBody(frame, EntityType.EDGE), FrameTopologyType.SWEPT_EDGE, undefined, undefined);
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const edgeQuery = qFrameTopology(qOwnedByBody(frame, EntityType.EDGE), FrameTopologyType.SWEPT_EDGE, undefined, undefined, undefined);
     return edgeQuery;
 }
 
 /** @internal */
 export function qFrameSweptFace(frame is Query) returns Query
 {
-    const sweptFaceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.SWEPT_FACE, undefined, undefined);
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const sweptFaceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.SWEPT_FACE, undefined, undefined, undefined);
+    return sweptFaceQuery;
+}
+
+/** @internal */
+export function qFrameCompositeTerminusFace(frame is Query) returns Query
+{
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const sweptFaceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, undefined, undefined, true);
+    return sweptFaceQuery;
+}
+
+/** @internal */
+export function qFrameCompositeTerminusStartFace(frame is Query) returns Query
+{
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const sweptFaceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, true, undefined, true);
+    return sweptFaceQuery;
+}
+
+/** @internal */
+export function qFrameCompositeTerminusEndFace(frame is Query) returns Query
+{
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
+    const sweptFaceQuery = qFrameTopology(qOwnedByBody(frame, EntityType.FACE), FrameTopologyType.CAP_FACE, false, undefined, true);
     return sweptFaceQuery;
 }
 
 /** @internal */
 export function qFrameAllFaces(frame is Query) returns Query
 {
+    frame = qUnion(frame, qContainedInCompositeParts(frame));
     const allFrameTopologyFaces = qOwnedByBody(frame, EntityType.FACE)->qHasAttribute(FRAME_ATTRIBUTE_TOPOLOGY_NAME);
     return allFrameTopologyFaces;
 }
@@ -142,6 +181,13 @@ export function qFrameAllFaces(frame is Query) returns Query
 export function qFrameAllBodies()
 {
     return qAllModifiableSolidBodies()->qHasAttribute(FRAME_ATTRIBUTE_PROFILE_NAME);
+}
+
+/** @internal */
+export function qFrameAllClosedCompositeSegments()
+{
+    const allClosedCompositeFrameSegments = qEverything(EntityType.BODY) -> qCompositePartTypeFilter(CompositePartType.CLOSED) -> qHasAttribute(FRAME_ATTRIBUTE_PROFILE_NAME);
+    return allClosedCompositeFrameSegments;
 }
 
 /** @internal */
@@ -196,5 +242,13 @@ export function max(elements is array, lessThan is function)
         }
     }
     return max;
+}
+
+/** @internal */
+export function isFrameCompositeSegment(context is Context, frame is Query) returns boolean
+{
+    const compositeFilteredQuery = qCompositePartTypeFilter(frame, CompositePartType.CLOSED);
+    const frameProfileAttribute = try silent(getFrameProfileAttribute(context, compositeFilteredQuery));
+    return frameProfileAttribute != undefined;
 }
 

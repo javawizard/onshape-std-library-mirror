@@ -1,20 +1,20 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/box.fs", version : "1777.0");
-import(path : "onshape/std/containers.fs", version : "1777.0");
-import(path : "onshape/std/context.fs", version : "1777.0");
-import(path : "onshape/std/coordSystem.fs", version : "1777.0");
-import(path : "onshape/std/error.fs", version : "1777.0");
-import(path : "onshape/std/evaluate.fs", version : "1777.0");
-import(path : "onshape/std/frameUtils.fs", version : "1777.0");
-import(path : "onshape/std/geomOperations.fs", version : "1777.0");
-import(path : "onshape/std/math.fs", version : "1777.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
-import(path : "onshape/std/units.fs", version : "1777.0");
-import(path : "onshape/std/vector.fs", version : "1777.0");
+import(path : "onshape/std/box.fs", version : "1793.0");
+import(path : "onshape/std/containers.fs", version : "1793.0");
+import(path : "onshape/std/context.fs", version : "1793.0");
+import(path : "onshape/std/coordSystem.fs", version : "1793.0");
+import(path : "onshape/std/error.fs", version : "1793.0");
+import(path : "onshape/std/evaluate.fs", version : "1793.0");
+import(path : "onshape/std/frameUtils.fs", version : "1793.0");
+import(path : "onshape/std/geomOperations.fs", version : "1793.0");
+import(path : "onshape/std/math.fs", version : "1793.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
+import(path : "onshape/std/units.fs", version : "1793.0");
+import(path : "onshape/std/vector.fs", version : "1793.0");
 
 const CUTLIST_MATCH_TOLERANCE = 1e-6 * meter;
 const NUM_ISOPARAM_CURVES = 7;
@@ -59,12 +59,12 @@ export function getCutlistLengthAndAngles(context is Context, topLevelId is Id, 
     return result;
 }
 
-function buildBeamCutlistData(length, angle1, angle2) returns map
+function buildBeamCutlistData(length, startAngle, endAngle) returns map
 {
     return {
             "length" : length,
-            "angle1" : angle1,
-            "angle2" : angle2
+            "angle1" : startAngle,
+            "angle2" : endAngle
         };
 }
 

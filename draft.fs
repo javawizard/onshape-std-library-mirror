@@ -1,23 +1,23 @@
-FeatureScript 1777; /* Automatically generated version */
+FeatureScript 1793; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1777.0");
+export import(path : "onshape/std/query.fs", version : "1793.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1777.0");
-import(path : "onshape/std/coordSystem.fs", version : "1777.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1777.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1777.0");
-import(path : "onshape/std/evaluate.fs", version : "1777.0");
-import(path : "onshape/std/feature.fs", version : "1777.0");
-import(path : "onshape/std/manipulator.fs", version : "1777.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1777.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1777.0");
-import(path : "onshape/std/valueBounds.fs", version : "1777.0");
-import(path : "onshape/std/vector.fs", version : "1777.0");
+import(path : "onshape/std/containers.fs", version : "1793.0");
+import(path : "onshape/std/coordSystem.fs", version : "1793.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1793.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1793.0");
+import(path : "onshape/std/evaluate.fs", version : "1793.0");
+import(path : "onshape/std/feature.fs", version : "1793.0");
+import(path : "onshape/std/manipulator.fs", version : "1793.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1793.0");
+import(path : "onshape/std/valueBounds.fs", version : "1793.0");
+import(path : "onshape/std/vector.fs", version : "1793.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -161,7 +161,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             }
         }
 
-        annotation { "Name" : "Draft angle" }
+        annotation { "Name" : "Draft angle",  "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : false }
@@ -169,7 +169,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
 
         if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE && definition.partingLineSides == PartingLineSides.TWO_SIDED)
         {
-            annotation { "Name" : "Second draft angle" }
+            annotation { "Name" : "Second draft angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isAngle(definition.secondAngle, ANGLE_STRICT_90_BOUNDS);
 
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : true }
