@@ -1,4 +1,4 @@
-FeatureScript 1793; /* Automatically generated version */
+FeatureScript 1803; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 1793; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1793.0");
-import(path : "onshape/std/string.fs", version : "1793.0");
+import(path : "onshape/std/math.fs", version : "1803.0");
+import(path : "onshape/std/string.fs", version : "1803.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -322,6 +322,15 @@ export function filter(arr is array, filterFunction is function)
             result = @resize(result, @size(result) + 1, element); // inlined append
     }
     return result;
+}
+
+/**
+ * Return the first item in a map
+ */
+export function first(m is map)
+{
+    for (var result in m)
+        return result.value;
 }
 
 /**

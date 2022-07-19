@@ -1,4 +1,4 @@
-FeatureScript 1793; /* Automatically generated version */
+FeatureScript 1803; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -46,28 +46,28 @@ FeatureScript 1793; /* Automatically generated version */
  * all subsequent operations and features.
  */
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1793.0");
+export import(path : "onshape/std/query.fs", version : "1803.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1793.0");
-import(path : "onshape/std/evaluate.fs", version : "1793.0");
-import(path : "onshape/std/feature.fs", version : "1793.0");
-import(path : "onshape/std/mathUtils.fs", version : "1793.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1793.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1793.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
-import(path : "onshape/std/tool.fs", version : "1793.0");
-import(path : "onshape/std/valueBounds.fs", version : "1793.0");
-import(path : "onshape/std/matrix.fs", version : "1793.0");
+import(path : "onshape/std/containers.fs", version : "1803.0");
+import(path : "onshape/std/evaluate.fs", version : "1803.0");
+import(path : "onshape/std/feature.fs", version : "1803.0");
+import(path : "onshape/std/mathUtils.fs", version : "1803.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1803.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1803.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1803.0");
+import(path : "onshape/std/tool.fs", version : "1803.0");
+import(path : "onshape/std/valueBounds.fs", version : "1803.0");
+import(path : "onshape/std/matrix.fs", version : "1803.0");
 
 // These are not used in the library, but are made available to programs.
-export import(path : "onshape/std/dimensionalignment.gen.fs", version : "1793.0");
-export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "1793.0");
-export import(path : "onshape/std/radiusdisplay.gen.fs", version : "1793.0");
-export import(path : "onshape/std/sketchtooltype.gen.fs", version : "1793.0");
-export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "1793.0");
-export import(path : "onshape/std/constrainttype.gen.fs", version : "1793.0");
-export import(path : "onshape/std/fixedparameterposition.gen.fs", version : "1793.0");
+export import(path : "onshape/std/dimensionalignment.gen.fs", version : "1803.0");
+export import(path : "onshape/std/dimensionhalfspace.gen.fs", version : "1803.0");
+export import(path : "onshape/std/radiusdisplay.gen.fs", version : "1803.0");
+export import(path : "onshape/std/sketchtooltype.gen.fs", version : "1803.0");
+export import(path : "onshape/std/sketchsilhouettedisambiguation.gen.fs", version : "1803.0");
+export import(path : "onshape/std/constrainttype.gen.fs", version : "1803.0");
+export import(path : "onshape/std/fixedparameterposition.gen.fs", version : "1803.0");
 
 /**
  * @internal
@@ -654,6 +654,35 @@ precondition
 }
 {
     return @skFitSpline(sketch, splineId, value);
+}
+
+/**
+ * Create a Bezier curve from the given control points.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param bezierId : @autocomplete `"bezier1"`
+ * @param value {{
+ *      @field points : An array of points.
+ * @eg ```
+ * [
+        vector( 0, 0) * inch,
+        vector( 0, 1) * inch,
+        vector( 1, 1) * inch,
+        vector( 1, 0) * inch
+ * ]
+ * ```
+ *      @field construction {boolean} : `true` for a construction line @optional
+ * }}
+ */
+export function skBezier(sketch is Sketch, bezierId is string, value is map)
+precondition
+{
+    value.construction is undefined || value.construction is boolean;
+    is2dPointVector(value.points);
+    size(value.points) > 1;
+}
+{
+    return @skBezier(sketch, bezierId, value);
 }
 
 function rectangleSideStartPoint(value, side)

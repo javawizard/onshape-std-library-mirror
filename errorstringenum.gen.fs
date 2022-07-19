@@ -1,4 +1,4 @@
-FeatureScript 1793; /* Automatically generated version */
+FeatureScript 1803; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1950,7 +1950,7 @@ export enum ErrorStringEnum
     SPLINE_THROUGH_EDGES_SELECT_EDGES,
     /* A single approximating spline resulted in more than one edge. */
     SPLINE_THROUGH_EDGES_RESULTED_IN_MORE_THAN_ONE_EDGE,
-    /* Cannot delete spline handles. */
+    /* Cannot delete end points spline handles. */
     SKETCH_CANNOT_DELETE_SPLINE_HANDLES,
     /* Cannot trim spline handles. */
     SKETCH_TRIM_NO_SPLINE_HANDLES,
@@ -2106,6 +2106,8 @@ export enum ErrorStringEnum
     FRAME_CUTLIST_NO_END_FACE_EDGE_GEOMETRY_PAIR,
     /* Cannot insert item into publication. */
     PUBLICATION_ITEM_INSERT_FAILED,
+    /* Unable to insert. Missing link permission for the document. */
+    PUBLICATION_ITEM_INSERT_FAILED_NO_LINK_PERMISSION,
     /* Radius value is required at each point. */
     VRFILLET_RADIUS_REQUIRED_AT_POINT,
     /* Edge parameter value is required at each point. */
@@ -2239,7 +2241,15 @@ export enum ErrorStringEnum
     /* Limit entity for flange bound must be a vertex or plane. */
     SHEET_METAL_FLANGE_BOUNDING_ENTITY_NOT_SUPPORTED,
     /* Composite frame segments must form a single body. */
-    FRAME_BAD_COMPOSITE_SEGMENT
+    FRAME_BAD_COMPOSITE_SEGMENT,
+    /* This spline point already has a handle. */
+    SKETCH_SPLINE_POINT_HAS_HANDLE,
+    /* Cannot trim spline control polygon. */
+    SKETCH_TRIM_NO_SPLINE_CONTROL_POLYGON,
+    /* Non-matching thread size selected. */
+    SELECTED_NON_MATCHING_SIZE,
+    /* Exact match for thread size not found. */
+    NEAREST_MATCHING_THREAD_SIZE
 }
 
 

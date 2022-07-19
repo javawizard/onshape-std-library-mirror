@@ -1,34 +1,34 @@
-FeatureScript 1793; /* Automatically generated version */
+FeatureScript 1803; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1793.0");
-import(path : "onshape/std/boolean.fs", version : "1793.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1793.0");
-import(path : "onshape/std/box.fs", version : "1793.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1793.0");
-import(path : "onshape/std/containers.fs", version : "1793.0");
-import(path : "onshape/std/coordSystem.fs", version : "1793.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1793.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1793.0");
-import(path : "onshape/std/evaluate.fs", version : "1793.0");
-import(path : "onshape/std/feature.fs", version : "1793.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1793.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1793.0");
-import(path : "onshape/std/mathUtils.fs", version : "1793.0");
-import(path : "onshape/std/revolve.fs", version : "1793.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1793.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1793.0");
-import(path : "onshape/std/sketch.fs", version : "1793.0");
-import(path : "onshape/std/string.fs", version : "1793.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1793.0");
-import(path : "onshape/std/tool.fs", version : "1793.0");
-import(path : "onshape/std/valueBounds.fs", version : "1793.0");
+import(path : "onshape/std/attributes.fs", version : "1803.0");
+import(path : "onshape/std/boolean.fs", version : "1803.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1803.0");
+import(path : "onshape/std/box.fs", version : "1803.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1803.0");
+import(path : "onshape/std/containers.fs", version : "1803.0");
+import(path : "onshape/std/coordSystem.fs", version : "1803.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1803.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1803.0");
+import(path : "onshape/std/evaluate.fs", version : "1803.0");
+import(path : "onshape/std/feature.fs", version : "1803.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1803.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1803.0");
+import(path : "onshape/std/mathUtils.fs", version : "1803.0");
+import(path : "onshape/std/revolve.fs", version : "1803.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1803.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1803.0");
+import(path : "onshape/std/sketch.fs", version : "1803.0");
+import(path : "onshape/std/string.fs", version : "1803.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1803.0");
+import(path : "onshape/std/tool.fs", version : "1803.0");
+import(path : "onshape/std/valueBounds.fs", version : "1803.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1793.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1793.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1793.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1803.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1803.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1803.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -1679,7 +1679,7 @@ function createAttributesForSheetMetalHole(context is Context, createdUsingNewHo
             // In addition to endStyle THROUGH, we need to tell the hole attribute that the tap goes all the way through.
             featureDefinition.isTappedThrough = true;
         }
-        holeAttribute = createHoleAttribute(createdUsingNewHolePipeline, attributeId, featureDefinition,
+        holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId, featureDefinition,
             HoleSectionFaceType.THROUGH_FACE, holeNumber);
         setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
     }
@@ -2038,7 +2038,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             const face = faceAndSectionFaceType.key;
             clearHoleAttributes(context, face);
             const createdUsingNewHolePipeline = true;
-            var holeAttribute = createHoleAttribute(createdUsingNewHolePipeline, attributeId,
+            var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
                 featureDefinitionForAttribute, faceAndSectionFaceType.value, holeIndex);
             if (holeAttribute != undefined)
             {
@@ -2137,7 +2137,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
         {
             clearHoleAttributes(context, entry.key);
             const createdUsingNewHolePipeline = false;
-            var holeAttribute = createHoleAttribute(createdUsingNewHolePipeline, attributeId,
+            var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
             holeDefinitionForAttribute, entry.value, holeNumber);
             if (holeAttribute != undefined)
             {
@@ -2237,7 +2237,7 @@ function buildHoleAttributeId(topLevelId is Id, holeIndex is number) returns str
  * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
  * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
  */
-function createHoleAttribute(createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinition is map,
+function createHoleAttribute(context is Context, createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinition is map,
     holeFaceType is HoleSectionFaceType, holeNumber is number) returns HoleAttribute
 {
     // make the base hole attribute
@@ -2248,7 +2248,7 @@ function createHoleAttribute(createdUsingNewHolePipeline is boolean, attributeId
     holeAttribute.holeFeatureCount = holeDefinition.holeFeatureCount;
 
     // add common properties
-    holeAttribute = addCommonAttributeProperties(holeAttribute, holeDefinition);
+    holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinition);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
     holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinition);
@@ -2256,7 +2256,7 @@ function createHoleAttribute(createdUsingNewHolePipeline is boolean, attributeId
     return holeAttribute;
 }
 
-function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
+function addCommonAttributeProperties(context is Context, attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
 {
     var resultAttribute = attribute;
 
@@ -2310,6 +2310,10 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
             {
                 var matchResult = match(entry.value, ".*[Tt]apped.*");
                 resultAttribute.isTappedHole = matchResult.hasMatch;
+                if (resultAttribute.isTappedHole && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE))
+                {
+                    resultAttribute.isTappedHole = holeDefinition.tappedDepth > 0;
+                }
                 isStandardComponentBasedHole = true;
                 if (!resultAttribute.isTappedHole)
                 {
@@ -2325,6 +2329,10 @@ function addCommonAttributeProperties(attribute is HoleAttribute, holeDefinition
                     {
                         matchResult = match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*");
                         resultAttribute.isTaperedPipeTapHole = matchResult.hasMatch;
+                        if (resultAttribute.isTaperedPipeTapHole && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE))
+                        {
+                            resultAttribute.isTaperedPipeTapHole = holeDefinition.tappedDepth > 0;
+                        }
                     }
                 }
             }
