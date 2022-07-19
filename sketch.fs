@@ -656,6 +656,35 @@ precondition
     return @skFitSpline(sketch, splineId, value);
 }
 
+/**
+ * Create a Bezier curve from the given control points.
+ *
+ * @param sketch : @autocomplete `sketch1`
+ * @param bezierId : @autocomplete `"bezier1"`
+ * @param value {{
+ *      @field points : An array of points.
+ * @eg ```
+ * [
+        vector( 0, 0) * inch,
+        vector( 0, 1) * inch,
+        vector( 1, 1) * inch,
+        vector( 1, 0) * inch
+ * ]
+ * ```
+ *      @field construction {boolean} : `true` for a construction line @optional
+ * }}
+ */
+export function skBezier(sketch is Sketch, bezierId is string, value is map)
+precondition
+{
+    value.construction is undefined || value.construction is boolean;
+    is2dPointVector(value.points);
+    size(value.points) > 1;
+}
+{
+    return @skBezier(sketch, bezierId, value);
+}
+
 function rectangleSideStartPoint(value, side)
 {
     if (value.firstCorner is undefined)

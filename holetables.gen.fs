@@ -379,25 +379,6 @@ export const ANSI_ExternalThreadTable = {
                 "72 tpi" : {"holeDiameter" : "0.0730 in", "minorDiameter" : "0.0565 in", "majorDiameter" : "0.0730 in"}
             }
         },
-        "#10" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "24 tpi",
-            "entries" : {
-                "24 tpi" : {"holeDiameter" : "0.1900 in", "minorDiameter" : "0.1394 in", "majorDiameter" : "0.1900 in"},
-                "32 tpi" : {"holeDiameter" : "0.1900 in", "minorDiameter" : "0.1528 in", "majorDiameter" : "0.1900 in"}
-            }
-        },
-        "#12" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "24 tpi",
-            "entries" : {
-                "24 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1654 in", "majorDiameter" : "0.2160 in"},
-                "28 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1734 in", "majorDiameter" : "0.2160 in"},
-                "32 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1788 in", "majorDiameter" : "0.2160 in"}
-            }
-        },
         "#2" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -452,159 +433,23 @@ export const ANSI_ExternalThreadTable = {
                 "36 tpi" : {"holeDiameter" : "0.1640 in", "minorDiameter" : "0.1309 in", "majorDiameter" : "0.1640 in"}
             }
         },
-        "1" : {
+        "#10" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "8 tpi",
+            "default" : "24 tpi",
             "entries" : {
-                "12 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.9001 in", "majorDiameter" : "1.0000 in"},
-                "20 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.9405 in", "majorDiameter" : "1.0000 in"},
-                "8 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.8492 in", "majorDiameter" : "1.0000 in"}
+                "24 tpi" : {"holeDiameter" : "0.1900 in", "minorDiameter" : "0.1394 in", "majorDiameter" : "0.1900 in"},
+                "32 tpi" : {"holeDiameter" : "0.1900 in", "minorDiameter" : "0.1528 in", "majorDiameter" : "0.1900 in"}
             }
         },
-        "1 1/16" : {
+        "#12" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "8 tpi",
+            "default" : "24 tpi",
             "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.0625 in", "minorDiameter" : "0.9964 in", "majorDiameter" : "1.0625 in"},
-                "8 tpi" : {"holeDiameter" : "1.0625 in", "minorDiameter" : "0.9117 in", "majorDiameter" : "1.0625 in"}
-            }
-        },
-        "1 1/2" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "12 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.4008 in", "majorDiameter" : "1.5000 in"},
-                "18 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.4339 in", "majorDiameter" : "1.5000 in"},
-                "6 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.2991 in", "majorDiameter" : "1.5000 in"}
-            }
-        },
-        "1 1/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "7 tpi",
-            "entries" : {
-                "12 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.1508 in", "majorDiameter" : "1.2500 in"},
-                "18 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.1839 in", "majorDiameter" : "1.2500 in"},
-                "7 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.0777 in", "majorDiameter" : "1.2500 in"}
-            }
-        },
-        "1 1/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "7 tpi",
-            "entries" : {
-                "12 tpi" : {"holeDiameter" : "1.1200 in", "minorDiameter" : "1.0258 in", "majorDiameter" : "1.1200 in"},
-                "18 tpi" : {"holeDiameter" : "1.1250 in", "minorDiameter" : "1.0589 in", "majorDiameter" : "1.1250 in"},
-                "7 tpi" : {"holeDiameter" : "1.1250 in", "minorDiameter" : "0.9527 in", "majorDiameter" : "1.1250 in"}
-            }
-        },
-        "1 11/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.6875 in", "minorDiameter" : "1.6214 in", "majorDiameter" : "1.6875 in"},
-                "6 tpi" : {"holeDiameter" : "1.6875 in", "minorDiameter" : "1.4865 in", "majorDiameter" : "1.6875 in"}
-            }
-        },
-        "1 13/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "1.8125 in", "minorDiameter" : "1.6115 in", "majorDiameter" : "1.8125 in"}
-            }
-        },
-        "1 15/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "1.9375 in", "minorDiameter" : "1.7364 in", "majorDiameter" : "1.9375 in"}
-            }
-        },
-        "1 3/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "8 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.1875 in", "minorDiameter" : "1.1214 in", "majorDiameter" : "1.1875 in"},
-                "8 tpi" : {"holeDiameter" : "1.1875 in", "minorDiameter" : "1.0366 in", "majorDiameter" : "1.1875 in"}
-            }
-        },
-        "1 3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "5 tpi",
-            "entries" : {
-                "5 tpi" : {"holeDiameter" : "1.7500 in", "minorDiameter" : "1.5091 in", "majorDiameter" : "1.7500 in"}
-            }
-        },
-        "1 3/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "12 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.2758 in", "majorDiameter" : "1.3750 in"},
-                "18 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.3089 in", "majorDiameter" : "1.3750 in"},
-                "6 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.1741 in", "majorDiameter" : "1.3750 in"}
-            }
-        },
-        "1 5/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "8 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.3125 in", "minorDiameter" : "1.2464 in", "majorDiameter" : "1.3125 in"},
-                "8 tpi" : {"holeDiameter" : "1.3125 in", "minorDiameter" : "1.1616 in", "majorDiameter" : "1.3125 in"}
-            }
-        },
-        "1 5/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.6250 in", "minorDiameter" : "1.5589 in", "majorDiameter" : "1.6250 in"},
-                "6 tpi" : {"holeDiameter" : "1.6250 in", "minorDiameter" : "1.4240 in", "majorDiameter" : "1.6250 in"}
-            }
-        },
-        "1 7/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.4375 in", "minorDiameter" : "1.3714 in", "majorDiameter" : "1.4375 in"},
-                "6 tpi" : {"holeDiameter" : "1.4375 in", "minorDiameter" : "1.2366 in", "majorDiameter" : "1.4375 in"}
-            }
-        },
-        "1 7/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "1.8750 in", "minorDiameter" : "1.6740 in", "majorDiameter" : "1.8750 in"}
-            }
-        },
-        "1 9/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "1.5625 in", "minorDiameter" : "1.4964 in", "majorDiameter" : "1.5625 in"},
-                "6 tpi" : {"holeDiameter" : "1.5625 in", "minorDiameter" : "1.3616 in", "majorDiameter" : "1.5625 in"}
-            }
-        },
-        "1/2" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "13 tpi",
-            "entries" : {
-                "13 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4069 in", "majorDiameter" : "0.5000 in"},
-                "20 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4405 in", "majorDiameter" : "0.5000 in"},
-                "28 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4574 in", "majorDiameter" : "0.5000 in"}
+                "24 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1654 in", "majorDiameter" : "0.2160 in"},
+                "28 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1734 in", "majorDiameter" : "0.2160 in"},
+                "32 tpi" : {"holeDiameter" : "0.2160 in", "minorDiameter" : "0.1788 in", "majorDiameter" : "0.2160 in"}
             }
         },
         "1/4" : {
@@ -617,6 +462,66 @@ export const ANSI_ExternalThreadTable = {
                 "32 tpi" : {"holeDiameter" : "0.2500 in", "minorDiameter" : "0.2128 in", "majorDiameter" : "0.2500 in"}
             }
         },
+        "5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "18 tpi",
+            "entries" : {
+                "18 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2451 in", "majorDiameter" : "0.3125 in"},
+                "24 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2629 in", "majorDiameter" : "0.3125 in"},
+                "32 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2753 in", "majorDiameter" : "0.3125 in"}
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "16 tpi",
+            "entries" : {
+                "16 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.2993 in", "majorDiameter" : "0.3750 in"},
+                "24 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.3254 in", "majorDiameter" : "0.3750 in"},
+                "32 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.3378 in", "majorDiameter" : "0.3750 in"}
+            }
+        },
+        "7/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "14 tpi",
+            "entries" : {
+                "14 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3510 in", "majorDiameter" : "0.4375 in"},
+                "20 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3780 in", "majorDiameter" : "0.4375 in"},
+                "28 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3949 in", "majorDiameter" : "0.4375 in"}
+            }
+        },
+        "1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "13 tpi",
+            "entries" : {
+                "13 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4069 in", "majorDiameter" : "0.5000 in"},
+                "20 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4405 in", "majorDiameter" : "0.5000 in"},
+                "28 tpi" : {"holeDiameter" : "0.5000 in", "minorDiameter" : "0.4574 in", "majorDiameter" : "0.5000 in"}
+            }
+        },
+        "9/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "12 tpi",
+            "entries" : {
+                "12 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.4617 in", "majorDiameter" : "0.5625 in"},
+                "18 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.4964 in", "majorDiameter" : "0.5625 in"},
+                "24 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.5129 in", "majorDiameter" : "0.5625 in"}
+            }
+        },
+        "5/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "11 tpi",
+            "entries" : {
+                "11 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5150 in", "majorDiameter" : "0.6250 in"},
+                "18 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5589 in", "majorDiameter" : "0.6250 in"},
+                "24 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5754 in", "majorDiameter" : "0.6250 in"}
+            }
+        },
         "11/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -624,6 +529,16 @@ export const ANSI_ExternalThreadTable = {
             "entries" : {
                 "12 tpi" : {"holeDiameter" : "0.6875 in", "minorDiameter" : "0.5867 in", "majorDiameter" : "0.6875 in"},
                 "24 tpi" : {"holeDiameter" : "0.6875 in", "minorDiameter" : "0.6379 in", "majorDiameter" : "0.6875 in"}
+            }
+        },
+        "3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "10 tpi",
+            "entries" : {
+                "10 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6291 in", "majorDiameter" : "0.7500 in"},
+                "16 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6763 in", "majorDiameter" : "0.7500 in"},
+                "20 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6905 in", "majorDiameter" : "0.7500 in"}
             }
         },
         "13/16" : {
@@ -635,6 +550,16 @@ export const ANSI_ExternalThreadTable = {
                 "20 tpi" : {"holeDiameter" : "0.8125 in", "minorDiameter" : "0.7530 in", "majorDiameter" : "0.8125 in"}
             }
         },
+        "7/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "9 tpi",
+            "entries" : {
+                "9 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.7408 in", "majorDiameter" : "0.8750 in"},
+                "14 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.7900 in", "majorDiameter" : "0.8750 in"},
+                "20 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.8155 in", "majorDiameter" : "0.8750 in"}
+            }
+        },
         "15/16" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -642,6 +567,151 @@ export const ANSI_ExternalThreadTable = {
             "entries" : {
                 "12 tpi" : {"holeDiameter" : "0.9375 in", "minorDiameter" : "0.8366 in", "majorDiameter" : "0.9375 in"},
                 "20 tpi" : {"holeDiameter" : "0.9375 in", "minorDiameter" : "0.8755 in", "majorDiameter" : "0.9375 in"}
+            }
+        },
+        "1" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "8 tpi",
+            "entries" : {
+                "8 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.8492 in", "majorDiameter" : "1.0000 in"},
+                "12 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.9001 in", "majorDiameter" : "1.0000 in"},
+                "20 tpi" : {"holeDiameter" : "1.0000 in", "minorDiameter" : "0.9405 in", "majorDiameter" : "1.0000 in"}
+            }
+        },
+        "1 1/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "8 tpi",
+            "entries" : {
+                "8 tpi" : {"holeDiameter" : "1.0625 in", "minorDiameter" : "0.9117 in", "majorDiameter" : "1.0625 in"},
+                "18 tpi" : {"holeDiameter" : "1.0625 in", "minorDiameter" : "0.9964 in", "majorDiameter" : "1.0625 in"}
+            }
+        },
+        "1 1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "7 tpi",
+            "entries" : {
+                "7 tpi" : {"holeDiameter" : "1.1250 in", "minorDiameter" : "0.9527 in", "majorDiameter" : "1.1250 in"},
+                "12 tpi" : {"holeDiameter" : "1.1200 in", "minorDiameter" : "1.0258 in", "majorDiameter" : "1.1200 in"},
+                "18 tpi" : {"holeDiameter" : "1.1250 in", "minorDiameter" : "1.0589 in", "majorDiameter" : "1.1250 in"}
+            }
+        },
+        "1 3/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "8 tpi",
+            "entries" : {
+                "8 tpi" : {"holeDiameter" : "1.1875 in", "minorDiameter" : "1.0366 in", "majorDiameter" : "1.1875 in"},
+                "18 tpi" : {"holeDiameter" : "1.1875 in", "minorDiameter" : "1.1214 in", "majorDiameter" : "1.1875 in"}
+            }
+        },
+        "1 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "7 tpi",
+            "entries" : {
+                "7 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.0777 in", "majorDiameter" : "1.2500 in"},
+                "12 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.1508 in", "majorDiameter" : "1.2500 in"},
+                "18 tpi" : {"holeDiameter" : "1.2500 in", "minorDiameter" : "1.1839 in", "majorDiameter" : "1.2500 in"}
+            }
+        },
+        "1 5/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "8 tpi",
+            "entries" : {
+                "8 tpi" : {"holeDiameter" : "1.3125 in", "minorDiameter" : "1.1616 in", "majorDiameter" : "1.3125 in"},
+                "18 tpi" : {"holeDiameter" : "1.3125 in", "minorDiameter" : "1.2464 in", "majorDiameter" : "1.3125 in"}
+            }
+        },
+        "1 3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.1741 in", "majorDiameter" : "1.3750 in"},
+                "12 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.2758 in", "majorDiameter" : "1.3750 in"},
+                "18 tpi" : {"holeDiameter" : "1.3750 in", "minorDiameter" : "1.3089 in", "majorDiameter" : "1.3750 in"}
+            }
+        },
+        "1 7/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.4375 in", "minorDiameter" : "1.2366 in", "majorDiameter" : "1.4375 in"},
+                "18 tpi" : {"holeDiameter" : "1.4375 in", "minorDiameter" : "1.3714 in", "majorDiameter" : "1.4375 in"}
+            }
+        },
+        "1 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.2991 in", "majorDiameter" : "1.5000 in"},
+                "12 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.4008 in", "majorDiameter" : "1.5000 in"},
+                "18 tpi" : {"holeDiameter" : "1.5000 in", "minorDiameter" : "1.4339 in", "majorDiameter" : "1.5000 in"}
+            }
+        },
+        "1 9/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.5625 in", "minorDiameter" : "1.3616 in", "majorDiameter" : "1.5625 in"},
+                "18 tpi" : {"holeDiameter" : "1.5625 in", "minorDiameter" : "1.4964 in", "majorDiameter" : "1.5625 in"}
+            }
+        },
+        "1 5/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.6250 in", "minorDiameter" : "1.4240 in", "majorDiameter" : "1.6250 in"},
+                "18 tpi" : {"holeDiameter" : "1.6250 in", "minorDiameter" : "1.5589 in", "majorDiameter" : "1.6250 in"}
+            }
+        },
+        "1 11/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.6875 in", "minorDiameter" : "1.4865 in", "majorDiameter" : "1.6875 in"},
+                "18 tpi" : {"holeDiameter" : "1.6875 in", "minorDiameter" : "1.6214 in", "majorDiameter" : "1.6875 in"}
+            }
+        },
+        "1 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "5 tpi",
+            "entries" : {
+                "5 tpi" : {"holeDiameter" : "1.7500 in", "minorDiameter" : "1.5091 in", "majorDiameter" : "1.7500 in"}
+            }
+        },
+        "1 13/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.8125 in", "minorDiameter" : "1.6115 in", "majorDiameter" : "1.8125 in"}
+            }
+        },
+        "1 7/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.8750 in", "minorDiameter" : "1.6740 in", "majorDiameter" : "1.8750 in"}
+            }
+        },
+        "1 15/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "6 tpi",
+            "entries" : {
+                "6 tpi" : {"holeDiameter" : "1.9375 in", "minorDiameter" : "1.7364 in", "majorDiameter" : "1.9375 in"}
             }
         },
         "2" : {
@@ -652,12 +722,12 @@ export const ANSI_ExternalThreadTable = {
                 "4.5 tpi" : {"holeDiameter" : "2.0000 in", "minorDiameter" : "1.7325 in", "majorDiameter" : "2.0000 in"}
             }
         },
-        "2 1/2" : {
+        "2 1/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "4 tpi",
+            "default" : "6 tpi",
             "entries" : {
-                "4 tpi" : {"holeDiameter" : "2.5000 in", "minorDiameter" : "2.1992 in", "majorDiameter" : "2.5000 in"}
+                "6 tpi" : {"holeDiameter" : "2.1250 in", "minorDiameter" : "1.9239 in", "majorDiameter" : "2.1250 in"}
             }
         },
         "2 1/4" : {
@@ -668,22 +738,6 @@ export const ANSI_ExternalThreadTable = {
                 "4.5 tpi" : {"holeDiameter" : "2.2500 in", "minorDiameter" : "1.9825 in", "majorDiameter" : "2.2500 in"}
             }
         },
-        "2 1/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "2.1250 in", "minorDiameter" : "1.9239 in", "majorDiameter" : "2.1250 in"}
-            }
-        },
-        "2 3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "4 tpi",
-            "entries" : {
-                "4 tpi" : {"holeDiameter" : "2.7500 in", "minorDiameter" : "2.4491 in", "majorDiameter" : "2.7500 in"}
-            }
-        },
         "2 3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -692,12 +746,28 @@ export const ANSI_ExternalThreadTable = {
                 "6 tpi" : {"holeDiameter" : "2.3750 in", "minorDiameter" : "2.1738 in", "majorDiameter" : "2.3750 in"}
             }
         },
+        "2 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "2.5000 in", "minorDiameter" : "2.1992 in", "majorDiameter" : "2.5000 in"}
+            }
+        },
         "2 5/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {"holeDiameter" : "2.6250 in", "minorDiameter" : "2.4238 in", "majorDiameter" : "2.6250 in"}
+            }
+        },
+        "2 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "2.7500 in", "minorDiameter" : "2.4491 in", "majorDiameter" : "2.7500 in"}
             }
         },
         "2 7/8" : {
@@ -716,12 +786,12 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "3.0000 in", "minorDiameter" : "2.6991 in", "majorDiameter" : "3.0000 in"}
             }
         },
-        "3 1/2" : {
+        "3 1/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "4 tpi",
+            "default" : "6 tpi",
             "entries" : {
-                "4 tpi" : {"holeDiameter" : "3.5000 in", "minorDiameter" : "3.1990 in", "majorDiameter" : "3.5000 in"}
+                "6 tpi" : {"holeDiameter" : "3.1250 in", "minorDiameter" : "2.9237 in", "majorDiameter" : "3.1250 in"}
             }
         },
         "3 1/4" : {
@@ -732,28 +802,20 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "3.2500 in", "minorDiameter" : "2.9490 in", "majorDiameter" : "3.2500 in"}
             }
         },
-        "3 1/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "3.1250 in", "minorDiameter" : "2.9237 in", "majorDiameter" : "3.1250 in"}
-            }
-        },
-        "3 3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "4 tpi",
-            "entries" : {
-                "4 tpi" : {"holeDiameter" : "3.7500 in", "minorDiameter" : "3.4489 in", "majorDiameter" : "3.7500 in"}
-            }
-        },
         "3 3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {"holeDiameter" : "3.3750 in", "minorDiameter" : "3.1736 in", "majorDiameter" : "3.3750 in"}
+            }
+        },
+        "3 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "3.5000 in", "minorDiameter" : "3.1990 in", "majorDiameter" : "3.5000 in"}
             }
         },
         "3 5/8" : {
@@ -764,32 +826,20 @@ export const ANSI_ExternalThreadTable = {
                 "6 tpi" : {"holeDiameter" : "3.6250 in", "minorDiameter" : "3.4236 in", "majorDiameter" : "3.6250 in"}
             }
         },
+        "3 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "3.7500 in", "minorDiameter" : "3.4489 in", "majorDiameter" : "3.7500 in"}
+            }
+        },
         "3 7/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {"holeDiameter" : "3.8750 in", "minorDiameter" : "3.6735 in", "majorDiameter" : "3.8750 in"}
-            }
-        },
-        "3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "10 tpi",
-            "entries" : {
-                "10 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6291 in", "majorDiameter" : "0.7500 in"},
-                "16 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6763 in", "majorDiameter" : "0.7500 in"},
-                "20 tpi" : {"holeDiameter" : "0.7500 in", "minorDiameter" : "0.6905 in", "majorDiameter" : "0.7500 in"}
-            }
-        },
-        "3/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "16 tpi",
-            "entries" : {
-                "16 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.2993 in", "majorDiameter" : "0.3750 in"},
-                "24 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.3254 in", "majorDiameter" : "0.3750 in"},
-                "32 tpi" : {"holeDiameter" : "0.3750 in", "minorDiameter" : "0.3378 in", "majorDiameter" : "0.3750 in"}
             }
         },
         "4" : {
@@ -800,12 +850,12 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "4.0000 in", "minorDiameter" : "3.6989 in", "majorDiameter" : "4.0000 in"}
             }
         },
-        "4 1/2" : {
+        "4 1/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "4 tpi",
+            "default" : "6 tpi",
             "entries" : {
-                "4 tpi" : {"holeDiameter" : "4.5000 in", "minorDiameter" : "4.1988 in", "majorDiameter" : "4.5000 in"}
+                "6 tpi" : {"holeDiameter" : "4.1250 in", "minorDiameter" : "3.9235 in", "majorDiameter" : "4.1250 in"}
             }
         },
         "4 1/4" : {
@@ -816,22 +866,6 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "4.2500 in", "minorDiameter" : "3.9489 in", "majorDiameter" : "4.2500 in"}
             }
         },
-        "4 1/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "4.1250 in", "minorDiameter" : "3.9235 in", "majorDiameter" : "4.1250 in"}
-            }
-        },
-        "4 3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "4 tpi",
-            "entries" : {
-                "4 tpi" : {"holeDiameter" : "4.7500 in", "minorDiameter" : "4.4488 in", "majorDiameter" : "4.7500 in"}
-            }
-        },
         "4 3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -840,12 +874,28 @@ export const ANSI_ExternalThreadTable = {
                 "6 tpi" : {"holeDiameter" : "4.3750 in", "minorDiameter" : "4.1735 in", "majorDiameter" : "4.3750 in"}
             }
         },
+        "4 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "4.5000 in", "minorDiameter" : "4.1988 in", "majorDiameter" : "4.5000 in"}
+            }
+        },
         "4 5/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {"holeDiameter" : "4.6250 in", "minorDiameter" : "4.4234 in", "majorDiameter" : "4.6250 in"}
+            }
+        },
+        "4 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "4.7500 in", "minorDiameter" : "4.4488 in", "majorDiameter" : "4.7500 in"}
             }
         },
         "4 7/8" : {
@@ -864,12 +914,12 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "5.0000 in", "minorDiameter" : "4.6987 in", "majorDiameter" : "5.0000 in"}
             }
         },
-        "5 1/2" : {
+        "5 1/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
-            "default" : "4 tpi",
+            "default" : "6 tpi",
             "entries" : {
-                "4 tpi" : {"holeDiameter" : "5.5000 in", "minorDiameter" : "5.1987 in", "majorDiameter" : "5.5000 in"}
+                "6 tpi" : {"holeDiameter" : "5.1250 in", "minorDiameter" : "4.9233 in", "majorDiameter" : "5.1250 in"}
             }
         },
         "5 1/4" : {
@@ -880,28 +930,20 @@ export const ANSI_ExternalThreadTable = {
                 "4 tpi" : {"holeDiameter" : "5.2500 in", "minorDiameter" : "4.9487 in", "majorDiameter" : "5.2500 in"}
             }
         },
-        "5 1/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "6 tpi",
-            "entries" : {
-                "6 tpi" : {"holeDiameter" : "5.1250 in", "minorDiameter" : "4.9233 in", "majorDiameter" : "5.1250 in"}
-            }
-        },
-        "5 3/4" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "4 tpi",
-            "entries" : {
-                "4 tpi" : {"holeDiameter" : "5.7500 in", "minorDiameter" : "5.4486 in", "majorDiameter" : "5.7500 in"}
-            }
-        },
         "5 3/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "6 tpi",
             "entries" : {
                 "6 tpi" : {"holeDiameter" : "5.3750 in", "minorDiameter" : "5.1733 in", "majorDiameter" : "5.3750 in"}
+            }
+        },
+        "5 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "5.5000 in", "minorDiameter" : "5.1987 in", "majorDiameter" : "5.5000 in"}
             }
         },
         "5 5/8" : {
@@ -912,6 +954,14 @@ export const ANSI_ExternalThreadTable = {
                 "6 tpi" : {"holeDiameter" : "5.6250 in", "minorDiameter" : "5.4233 in", "majorDiameter" : "5.6250 in"}
             }
         },
+        "5 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "default" : "4 tpi",
+            "entries" : {
+                "4 tpi" : {"holeDiameter" : "5.7500 in", "minorDiameter" : "5.4486 in", "majorDiameter" : "5.7500 in"}
+            }
+        },
         "5 7/8" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
@@ -920,62 +970,12 @@ export const ANSI_ExternalThreadTable = {
                 "6 tpi" : {"holeDiameter" : "5.8750 in", "minorDiameter" : "5.6732 in", "majorDiameter" : "5.8750 in"}
             }
         },
-        "5/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "18 tpi",
-            "entries" : {
-                "18 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2451 in", "majorDiameter" : "0.3125 in"},
-                "24 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2629 in", "majorDiameter" : "0.3125 in"},
-                "32 tpi" : {"holeDiameter" : "0.3125 in", "minorDiameter" : "0.2753 in", "majorDiameter" : "0.3125 in"}
-            }
-        },
-        "5/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "11 tpi",
-            "entries" : {
-                "11 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5150 in", "majorDiameter" : "0.6250 in"},
-                "18 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5589 in", "majorDiameter" : "0.6250 in"},
-                "24 tpi" : {"holeDiameter" : "0.6250 in", "minorDiameter" : "0.5754 in", "majorDiameter" : "0.6250 in"}
-            }
-        },
         "6" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
             "default" : "4 tpi",
             "entries" : {
                 "4 tpi" : {"holeDiameter" : "6.0000 in", "minorDiameter" : "5.6986 in", "majorDiameter" : "6.0000 in"}
-            }
-        },
-        "7/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "14 tpi",
-            "entries" : {
-                "14 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3510 in", "majorDiameter" : "0.4375 in"},
-                "20 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3780 in", "majorDiameter" : "0.4375 in"},
-                "28 tpi" : {"holeDiameter" : "0.4375 in", "minorDiameter" : "0.3949 in", "majorDiameter" : "0.4375 in"}
-            }
-        },
-        "7/8" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "9 tpi",
-            "entries" : {
-                "14 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.7900 in", "majorDiameter" : "0.8750 in"},
-                "20 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.8155 in", "majorDiameter" : "0.8750 in"},
-                "9 tpi" : {"holeDiameter" : "0.8750 in", "minorDiameter" : "0.7408 in", "majorDiameter" : "0.8750 in"}
-            }
-        },
-        "9/16" : {
-            "name" : "pitch",
-            "displayName" : "Threads/inch",
-            "default" : "12 tpi",
-            "entries" : {
-                "12 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.4617 in", "majorDiameter" : "0.5625 in"},
-                "18 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.4964 in", "majorDiameter" : "0.5625 in"},
-                "24 tpi" : {"holeDiameter" : "0.5625 in", "minorDiameter" : "0.5129 in", "majorDiameter" : "0.5625 in"}
             }
         }
     }
@@ -10552,8 +10552,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.25 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1 mm", "minorDiameter" : "0.783 mm", "majorDiameter" : "1 mm"},
-                "0.25 mm" : {"holeDiameter" : "1 mm", "minorDiameter" : "0.729 mm", "majorDiameter" : "1 mm"}
+                "0.25 mm" : {"holeDiameter" : "1 mm", "minorDiameter" : "0.729 mm", "majorDiameter" : "1 mm"},
+                "0.2 mm" : {"holeDiameter" : "1 mm", "minorDiameter" : "0.783 mm", "majorDiameter" : "1 mm"}
             }
         },
         "M1.1" : {
@@ -10561,8 +10561,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.25 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1.1 mm", "minorDiameter" : "0.883 mm", "majorDiameter" : "1.1 mm"},
-                "0.25 mm" : {"holeDiameter" : "1.1 mm", "minorDiameter" : "0.829 mm", "majorDiameter" : "1.1 mm"}
+                "0.25 mm" : {"holeDiameter" : "1.1 mm", "minorDiameter" : "0.829 mm", "majorDiameter" : "1.1 mm"},
+                "0.2 mm" : {"holeDiameter" : "1.1 mm", "minorDiameter" : "0.883 mm", "majorDiameter" : "1.1 mm"}
             }
         },
         "M1.2" : {
@@ -10570,8 +10570,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.25 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1.2 mm", "minorDiameter" : "0.983 mm", "majorDiameter" : "1.2 mm"},
-                "0.25 mm" : {"holeDiameter" : "1.2 mm", "minorDiameter" : "0.929 mm", "majorDiameter" : "1.2 mm"}
+                "0.25 mm" : {"holeDiameter" : "1.2 mm", "minorDiameter" : "0.929 mm", "majorDiameter" : "1.2 mm"},
+                "0.2 mm" : {"holeDiameter" : "1.2 mm", "minorDiameter" : "0.983 mm", "majorDiameter" : "1.2 mm"}
             }
         },
         "M1.4" : {
@@ -10579,8 +10579,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.3 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1.4 mm", "minorDiameter" : "1.183 mm", "majorDiameter" : "1.4 mm"},
-                "0.3 mm" : {"holeDiameter" : "1.4 mm", "minorDiameter" : "1.075 mm", "majorDiameter" : "1.4 mm"}
+                "0.3 mm" : {"holeDiameter" : "1.4 mm", "minorDiameter" : "1.075 mm", "majorDiameter" : "1.4 mm"},
+                "0.2 mm" : {"holeDiameter" : "1.4 mm", "minorDiameter" : "1.183 mm", "majorDiameter" : "1.4 mm"}
             }
         },
         "M1.6" : {
@@ -10588,8 +10588,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.35 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1.6 mm", "minorDiameter" : "1.383 mm", "majorDiameter" : "1.6 mm"},
-                "0.35 mm" : {"holeDiameter" : "1.6 mm", "minorDiameter" : "1.221 mm", "majorDiameter" : "1.6 mm"}
+                "0.35 mm" : {"holeDiameter" : "1.6 mm", "minorDiameter" : "1.221 mm", "majorDiameter" : "1.6 mm"},
+                "0.2 mm" : {"holeDiameter" : "1.6 mm", "minorDiameter" : "1.383 mm", "majorDiameter" : "1.6 mm"}
             }
         },
         "M1.8" : {
@@ -10597,306 +10597,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.35 mm",
             "entries" : {
-                "0.2 mm" : {"holeDiameter" : "1.8 mm", "minorDiameter" : "1.583 mm", "majorDiameter" : "1.8 mm"},
-                "0.35 mm" : {"holeDiameter" : "1.8 mm", "minorDiameter" : "1.421 mm", "majorDiameter" : "1.8 mm"}
-            }
-        },
-        "M10" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.5 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "9.188 mm", "majorDiameter" : "10 mm"},
-                "1 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "8.917 mm", "majorDiameter" : "10 mm"},
-                "1.25 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "9.647 mm", "majorDiameter" : "10 mm"},
-                "1.5 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "8.376 mm", "majorDiameter" : "10 mm"}
-            }
-        },
-        "M100" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "97.835 mm", "majorDiameter" : "100 mm"},
-                "3 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "96.752 mm", "majorDiameter" : "100 mm"},
-                "4 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "95.67 mm", "majorDiameter" : "100 mm"},
-                "6 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "93.505 mm", "majorDiameter" : "100 mm"}
-            }
-        },
-        "M105" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "102.835 mm", "majorDiameter" : "105 mm"},
-                "3 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "101.752 mm", "majorDiameter" : "105 mm"},
-                "4 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "100.67 mm", "majorDiameter" : "105 mm"},
-                "6 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "98.505 mm", "majorDiameter" : "105 mm"}
-            }
-        },
-        "M11" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.5 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "10.188 mm", "majorDiameter" : "11 mm"},
-                "1 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "9.917 mm", "majorDiameter" : "11 mm"},
-                "1.5 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "9.376 mm", "majorDiameter" : "11 mm"}
-            }
-        },
-        "M110" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "107.835 mm", "majorDiameter" : "110 mm"},
-                "3 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "106.752 mm", "majorDiameter" : "110 mm"},
-                "4 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "105.67 mm", "majorDiameter" : "110 mm"},
-                "6 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "103.505 mm", "majorDiameter" : "110 mm"}
-            }
-        },
-        "M115" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "112.835 mm", "majorDiameter" : "115 mm"},
-                "3 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "111.752 mm", "majorDiameter" : "115 mm"},
-                "4 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "110.67 mm", "majorDiameter" : "115 mm"},
-                "6 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "108.505 mm", "majorDiameter" : "115 mm"}
-            }
-        },
-        "M12" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.75 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.917 mm", "majorDiameter" : "12 mm"},
-                "1.25 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.647 mm", "majorDiameter" : "12 mm"},
-                "1.5 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.376 mm", "majorDiameter" : "12 mm"},
-                "1.75 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.106 mm", "majorDiameter" : "12 mm"}
-            }
-        },
-        "M120" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "117.835 mm", "majorDiameter" : "120 mm"},
-                "3 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "116.752 mm", "majorDiameter" : "120 mm"},
-                "4 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "115.67 mm", "majorDiameter" : "120 mm"},
-                "6 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "113.505 mm", "majorDiameter" : "120 mm"}
-            }
-        },
-        "M125" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "122.835 mm", "majorDiameter" : "125 mm"},
-                "3 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "121.752 mm", "majorDiameter" : "125 mm"},
-                "4 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "120.67 mm", "majorDiameter" : "125 mm"},
-                "6 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "118.505 mm", "majorDiameter" : "125 mm"}
-            }
-        },
-        "M130" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "127.835 mm", "majorDiameter" : "130 mm"},
-                "3 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "126.752 mm", "majorDiameter" : "130 mm"},
-                "4 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "125.67 mm", "majorDiameter" : "130 mm"},
-                "6 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "123.505 mm", "majorDiameter" : "130 mm"}
-            }
-        },
-        "M135" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "132.835 mm", "majorDiameter" : "135 mm"},
-                "3 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "131.752 mm", "majorDiameter" : "135 mm"},
-                "4 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "130.67 mm", "majorDiameter" : "135 mm"},
-                "6 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "128.505 mm", "majorDiameter" : "135 mm"}
-            }
-        },
-        "M14" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "2 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.917 mm", "majorDiameter" : "14 mm"},
-                "1.25 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.647 mm", "majorDiameter" : "14 mm"},
-                "1.5 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.376 mm", "majorDiameter" : "14 mm"},
-                "2 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "11.835 mm", "majorDiameter" : "14 mm"}
-            }
-        },
-        "M140" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "137.835 mm", "majorDiameter" : "140 mm"},
-                "3 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "136.752 mm", "majorDiameter" : "140 mm"},
-                "4 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "135.67 mm", "majorDiameter" : "140 mm"},
-                "6 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "133.505 mm", "majorDiameter" : "140 mm"}
-            }
-        },
-        "M145" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "142.835 mm", "majorDiameter" : "145 mm"},
-                "3 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "141.752 mm", "majorDiameter" : "145 mm"},
-                "4 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "140.67 mm", "majorDiameter" : "145 mm"},
-                "6 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "138.505 mm", "majorDiameter" : "145 mm"}
-            }
-        },
-        "M15" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.5 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "15 mm", "minorDiameter" : "13.917 mm", "majorDiameter" : "15 mm"},
-                "1.5 mm" : {"holeDiameter" : "15 mm", "minorDiameter" : "13.376 mm", "majorDiameter" : "15 mm"}
-            }
-        },
-        "M150" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "2 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "147.835 mm", "majorDiameter" : "150 mm"},
-                "3 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "146.752 mm", "majorDiameter" : "150 mm"},
-                "4 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "145.67 mm", "majorDiameter" : "150 mm"},
-                "6 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "143.505 mm", "majorDiameter" : "150 mm"},
-                "8 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "141.34 mm", "majorDiameter" : "150 mm"}
-            }
-        },
-        "M155" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "151.752 mm", "majorDiameter" : "155 mm"},
-                "4 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "150.67 mm", "majorDiameter" : "155 mm"},
-                "6 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "148.505 mm", "majorDiameter" : "155 mm"}
-            }
-        },
-        "M16" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "2 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "14.917 mm", "majorDiameter" : "16 mm"},
-                "1.5 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "14.376 mm", "majorDiameter" : "16 mm"},
-                "2 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "13.835 mm", "majorDiameter" : "16 mm"}
-            }
-        },
-        "M160" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "156.752 mm", "majorDiameter" : "160 mm"},
-                "4 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "155.67 mm", "majorDiameter" : "160 mm"},
-                "6 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "153.505 mm", "majorDiameter" : "160 mm"},
-                "8 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "151.34 mm", "majorDiameter" : "160 mm"}
-            }
-        },
-        "M165" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "161.67 mm", "majorDiameter" : "165 mm"},
-                "6 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "160.505 mm", "majorDiameter" : "165 mm"},
-                "8 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "158.34 mm", "majorDiameter" : "165 mm"}
-            }
-        },
-        "M17" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.5 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "17 mm", "minorDiameter" : "15.917 mm", "majorDiameter" : "17 mm"},
-                "1.5 mm" : {"holeDiameter" : "17 mm", "minorDiameter" : "15.376 mm", "majorDiameter" : "17 mm"}
-            }
-        },
-        "M170" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "166.752 mm", "majorDiameter" : "170 mm"},
-                "4 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "165.67 mm", "majorDiameter" : "170 mm"},
-                "6 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "163.505 mm", "majorDiameter" : "170 mm"},
-                "8 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "161.34 mm", "majorDiameter" : "170 mm"}
-            }
-        },
-        "M175" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "171.752 mm", "majorDiameter" : "175 mm"},
-                "4 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "170.67 mm", "majorDiameter" : "175 mm"},
-                "6 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "168.505 mm", "majorDiameter" : "175 mm"}
-            }
-        },
-        "M18" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "2.5 mm",
-            "entries" : {
-                "1 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "16.917 mm", "majorDiameter" : "18 mm"},
-                "1.5 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "16.376 mm", "majorDiameter" : "18 mm"},
-                "2 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "15.835 mm", "majorDiameter" : "18 mm"},
-                "2.5 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "15.294 mm", "majorDiameter" : "18 mm"}
-            }
-        },
-        "M180" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "176.752 mm", "majorDiameter" : "180 mm"},
-                "4 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "175.67 mm", "majorDiameter" : "180 mm"},
-                "6 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "173.505 mm", "majorDiameter" : "180 mm"},
-                "8 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "171.34 mm", "majorDiameter" : "180 mm"}
-            }
-        },
-        "M185" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "181.752 mm", "majorDiameter" : "185 mm"},
-                "4 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "180.67 mm", "majorDiameter" : "185 mm"},
-                "6 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "178.505 mm", "majorDiameter" : "185 mm"}
-            }
-        },
-        "M190" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "186.752 mm", "majorDiameter" : "190 mm"},
-                "4 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "185.67 mm", "majorDiameter" : "190 mm"},
-                "6 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "183.505 mm", "majorDiameter" : "190 mm"},
-                "8 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "181.34 mm", "majorDiameter" : "190 mm"}
-            }
-        },
-        "M195" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "191.752 mm", "majorDiameter" : "195 mm"},
-                "4 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "190.67 mm", "majorDiameter" : "195 mm"},
-                "6 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "188.505 mm", "majorDiameter" : "195 mm"}
+                "0.35 mm" : {"holeDiameter" : "1.8 mm", "minorDiameter" : "1.421 mm", "majorDiameter" : "1.8 mm"},
+                "0.2 mm" : {"holeDiameter" : "1.8 mm", "minorDiameter" : "1.583 mm", "majorDiameter" : "1.8 mm"}
             }
         },
         "M2" : {
@@ -10904,8 +10606,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.4 mm",
             "entries" : {
-                "0.25 mm" : {"holeDiameter" : "2 mm", "minorDiameter" : "1.729 mm", "majorDiameter" : "2 mm"},
-                "0.4 mm" : {"holeDiameter" : "2 mm", "minorDiameter" : "1.567 mm", "majorDiameter" : "2 mm"}
+                "0.4 mm" : {"holeDiameter" : "2 mm", "minorDiameter" : "1.567 mm", "majorDiameter" : "2 mm"},
+                "0.25 mm" : {"holeDiameter" : "2 mm", "minorDiameter" : "1.729 mm", "majorDiameter" : "2 mm"}
             }
         },
         "M2.2" : {
@@ -10913,8 +10615,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.45 mm",
             "entries" : {
-                "0.25 mm" : {"holeDiameter" : "2.2 mm", "minorDiameter" : "1.929 mm", "majorDiameter" : "2.2 mm"},
-                "0.45 mm" : {"holeDiameter" : "2.2 mm", "minorDiameter" : "1.713 mm", "majorDiameter" : "2.2 mm"}
+                "0.45 mm" : {"holeDiameter" : "2.2 mm", "minorDiameter" : "1.713 mm", "majorDiameter" : "2.2 mm"},
+                "0.25 mm" : {"holeDiameter" : "2.2 mm", "minorDiameter" : "1.929 mm", "majorDiameter" : "2.2 mm"}
             }
         },
         "M2.5" : {
@@ -10922,8 +10624,181 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "0.45 mm",
             "entries" : {
-                "0.25 mm" : {"holeDiameter" : "2.5 mm", "minorDiameter" : "2.121 mm", "majorDiameter" : "2.5 mm"},
-                "0.45 mm" : {"holeDiameter" : "2.5 mm", "minorDiameter" : "2.013 mm", "majorDiameter" : "2.5 mm"}
+                "0.45 mm" : {"holeDiameter" : "2.5 mm", "minorDiameter" : "2.013 mm", "majorDiameter" : "2.5 mm"},
+                "0.25 mm" : {"holeDiameter" : "2.5 mm", "minorDiameter" : "2.121 mm", "majorDiameter" : "2.5 mm"}
+            }
+        },
+        "M3" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.5 mm",
+            "entries" : {
+                "0.5 mm" : {"holeDiameter" : "3 mm", "minorDiameter" : "2.459 mm", "majorDiameter" : "3 mm"},
+                "0.35 mm" : {"holeDiameter" : "3 mm", "minorDiameter" : "2.621 mm", "majorDiameter" : "3 mm"}
+            }
+        },
+        "M3.5" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.6 mm",
+            "entries" : {
+                "0.6 mm" : {"holeDiameter" : "3.5 mm", "minorDiameter" : "2.85 mm", "majorDiameter" : "3.5 mm"},
+                "0.35 mm" : {"holeDiameter" : "3.5 mm", "minorDiameter" : "3.121 mm", "majorDiameter" : "3.5 mm"}
+            }
+        },
+        "M4" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.7 mm",
+            "entries" : {
+                "0.7 mm" : {"holeDiameter" : "4 mm", "minorDiameter" : "3.242 mm", "majorDiameter" : "4 mm"},
+                "0.5 mm" : {"holeDiameter" : "4 mm", "minorDiameter" : "3.459 mm", "majorDiameter" : "4 mm"}
+            }
+        },
+        "M4.5" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.75 mm",
+            "entries" : {
+                "0.75 mm" : {"holeDiameter" : "4.5 mm", "minorDiameter" : "3.688 mm", "majorDiameter" : "4.5 mm"},
+                "0.5 mm" : {"holeDiameter" : "4.5 mm", "minorDiameter" : "4.459 mm", "majorDiameter" : "4.5 mm"}
+            }
+        },
+        "M5" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.8 mm",
+            "entries" : {
+                "0.8 mm" : {"holeDiameter" : "5 mm", "minorDiameter" : "4.134 mm", "majorDiameter" : "5 mm"},
+                "0.5 mm" : {"holeDiameter" : "5 mm", "minorDiameter" : "4.459 mm", "majorDiameter" : "5 mm"}
+            }
+        },
+        "M5.5" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "0.5 mm",
+            "entries" : {
+                "0.5 mm" : {"holeDiameter" : "5.5 mm", "minorDiameter" : "4.959 mm", "majorDiameter" : "5.5 mm"}
+            }
+        },
+        "M6" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1 mm",
+            "entries" : {
+                "1 mm" : {"holeDiameter" : "6 mm", "minorDiameter" : "4.917 mm", "majorDiameter" : "6 mm"},
+                "0.75 mm" : {"holeDiameter" : "6 mm", "minorDiameter" : "5.188 mm", "majorDiameter" : "6 mm"}
+            }
+        },
+        "M7" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1 mm",
+            "entries" : {
+                "1 mm" : {"holeDiameter" : "7 mm", "minorDiameter" : "5.917 mm", "majorDiameter" : "7 mm"},
+                "0.75 mm" : {"holeDiameter" : "7 mm", "minorDiameter" : "6.188 mm", "majorDiameter" : "7 mm"}
+            }
+        },
+        "M8" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "6.647 mm", "majorDiameter" : "8 mm"},
+                "1 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "6.917 mm", "majorDiameter" : "8 mm"},
+                "0.75 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "7.188 mm", "majorDiameter" : "8 mm"}
+            }
+        },
+        "M9" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.25 mm",
+            "entries" : {
+                "1.25 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "7.647 mm", "majorDiameter" : "9 mm"},
+                "1 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "7.917 mm", "majorDiameter" : "9 mm"},
+                "0.75 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "8.188 mm", "majorDiameter" : "9 mm"}
+            }
+        },
+        "M10" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.5 mm",
+            "entries" : {
+                "1.5 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "8.376 mm", "majorDiameter" : "10 mm"},
+                "1.25 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "9.647 mm", "majorDiameter" : "10 mm"},
+                "1 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "8.917 mm", "majorDiameter" : "10 mm"},
+                "0.75 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "9.188 mm", "majorDiameter" : "10 mm"}
+            }
+        },
+        "M11" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.5 mm",
+            "entries" : {
+                "1.5 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "9.376 mm", "majorDiameter" : "11 mm"},
+                "1 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "9.917 mm", "majorDiameter" : "11 mm"},
+                "0.75 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "10.188 mm", "majorDiameter" : "11 mm"}
+            }
+        },
+        "M12" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.75 mm",
+            "entries" : {
+                "1.75 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.106 mm", "majorDiameter" : "12 mm"},
+                "1.5 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.376 mm", "majorDiameter" : "12 mm"},
+                "1.25 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.647 mm", "majorDiameter" : "12 mm"},
+                "1 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.917 mm", "majorDiameter" : "12 mm"}
+            }
+        },
+        "M14" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "2 mm",
+            "entries" : {
+                "2 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "11.835 mm", "majorDiameter" : "14 mm"},
+                "1.5 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.376 mm", "majorDiameter" : "14 mm"},
+                "1.25 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.647 mm", "majorDiameter" : "14 mm"},
+                "1 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "12.917 mm", "majorDiameter" : "14 mm"}
+            }
+        },
+        "M15" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.5 mm",
+            "entries" : {
+                "1.5 mm" : {"holeDiameter" : "15 mm", "minorDiameter" : "13.376 mm", "majorDiameter" : "15 mm"},
+                "1 mm" : {"holeDiameter" : "15 mm", "minorDiameter" : "13.917 mm", "majorDiameter" : "15 mm"}
+            }
+        },
+        "M16" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "2 mm",
+            "entries" : {
+                "2 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "13.835 mm", "majorDiameter" : "16 mm"},
+                "1.5 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "14.376 mm", "majorDiameter" : "16 mm"},
+                "1 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "14.917 mm", "majorDiameter" : "16 mm"}
+            }
+        },
+        "M17" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "1.5 mm",
+            "entries" : {
+                "1.5 mm" : {"holeDiameter" : "17 mm", "minorDiameter" : "15.376 mm", "majorDiameter" : "17 mm"},
+                "1 mm" : {"holeDiameter" : "17 mm", "minorDiameter" : "15.917 mm", "majorDiameter" : "17 mm"}
+            }
+        },
+        "M18" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "2.5 mm",
+            "entries" : {
+                "2.5 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "15.294 mm", "majorDiameter" : "18 mm"},
+                "2 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "15.835 mm", "majorDiameter" : "18 mm"},
+                "1.5 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "16.376 mm", "majorDiameter" : "18 mm"},
+                "1 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "16.917 mm", "majorDiameter" : "18 mm"}
             }
         },
         "M20" : {
@@ -10931,52 +10806,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "2.5 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "18.917 mm", "majorDiameter" : "20 mm"},
-                "1.5 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "18.376 mm", "majorDiameter" : "20 mm"},
+                "2.5 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "17.294 mm", "majorDiameter" : "20 mm"},
                 "2 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "17.835 mm", "majorDiameter" : "20 mm"},
-                "2.5 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "17.294 mm", "majorDiameter" : "20 mm"}
-            }
-        },
-        "M200" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "196.752 mm", "majorDiameter" : "200 mm"},
-                "4 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "195.67 mm", "majorDiameter" : "200 mm"},
-                "6 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "193.505 mm", "majorDiameter" : "200 mm"},
-                "8 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "191.34 mm", "majorDiameter" : "200 mm"}
-            }
-        },
-        "M205" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "201.752 mm", "majorDiameter" : "205 mm"},
-                "4 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "200.67 mm", "majorDiameter" : "205 mm"},
-                "6 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "198.505 mm", "majorDiameter" : "205 mm"}
-            }
-        },
-        "M210" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "206.752 mm", "majorDiameter" : "210 mm"},
-                "4 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "205.67 mm", "majorDiameter" : "210 mm"},
-                "6 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "203.505 mm", "majorDiameter" : "210 mm"},
-                "8 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "201.34 mm", "majorDiameter" : "210 mm"}
-            }
-        },
-        "M215" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "211.752 mm", "majorDiameter" : "215 mm"},
-                "4 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "210.67 mm", "majorDiameter" : "215 mm"},
-                "6 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "208.505 mm", "majorDiameter" : "215 mm"}
+                "1.5 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "18.376 mm", "majorDiameter" : "20 mm"},
+                "1 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "18.917 mm", "majorDiameter" : "20 mm"}
             }
         },
         "M22" : {
@@ -10984,52 +10817,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "2.5 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "20.917 mm", "majorDiameter" : "22 mm"},
-                "1.5 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "20.376 mm", "majorDiameter" : "22 mm"},
+                "2.5 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "19.294 mm", "majorDiameter" : "22 mm"},
                 "2 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "19.835 mm", "majorDiameter" : "22 mm"},
-                "2.5 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "19.294 mm", "majorDiameter" : "22 mm"}
-            }
-        },
-        "M220" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "216.752 mm", "majorDiameter" : "220 mm"},
-                "4 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "215.67 mm", "majorDiameter" : "220 mm"},
-                "6 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "213.505 mm", "majorDiameter" : "220 mm"},
-                "8 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "211.34 mm", "majorDiameter" : "220 mm"}
-            }
-        },
-        "M225" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "221.752 mm", "majorDiameter" : "225 mm"},
-                "4 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "220.67 mm", "majorDiameter" : "225 mm"},
-                "6 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "218.505 mm", "majorDiameter" : "225 mm"}
-            }
-        },
-        "M230" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "226.752 mm", "majorDiameter" : "230 mm"},
-                "4 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "225.67 mm", "majorDiameter" : "230 mm"},
-                "6 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "223.505 mm", "majorDiameter" : "230 mm"},
-                "8 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "221.34 mm", "majorDiameter" : "230 mm"}
-            }
-        },
-        "M235" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "231.752 mm", "majorDiameter" : "235 mm"},
-                "4 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "230.67 mm", "majorDiameter" : "235 mm"},
-                "6 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "228.505 mm", "majorDiameter" : "235 mm"}
+                "1.5 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "20.376 mm", "majorDiameter" : "22 mm"},
+                "1 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "20.917 mm", "majorDiameter" : "22 mm"}
             }
         },
         "M24" : {
@@ -11037,31 +10828,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "3 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "22.917 mm", "majorDiameter" : "24 mm"},
-                "1.5 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "22.376 mm", "majorDiameter" : "24 mm"},
+                "3 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "20.752 mm", "majorDiameter" : "24 mm"},
                 "2 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "21.835 mm", "majorDiameter" : "24 mm"},
-                "3 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "20.752 mm", "majorDiameter" : "24 mm"}
-            }
-        },
-        "M240" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "236.752 mm", "majorDiameter" : "240 mm"},
-                "4 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "235.67 mm", "majorDiameter" : "240 mm"},
-                "6 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "233.505 mm", "majorDiameter" : "240 mm"},
-                "8 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "231.34 mm", "majorDiameter" : "240 mm"}
-            }
-        },
-        "M245" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "241.752 mm", "majorDiameter" : "245 mm"},
-                "4 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "240.67 mm", "majorDiameter" : "245 mm"},
-                "6 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "238.505 mm", "majorDiameter" : "245 mm"}
+                "1.5 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "22.376 mm", "majorDiameter" : "24 mm"},
+                "1 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "22.917 mm", "majorDiameter" : "24 mm"}
             }
         },
         "M25" : {
@@ -11069,29 +10839,9 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "2 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "23.917 mm", "majorDiameter" : "25 mm"},
+                "2 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "22.835 mm", "majorDiameter" : "25 mm"},
                 "1.5 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "23.376 mm", "majorDiameter" : "25 mm"},
-                "2 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "22.835 mm", "majorDiameter" : "25 mm"}
-            }
-        },
-        "M250" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "3 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "246.752 mm", "majorDiameter" : "250 mm"},
-                "4 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "245.67 mm", "majorDiameter" : "250 mm"},
-                "6 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "243.505 mm", "majorDiameter" : "250 mm"},
-                "8 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "241.34 mm", "majorDiameter" : "250 mm"}
-            }
-        },
-        "M255" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "255 mm", "minorDiameter" : "250.67 mm", "majorDiameter" : "255 mm"},
-                "6 mm" : {"holeDiameter" : "255 mm", "minorDiameter" : "248.505 mm", "majorDiameter" : "255 mm"}
+                "1 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "23.917 mm", "majorDiameter" : "25 mm"}
             }
         },
         "M26" : {
@@ -11102,53 +10852,15 @@ export const ISO_ExternalThreadTable = {
                 "1.5 mm" : {"holeDiameter" : "26 mm", "minorDiameter" : "24.376 mm", "majorDiameter" : "26 mm"}
             }
         },
-        "M260" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "255.67 mm", "majorDiameter" : "260 mm"},
-                "6 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "253.505 mm", "majorDiameter" : "260 mm"},
-                "8 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "251.34 mm", "majorDiameter" : "260 mm"}
-            }
-        },
-        "M265" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "265 mm", "minorDiameter" : "260.67 mm", "majorDiameter" : "265 mm"},
-                "6 mm" : {"holeDiameter" : "265 mm", "minorDiameter" : "258.505 mm", "majorDiameter" : "265 mm"}
-            }
-        },
         "M27" : {
             "name" : "pitch",
             "displayName" : "pitch",
             "default" : "3 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "25.917 mm", "majorDiameter" : "27 mm"},
-                "1.5 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "25.376 mm", "majorDiameter" : "27 mm"},
+                "3 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "23.752 mm", "majorDiameter" : "27 mm"},
                 "2 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "24.835 mm", "majorDiameter" : "27 mm"},
-                "3 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "23.752 mm", "majorDiameter" : "27 mm"}
-            }
-        },
-        "M270" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "265.67 mm", "majorDiameter" : "270 mm"},
-                "6 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "263.505 mm", "majorDiameter" : "270 mm"},
-                "8 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "261.34 mm", "majorDiameter" : "270 mm"}
-            }
-        },
-        "M275" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "275 mm", "minorDiameter" : "270.67 mm", "majorDiameter" : "275 mm"},
-                "6 mm" : {"holeDiameter" : "275 mm", "minorDiameter" : "268.505 mm", "majorDiameter" : "275 mm"}
+                "1.5 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "25.376 mm", "majorDiameter" : "27 mm"},
+                "1 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "25.917 mm", "majorDiameter" : "27 mm"}
             }
         },
         "M28" : {
@@ -11156,65 +10868,9 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "2 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "26.917 mm", "majorDiameter" : "28 mm"},
+                "2 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "25.835 mm", "majorDiameter" : "28 mm"},
                 "1.5 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "26.376 mm", "majorDiameter" : "28 mm"},
-                "2 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "25.835 mm", "majorDiameter" : "28 mm"}
-            }
-        },
-        "M280" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "275.67 mm", "majorDiameter" : "280 mm"},
-                "6 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "273.505 mm", "majorDiameter" : "280 mm"},
-                "8 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "271.34 mm", "majorDiameter" : "280 mm"}
-            }
-        },
-        "M285" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "285 mm", "minorDiameter" : "280.67 mm", "majorDiameter" : "285 mm"},
-                "6 mm" : {"holeDiameter" : "285 mm", "minorDiameter" : "278.505 mm", "majorDiameter" : "285 mm"}
-            }
-        },
-        "M290" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "285.67 mm", "majorDiameter" : "290 mm"},
-                "6 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "283.505 mm", "majorDiameter" : "290 mm"},
-                "8 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "281.34 mm", "majorDiameter" : "290 mm"}
-            }
-        },
-        "M295" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "6 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "295 mm", "minorDiameter" : "290.67 mm", "majorDiameter" : "295 mm"},
-                "6 mm" : {"holeDiameter" : "295 mm", "minorDiameter" : "288.505 mm", "majorDiameter" : "295 mm"}
-            }
-        },
-        "M3" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.5 mm",
-            "entries" : {
-                "0.35 mm" : {"holeDiameter" : "3 mm", "minorDiameter" : "2.621 mm", "majorDiameter" : "3 mm"},
-                "0.5 mm" : {"holeDiameter" : "3 mm", "minorDiameter" : "2.459 mm", "majorDiameter" : "3 mm"}
-            }
-        },
-        "M3.5" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.6 mm",
-            "entries" : {
-                "0.35 mm" : {"holeDiameter" : "3.5 mm", "minorDiameter" : "3.121 mm", "majorDiameter" : "3.5 mm"},
-                "0.6 mm" : {"holeDiameter" : "3.5 mm", "minorDiameter" : "2.85 mm", "majorDiameter" : "3.5 mm"}
+                "1 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "26.917 mm", "majorDiameter" : "28 mm"}
             }
         },
         "M30" : {
@@ -11222,21 +10878,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "3.5 mm",
             "entries" : {
-                "1 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "28.917 mm", "majorDiameter" : "30 mm"},
-                "1.5 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "28.376 mm", "majorDiameter" : "30 mm"},
-                "2 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "27.835 mm", "majorDiameter" : "30 mm"},
+                "3.5 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "26.211 mm", "majorDiameter" : "30 mm"},
                 "3 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "26.752 mm", "majorDiameter" : "30 mm"},
-                "3.5 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "26.211 mm", "majorDiameter" : "30 mm"}
-            }
-        },
-        "M300" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "8 mm",
-            "entries" : {
-                "4 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "295.67 mm", "majorDiameter" : "300 mm"},
-                "6 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "293.505 mm", "majorDiameter" : "300 mm"},
-                "8 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "291.34 mm", "majorDiameter" : "300 mm"}
+                "2 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "27.835 mm", "majorDiameter" : "30 mm"},
+                "1.5 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "28.376 mm", "majorDiameter" : "30 mm"},
+                "1 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "28.917 mm", "majorDiameter" : "30 mm"}
             }
         },
         "M32" : {
@@ -11244,8 +10890,8 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "2 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "32 mm", "minorDiameter" : "30.376 mm", "majorDiameter" : "32 mm"},
-                "2 mm" : {"holeDiameter" : "32 mm", "minorDiameter" : "29.835 mm", "majorDiameter" : "32 mm"}
+                "2 mm" : {"holeDiameter" : "32 mm", "minorDiameter" : "29.835 mm", "majorDiameter" : "32 mm"},
+                "1.5 mm" : {"holeDiameter" : "32 mm", "minorDiameter" : "30.376 mm", "majorDiameter" : "32 mm"}
             }
         },
         "M33" : {
@@ -11253,10 +10899,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "3.5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "31.376 mm", "majorDiameter" : "33 mm"},
-                "2 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "30.835 mm", "majorDiameter" : "33 mm"},
+                "3.5 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "29.211 mm", "majorDiameter" : "33 mm"},
                 "3 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "29.752 mm", "majorDiameter" : "33 mm"},
-                "3.5 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "29.211 mm", "majorDiameter" : "33 mm"}
+                "2 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "30.835 mm", "majorDiameter" : "33 mm"},
+                "1.5 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "31.376 mm", "majorDiameter" : "33 mm"}
             }
         },
         "M35" : {
@@ -11272,10 +10918,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "34.376 mm", "majorDiameter" : "36 mm"},
-                "2 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "33.835 mm", "majorDiameter" : "36 mm"},
+                "4 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "31.67 mm", "majorDiameter" : "36 mm"},
                 "3 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "32.752 mm", "majorDiameter" : "36 mm"},
-                "4 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "31.67 mm", "majorDiameter" : "36 mm"}
+                "2 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "33.835 mm", "majorDiameter" : "36 mm"},
+                "1.5 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "34.376 mm", "majorDiameter" : "36 mm"}
             }
         },
         "M38" : {
@@ -11291,28 +10937,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "37.376 mm", "majorDiameter" : "39 mm"},
-                "2 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "36.835 mm", "majorDiameter" : "39 mm"},
+                "4 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "34.67 mm", "majorDiameter" : "39 mm"},
                 "3 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "35.752 mm", "majorDiameter" : "39 mm"},
-                "4 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "34.67 mm", "majorDiameter" : "39 mm"}
-            }
-        },
-        "M4" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.7 mm",
-            "entries" : {
-                "0.5 mm" : {"holeDiameter" : "4 mm", "minorDiameter" : "3.459 mm", "majorDiameter" : "4 mm"},
-                "0.7 mm" : {"holeDiameter" : "4 mm", "minorDiameter" : "3.242 mm", "majorDiameter" : "4 mm"}
-            }
-        },
-        "M4.5" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.75 mm",
-            "entries" : {
-                "0.5 mm" : {"holeDiameter" : "4.5 mm", "minorDiameter" : "4.459 mm", "majorDiameter" : "4.5 mm"},
-                "0.75 mm" : {"holeDiameter" : "4.5 mm", "minorDiameter" : "3.688 mm", "majorDiameter" : "4.5 mm"}
+                "2 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "36.835 mm", "majorDiameter" : "39 mm"},
+                "1.5 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "37.376 mm", "majorDiameter" : "39 mm"}
             }
         },
         "M40" : {
@@ -11320,9 +10948,9 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "3 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "38.376 mm", "majorDiameter" : "40 mm"},
+                "3 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "36.752 mm", "majorDiameter" : "40 mm"},
                 "2 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "37.835 mm", "majorDiameter" : "40 mm"},
-                "3 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "36.752 mm", "majorDiameter" : "40 mm"}
+                "1.5 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "38.376 mm", "majorDiameter" : "40 mm"}
             }
         },
         "M42" : {
@@ -11330,11 +10958,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4.5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "40.376 mm", "majorDiameter" : "42 mm"},
-                "2 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "39.835 mm", "majorDiameter" : "42 mm"},
-                "3 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "38.752 mm", "majorDiameter" : "42 mm"},
+                "4.5 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "37.129 mm", "majorDiameter" : "42 mm"},
                 "4 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "37.67 mm", "majorDiameter" : "42 mm"},
-                "4.5 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "37.129 mm", "majorDiameter" : "42 mm"}
+                "3 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "38.752 mm", "majorDiameter" : "42 mm"},
+                "2 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "39.835 mm", "majorDiameter" : "42 mm"},
+                "1.5 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "40.376 mm", "majorDiameter" : "42 mm"}
             }
         },
         "M45" : {
@@ -11342,11 +10970,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4.5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "43.376 mm", "majorDiameter" : "45 mm"},
-                "2 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "42.835 mm", "majorDiameter" : "45 mm"},
-                "3 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "41.752 mm", "majorDiameter" : "45 mm"},
+                "4.5 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "40.129 mm", "majorDiameter" : "45 mm"},
                 "4 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "40.67 mm", "majorDiameter" : "45 mm"},
-                "4.5 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "40.129 mm", "majorDiameter" : "45 mm"}
+                "3 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "41.752 mm", "majorDiameter" : "45 mm"},
+                "2 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "42.835 mm", "majorDiameter" : "45 mm"},
+                "1.5 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "43.376 mm", "majorDiameter" : "45 mm"}
             }
         },
         "M48" : {
@@ -11354,28 +10982,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "46.376 mm", "majorDiameter" : "48 mm"},
-                "2 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "45.835 mm", "majorDiameter" : "48 mm"},
-                "3 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "44.752 mm", "majorDiameter" : "48 mm"},
+                "5 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "42.587 mm", "majorDiameter" : "48 mm"},
                 "4 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "43.67 mm", "majorDiameter" : "48 mm"},
-                "5 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "42.587 mm", "majorDiameter" : "48 mm"}
-            }
-        },
-        "M5" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.8 mm",
-            "entries" : {
-                "0.5 mm" : {"holeDiameter" : "5 mm", "minorDiameter" : "4.459 mm", "majorDiameter" : "5 mm"},
-                "0.8 mm" : {"holeDiameter" : "5 mm", "minorDiameter" : "4.134 mm", "majorDiameter" : "5 mm"}
-            }
-        },
-        "M5.5" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "0.5 mm",
-            "entries" : {
-                "0.5 mm" : {"holeDiameter" : "5.5 mm", "minorDiameter" : "4.959 mm", "majorDiameter" : "5.5 mm"}
+                "3 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "44.752 mm", "majorDiameter" : "48 mm"},
+                "2 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "45.835 mm", "majorDiameter" : "48 mm"},
+                "1.5 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "46.376 mm", "majorDiameter" : "48 mm"}
             }
         },
         "M50" : {
@@ -11383,9 +10994,9 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "3 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "48.376 mm", "majorDiameter" : "50 mm"},
+                "3 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "46.752 mm", "majorDiameter" : "50 mm"},
                 "2 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "47.835 mm", "majorDiameter" : "50 mm"},
-                "3 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "46.752 mm", "majorDiameter" : "50 mm"}
+                "1.5 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "48.376 mm", "majorDiameter" : "50 mm"}
             }
         },
         "M52" : {
@@ -11393,11 +11004,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "50.376 mm", "majorDiameter" : "52 mm"},
-                "2 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "49.835 mm", "majorDiameter" : "52 mm"},
-                "3 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "48.752 mm", "majorDiameter" : "52 mm"},
+                "5 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "46.587 mm", "majorDiameter" : "52 mm"},
                 "4 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "47.67 mm", "majorDiameter" : "52 mm"},
-                "5 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "46.587 mm", "majorDiameter" : "52 mm"}
+                "3 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "48.752 mm", "majorDiameter" : "52 mm"},
+                "2 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "49.835 mm", "majorDiameter" : "52 mm"},
+                "1.5 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "50.376 mm", "majorDiameter" : "52 mm"}
             }
         },
         "M55" : {
@@ -11405,10 +11016,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "53.376 mm", "majorDiameter" : "55 mm"},
-                "2 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "52.835 mm", "majorDiameter" : "55 mm"},
+                "4 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "50.67 mm", "majorDiameter" : "55 mm"},
                 "3 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "51.752 mm", "majorDiameter" : "55 mm"},
-                "4 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "50.67 mm", "majorDiameter" : "55 mm"}
+                "2 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "52.835 mm", "majorDiameter" : "55 mm"},
+                "1.5 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "53.376 mm", "majorDiameter" : "55 mm"}
             }
         },
         "M56" : {
@@ -11416,11 +11027,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "5.5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "54.376 mm", "majorDiameter" : "56 mm"},
-                "2 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "53.835 mm", "majorDiameter" : "56 mm"},
-                "3 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "52.752 mm", "majorDiameter" : "56 mm"},
+                "5.5 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "50.046 mm", "majorDiameter" : "56 mm"},
                 "4 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "51.67 mm", "majorDiameter" : "56 mm"},
-                "5.5 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "50.046 mm", "majorDiameter" : "56 mm"}
+                "3 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "52.752 mm", "majorDiameter" : "56 mm"},
+                "2 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "53.835 mm", "majorDiameter" : "56 mm"},
+                "1.5 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "54.376 mm", "majorDiameter" : "56 mm"}
             }
         },
         "M58" : {
@@ -11428,19 +11039,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "56.376 mm", "majorDiameter" : "58 mm"},
-                "2 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "55.835 mm", "majorDiameter" : "58 mm"},
+                "4 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "53.67 mm", "majorDiameter" : "58 mm"},
                 "3 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "54.752 mm", "majorDiameter" : "58 mm"},
-                "4 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "53.67 mm", "majorDiameter" : "58 mm"}
-            }
-        },
-        "M6" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "6 mm", "minorDiameter" : "5.188 mm", "majorDiameter" : "6 mm"},
-                "1 mm" : {"holeDiameter" : "6 mm", "minorDiameter" : "4.917 mm", "majorDiameter" : "6 mm"}
+                "2 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "55.835 mm", "majorDiameter" : "58 mm"},
+                "1.5 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "56.376 mm", "majorDiameter" : "58 mm"}
             }
         },
         "M60" : {
@@ -11448,11 +11050,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "5.5 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "58.376 mm", "majorDiameter" : "60 mm"},
-                "2 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "57.835 mm", "majorDiameter" : "60 mm"},
-                "3 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "56.752 mm", "majorDiameter" : "60 mm"},
+                "5.5 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "54.046 mm", "majorDiameter" : "60 mm"},
                 "4 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "55.67 mm", "majorDiameter" : "60 mm"},
-                "5.5 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "54.046 mm", "majorDiameter" : "60 mm"}
+                "3 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "56.752 mm", "majorDiameter" : "60 mm"},
+                "2 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "57.835 mm", "majorDiameter" : "60 mm"},
+                "1.5 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "58.376 mm", "majorDiameter" : "60 mm"}
             }
         },
         "M62" : {
@@ -11460,10 +11062,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "60.376 mm", "majorDiameter" : "62 mm"},
-                "2 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "59.835 mm", "majorDiameter" : "62 mm"},
+                "4 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "57.67 mm", "majorDiameter" : "62 mm"},
                 "3 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "58.752 mm", "majorDiameter" : "62 mm"},
-                "4 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "57.67 mm", "majorDiameter" : "62 mm"}
+                "2 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "59.835 mm", "majorDiameter" : "62 mm"},
+                "1.5 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "60.376 mm", "majorDiameter" : "62 mm"}
             }
         },
         "M64" : {
@@ -11471,11 +11073,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "62.376 mm", "majorDiameter" : "64 mm"},
-                "2 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "61.835 mm", "majorDiameter" : "64 mm"},
-                "3 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "60.752 mm", "majorDiameter" : "64 mm"},
+                "6 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "57.505 mm", "majorDiameter" : "64 mm"},
                 "4 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "59.67 mm", "majorDiameter" : "64 mm"},
-                "6 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "57.505 mm", "majorDiameter" : "64 mm"}
+                "3 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "60.752 mm", "majorDiameter" : "64 mm"},
+                "2 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "61.835 mm", "majorDiameter" : "64 mm"},
+                "1.5 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "62.376 mm", "majorDiameter" : "64 mm"}
             }
         },
         "M65" : {
@@ -11483,10 +11085,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "63.376 mm", "majorDiameter" : "65 mm"},
-                "2 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "62.835 mm", "majorDiameter" : "65 mm"},
+                "4 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "60.67 mm", "majorDiameter" : "65 mm"},
                 "3 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "61.752 mm", "majorDiameter" : "65 mm"},
-                "4 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "60.67 mm", "majorDiameter" : "65 mm"}
+                "2 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "62.835 mm", "majorDiameter" : "65 mm"},
+                "1.5 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "63.376 mm", "majorDiameter" : "65 mm"}
             }
         },
         "M68" : {
@@ -11494,20 +11096,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "66.376 mm", "majorDiameter" : "68 mm"},
-                "2 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "65.835 mm", "majorDiameter" : "68 mm"},
-                "3 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "64.752 mm", "majorDiameter" : "68 mm"},
+                "6 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "61.505 mm", "majorDiameter" : "68 mm"},
                 "4 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "63.67 mm", "majorDiameter" : "68 mm"},
-                "6 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "61.505 mm", "majorDiameter" : "68 mm"}
-            }
-        },
-        "M7" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "7 mm", "minorDiameter" : "6.188 mm", "majorDiameter" : "7 mm"},
-                "1 mm" : {"holeDiameter" : "7 mm", "minorDiameter" : "5.917 mm", "majorDiameter" : "7 mm"}
+                "3 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "64.752 mm", "majorDiameter" : "68 mm"},
+                "2 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "65.835 mm", "majorDiameter" : "68 mm"},
+                "1.5 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "66.376 mm", "majorDiameter" : "68 mm"}
             }
         },
         "M70" : {
@@ -11515,11 +11108,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "68.376 mm", "majorDiameter" : "70 mm"},
-                "2 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "67.835 mm", "majorDiameter" : "70 mm"},
-                "3 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "66.752 mm", "majorDiameter" : "70 mm"},
+                "6 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "63.505 mm", "majorDiameter" : "70 mm"},
                 "4 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "65.67 mm", "majorDiameter" : "70 mm"},
-                "6 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "63.505 mm", "majorDiameter" : "70 mm"}
+                "3 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "66.752 mm", "majorDiameter" : "70 mm"},
+                "2 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "67.835 mm", "majorDiameter" : "70 mm"},
+                "1.5 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "68.376 mm", "majorDiameter" : "70 mm"}
             }
         },
         "M72" : {
@@ -11527,11 +11120,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "70.376 mm", "majorDiameter" : "72 mm"},
-                "2 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "69.835 mm", "majorDiameter" : "72 mm"},
-                "3 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "68.752 mm", "majorDiameter" : "72 mm"},
+                "6 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "65.505 mm", "majorDiameter" : "72 mm"},
                 "4 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "67.67 mm", "majorDiameter" : "72 mm"},
-                "6 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "65.505 mm", "majorDiameter" : "72 mm"}
+                "3 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "68.752 mm", "majorDiameter" : "72 mm"},
+                "2 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "69.835 mm", "majorDiameter" : "72 mm"},
+                "1.5 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "70.376 mm", "majorDiameter" : "72 mm"}
             }
         },
         "M75" : {
@@ -11539,10 +11132,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "4 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "73.376 mm", "majorDiameter" : "75 mm"},
-                "2 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "72.835 mm", "majorDiameter" : "75 mm"},
+                "4 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "70.67 mm", "majorDiameter" : "75 mm"},
                 "3 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "71.752 mm", "majorDiameter" : "75 mm"},
-                "4 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "70.67 mm", "majorDiameter" : "75 mm"}
+                "2 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "72.835 mm", "majorDiameter" : "75 mm"},
+                "1.5 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "73.376 mm", "majorDiameter" : "75 mm"}
             }
         },
         "M76" : {
@@ -11550,11 +11143,11 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "74.376 mm", "majorDiameter" : "76 mm"},
-                "2 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "73.835 mm", "majorDiameter" : "76 mm"},
-                "3 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "72.752 mm", "majorDiameter" : "76 mm"},
+                "6 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "69.505 mm", "majorDiameter" : "76 mm"},
                 "4 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "71.67 mm", "majorDiameter" : "76 mm"},
-                "6 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "69.505 mm", "majorDiameter" : "76 mm"}
+                "3 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "72.752 mm", "majorDiameter" : "76 mm"},
+                "2 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "73.835 mm", "majorDiameter" : "76 mm"},
+                "1.5 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "74.376 mm", "majorDiameter" : "76 mm"}
             }
         },
         "M78" : {
@@ -11565,26 +11158,16 @@ export const ISO_ExternalThreadTable = {
                 "2 mm" : {"holeDiameter" : "78 mm", "minorDiameter" : "75.835 mm", "majorDiameter" : "78 mm"}
             }
         },
-        "M8" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.25 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "7.188 mm", "majorDiameter" : "8 mm"},
-                "1 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "6.917 mm", "majorDiameter" : "8 mm"},
-                "1.25 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "6.647 mm", "majorDiameter" : "8 mm"}
-            }
-        },
         "M80" : {
             "name" : "pitch",
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "1.5 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "78.376 mm", "majorDiameter" : "80 mm"},
-                "2 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "77.835 mm", "majorDiameter" : "80 mm"},
-                "3 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "76.752 mm", "majorDiameter" : "80 mm"},
+                "6 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "73.505 mm", "majorDiameter" : "80 mm"},
                 "4 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "75.67 mm", "majorDiameter" : "80 mm"},
-                "6 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "73.505 mm", "majorDiameter" : "80 mm"}
+                "3 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "76.752 mm", "majorDiameter" : "80 mm"},
+                "2 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "77.835 mm", "majorDiameter" : "80 mm"},
+                "1.5 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "78.376 mm", "majorDiameter" : "80 mm"}
             }
         },
         "M82" : {
@@ -11600,20 +11183,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "2 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "82.835 mm", "majorDiameter" : "85 mm"},
-                "3 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "81.752 mm", "majorDiameter" : "85 mm"},
+                "6 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "78.505 mm", "majorDiameter" : "85 mm"},
                 "4 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "80.67 mm", "majorDiameter" : "85 mm"},
-                "6 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "78.505 mm", "majorDiameter" : "85 mm"}
-            }
-        },
-        "M9" : {
-            "name" : "pitch",
-            "displayName" : "pitch",
-            "default" : "1.25 mm",
-            "entries" : {
-                "0.75 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "8.188 mm", "majorDiameter" : "9 mm"},
-                "1 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "7.917 mm", "majorDiameter" : "9 mm"},
-                "1.25 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "7.647 mm", "majorDiameter" : "9 mm"}
+                "3 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "81.752 mm", "majorDiameter" : "85 mm"},
+                "2 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "82.835 mm", "majorDiameter" : "85 mm"}
             }
         },
         "M90" : {
@@ -11621,10 +11194,10 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "2 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "87.835 mm", "majorDiameter" : "90 mm"},
-                "3 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "86.752 mm", "majorDiameter" : "90 mm"},
+                "6 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "83.505 mm", "majorDiameter" : "90 mm"},
                 "4 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "85.67 mm", "majorDiameter" : "90 mm"},
-                "6 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "83.505 mm", "majorDiameter" : "90 mm"}
+                "3 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "86.752 mm", "majorDiameter" : "90 mm"},
+                "2 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "87.835 mm", "majorDiameter" : "90 mm"}
             }
         },
         "M95" : {
@@ -11632,10 +11205,437 @@ export const ISO_ExternalThreadTable = {
             "displayName" : "pitch",
             "default" : "6 mm",
             "entries" : {
-                "2 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "92.835 mm", "majorDiameter" : "95 mm"},
-                "3 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "91.752 mm", "majorDiameter" : "95 mm"},
+                "6 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "88.505 mm", "majorDiameter" : "95 mm"},
                 "4 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "90.67 mm", "majorDiameter" : "95 mm"},
-                "6 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "88.505 mm", "majorDiameter" : "95 mm"}
+                "3 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "91.752 mm", "majorDiameter" : "95 mm"},
+                "2 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "92.835 mm", "majorDiameter" : "95 mm"}
+            }
+        },
+        "M100" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "93.505 mm", "majorDiameter" : "100 mm"},
+                "4 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "95.67 mm", "majorDiameter" : "100 mm"},
+                "3 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "96.752 mm", "majorDiameter" : "100 mm"},
+                "2 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "97.835 mm", "majorDiameter" : "100 mm"}
+            }
+        },
+        "M105" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "98.505 mm", "majorDiameter" : "105 mm"},
+                "4 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "100.67 mm", "majorDiameter" : "105 mm"},
+                "3 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "101.752 mm", "majorDiameter" : "105 mm"},
+                "2 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "102.835 mm", "majorDiameter" : "105 mm"}
+            }
+        },
+        "M110" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "103.505 mm", "majorDiameter" : "110 mm"},
+                "4 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "105.67 mm", "majorDiameter" : "110 mm"},
+                "3 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "106.752 mm", "majorDiameter" : "110 mm"},
+                "2 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "107.835 mm", "majorDiameter" : "110 mm"}
+            }
+        },
+        "M115" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "108.505 mm", "majorDiameter" : "115 mm"},
+                "4 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "110.67 mm", "majorDiameter" : "115 mm"},
+                "3 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "111.752 mm", "majorDiameter" : "115 mm"},
+                "2 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "112.835 mm", "majorDiameter" : "115 mm"}
+            }
+        },
+        "M120" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "113.505 mm", "majorDiameter" : "120 mm"},
+                "4 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "115.67 mm", "majorDiameter" : "120 mm"},
+                "3 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "116.752 mm", "majorDiameter" : "120 mm"},
+                "2 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "117.835 mm", "majorDiameter" : "120 mm"}
+            }
+        },
+        "M125" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "118.505 mm", "majorDiameter" : "125 mm"},
+                "4 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "120.67 mm", "majorDiameter" : "125 mm"},
+                "3 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "121.752 mm", "majorDiameter" : "125 mm"},
+                "2 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "122.835 mm", "majorDiameter" : "125 mm"}
+            }
+        },
+        "M130" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "123.505 mm", "majorDiameter" : "130 mm"},
+                "4 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "125.67 mm", "majorDiameter" : "130 mm"},
+                "3 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "126.752 mm", "majorDiameter" : "130 mm"},
+                "2 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "127.835 mm", "majorDiameter" : "130 mm"}
+            }
+        },
+        "M135" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "128.505 mm", "majorDiameter" : "135 mm"},
+                "4 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "130.67 mm", "majorDiameter" : "135 mm"},
+                "3 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "131.752 mm", "majorDiameter" : "135 mm"},
+                "2 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "132.835 mm", "majorDiameter" : "135 mm"}
+            }
+        },
+        "M140" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "133.505 mm", "majorDiameter" : "140 mm"},
+                "4 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "135.67 mm", "majorDiameter" : "140 mm"},
+                "3 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "136.752 mm", "majorDiameter" : "140 mm"},
+                "2 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "137.835 mm", "majorDiameter" : "140 mm"}
+            }
+        },
+        "M145" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "138.505 mm", "majorDiameter" : "145 mm"},
+                "4 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "140.67 mm", "majorDiameter" : "145 mm"},
+                "3 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "141.752 mm", "majorDiameter" : "145 mm"},
+                "2 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "142.835 mm", "majorDiameter" : "145 mm"}
+            }
+        },
+        "M150" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "141.34 mm", "majorDiameter" : "150 mm"},
+                "6 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "143.505 mm", "majorDiameter" : "150 mm"},
+                "4 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "145.67 mm", "majorDiameter" : "150 mm"},
+                "3 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "146.752 mm", "majorDiameter" : "150 mm"},
+                "2 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "147.835 mm", "majorDiameter" : "150 mm"}
+            }
+        },
+        "M155" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "148.505 mm", "majorDiameter" : "155 mm"},
+                "4 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "150.67 mm", "majorDiameter" : "155 mm"},
+                "3 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "151.752 mm", "majorDiameter" : "155 mm"}
+            }
+        },
+        "M160" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "151.34 mm", "majorDiameter" : "160 mm"},
+                "6 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "153.505 mm", "majorDiameter" : "160 mm"},
+                "4 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "155.67 mm", "majorDiameter" : "160 mm"},
+                "3 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "156.752 mm", "majorDiameter" : "160 mm"}
+            }
+        },
+        "M165" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "158.34 mm", "majorDiameter" : "165 mm"},
+                "6 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "160.505 mm", "majorDiameter" : "165 mm"},
+                "4 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "161.67 mm", "majorDiameter" : "165 mm"}
+            }
+        },
+        "M170" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "161.34 mm", "majorDiameter" : "170 mm"},
+                "6 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "163.505 mm", "majorDiameter" : "170 mm"},
+                "4 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "165.67 mm", "majorDiameter" : "170 mm"},
+                "3 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "166.752 mm", "majorDiameter" : "170 mm"}
+            }
+        },
+        "M175" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "168.505 mm", "majorDiameter" : "175 mm"},
+                "4 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "170.67 mm", "majorDiameter" : "175 mm"},
+                "3 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "171.752 mm", "majorDiameter" : "175 mm"}
+            }
+        },
+        "M180" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "171.34 mm", "majorDiameter" : "180 mm"},
+                "6 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "173.505 mm", "majorDiameter" : "180 mm"},
+                "4 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "175.67 mm", "majorDiameter" : "180 mm"},
+                "3 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "176.752 mm", "majorDiameter" : "180 mm"}
+            }
+        },
+        "M185" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "178.505 mm", "majorDiameter" : "185 mm"},
+                "4 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "180.67 mm", "majorDiameter" : "185 mm"},
+                "3 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "181.752 mm", "majorDiameter" : "185 mm"}
+            }
+        },
+        "M190" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "181.34 mm", "majorDiameter" : "190 mm"},
+                "6 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "183.505 mm", "majorDiameter" : "190 mm"},
+                "4 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "185.67 mm", "majorDiameter" : "190 mm"},
+                "3 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "186.752 mm", "majorDiameter" : "190 mm"}
+            }
+        },
+        "M195" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "188.505 mm", "majorDiameter" : "195 mm"},
+                "4 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "190.67 mm", "majorDiameter" : "195 mm"},
+                "3 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "191.752 mm", "majorDiameter" : "195 mm"}
+            }
+        },
+        "M200" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "191.34 mm", "majorDiameter" : "200 mm"},
+                "6 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "193.505 mm", "majorDiameter" : "200 mm"},
+                "4 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "195.67 mm", "majorDiameter" : "200 mm"},
+                "3 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "196.752 mm", "majorDiameter" : "200 mm"}
+            }
+        },
+        "M205" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "198.505 mm", "majorDiameter" : "205 mm"},
+                "4 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "200.67 mm", "majorDiameter" : "205 mm"},
+                "3 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "201.752 mm", "majorDiameter" : "205 mm"}
+            }
+        },
+        "M210" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "201.34 mm", "majorDiameter" : "210 mm"},
+                "6 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "203.505 mm", "majorDiameter" : "210 mm"},
+                "4 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "205.67 mm", "majorDiameter" : "210 mm"},
+                "3 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "206.752 mm", "majorDiameter" : "210 mm"}
+            }
+        },
+        "M215" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "208.505 mm", "majorDiameter" : "215 mm"},
+                "4 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "210.67 mm", "majorDiameter" : "215 mm"},
+                "3 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "211.752 mm", "majorDiameter" : "215 mm"}
+            }
+        },
+        "M220" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "211.34 mm", "majorDiameter" : "220 mm"},
+                "6 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "213.505 mm", "majorDiameter" : "220 mm"},
+                "4 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "215.67 mm", "majorDiameter" : "220 mm"},
+                "3 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "216.752 mm", "majorDiameter" : "220 mm"}
+            }
+        },
+        "M225" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "218.505 mm", "majorDiameter" : "225 mm"},
+                "4 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "220.67 mm", "majorDiameter" : "225 mm"},
+                "3 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "221.752 mm", "majorDiameter" : "225 mm"}
+            }
+        },
+        "M230" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "221.34 mm", "majorDiameter" : "230 mm"},
+                "6 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "223.505 mm", "majorDiameter" : "230 mm"},
+                "4 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "225.67 mm", "majorDiameter" : "230 mm"},
+                "3 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "226.752 mm", "majorDiameter" : "230 mm"}
+            }
+        },
+        "M235" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "228.505 mm", "majorDiameter" : "235 mm"},
+                "4 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "230.67 mm", "majorDiameter" : "235 mm"},
+                "3 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "231.752 mm", "majorDiameter" : "235 mm"}
+            }
+        },
+        "M240" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "231.34 mm", "majorDiameter" : "240 mm"},
+                "6 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "233.505 mm", "majorDiameter" : "240 mm"},
+                "4 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "235.67 mm", "majorDiameter" : "240 mm"},
+                "3 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "236.752 mm", "majorDiameter" : "240 mm"}
+            }
+        },
+        "M245" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "238.505 mm", "majorDiameter" : "245 mm"},
+                "4 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "240.67 mm", "majorDiameter" : "245 mm"},
+                "3 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "241.752 mm", "majorDiameter" : "245 mm"}
+            }
+        },
+        "M250" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "241.34 mm", "majorDiameter" : "250 mm"},
+                "6 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "243.505 mm", "majorDiameter" : "250 mm"},
+                "4 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "245.67 mm", "majorDiameter" : "250 mm"},
+                "3 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "246.752 mm", "majorDiameter" : "250 mm"}
+            }
+        },
+        "M255" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "255 mm", "minorDiameter" : "248.505 mm", "majorDiameter" : "255 mm"},
+                "4 mm" : {"holeDiameter" : "255 mm", "minorDiameter" : "250.67 mm", "majorDiameter" : "255 mm"}
+            }
+        },
+        "M260" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "251.34 mm", "majorDiameter" : "260 mm"},
+                "6 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "253.505 mm", "majorDiameter" : "260 mm"},
+                "4 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "255.67 mm", "majorDiameter" : "260 mm"}
+            }
+        },
+        "M265" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "265 mm", "minorDiameter" : "258.505 mm", "majorDiameter" : "265 mm"},
+                "4 mm" : {"holeDiameter" : "265 mm", "minorDiameter" : "260.67 mm", "majorDiameter" : "265 mm"}
+            }
+        },
+        "M270" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "261.34 mm", "majorDiameter" : "270 mm"},
+                "6 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "263.505 mm", "majorDiameter" : "270 mm"},
+                "4 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "265.67 mm", "majorDiameter" : "270 mm"}
+            }
+        },
+        "M275" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "275 mm", "minorDiameter" : "268.505 mm", "majorDiameter" : "275 mm"},
+                "4 mm" : {"holeDiameter" : "275 mm", "minorDiameter" : "270.67 mm", "majorDiameter" : "275 mm"}
+            }
+        },
+        "M280" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "271.34 mm", "majorDiameter" : "280 mm"},
+                "6 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "273.505 mm", "majorDiameter" : "280 mm"},
+                "4 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "275.67 mm", "majorDiameter" : "280 mm"}
+            }
+        },
+        "M285" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "285 mm", "minorDiameter" : "278.505 mm", "majorDiameter" : "285 mm"},
+                "4 mm" : {"holeDiameter" : "285 mm", "minorDiameter" : "280.67 mm", "majorDiameter" : "285 mm"}
+            }
+        },
+        "M290" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "281.34 mm", "majorDiameter" : "290 mm"},
+                "6 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "283.505 mm", "majorDiameter" : "290 mm"},
+                "4 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "285.67 mm", "majorDiameter" : "290 mm"}
+            }
+        },
+        "M295" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "6 mm",
+            "entries" : {
+                "6 mm" : {"holeDiameter" : "295 mm", "minorDiameter" : "288.505 mm", "majorDiameter" : "295 mm"},
+                "4 mm" : {"holeDiameter" : "295 mm", "minorDiameter" : "290.67 mm", "majorDiameter" : "295 mm"}
+            }
+        },
+        "M300" : {
+            "name" : "pitch",
+            "displayName" : "pitch",
+            "default" : "8 mm",
+            "entries" : {
+                "8 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "291.34 mm", "majorDiameter" : "300 mm"},
+                "6 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "293.505 mm", "majorDiameter" : "300 mm"},
+                "4 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "295.67 mm", "majorDiameter" : "300 mm"}
             }
         }
     }

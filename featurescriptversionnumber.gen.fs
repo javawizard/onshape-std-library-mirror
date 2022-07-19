@@ -1112,7 +1112,12 @@ export enum FeatureScriptVersionNumber
     V1790_ATTRIBUTE_CLOSED_COMPOSITE_SEGMENTS,
     V1791_RESOURCE_CHANGE_IN_RELEASE,
     V1792_INC_HOLE_CLEARANCE_BOUNDS_UPPER_LIMIT,
-    V1793_PARTIAL_FLANGE_FIXES
+    V1793_PARTIAL_FLANGE_FIXES,
+    V1799_SORT_CLUSTER_BODIES,
+    V1800_BOOLEAN_UNION_KEEPTOOLS,
+    V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE,
+    V1802_PARTIAL_FLANGE_BUMP,
+    V1803_VERSION_BUMP
 }
 
 /**
@@ -1123,6 +1128,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1793_PARTIAL_FLANGE_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1803_VERSION_BUMP;
 
 

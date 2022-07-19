@@ -325,6 +325,15 @@ export function filter(arr is array, filterFunction is function)
 }
 
 /**
+ * Return the first item in a map
+ */
+export function first(m is map)
+{
+    for (var result in m)
+        return result.value;
+}
+
+/**
  * Returns the keys in the supplied map in map iteration order.
  *
  *
