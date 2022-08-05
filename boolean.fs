@@ -71,11 +71,9 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 definition.reFillet is boolean;
             }
         }
-        if (definition.operationType == BooleanOperationType.SUBTRACTION || definition.operationType == BooleanOperationType.INTERSECTION)
-        {
-            annotation { "Name" : "Keep tools", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            definition.keepTools is boolean;
-        }
+
+        annotation { "Name" : "Keep tools", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        definition.keepTools is boolean;
     }
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
@@ -105,7 +103,8 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                         "eraseImprintedEdges" : true,
                         "detectAdjacencyForSheets" : noImpliedDetection,
                          "recomputeMatches" : true,
-                        "tools" : definition.tools
+                        "tools" : definition.tools,
+                        "keepTools" : definition.keepTools
                         });
                 }
                 return;

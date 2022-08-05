@@ -61,6 +61,8 @@ FeatureScript ✨; /* Automatically generated version */
  * @value PREVENT_ARRAY_REORDER : Disable reordering of items in an array parameter.
  * @value FOCUS_INNER_QUERY : When selecting a new item of a selection-driven array parameter, move selection focus from the outer array         parameter to the inner QLV.
  * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
+ * @value SHOW_TOLERANCE : For a boolean parameter, display as a toggle button with tolerance icon next to
+ *      the previous parameter.
  */
 export enum UIHint
 {
@@ -90,7 +92,8 @@ export enum UIHint
     ALLOW_QUERY_ORDER,
     PREVENT_ARRAY_REORDER,
     VARIABLE_NAME,
-    FOCUS_INNER_QUERY
+    FOCUS_INNER_QUERY,
+    SHOW_TOLERANCE
 }
 
 

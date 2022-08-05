@@ -1117,7 +1117,17 @@ export enum FeatureScriptVersionNumber
     V1800_BOOLEAN_UNION_KEEPTOOLS,
     V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE,
     V1802_PARTIAL_FLANGE_BUMP,
-    V1803_VERSION_BUMP
+    V1803_VERSION_BUMP,
+    V1812_FIX_LOFT_CLAMPS,
+    V1813_UNION_TRACKING,
+    V1814_CONTAINED_SUBTRACT_COMPLEMENT,
+    V1815_DONT_GROW_SM_OFFSET,
+    V1816_WIRE_OP_DISCONTINUITY_SMUGGLER,
+    V1817_RULED_SURFACE_CLAMPED_ENDS,
+    V1818_REVERT_MEASURE_TO_VARIABLE,
+    V1819_SKETCH_CURVE_CLIENT_ENUM,
+    V1820_VERSION_BUMP,
+    V1821_PARTIAL_FLANGE_BUMP
 }
 
 /**
@@ -1128,6 +1138,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1803_VERSION_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1821_PARTIAL_FLANGE_BUMP;
 
 
