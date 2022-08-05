@@ -1,14 +1,14 @@
-FeatureScript 1803; /* Automatically generated version */
+FeatureScript 1821; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "1803.0");
-import(path : "onshape/std/math.fs", version : "1803.0");
-import(path : "onshape/std/units.fs", version : "1803.0");
-import(path : "onshape/std/matrix.fs", version : "1803.0");
-import(path : "onshape/std/string.fs", version : "1803.0");
+import(path : "onshape/std/containers.fs", version : "1821.0");
+import(path : "onshape/std/math.fs", version : "1821.0");
+import(path : "onshape/std/units.fs", version : "1821.0");
+import(path : "onshape/std/matrix.fs", version : "1821.0");
+import(path : "onshape/std/string.fs", version : "1821.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -229,9 +229,13 @@ precondition
 }
 
 /**
- * Returns the angle between two 3-dimensional vectors.
+ * Returns the angle between two 3-dimensional vectors. Values are within the range `[0, PI] * radian`.
+ * @ex `angleBetween(X_DIRECTION, Y_DIRECTION)` equals `PI/2 * radian`
+ * @ex `angleBetween(Y_DIRECTION, X_DIRECTION)` equals `PI/2 * radian`
+ *
+ * A plane is fitted to the two vectors and the shortest angle between them is measured on that plane.
  */
-export function angleBetween(vector1 is Vector, vector2 is Vector)
+export function angleBetween(vector1 is Vector, vector2 is Vector) returns ValueWithUnits
 precondition
 {
     @size(vector1) == 3;
@@ -239,6 +243,26 @@ precondition
 }
 {
     return atan2(norm(cross(vector1, vector2)), dot(vector1, vector2));
+}
+
+/**
+ * Returns the counterclockwise angle between two 3-dimensional vectors as witnessed from the tip of a third 3-dimensional vector. Values are within the range `(-PI, PI] * radian` with negative values indicating clockwise angles.
+ * @ex `angleBetween(X_DIRECTION, Y_DIRECTION, Z_DIRECTION)` equals `PI/2 * radian`
+ * @ex `angleBetween(Y_DIRECTION, X_DIRECTION, Z_DIRECTION)` equals `-PI/2 * radian`
+ *
+ * The first two vectors are projected onto a plane perpendicular to the reference vector and the angle is measured according to that projection.
+ */
+export function angleBetween(vector1 is Vector, vector2 is Vector, ref is Vector) returns ValueWithUnits
+precondition
+{
+    @size(vector1) == 3;
+    @size(vector2) == 3;
+    @size(ref) == 3;
+}
+{
+    var dotProd = dot(vector1, vector2);
+    var area = dot(cross(vector1, vector2), normalize(ref));
+    return atan2(area, dotProd);
 }
 
 /**

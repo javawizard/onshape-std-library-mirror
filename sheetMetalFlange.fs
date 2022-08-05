@@ -1,30 +1,30 @@
-FeatureScript 1803; /* Automatically generated version */
+FeatureScript 1821; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1803.0");
-import(path : "onshape/std/boolean.fs", version : "1803.0");
-import(path : "onshape/std/containers.fs", version : "1803.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1803.0");
-import(path : "onshape/std/debug.fs", version : "1803.0");
-import(path : "onshape/std/extrude.fs", version : "1803.0");
-import(path : "onshape/std/evaluate.fs", version : "1803.0");
-import(path : "onshape/std/feature.fs", version : "1803.0");
-import(path : "onshape/std/math.fs", version : "1803.0");
-import(path : "onshape/std/matrix.fs", version : "1803.0");
-import(path : "onshape/std/path.fs", version : "1803.0");
-import(path : "onshape/std/query.fs", version : "1803.0");
-import(path : "onshape/std/sketch.fs", version : "1803.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1803.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1803.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1803.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1803.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1803.0");
-import(path : "onshape/std/units.fs", version : "1803.0");
-import(path : "onshape/std/valueBounds.fs", version : "1803.0");
-import(path : "onshape/std/vector.fs", version : "1803.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1803.0");
+import(path : "onshape/std/attributes.fs", version : "1821.0");
+import(path : "onshape/std/boolean.fs", version : "1821.0");
+import(path : "onshape/std/containers.fs", version : "1821.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1821.0");
+import(path : "onshape/std/debug.fs", version : "1821.0");
+import(path : "onshape/std/extrude.fs", version : "1821.0");
+import(path : "onshape/std/evaluate.fs", version : "1821.0");
+import(path : "onshape/std/feature.fs", version : "1821.0");
+import(path : "onshape/std/math.fs", version : "1821.0");
+import(path : "onshape/std/matrix.fs", version : "1821.0");
+import(path : "onshape/std/path.fs", version : "1821.0");
+import(path : "onshape/std/query.fs", version : "1821.0");
+import(path : "onshape/std/sketch.fs", version : "1821.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1821.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1821.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1821.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1821.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1821.0");
+import(path : "onshape/std/units.fs", version : "1821.0");
+import(path : "onshape/std/valueBounds.fs", version : "1821.0");
+import(path : "onshape/std/vector.fs", version : "1821.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1821.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -238,11 +238,25 @@ precondition
     const initialData = getInitialEntitiesAndAttributes(context, smBodiesQ);
     const robustSMBodiesQ = qUnion([smBodiesQ, startTracking(context, smBodiesQ)]);
 
-    var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
     var containerToLoop = isAtVersionOrLater(context, FeatureScriptVersionNumber.V483_FLAT_QUERY_EVAL_FIX) ? edgeMaps.bodyToEdgeMap : edgeMaps.modelToEdgeMap;
+    var flangeDataOverrides = {};
+    if (definition.isPartialFlange)
+    {
+        var modelIndex = 0;
+        const splitIdBase = id + "split";
+        for (var key, value in containerToLoop)
+        {
+            const limitEntitiesAndSplitEdges = splitAllEdgesForPartialFlange(context, splitIdBase + unstableIdComponent(modelIndex), definition, qUnion(value));
+            modelIndex += 1;
+            flangeDataOverrides = mergeMaps(flangeDataOverrides, limitEntitiesAndSplitEdges.limitEntities);
+            containerToLoop[key] = limitEntitiesAndSplitEdges.splitEdgeQueries;
+        }
+    }
+
+    var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
     for (var entry in containerToLoop)
     {
-        objectCounter = updateSheetMetalModelForFlange(context, id, objectCounter, qUnion(entry.value), definition);
+        objectCounter = updateSheetMetalModelForFlange(context, id, objectCounter, qUnion(entry.value), definition, flangeDataOverrides);
     }
 
     // Add association attributes where needed and compute deleted attributes
@@ -348,17 +362,9 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
     return definition;
 }
 
-function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map) returns number
+function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, objectCounter is number, edges is Query, definition is map, flangeDataOverrides is map) returns number
 {
-    var reprocessedEdges = edges;
-    var flangeDataOverrides = {};
-    if (definition.isPartialFlange)
-    {
-        const limitEntitiesAndSplitEdges = splitAllEdgesForPartialFlange(context, topLevelId + unstableIdComponent(objectCounter) + "split", definition, edges);
-        flangeDataOverrides = limitEntitiesAndSplitEdges.limitEntities;
-        reprocessedEdges = limitEntitiesAndSplitEdges.splitEdgeQueries;
-    }
-    const originalFlangeEdges = evaluateQuery(context, reprocessedEdges);
+    const originalFlangeEdges = evaluateQuery(context, edges);
 
     // add thickness, minimalClearance and defaultBendRadius to definition.
     // Flange uses thickness, minimalClearance and potentially defaultBendRadius derived from underlying sheet metal model
@@ -379,28 +385,28 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     }
 
     // Extend or retract each wall that is receiving a flange to comply with user specified SMFlangeAlignment.
-    var edgeToExtensionDistance = collectEdgeToExtensionDistance(context, topLevelId, reprocessedEdges, edgeToFlangeData, definition);
+    var edgeToExtensionDistance = collectEdgeToExtensionDistance(context, topLevelId, edges, edgeToFlangeData, definition);
 
     var alignmentChanges = changeUnderlyingSheetForAlignment(context, topLevelId, topLevelId + unstableIdComponent(objectCounter),
-    definition.useExternalDisambiguation, reprocessedEdges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
+    definition.useExternalDisambiguation, edges, edgeToFlangeData, oldEdgeToNewEdge, edgeToExtensionDistance);
     var originalCornerVertices = alignmentChanges.cornerVertices;
     var modifiedEntities = alignmentChanges.modifiedEntities;
-    reprocessedEdges = alignmentChanges.updatedEdges;
+    edges = alignmentChanges.updatedEdges;
 
     edgeToFlangeData = updateEdgeToFlangeDataAfterAlignmentChange(context, topLevelId, originalFlangeEdges, edgeToFlangeData,
         oldEdgeToNewEdge, edgeToExtensionDistance);
 
     // Collect information about the shape of each flange
-    var edgeToSideAndBase = collectEdgeToSideAndBase(context, topLevelId, definition.useExternalDisambiguation, reprocessedEdges,
+    var edgeToSideAndBase = collectEdgeToSideAndBase(context, topLevelId, definition.useExternalDisambiguation, edges,
     originalCornerVertices, edgeToFlangeData, definition, flangeDataOverrides);
-    var edgeToFlangeDistance = collectEdgeToFlangeDistance(context, topLevelId, reprocessedEdges, edgeToFlangeData, edgeToSideAndBase, definition);
+    var edgeToFlangeDistance = collectEdgeToFlangeDistance(context, topLevelId, edges, edgeToFlangeData, edgeToSideAndBase, definition);
 
     // Sketch each flange and add it to the underlying sheet body
     var surfaceBodies = [];
     var originalEntities = [];
     var trackingBendEdges = [];
     var setBendAttributesAfterBoolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
-    for (var edge in evaluateQuery(context, reprocessedEdges))
+    for (var edge in evaluateQuery(context, edges))
     {
         var ownerBody = qOwnerBody(edge);
         originalEntities = append(originalEntities, qSubtraction(qOwnedByBody(ownerBody), modifiedEntities));
@@ -2109,7 +2115,7 @@ function getFacePlane(context is Context, face is Query, edge is Query) returns 
 
 predicate partialFlangePredicate(flangeDefinition is map)
 {
-    annotation { "Name" : "Partial flange", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    annotation { "Name" : "Partial flange" }
     flangeDefinition.isPartialFlange is boolean;
 
     if (flangeDefinition.isPartialFlange)
@@ -2163,7 +2169,7 @@ predicate partialFlangePredicate(flangeDefinition is map)
                 }
                 else if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY || flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
                 {
-                    annotation { "Name" : "Up to face", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+                    annotation { "Name" : "Up to entity", "Filter" : EntityType.FACE || EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
                     flangeDefinition.secondBoundingEntity is Query;
 
                     if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
@@ -2347,8 +2353,11 @@ function showSplitErrorLocations(context is Context, modelEdge is Query, splitPa
     }
     if (points->size() == 2)
     {
-        const arrowSize = 0 * meter; // Do not show arrowhead.
-        addDebugArrow(context, points[0], points[1], arrowSize, DebugColor.RED);
+        if (!tolerantEquals(points[0], points[1]))
+        {
+            const arrowSize = 0 * meter; // Do not show arrowhead.
+            addDebugArrow(context, points[0], points[1], arrowSize, DebugColor.RED);
+        }
     }
 }
 
@@ -2410,7 +2419,7 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
             convertedLimits[vertexQuery] = limit;
         }
         return {
-                "splitEdgeQuery" : modelEdge,
+                "splitEdgeQuery" : makeRobustQuery(context, modelEdge),
                 "limitEntities" : convertedLimits
             };
     }
@@ -2446,7 +2455,7 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
         convertedLimits[vertexQuery] = limit;
     }
     return {
-            "splitEdgeQuery" : qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint),
+            "splitEdgeQuery" : makeRobustQuery(context, qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint)),
             "limitEntities" : convertedLimits
         };
 }
@@ -2528,7 +2537,7 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
         }
     }
     return {
-            "splitEdgeQueries" : qUnion(splitEdgeQueries),
+            "splitEdgeQueries" : splitEdgeQueries,
             "limitEntities" : limitEntities
         };
 }

@@ -1,4 +1,4 @@
-FeatureScript 1803; /* Automatically generated version */
+FeatureScript 1821; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1088,7 +1088,6 @@ export enum ErrorStringEnum
     SPHERE_FAILED,
     /* This document contains assembly patterns, which are not supported by your version of Onshape on this mobile device. */
     ASSEMBLY_PATTERN_NOT_SUPPORTED,
-    /* Some mate values could not be applied when loading the named position. */
     ASSEMBLY_NAMED_POSITIONS_PARTIAL_LOAD_FAILURE,
     /* Saved mate values were applied, but the number of mates has changed since the position was saved. */
     ASSEMBLY_NAMED_POSITIONS_LOAD_SUCCEEDED_WITH_EXTRA_MATES,
@@ -2249,7 +2248,17 @@ export enum ErrorStringEnum
     /* Non-matching thread size selected. */
     SELECTED_NON_MATCHING_SIZE,
     /* Exact match for thread size not found. */
-    NEAREST_MATCHING_THREAD_SIZE
+    NEAREST_MATCHING_THREAD_SIZE,
+    /* Cannot pattern spline control polygon. */
+    SKETCH_PATTERN_NO_SPLINE_CONTROL_POLYGON,
+    /* Cannot transform spline control polygon. */
+    SKETCH_TRANSFORM_NO_SPLINE_CONTROL_POLYGON,
+    /* Cannot fillet spline control polygon. */
+    SKETCH_FILLET_NO_SPLINE_CONTROL_POLYGON,
+    /* Cannot mirror spline control polygon. */
+    SKETCH_MIRROR_NO_SPLINE_CONTROL_POLYGON,
+    /* Cannot split spline control polygon. */
+    SKETCH_SPLIT_NO_SPLINE_CONTROL_POLYGON
 }
 
 
