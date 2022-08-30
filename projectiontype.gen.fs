@@ -5,15 +5,13 @@ FeatureScript 1837; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies how a mate connector origin is defined, and how many entities define it.
- */
-export enum OriginCreationType
+/** See [opDropCurve]. */
+export enum ProjectionType
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    annotation {"Name" : "Direction"}
+    DIRECTION,
+    annotation {"Name" : "Normal to face"}
+    NORMAL_TO_FACE
 }
 
 

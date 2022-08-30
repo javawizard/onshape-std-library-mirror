@@ -1,4 +1,4 @@
-FeatureScript 1821; /* Automatically generated version */
+FeatureScript 1837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1821; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1821.0");
-import(path : "onshape/std/context.fs", version : "1821.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1821.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1821.0");
-import(path : "onshape/std/query.fs", version : "1821.0");
-import(path : "onshape/std/valueBounds.fs", version : "1821.0");
-import(path : "onshape/std/vector.fs", version : "1821.0");
+import(path : "onshape/std/containers.fs", version : "1837.0");
+import(path : "onshape/std/context.fs", version : "1837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
+import(path : "onshape/std/query.fs", version : "1837.0");
+import(path : "onshape/std/valueBounds.fs", version : "1837.0");
+import(path : "onshape/std/vector.fs", version : "1837.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1837.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1837.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1837.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1837.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1837.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1837.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1821.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1837.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1821.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1837.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1821.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1837.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1837.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1821.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1837.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -1003,6 +1003,35 @@ export const opBooleanedPattern = function(context is Context, id is Id, definit
 export const opPlane = function(context is Context, id is Id, definition is map)
 {
     return @opPlane(context, id, definition);
+};
+
+/**
+ * Projects curves on a face.
+ * @param id : @autocomplete `id + "dropCurve1"`
+ * @param definition {{
+ *      @field tools {Query} : The edges to project.
+ *      @field targets {Query} : The faces/bodies the edges are to be projected onto.
+        @field projectionType {ProjectionType} : Projection method.
+ *      @field direction {Vector} : @optional
+                The direction in which to project the curve. Required if projectionType is ProjectionType.DIRECTION.
+ * }}
+ */
+export const opDropCurve = function(context is Context, id is Id, definition is map)
+{
+    return @opDropCurve(context, id, definition);
+};
+
+/**
+ * Intersect two faces, creating curves appropriately.
+ * @param id : @autocomplete `id + "intersectFaces1"`
+ * @param definition {{
+ *      @field tools {Query} : First array of faces to intersect.
+ *      @field targets {Query} : Second array of faces to intersect.
+ * }}
+ */
+export const opIntersectFaces = function(context is Context, id is Id, definition is map)
+{
+    return @opIntersectFaces(context, id, definition);
 };
 
 /**

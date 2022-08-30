@@ -1,30 +1,30 @@
-FeatureScript 1821; /* Automatically generated version */
+FeatureScript 1837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1821.0");
-import(path : "onshape/std/boolean.fs", version : "1821.0");
-import(path : "onshape/std/containers.fs", version : "1821.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1821.0");
-import(path : "onshape/std/debug.fs", version : "1821.0");
-import(path : "onshape/std/extrude.fs", version : "1821.0");
-import(path : "onshape/std/evaluate.fs", version : "1821.0");
-import(path : "onshape/std/feature.fs", version : "1821.0");
-import(path : "onshape/std/math.fs", version : "1821.0");
-import(path : "onshape/std/matrix.fs", version : "1821.0");
-import(path : "onshape/std/path.fs", version : "1821.0");
-import(path : "onshape/std/query.fs", version : "1821.0");
-import(path : "onshape/std/sketch.fs", version : "1821.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1821.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1821.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1821.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1821.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1821.0");
-import(path : "onshape/std/units.fs", version : "1821.0");
-import(path : "onshape/std/valueBounds.fs", version : "1821.0");
-import(path : "onshape/std/vector.fs", version : "1821.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1821.0");
+import(path : "onshape/std/attributes.fs", version : "1837.0");
+import(path : "onshape/std/boolean.fs", version : "1837.0");
+import(path : "onshape/std/containers.fs", version : "1837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
+import(path : "onshape/std/debug.fs", version : "1837.0");
+import(path : "onshape/std/extrude.fs", version : "1837.0");
+import(path : "onshape/std/evaluate.fs", version : "1837.0");
+import(path : "onshape/std/feature.fs", version : "1837.0");
+import(path : "onshape/std/math.fs", version : "1837.0");
+import(path : "onshape/std/matrix.fs", version : "1837.0");
+import(path : "onshape/std/path.fs", version : "1837.0");
+import(path : "onshape/std/query.fs", version : "1837.0");
+import(path : "onshape/std/sketch.fs", version : "1837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1837.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1837.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1837.0");
+import(path : "onshape/std/units.fs", version : "1837.0");
+import(path : "onshape/std/valueBounds.fs", version : "1837.0");
+import(path : "onshape/std/vector.fs", version : "1837.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1837.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -2355,8 +2355,7 @@ function showSplitErrorLocations(context is Context, modelEdge is Query, splitPa
     {
         if (!tolerantEquals(points[0], points[1]))
         {
-            const arrowSize = 0 * meter; // Do not show arrowhead.
-            addDebugArrow(context, points[0], points[1], arrowSize, DebugColor.RED);
+            addDebugLine(context, points[0], points[1], DebugColor.RED);
         }
     }
 }

@@ -1,15 +1,15 @@
-FeatureScript 1821; /* Automatically generated version */
+FeatureScript 1837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "1821.0");
-import(path : "onshape/std/context.fs", version : "1821.0");
-import(path : "onshape/std/evaluate.fs", version : "1821.0");
-import(path : "onshape/std/feature.fs", version : "1821.0");
-import(path : "onshape/std/query.fs", version : "1821.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1821.0");
-import(path : "onshape/std/vector.fs", version : "1821.0");
+import(path : "onshape/std/containers.fs", version : "1837.0");
+import(path : "onshape/std/context.fs", version : "1837.0");
+import(path : "onshape/std/evaluate.fs", version : "1837.0");
+import(path : "onshape/std/feature.fs", version : "1837.0");
+import(path : "onshape/std/query.fs", version : "1837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
+import(path : "onshape/std/vector.fs", version : "1837.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 

@@ -1,34 +1,34 @@
-FeatureScript 1821; /* Automatically generated version */
+FeatureScript 1837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1821.0");
-import(path : "onshape/std/boolean.fs", version : "1821.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1821.0");
-import(path : "onshape/std/box.fs", version : "1821.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1821.0");
-import(path : "onshape/std/containers.fs", version : "1821.0");
-import(path : "onshape/std/coordSystem.fs", version : "1821.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1821.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1821.0");
-import(path : "onshape/std/evaluate.fs", version : "1821.0");
-import(path : "onshape/std/feature.fs", version : "1821.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1821.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1821.0");
-import(path : "onshape/std/mathUtils.fs", version : "1821.0");
-import(path : "onshape/std/revolve.fs", version : "1821.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1821.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1821.0");
-import(path : "onshape/std/sketch.fs", version : "1821.0");
-import(path : "onshape/std/string.fs", version : "1821.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1821.0");
-import(path : "onshape/std/tool.fs", version : "1821.0");
-import(path : "onshape/std/valueBounds.fs", version : "1821.0");
+import(path : "onshape/std/attributes.fs", version : "1837.0");
+import(path : "onshape/std/boolean.fs", version : "1837.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1837.0");
+import(path : "onshape/std/box.fs", version : "1837.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1837.0");
+import(path : "onshape/std/containers.fs", version : "1837.0");
+import(path : "onshape/std/coordSystem.fs", version : "1837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1837.0");
+import(path : "onshape/std/evaluate.fs", version : "1837.0");
+import(path : "onshape/std/feature.fs", version : "1837.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1837.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1837.0");
+import(path : "onshape/std/mathUtils.fs", version : "1837.0");
+import(path : "onshape/std/revolve.fs", version : "1837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1837.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1837.0");
+import(path : "onshape/std/sketch.fs", version : "1837.0");
+import(path : "onshape/std/string.fs", version : "1837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
+import(path : "onshape/std/tool.fs", version : "1837.0");
+import(path : "onshape/std/valueBounds.fs", version : "1837.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1821.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1821.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1821.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1837.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1837.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -68,6 +68,10 @@ function enforceMaxLocations(context is Context, nLocations is number)
 }
 
 const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid identifier, so it is not offered in autocomplete
+
+// When `isTappedThrough` is set to `true`, `tappedDepth` should be set to a consistent value to prevent issues in
+// drawings tables. The value in question is unimportant, so we will use 0.
+const TAPPED_DEPTH_FOR_TAPPED_THROUGH = 0 * meter;
 
 /*
  * JAR/IB: The call structure of the principal functions in this file is something like this:
@@ -321,6 +325,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             {
                 throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE, ["holeDiameter", "tapDrillDiameter"]);
             }
+        }
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
+        {
+            definition = definition->setIsTappedThroughAndFixTappedDepth(definition.endStyle == HoleEndStyle.THROUGH && definition.isTappedThrough);
         }
 
         definition.transform = getRemainderPatternTransform(context, { "references" : definition.locations });
@@ -2043,10 +2052,24 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             if (holeAttribute != undefined)
             {
                 // Adjust `isTappedThrough`
-                if (holeAttribute.isTappedHole == true && featureDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
+                if (holeAttribute.isTappedHole == true && featureDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is through, isTappedThrough is set explicitly
                 {
+                    // BEL-141916: This check for this if statement should be
+                    // holeAttribute.isTappedHole == true && holeAttribute.endType == HoleEndStyle.THROUGH && !holeAttribute.isTappedThrough
+                    // but it cannot be changed easily because fullExitInFinalPositionReferenceSpace does not represent
+                    // the correct value for THROUGH holes; to get the correct value we would need more info from opHole.
+
                     const userDefinedTappedDepth = featureDefinition.tappedDepth;
-                    holeAttribute.isTappedThrough = userDefinedTappedDepth > (fullExitInFinalPositionReferenceSpace - (TOLERANCE.zeroLength * meter));
+                    const isTappedThrough = userDefinedTappedDepth > (fullExitInFinalPositionReferenceSpace - (TOLERANCE.zeroLength * meter));
+
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
+                    {
+                        holeAttribute = holeAttribute->setIsTappedThroughAndFixTappedDepth(isTappedThrough);
+                    }
+                    else
+                    {
+                        holeAttribute.isTappedThrough = isTappedThrough;
+                    }
                 }
 
                 setAttribute(context, { "entities" : face, "attribute" : holeAttribute });
@@ -2221,6 +2244,35 @@ function computeActualHoleDepth(context is Context, faces is Query)
     return holeBox.maxCorner[2] - holeBox.minCorner[2];
 }
 
+function isTappedDepthPositive(context is Context, holeDefinition is map) returns boolean
+{
+    const isPositiveDepth = holeDefinition.tappedDepth > 0 * meter;
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
+    {
+        return isPositiveDepth || holeDefinition.isTappedThrough;
+    }
+    else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE))
+    {
+        return isPositiveDepth;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+// holeMap can be a hole definition or a hole attribute
+function setIsTappedThroughAndFixTappedDepth(holeMap is map, isTappedThrough is boolean) returns map
+{
+    holeMap.isTappedThrough = isTappedThrough;
+    if (isTappedThrough)
+    {
+        holeMap.tappedDepth = TAPPED_DEPTH_FOR_TAPPED_THROUGH;
+    }
+    return holeMap;
+}
+
 const HOLE_ID_EXTENSION_PREFIX = "hole-";
 
 function buildHoleIdExtension(holeIndex is number) returns string
@@ -2263,8 +2315,13 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     // Through, Blind or Blind in Last
     resultAttribute.endType = holeDefinition.endStyle;
     resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
-    resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
     resultAttribute.majorDiameter = holeDefinition.majorDiameter;
+
+    // Update: later in the function, include this parameter only if it is relevant.
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
+    {
+        resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
+    }
 
     // Through hole diameter
     resultAttribute.holeDiameter = holeDefinition.holeDiameter;
@@ -2308,32 +2365,20 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
             }
             else if (entry.key == "type")
             {
-                var matchResult = match(entry.value, ".*[Tt]apped.*");
-                resultAttribute.isTappedHole = matchResult.hasMatch;
-                if (resultAttribute.isTappedHole && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE))
-                {
-                    resultAttribute.isTappedHole = holeDefinition.tappedDepth > 0;
-                }
                 isStandardComponentBasedHole = true;
-                if (!resultAttribute.isTappedHole)
+                if (match(entry.value, ".*[Tt]apped.*").hasMatch)
                 {
-                    matchResult = match(entry.value, ".*[Dd]rilled.*");
-
+                    resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinition);
+                }
+                else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
+                {
+                    resultAttribute.isTaperedPipeTapHole = isTappedDepthPositive(context, holeDefinition);
+                }
+                else if (match(entry.value, ".*[Dd]rilled.*").hasMatch)
+                {
                     // drilled holes are based upon a drill size, not a component size
-                    if (matchResult.hasMatch)
-                    {
-                        isStandardComponentBasedHole = false;
-                        isStandardDrillBasedHole = true;
-                    }
-                    else
-                    {
-                        matchResult = match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*");
-                        resultAttribute.isTaperedPipeTapHole = matchResult.hasMatch;
-                        if (resultAttribute.isTaperedPipeTapHole && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1801_HOLE_TAPPED_ONLY_IF_TAPPED_DEPTH_POSITIVE))
-                        {
-                            resultAttribute.isTaperedPipeTapHole = holeDefinition.tappedDepth > 0;
-                        }
-                    }
+                    isStandardComponentBasedHole = false;
+                    isStandardDrillBasedHole = true;
                 }
             }
             else if (entry.key == "size")
@@ -2389,10 +2434,30 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         resultAttribute.tapSize = tapSize ~ delimiter ~ pitch;
         if (resultAttribute.isTaperedPipeTapHole)
             resultAttribute.tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
-        if (holeDefinition.tappedDepth != undefined)
+
+        // set tappedDepth and isTappedThrough
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
+        {
             resultAttribute.tappedDepth = holeDefinition.tappedDepth;
-        else if (holeDefinition.isTappedThrough)
-            resultAttribute.tappedDepth = 0 * meter; // it doesn't really matter, just not undefined
+            resultAttribute = resultAttribute->setIsTappedThroughAndFixTappedDepth(holeDefinition.isTappedThrough);
+        }
+        else
+        {
+            // resultAttribute.isTappedThrough has already been set earlier in the function.
+
+            if (holeDefinition.tappedDepth != undefined)
+            {
+                // This is likely always called and will put a hidden, irrelevant value into tappedDepth when
+                // isTappedThrough is true.  It may not be called in some legacy cases.
+                resultAttribute.tappedDepth = holeDefinition.tappedDepth;
+            }
+            else if (holeDefinition.isTappedThrough)
+            {
+                // This is likely never called because tappedDepth is always set to something, even when hidden.
+                // It may be called in some legacy cases, it is left in for safety.
+                resultAttribute.tappedDepth = TAPPED_DEPTH_FOR_TAPPED_THROUGH;
+            }
+        }
 
         if (resultAttribute.isTaperedPipeTapHole && holeDefinition.tappedAngle != undefined)
             resultAttribute.tappedAngle = holeDefinition.tappedAngle;
