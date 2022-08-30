@@ -233,25 +233,7 @@ export function debug(context is Context, point1 is Vector, point2 is Vector, co
     if (is3dLengthVector(point1) && is3dLengthVector(point2))
     {
         println(", distance = " ~ toString(norm(point2 - point1)));
-        const lineId = getLastActiveId(context) + DEBUG_ID_STRING + "line";
-        startFeature(context, lineId, {});
-        try
-        {
-            const length = norm(point2 - point1);
-            const orth = perpendicularVector(point2 - point1);
-
-            var lineDef = { "end" : vector(length, 0 * meter) };
-
-            const sketch1 = newSketchOnPlane(context, lineId + "sketch1", {
-                        "sketchPlane" : plane(point1, orth, point2 - point1)
-                    });
-            lineDef.start = vector(0, 0) * meter;
-            skLineSegment(sketch1, "line1", lineDef);
-            skSolve(sketch1);
-
-            addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE), color);
-        }
-        abortFeature(context, lineId);
+        addDebugLine(context, point1, point2, color);
     }
     else
     {
@@ -386,6 +368,43 @@ precondition
 export function addDebugPoint(context is Context, point is Vector)
 {
     addDebugPoint(context, point, DebugColor.RED);
+}
+
+/**
+ * Draws a line in 3D space from `point1` to `point2` with a chosen [DebugColor].
+ *
+ * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
+ *
+ * @param point1: one endpoint of the line.
+ * @param point2: the other endpoint of the line.
+ * @param color : @autocomplete `DebugColor.RED`
+ */
+export function addDebugLine(context is Context, point1 is Vector, point2 is Vector, color is DebugColor)
+{
+    const lineId = getLastActiveId(context) + DEBUG_ID_STRING + "line";
+    startFeature(context, lineId, {});
+    try
+    {
+        const length = norm(point2 - point1);
+        const orth = perpendicularVector(point2 - point1);
+
+        var lineDef = { "end" : vector(length, 0 * meter) };
+
+        const sketch1 = newSketchOnPlane(context, lineId + "sketch1", {
+                    "sketchPlane" : plane(point1, orth, point2 - point1)
+                });
+        lineDef.start = vector(0, 0) * meter;
+        skLineSegment(sketch1, "line1", lineDef);
+        skSolve(sketch1);
+
+        addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE), color);
+    }
+    abortFeature(context, lineId);
+}
+
+export function addDebugLine(context is Context, point1 is Vector, point2 is Vector)
+{
+    addDebugLine(context, point1, point2, DebugColor.RED);
 }
 
 /**

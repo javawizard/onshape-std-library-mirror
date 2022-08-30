@@ -2355,8 +2355,7 @@ function showSplitErrorLocations(context is Context, modelEdge is Query, splitPa
     {
         if (!tolerantEquals(points[0], points[1]))
         {
-            const arrowSize = 0 * meter; // Do not show arrowhead.
-            addDebugArrow(context, points[0], points[1], arrowSize, DebugColor.RED);
+            addDebugLine(context, points[0], points[1], DebugColor.RED);
         }
     }
 }

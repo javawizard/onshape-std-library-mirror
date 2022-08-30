@@ -20,7 +20,7 @@ export enum FrameCornerType
     MITER,
     annotation { "Name" : "Butt" }
     BUTT,
-    annotation { "Name" : "Coped Butt" }
+    annotation { "Name" : "Coped butt" }
     COPED_BUTT,
     annotation { "Name" : "None" }
     NONE,

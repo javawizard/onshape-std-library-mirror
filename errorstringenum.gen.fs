@@ -2258,7 +2258,37 @@ export enum ErrorStringEnum
     /* Cannot mirror spline control polygon. */
     SKETCH_MIRROR_NO_SPLINE_CONTROL_POLYGON,
     /* Cannot split spline control polygon. */
-    SKETCH_SPLIT_NO_SPLINE_CONTROL_POLYGON
+    SKETCH_SPLIT_NO_SPLINE_CONTROL_POLYGON,
+    /* Select the first entity to measure between. */
+    VARIABLE_SELECT_FIRST_ENTITY,
+    /* Select the second entity to measure between. */
+    VARIABLE_SELECT_SECOND_ENTITY,
+    /* Select custom direction. */
+    VARIABLE_SELECT_CUSTOM_DIRECTION,
+    /* Select entities to measure. */
+    VARIABLE_SELECT_ENTITIES_TO_MEASURE,
+    /* Select entity to measure. */
+    VARIABLE_SELECT_ENTITY_TO_MEASURE,
+    /* Unable to find geometry with a diameter in query. */
+    VARIABLE_NO_GEOMETRY_WITH_DIAMETER,
+    /* Only two entities can be selected for distance measurement. */
+    VARIABLE_ONLY_TWO_ENTITIES_ALLOWED,
+    /* Sheet metal selections must belong to the same body. */
+    VARIABLE_FLATTENED_ENTITIES_MUST_BE_SAME_BODY,
+    /* Could not project curves on target. */
+    CURVE_PROJECTION_FAILED,
+    /* Could not intersect given faces. */
+    FACE_INTERSECTION_FAILED,
+    /* No intersections found with current selections. */
+    FACE_INTERSECTION_NO_RESULT,
+    /* Selections must be unique. */
+    FACE_INTERSECTION_UNIQUE_SELECTION,
+    /* The current selections result in duplicate curves. Only one curve will be created. */
+    FACE_INTERSECTION_OVERLAPPING_SELECTION,
+    /* Cannot use 'Maximum' option with infinite entities. */
+    VARIABLE_CANNOT_USE_MAXIMUM_WITH_INFINITE_ENTITIES,
+    /* Measure from axis selected, but no entities with an axis were selected. */
+    VARIABLE_NO_AXIS_ENTITIES
 }
 
 

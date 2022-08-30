@@ -1006,6 +1006,35 @@ export const opPlane = function(context is Context, id is Id, definition is map)
 };
 
 /**
+ * Projects curves on a face.
+ * @param id : @autocomplete `id + "dropCurve1"`
+ * @param definition {{
+ *      @field tools {Query} : The edges to project.
+ *      @field targets {Query} : The faces/bodies the edges are to be projected onto.
+        @field projectionType {ProjectionType} : Projection method.
+ *      @field direction {Vector} : @optional
+                The direction in which to project the curve. Required if projectionType is ProjectionType.DIRECTION.
+ * }}
+ */
+export const opDropCurve = function(context is Context, id is Id, definition is map)
+{
+    return @opDropCurve(context, id, definition);
+};
+
+/**
+ * Intersect two faces, creating curves appropriately.
+ * @param id : @autocomplete `id + "intersectFaces1"`
+ * @param definition {{
+ *      @field tools {Query} : First array of faces to intersect.
+ *      @field targets {Query} : Second array of faces to intersect.
+ * }}
+ */
+export const opIntersectFaces = function(context is Context, id is Id, definition is map)
+{
+    return @opIntersectFaces(context, id, definition);
+};
+
+/**
  * Creates a sphere.
  * @param definition {{
  *      @field radius {ValueWithUnits} : The radius of the sphere.
