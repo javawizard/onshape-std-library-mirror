@@ -5,103 +5,95 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
+import(path : "onshape/std/manipulator.fs", version : "✨");
+import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+
+export import(path : "onshape/std/projectiontype.gen.fs", version : "✨");
 
 /**
- *  Performs [opExtrude] twice to extrude two sketches and then [opBoolean] to produce the intersection of the extruded surfaces
+ * Specifies the method used for generating intersection curves.
+ *
+ * @value TWO_SKETCHES: Performs [opExtrude] to convert sketches into surface, then uses [opBoolean] to intersect
+ *          those surfaces.
+ * @value CURVE_TO_FACE: Performs [opDropCurve] to project curves onto faces.
+ */
+export enum CurveProjectionType
+{
+    annotation { "Name" : "Two sketches" }
+    TWO_SKETCHES,
+    annotation { "Name" : "Curve to face" }
+    CURVE_TO_FACE
+}
+
+/**
+  * Feature creating projected curves.
+  *
+  * @param id : @autocomplete `id + "projectCurves1"`
+  * @param definition {{
+  *      @field curveProjectionType {CurveProjectionType}: @optional
+  *            The method used for generating intersection curves.
+  *            Default is `TWO_SKETCHES`.
+  *      @field sketchEdges1 {Query}: @requiredif { `curveProjectionType` is `TWO_SKETCHES` }
+  *            Edges from a single sketch that will be extruded to perform an intersection.
+  *      @field sketchEdges2 {Query}: @requiredif { `curveProjectionType` is `TWO_SKETCHES` }
+  *            Edges from a single sketch that will be extruded to perform an intersection.
+  *      @field dropTools {Query}: @requiredif { `curveProjectionType` is `CURVE_TO_FACE` }
+  *            Edges that will be projected onto `targets`.
+  *      @field projectionType {ProjectionType}: @requiredif { `curveProjectionType` is `CURVE_TO_FACE` }
+  *            Specifies whether to project along a direction or the face normal of `targets`.
+  *      @field directionQuery {Query}: @requiredif { `projectionType` is `DIRECTION` }
+  *            Specifies the direction of projection.
+  *      @field oppositeDirection {boolean}: @requiredif { `projectionType` is `DIRECTION` }
+  *            If true, negates the direction supplied by `directionQuery`.
+  *      @field targets {Query}: @requiredif { `curveProjectionType` is `CURVE_TO_FACE` }
+  *            Faces, sheet bodies, or solid bodies to project onto.
+  * }}
  */
 annotation { "Feature Type Name" : "Projected curve",
-        "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
+             "Manipulator Change Function" : "projectedCurveManipulatorChange",
+             "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const projectCurves = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "First sketch", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
-        definition.sketchEdges1 is Query;
-        annotation { "Name" : "Second sketch", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
-        definition.sketchEdges2 is Query;
+        annotation { "Name" : "Curve projection type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE] }
+        definition.curveProjectionType is CurveProjectionType;
+        if (definition.curveProjectionType == CurveProjectionType.TWO_SKETCHES)
+        {
+            annotation { "Name" : "First sketch", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
+            definition.sketchEdges1 is Query;
+            annotation { "Name" : "Second sketch", "Filter" : EntityType.EDGE && SketchObject.YES && ConstructionObject.NO }
+            definition.sketchEdges2 is Query;
+        }
+        else
+        {
+            annotation { "Name" : "Edges", "Filter" : EntityType.EDGE && ConstructionObject.NO }
+            definition.dropTools is Query;
+            annotation { "Name" : "Projection direction type" }
+            definition.projectionType is ProjectionType;
+            if (definition.projectionType == ProjectionType.DIRECTION)
+            {
+                annotation { "Name" : "Direction",
+                            "Filter" : QueryFilterCompound.ALLOWS_DIRECTION,
+                            "MaxNumberOfPicks" : 1 }
+                definition.directionQuery is Query;
+                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.oppositeDirection is boolean;
+            }
+            annotation { "Name" : "Targets", "Filter" : EntityType.FACE ||  (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) }
+            definition.targets is Query;
+        }
     }
     {
-        // We want to extrude the sketch edges
-        // Then we want to intersect the resulting faces with the target faces
-        // Then we want to delete the extruded faces
-
-        const edgeQ1 = qConstructionFilter(definition.sketchEdges1, ConstructionObject.NO);
-        const edgeQ2 = qConstructionFilter(definition.sketchEdges2, ConstructionObject.NO);
-
-        if (isQueryEmpty(context, edgeQ1))
+        if (definition.curveProjectionType == CurveProjectionType.TWO_SKETCHES)
         {
-            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges1"]);
+            projectSketches(context, id, definition);
         }
-
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V558_PROJECT_EDGES_SAME_SKETCH))
+        else
         {
-            verifySameSketch(context, edgeQ1, "sketchEdges1");
+            dropCurve(context, id, definition);
         }
-
-        if (isQueryEmpty(context, edgeQ2))
-        {
-            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges2"]);
-        }
-
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V558_PROJECT_EDGES_SAME_SKETCH))
-        {
-            verifySameSketch(context, edgeQ2, "sketchEdges2");
-        }
-
-        const plane1 = evOwnerSketchPlane(context, {
-                    "entity" : definition.sketchEdges1
-                });
-        const plane2 = evOwnerSketchPlane(context, {
-                    "entity" : definition.sketchEdges2
-                });
-        if (parallelVectors(plane1.normal, plane2.normal))
-        {
-            throw regenError(ErrorStringEnum.PROJECT_CURVES_PARALLEL_PLANES);
-        }
-
-        const boxAll = evBox3d(context, {
-                    "topology" : qUnion([edgeQ1, edgeQ2]),
-                    "tight" : false
-                });
-
-        const sizeAll = box3dDiagonalLength(boxAll);
-
-        opExtrude(context, id + "extrude1", {
-                    "entities" : edgeQ1,
-                    "direction" : evOwnerSketchPlane(context, { "entity" : edgeQ1 }).normal,
-                    "endBound" : BoundingType.BLIND,
-                    "endDepth" : sizeAll,
-                    "startBound" : BoundingType.BLIND,
-                    "startDepth" : sizeAll
-                });
-        opExtrude(context, id + "extrude2", {
-                    "entities" : edgeQ2,
-                    "direction" : evOwnerSketchPlane(context, { "entity" : edgeQ2 }).normal,
-                    "endBound" : BoundingType.THROUGH_ALL,
-                    "startBound" : BoundingType.THROUGH_ALL
-                });
-
-        var toolsQ = qUnion([qCreatedBy(id + "extrude1", EntityType.BODY), qCreatedBy(id + "extrude2", EntityType.BODY)]);
-        try
-        {
-            opBoolean(context, id + "boolean", {
-                        "tools" : toolsQ,
-                        "operationType" : BooleanOperationType.INTERSECTION,
-                        "allowSheets" : true,
-                        "eraseImprintedEdges" : false
-                    });
-        }
-        catch
-        {
-            throw regenError(ErrorStringEnum.REGEN_ERROR);
-        }
-        const booleanResult = qCreatedBy(id + "boolean", EntityType.BODY);
-        const resultCount = size(evaluateQuery(context, booleanResult));
-        const wireCount = size(evaluateQuery(context, qBodyType(booleanResult, BodyType.WIRE)));
-        if (resultCount != wireCount || wireCount < 1)
-        {
-            throw regenError(ErrorStringEnum.REGEN_ERROR);
-        }
-    });
+    }, { curveProjectionType : CurveProjectionType.TWO_SKETCHES });
 
 function verifySameSketch(context is Context, edges is Query, source is string)
 {
@@ -116,3 +108,171 @@ function verifySameSketch(context is Context, edges is Query, source is string)
     }
 }
 
+function projectSketches(context is Context, id is Id, definition is map)
+{
+    // We want to extrude the sketch edges
+    // Then we want to intersect the resulting faces with the target faces
+    // Then we want to delete the extruded faces
+
+    const edgeQ1 = qConstructionFilter(definition.sketchEdges1, ConstructionObject.NO);
+    const edgeQ2 = qConstructionFilter(definition.sketchEdges2, ConstructionObject.NO);
+
+    if (isQueryEmpty(context, edgeQ1))
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges1"]);
+    }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V558_PROJECT_EDGES_SAME_SKETCH))
+    {
+        verifySameSketch(context, edgeQ1, "sketchEdges1");
+    }
+
+    if (isQueryEmpty(context, edgeQ2))
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["sketchEdges2"]);
+    }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V558_PROJECT_EDGES_SAME_SKETCH))
+    {
+        verifySameSketch(context, edgeQ2, "sketchEdges2");
+    }
+
+    const plane1 = evOwnerSketchPlane(context, {
+                "entity" : definition.sketchEdges1
+            });
+    const plane2 = evOwnerSketchPlane(context, {
+                "entity" : definition.sketchEdges2
+            });
+    if (parallelVectors(plane1.normal, plane2.normal))
+    {
+        throw regenError(ErrorStringEnum.PROJECT_CURVES_PARALLEL_PLANES);
+    }
+
+    const boxAll = evBox3d(context, {
+                "topology" : qUnion([edgeQ1, edgeQ2]),
+                "tight" : false
+            });
+
+    const sizeAll = box3dDiagonalLength(boxAll);
+
+    opExtrude(context, id + "extrude1", {
+                "entities" : edgeQ1,
+                "direction" : evOwnerSketchPlane(context, { "entity" : edgeQ1 }).normal,
+                "endBound" : BoundingType.BLIND,
+                "endDepth" : sizeAll,
+                "startBound" : BoundingType.BLIND,
+                "startDepth" : sizeAll
+            });
+    opExtrude(context, id + "extrude2", {
+                "entities" : edgeQ2,
+                "direction" : evOwnerSketchPlane(context, { "entity" : edgeQ2 }).normal,
+                "endBound" : BoundingType.THROUGH_ALL,
+                "startBound" : BoundingType.THROUGH_ALL
+            });
+
+    var toolsQ = qUnion([qCreatedBy(id + "extrude1", EntityType.BODY), qCreatedBy(id + "extrude2", EntityType.BODY)]);
+    try
+    {
+        opBoolean(context, id + "boolean", {
+                    "tools" : toolsQ,
+                    "operationType" : BooleanOperationType.INTERSECTION,
+                    "allowSheets" : true,
+                    "eraseImprintedEdges" : false
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.REGEN_ERROR);
+    }
+    const booleanResult = qCreatedBy(id + "boolean", EntityType.BODY);
+    const resultCount = size(evaluateQuery(context, booleanResult));
+    const wireCount = size(evaluateQuery(context, qBodyType(booleanResult, BodyType.WIRE)));
+    if (resultCount != wireCount || wireCount < 1)
+    {
+        throw regenError(ErrorStringEnum.REGEN_ERROR);
+    }
+}
+
+function dropCurve(context is Context, id is Id, definition is map)
+{
+    const tools = qConstructionFilter(definition.dropTools, ConstructionObject.NO);
+    if (isQueryEmpty(context, tools))
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["dropTools"]);
+    }
+    if (definition.projectionType == ProjectionType.DIRECTION)
+    {
+        if (isQueryEmpty(context, definition.directionQuery))
+        {
+            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["directionQuery"]);
+        }
+        else
+        {
+            definition.direction = extractDirection(context, definition.directionQuery) * (definition.oppositeDirection ? -1 : 1);
+            addDropCurveManipulator(context, id, definition);
+        }
+    }
+    if (isQueryEmpty(context, definition.targets))
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["targets"]);
+    }
+    var remainingTransform = getRemainderPatternTransform(context,
+        {
+            "references" : qUnion(definition.dropTools, definition.targets)
+        });
+
+    opDropCurve(context, id, mergeMaps(definition, { "tools" : tools }));
+
+    transformResultIfNecessary(context, id, remainingTransform);
+}
+
+
+/**
+ * @internal
+ * Manipulator to keep front/back side of split
+ */
+function addDropCurveManipulator(context is Context, id is Id, definition is map)
+{
+    if (definition.projectionType != ProjectionType.DIRECTION || isQueryEmpty(context, definition.directionQuery))
+    {
+        return;
+    }
+    var manipulatorPlane;
+    if (!isQueryEmpty(context, qGeometry(definition.directionQuery, GeometryType.PLANE)))
+    {
+        manipulatorPlane = evPlane(context, {
+                "face" : definition.directionQuery
+        });
+    }
+    else
+    {
+        const axis = evAxis(context, {
+                "axis" : definition.directionQuery
+        });
+        manipulatorPlane = plane(axis.origin, axis.direction);
+    }
+    var manipulator is Manipulator = flipManipulator({
+        "base" : manipulatorPlane.origin,
+        "direction" : manipulatorPlane.normal,
+        "flipped" : definition.oppositeDirection
+    });
+    addManipulators(context, id, {
+        "flipManipulator" : manipulator
+    });
+}
+
+/**
+ * @internal
+ * Manipulator change function for `curveOnSurface`.
+ */
+export function projectedCurveManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    for (var manipulator in newManipulators)
+    {
+        if (manipulator.key == "flipManipulator")
+        {
+            definition.oppositeDirection = manipulator.value.flipped;
+        }
+    }
+    return definition;
+}

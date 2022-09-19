@@ -10,8 +10,8 @@ export enum ProjectionType
 {
     annotation {"Name" : "Direction"}
     DIRECTION,
-    annotation {"Name" : "Normal to face"}
-    NORMAL_TO_FACE
+    annotation {"Name" : "Normal to target"}
+    NORMAL_TO_TARGET
 }
 
 

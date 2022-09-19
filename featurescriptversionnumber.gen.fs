@@ -1137,7 +1137,14 @@ export enum FeatureScriptVersionNumber
     V1834_FIX_VARIABLE_FEATURE_VERSION_BUMP,
     V1835_VARIABLE_FEATURE_VALUE_VERSION_BUMP,
     V1836_INTERSECTION_CURVE_PATTERN_FIX_VERSION_BUMP,
-    V1837_SENTENCE_CASE_IN_VARIABLE_FEATURE_VERSION_BUMP
+    V1837_SENTENCE_CASE_IN_VARIABLE_FEATURE_VERSION_BUMP,
+    V1841_LOFT_CONNECTION_GUIDE_DIFF,
+    V1842_HOLE_GENERAL_INTERSECT,
+    V1843_GUSSET_FEATURE,
+    V1844_ENDCAP_FEATURE,
+    V1845_RULED_SURFACE_DERIVATIVE,
+    V1846_BEND_LINE_ATTACHED,
+    V1847_PROJECTED_CURVE_FIXES
 }
 
 /**
@@ -1148,6 +1155,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1837_SENTENCE_CASE_IN_VARIABLE_FEATURE_VERSION_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1847_PROJECTED_CURVE_FIXES;
 
 

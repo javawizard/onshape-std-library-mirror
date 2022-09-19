@@ -1249,6 +1249,7 @@ export const opSplitFace = function(context is Context, id is Id, definition is 
  * @type {{
  *      @field steepFaces {array} : An array of steep faces.
  *      @field nonSteepFaces {array} : An array of non-steep faces.
+ *      @field boundaryEdges {array} : An array of edges at the transition from non-steep faces to steep faces.
  * }}
  */
 export type SplitByIsoclineResult typecheck canBeSplitByIsoclineResult;
@@ -1259,6 +1260,7 @@ export predicate canBeSplitByIsoclineResult(value)
     value is map;
     value.steepFaces is array;
     value.nonSteepFaces is array;
+    value.boundaryEdges is array;
 }
 
 /**
@@ -1301,9 +1303,16 @@ export const opSplitByIsocline = function(context is Context, id is Id, definiti
         nonSteepFaces = append(nonSteepFaces, qTransient(transientId));
     }
 
+    var boundaryEdges = [];
+    for (var transientId in data.boundaryEdges)
+    {
+        boundaryEdges = append(boundaryEdges, qTransient(transientId));
+    }
+
     return {
         "steepFaces": steepFaces,
-        "nonSteepFaces": nonSteepFaces
+        "nonSteepFaces": nonSteepFaces,
+        "boundaryEdges": boundaryEdges
     } as SplitByIsoclineResult;
 };
 

@@ -2285,10 +2285,56 @@ export enum ErrorStringEnum
     FACE_INTERSECTION_UNIQUE_SELECTION,
     /* The current selections result in duplicate curves. Only one curve will be created. */
     FACE_INTERSECTION_OVERLAPPING_SELECTION,
+    /* Chamfer size cannot exceed the gusset size. */
+    CHAMFER_SIZE_EXCEED_GUSSET_SIZE,
+    /* Select linear edge on the frame segment cut face to create gusset. */
+    EMPTY_GUSSET_SELECTION,
+    /* Cannot fit a gusset for the highlighted edge(s). */
+    CANNOT_FIT_A_GUSSET,
+    /* Unable to create Gusset for non-Frame parts. */
+    NON_FRAME_EDGE_SELECTED,
+    /* Only edges adjacent to frame segment start or end faces are allowed. */
+    SWEPT_EDGE_SELECTED,
+    /* Select frame segment start or end face to create endcap. */
+    NO_CAP_FACE_SELECTED_ERROR,
+    /* Invalid selection. Select either end or start face of frame segment to build a cap. */
+    INVALID_CAP_FACE_SELECTED_ERROR,
+    /* Frame segments with multiple cap faces can only be covered by "Rectangle" endcap type. */
+    CAP_MULTI_FACE_SELECTED_ERROR,
+    /* Only frame segments with one internal profile can be capped. */
+    CAP_MULTI_LUMENS_SELECTED_ERROR,
+    /* Only straight frame segments can be capped. */
+    CAP_CURVED_FRAME_ERROR,
+    /* Cannot determine straight axis. */
+    CAP_FRAME_AXIS_ERROR,
     /* Cannot use 'Maximum' option with infinite entities. */
     VARIABLE_CANNOT_USE_MAXIMUM_WITH_INFINITE_ENTITIES,
     /* Measure from axis selected, but no entities with an axis were selected. */
-    VARIABLE_NO_AXIS_ENTITIES
+    VARIABLE_NO_AXIS_ENTITIES,
+    /* No projections found with current selections. */
+    CURVE_PROJECTION_NO_RESULT,
+    /* Could not create boundary surface with given information. Check profile order, intersections or end conditions. */
+    BSURF_FAILED,
+    /* Could not create valid profiles from selections. */
+    BSURF_PROFILE_FAILED,
+    /* Inconsistent boundary conditions. Some conditions will not be satisfied. */
+    BSURF_INCONSISTENT_BOUNDARY_CONDITIONS,
+    /* Simulation did not converge. Check for the presence of rigid body motion and/or change the connection type. Also check for incorrect/radically different material properties. */
+    FGS_SIMULATION_ERROR_SIMULATION_NON_CONVERGENT,
+    /* A bearing force generating greater than 5% lateral force has been detected. Ensure sufficient material and resolution around the interface if this is not the desired effect. */
+    FGS_SIMULATION_ERROR_LATERAL_BEARING_FORCE,
+    /* No loads have been applied to the assembly. At least one load is required for a linear static simulation. */
+    FGS_SIMULATION_ERROR_LOADS_NONE,
+    /* No constraints have been applied to the assembly. At least one constraint is required for a linear static simulation. */
+    FGS_SIMULATION_ERROR_CONSTRAINTS_NONE,
+    /* The assembly only has kinematic constraints applied. If all rigid body modes are constrained, results will be accurate. Otherwise, a fixed constraint may be required. */
+    FGS_SIMULATION_ERROR_CONSTRAINTS_ONLY_KINEMATIC,
+    /* An internal error has occurred and Onshape Simulation is unable to properly process your request at this time. We appreciate your patience and encourage you to submit this error to Onshape Support. */
+    FGS_SIMULATION_ERROR_INTERNAL_ERROR,
+    /* Text is not supported. */
+    DXF_COULD_NOT_CONVERT_TEXT,
+    /* Assembly too large to simulate. Try reducing the complexity or number of components. */
+    FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX
 }
 
 
