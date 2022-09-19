@@ -1,34 +1,34 @@
-FeatureScript 1837; /* Automatically generated version */
+FeatureScript 1847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1837.0");
-import(path : "onshape/std/boolean.fs", version : "1837.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1837.0");
-import(path : "onshape/std/box.fs", version : "1837.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1837.0");
-import(path : "onshape/std/containers.fs", version : "1837.0");
-import(path : "onshape/std/coordSystem.fs", version : "1837.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1837.0");
-import(path : "onshape/std/evaluate.fs", version : "1837.0");
-import(path : "onshape/std/feature.fs", version : "1837.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1837.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1837.0");
-import(path : "onshape/std/mathUtils.fs", version : "1837.0");
-import(path : "onshape/std/revolve.fs", version : "1837.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1837.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1837.0");
-import(path : "onshape/std/sketch.fs", version : "1837.0");
-import(path : "onshape/std/string.fs", version : "1837.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
-import(path : "onshape/std/tool.fs", version : "1837.0");
-import(path : "onshape/std/valueBounds.fs", version : "1837.0");
+import(path : "onshape/std/attributes.fs", version : "1847.0");
+import(path : "onshape/std/boolean.fs", version : "1847.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1847.0");
+import(path : "onshape/std/box.fs", version : "1847.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1847.0");
+import(path : "onshape/std/containers.fs", version : "1847.0");
+import(path : "onshape/std/coordSystem.fs", version : "1847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1847.0");
+import(path : "onshape/std/evaluate.fs", version : "1847.0");
+import(path : "onshape/std/feature.fs", version : "1847.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1847.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1847.0");
+import(path : "onshape/std/mathUtils.fs", version : "1847.0");
+import(path : "onshape/std/revolve.fs", version : "1847.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1847.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1847.0");
+import(path : "onshape/std/sketch.fs", version : "1847.0");
+import(path : "onshape/std/string.fs", version : "1847.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1847.0");
+import(path : "onshape/std/tool.fs", version : "1847.0");
+import(path : "onshape/std/valueBounds.fs", version : "1847.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1837.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1837.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1837.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1847.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1847.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -2638,7 +2638,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
     }
-    definition = adjustThreadDepth(oldDefinition, definition);
+    definition = adjustDepthAndThreadParameters(oldDefinition, definition, specifiedParameters);
     /* For Tapered Pipe Tap, the holeDepth and tappedDepth are also specified by the standard(ANSI, ISO).
        So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
     definition = setToCustomIfStandardViolated(definition);
@@ -2701,43 +2701,83 @@ function computePitch(definition is map)
     return undefined;
 }
 
-/*
- * Accounts for tapped holes by computing depth or threaded depth based on pitch
+/**
+ * Adjust the `holeDepth`, `tappedDepth`, and `tapClearance` parameters to be consistent
  */
-function adjustThreadDepth(oldDefinition is map, definition is map) returns map
+function adjustDepthAndThreadParameters(oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
-    if (threadPitchChanged(oldDefinition, definition))
+    if (!definitionChangeAffectsDepthAndThreadParameters(oldDefinition, definition))
+    {
+        return definition;
+    }
+
+    const pitch = computePitch(definition);
+    if (pitch == undefined)
     {
         definition.showTappedDepth = false;
-        var pitch = computePitch(definition);
-        if (pitch != undefined)
-        {
-            definition.showTappedDepth = true;
+        return definition;
+    }
+    definition.showTappedDepth = true;
 
-            // if blind hole type and have valid tap clearance value, then calculate and set either tapped or hole depth
-            if ((definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST) && definition.tapClearance != undefined)
+    const fieldInfos = [
             {
-                if (definition.holeDepth != oldDefinition.holeDepth)
-                {
-                    if (definition.holeDepth != undefined)
-                    {
-                        definition.tappedDepth = definition.holeDepth - definition.tapClearance * pitch;
-                    }
-                }
-                else
-                {
-                    if (definition.tappedDepth != undefined)
-                    {
-                        definition.holeDepth = definition.tappedDepth + definition.tapClearance * pitch;
-                    }
-                }
+                "fieldName" : "holeDepth",
+                "precalculatedValue" : definition.tappedDepth + definition.tapClearance * pitch,
+                "allowedToBeZero" : false
+            }, {
+                "fieldName" : "tappedDepth",
+                "precalculatedValue" : definition.holeDepth - definition.tapClearance * pitch,
+                "allowedToBeZero" : false
+            }, {
+                "fieldName" : "tapClearance",
+                // Pitch should be non-zero if `computePitch` returns successfully above, so dividing by it should be ok
+                "precalculatedValue" : (definition.holeDepth - definition.tappedDepth) / pitch,
+                "allowedToBeZero" : true
             }
+        ];
+    var candidates = [];
+    for (var fieldInfo in fieldInfos)
+    {
+        const valueIsBeingEdited = definition[fieldInfo.fieldName] != oldDefinition[fieldInfo.fieldName];
+        // When this is the "initial edit" made by the system when opening the dialog, it is ok to edit even though the value is undergoing a change.
+        const valueIsBeingEditedByUser = valueIsBeingEdited && oldDefinition[fieldInfo.fieldName] != undefined;
+
+        var valueIsPositive = fieldInfo.precalculatedValue > 0;
+        if (fieldInfo.allowedToBeZero)
+        {
+            valueIsPositive = valueIsPositive || fieldInfo.precalculatedValue == 0;
+        }
+
+        // Field is a candidate if it is not currently being edited, and is not going to be set to a negative number
+        if (!valueIsBeingEditedByUser && valueIsPositive)
+        {
+            candidates = candidates->append(fieldInfo);
         }
     }
+
+    if (candidates == [])
+    {
+        // No fields available to change. Let the feature issue a HOLE_INCONSISTENT_TAP_INFO warning
+        return definition;
+    }
+
+    // Try to pick a parameter that has not been edited yet
+    var fieldToChange = undefined;
+    for (var i = size(candidates) - 1; i >= 0; i -= 1) // Go backwards to prioritize fields at the end
+    {
+        if (specifiedParameters[candidates[i].fieldName] == false)
+        {
+            fieldToChange = candidates[i];
+        }
+    }
+    // Fall back on the last available field, if all the fields have been edited
+    fieldToChange = last(candidates);
+
+    definition[fieldToChange.fieldName] = fieldToChange.precalculatedValue;
     return definition;
 }
 
-function threadPitchChanged(oldDefinition is map, definition is map) returns boolean
+function definitionChangeAffectsDepthAndThreadParameters(oldDefinition is map, definition is map) returns boolean
 {
     return oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
         oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||

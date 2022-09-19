@@ -1,15 +1,15 @@
-FeatureScript 1837; /* Automatically generated version */
+FeatureScript 1847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import (path : "onshape/std/attributes.fs", version : "1837.0");
-import (path : "onshape/std/containers.fs", version : "1837.0");
-import (path : "onshape/std/context.fs", version : "1837.0");
-import (path : "onshape/std/evaluate.fs", version : "1837.0");
-import (path : "onshape/std/feature.fs", version : "1837.0");
-import (path : "onshape/std/query.fs", version : "1837.0");
-import (path : "onshape/std/table.fs", version : "1837.0");
+import (path : "onshape/std/attributes.fs", version : "1847.0");
+import (path : "onshape/std/containers.fs", version : "1847.0");
+import (path : "onshape/std/context.fs", version : "1847.0");
+import (path : "onshape/std/evaluate.fs", version : "1847.0");
+import (path : "onshape/std/feature.fs", version : "1847.0");
+import (path : "onshape/std/query.fs", version : "1847.0");
+import (path : "onshape/std/table.fs", version : "1847.0");
 
 /**
  * The possible types of a [FrameTopologyAttribute].

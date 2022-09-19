@@ -1,4 +1,4 @@
-FeatureScript 1837; /* Automatically generated version */
+FeatureScript 1847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1837; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1837.0");
-import(path : "onshape/std/context.fs", version : "1837.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1837.0");
-import(path : "onshape/std/query.fs", version : "1837.0");
-import(path : "onshape/std/valueBounds.fs", version : "1837.0");
-import(path : "onshape/std/vector.fs", version : "1837.0");
+import(path : "onshape/std/containers.fs", version : "1847.0");
+import(path : "onshape/std/context.fs", version : "1847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1847.0");
+import(path : "onshape/std/query.fs", version : "1847.0");
+import(path : "onshape/std/valueBounds.fs", version : "1847.0");
+import(path : "onshape/std/vector.fs", version : "1847.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1847.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1847.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1847.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1847.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1847.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1847.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1837.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1847.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1837.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1847.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1837.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1847.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1847.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1847.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -1249,6 +1249,7 @@ export const opSplitFace = function(context is Context, id is Id, definition is 
  * @type {{
  *      @field steepFaces {array} : An array of steep faces.
  *      @field nonSteepFaces {array} : An array of non-steep faces.
+ *      @field boundaryEdges {array} : An array of edges at the transition from non-steep faces to steep faces.
  * }}
  */
 export type SplitByIsoclineResult typecheck canBeSplitByIsoclineResult;
@@ -1259,6 +1260,7 @@ export predicate canBeSplitByIsoclineResult(value)
     value is map;
     value.steepFaces is array;
     value.nonSteepFaces is array;
+    value.boundaryEdges is array;
 }
 
 /**
@@ -1301,9 +1303,16 @@ export const opSplitByIsocline = function(context is Context, id is Id, definiti
         nonSteepFaces = append(nonSteepFaces, qTransient(transientId));
     }
 
+    var boundaryEdges = [];
+    for (var transientId in data.boundaryEdges)
+    {
+        boundaryEdges = append(boundaryEdges, qTransient(transientId));
+    }
+
     return {
         "steepFaces": steepFaces,
-        "nonSteepFaces": nonSteepFaces
+        "nonSteepFaces": nonSteepFaces,
+        "boundaryEdges": boundaryEdges
     } as SplitByIsoclineResult;
 };
 

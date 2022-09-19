@@ -1,26 +1,26 @@
-FeatureScript 1837; /* Automatically generated version */
+FeatureScript 1847; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1837.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "1837.0");
+export import(path : "onshape/std/query.fs", version : "1847.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "1847.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1837.0");
-import(path : "onshape/std/debug.fs", version : "1837.0");
-import(path : "onshape/std/evaluate.fs", version : "1837.0");
-import(path : "onshape/std/feature.fs", version : "1837.0");
-import(path : "onshape/std/string.fs", version : "1837.0");
-import(path : "onshape/std/tool.fs", version : "1837.0");
-import(path : "onshape/std/valueBounds.fs", version : "1837.0");
-import(path : "onshape/std/manipulator.fs", version : "1837.0");
-import(path : "onshape/std/vector.fs", version : "1837.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1837.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1837.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "1837.0");
-import(path : "onshape/std/coordSystem.fs", version : "1837.0");
+import(path : "onshape/std/containers.fs", version : "1847.0");
+import(path : "onshape/std/debug.fs", version : "1847.0");
+import(path : "onshape/std/evaluate.fs", version : "1847.0");
+import(path : "onshape/std/feature.fs", version : "1847.0");
+import(path : "onshape/std/string.fs", version : "1847.0");
+import(path : "onshape/std/tool.fs", version : "1847.0");
+import(path : "onshape/std/valueBounds.fs", version : "1847.0");
+import(path : "onshape/std/manipulator.fs", version : "1847.0");
+import(path : "onshape/std/vector.fs", version : "1847.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1847.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "1847.0");
+import(path : "onshape/std/coordSystem.fs", version : "1847.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -73,6 +73,12 @@ export enum VariableMinMaxSelection
     annotation { "Name" : "Maximum" }
     MAXIMUM
 }
+
+const AXIS_COLORS = [
+    DebugColor.RED,
+    DebugColor.GREEN,
+    DebugColor.BLUE
+];
 
 /**
  * Feature performing a `setVariable` allowing a user to assign a FeatureScript
@@ -225,7 +231,12 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         definition.description is string;
     }
     {
-        verifyVariableName(definition.name, "name");
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1846_BEND_LINE_ATTACHED))
+        {
+            verifyVariableName(definition.name, "name");
+        }
+
+        var value;
 
         if (definition.mode == VariableMode.ASSIGNED)
         {
@@ -235,8 +246,6 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                 definition.angleValue = adjustAngle(context, definition.angleValue);
             }
 
-            var value;
-
             if (definition.variableType == VariableType.LENGTH)
                 value = definition.lengthValue;
             else if (definition.variableType == VariableType.ANGLE)
@@ -245,8 +254,6 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                 value = definition.numberValue;
             else if (definition.variableType == VariableType.ANY)
                 value = definition.anyValue;
-
-            publishVariableValue(definition.name, context, id, value);
 
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
             {
@@ -262,16 +269,40 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             {
                 verifyNonemptyQuery(context, definition, "entityCouple", ErrorStringEnum.VARIABLE_SELECT_FIRST_ENTITY);
 
-                // If we have any flat entities and the entities come from multiple bodies, this is not a meaningful measurement.
-                const hasFlatEntities = !isQueryEmpty(context, definition.entityCouple->qSheetMetalFlatFilter(SMFlatType.YES));
-                if (hasFlatEntities && size(evaluateQuery(context, qOwnerBody(definition.entityCouple))) > 1)
+                var hasFlatEntities = false;
+                if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1846_BEND_LINE_ATTACHED))
                 {
-                    throw regenError(ErrorStringEnum.VARIABLE_FLATTENED_ENTITIES_MUST_BE_SAME_BODY);
+                    hasFlatEntities = !isQueryEmpty(context, definition.entityCouple->qSheetMetalFlatFilter(SMFlatType.YES));
+                    if (hasFlatEntities && size(evaluateQuery(context, qOwnerBody(definition.entityCouple))) > 1)
+                    {
+                        throw regenError(ErrorStringEnum.VARIABLE_FLATTENED_ENTITIES_MUST_BE_SAME_BODY);
+                    }
                 }
 
                 if (size(evaluateQuery(context, definition.entityCouple)) == 1)
                 {
-                    throw regenError(ErrorStringEnum.VARIABLE_SELECT_FIRST_ENTITY);
+                    throw regenError(ErrorStringEnum.VARIABLE_SELECT_SECOND_ENTITY);
+                }
+
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1846_BEND_LINE_ATTACHED))
+                {
+                    const flatOwnerBodySideA = getFlatOwnerBody(context, qNthElement(definition.entityCouple, 0));
+                    const flatOwnerBodySideB = getFlatOwnerBody(context, qNthElement(definition.entityCouple, 1));
+                    hasFlatEntities = flatOwnerBodySideA != undefined || flatOwnerBodySideB != undefined;
+
+                    // If both entities are in flats, check that they're in the same flat.
+                    if (flatOwnerBodySideA != undefined && flatOwnerBodySideB != undefined)
+                    {
+                        if (size(evaluateQuery(context, qUnion(flatOwnerBodySideA, flatOwnerBodySideB))) > 1)
+                        {
+                            throw regenError(ErrorStringEnum.VARIABLE_FLATTENED_ENTITIES_MUST_BE_SAME_BODY);
+                        }
+                    }
+                    // Else, if either entity is in a flat, we're measuring between a flat and something else, so throw.
+                    else if (hasFlatEntities)
+                    {
+                        throw regenError(ErrorStringEnum.VARIABLE_FLATTENED_ENTITIES_MUST_BE_SAME_BODY);
+                    }
                 }
 
                 if (definition.componentSelector == AxisWithCustom.CUSTOM)
@@ -286,12 +317,27 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                             extendEntities : definition.extendEntities,
                             maximum : definition.minmax == VariableMinMaxSelection.MAXIMUM
                         });
-                const selectedDistance = selectDistanceComponent(distanceResultMap, definition.componentSelector);
-                publishVariableValue(definition.name, context, id, selectedDistance);
+                value = selectDistanceComponent(distanceResultMap, definition.componentSelector);
 
                 if (!hasFlatEntities)
                 {
-                    try silent(addDebugLine(context, distanceResultMap.firstPoint, distanceResultMap.secondPoint, DebugColor.MAGENTA));
+                    try silent
+                    {
+                        addDebugLine(context, distanceResultMap.firstPoint, distanceResultMap.secondPoint, DebugColor.MAGENTA);
+                        if (definition.componentSelector != AxisWithCustom.DISTANCE && definition.componentSelector != AxisWithCustom.CUSTOM)
+                        {
+                            addAxisDecompositionDebugLines(context, distanceResultMap.firstPoint, distanceResultMap.secondPoint);
+                        }
+                        if (definition.componentSelector == AxisWithCustom.CUSTOM)
+                        {
+                            var customDirection = extractDirection(context, definition.customDirection);
+                            if (dot(customDirection, normalize(distanceResultMap.secondPoint - distanceResultMap.firstPoint)) < 0)
+                            {
+                                customDirection *= -1;
+                            }
+                            addDebugLine(context, distanceResultMap.firstPoint, distanceResultMap.firstPoint + value * customDirection, DebugColor.CYAN);
+                        }
+                    }
                 }
 
                 // Show axis decomposition in the feature dialog
@@ -307,19 +353,22 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
                 verifyNonemptyQuery(context, definition, "lengthEntities", ErrorStringEnum.VARIABLE_SELECT_ENTITIES_TO_MEASURE);
-                publishVariableValue(definition.name, context, id, evLength(context, {
+                value = evLength(context, {
                     "entities" : definition.lengthEntities
-                }));
+                });
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
             {
                 verifyNonemptyQuery(context, definition, "diameterEntity", ErrorStringEnum.VARIABLE_SELECT_ENTITY_TO_MEASURE);
-                publishVariableValue(definition.name, context, id, measureDiameter(context, {
+                value = measureDiameter(context, {
                     entity: definition.diameterEntity,
                     radius: definition.radius
-                }));
+                });
             }
         }
+
+        verifyVariableName(definition.name, "name");
+        publishVariableValue(definition.name, context, id, value);
     },
     {
         // Default mode is ASSIGNED.
@@ -644,6 +693,19 @@ function addAxisDecomposition(context is Context, distanceMap is map) returns ma
     return mergeMaps(distanceMap, axisDecomposition);
 }
 
+function addAxisDecompositionDebugLines(context is Context, from is Vector, to is Vector)
+{
+    const difference = to - from;
+    var current = from;
+    for (var axis = 0; axis < 3; axis += 1)
+    {
+        var next = current;
+        next[axis] += difference[axis];
+        addDebugLine(context, current, next, AXIS_COLORS[axis]);
+        current = next;
+    }
+}
+
 /**
  * For one of the sides of a DistanceResult, return the entity or line where the extremum was found.
  */
@@ -740,10 +802,21 @@ function hasAxisEntity(context is Context, entityQuery is Query) returns boolean
     return false;
 }
 
-function sideContainsConstructionPlanes(context is Context, side) returns boolean {
-    if (side is Query) {
+function sideContainsConstructionPlanes(context is Context, side) returns boolean
+{
+    if (side is Query)
+    {
         return !isQueryEmpty(context, side->qConstructionFilter(ConstructionObject.YES)->qGeometry(GeometryType.PLANE));
     }
     return false;
+}
+
+function getFlatOwnerBody(context is Context, entity is Query)
+{
+    const smFlatOwnerBodyQuery = qUnion(
+        entity->qSheetMetalFlatFilter(SMFlatType.YES)->qOwnerBody(), // regular flat entities
+        qPartsAttachedTo(entity) // bend lines
+    )->qBodyType(BodyType.SOLID); // solid because sheet metal sketches will get the sketch body and the flat
+    return isQueryEmpty(context, smFlatOwnerBodyQuery) ? undefined : smFlatOwnerBodyQuery;
 }
 
