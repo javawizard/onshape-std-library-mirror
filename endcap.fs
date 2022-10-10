@@ -1,35 +1,35 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "1847.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1847.0");
-import(path : "onshape/std/chamfer.fs", version : "1847.0");
-import(path : "onshape/std/containers.fs", version : "1847.0");
-import(path : "onshape/std/cutlistMath.fs", version : "1847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
-import(path : "onshape/std/coordSystem.fs", version : "1847.0");
-import(path : "onshape/std/error.fs", version : "1847.0");
-import(path : "onshape/std/evaluate.fs", version : "1847.0");
-import(path : "onshape/std/feature.fs", version : "1847.0");
-import(path : "onshape/std/frameUtils.fs", version : "1847.0");
-import(path : "onshape/std/fillet.fs", version : "1847.0");
-import(path : "onshape/std/math.fs", version : "1847.0");
-import(path : "onshape/std/manipulator.fs", version : "1847.0");
-import(path : "onshape/std/offsetSurface.fs", version : "1847.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1847.0");
-import(path : "onshape/std/string.fs", version : "1847.0");
-import(path : "onshape/std/sketch.fs", version : "1847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1847.0");
-import(path : "onshape/std/splitpart.fs", version : "1847.0");
-import(path : "onshape/std/units.fs", version : "1847.0");
-import(path : "onshape/std/valueBounds.fs", version : "1847.0");
-import(path : "onshape/std/vector.fs", version : "1847.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1867.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1867.0");
+import(path : "onshape/std/chamfer.fs", version : "1867.0");
+import(path : "onshape/std/containers.fs", version : "1867.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1867.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
+import(path : "onshape/std/coordSystem.fs", version : "1867.0");
+import(path : "onshape/std/error.fs", version : "1867.0");
+import(path : "onshape/std/evaluate.fs", version : "1867.0");
+import(path : "onshape/std/feature.fs", version : "1867.0");
+import(path : "onshape/std/frameUtils.fs", version : "1867.0");
+import(path : "onshape/std/fillet.fs", version : "1867.0");
+import(path : "onshape/std/math.fs", version : "1867.0");
+import(path : "onshape/std/manipulator.fs", version : "1867.0");
+import(path : "onshape/std/offsetSurface.fs", version : "1867.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1867.0");
+import(path : "onshape/std/string.fs", version : "1867.0");
+import(path : "onshape/std/sketch.fs", version : "1867.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
+import(path : "onshape/std/splitpart.fs", version : "1867.0");
+import(path : "onshape/std/units.fs", version : "1867.0");
+import(path : "onshape/std/valueBounds.fs", version : "1867.0");
+import(path : "onshape/std/vector.fs", version : "1867.0");
 
-const THICKNESS_MANIPULATOR_ID = "thicknessManipulator";
-const OFFSET_MANIPULATOR_ID = "offsetManipulator";
-const INTERNAL_MANIPULATOR_ID = "internalManipulator";
+const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
+const OFFSET_MANIPULATOR_ID = "Offset manipulator";
+const INTERNAL_MANIPULATOR_ID = "Internal manipulator";
 
 const OFFSET_BOUNDS =
 {
@@ -42,10 +42,17 @@ const OFFSET_BOUNDS =
         } as LengthBoundSpec;
 
 const POSITIVE_LENGTH_BOUNDS =
-{ (meter) : [0, 0.0, 500] } as LengthBoundSpec;
+{
+            (meter) : [0.0, 0.0, 500],
+            (centimeter) : 0.0,
+            (millimeter) : 0.0,
+            (inch) : 0.0,
+            (foot) : 0.0,
+            (yard) : 0.0
+        } as LengthBoundSpec;
 
 /** @internal */
-export enum ProfileControl
+export enum ProfileType
 {
     annotation { "Name" : "Match profile" }
     MATCH_PROFILE,
@@ -76,16 +83,16 @@ annotation { "Feature Type Name" : "End cap",
 export const endcap = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Faces", "Filter" : GeometryType.PLANE }
+        annotation { "Name" : "Faces", "Filter" : GeometryType.PLANE && ConstructionObject.NO }
         definition.faces is Query;
 
-        annotation { "Name" : "Profile control" }
-        definition.profileControl is ProfileControl;
+        annotation { "Name" : "Profile type" }
+        definition.profileType is ProfileType;
 
         annotation { "Name" : "Thickness" }
         isLength(definition.thickness, OFFSET_BOUNDS);
 
-        if (definition.profileControl != ProfileControl.INTERNAL)
+        if (definition.profileType != ProfileType.INTERNAL)
         {
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.thicknessDirection is boolean;
@@ -93,25 +100,30 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Offset", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
             isLength(definition.offsetDistance, POSITIVE_LENGTH_BOUNDS);
 
-            annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.offsetDirection is boolean;
         }
 
-        if (definition.profileControl == ProfileControl.INTERNAL)
+        if (definition.profileType == ProfileType.INTERNAL)
         {
-            annotation { "Name" : "Offset", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
+            annotation { "Name" : "Inset", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
             isLength(definition.internalShiftDistance, POSITIVE_LENGTH_BOUNDS);
         }
 
-        if (definition.profileControl == ProfileControl.RECTANGLE)
+        if (definition.profileType == ProfileType.RECTANGLE)
         {
             annotation { "Name" : "Treatment type", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.SHOW_LABEL] }
             definition.cornersType is CornerType;
 
-            if (definition.cornersType != CornerType.NONE)
+            if (definition.cornersType == CornerType.CHAMFER)
             {
                 annotation { "Name" : "Length", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
                 isLength(definition.cornerDistance, OFFSET_BOUNDS);
+            }
+            else if (definition.cornersType == CornerType.FILLET)
+            {
+                annotation { "Name" : "Radius", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
+                isLength(definition.cornerRadius, OFFSET_BOUNDS);
             }
         }
     }
@@ -130,7 +142,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 //Collecting of all of them necessary for proper Cap geometry creation.
                 //For a beam, check if the user has selected a “start” face or “end face”.
                 //Then gather up all the other faces belonging to the body that have the same attribution.
-                if (!isFrameCapFace(context, face))
+                if (!isCapFace(context, face))
                 {
                     throw regenError(ErrorStringEnum.INVALID_CAP_FACE_SELECTED_ERROR, ["faces"], face);
                 }
@@ -140,13 +152,13 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
 
                 face = isStartFace(context, face) ? qFrameStartFace(body) : qFrameEndFace(body);
 
-                if (definition.profileControl != ProfileControl.RECTANGLE && size(evaluateQuery(context, face)) > 1)
+                if (definition.profileType != ProfileType.RECTANGLE && size(evaluateQuery(context, face)) > 1)
                 {
                     throw regenError(ErrorStringEnum.CAP_MULTI_FACE_SELECTED_ERROR, ["faces"], face);
                 }
 
                 var selectedFace = face;
-                if (!definition.thicknessDirection && definition.profileControl != ProfileControl.INTERNAL)
+                if (!definition.thicknessDirection && definition.profileType != ProfileType.INTERNAL)
                 {
                     selectedFace = startTracking(context, face);
                     opOffsetFace(context, id + "offsetFace1", {
@@ -159,13 +171,13 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 const facePlane = selectedFaceGeometryMap.facePlane;
 
                 //Only work for single lumen frame segments. Fail if multiple internal lumens detected.
-                if (definition.profileControl == ProfileControl.INTERNAL && selectedFaceGeometryMap.loopsCount != 2)
+                if (definition.profileType == ProfileType.INTERNAL && selectedFaceGeometryMap.loopsCount != 2)
                 {
                     throw regenError(ErrorStringEnum.CAP_MULTI_LUMENS_SELECTED_ERROR, ["faces"], face);
                 }
 
                 var facesToDelete = selectedFaceGeometryMap.tempFace;
-                if (definition.profileControl == ProfileControl.INTERNAL)
+                if (definition.profileType == ProfileType.INTERNAL)
                 {
                     const internalCapFaceMap = generateProfileInternal(context, id, definition, selectedFace, selectedFaceGeometryMap);
 
@@ -177,7 +189,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                                 "direction" : internalCapFaceMap.direction,
                                 "offset" : definition.internalShiftDistance,
                                 "minValue" : 0 * meter,
-                                "primaryParameterId" : "InternalShift"
+                                "primaryParameterId" : "internalShiftDistance"
                             });
 
                         addManipulators(context, featureId[], {
@@ -187,20 +199,20 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                         isManipulatorAdded[] = true;
                     }
                 }
-                else if (definition.profileControl == ProfileControl.MATCH_PROFILE)
+                else if (definition.profileType == ProfileType.MATCH_PROFILE)
                 {
                     endCapFaces = generateProfileMatch(context, id, definition, selectedFace, selectedFaceGeometryMap);
                 }
-                else if (definition.profileControl == ProfileControl.RECTANGLE)
+                else if (definition.profileType == ProfileType.RECTANGLE)
                 {
                     endCapFaces = generateProfileRectangle(context, id, definition, selectedFace, facePlane);
                 }
-                else if (definition.profileControl == ProfileControl.CIRCLE)
+                else if (definition.profileType == ProfileType.CIRCLE)
                 {
                     endCapFaces = generateProfileCircle(context, id, definition, selectedFace, selectedFaceGeometryMap);
                 }
 
-                if (definition.profileControl != ProfileControl.INTERNAL)
+                if (definition.profileType != ProfileType.INTERNAL)
                 {
                     const outerFaces = qSubtraction(endCapFaces, qFacesParallelToDirection(endCapFaces, facePlane.normal));
                     const edgeFaces = qSubtraction(endCapFaces, outerFaces);
@@ -213,7 +225,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                                 "base" : manipulatorBase,
                                 "direction" : definition.thicknessDirection ? facePlane.normal : -facePlane.normal,
                                 "offset" : definition.thickness,
-                                "primaryParameterId" : "Thickness"
+                                "primaryParameterId" : "thickness"
                             });
 
                         addManipulators(context, featureId[], {
@@ -230,7 +242,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                                 "base" : extrudePlane.origin,
                                 "direction" : definition.offsetDirection ? -extrudePlane.normal : extrudePlane.normal,
                                 "offset" : definition.offsetDistance,
-                                "primaryParameterId" : "Offset"
+                                "primaryParameterId" : "offsetDistance"
                             });
 
                         addManipulators(context, featureId[], {
@@ -248,7 +260,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                                 });
                     }
 
-                    if (definition.profileControl == ProfileControl.RECTANGLE && definition.cornersType != CornerType.NONE)
+                    if (definition.profileType == ProfileType.RECTANGLE && definition.cornersType != CornerType.NONE)
                     {
                         const chamferEdges = qNonCapEntity(id + "extrude", EntityType.EDGE);
 
@@ -264,7 +276,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                         {
                             callSubfeatureAndProcessStatus(featureId[], fillet, context, id + "fillet1", {
                                         "entities" : chamferEdges,
-                                        "radius" : definition.cornerDistance
+                                        "radius" : definition.cornerRadius
                                     });
                         }
                     }
@@ -327,7 +339,7 @@ function generateProfileMatch(context is Context, id is Id, definition is map, f
     const extrudeId = id + "extrude";
     opExtrude(context, extrudeId, {
                 "entities" : outerFace,
-                "direction" : definition.profileControl == ProfileControl.INTERNAL ? -facePlane.normal : facePlane.normal,
+                "direction" : definition.profileType == ProfileType.INTERNAL ? -facePlane.normal : facePlane.normal,
                 "endBound" : BoundingType.BLIND,
                 "endDepth" : definition.thickness
             });

@@ -1,4 +1,4 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1847; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1847.0");
-import(path : "onshape/std/context.fs", version : "1847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1847.0");
-import(path : "onshape/std/query.fs", version : "1847.0");
-import(path : "onshape/std/valueBounds.fs", version : "1847.0");
-import(path : "onshape/std/vector.fs", version : "1847.0");
+import(path : "onshape/std/containers.fs", version : "1867.0");
+import(path : "onshape/std/context.fs", version : "1867.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
+import(path : "onshape/std/query.fs", version : "1867.0");
+import(path : "onshape/std/valueBounds.fs", version : "1867.0");
+import(path : "onshape/std/vector.fs", version : "1867.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1867.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1867.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1867.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1867.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1867.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1867.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1847.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1867.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1847.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1867.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1847.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1867.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1867.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1847.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1867.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -821,7 +821,7 @@ export const opImportForeign = function(context is Context, id is Id, definition
 
 
                 (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
- *              @eg `[ {"connectionEntities" : qVertexAndEdge1, "connectionEdges : [qEdge1], "connectionEdgeParameters" : [0.25]} {"connectionEntities" : qVertexAndEdge2, "connectionEdges" : [qEdge2], "connectionEdgeParameters" : [0.75]}]`
+ *              @eg `[ {"connectionEntities" : qVertexAndEdge1, "connectionEdges" : [qEdge1], "connectionEdgeParameters" : [0.25]} {"connectionEntities" : qVertexAndEdge2, "connectionEdges" : [qEdge2], "connectionEdgeParameters" : [0.75]}]`
  *      @field connectionsArcLengthParameterization {boolean} : Defaults to false for better performance. Controls interpretation of connectionEdgeParameters.
  *              If [evDistance], [evEdgeTangentLine] etc. are called in conjunction with opLoft the same value should be passed as `arcLengthParameterization` there. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
@@ -1220,12 +1220,13 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *      @field faceTargets {Query} : The faces to split.
  *      @field edgeTools {Query} : @optional
  *              The edges to cut with.
- *      @field direction {Vector} : @requiredif {there are edge tools.}
+ *      @field projectionType {ProjectionType} : @optional Edge projection method. Default is `ProjectionType.NORMAL_TO_TARGET`
+ *      @field direction {Vector} : @requiredif {`edgeTools` are present and `projectionType` is `ProjectionType.DIRECTION`.}
  *              The projection direction.
  *      @field faceTools {Query} : @optional
  *              The faces to cut with.
  *      @field bodyTools {Query} : @optional
- *              The bodies to cut with.
+ *              The sheet or wire bodies to cut with.
  *      @field keepToolSurfaces {boolean} : @optional
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional

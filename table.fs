@@ -1,17 +1,17 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/containers.fs", version : "1847.0");
-export import(path : "onshape/std/context.fs", version : "1847.0");
-export import(path : "onshape/std/evaluate.fs", version : "1847.0");
-export import(path : "onshape/std/math.fs", version : "1847.0");
-export import(path : "onshape/std/properties.fs", version : "1847.0");
-export import(path : "onshape/std/query.fs", version : "1847.0");
-export import(path : "onshape/std/string.fs", version : "1847.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1847.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1847.0");
+export import(path : "onshape/std/containers.fs", version : "1867.0");
+export import(path : "onshape/std/context.fs", version : "1867.0");
+export import(path : "onshape/std/evaluate.fs", version : "1867.0");
+export import(path : "onshape/std/math.fs", version : "1867.0");
+export import(path : "onshape/std/properties.fs", version : "1867.0");
+export import(path : "onshape/std/query.fs", version : "1867.0");
+export import(path : "onshape/std/string.fs", version : "1867.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1867.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1867.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -198,12 +198,26 @@ export function tableRow(columnIdToCell is map, entities is Query) returns Table
 
 // ----------------------------------- Table Values -----------------------------------
 
+/** Represents a [ValueWithUnits] which, when put in a [TemplateString] will render with a specified precision override. */
+export type ValueWithUnitsAndPrecision typecheck canBeValueWithUnitsAndPrecision;
 
+/** Typecheck for [ValueWithUnitsAndPrecision] */
+export predicate canBeValueWithUnitsAndPrecision(value)
+{
+    value.value is ValueWithUnits;
+    value.precision is number;
+}
+
+/** Constructs a [ValueWithUnitsAndPrecision] given the value and precision. */
+export function valueWithUnitsAndPrecision(value is ValueWithUnits, precision is number) returns ValueWithUnitsAndPrecision
+{
+    return { "value" : value, "precision" : precision } as ValueWithUnitsAndPrecision;
+}
 
 /** Returns `true` if the input is a table value, that is a string, a number, a [ValueWithUnits] or a [TemplateString]. */
 export predicate isTableValue(value)
 {
-    value is string || value is number || value is ValueWithUnits || value is TemplateString || value is StringWithTolerances;
+    value is string || value is number || value is ValueWithUnits || value is TemplateString || value is StringWithTolerances || value is ValueWithUnitsAndPrecision;
 }
 
 // ----------------------------------- Table Array -----------------------------------
@@ -285,7 +299,7 @@ export predicate canBeTemplateString(value)
     for (var entry in value)
     {
         entry.key is string;
-        entry.value is string || entry.value is number || entry.value is ValueWithUnits;
+        entry.value is string || entry.value is number || entry.value is ValueWithUnits || entry.value is ValueWithUnitsAndPrecision;
     }
     // Other entries are referenced by the template
 }

@@ -1,11 +1,16 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1847.0");
-import(path : "onshape/std/hole.fs", version : "1847.0");
-import(path : "onshape/std/table.fs", version : "1847.0");
+import(path : "onshape/std/attributes.fs", version : "1867.0");
+import(path : "onshape/std/hole.fs", version : "1867.0");
+import(path : "onshape/std/table.fs", version : "1867.0");
+
+const TAG_COLUMN_KEY = "tag";
+const SIZE_COLUMN_KEY = "size";
+const ANGLE_COLUMN_KEY = "angle";
+const QUANTITY_COLUMN_KEY = "quantity";
 
 /** Computes one hole table for each part */
 annotation { "Table Type Name" : "Hole table" }
@@ -14,19 +19,17 @@ export const holeTable = defineTable(function(context is Context, definition is 
     {
     }
     {
+        const attributePattern = {} as HoleAttribute;
+
         var tables = [];
 
-        var columnDefinitions = [];
-        columnDefinitions = append(columnDefinitions, tableColumnDefinition("tag", "Tag"));
-        columnDefinitions = append(columnDefinitions, tableColumnDefinition("size", "Size"));
-        columnDefinitions = append(columnDefinitions, tableColumnDefinition("quantity", "Qty"));
+        var partAndBodyToRowToData = {};
 
-        const attributePattern = {} as HoleAttribute;
+        var showAngle = false;
+        var lastAngle = undefined;
 
         for (var partAndBodies in allSolidsAndClosedComposites(context))
         {
-            var rows = [];
-
             var featureAndNumberToFaces = {};
             var sizeToRowData = {};
 
@@ -34,13 +37,24 @@ export const holeTable = defineTable(function(context is Context, definition is 
             for (var face in evaluateQuery(context, holeFacesQuery))
             {
                 var attribute = @getAttributes(context, { "entities" : face, "attributePattern" : attributePattern })[0];
+                if (attribute.isExternalThread == true)
+                {
+                    continue;
+                }
                 var featureAndNumber = [attribute.holeFeatureCount, attribute.holeNumber, attribute.attributeId];
                 var current = featureAndNumberToFaces[featureAndNumber];
                 if (current != undefined)
                     featureAndNumberToFaces[featureAndNumber] = append(current, face);
                 else
                     featureAndNumberToFaces[featureAndNumber] = [face];
+
+                var tipAngle = computeAngle(attribute);
+                if (lastAngle == undefined)
+                    lastAngle = tipAngle;
+                else if (tipAngle != lastAngle)
+                    showAngle = true;
             }
+
             var numRows = 0;
             var tag = 'A';
             for (var entry in featureAndNumberToFaces)
@@ -49,15 +63,19 @@ export const holeTable = defineTable(function(context is Context, definition is 
                 var size = computeSize(attribute);
                 var sizeSignature = sizeToSizeSignature(size);
 
-                var current = sizeToRowData[sizeSignature];
+                const tipAngle = computeAngle(attribute);
+
+                const holeKey = [sizeSignature, tipAngle];
+
+                const current = sizeToRowData[holeKey];
                 if (current != undefined)
                 {
-                    sizeToRowData[sizeSignature].quantity += 1;
-                    sizeToRowData[sizeSignature].faces = append(current.faces, entry.value);
+                    sizeToRowData[holeKey].quantity += 1;
+                    sizeToRowData[holeKey].faces = append(current.faces, entry.value);
                 }
                 else
                 {
-                    sizeToRowData[sizeSignature] = { "quantity" : 1, "row" : numRows, "faces" : [entry.value], "tag" : tag, "size" : size };
+                    sizeToRowData[holeKey] = { (QUANTITY_COLUMN_KEY) : 1, "row" : numRows, "faces" : [entry.value], (TAG_COLUMN_KEY) : tag, (ANGLE_COLUMN_KEY) : tipAngle, (SIZE_COLUMN_KEY) : size };
                     tag = nextTag(tag);
                     numRows += 1;
                 }
@@ -66,20 +84,67 @@ export const holeTable = defineTable(function(context is Context, definition is 
             for (var entry in sizeToRowData)
                 rowToData[entry.value.row] = entry.value;
 
+            partAndBodyToRowToData[partAndBodies] = rowToData;
+        }
+
+        var columnDefinitions = [];
+        columnDefinitions = append(columnDefinitions, tableColumnDefinition(TAG_COLUMN_KEY, "Tag"));
+        columnDefinitions = append(columnDefinitions, tableColumnDefinition(SIZE_COLUMN_KEY, "Size"));
+
+        if (showAngle)
+        {
+            columnDefinitions = append(columnDefinitions, tableColumnDefinition(ANGLE_COLUMN_KEY, "Drill angle"));
+        }
+
+        columnDefinitions = append(columnDefinitions, tableColumnDefinition(QUANTITY_COLUMN_KEY, "Qty"));
+
+        for (var partAndBodies in allSolidsAndClosedComposites(context))
+        {
+            var rows = [];
+
+            var rowToData = partAndBodyToRowToData[partAndBodies];
+
             for (var entry in rowToData)
             {
                 var holeFaces = qUnion(concatenateArrays(entry.value.faces));
                 var holeEdges = qAdjacent(holeFaces, AdjacencyType.EDGE, EntityType.EDGE);
-                rows = append(rows, tableRow({ "tag" : entry.value.tag, "size" : entry.value.size, "quantity" : entry.value.quantity }, qUnion([holeFaces, holeEdges])));
-            }
 
-            var partName = getProperty(context, { "entity" : partAndBodies.part, "propertyType" : PropertyType.NAME } );
+                var rowMap = {
+                    (TAG_COLUMN_KEY) : entry.value.tag,
+                    (SIZE_COLUMN_KEY) : entry.value.size,
+                    (QUANTITY_COLUMN_KEY) : entry.value.quantity
+                };
+                if (showAngle)
+                {
+                    rowMap[ANGLE_COLUMN_KEY] = entry.value.angle;
+                }
+                rows = append(rows, tableRow(rowMap, qUnion([holeFaces, holeEdges])));
+            }
+            //for local testing comment the getProperty method
+            var partName = getProperty(context, { "entity" : partAndBodies.part, "propertyType" : PropertyType.NAME });
             var title = { "template" : "#name", "name" : partName } as TemplateString; // Use a template so we don't try to translate the part name
 
             tables = append(tables, table(title, columnDefinitions, rows, partAndBodies.part));
         }
         return tableArray(tables);
     });
+
+function computeAngle(attribute is HoleAttribute) returns TemplateString
+{
+    var result = {};
+    const CHARACTER_SPACE = ' ';
+    if (attribute.endType != HoleEndStyle.THROUGH)
+    {
+        result.template = "#tipAngle";
+        result.tipAngle = attribute.tipAngle;
+    }
+    else
+    {
+        result.template = CHARACTER_SPACE;
+    }
+
+    return result as TemplateString;
+}
 
 function computeSize(attribute is HoleAttribute) returns TemplateString
 {
@@ -132,7 +197,11 @@ function computeSize(attribute is HoleAttribute) returns TemplateString
             }
         }
     }
-
+    if (attribute.isExternalThread == true)
+    {
+        result = {};
+        template = "External Thread";
+    }
     result.template = template;
     return result as TemplateString;
 }

@@ -1,25 +1,29 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "1847.0");
-import(path : "onshape/std/valueBounds.fs", version : "1847.0");
-import(path : "onshape/std/frameUtils.fs", version : "1847.0");
-import(path : "onshape/std/feature.fs", version : "1847.0");
-import(path : "onshape/std/evaluate.fs", version : "1847.0");
-import(path : "onshape/std/containers.fs", version : "1847.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1847.0");
-import(path : "onshape/std/string.fs", version : "1847.0");
-import(path : "onshape/std/vector.fs", version : "1847.0");
-import(path : "onshape/std/coordSystem.fs", version : "1847.0");
-import(path : "onshape/std/sketch.fs", version : "1847.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1847.0");
-import(path : "onshape/std/manipulator.fs", version : "1847.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1847.0");
+import(path : "onshape/std/units.fs", version : "1867.0");
+import(path : "onshape/std/valueBounds.fs", version : "1867.0");
+import(path : "onshape/std/frameUtils.fs", version : "1867.0");
+import(path : "onshape/std/feature.fs", version : "1867.0");
+import(path : "onshape/std/evaluate.fs", version : "1867.0");
+import(path : "onshape/std/containers.fs", version : "1867.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
+import(path : "onshape/std/string.fs", version : "1867.0");
+import(path : "onshape/std/vector.fs", version : "1867.0");
+import(path : "onshape/std/coordSystem.fs", version : "1867.0");
+import(path : "onshape/std/sketch.fs", version : "1867.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
+import(path : "onshape/std/manipulator.fs", version : "1867.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1867.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 const MIN_THICKNESS = MIN_SIZE;
+
+const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
+const SIZE_MANIPULATOR_ID = "Size manipulator";
+const OFFSET_MANIPULATOR_ID = "Offset manipulator";
 
 enum GussetError
 {
@@ -359,10 +363,10 @@ function createMidpointManipulator(context is Context, id is Id, definition is m
                 "base" : tangentLine.origin,
                 "direction" : tangentLine.direction,
                 "offset" : definition.shouldFlipOffset ? definition.offset : -definition.offset,
-                "primaryParameterId" : "Offset"
+                "primaryParameterId" : "offset"
             });
     addManipulators(context, id, {
-                "midpointManipulator" : midpointManipulator
+                (OFFSET_MANIPULATOR_ID) : midpointManipulator
             });
 }
 
@@ -375,11 +379,11 @@ function createThicknessManipulator(context is Context, id is Id, definition is 
                 "base" : centroid,
                 "direction" : tangentLine.direction,
                 "offset" : definition.thickness / 2.0,
-                "primaryParameterId" : "Thickness",
+                "primaryParameterId" : "thickness",
                 "minValue" : MIN_THICKNESS
             });
     addManipulators(context, id, {
-                "thicknessManipulator" : thicknessManipulator
+                (THICKNESS_MANIPULATOR_ID) : thicknessManipulator
             });
 }
 
@@ -389,11 +393,11 @@ function createSizeManipulator(context is Context, id is Id, tangentLine is Line
                 "base" : tangentLine.origin,
                 "direction" : tangentLine.direction,
                 "offset" : offset,
-                "primaryParameterId" : "Size",
+                "primaryParameterId" : "size",
                 "minValue" : MIN_SIZE
             });
     addManipulators(context, id, {
-                "sizeManipulator" : sizeManipulator
+                (SIZE_MANIPULATOR_ID) : sizeManipulator
             });
 }
 
@@ -402,16 +406,16 @@ export function gussetManipulatorChange(context is Context, definition is map, n
 {
     for (var key, value in newManipulators)
     {
-        if (key == "midpointManipulator")
+        if (key == OFFSET_MANIPULATOR_ID)
         {
             definition.offset = abs(value.offset);
             definition.shouldFlipOffset = value.offset > 0;
         }
-        if (key == "thicknessManipulator")
+        if (key == THICKNESS_MANIPULATOR_ID)
         {
             definition.thickness = value.offset * 2;
         }
-        if (key == "sizeManipulator")
+        if (key == SIZE_MANIPULATOR_ID)
         {
             definition.size = value.offset;
         }

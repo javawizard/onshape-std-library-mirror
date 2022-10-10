@@ -1,4 +1,4 @@
-FeatureScript 1847; /* Automatically generated version */
+FeatureScript 1867; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -59,7 +59,7 @@ FeatureScript 1847; /* Automatically generated version */
  *      its displayed row.
  * @value ALLOW_QUERY_ORDER : Enable reordering of queries in a query parameter.
  * @value PREVENT_ARRAY_REORDER : Disable reordering of items in an array parameter.
- * @value FOCUS_INNER_QUERY : When selecting a new item of a selection-driven array parameter, move selection focus from the outer array         parameter to the inner QLV.
+ * @value FOCUS_INNER_QUERY : When adding a new item to an array parameter, focus the driving inner QLV if the parameter is         selection-driven, and focus the first inner QLV otherwise.
  * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
  * @value SHOW_TOLERANCE : For a boolean parameter, display as a toggle button with tolerance icon next to
  *      the previous parameter.
