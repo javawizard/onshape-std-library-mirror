@@ -10549,7 +10549,7 @@ export const ISO_ExternalThreadTable = {
     "entries" : {
         "M1" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.25 mm",
             "entries" : {
                 "0.25 mm" : {"holeDiameter" : "1 mm", "minorDiameter" : "0.729 mm", "majorDiameter" : "1 mm"},
@@ -10558,7 +10558,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M1.1" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.25 mm",
             "entries" : {
                 "0.25 mm" : {"holeDiameter" : "1.1 mm", "minorDiameter" : "0.829 mm", "majorDiameter" : "1.1 mm"},
@@ -10567,7 +10567,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M1.2" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.25 mm",
             "entries" : {
                 "0.25 mm" : {"holeDiameter" : "1.2 mm", "minorDiameter" : "0.929 mm", "majorDiameter" : "1.2 mm"},
@@ -10576,7 +10576,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M1.4" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.3 mm",
             "entries" : {
                 "0.3 mm" : {"holeDiameter" : "1.4 mm", "minorDiameter" : "1.075 mm", "majorDiameter" : "1.4 mm"},
@@ -10585,7 +10585,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M1.6" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.35 mm",
             "entries" : {
                 "0.35 mm" : {"holeDiameter" : "1.6 mm", "minorDiameter" : "1.221 mm", "majorDiameter" : "1.6 mm"},
@@ -10594,7 +10594,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M1.8" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.35 mm",
             "entries" : {
                 "0.35 mm" : {"holeDiameter" : "1.8 mm", "minorDiameter" : "1.421 mm", "majorDiameter" : "1.8 mm"},
@@ -10603,7 +10603,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M2" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.4 mm",
             "entries" : {
                 "0.4 mm" : {"holeDiameter" : "2 mm", "minorDiameter" : "1.567 mm", "majorDiameter" : "2 mm"},
@@ -10612,7 +10612,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M2.2" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.45 mm",
             "entries" : {
                 "0.45 mm" : {"holeDiameter" : "2.2 mm", "minorDiameter" : "1.713 mm", "majorDiameter" : "2.2 mm"},
@@ -10621,7 +10621,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M2.5" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.45 mm",
             "entries" : {
                 "0.45 mm" : {"holeDiameter" : "2.5 mm", "minorDiameter" : "2.013 mm", "majorDiameter" : "2.5 mm"},
@@ -10630,7 +10630,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M3" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.5 mm",
             "entries" : {
                 "0.5 mm" : {"holeDiameter" : "3 mm", "minorDiameter" : "2.459 mm", "majorDiameter" : "3 mm"},
@@ -10639,7 +10639,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M3.5" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.6 mm",
             "entries" : {
                 "0.6 mm" : {"holeDiameter" : "3.5 mm", "minorDiameter" : "2.85 mm", "majorDiameter" : "3.5 mm"},
@@ -10648,7 +10648,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M4" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.7 mm",
             "entries" : {
                 "0.7 mm" : {"holeDiameter" : "4 mm", "minorDiameter" : "3.242 mm", "majorDiameter" : "4 mm"},
@@ -10657,7 +10657,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M4.5" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.75 mm",
             "entries" : {
                 "0.75 mm" : {"holeDiameter" : "4.5 mm", "minorDiameter" : "3.688 mm", "majorDiameter" : "4.5 mm"},
@@ -10666,7 +10666,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M5" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.8 mm",
             "entries" : {
                 "0.8 mm" : {"holeDiameter" : "5 mm", "minorDiameter" : "4.134 mm", "majorDiameter" : "5 mm"},
@@ -10675,7 +10675,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M5.5" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "0.5 mm",
             "entries" : {
                 "0.5 mm" : {"holeDiameter" : "5.5 mm", "minorDiameter" : "4.959 mm", "majorDiameter" : "5.5 mm"}
@@ -10683,7 +10683,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M6" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1 mm",
             "entries" : {
                 "1 mm" : {"holeDiameter" : "6 mm", "minorDiameter" : "4.917 mm", "majorDiameter" : "6 mm"},
@@ -10692,7 +10692,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M7" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1 mm",
             "entries" : {
                 "1 mm" : {"holeDiameter" : "7 mm", "minorDiameter" : "5.917 mm", "majorDiameter" : "7 mm"},
@@ -10701,7 +10701,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M8" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.25 mm",
             "entries" : {
                 "1.25 mm" : {"holeDiameter" : "8 mm", "minorDiameter" : "6.647 mm", "majorDiameter" : "8 mm"},
@@ -10711,7 +10711,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M9" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.25 mm",
             "entries" : {
                 "1.25 mm" : {"holeDiameter" : "9 mm", "minorDiameter" : "7.647 mm", "majorDiameter" : "9 mm"},
@@ -10721,7 +10721,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M10" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "10 mm", "minorDiameter" : "8.376 mm", "majorDiameter" : "10 mm"},
@@ -10732,7 +10732,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M11" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "11 mm", "minorDiameter" : "9.376 mm", "majorDiameter" : "11 mm"},
@@ -10742,7 +10742,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M12" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.75 mm",
             "entries" : {
                 "1.75 mm" : {"holeDiameter" : "12 mm", "minorDiameter" : "10.106 mm", "majorDiameter" : "12 mm"},
@@ -10753,7 +10753,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M14" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "14 mm", "minorDiameter" : "11.835 mm", "majorDiameter" : "14 mm"},
@@ -10764,7 +10764,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M15" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "15 mm", "minorDiameter" : "13.376 mm", "majorDiameter" : "15 mm"},
@@ -10773,7 +10773,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M16" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "16 mm", "minorDiameter" : "13.835 mm", "majorDiameter" : "16 mm"},
@@ -10783,7 +10783,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M17" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "17 mm", "minorDiameter" : "15.376 mm", "majorDiameter" : "17 mm"},
@@ -10792,7 +10792,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M18" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2.5 mm",
             "entries" : {
                 "2.5 mm" : {"holeDiameter" : "18 mm", "minorDiameter" : "15.294 mm", "majorDiameter" : "18 mm"},
@@ -10803,7 +10803,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M20" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2.5 mm",
             "entries" : {
                 "2.5 mm" : {"holeDiameter" : "20 mm", "minorDiameter" : "17.294 mm", "majorDiameter" : "20 mm"},
@@ -10814,7 +10814,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M22" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2.5 mm",
             "entries" : {
                 "2.5 mm" : {"holeDiameter" : "22 mm", "minorDiameter" : "19.294 mm", "majorDiameter" : "22 mm"},
@@ -10825,7 +10825,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M24" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3 mm",
             "entries" : {
                 "3 mm" : {"holeDiameter" : "24 mm", "minorDiameter" : "20.752 mm", "majorDiameter" : "24 mm"},
@@ -10836,7 +10836,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M25" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "25 mm", "minorDiameter" : "22.835 mm", "majorDiameter" : "25 mm"},
@@ -10846,7 +10846,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M26" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "26 mm", "minorDiameter" : "24.376 mm", "majorDiameter" : "26 mm"}
@@ -10854,7 +10854,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M27" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3 mm",
             "entries" : {
                 "3 mm" : {"holeDiameter" : "27 mm", "minorDiameter" : "23.752 mm", "majorDiameter" : "27 mm"},
@@ -10865,7 +10865,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M28" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "28 mm", "minorDiameter" : "25.835 mm", "majorDiameter" : "28 mm"},
@@ -10875,7 +10875,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M30" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3.5 mm",
             "entries" : {
                 "3.5 mm" : {"holeDiameter" : "30 mm", "minorDiameter" : "26.211 mm", "majorDiameter" : "30 mm"},
@@ -10887,7 +10887,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M32" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "32 mm", "minorDiameter" : "29.835 mm", "majorDiameter" : "32 mm"},
@@ -10896,7 +10896,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M33" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3.5 mm",
             "entries" : {
                 "3.5 mm" : {"holeDiameter" : "33 mm", "minorDiameter" : "29.211 mm", "majorDiameter" : "33 mm"},
@@ -10907,7 +10907,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M35" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "35 mm", "minorDiameter" : "33.376 mm", "majorDiameter" : "35 mm"}
@@ -10915,7 +10915,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M36" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "36 mm", "minorDiameter" : "31.67 mm", "majorDiameter" : "36 mm"},
@@ -10926,7 +10926,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M38" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "1.5 mm",
             "entries" : {
                 "1.5 mm" : {"holeDiameter" : "38 mm", "minorDiameter" : "36.376 mm", "majorDiameter" : "38 mm"}
@@ -10934,7 +10934,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M39" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "39 mm", "minorDiameter" : "34.67 mm", "majorDiameter" : "39 mm"},
@@ -10945,7 +10945,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M40" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3 mm",
             "entries" : {
                 "3 mm" : {"holeDiameter" : "40 mm", "minorDiameter" : "36.752 mm", "majorDiameter" : "40 mm"},
@@ -10955,7 +10955,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M42" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4.5 mm",
             "entries" : {
                 "4.5 mm" : {"holeDiameter" : "42 mm", "minorDiameter" : "37.129 mm", "majorDiameter" : "42 mm"},
@@ -10967,7 +10967,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M45" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4.5 mm",
             "entries" : {
                 "4.5 mm" : {"holeDiameter" : "45 mm", "minorDiameter" : "40.129 mm", "majorDiameter" : "45 mm"},
@@ -10979,7 +10979,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M48" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "5 mm",
             "entries" : {
                 "5 mm" : {"holeDiameter" : "48 mm", "minorDiameter" : "42.587 mm", "majorDiameter" : "48 mm"},
@@ -10991,7 +10991,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M50" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "3 mm",
             "entries" : {
                 "3 mm" : {"holeDiameter" : "50 mm", "minorDiameter" : "46.752 mm", "majorDiameter" : "50 mm"},
@@ -11001,7 +11001,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M52" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "5 mm",
             "entries" : {
                 "5 mm" : {"holeDiameter" : "52 mm", "minorDiameter" : "46.587 mm", "majorDiameter" : "52 mm"},
@@ -11013,7 +11013,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M55" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "55 mm", "minorDiameter" : "50.67 mm", "majorDiameter" : "55 mm"},
@@ -11024,7 +11024,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M56" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "5.5 mm",
             "entries" : {
                 "5.5 mm" : {"holeDiameter" : "56 mm", "minorDiameter" : "50.046 mm", "majorDiameter" : "56 mm"},
@@ -11036,7 +11036,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M58" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "58 mm", "minorDiameter" : "53.67 mm", "majorDiameter" : "58 mm"},
@@ -11047,7 +11047,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M60" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "5.5 mm",
             "entries" : {
                 "5.5 mm" : {"holeDiameter" : "60 mm", "minorDiameter" : "54.046 mm", "majorDiameter" : "60 mm"},
@@ -11059,7 +11059,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M62" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "62 mm", "minorDiameter" : "57.67 mm", "majorDiameter" : "62 mm"},
@@ -11070,7 +11070,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M64" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "64 mm", "minorDiameter" : "57.505 mm", "majorDiameter" : "64 mm"},
@@ -11082,7 +11082,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M65" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "65 mm", "minorDiameter" : "60.67 mm", "majorDiameter" : "65 mm"},
@@ -11093,7 +11093,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M68" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "68 mm", "minorDiameter" : "61.505 mm", "majorDiameter" : "68 mm"},
@@ -11105,7 +11105,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M70" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "70 mm", "minorDiameter" : "63.505 mm", "majorDiameter" : "70 mm"},
@@ -11117,7 +11117,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M72" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "72 mm", "minorDiameter" : "65.505 mm", "majorDiameter" : "72 mm"},
@@ -11129,7 +11129,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M75" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "4 mm",
             "entries" : {
                 "4 mm" : {"holeDiameter" : "75 mm", "minorDiameter" : "70.67 mm", "majorDiameter" : "75 mm"},
@@ -11140,7 +11140,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M76" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "76 mm", "minorDiameter" : "69.505 mm", "majorDiameter" : "76 mm"},
@@ -11152,7 +11152,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M78" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "78 mm", "minorDiameter" : "75.835 mm", "majorDiameter" : "78 mm"}
@@ -11160,7 +11160,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M80" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "80 mm", "minorDiameter" : "73.505 mm", "majorDiameter" : "80 mm"},
@@ -11172,7 +11172,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M82" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "2 mm",
             "entries" : {
                 "2 mm" : {"holeDiameter" : "82 mm", "minorDiameter" : "79.835 mm", "majorDiameter" : "82 mm"}
@@ -11180,7 +11180,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M85" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "85 mm", "minorDiameter" : "78.505 mm", "majorDiameter" : "85 mm"},
@@ -11191,7 +11191,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M90" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "90 mm", "minorDiameter" : "83.505 mm", "majorDiameter" : "90 mm"},
@@ -11202,7 +11202,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M95" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "95 mm", "minorDiameter" : "88.505 mm", "majorDiameter" : "95 mm"},
@@ -11213,7 +11213,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M100" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "100 mm", "minorDiameter" : "93.505 mm", "majorDiameter" : "100 mm"},
@@ -11224,7 +11224,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M105" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "105 mm", "minorDiameter" : "98.505 mm", "majorDiameter" : "105 mm"},
@@ -11235,7 +11235,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M110" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "110 mm", "minorDiameter" : "103.505 mm", "majorDiameter" : "110 mm"},
@@ -11246,7 +11246,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M115" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "115 mm", "minorDiameter" : "108.505 mm", "majorDiameter" : "115 mm"},
@@ -11257,7 +11257,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M120" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "120 mm", "minorDiameter" : "113.505 mm", "majorDiameter" : "120 mm"},
@@ -11268,7 +11268,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M125" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "125 mm", "minorDiameter" : "118.505 mm", "majorDiameter" : "125 mm"},
@@ -11279,7 +11279,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M130" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "130 mm", "minorDiameter" : "123.505 mm", "majorDiameter" : "130 mm"},
@@ -11290,7 +11290,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M135" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "135 mm", "minorDiameter" : "128.505 mm", "majorDiameter" : "135 mm"},
@@ -11301,7 +11301,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M140" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "140 mm", "minorDiameter" : "133.505 mm", "majorDiameter" : "140 mm"},
@@ -11312,7 +11312,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M145" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "145 mm", "minorDiameter" : "138.505 mm", "majorDiameter" : "145 mm"},
@@ -11323,7 +11323,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M150" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "150 mm", "minorDiameter" : "141.34 mm", "majorDiameter" : "150 mm"},
@@ -11335,7 +11335,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M155" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "155 mm", "minorDiameter" : "148.505 mm", "majorDiameter" : "155 mm"},
@@ -11345,7 +11345,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M160" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "160 mm", "minorDiameter" : "151.34 mm", "majorDiameter" : "160 mm"},
@@ -11356,7 +11356,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M165" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "165 mm", "minorDiameter" : "158.34 mm", "majorDiameter" : "165 mm"},
@@ -11366,7 +11366,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M170" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "170 mm", "minorDiameter" : "161.34 mm", "majorDiameter" : "170 mm"},
@@ -11377,7 +11377,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M175" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "175 mm", "minorDiameter" : "168.505 mm", "majorDiameter" : "175 mm"},
@@ -11387,7 +11387,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M180" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "180 mm", "minorDiameter" : "171.34 mm", "majorDiameter" : "180 mm"},
@@ -11398,7 +11398,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M185" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "185 mm", "minorDiameter" : "178.505 mm", "majorDiameter" : "185 mm"},
@@ -11408,7 +11408,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M190" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "190 mm", "minorDiameter" : "181.34 mm", "majorDiameter" : "190 mm"},
@@ -11419,7 +11419,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M195" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "195 mm", "minorDiameter" : "188.505 mm", "majorDiameter" : "195 mm"},
@@ -11429,7 +11429,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M200" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "200 mm", "minorDiameter" : "191.34 mm", "majorDiameter" : "200 mm"},
@@ -11440,7 +11440,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M205" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "205 mm", "minorDiameter" : "198.505 mm", "majorDiameter" : "205 mm"},
@@ -11450,7 +11450,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M210" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "210 mm", "minorDiameter" : "201.34 mm", "majorDiameter" : "210 mm"},
@@ -11461,7 +11461,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M215" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "215 mm", "minorDiameter" : "208.505 mm", "majorDiameter" : "215 mm"},
@@ -11471,7 +11471,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M220" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "220 mm", "minorDiameter" : "211.34 mm", "majorDiameter" : "220 mm"},
@@ -11482,7 +11482,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M225" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "225 mm", "minorDiameter" : "218.505 mm", "majorDiameter" : "225 mm"},
@@ -11492,7 +11492,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M230" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "230 mm", "minorDiameter" : "221.34 mm", "majorDiameter" : "230 mm"},
@@ -11503,7 +11503,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M235" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "235 mm", "minorDiameter" : "228.505 mm", "majorDiameter" : "235 mm"},
@@ -11513,7 +11513,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M240" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "240 mm", "minorDiameter" : "231.34 mm", "majorDiameter" : "240 mm"},
@@ -11524,7 +11524,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M245" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "245 mm", "minorDiameter" : "238.505 mm", "majorDiameter" : "245 mm"},
@@ -11534,7 +11534,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M250" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "250 mm", "minorDiameter" : "241.34 mm", "majorDiameter" : "250 mm"},
@@ -11545,7 +11545,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M255" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "255 mm", "minorDiameter" : "248.505 mm", "majorDiameter" : "255 mm"},
@@ -11554,7 +11554,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M260" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "260 mm", "minorDiameter" : "251.34 mm", "majorDiameter" : "260 mm"},
@@ -11564,7 +11564,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M265" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "265 mm", "minorDiameter" : "258.505 mm", "majorDiameter" : "265 mm"},
@@ -11573,7 +11573,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M270" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "270 mm", "minorDiameter" : "261.34 mm", "majorDiameter" : "270 mm"},
@@ -11583,7 +11583,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M275" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "275 mm", "minorDiameter" : "268.505 mm", "majorDiameter" : "275 mm"},
@@ -11592,7 +11592,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M280" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "280 mm", "minorDiameter" : "271.34 mm", "majorDiameter" : "280 mm"},
@@ -11602,7 +11602,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M285" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "285 mm", "minorDiameter" : "278.505 mm", "majorDiameter" : "285 mm"},
@@ -11611,7 +11611,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M290" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "290 mm", "minorDiameter" : "281.34 mm", "majorDiameter" : "290 mm"},
@@ -11621,7 +11621,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M295" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "6 mm",
             "entries" : {
                 "6 mm" : {"holeDiameter" : "295 mm", "minorDiameter" : "288.505 mm", "majorDiameter" : "295 mm"},
@@ -11630,7 +11630,7 @@ export const ISO_ExternalThreadTable = {
         },
         "M300" : {
             "name" : "pitch",
-            "displayName" : "pitch",
+            "displayName" : "Pitch",
             "default" : "8 mm",
             "entries" : {
                 "8 mm" : {"holeDiameter" : "300 mm", "minorDiameter" : "291.34 mm", "majorDiameter" : "300 mm"},

@@ -821,7 +821,7 @@ export const opImportForeign = function(context is Context, id is Id, definition
 
 
                 (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
- *              @eg `[ {"connectionEntities" : qVertexAndEdge1, "connectionEdges : [qEdge1], "connectionEdgeParameters" : [0.25]} {"connectionEntities" : qVertexAndEdge2, "connectionEdges" : [qEdge2], "connectionEdgeParameters" : [0.75]}]`
+ *              @eg `[ {"connectionEntities" : qVertexAndEdge1, "connectionEdges" : [qEdge1], "connectionEdgeParameters" : [0.25]} {"connectionEntities" : qVertexAndEdge2, "connectionEdges" : [qEdge2], "connectionEdgeParameters" : [0.75]}]`
  *      @field connectionsArcLengthParameterization {boolean} : Defaults to false for better performance. Controls interpretation of connectionEdgeParameters.
  *              If [evDistance], [evEdgeTangentLine] etc. are called in conjunction with opLoft the same value should be passed as `arcLengthParameterization` there. @optional
  *      @field makePeriodic {boolean} : Defaults to false. A closed guide creates a periodic loft regardless of this option. @optional
@@ -1220,12 +1220,13 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *      @field faceTargets {Query} : The faces to split.
  *      @field edgeTools {Query} : @optional
  *              The edges to cut with.
- *      @field direction {Vector} : @requiredif {there are edge tools.}
+ *      @field projectionType {ProjectionType} : @optional Edge projection method. Default is `ProjectionType.NORMAL_TO_TARGET`
+ *      @field direction {Vector} : @requiredif {`edgeTools` are present and `projectionType` is `ProjectionType.DIRECTION`.}
  *              The projection direction.
  *      @field faceTools {Query} : @optional
  *              The faces to cut with.
  *      @field bodyTools {Query} : @optional
- *              The bodies to cut with.
+ *              The sheet or wire bodies to cut with.
  *      @field keepToolSurfaces {boolean} : @optional
  *              If `true`, the `bodyTools` do not get consumed by the operation.  Default is `true`.
  *      @field planeTools {Query} : @optional

@@ -4,6 +4,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
+export import(path : "onshape/std/projectiontype.gen.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 
 // Imports used internally
@@ -21,6 +22,7 @@ import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
@@ -79,14 +81,32 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
 
             annotation { "Name" : "Entities to split with",
                         "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) || //Sketch edge
-                            (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) || //Sheet Body (surface)
+                            (EntityType.BODY && (BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.NO) || //Sheet Body (surface) or Wire Body (curve)
                             EntityType.FACE || //Face or Construction Plane
                             BodyType.MATE_CONNECTOR
                             && AllowMeshGeometry.YES
                     }
             definition.faceTools is Query;
 
-            annotation { "Name" : "Keep tool surfaces", "Default" : true }
+            annotation { "Group Name" : "Edge projection options", "Collapsed By Default" : false }
+            {
+                annotation { "Name" : "Projection direction type" }
+                definition.projectionType is ProjectionType;
+
+                if (definition.projectionType == ProjectionType.DIRECTION)
+                {
+                    annotation { "Name" : "Use sketch plane direction", "Default" : true }
+                    definition.useSketchPlaneDirection is boolean;
+
+                    if (!definition.useSketchPlaneDirection)
+                    {
+                        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+                        definition.directionQuery is Query;
+                    }
+                }
+            }
+
+            annotation { "Name" : "Keep tool surfaces and curves", "Default" : true }
             definition.keepToolSurfaces is boolean;
         }
     }
@@ -96,7 +116,8 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             SplitType.PART : performSplitPart(context, id, definition),
             SplitType.FACE : performSplitFace(context, id, definition)
         };
-    }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepBothSides : true, keepFront : true, keepToolSurfaces : true });
+}, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepBothSides : true, keepFront : true, keepToolSurfaces : true,
+     projectionType : ProjectionType.DIRECTION, useSketchPlaneDirection : true });
 
 function performSplitPart(context is Context, topLevelId is Id, definition is map)
 {
@@ -156,10 +177,10 @@ function performSplitPart(context is Context, topLevelId is Id, definition is ma
 
 function performSplitFace(context is Context, topLevelId is Id, definition is map)
 {
-    const edgeTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.EDGE), ConstructionObject.NO);
+    const edgeTools = getEdgeTools(context, definition);
     const faceTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.FACE), ConstructionObject.NO);
 
-    // bodyTools are sheet bodies
+    // bodyTools are sheet or wire bodies
     var bodyTools = qConstructionFilter(qEntityFilter(definition.faceTools, EntityType.BODY), ConstructionObject.NO);
     // Older documents require an additional filter to remove the mate connectors
     bodyTools = removeMateConnectors(context, bodyTools);
@@ -182,10 +203,11 @@ function performSplitFace(context is Context, topLevelId is Id, definition is ma
         "bodyTools" : bodyTools,
         "planeTools" : planeTools,
         "faceTools" : faceTools,
+        "projectionType" : definition.projectionType,
         "keepToolSurfaces" : definition.keepToolSurfaces
     };
 
-    splitFaceDefinition = setDirectionForEdgeTools(context, splitFaceDefinition);
+    splitFaceDefinition = setDirectionForEdgeTools(context, definition, splitFaceDefinition);
     opSplitFace(context, topLevelId, splitFaceDefinition);
     // `opSplitFace` doesn't delete planes regardless of `keepToolSurfaces` so we delete them here.
     if (tempPlaneQueries != [])
@@ -194,16 +216,42 @@ function performSplitFace(context is Context, topLevelId is Id, definition is ma
     }
 }
 
-function setDirectionForEdgeTools(context is Context, splitFaceDefinition is map) returns map
+function getEdgeTools(context is Context, definition is map) returns Query
 {
-    // edge tools need an explicit direction
-    // if there are edge tools we set the direction to be the sketch plane normal
-    const planeResult = try silent(evOwnerSketchPlane(context, { "entity" : splitFaceDefinition.edgeTools }));
-    if (planeResult != undefined)
+    return qEntityFilter(definition.faceTools, EntityType.EDGE)->qConstructionFilter(ConstructionObject.NO);
+}
+
+function setDirectionForEdgeTools(context is Context, definition is map, splitFaceDefinition is map) returns map
+{
+    // edge and curve tools need an explicit direction if projectionType is Direction
+    if (definition.projectionType == ProjectionType.DIRECTION &&
+        !isQueryEmpty(context, splitFaceDefinition.faceTargets) &&
+        (!isQueryEmpty(context, splitFaceDefinition.edgeTools) || !isQueryEmpty(context, qBodyType(splitFaceDefinition.bodyTools, BodyType.WIRE))))
     {
-        splitFaceDefinition.direction = planeResult.normal;
+        // if Use sketch plane direction is checked, we set the direction to be the sketch plane normal
+        if (definition.useSketchPlaneDirection)
+        {
+            const planeResult = getSketchPlaneOfEdgeTools(context, splitFaceDefinition.edgeTools);
+            if (planeResult != undefined)
+            {
+                splitFaceDefinition.direction = planeResult.normal;
+            }
+        }
+        else
+        {
+            splitFaceDefinition.direction = extractDirection(context, definition.directionQuery);
+        }
+        if (splitFaceDefinition.direction == undefined)
+        {
+            throw regenError(ErrorStringEnum.SPLIT_SELECT_FACE_DIRECTION, ["directionQuery"]);
+        }
     }
     return splitFaceDefinition;
+}
+
+function getSketchPlaneOfEdgeTools(context is Context, edgeTools is Query)
+{
+    return try silent(evOwnerSketchPlane(context, { "entity" : qSketchFilter(edgeTools, SketchObject.YES) }));
 }
 
 function createTemporaryPlanesForMateConnectors(context is Context, id is Id, tools is Query) returns array
@@ -241,7 +289,8 @@ function removeMateConnectors(context is Context, queryToFilter is Query) return
 
 /**
  * @internal
- * Edit logic to set keepTools to true when a single face is selected
+ * Edit logic to set keepTools to true when a single face is selected and
+ * to set useSketchPlaneDirection to true when the user selects a sketch edge into the dialog
  */
 export function splitEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
@@ -250,6 +299,14 @@ export function splitEditLogic(context is Context, id is Id, oldDefinition is ma
     if (numFaces == 1 && !specifiedParameters.keepTools)
     {
         definition.keepTools = true;
+    }
+
+    if ((definition.projectionType != oldDefinition.projectionType || definition.faceTools != oldDefinition.faceTools) &&
+        definition.splitType == SplitType.FACE && definition.projectionType == ProjectionType.DIRECTION && !specifiedParameters.useSketchPlaneDirection)
+    {
+        const edgeTools = getEdgeTools(context, definition);
+        const planeResult = getSketchPlaneOfEdgeTools(context, edgeTools);
+        definition.useSketchPlaneDirection = (planeResult != undefined);
     }
     return definition;
 }
@@ -317,3 +374,4 @@ export function splitManipulatorChange(context is Context, definition is map, ne
         }
     }
 }
+

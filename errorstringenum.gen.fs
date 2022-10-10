@@ -184,7 +184,7 @@ export enum ErrorStringEnum
     REVOLVE_PERPENDICULAR,
     /* Could not use selected entities to revolve. */
     REVOLVE_INVALID_ENTITIES,
-    /* Tool entity cannot split the selected part. */
+    /* Tool entity cannot split the selected part/face. */
     SPLIT_FAILED,
     /* Incorrect input for tool type. */
     SPLIT_INVALID_INPUT,
@@ -1683,6 +1683,8 @@ export enum ErrorStringEnum
     DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D,
     /* Cannot change reference to a deleted document. */
     CANNOT_CHANGE_REFERENCE_TO_DELETED_DOCUMENT,
+    /* Cannot change reference. Element or version not found. */
+    CANNOT_CHANGE_REFERENCE_ELEMENT_NOT_FOUND,
     /* Could not find sketch to copy. */
     COPIED_SKETCH_NOT_FOUND,
     /* Variable name must be less than 10000 characters. */
@@ -2107,6 +2109,10 @@ export enum ErrorStringEnum
     PUBLICATION_ITEM_INSERT_FAILED,
     /* Unable to insert. Missing link permission for the document. */
     PUBLICATION_ITEM_INSERT_FAILED_NO_LINK_PERMISSION,
+    PUBLICATION_ITEM_INSERT_FAILED_NO_DUPLICATES_ALLOWED,
+    PUBLICATION_ITEM_UPDATE_FAILED_NO_DUPLICATES_ALLOWED,
+    /* Unable to update publication item. */
+    PUBLICATION_ITEM_UPDATE_FAILED,
     /* Radius value is required at each point. */
     VRFILLET_RADIUS_REQUIRED_AT_POINT,
     /* Edge parameter value is required at each point. */
@@ -2221,12 +2227,16 @@ export enum ErrorStringEnum
     DIAMETERS_MUST_BE_EQUAL,
     /* Not a convex surface. */
     NOT_CONVEX,
-    /* Select one or more cylinder edges. */
+    /* Select one or more cylindrical edges. */
     SELECT_CYLINDER_EDGES,
     /* Not cylinder or cone. */
     NOT_CYLINDER_OR_CONE,
     /* Unable to find a thread boundary. */
     UNABLE_TO_FIND_THREAD_BOUNDARY,
+    /* Undercut is outside of surface to cut. */
+    UNDERCUT_OFF_FACE,
+    /* Undercut depth is greater than the cylinder being cut. */
+    UNDERCUT_TOO_DEEP,
     /* Counterbore and countersink values are non standard for tapered holes. */
     HOLE_CBORE_CSINK_VALUES_NON_STD,
     /* Cannot extend partial flange beyond base edge. */
@@ -2334,7 +2344,13 @@ export enum ErrorStringEnum
     /* Text is not supported. */
     DXF_COULD_NOT_CONVERT_TEXT,
     /* Assembly too large to simulate. Try reducing the complexity or number of components. */
-    FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX
+    FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX,
+    /* Select edge projection direction for split. */
+    SPLIT_SELECT_FACE_DIRECTION,
+    /* Selection is invalid. */
+    SELECTION_IS_INVALID,
+    /* Users on Free and Edu yearly plans cannot modify publications. */
+    PUBLICATION_ACTION_FAILED_NO_PLAN_ACCESS
 }
 
 

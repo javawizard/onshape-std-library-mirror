@@ -170,7 +170,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                         annotation { "Name" : "Points on edges", "Item name" : "point on edge",
                                     "Item label template" : "[#pointOnEdgeRadius] #edge",
-                                    "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                                    "UIHint" : [ UIHint.PREVENT_ARRAY_REORDER, UIHint.FOCUS_INNER_QUERY ] }
                         definition.pointOnEdgeSettings is array;
                         for (var setting in definition.pointOnEdgeSettings)
                         {

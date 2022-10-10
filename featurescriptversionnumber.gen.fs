@@ -1144,7 +1144,18 @@ export enum FeatureScriptVersionNumber
     V1844_ENDCAP_FEATURE,
     V1845_RULED_SURFACE_DERIVATIVE,
     V1846_BEND_LINE_ATTACHED,
-    V1847_PROJECTED_CURVE_FIXES
+    V1847_PROJECTED_CURVE_FIXES,
+    V1857_TIP_ANGLE,
+    V1858_SWEEP_UTILS,
+    V1859_SPLIT_FACE_DEFAULT_NORMAL_TO_TARGET,
+    V1860_LOFT_CONNECTION_GUIDE_DIFF_FIX,
+    V1861_HOLE_TIP_ANGLE_NAMES,
+    V1862_HOLE_TABLE_DRILL_ANGLE_NAME,
+    V1863_SPLIT_FACE_KEEP_CURVE_TOOLS,
+    V1864_TANGENT_MATE_SPLIT_FACE_ERROR,
+    V1865_PUBLICATION_ACTION_FAILED_NO_PLAN_ACCESS,
+    V1866_SPLIT_FACE_CURVE_TOOLS_NEED_DIR,
+    V1867_HOLE_TIP_ANGLE_OPTION_NAMES
 }
 
 /**
@@ -1155,6 +1166,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1847_PROJECTED_CURVE_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1867_HOLE_TIP_ANGLE_OPTION_NAMES;
 
 

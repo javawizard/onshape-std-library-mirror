@@ -16,7 +16,8 @@ export enum DebugColor
     CYAN,
     MAGENTA,
     YELLOW,
-    BLACK
+    BLACK,
+    ORANGE
 }
 
 

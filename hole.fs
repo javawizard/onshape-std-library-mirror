@@ -47,6 +47,25 @@ export enum HoleEndStyle
     BLIND_IN_LAST
 }
 
+/**
+ * Defines the tip angle style for the hole tip
+ * @value DEGREE118 : Tip angle is set at 118 degrees
+ * @value DEGREE135 : Tip angle is set at 135 degrees
+ * @value FLAT : Tip angle is flat or 180 degrees
+ * @value CUSTOM : User inputs specific angle value
+ */
+export enum TipAngleStyle
+{
+    annotation { "Name" : "118 deg" }
+    DEGREE118,
+    annotation { "Name" : "135 deg" }
+    DEGREE135,
+    annotation { "Name" : "Flat" }
+    FLAT,
+    annotation { "Name" : "Custom" }
+    CUSTOM
+}
+
 const MAX_LOCATIONS_V274 = 100;
 const MAX_LOCATIONS_V1548 = 500;
 
@@ -67,6 +86,32 @@ function enforceMaxLocations(context is Context, nLocations is number)
     }
 }
 
+/**
+ * Parse and split the numerical and unit portion of a pitch string, e.g. "20 tpi"
+ */
+export function parsePitch(pitch is string)
+{
+    return match(pitch, "([0123456789.]*)\\s*(tpi|mm)");
+}
+
+/**
+ * Parse a pitch string, e.g. "20 tpi" or "1.5 mm, and return its annotation suffix in imperial or metric format, e.g. -20 or x1.5
+ */
+export function buildPitchAnnotation(pitch is string)
+{
+    const parsedPitch = parsePitch(pitch);
+    var delimeter = "x";
+    if (parsedPitch.hasMatch)
+    {
+        if (parsedPitch.captures[2] == "tpi")
+        {
+            delimeter = "-";
+        }
+        return delimeter ~ parsedPitch.captures[1];
+    }
+    return pitch;
+}
+
 const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid identifier, so it is not offered in autocomplete
 
 // When `isTappedThrough` is set to `true`, `tappedDepth` should be set to a consistent value to prevent issues in
@@ -74,7 +119,7 @@ const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid ide
 const TAPPED_DEPTH_FOR_TAPPED_THROUGH = 0 * meter;
 
 /*
- * JAR/IB: The call structure of the principal functions in this file is something like this:
+* JAR/IB: The call structure of the principal functions in this file is something like this:
  *
  * // hole does the definition checks
  * hole --> reduceLocations
@@ -138,7 +183,7 @@ const TAPPED_DEPTH_FOR_TAPPED_THROUGH = 0 * meter;
  */
 
 /**
- * Creates holes of specific dimensions and style, based either on standard
+* Creates holes of specific dimensions and style, based either on standard
  * hole size, or by user-defined values. Each hole's position and orientation
  * are specified using sketch points.
  */
@@ -213,6 +258,15 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             annotation { "Name" : "Depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
+
+            annotation { "Name" : "Tip angle style", "UIHint" : UIHint.SHOW_LABEL }
+            definition.tipAngleStyle is TipAngleStyle;
+
+            if (definition.tipAngleStyle == TipAngleStyle.CUSTOM)
+            {
+                annotation { "Name" : "Tip angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isAngle(definition.tipAngle, TIP_ANGLE_BOUNDS);
+            }
         }
         if (definition.showTappedDepth)
         {
@@ -302,6 +356,19 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         // ------------- Definition adjustment -------------
 
+        if (definition.tipAngleStyle == TipAngleStyle.DEGREE118)
+        {
+            definition.tipAngle = 118 * degree;
+        }
+        else if (definition.tipAngleStyle == TipAngleStyle.DEGREE135)
+        {
+            definition.tipAngle = 135 * degree;
+        }
+        else if (definition.tipAngleStyle == TipAngleStyle.FLAT)
+        {
+            definition.tipAngle = 180 * degree;
+        }
+
         if (definition.endStyle != HoleEndStyle.BLIND && (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
         {
             definition.startFromSketch = false;
@@ -361,6 +428,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             style : HoleStyle.SIMPLE,
             oppositeDirection : false,
             tipAngle : 118 * degree,
+            tipAngleStyle : TipAngleStyle.DEGREE118,
             useTipDepth : false,
             cSinkUseDepth : false,
             cSinkDepth : 0 * meter,
@@ -478,8 +546,8 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
             }
 
             const instanceProducedFaces = createAttributesFromQuery(context, topLevelId, opHoleId, definition,
-                    opHoleInfo.finalPositionReference, buildHoleAttributeId(topLevelId, i), faceTypeToSectionFaceType,
-                    locations[i], opHoleInfo.returnMapPerHole[i], i, opHoleInfo.holeDepth);
+                opHoleInfo.finalPositionReference, buildHoleAttributeId(topLevelId, i), faceTypeToSectionFaceType,
+                locations[i], opHoleInfo.returnMapPerHole[i], i, opHoleInfo.holeDepth);
             if (instanceProducedFaces)
             {
                 successfulHoles[][i] = true;
@@ -573,7 +641,7 @@ function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id,
 
         const createdUsingNewHolePipeline = true;
         const instanceProducedEdges = assignSheetMetalHoleAttributesForInstance(context, createdUsingNewHolePipeline,
-                buildHoleAttributeId(topLevelId, i), smHoleEdgeQueries, subtopologyTrackingPerTool[i], definition, i);
+            buildHoleAttributeId(topLevelId, i), smHoleEdgeQueries, subtopologyTrackingPerTool[i], definition, i);
         if (instanceProducedEdges)
         {
             successfulHoles[][i] = true;
@@ -666,40 +734,40 @@ enum HoleFaceType
 // The pieces of data which do not contain `sectionFaceType` are not expected to create any faces on the target.
 const faceTypeToFaceTypeData = {
         HoleFaceType.CAP : {
-                "name" : "cap"
-            },
+            "name" : "cap"
+        },
         // COMMENT_FOR_REVIEW: Testing revealed I had these reversed.
         HoleFaceType.CBORE_CYLINDER_FACE : {
-                "name" : "cboreCylinder",
-                "sectionFaceType" : HoleSectionFaceType.CBORE_DIAMETER_FACE
-            },
+            "name" : "cboreCylinder",
+            "sectionFaceType" : HoleSectionFaceType.CBORE_DIAMETER_FACE
+        },
         HoleFaceType.CBORE_PLANE_FACE : {
-                "name" : "cborePlane",
-                "sectionFaceType" : HoleSectionFaceType.CBORE_DEPTH_FACE
-            },
+            "name" : "cborePlane",
+            "sectionFaceType" : HoleSectionFaceType.CBORE_DEPTH_FACE
+        },
         HoleFaceType.CSINK_CYLINDER_FACE : {
-                "name" : "csinkCylinder",
-                "sectionFaceType" : HoleSectionFaceType.CSINK_CBORE_FACE
-            },
+            "name" : "csinkCylinder",
+            "sectionFaceType" : HoleSectionFaceType.CSINK_CBORE_FACE
+        },
         HoleFaceType.CSINK_CONE_FACE : {
-                "name" : "csinkCone",
-                "sectionFaceType" : HoleSectionFaceType.CSINK_FACE
-            },
+            "name" : "csinkCone",
+            "sectionFaceType" : HoleSectionFaceType.CSINK_FACE
+        },
         HoleFaceType.SHAFT : {
-                "name" : "shaft",
-                "sectionFaceType" : HoleSectionFaceType.THROUGH_FACE
-            },
+            "name" : "shaft",
+            "sectionFaceType" : HoleSectionFaceType.THROUGH_FACE
+        },
         HoleFaceType.BLIND_IN_LAST_MATCHED : {
-                "name" : "blindInLastMatched"
-            },
+            "name" : "blindInLastMatched"
+        },
         HoleFaceType.OFFSET_SHAFT : {
-                "name" : "offsetShaft",
-                "sectionFaceType" : HoleSectionFaceType.THROUGH_FACE
-            },
+            "name" : "offsetShaft",
+            "sectionFaceType" : HoleSectionFaceType.THROUGH_FACE
+        },
         HoleFaceType.TIP : {
-                "name" : "tip",
-                "sectionFaceType" : HoleSectionFaceType.BLIND_TIP_FACE
-            }
+            "name" : "tip",
+            "sectionFaceType" : HoleSectionFaceType.BLIND_TIP_FACE
+        }
     };
 
 // Face types that are not expected to create faces on the target are skipped, and not present in the returned mapping.
@@ -742,10 +810,10 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
         const cBoreRadius = definition.cBoreDiameter / 2.0;
         return {
                 "profiles" : [
-                        holeProfileBeforeReference(firstPositionReference, 0 * meter, cBoreRadius, { "name" : BEFORE_CBORE_PROFILE_NAME }),
-                        holeProfile(firstPositionReference, definition.cBoreDepth, cBoreRadius, { "name" : CBORE_TRANSITION_PROFILE_NAME }),
-                        holeProfile(firstPositionReference, definition.cBoreDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
-                    ],
+                    holeProfileBeforeReference(firstPositionReference, 0 * meter, cBoreRadius, { "name" : BEFORE_CBORE_PROFILE_NAME }),
+                    holeProfile(firstPositionReference, definition.cBoreDepth, cBoreRadius, { "name" : CBORE_TRANSITION_PROFILE_NAME }),
+                    holeProfile(firstPositionReference, definition.cBoreDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
+                ],
                 "faceTypes" : [HoleFaceType.CAP, HoleFaceType.CBORE_CYLINDER_FACE, HoleFaceType.CBORE_PLANE_FACE]
             };
     }
@@ -755,13 +823,13 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
         const cSinkDepth = (cSinkRadius - shaftRadius) / tan(definition.cSinkAngle / 2.0);
         return {
                 "profiles" : [
-                        // When the entry face is flat, the second profile will be collapsed onto the first profile by
-                        // opHole. When collapsing the earliest name in the list is kept, so BEFORE_CSINK_PROFILE_NAME will
-                        // survive, with CSINK_TRANSITION_PROFILE_NAME skipped.
-                        holeProfileBeforeReference(firstPositionReference, 0 * meter, cSinkRadius, { "name" : BEFORE_CSINK_PROFILE_NAME }),
-                        holeProfile(firstPositionReference, 0 * meter, cSinkRadius, { "name" : CSINK_TRANSITION_PROFILE_NAME }),
-                        holeProfile(firstPositionReference, cSinkDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
-                    ],
+                    // When the entry face is flat, the second profile will be collapsed onto the first profile by
+                    // opHole. When collapsing the earliest name in the list is kept, so BEFORE_CSINK_PROFILE_NAME will
+                    // survive, with CSINK_TRANSITION_PROFILE_NAME skipped.
+                    holeProfileBeforeReference(firstPositionReference, 0 * meter, cSinkRadius, { "name" : BEFORE_CSINK_PROFILE_NAME }),
+                    holeProfile(firstPositionReference, 0 * meter, cSinkRadius, { "name" : CSINK_TRANSITION_PROFILE_NAME }),
+                    holeProfile(firstPositionReference, cSinkDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
+                ],
                 // If the second profile is consumed (as described above), the HoleFaceType.NEAR_SIDE_FEATURE_PRE_PRIMARY
                 // is also consumed.
                 "faceTypes" : [HoleFaceType.CAP, HoleFaceType.CSINK_CYLINDER_FACE, HoleFaceType.CSINK_CONE_FACE]
@@ -820,10 +888,10 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
             // LAST_TARGET_START to avoid cutting into the last part incorrectly
             profiles = [
                     matchedHoleProfile(HolePositionReference.LAST_TARGET_START, shaftRadius, {
-                                "name" : BLIND_IN_LAST_OUTER_MATCHED_PROFILE_NAME,
-                                // Do not allow opHole to build any hole in which the "last target" is not distinct
-                                "targetMustDifferFromPrevious" : true
-                            }),
+                            "name" : BLIND_IN_LAST_OUTER_MATCHED_PROFILE_NAME,
+                            // Do not allow opHole to build any hole in which the "last target" is not distinct
+                            "targetMustDifferFromPrevious" : true
+                        }),
                     matchedHoleProfile(HolePositionReference.LAST_TARGET_START, tapRadius, { "name" : BLIND_IN_LAST_INNER_MATCHED_PROFILE_NAME })
                 ];
             targetMustDifferFromPreviousHasBeenSet = true;
@@ -831,15 +899,15 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
         }
 
         profiles = concatenateArrays([profiles, [
-                    holeProfile(HolePositionReference.LAST_TARGET_START, definition.holeDepth, tapRadius, {
+                        holeProfile(HolePositionReference.LAST_TARGET_START, definition.holeDepth, tapRadius, {
                                 "name" : BEFORE_TIP_PROFILE_NAME,
                                 // Do not allow opHole to build any hole in which the "last target" is not distinct.
                                 // Only set this if this is the first profile referencing LAST_TARGET_START; i.e. only
                                 //  set if it was not already set above.
                                 "targetMustDifferFromPrevious" : targetMustDifferFromPreviousHasBeenSet ? undefined : true
                             }),
-                    holeProfile(HolePositionReference.LAST_TARGET_START, definition.holeDepth + tipDepth, 0 * meter, { "name" : TIP_PROFILE_NAME })
-                ]]);
+                        holeProfile(HolePositionReference.LAST_TARGET_START, definition.holeDepth + tipDepth, 0 * meter, { "name" : TIP_PROFILE_NAME })
+                    ]]);
         faceTypes = append(faceTypes, HoleFaceType.TIP);
         finalPositionReference = HolePositionReference.LAST_TARGET_START;
         holeDepth = definition.holeDepth;
@@ -1243,6 +1311,12 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
     }
     return locations;
 }
+
+const TIP_ANGLE_BOUNDS =
+{
+            (degree) : [0.1, 118, 180],
+            (radian) : 0.5 * PI
+        } as AngleBoundSpec;
 
 const HOLE_CLEARANCE_BOUNDS =
 {
@@ -2334,6 +2408,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     {
         // blind hole depth
         resultAttribute.holeDepth = holeDefinition.holeDepth;
+        resultAttribute.tipAngle = holeDefinition.tipAngle;
     }
 
     // initialize tapped hole information
@@ -2411,17 +2486,16 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         // format tap pitch based upon units
         var pitch = tapPitch;
         var pitchWithUnits;
-        var delimiter = "x";
-        var result = match(tapPitch, "([0123456789.]*)\\s*(tpi|mm)");
+        var pitchAnnotation = pitch;
+        var result = parsePitch(tapPitch);
+
         if (result.hasMatch)
         {
+            pitchAnnotation = buildPitchAnnotation(tapPitch);
             if (result.captures[2] == "tpi")
             {
                 pitch = result.captures[1];
                 pitchWithUnits = (1.0 / stringToNumber(pitch)) * inch;
-
-                // use '-' instead of 'x'
-                delimiter = "-";
             }
             else if (result.captures[2] == "mm")
             {
@@ -2431,7 +2505,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         }
 
         // set tap size
-        resultAttribute.tapSize = tapSize ~ delimiter ~ pitch;
+        resultAttribute.tapSize = tapSize ~ pitchAnnotation;
         if (resultAttribute.isTaperedPipeTapHole)
             resultAttribute.tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
 
@@ -2679,24 +2753,34 @@ function computeMajorDiameter(definition is map)
     return undefined;
 }
 
+/**
+ *
+ * Extract value from pitch string
+ */
+export function computePitchValue(pitch is string)
+{
+    var result = parsePitch(pitch);
+    if (result.hasMatch)
+    {
+        // Check for NN.N tpi or NN.N mm
+        if (result.captures[2] == "tpi")
+        {
+            return 1.0 / stringToNumber(result.captures[1]) * inch;
+        }
+        else if (result.captures[2] == "mm")
+        {
+            return stringToNumber(result.captures[1]) * millimeter;
+        }
+    }
+    return undefined;
+}
+
 function computePitch(definition is map)
 {
     var standard = getStandardAndTable(definition).standard;
     if (standard != undefined && standard.pitch != undefined)
     {
-        // Check for NN.N tpi or NN.N mm
-        var result = match(standard.pitch, "([0123456789.]*)\\s*(tpi|mm)");
-        if (result.hasMatch)
-        {
-            if (result.captures[2] == "tpi")
-            {
-                return 1.0 / stringToNumber(result.captures[1]) * inch;
-            }
-            else if (result.captures[2] == "mm")
-            {
-                return stringToNumber(result.captures[1]) * millimeter;
-            }
-        }
+        return computePitchValue(standard.pitch);
     }
     return undefined;
 }
@@ -2999,7 +3083,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     // -- parameters are needed for `raycastForScopeFlipResults` they should be extracted in `extractRaycastInputs`
     // -- and added to `isEquivalent`.
     const scopeFlipResults = raycastForScopeFlipResults(context, raycastInputs, newAxes,
-            comprehensive, canEditScope, canEditFlip, hiddenBodies);
+        comprehensive, canEditScope, canEditFlip, hiddenBodies);
     definition.scope = scopeFlipResults.scope;
     definition.oppositeDirection = scopeFlipResults.oppositeDirection;
     return definition;
@@ -3018,13 +3102,13 @@ function extractRaycastInputs(definition is map)
             // locations, or an incremental heuristic over just the new locations. If adding additional parameters to
             // this map, the appropriate comparison should be added to `isEquivalent`.
             "isEquivalent" :
-                function(context, self, other)
-                {
-                    return self.oppositeDirection == other.oppositeDirection
-                        && self.hasDepthLimit == other.hasDepthLimit
-                        && (!self.hasDepthLimit || tolerantEquals(self.depthLimit, other.depthLimit))
-                        && areQueriesEquivalent(context, self.scope, other.scope);
-                }
+            function(context, self, other)
+            {
+                return self.oppositeDirection == other.oppositeDirection
+                    && self.hasDepthLimit == other.hasDepthLimit
+                    && (!self.hasDepthLimit || tolerantEquals(self.depthLimit, other.depthLimit))
+                    && areQueriesEquivalent(context, self.scope, other.scope);
+            }
         };
 }
 
