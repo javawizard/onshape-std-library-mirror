@@ -60,6 +60,12 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
 
             annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }
             edge.continuity is GeometricContinuity;
+
+            if (edge.continuity != GeometricContinuity.G0 && edge.adjacentFaces != undefined)
+            {
+                annotation { "Name" : "Adjacent faces", "Filter" : EntityType.FACE }
+                edge.adjacentFaces is Query;
+            }
         }
 
         annotation {"Name" : "Guides"}
@@ -149,27 +155,64 @@ function updateEdgeSelections(context is Context, definition is map) returns map
     var edgesG1 = [];
     var edgesG2 = [];
     var allEdges = [];
-    for (var edge in definition.edges)
-    {
-        allEdges = append(allEdges, edge.entities);
-        if (edge.continuity == GeometricContinuity.G0)
-        {
-            edgesG0 = append(edgesG0, edge.entities);
-        }
-        if (edge.continuity == GeometricContinuity.G1)
-        {
-            edgesG1 = append(edgesG1, edge.entities);
-        }
-        if (edge.continuity == GeometricContinuity.G2)
-        {
-            edgesG2 = append(edgesG2, edge.entities);
-        }
-    }
+    var adjacentFaces = [];
 
-    definition.edgesG0 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG0)), ConstructionObject.NO);
-    definition.edgesG1 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG1)), ConstructionObject.NO);
-    definition.edgesG2 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG2)), ConstructionObject.NO);
-    definition.allEdges = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(allEdges)), ConstructionObject.NO);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1890_FOLLOW_LAMINAR_SOURCE_COINCIDENCE_CHECK))
+    {
+        for (var edge in definition.edges)
+        {
+            var laminarEdges = qConstructionFilter(followWireEdgesToLaminarSource(context, edge.entities), ConstructionObject.NO);
+            allEdges = append(allEdges, laminarEdges);
+            if (edge.continuity == GeometricContinuity.G0)
+            {
+                edgesG0 = append(edgesG0, laminarEdges);
+            }
+            else
+            {
+                if (edge.adjacentFaces != undefined && !isQueryEmpty(context, edge.adjacentFaces))
+                {
+                    adjacentFaces = append(adjacentFaces, {"edges" : laminarEdges,
+                                                        "faces" : edge.adjacentFaces});
+                }
+            }
+            if (edge.continuity == GeometricContinuity.G1)
+            {
+                edgesG1 = append(edgesG1, laminarEdges);
+            }
+            if (edge.continuity == GeometricContinuity.G2)
+            {
+                edgesG2 = append(edgesG2, laminarEdges);
+            }
+        }
+        definition.edgesG0 = qUnion(edgesG0);
+        definition.edgesG1 = qUnion(edgesG1);
+        definition.edgesG2 = qUnion(edgesG2);
+        definition.allEdges = qUnion(allEdges);
+        definition.adjacentFaces = adjacentFaces;
+    }
+    else
+    {
+        for (var edge in definition.edges)
+        {
+            allEdges = append(allEdges, edge.entities);
+            if (edge.continuity == GeometricContinuity.G0)
+            {
+                edgesG0 = append(edgesG0, edge.entities);
+            }
+            if (edge.continuity == GeometricContinuity.G1)
+            {
+                edgesG1 = append(edgesG1, edge.entities);
+            }
+            if (edge.continuity == GeometricContinuity.G2)
+            {
+                edgesG2 = append(edgesG2, edge.entities);
+            }
+        }
+        definition.edgesG0 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG0)), ConstructionObject.NO);
+        definition.edgesG1 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG1)), ConstructionObject.NO);
+        definition.edgesG2 = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(edgesG2)), ConstructionObject.NO);
+        definition.allEdges = qConstructionFilter(followWireEdgesToLaminarSource(context, qUnion(allEdges)), ConstructionObject.NO);
+    }
     return definition;
 }
 

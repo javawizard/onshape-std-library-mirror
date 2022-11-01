@@ -366,6 +366,7 @@ export const ANSI_ExternalThreadTable = {
         "#0" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
+            "default" : "80 tpi",
             "entries" : {
                 "80 tpi" : {"holeDiameter" : "0.0600 in", "minorDiameter" : "0.0451 in", "majorDiameter" : "0.0600 in"}
             }

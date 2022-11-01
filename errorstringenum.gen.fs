@@ -2227,7 +2227,7 @@ export enum ErrorStringEnum
     DIAMETERS_MUST_BE_EQUAL,
     /* Not a convex surface. */
     NOT_CONVEX,
-    /* Select one or more cylindrical edges. */
+    /* Select one or more cylinder edges. */
     SELECT_CYLINDER_EDGES,
     /* Not cylinder or cone. */
     NOT_CYLINDER_OR_CONE,
@@ -2349,8 +2349,116 @@ export enum ErrorStringEnum
     SPLIT_SELECT_FACE_DIRECTION,
     /* Selection is invalid. */
     SELECTION_IS_INVALID,
+    /* Cannot apply multiple thread annotations to the same face.  Consider using the split option. */
+    CANNOT_ADD_MORE_THAN_ONE_THREAD_TO_UNSPLIT_CYLINDER,
+    /* Undercut depth must be past the inner thread diameter. */
+    UNDERCUT_TOO_SHALLOW,
+    /* Invalid end face selection. Angled frame ends are not supported. */
+    CAP_INCLINED_CUT_FRAME_ERROR,
+    /* Split is outside of surface to cut. */
+    SPLIT_OFF_FACE,
+    /* Undercut diameter must be less than the inner thread diameter. */
+    UNDERCUT_DIAMETER_TOO_LARGE,
     /* Users on Free and Edu yearly plans cannot modify publications. */
-    PUBLICATION_ACTION_FAILED_NO_PLAN_ACCESS
+    PUBLICATION_ACTION_FAILED_NO_PLAN_ACCESS,
+    /* Reference data for this display state is not available. */
+    DISPLAY_STATES_NO_REFERENCE,
+    /* The selected arc is not large enough to support a thread. */
+    INVALID_ARC_LENGTH,
+    /* Adjoining edge not filleted. */
+    FILLET_ADJOINING_EDGE_NOT_FILLETED,
+    /* End boundary intersects unfilleted edge. */
+    FILLET_BOUNDARY_INTERSECTS_EDGE,
+    /* Bad overlap on end boundary of fillet. */
+    FILLET_BOUNDARY_OVERLAP,
+    /* Unfilleted edge overlapped by fillet. */
+    FILLET_EDGE_OVERLAPPED_BY_FILLET,
+    /* Radius of fillet on face too large. */
+    FILLET_FACE_RANGE_TOO_LARGE,
+    /* Fillet has a bad end boundary. */
+    FILLET_ILLEGAL_END_BOUNDARY,
+    /* Overlapping fillets. */
+    FILLET_OVERLAP,
+    /* Fillet completely overlaps edge loop. */
+    FILLET_OVERLAPS_EDGE_LOOP,
+    /* Fillet produces a self-intersecting surface. */
+    FILLET_PRODUCED_SELF_INT_SURFACE,
+    /* Radius inconsistent with adjacent filleted edge. */
+    FILLET_RANGE_INCONSISTENT_EDGE,
+    /* Fillet requires invalid extension of surface. */
+    FILLET_REQUIRES_SURFACE_EXTENSION,
+    /* A large rho value has resulted in the fillet cross section curvature being too flat compared to the underlying surface. */
+    FILLET_RHO_TOO_LARGE,
+    /* Selection of edges at vertex is too complicated for filleting. */
+    FILLET_VERTEX_EDGES_COMPLICATED,
+    /* Adjoining edge not chamfered. */
+    CHAMFER_ADJOINING_EDGE_NOT_CHAMFERED,
+    /* End boundary intersects unchamfered edge. */
+    CHAMFER_BOUNDARY_INTERSECTS_EDGE,
+    /* Bad overlap on end boundary of chamfer. */
+    CHAMFER_BOUNDARY_OVERLAP,
+    /* Unchamfered edge overlapped by chamfer. */
+    CHAMFER_EDGE_OVERLAPPED_BY_CHAMFER,
+    /* Distance of chamfer on face too large. */
+    CHAMFER_FACE_RANGE_TOO_LARGE,
+    /* Chamfer has a bad end boundary. */
+    CHAMFER_ILLEGAL_END_BOUNDARY,
+    /* Overlapping chamfers. */
+    CHAMFER_OVERLAP,
+    /* Chamfer completely overlaps edge loop. */
+    CHAMFER_OVERLAPS_EDGE_LOOP,
+    /* Chamfer produces a self-intersecting surface. */
+    CHAMFER_PRODUCED_SELF_INT_SURFACE,
+    /* Distance inconsistent with adjacent chamfered edge. */
+    CHAMFER_RANGE_INCONSISTENT_EDGE,
+    /* Chamfer requires invalid extension of surface. */
+    CHAMFER_REQUIRES_SURFACE_EXTENSION,
+    /* A large rho value has resulted in the chamfer cross section curvature being too flat compared to the underlying surface. */
+    CHAMFER_RHO_TOO_LARGE,
+    /* Selection of edges at vertex is too complicated for chamfering. */
+    CHAMFER_VERTEX_EDGES_COMPLICATED,
+    /* Adjoining edge not blended. */
+    EDGEBLEND_ADJOINING_EDGE_NOT_BLENDED,
+    /* End boundary intersects unblended edge. */
+    EDGEBLEND_BOUNDARY_INTERSECTS_EDGE,
+    /* Bad overlap on end boundary of blend. */
+    EDGEBLEND_BOUNDARY_OVERLAP,
+    /* Unblended edge overlapped by blend. */
+    EDGEBLEND_EDGE_OVERLAPPED_BY_BLEND,
+    /* Range of blend on face too large. */
+    EDGEBLEND_FACE_RANGE_TOO_LARGE,
+    /* Blend has a bad end boundary. */
+    EDGEBLEND_ILLEGAL_END_BOUNDARY,
+    /* Overlapping blends. */
+    EDGEBLEND_OVERLAP,
+    /* Blend completely overlaps edge loop. */
+    EDGEBLEND_OVERLAPS_EDGE_LOOP,
+    /* Blend produces a self-intersecting surface. */
+    EDGEBLEND_PRODUCED_SELF_INT_SURFACE,
+    /* Range inconsistent with adjacent blended edge. */
+    EDGEBLEND_RANGE_INCONSISTENT_EDGE,
+    /* Blend requires invalid extension of surface. */
+    EDGEBLEND_REQUIRES_SURFACE_EXTENSION,
+    /* A large rho value has resulted in the blend cross section curvature being too flat compared to the underlying surface. */
+    EDGEBLEND_RHO_TOO_LARGE,
+    /* Selection of edges at vertex is too complicated for blending. */
+    EDGEBLEND_VERTEX_EDGES_COMPLICATED,
+    /* Loads applied to fixed bodies have no effect on the system. */
+    SIMULATION_LOAD_ON_FIXED_INSTANCE,
+    /* Custom alignment points must be in the selected profile sketch. */
+    FRAME_CUSTOM_ALIGNMENT_POINTS_NOT_IN_SKETCH,
+    /* Minor diameter cannot exceed cylinder diameter. */
+    NON_MATCHING_SIZE_ERROR,
+    /* Could not match selected edge and adjacent faces. */
+    FILL_CANNOT_MATCH_EDGE_ADJACENT_FACES,
+    /* Bad adjacent face data provided, expected map containing "edges" and "faces". */
+    FILL_ADJACENT_FACE_BAD_INPUT,
+    /* Missing custom alignment point. */
+    FRAME_BAD_OFFSET_INDEX,
+    /* External threads cannot be applied to sheet metal features. */
+    EXTERNAL_THREADS_UNSUPPORTED_ON_SHEET_METAL,
+    /* Thread length is greater than cylinder length. */
+    THREAD_DEPTH_BEYOND_CYLINDER
 }
 
 

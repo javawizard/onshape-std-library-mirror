@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/error.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/featureList.fs", version : "✨");
 import(path : "onshape/std/frameAttributes.fs", version : "✨");
@@ -20,6 +21,12 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
     {
         annotation { "Name" : "Sketch profile", "MaxNumberOfPicks" : 1 }
         definition.sketch is FeatureList;
+
+        annotation { "Group Name" : "Additional alignment points", "Collapsed By Default" : true }
+        {
+            annotation { "Name" : "Sketch points", "Filter" : EntityType.VERTEX && SketchObject.YES }
+            definition.alignmentPoints is Query;
+        }
 
         // --
         // Standard and Description must appear as explicit fields because array parameter fields are not configurable
@@ -53,7 +60,8 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
     }, {
             standard : "",
             description : "",
-            additionalColumns : []
+            additionalColumns : [],
+            alignmentPoints : qNothing()
         });
 
 function doTagProfile(context is Context, topLevelId is Id, definition is map)
@@ -89,5 +97,14 @@ function doTagProfile(context is Context, topLevelId is Id, definition is map)
     }
 
     setFrameProfileAttribute(context, sketchRegions, frameProfileAttribute(profileAttribute));
+    doTagCustomAlignmentPoints(context, topLevelId, definition);
 }
 
+function doTagCustomAlignmentPoints(context is Context, topLevelId is Id, definition is map)
+{
+    const allPointsQuery = qCreatedBy(definition.sketch) -> qEntityFilter(EntityType.VERTEX);
+    const goodPointsQuery = qIntersection([allPointsQuery, definition.alignmentPoints]);
+    const badPointsQuery = qSubtraction(definition.alignmentPoints, goodPointsQuery);
+    verify(isQueryEmpty(context, badPointsQuery), ErrorStringEnum.FRAME_CUSTOM_ALIGNMENT_POINTS_NOT_IN_SKETCH, { "entities" : badPointsQuery });
+    setCustomFrameAlignmentPointAttribute(context, goodPointsQuery);
+}

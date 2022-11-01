@@ -73,7 +73,7 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
     {
         return query;
     }
-
+    var doCoincidenceCheck = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1890_FOLLOW_LAMINAR_SOURCE_COINCIDENCE_CHECK);
     for (var index = 0; index < edgeCount; index += 1)
     {
         if (handleNonWireEdges && hasNonWireBodies)
@@ -84,15 +84,31 @@ export function followWireEdgesToLaminarSource(context is Context, query is Quer
             if (!isOwnerBodyWire)
                 continue;
         }
-        var edgePoint = evEdgeTangentLine(context, {
-                    "edge" : edges[index],
-                    "parameter" : ON_EDGE_TEST_PARAMETER,
-                    "arcLengthParameterization" : false
-                }).origin;
         const sourceQ = qLaminarDependency(edges[index]);
-        if (!isQueryEmpty(context, qContainsPoint(sourceQ, edgePoint)))
+        if (isQueryEmpty(context, sourceQ))
         {
-            edges[index] = sourceQ;
+            continue;
+        }
+        if (doCoincidenceCheck)
+        {
+            const coincidentEdges = qCoincidentFilter(sourceQ, edges[index]);
+            if (size(evaluateQuery(context, coincidentEdges)) == 1)
+            {
+                edges[index] = coincidentEdges;
+            }
+        }
+        else
+        {
+            var edgePoint = evEdgeTangentLine(context, {
+                        "edge" : edges[index],
+                        "parameter" : ON_EDGE_TEST_PARAMETER,
+                        "arcLengthParameterization" : false
+                    }).origin;
+
+            if (!isQueryEmpty(context, qContainsPoint(sourceQ, edgePoint)))
+            {
+                edges[index] = sourceQ;
+            }
         }
     }
     return qUnion(edges);
@@ -306,5 +322,52 @@ export function getLastNonMeshFace(context is Context, topologies is Query) retu
 export function getFirstNonMeshFace(context is Context, topologies is Query) returns Query
 {
     return getTerminalNonMeshFace(context, topologies, true);
+}
+
+/** @internal */
+export function getAdjacentFacesOfWireProfiles(context is Context, profileQ is Query,  hiddenBodies is Query) returns Query
+{
+    var faces = [];
+    for (var edge in evaluateQuery(context, profileQ))
+    {
+        var laminarEdgesQ = qLaminarDependency(edge);
+        const edgeTangents = evEdgeTangentLines(context, {
+                    "edge" : edge,
+                    "parameters" : [0.1, 0.5, 0.8]
+            });
+        //For laminar edges selected or recovered through dependency
+        if (!isQueryEmpty(context, laminarEdgesQ))
+        {
+            laminarEdgesQ = filterByCoincidence(laminarEdgesQ, edgeTangents);
+        }
+        //For wire edges look for derived laminar edges
+        if (isQueryEmpty(context, laminarEdgesQ) && !isQueryEmpty(context, edge->qBodyType(BodyType.WIRE)))
+        {
+            const tracking = startTracking(context,
+                    {"subquery" : edge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, edge) });
+            var laminarEdgesQ = tracking->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+            laminarEdgesQ = filterByCoincidence(laminarEdgesQ, edgeTangents);
+            laminarEdgesQ = qSubtraction(laminarEdgesQ, qOwnedByBody(hiddenBodies, EntityType.EDGE));
+        }
+        if (isQueryEmpty(context, laminarEdgesQ))
+            continue;
+        const adjacentFaceQ = qAdjacent(laminarEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+        // only use the adjacent face if it is unambiguous
+        if (size(evaluateQuery(context, adjacentFaceQ)) == 1)
+        {
+            faces = append(faces, adjacentFaceQ);
+        }
+    }
+    return qUnion(faces);
+}
+
+function filterByCoincidence(edgeQ is Query, edgeTangents is array) returns Query
+{
+    var out = edgeQ;
+    for (var tangent in edgeTangents)
+    {
+        out = qContainsPoint(out, tangent.origin);
+    }
+    return out;
 }
 

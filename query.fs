@@ -142,6 +142,7 @@ export predicate canBeQuery(value)
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
  * @value CONSUMED                   : Used in [qConsumed]
  * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
+ * @value COINCIDENT                 : Used in [qCoincidentFilter]
 
  ******************************************************************************/
 export enum QueryType
@@ -227,7 +228,8 @@ export enum QueryType
     PLANE_PARALLEL_DIRECTION,
     FACE_PARALLEL_DIRECTION,
     CONSUMED,
-    COMPOSITE_PART_TYPE_FITLER
+    COMPOSITE_PART_TYPE_FITLER,
+    COINCIDENT
 }
 
 /**
@@ -2106,6 +2108,12 @@ precondition
 }
 {
     return @unpackQuery(version, query, root);
+}
+
+/** @internal */
+export function qCoincidentFilter(subquery is Query, target is Query) returns Query
+{
+    return { "queryType" : QueryType.COINCIDENT, "subquery" : subquery, "target" : target } as Query;
 }
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.

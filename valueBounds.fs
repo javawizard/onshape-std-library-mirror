@@ -413,7 +413,7 @@ export const VOLUME_BOUNDS =
     (cubicInch)       : 1.0,
     (cubicFoot)       : 0.001,
     (cubicYard)       : 0.0001
-} as AreaBoundSpec;
+} as VolumeBoundSpec;
 
 /**
  * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 30 degrees.

@@ -30,6 +30,7 @@ export import(path : "onshape/std/deleteFace.fs", version : "✨");
 export import(path : "onshape/std/draft.fs", version : "✨");
 export import(path : "onshape/std/enclose.fs", version : "✨");
 export import(path : "onshape/std/extend.fs", version : "✨");
+export import(path : "onshape/std/externalThread.fs", version : "✨");
 export import(path : "onshape/std/extrude.fs", version : "✨");
 export import(path : "onshape/std/endcap.fs", version : "✨");
 export import(path : "onshape/std/faceIntersection.fs", version : "✨");
