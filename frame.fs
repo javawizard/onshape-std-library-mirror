@@ -1,38 +1,41 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1867.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1867.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "1867.0");
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/coordSystem.fs", version : "1867.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
-import(path : "onshape/std/error.fs", version : "1867.0");
-import(path : "onshape/std/evaluate.fs", version : "1867.0");
-import(path : "onshape/std/feature.fs", version : "1867.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1867.0");
-import(path : "onshape/std/instantiator.fs", version : "1867.0");
-import(path : "onshape/std/manipulator.fs", version : "1867.0");
-import(path : "onshape/std/path.fs", version : "1867.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
-import(path : "onshape/std/tabReferences.fs", version : "1867.0");
-import(path : "onshape/std/tagProfile.fs", version : "1867.0");
-import(path : "onshape/std/tool.fs", version : "1867.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1867.0");
-import(path : "onshape/std/transform.fs", version : "1867.0");
-import(path : "onshape/std/valueBounds.fs", version : "1867.0");
-import(path : "onshape/std/vector.fs", version : "1867.0");
+import(path : "onshape/std/attributes.fs", version : "1890.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1890.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/coordSystem.fs", version : "1890.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
+import(path : "onshape/std/error.fs", version : "1890.0");
+import(path : "onshape/std/evaluate.fs", version : "1890.0");
+import(path : "onshape/std/feature.fs", version : "1890.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1890.0");
+import(path : "onshape/std/instantiator.fs", version : "1890.0");
+import(path : "onshape/std/manipulator.fs", version : "1890.0");
+import(path : "onshape/std/path.fs", version : "1890.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
+import(path : "onshape/std/tabReferences.fs", version : "1890.0");
+import(path : "onshape/std/tagProfile.fs", version : "1890.0");
+import(path : "onshape/std/tool.fs", version : "1890.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1890.0");
+import(path : "onshape/std/transform.fs", version : "1890.0");
+import(path : "onshape/std/valueBounds.fs", version : "1890.0");
+import(path : "onshape/std/vector.fs", version : "1890.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "1867.0");
+export import(path : "onshape/std/frameUtils.fs", version : "1890.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
 {
-            (unitless) : [0, 4, 8]
+            (unitless) : [0, 4, 100]
         }
     as IntegerBoundSpec;
+
+/** @internal */
+export const FRAME_NINE_POINT_CENTER_INDEX = 4;
 
 // in `extendFrames` we pad our frame extrusion length to help avoid non-manifold cases in boolean operations
 const EXTEND_FRAMES_PAD_LENGTH = .1 * millimeter;
@@ -288,7 +291,7 @@ function createComposites(context is Context, id is Id, mergeSegments is boolean
         setFrameTopologyAttribute(context, endFaceQuery, endFaceAttributes);
 
         //set composite body attribute
-        const closedCompositeBodyQuery = qCreatedBy(compositeId, EntityType.BODY) -> qCompositePartTypeFilter(CompositePartType.CLOSED);
+        const closedCompositeBodyQuery = qCreatedBy(compositeId, EntityType.BODY)->qCompositePartTypeFilter(CompositePartType.CLOSED);
         setFrameProfileAttribute(context, closedCompositeBodyQuery, profileData.profileAttribute);
     }
 }
@@ -296,25 +299,28 @@ function createComposites(context is Context, id is Id, mergeSegments is boolean
 function sweepFrames(context is Context, topLevelId is Id, definition is map, profileData is map, bodiesToDelete is box) returns map
 {
     verify(!isQueryEmpty(context, definition.selections), ErrorStringEnum.FRAME_SELECT_PATH, { "faultyParameters" : ["selections"] });
-
     const cornerOverrides = gatherCornerOverrides(context, definition.cornerOverrides);
     const selectionData = createPathsFromSelections(context, topLevelId, definition.selections, bodiesToDelete);
-    var manipulators = {};
 
+    const frameManipulators = createStableFrameManipulators(context, topLevelId, definition, selectionData.manipulatorEdge, profileData);
+    // The points manipulator _must_ succeed because there is no mapping for the points manipulator back to any user-editable field in the UI.
+    // Therefore the points manipulator *may* modify the index as required.
+    definition.index = frameManipulators.points.index;
+    // Immediately display the manipulators before the sweep operation is performed.
+    // This guarantees the point and angle manipulator show even in the event of failure.
+    // The user thus always has a way to undo the fail state.
+    addManipulators(context, topLevelId, frameManipulators);
     const sweepData = doStablePaths(context, topLevelId, definition, profileData, cornerOverrides, selectionData.paths, selectionData.stableEdges, bodiesToDelete);
-    manipulators = updateManipulators(manipulators, sweepData.manipulators);
-
-    const frameManipulators = createStableFrameManipulators(context, definition, selectionData.manipulatorEdge, profileData);
 
     return {
             "trimEnds" : sweepData.trimEnds,
-            "manipulators" : mergeMaps(manipulators, frameManipulators),
+            "manipulators" : mergeMaps(sweepData.manipulators, frameManipulators),
             "sweepBodies" : sweepData.sweepBodies,
             "compositeGroups" : sweepData.compositeGroups
         };
 }
 
-function createStableFrameManipulators(context is Context, definition is map, manipulatorEdge is Query, profileData is map) returns map
+function createStableFrameManipulators(context is Context, topLevelId is Id, definition is map, manipulatorEdge is Query, profileData is map) returns map
 {
     // Desired behavior is to set the frames manipulator at the middle of the first user-selected swept segment.
     // Due to the heuristic for creating planes the manipulators can lose correct orientation with the frame.
@@ -325,8 +331,8 @@ function createStableFrameManipulators(context is Context, definition is map, ma
     const startXDir = getXDirFromHeuristic(manipulatorStart);
     const midXDir = getXDirFromHeuristic(manipulatorMid);
     return tolerantEquals(startXDir, midXDir)
-        ? createFrameManipulators(context, definition, manipulatorMid, profileData)
-        : createFrameManipulators(context, definition, manipulatorStart, profileData);
+        ? createFrameManipulators(context, topLevelId, definition, manipulatorMid, profileData)
+        : createFrameManipulators(context, topLevelId, definition, manipulatorStart, profileData);
 }
 
 function doStablePaths(context is Context, topLevelId is Id, definition is map, profileData is map, cornerOverrides is array,
@@ -724,7 +730,7 @@ function splitPathAtEdge(path is Path, stableEdge is map) returns map
         };
 }
 
-function createFrameManipulators(context is Context, definition is map, manipulatorLine is Line, profileData is map) returns map
+function createFrameManipulators(context is Context, topLevelId is Id, definition is map, manipulatorLine is Line, profileData is map) returns map
 {
     var manipulatorPlane = getPlaneAtLineStart(manipulatorLine);
 
@@ -743,20 +749,19 @@ function createFrameManipulators(context is Context, definition is map, manipula
                 "angle" : definition.angle,
                 "minValue" : 0 * degree,
                 "maxValue" : 360 * degree,
-                "rotationOrigin" : manipulatorPlane.origin + manipulatorPlane.x * profileData.xInc * 2
+                "rotationOrigin" : manipulatorPlane.origin + manipulatorPlane.x * profileData.pointsManipulatorData.halfExtents[0] * 2
             });
 
-    const pointsManipulator = createPointsManipulator(definition.index, profileData, manipulatorPlane, definition.angle);
+    const pointsManipulator = createPointsManipulator(context, topLevelId, definition.index, profileData, manipulatorPlane, definition.angle);
 
     return { "angleManipulator" : angleManipulator, "points" : pointsManipulator };
 }
 
 function getProfilePlane(profileData is map, definition is map) returns Plane
 {
-    var x = profileData.xMid + indexToMultiplier(definition.index)[0] * profileData.xInc;
-    var y = profileData.yMid + indexToMultiplier(definition.index)[1] * profileData.yInc;
-    const profilePlane = plane(planeToWorld(profileData.profilePlane, vector(x, y)), profileData.profilePlane.normal, profileData.profilePlane.x);
-    return profilePlane;
+    const profilePlaneOrigin = profileData.pointsManipulatorData.center + profileData.pointsManipulatorData.offset[definition.index];
+    const profilePlaneInWorld = plane(planeToWorld(profileData.profilePlane, vector(profilePlaneOrigin[0], profilePlaneOrigin[1])), profileData.profilePlane.normal, profileData.profilePlane.x);
+    return profilePlaneInWorld;
 }
 
 function evaluatePathEdge(context is Context, edge is Query, isFlipped is boolean, parameter is number) returns Line
@@ -1481,6 +1486,9 @@ function getProfile(context is Context, id is Id, definition is map, bodiesToDel
     instantiate(context, instantiator);
     cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
 
+    const customPointsQuery = getCustomFrameAlignmentPoints(context, profileId);
+    const customPoints = evaluateQuery(context, customPointsQuery);
+
     const facesCreated = evaluateQuery(context, qCreatedBy(profileId, EntityType.FACE));
     verify(facesCreated != [], ErrorStringEnum.FRAME_PROFILE_REGION);
 
@@ -1521,22 +1529,49 @@ function getProfile(context is Context, id is Id, definition is map, bodiesToDel
     var faceData = {};
     faceData.profileBody = profileBody;
     faceData.profilePlane = evPlane(context, { "face" : qOwnedByBody(profileBody, EntityType.FACE) });
-
-    const box3d = evBox3d(context, {
-                "topology" : faceData.profileBody,
-                "cSys" : coordSystem(faceData.profilePlane)
-            });
-
-    faceData.xInc = .5 * (box3d.maxCorner[0] - box3d.minCorner[0]);
-    faceData.yInc = .5 * (box3d.maxCorner[1] - box3d.minCorner[1]);
-    faceData.xMid = .5 * (box3d.maxCorner[0] + box3d.minCorner[0]);
-    faceData.yMid = .5 * (box3d.maxCorner[1] + box3d.minCorner[1]);
+    faceData.pointsManipulatorData = getPointsManipulatorData(context, faceData, customPoints);
 
     // For cutlists:
     // Must use original profile, not extracted.  opExtractSurface seems to clear the attribute here.
     faceData.profileAttribute = getFrameProfileAttributeOrDefault(context, outerFaces, definition.profileSketch.configuration);
 
     return faceData;
+}
+
+
+function getPointsManipulatorData(context, faceData is map, customPoints is array) returns map
+{
+    const bb = evBox3d(context, {
+                "topology" : faceData.profileBody,
+                "cSys" : coordSystem(faceData.profilePlane)
+            });
+    const center2d = 0.5 * (bb.maxCorner + bb.minCorner);
+    const halfExtents = 0.5 *(bb.maxCorner - bb.minCorner);
+    //compute standard offsets with layout:
+    //8 7 6
+    //5 4 3
+    //2 1 0
+    var standardOffsets = makeArray(9);
+    standardOffsets[8] = vector(-halfExtents[0], halfExtents[1], 0 * meter);
+    standardOffsets[7] = vector(0 * meter, halfExtents[1], 0 * meter);
+    standardOffsets[6] = vector(halfExtents[0], halfExtents[1], 0 * meter);
+    standardOffsets[5] = vector(-halfExtents[0], 0 * meter, 0 * meter);
+    standardOffsets[FRAME_NINE_POINT_CENTER_INDEX] = vector(0, 0, 0) * meter;
+    standardOffsets[3] = -standardOffsets[5];
+    standardOffsets[2] = -standardOffsets[6];
+    standardOffsets[1] = -standardOffsets[7];
+    standardOffsets[0] = -standardOffsets[8];
+
+    const customOffsets = mapArray(customPoints, function(pointQuery) {
+        const pointWCS = evVertexPoint(context, { "vertex" : pointQuery });
+        return worldToPlane3D(faceData.profilePlane, pointWCS);
+        });
+
+    return {
+        "center" : center2d,
+        "halfExtents" : halfExtents,
+        "offset" : concatenateArrays([standardOffsets, customOffsets])
+    };
 }
 
 // Creates a plane with the Z-axis along the line's direction.
@@ -1553,39 +1588,33 @@ function getXDirFromHeuristic(edgeLine is Line) returns Vector
     return (abs(edgeLine.direction[2]) > TOLERANCE.computational) ? Y_DIRECTION : Z_DIRECTION;
 }
 
-function createPointsManipulator(index is number, profileData is map, manipulatorPlane is Plane,
-    rotationAngle is ValueWithUnits)
+function createPointsManipulator(context is Context, topLevelId is Id, index is number, profileData is map, manipulatorPlane is Plane, rotationAngle is ValueWithUnits)
 {
-    var points = makeArray(9);
+    // offset is defined from center point (index 4)
+    // For every point, compute the offset as if the current index is the center
+    // ex: if current index == 2, the offset to index 7 will be found by treating index 2 as zero.
+    // For offset 7 when current index is 2: (-offset2 + offset7)
+    // To confirm observe: offset 2 when current index is 2 works out to -offset 2 + offset 2 == 0.
+
     const manipulatorPlaneX = manipulatorPlane.x;
     const manipulatorPlaneY = cross(manipulatorPlane.normal, manipulatorPlane.x);
     const rotation = rotationMatrix3d(manipulatorPlane.normal, rotationAngle);
-    for (var i = 0; i < 9; i += 1)
+
+    // if user changes profile or deletes a custom tagged alignment point this will silently reset to center
+    // ideally this would warn the user but because reference parameter changes are hard to reliably detect in editing logic
+    // the decision to silently fail is better than to warn or fail in a way the user doesn't understand how to fix.
+    if (index >= size(profileData.pointsManipulatorData.offset))
     {
-        points[i] = manipulatorPlane.origin;
-        const offset = ((indexToMultiplier(i)[0] - indexToMultiplier(index)[0]) * manipulatorPlaneX * profileData.xInc
-                + (indexToMultiplier(i)[1] - indexToMultiplier(index)[1]) * manipulatorPlaneY * profileData.yInc);
-        points[i] += rotation * offset;
+        index = FRAME_NINE_POINT_CENTER_INDEX;
     }
+
+    const points = mapArray(profileData.pointsManipulatorData.offset, function(offset) {
+        const offsetFromCenter = -profileData.pointsManipulatorData.offset[index] + offset;
+        var point = (offsetFromCenter[0] * manipulatorPlaneX) + (offsetFromCenter[1] * manipulatorPlaneY);
+        point = manipulatorPlane.origin + rotation * point;
+        return point;
+    });
     return pointsManipulator({ "points" : points, "index" : index });
-}
-
-function indexToMultiplier(index is number) returns array
-{
-    verify(index >= 0 && index <= 8, "Incorrect manipulator index");
-
-    const offset = switch (index) {
-                0 : [1, -1],
-                1 : [0, -1],
-                2 : [-1, -1],
-                3 : [1, 0],
-                4 : [0, 0],
-                5 : [-1, 0],
-                6 : [1, 1],
-                7 : [0, 1],
-                8 : [-1, 1]
-            };
-    return offset;
 }
 
 function getValueToIndexMap(container is array) returns map
@@ -1935,7 +1964,7 @@ function sweepFrames_PRE_V1742(context is Context, topLevelId is Id, definition 
     const manipulatorEdge = paths[0].edges[0];
     const manipulatorFlipped = paths[0].flipped[0];
     const manipulatorLine = evaluatePathEdge(context, manipulatorEdge, manipulatorFlipped, 0.5);
-    const frameManipulators = createFrameManipulators(context, definition, manipulatorLine, profileData);
+    const frameManipulators = createFrameManipulators(context, topLevelId, definition, manipulatorLine, profileData);
 
     manipulators = updateManipulators(frameManipulators, manipulators);
     return {

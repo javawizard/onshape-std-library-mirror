@@ -1,30 +1,30 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1867.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
+export import(path : "onshape/std/query.fs", version : "1890.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1867.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1867.0");
-import(path : "onshape/std/box.fs", version : "1867.0");
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/coordSystem.fs", version : "1867.0");
-import(path : "onshape/std/evaluate.fs", version : "1867.0");
-import(path : "onshape/std/extrude.fs", version : "1867.0");
-import(path : "onshape/std/feature.fs", version : "1867.0");
-import(path : "onshape/std/holeAttribute.fs", version : "1867.0");
-import(path : "onshape/std/math.fs", version : "1867.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1867.0");
-import(path : "onshape/std/sketch.fs", version : "1867.0");
-import(path : "onshape/std/tool.fs", version : "1867.0");
-import(path : "onshape/std/transform.fs", version : "1867.0");
-import(path : "onshape/std/units.fs", version : "1867.0");
-import(path : "onshape/std/vector.fs", version : "1867.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
+import(path : "onshape/std/attributes.fs", version : "1890.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1890.0");
+import(path : "onshape/std/box.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/coordSystem.fs", version : "1890.0");
+import(path : "onshape/std/evaluate.fs", version : "1890.0");
+import(path : "onshape/std/extrude.fs", version : "1890.0");
+import(path : "onshape/std/feature.fs", version : "1890.0");
+import(path : "onshape/std/holeAttribute.fs", version : "1890.0");
+import(path : "onshape/std/math.fs", version : "1890.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1890.0");
+import(path : "onshape/std/sketch.fs", version : "1890.0");
+import(path : "onshape/std/tool.fs", version : "1890.0");
+import(path : "onshape/std/transform.fs", version : "1890.0");
+import(path : "onshape/std/units.fs", version : "1890.0");
+import(path : "onshape/std/vector.fs", version : "1890.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -621,7 +621,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
             }
             else if (isPartialSection)
             {
-                polygon = createJogPolygonForPartialSection(projectedPoints, boxResult, offsetPlane);
+                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane);
             }
             else if (isAlignedSection)
             {
@@ -879,25 +879,56 @@ function createJogPolygon(points is array, boundingBox is Box3d, sketchPlane is 
     return polygonVertices;
 }
 
-function createJogPolygonForPartialSection(points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
+function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
 {
-    var polygonVertices = concatenateArrays([points, makeArray(7)]);
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION))
+    {
+        var polygonVertices = concatenateArrays([points, makeArray(7)]);
 
-    const pointCount = size(points);
-    const boxRadius = norm(boundingBox.maxCorner) / 2;
-    const boxCenterInPlane = vector(boundingBox.maxCorner[0] / 2, boundingBox.maxCorner[1] / 2);
-    const alignedDistanceToJogStart = abs(boxCenterInPlane[0] - points[0][0]);
-    const alignedDistanceToJogEnd = abs(boxCenterInPlane[0] - points[pointCount - 1][0]);
+        const pointCount = size(points);
+        const boxRadius = norm(boundingBox.maxCorner) / 2;
+        const boxCenterInPlane = vector(boundingBox.maxCorner[0] / 2, boundingBox.maxCorner[1] / 2);
+        const alignedDistanceToJogStart = abs(boxCenterInPlane[0] - points[0][0]);
+        const alignedDistanceToJogEnd = abs(boxCenterInPlane[0] - points[pointCount - 1][0]);
+        const flipY = points[pointCount - 1][1] < points[0][1];
+
+        polygonVertices[pointCount] = vector(boundingBox.maxCorner[0], points[pointCount - 1][1]);
+        polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
+        polygonVertices[pointCount + 2] = vector(boundingBox.minCorner[0], polygonVertices[pointCount + 1][1]);
+        polygonVertices[pointCount + 3] = vector(polygonVertices[pointCount + 2][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
+        polygonVertices[pointCount + 4] = vector(boundingBox.maxCorner[0], polygonVertices[pointCount + 3][1]);
+        polygonVertices[pointCount + 5] = vector(polygonVertices[pointCount + 4][0], points[0][1]);
+        polygonVertices[pointCount + 6] = polygonVertices[0];
+
+        return polygonVertices;
+    }
+    // Avoid self intersection in polygon when start or end point is outside bounding box. Also, the order
+    // of vertices is consistent with that in createJogPolygon. Needed for associative data query resolution.
+    var polygonVertices = concatenateArrays([makeArray(1), points]);
+    var pointCount = size(points);
     const flipY = points[pointCount - 1][1] < points[0][1];
-
-    polygonVertices[pointCount] = vector(boundingBox.maxCorner[0], points[pointCount - 1][1]);
-    polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
-    polygonVertices[pointCount + 2] = vector(boundingBox.minCorner[0], polygonVertices[pointCount + 1][1]);
-    polygonVertices[pointCount + 3] = vector(polygonVertices[pointCount + 2][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-    polygonVertices[pointCount + 4] = vector(boundingBox.maxCorner[0], polygonVertices[pointCount + 3][1]);
-    polygonVertices[pointCount + 5] = vector(polygonVertices[pointCount + 4][0], points[0][1]);
-    polygonVertices[pointCount + 6] = polygonVertices[0];
-
+    if ((flipY && points[pointCount - 1][1] <= boundingBox.minCorner[1]) || (!flipY && points[pointCount - 1][1] >= boundingBox.maxCorner[1]))
+    {
+        polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], points[pointCount - 1][1]));
+    }
+    else
+    {
+        polygonVertices = append(polygonVertices, vector(boundingBox.maxCorner[0], points[pointCount - 1][1]));
+        polygonVertices = append(polygonVertices, vector(polygonVertices[pointCount + 1][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]));
+        polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], polygonVertices[pointCount + 2][1]));
+    }
+    polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]));
+    pointCount = size(polygonVertices);
+    if ((flipY && points[0][1] >= boundingBox.maxCorner[1]) || (!flipY && points[0][1] <= boundingBox.minCorner[1]))
+    {
+        polygonVertices[pointCount - 1] = vector(polygonVertices[pointCount - 1][0], points[0][1]);
+    }
+    else
+    {
+        polygonVertices = append(polygonVertices, vector(boundingBox.maxCorner[0], polygonVertices[pointCount - 1][1]));
+        polygonVertices = append(polygonVertices, vector(polygonVertices[pointCount][0], points[0][1]));
+    }
+    polygonVertices[0] = polygonVertices[size(polygonVertices) - 1];
     return polygonVertices;
 }
 

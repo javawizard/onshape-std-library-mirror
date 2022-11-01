@@ -1,4 +1,4 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 1867; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/math.fs", version : "1867.0");
-import(path : "onshape/std/error.fs", version : "1867.0");
-export import(path : "onshape/std/units.fs", version : "1867.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/math.fs", version : "1890.0");
+import(path : "onshape/std/error.fs", version : "1890.0");
+export import(path : "onshape/std/units.fs", version : "1890.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -413,7 +413,7 @@ export const VOLUME_BOUNDS =
     (cubicInch)       : 1.0,
     (cubicFoot)       : 0.001,
     (cubicYard)       : 0.0001
-} as AreaBoundSpec;
+} as VolumeBoundSpec;
 
 /**
  * An `AngleBoundSpec` for an angle between 0 and 360 degrees, defaulting to 30 degrees.

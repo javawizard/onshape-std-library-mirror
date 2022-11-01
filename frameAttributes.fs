@@ -1,15 +1,15 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import (path : "onshape/std/attributes.fs", version : "1867.0");
-import (path : "onshape/std/containers.fs", version : "1867.0");
-import (path : "onshape/std/context.fs", version : "1867.0");
-import (path : "onshape/std/evaluate.fs", version : "1867.0");
-import (path : "onshape/std/feature.fs", version : "1867.0");
-import (path : "onshape/std/query.fs", version : "1867.0");
-import (path : "onshape/std/table.fs", version : "1867.0");
+import (path : "onshape/std/attributes.fs", version : "1890.0");
+import (path : "onshape/std/containers.fs", version : "1890.0");
+import (path : "onshape/std/context.fs", version : "1890.0");
+import (path : "onshape/std/evaluate.fs", version : "1890.0");
+import (path : "onshape/std/feature.fs", version : "1890.0");
+import (path : "onshape/std/query.fs", version : "1890.0");
+import (path : "onshape/std/table.fs", version : "1890.0");
 
 /**
  * The possible types of a [FrameTopologyAttribute].
@@ -33,6 +33,9 @@ export const FRAME_ATTRIBUTE_PROFILE_NAME = "frameProfile";
 
 /** @internal */
 export const FRAME_ATTRIBUTE_CUTLIST_NAME = "cutlist";
+
+/** @internal */
+const FRAME_ATTRIBUTE_CUSTOM_ALIGNMENT_POINT_NAME = "frameAlignmentPoint";
 
 // == FrameProfileAttribute ==
 
@@ -239,4 +242,26 @@ export function setCutlistAttribute(context is Context, composite is Query, attr
     });
 }
 
+/**
+ * Sets an attribute on the sketch entity point queries for later discovery and use during frame creation.
+ */
+export function setCustomFrameAlignmentPointAttribute(context is Context, pointsQuery is Query)
+{
+    if (!isQueryEmpty(context, pointsQuery))
+    {
 
+        setAttribute(context, {
+                    "entities" : pointsQuery,
+                    "name" : FRAME_ATTRIBUTE_CUSTOM_ALIGNMENT_POINT_NAME,
+                    "attribute" : true
+                });
+    }
+}
+
+/**
+ * Finds the sketch points in the `profileId` sketch with the custom alignment point attribute.
+ */
+export function getCustomFrameAlignmentPoints(context is Context, profileId is Id) returns Query
+{
+    return qCreatedBy(profileId, EntityType.VERTEX)->qHasAttribute(FRAME_ATTRIBUTE_CUSTOM_ALIGNMENT_POINT_NAME);
+}

@@ -1,8 +1,8 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "1867.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1867.0");
+import(path : "onshape/std/units.fs", version : "1890.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1890.0");
 
 const ANSI_TaperedPipeTapHoleTable = {
     "name" : "size",
@@ -366,6 +366,7 @@ export const ANSI_ExternalThreadTable = {
         "#0" : {
             "name" : "pitch",
             "displayName" : "Threads/inch",
+            "default" : "80 tpi",
             "entries" : {
                 "80 tpi" : {"holeDiameter" : "0.0600 in", "minorDiameter" : "0.0451 in", "majorDiameter" : "0.0600 in"}
             }

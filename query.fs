@@ -1,4 +1,4 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,14 +32,14 @@ FeatureScript 1867; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "1867.0");
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/context.fs", version : "1867.0");
-import(path : "onshape/std/mathUtils.fs", version : "1867.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
-import(path : "onshape/std/units.fs", version : "1867.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
-import(path : "onshape/std/featureList.fs", version : "1867.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/context.fs", version : "1890.0");
+import(path : "onshape/std/mathUtils.fs", version : "1890.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
+import(path : "onshape/std/units.fs", version : "1890.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
+import(path : "onshape/std/featureList.fs", version : "1890.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -142,6 +142,7 @@ export predicate canBeQuery(value)
  * @value PARALLEL_EDGES             : Used in [qParallelEdges]
  * @value CONSUMED                   : Used in [qConsumed]
  * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
+ * @value COINCIDENT                 : Used in [qCoincidentFilter]
 
  ******************************************************************************/
 export enum QueryType
@@ -227,7 +228,8 @@ export enum QueryType
     PLANE_PARALLEL_DIRECTION,
     FACE_PARALLEL_DIRECTION,
     CONSUMED,
-    COMPOSITE_PART_TYPE_FITLER
+    COMPOSITE_PART_TYPE_FITLER,
+    COINCIDENT
 }
 
 /**
@@ -2106,6 +2108,12 @@ precondition
 }
 {
     return @unpackQuery(version, query, root);
+}
+
+/** @internal */
+export function qCoincidentFilter(subquery is Query, target is Query) returns Query
+{
+    return { "queryType" : QueryType.COINCIDENT, "subquery" : subquery, "target" : target } as Query;
 }
 
 //backward compatibility -- do not use these functions.  Will need to figure out a way to remove them.

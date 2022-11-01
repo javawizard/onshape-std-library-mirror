@@ -1,29 +1,29 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1867.0");
-export import(path : "onshape/std/tool.fs", version : "1867.0");
+export import(path : "onshape/std/query.fs", version : "1890.0");
+export import(path : "onshape/std/tool.fs", version : "1890.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1867.0");
+export import(path : "onshape/std/manipulator.fs", version : "1890.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1867.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1867.0");
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/evaluate.fs", version : "1867.0");
-import(path : "onshape/std/feature.fs", version : "1867.0");
-import(path : "onshape/std/math.fs", version : "1867.0");
-import(path : "onshape/std/string.fs", version : "1867.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1867.0");
-import(path : "onshape/std/transform.fs", version : "1867.0");
-import(path : "onshape/std/units.fs", version : "1867.0");
-import(path : "onshape/std/valueBounds.fs", version : "1867.0");
-import(path : "onshape/std/vector.fs", version : "1867.0");
+import(path : "onshape/std/boolean.fs", version : "1890.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/evaluate.fs", version : "1890.0");
+import(path : "onshape/std/feature.fs", version : "1890.0");
+import(path : "onshape/std/math.fs", version : "1890.0");
+import(path : "onshape/std/string.fs", version : "1890.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1890.0");
+import(path : "onshape/std/transform.fs", version : "1890.0");
+import(path : "onshape/std/units.fs", version : "1890.0");
+import(path : "onshape/std/valueBounds.fs", version : "1890.0");
+import(path : "onshape/std/vector.fs", version : "1890.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -118,22 +118,35 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 profile.wireProfileEntities is Query;
             }
         }
-
-        annotation { "Name" : "Start profile condition", "UIHint" : UIHint.SHOW_LABEL }
-        definition.startCondition is LoftEndDerivativeType;
-
-        if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
+        annotation { "Group Name" : "End conditions", "Collapsed By Default" : false }
         {
-            annotation { "Name" : "Start magnitude" }
-            isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
-        }
+            annotation { "Name" : "Start profile condition", "UIHint" : UIHint.SHOW_LABEL }
+            definition.startCondition is LoftEndDerivativeType;
 
-        annotation { "Name" : "End profile condition", "UIHint" : UIHint.SHOW_LABEL }
-        definition.endCondition is LoftEndDerivativeType;
-        if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
-        {
-            annotation { "Name" : "End magnitude" }
-            isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            if (definition.startCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.startCondition == LoftEndDerivativeType.MATCH_CURVATURE)
+            {
+                annotation { "Name" : "Adjacent faces", "Column Name" : "Start profile adjacent faces", "Filter" : EntityType.FACE }
+                definition.adjacentFacesStart is Query;
+            }
+            if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
+            {
+                annotation { "Name" : "Start magnitude" }
+                isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
+
+            annotation { "Name" : "End profile condition", "UIHint" : UIHint.SHOW_LABEL }
+            definition.endCondition is LoftEndDerivativeType;
+
+            if (definition.endCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
+            {
+                annotation { "Name" : "Adjacent faces", "Column Name" : "End profile adjacent faces", "Filter" : EntityType.FACE }
+                definition.adjacentFacesEnd is Query;
+            }
+            if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
+            {
+                annotation { "Name" : "End magnitude" }
+                isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
         }
 
         if (definition.bodyType == ToolBodyType.SURFACE)
@@ -273,13 +286,13 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
         {
             derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
-                                                        definition.profileSubqueries[0], 0, definition.startMagnitude));
+                                                        definition.profileSubqueries[0], 0, definition.startMagnitude, definition.adjacentFacesStart));
         }
         if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
         {
             const lastProfileIndex = @size(definition.profileSubqueries) - 1;
             derivatives = append(derivatives, createProfileConditions(context, definition.endCondition,
-                                                        definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude));
+                                                        definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude, definition.adjacentFacesEnd));
         }
         definition.derivativeInfo = derivatives;
 
@@ -375,10 +388,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
-        trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false });
+        trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false,
+        adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing() });
 
 /** @internal */
-export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number) returns map
+export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number, adjFaceQuery is Query) returns map
 {
     if (endCondition == LoftEndDerivativeType.NORMAL_TO_PROFILE || endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE)
     {
@@ -408,6 +422,15 @@ export function createProfileConditions(context is Context, endCondition is Loft
     else if (endCondition == LoftEndDerivativeType.MATCH_TANGENT ||
              endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
     {
+        if (!isQueryEmpty(context, adjFaceQuery))
+        {
+            const derivativeInfo = { "profileIndex" : profileIndex,
+                                    "magnitude" : magnitude,
+                                    "matchCurvature" : endCondition == LoftEndDerivativeType.MATCH_CURVATURE,
+                                    "adjacentFaces" : adjFaceQuery,
+                                    "userDefinedAdjacentFaces" : true};
+            return derivativeInfo;
+        }
         const adjacentFaceQuery = qAdjacent(profileQuery, AdjacencyType.EDGE, EntityType.FACE);
         if (isQueryEmpty(context, adjacentFaceQuery))
         {
@@ -416,7 +439,8 @@ export function createProfileConditions(context is Context, endCondition is Loft
         const derivativeInfo = { "profileIndex" : profileIndex,
                                  "magnitude" : magnitude,
                                  "matchCurvature" : endCondition == LoftEndDerivativeType.MATCH_CURVATURE,
-                                 "adjacentFaces" : qAdjacent(profileQuery, AdjacencyType.EDGE, EntityType.FACE)};
+                                 "adjacentFaces" : adjacentFaceQuery,
+                                 "userDefinedAdjacentFaces" : false};
         return derivativeInfo;
     }
 }
@@ -463,7 +487,7 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
         {
             definition = mergeMaps(definition, copyFaceOrVertexSelections(context, oldDefinition.wireProfilesArray, arrayParameterMappingSheet, arrayParameterMappingSolid));
         }
-        return booleanStepEditLogic(context, id, oldDefinition, definition,
+        definition = booleanStepEditLogic(context, id, oldDefinition, definition,
                                 specifiedParameters, hiddenBodies, loft);
     }
     else
@@ -472,9 +496,92 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
         {
             definition = mergeMaps(definition, copyFaceOrVertexSelections(context, oldDefinition.sheetProfilesArray, arrayParameterMappingSolid, arrayParameterMappingSheet));
         }
-       return surfaceOperationTypeEditLogic(context, id, definition,
+       definition = surfaceOperationTypeEditLogic(context, id, definition,
                                     specifiedParameters, wireProfilesAndGuides(definition), hiddenBodies);
     }
+
+    return adjacentFacesEditingLogic(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
+}
+
+function adjacentFacesEditingLogic(context is Context, oldDefinition is map, definition is map,
+                                   specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    var profileArrayKey;
+    var profileSubqueryKey;
+    if (definition.bodyType == ToolBodyType.SOLID)
+    {
+        profileArrayKey = "sheetProfilesArray";
+        profileSubqueryKey = "sheetProfileEntities";
+    }
+    else
+    {
+        profileArrayKey = "wireProfilesArray";
+        profileSubqueryKey = "wireProfileEntities";
+    }
+    if (definition[profileArrayKey] == undefined || size(definition[profileArrayKey]) == 0)
+    {
+        return definition;
+    }
+    if (specifiedParameters.adjacentFacesStart != true)
+    {
+        definition.adjacentFacesStart = populateAjdacentFacesIfNeeded(context, definition, oldDefinition, hiddenBodies, "startCondition", profileArrayKey, profileSubqueryKey, 0, "adjacentFacesStart");
+    }
+
+    if (size(definition[profileArrayKey]) == 1)
+    {
+        return definition;
+    }
+    if (specifiedParameters.adjacentFacesEnd != true)
+    {
+        definition.adjacentFacesEnd = populateAjdacentFacesIfNeeded(context, definition, oldDefinition, hiddenBodies, "endCondition", profileArrayKey, profileSubqueryKey, size(definition[profileArrayKey]) - 1, "adjacentFacesEnd");
+    }
+    return definition;
+}
+
+function populateAjdacentFacesIfNeeded(context is Context, definition is map, oldDefinition is map,  hiddenBodies is Query,
+            condition is string, profileArray is string, profileSubquery is string, startEnd is number, reference is string) returns Query
+{
+    if (definition[condition] != LoftEndDerivativeType.MATCH_TANGENT &&
+        definition[condition] != LoftEndDerivativeType.MATCH_CURVATURE)
+    {
+        return definition[reference];
+    }
+    const profileQ = definition[profileArray][startEnd][profileSubquery];
+    if (isQueryEmpty(context, profileQ))
+    {
+        return qNothing();
+    }
+    // No new profile elements
+    if (oldDefinition[profileArray] != undefined &&
+        (oldDefinition[condition] == LoftEndDerivativeType.MATCH_TANGENT ||
+        oldDefinition[condition] == LoftEndDerivativeType.MATCH_CURVATURE))
+    {
+        const oldProfileQ = oldDefinition[profileArray][startEnd][profileSubquery];
+        if (evaluateQuery(context, profileQ) == evaluateQuery(context, oldProfileQ))
+        {
+            return definition[reference];
+        }
+    }
+    const faces = qEntityFilter(profileQ, EntityType.FACE);
+    if (!isQueryEmpty(context, faces))
+    {
+        return getAdjacentFacesOfSheetProfiles(context, faces, hiddenBodies);
+    }
+    else
+    {
+        return getAdjacentFacesOfWireProfiles(context, profileQ, hiddenBodies);
+    }
+}
+
+function getAdjacentFacesOfSheetProfiles(context is Context, profileQ is Query,  hiddenBodies is Query) returns Query
+{
+    var faces = [];
+    for (var face in evaluateQuery(context, profileQ))
+    {
+        var adjacentFaceQ = qAdjacent(face, AdjacencyType.EDGE, EntityType.FACE);
+        faces = append(faces, qSubtraction(adjacentFaceQ, profileQ));
+    }
+    return qUnion(faces);
 }
 
 /**

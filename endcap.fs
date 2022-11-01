@@ -1,31 +1,31 @@
-FeatureScript 1867; /* Automatically generated version */
+FeatureScript 1890; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "1867.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1867.0");
-import(path : "onshape/std/chamfer.fs", version : "1867.0");
-import(path : "onshape/std/containers.fs", version : "1867.0");
-import(path : "onshape/std/cutlistMath.fs", version : "1867.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1867.0");
-import(path : "onshape/std/coordSystem.fs", version : "1867.0");
-import(path : "onshape/std/error.fs", version : "1867.0");
-import(path : "onshape/std/evaluate.fs", version : "1867.0");
-import(path : "onshape/std/feature.fs", version : "1867.0");
-import(path : "onshape/std/frameUtils.fs", version : "1867.0");
-import(path : "onshape/std/fillet.fs", version : "1867.0");
-import(path : "onshape/std/math.fs", version : "1867.0");
-import(path : "onshape/std/manipulator.fs", version : "1867.0");
-import(path : "onshape/std/offsetSurface.fs", version : "1867.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1867.0");
-import(path : "onshape/std/string.fs", version : "1867.0");
-import(path : "onshape/std/sketch.fs", version : "1867.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1867.0");
-import(path : "onshape/std/splitpart.fs", version : "1867.0");
-import(path : "onshape/std/units.fs", version : "1867.0");
-import(path : "onshape/std/valueBounds.fs", version : "1867.0");
-import(path : "onshape/std/vector.fs", version : "1867.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1890.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1890.0");
+import(path : "onshape/std/chamfer.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1890.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1890.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
+import(path : "onshape/std/coordSystem.fs", version : "1890.0");
+import(path : "onshape/std/error.fs", version : "1890.0");
+import(path : "onshape/std/evaluate.fs", version : "1890.0");
+import(path : "onshape/std/feature.fs", version : "1890.0");
+import(path : "onshape/std/frameUtils.fs", version : "1890.0");
+import(path : "onshape/std/fillet.fs", version : "1890.0");
+import(path : "onshape/std/math.fs", version : "1890.0");
+import(path : "onshape/std/manipulator.fs", version : "1890.0");
+import(path : "onshape/std/offsetSurface.fs", version : "1890.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1890.0");
+import(path : "onshape/std/string.fs", version : "1890.0");
+import(path : "onshape/std/sketch.fs", version : "1890.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
+import(path : "onshape/std/splitpart.fs", version : "1890.0");
+import(path : "onshape/std/units.fs", version : "1890.0");
+import(path : "onshape/std/valueBounds.fs", version : "1890.0");
+import(path : "onshape/std/vector.fs", version : "1890.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
@@ -106,6 +106,9 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.profileType == ProfileType.INTERNAL)
         {
+            annotation { "Name" : "Offset", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
+            isLength(definition.internalOffsetDistance, POSITIVE_LENGTH_BOUNDS);
+
             annotation { "Name" : "Inset", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
             isLength(definition.internalShiftDistance, POSITIVE_LENGTH_BOUNDS);
         }
@@ -158,13 +161,49 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 }
 
                 var selectedFace = face;
+
+                const frameSegment = qOwnerBody(selectedFace);
+                var bodiesToDelete = new box([]);
+                var facesToDelete = qNothing();
+                var lengthAndAngle = getCutlistLengthAndAngles(context, featureId[], id + "lengthAndAngle1", frameSegment, bodiesToDelete);
+
+                if (!isQueryEmpty(context, qUnion(bodiesToDelete[])))
+                {
+                    opDeleteBodies(context, id + "deleteCutlistBodies", {
+                                "entities" : qUnion(bodiesToDelete[])
+                            });
+                }
+
                 if (!definition.thicknessDirection && definition.profileType != ProfileType.INTERNAL)
                 {
-                    selectedFace = startTracking(context, face);
-                    opOffsetFace(context, id + "offsetFace1", {
-                                "moveFaces" : face,
-                                "offsetDistance" : -definition.thickness
-                            });
+                    if (lengthAndAngle.length > definition.thickness)
+                    {
+                        selectedFace = startTracking(context, face);
+                        opOffsetFace(context, id + "offsetFace1", {
+                                    "moveFaces" : face,
+                                    "offsetDistance" : -definition.thickness
+                                });
+                    }
+                    else
+                    {
+                        offsetSurface(context, id + "tempFace", {
+                                    "surfacesAndFaces" : face,
+                                    "offset" : 0 * meter
+                                });
+
+                        selectedFace = qCreatedBy(id + "tempFace", EntityType.FACE);
+
+                        opOffsetFace(context, id + "offsetFace1", {
+                                    "moveFaces" : selectedFace,
+                                    "offsetDistance" : -definition.thickness
+                                });
+
+                        facesToDelete = selectedFace;
+
+                        opDeleteBodies(context, id + "deleteBodies1", {
+                                    "entities" : frameSegment
+                                });
+                    }
                 }
 
                 var selectedFaceGeometryMap = getFaceContours(context, id, selectedFace);
@@ -176,10 +215,24 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                     throw regenError(ErrorStringEnum.CAP_MULTI_LUMENS_SELECTED_ERROR, ["faces"], face);
                 }
 
-                var facesToDelete = selectedFaceGeometryMap.tempFace;
+                facesToDelete = qUnion([facesToDelete,
+                            selectedFaceGeometryMap.outerFace,
+                            selectedFaceGeometryMap.tempFace,
+                            selectedFaceGeometryMap.innerFace]);
+
                 if (definition.profileType == ProfileType.INTERNAL)
                 {
                     const internalCapFaceMap = generateProfileInternal(context, id, definition, selectedFace, selectedFaceGeometryMap);
+                    const outerFaces = qSubtraction(internalCapFaceMap.innerFace, qFacesParallelToDirection(internalCapFaceMap.innerFace, facePlane.normal));
+                    const edgeFaces = qSubtraction(internalCapFaceMap.innerFace, outerFaces);
+
+                    if (definition.internalOffsetDistance > 0)
+                    {
+                        opOffsetFace(context, id + "offsetFace7", {
+                                    "moveFaces" : edgeFaces,
+                                    "offsetDistance" : -definition.internalOffsetDistance
+                                });
+                    }
 
                     //Internal shift manipulator
                     if (!isManipulatorAdded[])
@@ -223,8 +276,8 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                         const manipulatorBase = definition.thicknessDirection ? facePlane.origin : facePlane.origin + (facePlane.normal * definition.thickness);
                         var thicknessManipulator = linearManipulator({
                                 "base" : manipulatorBase,
-                                "direction" : definition.thicknessDirection ? facePlane.normal : -facePlane.normal,
-                                "offset" : definition.thickness,
+                                "direction" : facePlane.normal,
+                                "offset" : (definition.thicknessDirection ? 1 : -1) * definition.thickness,
                                 "primaryParameterId" : "thickness"
                             });
 
@@ -240,8 +293,8 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                         //Offset manipulator
                         var offsetManipulator = linearManipulator({
                                 "base" : extrudePlane.origin,
-                                "direction" : definition.offsetDirection ? -extrudePlane.normal : extrudePlane.normal,
-                                "offset" : definition.offsetDistance,
+                                "direction" : -extrudePlane.normal,
+                                "offset" : (definition.offsetDirection ? 1 : -1) * definition.offsetDistance,
                                 "primaryParameterId" : "offsetDistance"
                             });
 
@@ -252,7 +305,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                         isManipulatorAdded[] = true;
                     }
 
-                    if (abs(definition.offsetDistance) > 0)
+                    if (definition.offsetDistance > 0)
                     {
                         opOffsetFace(context, id + "offsetFace4", {
                                     "moveFaces" : edgeFaces,
@@ -300,7 +353,7 @@ function generateProfileInternal(context is Context, id is Id, definition is map
     try
     {
         //Get face for cap creation
-        const internalCapFaceMap = createInternalCapFaceMap(context, id, face, faceGeometryMap);
+        var internalCapFaceMap = createInternalCapFaceMap(context, id, face, faceGeometryMap);
 
         //Move face to initial position
         opOffsetFace(context, id + "offsetInnerFace", {
@@ -315,13 +368,15 @@ function generateProfileInternal(context is Context, id is Id, definition is map
         const thickness1 = internalCapFaceMap.invertedNormal ? 0 * inch : definition.thickness;
         const thickness2 = internalCapFaceMap.invertedNormal ? definition.thickness : 0 * inch;
 
-        opThicken(context, id + "thickenInnerCup", {
+        const thickenInnerCapId = id + "thickenInnerCap";
+        opThicken(context, thickenInnerCapId, {
                     "entities" : internalCapFaceMap.innerFace,
                     "thickness1" : thickness1,
                     "thickness2" : thickness2,
                     "keepTools" : false
                 });
 
+        internalCapFaceMap.innerFace = qCreatedBy(thickenInnerCapId, EntityType.FACE);
         return internalCapFaceMap;
     }
     catch
@@ -334,21 +389,13 @@ function generateProfileInternal(context is Context, id is Id, definition is map
 function generateProfileMatch(context is Context, id is Id, definition is map, face is Query, faceGeometryMap is map) returns Query
 {
     const facePlane = faceGeometryMap.facePlane;
-    var outerFace = getOuterInnerFace(context, id, true, faceGeometryMap);
 
     const extrudeId = id + "extrude";
     opExtrude(context, extrudeId, {
-                "entities" : outerFace,
+                "entities" : faceGeometryMap.outerFace,
                 "direction" : definition.profileType == ProfileType.INTERNAL ? -facePlane.normal : facePlane.normal,
                 "endBound" : BoundingType.BLIND,
                 "endDepth" : definition.thickness
-            });
-
-    opDeleteFace(context, id + "deleteFace", {
-                "deleteFaces" : outerFace,
-                "includeFillet" : false,
-                "capVoid" : false,
-                "leaveOpen" : false
             });
 
     return qCreatedBy(extrudeId, EntityType.FACE);
@@ -393,8 +440,7 @@ function generateProfileRectangle(context is Context, id is Id, definition is ma
 function generateProfileCircle(context is Context, id is Id, definition is map, face is Query, faceGeometryMap is map) returns Query
 {
     const facePlane = faceGeometryMap.facePlane;
-    const innerFace = getOuterInnerFace(context, id, false, faceGeometryMap);
-    const edges = qAdjacent(innerFace, AdjacencyType.EDGE, EntityType.EDGE);
+    const edges = qAdjacent(faceGeometryMap.innerFace, AdjacencyType.EDGE, EntityType.EDGE);
 
     const partBB = evBox3d(context, {
                 "topology" : face,
@@ -429,13 +475,6 @@ function generateProfileCircle(context is Context, id is Id, definition is map, 
 
     opDeleteBodies(context, id + "deleteBodies", {
                 "entities" : qCreatedBy(sketchId, EntityType.BODY)
-            });
-
-    opDeleteFace(context, id + "deleteFace", {
-                "deleteFaces" : innerFace,
-                "includeFillet" : false,
-                "capVoid" : false,
-                "leaveOpen" : false
             });
 
     return qCreatedBy(extrudeId, EntityType.FACE);
@@ -518,12 +557,17 @@ export function getFaceContours(context is Context, id is Id, face is Query) ret
                 "face" : face
             });
 
-    return {
-            "tempFace" : tempFace,
-            "facePlane" : facePlane,
-            "loopsArray" : loopsArray,
-            "loopsCount" : size(loopsArray)
-        };
+    var result = {
+        "tempFace" : tempFace,
+        "facePlane" : facePlane,
+        "loopsArray" : loopsArray,
+        "loopsCount" : size(loopsArray)
+    };
+
+    result.innerFace = getOuterInnerFace(context, id + "innerFace", false, result);
+    result.outerFace = getOuterInnerFace(context, id + "outerFace", true, result);
+
+    return result;
 }
 
 /** @internal */
@@ -531,18 +575,8 @@ export function createInternalCapFaceMap(context is Context, id is Id, face is Q
 {
     //only straight frame segment can be processed
     const frameSegment = qOwnerBody(face);
-    var segmentAxis = undefined;
-    try
-    {
-        segmentAxis = getFrameAxis(context, frameSegment);
-    }
-    catch (error)
-    {
-        throw regenError(error.customMessage);
-    }
-
     var direction = undefined;
-    var innerFace = qNothing();
+    var innerFace = faceGeometryMap.innerFace;
     var invertedNormal = true;
     var zeroOffset = 0 * meter;
 
@@ -553,78 +587,13 @@ export function createInternalCapFaceMap(context is Context, id is Id, face is Q
                 }).normal;
 
     if ((isStartFace(context, face) && abs(lengthAndAngle.angle1.value) > 0) || (!isStartFace(context, face) && abs(lengthAndAngle.angle2.value) > 0))
-    //Processing inclinde cut of the frame segment
     {
-        //Get oposite face of the frame segment
-        const oppositeFace = qFrameOppositeFace(context, frameSegment, face);
-
-        //Create refernce plane perpendicular to frame segment axis
-        const farOrigin = evPlane(context, {
-                        "face" : oppositeFace
-                    }).origin;
-        const refPlane = plane(farOrigin, segmentAxis);
-
-        //locate point on the initial face that is closest to the oposite side
-        const distanceMap = evDistance(context, {
-                    "side0" : face,
-                    "side1" : refPlane
-                });
-        const slicePoint = distanceMap.sides[0].point;
-
-        //create splitting plane
-        opPlane(context, id + "toolPlane", {
-                    "plane" : plane(slicePoint, segmentAxis)
-                });
-        const toolPlane = qCreatedBy(id + "toolPlane", EntityType.FACE);
-
-        //split frame segment
-        splitPart(context, id + "splitForInternalCup", {
-                    "targets" : frameSegment,
-                    "tool" : toolPlane
-                });
-        //take 2 faces
-        var splitBoundary = qCreatedBy(id + "splitForInternalCup", EntityType.FACE);
-        var subParts = qOwnerBody(splitBoundary);
-
-        //define direction of cap extrusion
-        direction = normalize(distanceMap.sides[1].point - slicePoint);
-
-        //select face oriented outside the frame segment
-        const firstFace = qNthElement(splitBoundary, 0);
-        const firstNormal = evPlane(context, {
-                        "face" : firstFace
-                    }).normal;
-        const facePointedOutside = norm(firstNormal + direction) > 1 ? firstFace : qNthElement(splitBoundary, 1);
-        const toolFaceMap = getFaceContours(context, id + "normalizedFaceMap", facePointedOutside);
-
-        //create face for cap geometry
-        innerFace = getOuterInnerFace(context, id + "inclinedCapToolFace", false, toolFaceMap);
-
-        //locate internal edge of the frame end face
-        const edgeOfFrameSegment = getInnerBoundary(context, faceGeometryMap);
-
-        //calculate zero offset face to the edge of the frame segment
-        zeroOffset = evDistance(context, {
-                        "side0" : innerFace,
-                        "side1" : edgeOfFrameSegment
-                    }).distance;
-
-        //Unite segment parts back
-        opBoolean(context, id + "segmentReunion", {
-                    "tools" : subParts,
-                    "operationType" : BooleanOperationType.UNION
-                });
-        //delete local temporary entities
-        opDeleteBodies(context, id + "deleteInslinedSliceTools", {
-                    "entities" : qUnion([toolPlane, toolFaceMap.tempFace])
-                });
+        throw regenError(ErrorStringEnum.CAP_INCLINED_CUT_FRAME_ERROR, ["faces"], face);
     }
-    else
+
     //Processing 90 deg cut on frame segment
-    {
-        innerFace = getOuterInnerFace(context, id + "straightCapToolFace", false, faceGeometryMap);
-        direction = -dirOutsideFrameSegment;
-    }
+    direction = -dirOutsideFrameSegment;
+
 
     const newFaceNormal = evPlane(context, {
                     "face" : innerFace
@@ -685,14 +654,12 @@ export function manipulatorChange(context is Context, definition is map, newMani
         if (key == THICKNESS_MANIPULATOR_ID)
         {
             definition.thickness = abs(value.offset);
-            if (value.offset < 0)
-                definition.thicknessDirection = !definition.thicknessDirection;
+            definition.thicknessDirection = value.offset > 0;
         }
         if (key == OFFSET_MANIPULATOR_ID)
         {
             definition.offsetDistance = abs(value.offset);
-            if (value.offset < 0)
-                definition.offsetDirection = !definition.offsetDirection;
+            definition.offsetDirection = value.offset > 0;
         }
         if (key == INTERNAL_MANIPULATOR_ID)
         {
