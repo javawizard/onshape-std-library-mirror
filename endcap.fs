@@ -1,31 +1,31 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "1890.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1890.0");
-import(path : "onshape/std/chamfer.fs", version : "1890.0");
-import(path : "onshape/std/containers.fs", version : "1890.0");
-import(path : "onshape/std/cutlistMath.fs", version : "1890.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
-import(path : "onshape/std/coordSystem.fs", version : "1890.0");
-import(path : "onshape/std/error.fs", version : "1890.0");
-import(path : "onshape/std/evaluate.fs", version : "1890.0");
-import(path : "onshape/std/feature.fs", version : "1890.0");
-import(path : "onshape/std/frameUtils.fs", version : "1890.0");
-import(path : "onshape/std/fillet.fs", version : "1890.0");
-import(path : "onshape/std/math.fs", version : "1890.0");
-import(path : "onshape/std/manipulator.fs", version : "1890.0");
-import(path : "onshape/std/offsetSurface.fs", version : "1890.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1890.0");
-import(path : "onshape/std/string.fs", version : "1890.0");
-import(path : "onshape/std/sketch.fs", version : "1890.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
-import(path : "onshape/std/splitpart.fs", version : "1890.0");
-import(path : "onshape/std/units.fs", version : "1890.0");
-import(path : "onshape/std/valueBounds.fs", version : "1890.0");
-import(path : "onshape/std/vector.fs", version : "1890.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1913.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1913.0");
+import(path : "onshape/std/chamfer.fs", version : "1913.0");
+import(path : "onshape/std/containers.fs", version : "1913.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1913.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
+import(path : "onshape/std/coordSystem.fs", version : "1913.0");
+import(path : "onshape/std/error.fs", version : "1913.0");
+import(path : "onshape/std/evaluate.fs", version : "1913.0");
+import(path : "onshape/std/feature.fs", version : "1913.0");
+import(path : "onshape/std/frameUtils.fs", version : "1913.0");
+import(path : "onshape/std/fillet.fs", version : "1913.0");
+import(path : "onshape/std/math.fs", version : "1913.0");
+import(path : "onshape/std/manipulator.fs", version : "1913.0");
+import(path : "onshape/std/offsetSurface.fs", version : "1913.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
+import(path : "onshape/std/string.fs", version : "1913.0");
+import(path : "onshape/std/sketch.fs", version : "1913.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
+import(path : "onshape/std/splitpart.fs", version : "1913.0");
+import(path : "onshape/std/units.fs", version : "1913.0");
+import(path : "onshape/std/valueBounds.fs", version : "1913.0");
+import(path : "onshape/std/vector.fs", version : "1913.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
@@ -580,20 +580,17 @@ export function createInternalCapFaceMap(context is Context, id is Id, face is Q
     var invertedNormal = true;
     var zeroOffset = 0 * meter;
 
-    var bodiesToDelete = new box([]);
-    var lengthAndAngle = getCutlistLengthAndAngles(context, id, id + "lengthAndAngle", frameSegment, bodiesToDelete);
     const dirOutsideFrameSegment = evPlane(context, {
                     "face" : face
                 }).normal;
 
-    if ((isStartFace(context, face) && abs(lengthAndAngle.angle1.value) > 0) || (!isStartFace(context, face) && abs(lengthAndAngle.angle2.value) > 0))
+    if (!parallelVectors(getFrameAxis(context, frameSegment), dirOutsideFrameSegment))
     {
         throw regenError(ErrorStringEnum.CAP_INCLINED_CUT_FRAME_ERROR, ["faces"], face);
     }
 
     //Processing 90 deg cut on frame segment
     direction = -dirOutsideFrameSegment;
-
 
     const newFaceNormal = evPlane(context, {
                     "face" : innerFace

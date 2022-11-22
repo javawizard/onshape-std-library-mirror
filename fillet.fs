@@ -1,43 +1,42 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1890.0");
+export import(path : "onshape/std/query.fs", version : "1913.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1890.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1890.0");
-export import(path : "onshape/std/manipulator.fs", version : "1890.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1913.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1913.0");
+export import(path : "onshape/std/manipulator.fs", version : "1913.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1890.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1890.0");
-import(path : "onshape/std/evaluate.fs", version : "1890.0");
-import(path : "onshape/std/feature.fs", version : "1890.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1890.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1890.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1890.0");
-import(path : "onshape/std/string.fs", version : "1890.0");
-import(path : "onshape/std/tool.fs", version : "1890.0");
-import(path : "onshape/std/valueBounds.fs", version : "1890.0");
-import(path : "onshape/std/vector.fs", version : "1890.0");
+import(path : "onshape/std/containers.fs", version : "1913.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1913.0");
+import(path : "onshape/std/evaluate.fs", version : "1913.0");
+import(path : "onshape/std/feature.fs", version : "1913.0");
+import(path : "onshape/std/path.fs", version : "1913.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1913.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1913.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
+import(path : "onshape/std/string.fs", version : "1913.0");
+import(path : "onshape/std/tool.fs", version : "1913.0");
+import(path : "onshape/std/valueBounds.fs", version : "1913.0");
+import(path : "onshape/std/vector.fs", version : "1913.0");
 
-const FILLET_RHO_BOUNDS =
-{
-    (unitless) : [0.0, 0.5, 0.99999]
-} as RealBoundSpec;
+const FILLET_RHO_BOUNDS = {
+            (unitless) : [0.0, 0.5, 0.99999]
+        } as RealBoundSpec;
 
-const VR_BLEND_BOUNDS =
-{
-    (meter)      : [0, 0.005, 500], //allows zero
-    (centimeter) : 0.5,
-    (millimeter) : 5.0,
-    (inch)       : 0.2,
-    (foot)       : 0.015,
-    (yard)       : 0.005
-} as LengthBoundSpec;
+const VR_BLEND_BOUNDS = {
+            (meter) : [0, 0.005, 500], //allows zero
+            (centimeter) : 0.5,
+            (millimeter) : 5.0,
+            (inch) : 0.2,
+            (foot) : 0.015,
+            (yard) : 0.005
+        } as LengthBoundSpec;
 
 /** @internal */
 export enum FilletType
@@ -58,11 +57,35 @@ const EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC =
 } as RealBoundSpec;
 
 /* @internal */
+const PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS = [0.0, 0.01, 1.0];
+
+/* @internal */
+const PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC =
+{
+    (unitless) : PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS
+} as RealBoundSpec;
+
+/* @internal */
+const PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS2 = [0.0, 0.99, 1.0];
+
+/* @internal */
+const PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2 =
+{
+    (unitless) : PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS2
+} as RealBoundSpec;
+
+/* @internal */
 const FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION = false; // For better performance. Must use name different from definition map keys
 // [evDistance], [evEdgeTangentLine] etc. called in conjunction with variable radius fillet should use this as value of arcLengthParameterization
 
+/* @internal */
+const FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION = false;
+
+/* @internal */
+const PARAMETER_PRECISION = 3;
+
 /**
- * Feature performing an [opFillet] or [opFullRoundFillet].
+* Feature performing an [opFillet] or [opFullRoundFillet].
  */
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange",
         "Filter Selector" : "allparts", "Editing Logic Function" : "filletEditLogic" }
@@ -76,8 +99,8 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         {
             annotation { "Name" : "Entities to fillet",
                         "Filter" : ((ActiveSheetMetal.NO && ((EntityType.EDGE && EdgeTopology.TWO_SIDED) || EntityType.FACE))
-                                    || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
-                            && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                                || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
+                        && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
                         "AdditionalBoxSelectFilter" : EntityType.EDGE }
             definition.entities is Query;
         }
@@ -104,7 +127,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
             annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.blendControlType is BlendControlType;
 
-            annotation { "Name" : "Cross section", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+            annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.crossSection is FilletCrossSection;
 
             if (definition.blendControlType == BlendControlType.RADIUS)
@@ -135,6 +158,42 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
             if (definition.blendControlType == BlendControlType.RADIUS)
             {
+                annotation { "Name" : "Asymmetric" }
+                definition.isAsymmetric is boolean;
+
+                if (definition.isAsymmetric)
+                {
+                    annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                    isLength(definition.otherRadius, BLEND_BOUNDS);
+
+                    annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                    definition.flipAsymmetric is boolean;
+                }
+
+                annotation { "Name" : "Partial fillet", "Default" : false }
+                definition.isPartial is boolean;
+
+                if (definition.isPartial)
+                {
+                    annotation { "Group Name" : "Partial fillet", "Driving Parameter" : "isPartial", "Collapsed By Default" : false }
+                    {
+                        annotation { "Name" : "First bound location" }
+                        isReal(definition.partialFirstEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
+
+                        annotation { "Name" : "Opposite direction", "Default" : true, "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.DISPLAY_SHORT] }
+                        definition.partialOppositeParameter is boolean;
+
+                        annotation { "Name" : "Second bound" }
+                        definition.secondBound is boolean;
+
+                        if (definition.secondBound)
+                        {
+                            annotation { "Name" : "Second bound location" }
+                            isReal(definition.partialSecondEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2);
+                        }
+                    }
+                }
+
                 annotation { "Name" : "Variable fillet" }
                 definition.isVariable is boolean;
 
@@ -156,6 +215,13 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                             annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                             isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
 
+                            if (definition.isAsymmetric) {
+                                annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                                isLength(setting.vertexOtherRadius, BLEND_BOUNDS);
+                                annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                                setting.vertexFlipAsymmetric is boolean;
+                            }
+
                             if (definition.crossSection == FilletCrossSection.CONIC)
                             {
                                 annotation { "Name" : "Rho", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
@@ -170,7 +236,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                         annotation { "Name" : "Points on edges", "Item name" : "point on edge",
                                     "Item label template" : "[#pointOnEdgeRadius] #edge",
-                                    "UIHint" : [ UIHint.PREVENT_ARRAY_REORDER, UIHint.FOCUS_INNER_QUERY ] }
+                                    "UIHint" : [UIHint.PREVENT_ARRAY_REORDER, UIHint.FOCUS_INNER_QUERY] }
                         definition.pointOnEdgeSettings is array;
                         for (var setting in definition.pointOnEdgeSettings)
                         {
@@ -185,6 +251,13 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                             annotation { "Name" : "Radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                             isLength(setting.pointOnEdgeRadius, VR_BLEND_BOUNDS);
+
+                            if (definition.isAsymmetric) {
+                                annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                                isLength(setting.pointOnEdgeOtherRadius, BLEND_BOUNDS);
+                                annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                                setting.pointOnEdgeFlipAsymmetric is boolean;
+                            }
 
                             if (definition.crossSection == FilletCrossSection.CONIC)
                             {
@@ -209,13 +282,13 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                     if (definition.allowEdgeOverflow)
                     {
-                       annotation { "Group Name" : "Edge overflow", "Driving Parameter" : "allowEdgeOverflow" }
-                       {
-                           annotation { "Name" : "Edges to keep",
+                        annotation { "Group Name" : "Edge overflow", "Driving Parameter" : "allowEdgeOverflow" }
+                        {
+                            annotation { "Name" : "Edges to keep",
                                         "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && ConstructionObject.NO &&
-                                                   SketchObject.NO && ModifiableEntityOnly.YES }
-                           definition.keepEdges is Query;
-                       }
+                                        SketchObject.NO && ModifiableEntityOnly.YES }
+                            definition.keepEdges is Query;
+                        }
                     }
 
                     annotation { "Name" : "Smooth fillet corners" }
@@ -226,7 +299,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                         annotation { "Group Name" : "Smooth fillet corners", "Driving Parameter" : "smoothCorners", "Collapsed By Default" : false }
                         {
                             annotation { "Name" : "Corners to exclude",
-                                         "Filter" : EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
+                                        "Filter" : EntityType.VERTEX && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
                             definition.smoothCornerExceptions is Query;
                         }
                     }
@@ -259,13 +332,15 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         vertexSettings : [],
         pointOnEdgeSettings : [],
         smoothCorners : false,
-        smoothCornerExceptions : qNothing()
+        smoothCornerExceptions : qNothing(),
+        isAsymmetric : false,
+        isPartial : false
     });
 
 
 function performFullRoundFillet(context is Context, topLevelId is Id, definition is map)
 {
-    const allSelections =  qUnion([definition.side1Face, definition.side2Face, definition.centerFaces]);
+    const allSelections = qUnion([definition.side1Face, definition.side2Face, definition.centerFaces]);
     if (queryContainsActiveSheetMetal(context, allSelections))
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, allSelections);
@@ -290,6 +365,78 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
             try(addPointOnEdgeManipulators(context, topLevelId, definition));
         }
     }
+
+    if (definition.isPartial && definition.blendControlType == BlendControlType.RADIUS)
+    {
+        const separatedQueries = separateSheetMetalQueries(context, definition.entities);
+
+        if (!isQueryEmpty(context, separatedQueries.sheetMetalQueries))
+        {
+            throw regenError(ErrorStringEnum.CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL, ["entities"], separatedQueries.sheetMetalQueries);
+        }
+
+        var paths;
+        const edges = qEntityFilter(definition.entities, EntityType.EDGE);
+        try
+        {
+            const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
+            paths = constructPaths(context, tangentEdges, {});
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.PATH_EDGES_NOT_CONTINUOUS, ["edges"], edges);
+        }
+
+        if (size(paths) != 1)
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_BAD_INPUT_ERROR, ["edges"], edges);
+        }
+
+        if (paths[0].closed && !definition.secondBound)
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_CLOSED_PATH_ERROR, ["edges"], edges);
+        }
+
+        var params = [definition.partialFirstEdgeTotalParameter] as array;
+        if (definition.secondBound)
+        {
+            params = append(params, definition.partialSecondEdgeTotalParameter);
+        }
+
+        definition.partialFilletBounds = [];
+        var flipDirection = definition.partialOppositeParameter;
+        definition.partialArcLengthParameterization = FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION;
+        const path = paths[0];
+        const lines = evPathTangentLines(context, path, params);
+        const tangentLinesCount = size(lines.tangentLines);
+        const pathLength = evPathLength(context, path);
+        for (var i = 0; i < tangentLinesCount; i += 1)
+        {
+            var param = i == 0 ? definition.partialFirstEdgeTotalParameter : definition.partialSecondEdgeTotalParameter;
+            param = flipDirection ? param : 1 - param;
+            const normal = flipDirection ? -lines.tangentLines[i].direction : lines.tangentLines[i].direction;
+            const offset = pathLength * param;
+            const position = lines.tangentLines[i].origin + (normal * offset);
+            const primaryParameterId = i == 0 ? "partialFirstEdgeTotalParameter" : "partialSecondEdgeTotalParameter";
+            addManipulators(context, topLevelId, { PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(i) :
+                        linearManipulator({
+                                "base" : position,
+                                "direction" : -normal,
+                                "offset" : offset,
+                                "minValue" : 0 * meter,
+                                "maxValue" : pathLength,
+                                "primaryParameterId" : primaryParameterId }) });
+            const boundaryEdge = path.edges[lines.edgeIndices[i]];
+            const qEdges = evaluateQuery(context, qEntityFilter(boundaryEdge, EntityType.EDGE));
+            const boundaryParameter = evDistance(context, { "side0" : lines.tangentLines[i].origin, "side1" : qEdges[0],
+                        "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION }).sides[1].parameter;
+
+            definition.partialFilletBounds = append(definition.partialFilletBounds, { "boundaryEdge" : boundaryEdge, "boundaryParameter" : boundaryParameter, "isFlipped" : path.flipped[lines.edgeIndices[i]] != flipDirection });
+
+            flipDirection = !flipDirection;
+        }
+    }
+
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
     {
         sheetMetalAwareFillet(context, topLevelId, definition);
@@ -317,15 +464,32 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     definition.defaultsChanged = false;
-    if (specifiedParameters.radius || specifiedParameters.rho || specifiedParameters.magnitude)
+    if (specifiedParameters.radius || specifiedParameters.rho || specifiedParameters.magnitude || specifiedParameters.otherRadius)
     {
         if (definition.radius != oldDefinition.radius ||
             definition.rho != oldDefinition.rho ||
-            definition.magnitude != oldDefinition.magnitude)
+            definition.magnitude != oldDefinition.magnitude ||
+            definition.otherRadius != oldDefinition.otherRadius)
         {
             definition.defaultsChanged = true; //default values are being changed, server decides if they're being used anywhere
         }
     }
+
+    if (definition.isPartial && definition.secondBound && definition.partialFirstEdgeTotalParameter > definition.partialSecondEdgeTotalParameter)
+    {
+        if (oldDefinition.secondBound)
+        {
+            definition.partialFirstEdgeTotalParameter = oldDefinition.partialFirstEdgeTotalParameter;
+            definition.partialSecondEdgeTotalParameter = oldDefinition.partialSecondEdgeTotalParameter;
+        }
+        else
+        {
+            definition.partialFirstEdgeTotalParameter = oldDefinition.partialSecondEdgeTotalParameter;
+        }
+
+        return definition;
+    }
+
     return definition;
 }
 
@@ -346,18 +510,12 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 
     if (hasSheetMetalQueries)
     {
-        if (definition.blendControlType == BlendControlType.WIDTH)
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_WIDTH, ["blendControlType"]);
-        }
-        if (definition.crossSection != FilletCrossSection.CIRCULAR)
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["crossSection"]);
-        }
-        if (definition.isVariable)
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, ["isVariable"]);
-        }
+        verify(definition.blendControlType != BlendControlType.WIDTH, ErrorStringEnum.SHEET_METAL_FILLET_NO_WIDTH, {"faultyParameters" : ["blendControlType"]});
+        verify(definition.crossSection == FilletCrossSection.CIRCULAR, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["crossSection"]});
+        verify(!definition.isVariable, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["isVariable"]});
+        verify(!definition.isAsymmetric, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["isAsymmetric"]});
+        verify(!definition.isPartial, ErrorStringEnum.CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL, {"faultyParameters" : ["isPartial"]});
+
         var cornerBreakDefinition = {
             "entities" : separatedQueries.sheetMetalQueries,
             "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
@@ -375,7 +533,8 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 
 const FILLET_RADIUS_MANIPULATOR = "filletRadiusManipulator";
 const FILLET_WIDTH_MANIPULATOR = "filletWidthManipulator";
-const POINT_ON_EDGE_MANIPULATOR = "pointOnEdgeManipulator";
+const VARIABLE_POINT_ON_EDGE_MANIPULATOR = "variablePointOnEdgeManipulator";
+const PARTIAL_POINT_ON_EDGE_MANIPULATOR = "partialPointOnEdgeManipulator";
 
 function getManipulatorId(definition is map) returns string
 {
@@ -425,13 +584,13 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
             const manipulatorId = getManipulatorId(definition);
             addManipulators(context, id, {
                         (manipulatorId) : linearManipulator({
-                                    "base" : origin,
-                                    "direction" : direction,
-                                    "offset" : offset,
-                                    "minValue" : minDragValue,
-                                    "maxValue" : maxDragValue,
-                                    "primaryParameterId" : primaryParameterId
-                                })
+                                "base" : origin,
+                                "direction" : direction,
+                                "offset" : offset,
+                                "minValue" : minDragValue,
+                                "maxValue" : maxDragValue,
+                                "primaryParameterId" : primaryParameterId
+                            })
                     });
         }
     }
@@ -461,7 +620,7 @@ function addPointOnEdgeManipulators(context is Context, id is Id, definition is 
             var lines = evEdgeTangentLines(context, { "edge" : qEdges[0],
                     "parameters" : [EDGE_INTERIOR_PARAMETER_BOUNDS[0], setting.edgeParameter, EDGE_INTERIOR_PARAMETER_BOUNDS[2]],
                     "arcLengthParameterization" : FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION });
-            addManipulators(context, id, { POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(ii) :
+            addManipulators(context, id, { VARIABLE_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(ii) :
                         linearManipulator({
                                 "base" : lines[1].origin,
                                 "direction" : lines[1].direction,
@@ -502,27 +661,57 @@ export function filletManipulatorChange(context is Context, definition is map, n
         }
         else // points on edges manipulators
         {
-            var manipulatorKeys = keys(newManipulators);
-            for (var ii = 0; ii < size(manipulatorKeys); ii += 1)
+            for (var key, manipulator in newManipulators)
             {
-                var manipulator = newManipulators[manipulatorKeys[ii]];
                 if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
                     continue;
-                var settingIndex = stringToNumber(replace(manipulatorKeys[ii], POINT_ON_EDGE_MANIPULATOR ~ '.', ""));
-                var pos = manipulator.base + manipulator.direction * manipulator.offset;
-                var qEdges = evaluateQuery(context, qEntityFilter(definition.pointOnEdgeSettings[settingIndex].edge, EntityType.EDGE));
-                var distanceResult is DistanceResult = evDistance(context, { "side0" : pos, "side1" : qEdges[0],
-                        "arcLengthParameterization" : FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION });
-                var parameter = distanceResult.sides[1].parameter;
-                if (parameter < EDGE_INTERIOR_PARAMETER_BOUNDS[0])
+
+                if (match(key, PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.*').hasMatch)
                 {
-                    parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[0];
+                    const index = stringToNumber(replace(key, PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.', ""));
+                    const edges = qEntityFilter(definition.entities, EntityType.EDGE);
+                    try
+                    {
+                        const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
+                        const totalLength = evLength(context, {
+                                    "entities" : tangentEdges
+                                });
+                        var totalParameter = manipulator.offset / totalLength;
+                        totalParameter = clamp(totalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[0], PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[2]);
+
+                        if (!definition.partialOppositeParameter)
+                        {
+                            totalParameter = 1 - totalParameter;
+                        }
+
+                        if (index == 0)
+                        {
+                            definition.partialFirstEdgeTotalParameter = roundToPrecision(totalParameter, PARAMETER_PRECISION);
+                        }
+                        else
+                        {
+                            definition.partialSecondEdgeTotalParameter = roundToPrecision(1 - totalParameter, PARAMETER_PRECISION);
+                        }
+                    }
                 }
-                else if (parameter > EDGE_INTERIOR_PARAMETER_BOUNDS[2])
+                else
                 {
-                    parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[2];
+                    var settingIndex = stringToNumber(replace(key, VARIABLE_POINT_ON_EDGE_MANIPULATOR ~ '.', ""));
+                    var pos = manipulator.base + manipulator.direction * manipulator.offset;
+                    var qEdges = evaluateQuery(context, qEntityFilter(definition.pointOnEdgeSettings[settingIndex].edge, EntityType.EDGE));
+                    var distanceResult is DistanceResult = evDistance(context, { "side0" : pos, "side1" : qEdges[0],
+                            "arcLengthParameterization" : FS_VARIABLE_RADIUS_ARC_LENGTH_PARAMETERIZATION });
+                    var parameter = distanceResult.sides[1].parameter;
+                    if (parameter < EDGE_INTERIOR_PARAMETER_BOUNDS[0])
+                    {
+                        parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[0];
+                    }
+                    else if (parameter > EDGE_INTERIOR_PARAMETER_BOUNDS[2])
+                    {
+                        parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[2];
+                    }
+                    definition.pointOnEdgeSettings[settingIndex].edgeParameter = parameter;
                 }
-                definition.pointOnEdgeSettings[settingIndex].edgeParameter = parameter;
             }
         }
     }

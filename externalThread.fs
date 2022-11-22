@@ -1,36 +1,36 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "1890.0");
-export import(path : "onshape/std/hole.fs", version : "1890.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "1890.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1890.0");
-export import(path : "onshape/std/moveFace.fs", version : "1890.0");
-export import(path : "onshape/std/query.fs", version : "1890.0");
-export import(path : "onshape/std/tool.fs", version : "1890.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "1913.0");
+export import(path : "onshape/std/hole.fs", version : "1913.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1913.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1913.0");
+export import(path : "onshape/std/moveFace.fs", version : "1913.0");
+export import(path : "onshape/std/query.fs", version : "1913.0");
+export import(path : "onshape/std/tool.fs", version : "1913.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1890.0");
+export import(path : "onshape/std/manipulator.fs", version : "1913.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1890.0");
-import(path : "onshape/std/containers.fs", version : "1890.0");
-import(path : "onshape/std/string.fs", version : "1890.0");
-import(path : "onshape/std/debug.fs", version : "1890.0");
-import(path : "onshape/std/coordSystem.fs", version : "1890.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
-import(path : "onshape/std/evaluate.fs", version : "1890.0");
-import(path : "onshape/std/feature.fs", version : "1890.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1890.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1890.0");
-import(path : "onshape/std/primitives.fs", version : "1890.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1890.0");
-import(path : "onshape/std/splitpart.fs", version : "1890.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
-import(path : "onshape/std/valueBounds.fs", version : "1890.0");
-import(path : "onshape/std/vector.fs", version : "1890.0");
+import(path : "onshape/std/attributes.fs", version : "1913.0");
+import(path : "onshape/std/containers.fs", version : "1913.0");
+import(path : "onshape/std/string.fs", version : "1913.0");
+import(path : "onshape/std/debug.fs", version : "1913.0");
+import(path : "onshape/std/coordSystem.fs", version : "1913.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
+import(path : "onshape/std/evaluate.fs", version : "1913.0");
+import(path : "onshape/std/feature.fs", version : "1913.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1913.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1913.0");
+import(path : "onshape/std/primitives.fs", version : "1913.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
+import(path : "onshape/std/splitpart.fs", version : "1913.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
+import(path : "onshape/std/valueBounds.fs", version : "1913.0");
+import(path : "onshape/std/vector.fs", version : "1913.0");
 
 
 
@@ -151,9 +151,18 @@ export const externalThread = defineFeature(function(context is Context, id is I
         checkExistingExternalThread(context, definition.entities);
         const entityList = checkAndSplitAllShaftFaces(context, id, definition);
         checkNonMatchingSize(context, id, definition, entityList[0].diameter);
-        addExternalThreadAttributes(context, id, definition, entityList);
-        addChamfers(context, id + "Chamfers", definition, entityList);
-
+        const attributes = addExternalThreadAttributes(context, id, definition, entityList);
+        const chamfers = addChamfers(context, id + "Chamfers", definition, entityList);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1904_ADD_HOLE_ATTRIBUTES_TO_CHAMFER_FEATURES))
+        {
+            for (var chamferIndex, chamfer in chamfers) // Add attributes to newly created chamfer faces as well
+            {
+                checkExistingExternalThread(context, chamfer);
+                var updatedAttribute = attributes[chamferIndex];
+                updatedAttribute.sectionFace = { "type" : HoleSectionFaceType.EXTERNAL_THREAD_CHAMFER_FACE };
+                setAttribute(context, { "entities" : chamfer, "attribute" : updatedAttribute});
+            }
+        }
         if (definition.addUndercut)
         {
             const minorDiameter = getMinorDiameter(definition);
@@ -386,12 +395,15 @@ function checkAndSplitAllShaftFaces(context is Context, topLevelId is Id, defini
             {
                 throw regenError(ErrorStringEnum.INVALID_ARC_LENGTH);
             }
-
-            if ((definition.depthType == DepthType.Blind) && (definition.threadDepth >= splitData.length - (TOLERANCE.zeroLength * meter)))
+            var threadLengthTooLong = (definition.threadDepth >= splitData.length - (TOLERANCE.zeroLength * meter));
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1901_MAX_THREAD_LENGTH_COMPARISON_FIX))
+            {
+                threadLengthTooLong = (definition.threadDepth > splitData.length + (TOLERANCE.zeroLength * meter));
+            }
+            if ((definition.depthType == DepthType.Blind) && threadLengthTooLong)
             {
                 throw regenError(ErrorStringEnum.THREAD_DEPTH_BEYOND_CYLINDER, ["threadDepth"]);
             }
-
             if (performSplit && !definition.addUndercut)
             {
                 var adjustedDepthValue = definition.threadDepth - splitData.chamferDistance;
@@ -464,11 +476,12 @@ function checkAndSplitAllShaftFaces(context is Context, topLevelId is Id, defini
                     "outputType":  MoveFaceOutputType.MOVE,
                     "limitType": MoveFaceBoundingType.BLIND
                 };
-                if ((definition.depthType == DepthType.Blind) && (definition.threadDepth >= splitData.length - (TOLERANCE.zeroLength * meter)))
+                var threadPlusUndercutTooLong = ((definition.threadDepth + definition.undercutLength >= splitData.length - (TOLERANCE.zeroLength * meter)));
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1901_MAX_THREAD_LENGTH_COMPARISON_FIX))
                 {
-                    throw regenError(ErrorStringEnum.UNDERCUT_OFF_FACE, ["threadDepth"]);
+                    threadPlusUndercutTooLong = ((definition.threadDepth + definition.undercutLength > splitData.length + (TOLERANCE.zeroLength * meter)));
                 }
-                if ((definition.depthType == DepthType.Blind) && (definition.threadDepth + definition.undercutLength >= splitData.length - (TOLERANCE.zeroLength * meter)))
+                if ((definition.depthType == DepthType.Blind) && threadPlusUndercutTooLong)
                 {
                     throw regenError(ErrorStringEnum.UNDERCUT_OFF_FACE, ["threadDepth", "undercutLength"]);
                 }
@@ -491,8 +504,9 @@ function checkAndSplitAllShaftFaces(context is Context, topLevelId is Id, defini
 /**
  * Add chamfers to threaded cylinder ends
  */
-function addChamfers(context, topLevelId, definition, entityList is array)
+function addChamfers(context, topLevelId, definition, entityList is array) returns array
 {
+    var chamferFaces is box = new box([]);
     var index = new box(0);
     if (definition.addChamfer)
     {
@@ -508,6 +522,7 @@ function addChamfers(context, topLevelId, definition, entityList is array)
             {
                 opChamfer(context, innerId + "Chamfer", chamferParams);
                 const qChamferFace = qCreatedBy(innerId + "Chamfer", EntityType.FACE);
+                chamferFaces[] = append(chamferFaces[], qChamferFace);
                 const qAdjacentCylinder = qChamferFace->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CYLINDER);
                 setHighlightedEntities(context, {"entities": qUnion(qChamferFace, qAdjacentCylinder)});
             }
@@ -519,6 +534,7 @@ function addChamfers(context, topLevelId, definition, entityList is array)
         };
         forEachEntity(context, topLevelId, definition.entities, perEdgeFunctionChamfer);
     }
+    return chamferFaces[];
 }
 
 
@@ -800,6 +816,7 @@ function checkExistingExternalThread(context is Context, entities is Query)
  */
 function addExternalThreadAttributes(context is Context, id is Id, definition is map, entityList is array)
 {
+    var attributes = [];
     var table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
     const minorDiameter = lookupTableEvaluate(table.minorDiameter);
     const majorDiameter = lookupTableEvaluate(table.majorDiameter);
@@ -828,11 +845,13 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
 
         const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection);
         const entitiesToMark = qUnion(relatedEntities, entityMap.edgeQuery);
+        attributes = append(attributes, attribute);
         checkExistingExternalThread(context, entitiesToMark);
         setAttribute(context, { "entities" : entitiesToMark, "attribute" : attribute });
         addDebugEntities(context, cylinderHighlight, DebugColor.ORANGE);
         i += 1;
     }
+    return attributes;
 }
 
 /**

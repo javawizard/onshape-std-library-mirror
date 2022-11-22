@@ -1,4 +1,4 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,11 +6,11 @@ FeatureScript 1890; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the cross section for a fillet operation.
+ * Specifies the cross sectional control for a fillet operation.
  */
 export enum FilletCrossSection
 {
-    annotation {"Name" : "Circular"}
+    annotation {"Name" : "Distance"}
     CIRCULAR,
     annotation {"Name" : "Conic"}
     CONIC,

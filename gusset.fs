@@ -1,40 +1,39 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "1890.0");
-import(path : "onshape/std/valueBounds.fs", version : "1890.0");
-import(path : "onshape/std/frameUtils.fs", version : "1890.0");
-import(path : "onshape/std/feature.fs", version : "1890.0");
-import(path : "onshape/std/evaluate.fs", version : "1890.0");
-import(path : "onshape/std/containers.fs", version : "1890.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1890.0");
-import(path : "onshape/std/string.fs", version : "1890.0");
-import(path : "onshape/std/vector.fs", version : "1890.0");
-import(path : "onshape/std/coordSystem.fs", version : "1890.0");
-import(path : "onshape/std/sketch.fs", version : "1890.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1890.0");
-import(path : "onshape/std/manipulator.fs", version : "1890.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1890.0");
+import(path : "onshape/std/units.fs", version : "1913.0");
+import(path : "onshape/std/valueBounds.fs", version : "1913.0");
+import(path : "onshape/std/frameUtils.fs", version : "1913.0");
+import(path : "onshape/std/feature.fs", version : "1913.0");
+import(path : "onshape/std/evaluate.fs", version : "1913.0");
+import(path : "onshape/std/containers.fs", version : "1913.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
+import(path : "onshape/std/string.fs", version : "1913.0");
+import(path : "onshape/std/vector.fs", version : "1913.0");
+import(path : "onshape/std/coordSystem.fs", version : "1913.0");
+import(path : "onshape/std/sketch.fs", version : "1913.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
+import(path : "onshape/std/manipulator.fs", version : "1913.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1913.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 const MIN_THICKNESS = MIN_SIZE;
 
-const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const LENGTH_MANIPULATOR_ID = "Length manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
 const GUSSET_EXTRUDE_SUFFIX = "finalExtrude";
 
 const CHAMFER_SIZE_BOUNDS =
 {
-    (meter)      : [1e-5, 0.001, 500],
-    (centimeter) : 0.1,
-    (millimeter) : 1.0,
-    (inch)       : 0.04,
-    (foot)       : 0.003,
-    (yard)       : 0.001
-} as LengthBoundSpec;
+            (meter) : [1e-5, 0.001, 500],
+            (centimeter) : 0.1,
+            (millimeter) : 1.0,
+            (inch) : 0.04,
+            (foot) : 0.003,
+            (yard) : 0.001
+        } as LengthBoundSpec;
 
 /**
  * Defines the shape of the gusset.
@@ -48,29 +47,68 @@ export enum GussetStyleType
 }
 
 /**
+ * Defines the alignment of the gusset.
+ */
+export enum GussetPosition
+{
+    annotation { "Name" : "Centered" }
+    CENTERED,
+    annotation { "Name" : "Aligned" }
+    ALIGNED
+}
+
+type GussetDefinition typecheck canBeGussetDefinition;
+
+predicate canBeGussetDefinition(value)
+{
+    value is map;
+    value.lhsPlane is Plane;
+    value.rhsPlane is Plane;
+    value.gussetMidpoint is Vector;
+    value.closestSweptFacesQuery is Query;
+    value.edgeMidpoint is Vector;
+}
+
+type ManipulatorDefinition typecheck canBeManipulatorDefinition;
+
+predicate canBeManipulatorDefinition(value)
+{
+    value is map;
+    value.sizeLine is Line;
+    value.sizeOffset is ValueWithUnits;
+}
+
+type GussetCreationResult typecheck canBeGussetCreationResult;
+
+predicate canBeGussetCreationResult(value)
+{
+    value is map;
+    value.manipulatorDefinition is ManipulatorDefinition;
+    value.points is array;
+    for (var point in value.points)
+        is2dPointVector(point);
+    value.gussetError is ErrorStringEnum;
+}
+
+/**
  * Create gussets based on the selected edges.
  */
-annotation { "Feature Type Name" : "Gusset", "Manipulator Change Function" : "gussetManipulatorChange", "Editing Logic Function" : "gussetEditLogic"  }
+annotation { "Feature Type Name" : "Gusset", "Manipulator Change Function" : "gussetManipulatorChange", "Editing Logic Function" : "gussetEditLogic" }
 export const gusset = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Edges", "Description" : "Edges that define the bases of the gussets", "Filter" : GeometryType.LINE  && BodyType.SOLID}
+        annotation { "Name" : "Edges", "Description" : "Edges that define the bases of the gussets", "Filter" : GeometryType.LINE && BodyType.SOLID }
         definition.edges is Query;
+
+        annotation { "Name" : "Gusset type", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.SHOW_LABEL] }
+        definition.gussetType is GussetStyleType;
+
 
         annotation { "Name" : "Length", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.length, NONNEGATIVE_LENGTH_BOUNDS);
 
         annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.thickness, NONNEGATIVE_LENGTH_BOUNDS);
-
-        annotation { "Name" : "Offset", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
-
-        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.shouldFlipOffset is boolean;
-
-        annotation { "Name" : "Gusset type", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.SHOW_LABEL] }
-        definition.gussetType is GussetStyleType;
 
         if (definition.gussetType == GussetStyleType.RECTANGLE)
         {
@@ -87,11 +125,31 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
             }
         }
 
+        annotation { "Name" : "Gusset position", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.SHOW_LABEL] }
+        definition.gussetPosition is GussetPosition;
+
+        if (definition.gussetPosition == GussetPosition.ALIGNED)
+        {
+            annotation { "Name" : "Alignment entity", "Filter" : GeometryType.LINE && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            definition.alignedReference is Query;
+
+            annotation { "Name" : "Opposite alignment", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.shouldFlipAlignment is boolean;
+        }
+
+        annotation { "Name" : "Offset distance", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+        definition.shouldFlipOffset is boolean;
+
         annotation { "Name" : "Base faces", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.baseSweptFaces is Query;
     }
     {
         verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.EMPTY_GUSSET_SELECTION);
+
+        const alignedOffset = getAlignedOffset(context, definition);
         const edges = reverse(evaluateQuery(context, definition.edges));
         for (var i = 0; i < size(edges); i += 1)
         {
@@ -102,113 +160,152 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
                         "edge" : currentEdge,
                         "parameter" : 0.5
                     });
-            var midpoint = tangentLine.origin;
+            const midpoint = tangentLine.origin;
 
             const closestSweptFaces = qContainsPoint(definition.baseSweptFaces, midpoint);
             const gussetBasePlanes = getGussetBasePlanes(context, closestSweptFaces, currentEdge);
-            midpoint += (definition.shouldFlipOffset ? 1 : -1) * tangentLine.direction * definition.offset;
-            const manipulatorData = createGussetSolid(
-                    context, loopId, definition,
-                    gussetBasePlanes.planeA, gussetBasePlanes.planeB, midpoint,
-                    closestSweptFaces, currentEdge);
+            const offset = (definition.shouldFlipOffset ? 1 : -1) * tangentLine.direction * definition.offset;
+            const gussetDefinition = {
+                        "lhsPlane" : gussetBasePlanes.planeA,
+                        "rhsPlane" : gussetBasePlanes.planeB,
+                        "gussetMidpoint" : midpoint + offset + alignedOffset,
+                        "closestSweptFacesQuery" : closestSweptFaces,
+                        "edgeMidpoint" : tangentLine.origin
+                    } as GussetDefinition;
+            const gussetCreationResult = createGussetSolid(context, loopId, definition, gussetDefinition);
 
             if (i == 0) // Add manipulators only to the last edge
             {
-                createMidpointManipulator(context, id, definition, tangentLine);
-                createThicknessManipulator(context, id, definition, tangentLine, loopId + GUSSET_EXTRUDE_SUFFIX);
-                createLengthManipulator(context, id, manipulatorData.sizeLine, manipulatorData.sizeOffset);
+                createMidpointManipulator(context, id, definition, tangentLine, midpoint + alignedOffset);
+                createLengthManipulator(context, id, gussetCreationResult.manipulatorDefinition);
             }
 
-            if (manipulatorData.gussetError != undefined)
+            if (gussetCreationResult.gussetError != undefined)
             {
-                throw regenError(manipulatorData.gussetError, ["edges"], qUnion([currentEdge, closestSweptFaces]));
+                throw regenError(gussetCreationResult.gussetError, ["edges"], qUnion([currentEdge, closestSweptFaces]));
             }
         }
     });
 
-function createGussetSolid(context is Context, id is Id, definition is map, lhsPlane is Plane, rhsPlane is Plane, midpoint is Vector, closestSweptFacesQuery is Query, currentEdge is Query) returns map
+function createGussetSolid(context is Context, id is Id, definition is map, gussetDefinition is GussetDefinition) returns GussetCreationResult
 {
     var planeA = undefined;
     var planeB = undefined;
 
     if (definition.shouldFlipBaseSides)
     {
-        planeA = rhsPlane;
-        planeB = lhsPlane;
+        planeA = gussetDefinition.rhsPlane;
+        planeB = gussetDefinition.lhsPlane;
     }
     else
     {
-        planeA = lhsPlane;
-        planeB = rhsPlane;
+        planeA = gussetDefinition.lhsPlane;
+        planeB = gussetDefinition.rhsPlane;
     }
-
-    var result = undefined;
 
     const sketchPlaneNormal = cross(planeA.normal, planeB.normal);
-    const endResultSketchPlane = plane(midpoint, sketchPlaneNormal, planeA.normal);
-    const gussetBasePoints = getGussetBasePoints(definition.length, endResultSketchPlane, planeA, planeB, sketchPlaneNormal, midpoint);
-    const triangleP1 = gussetBasePoints[0];
-    const triangleP2 = gussetBasePoints[1];
+    const endResultSketchPlane = plane(gussetDefinition.gussetMidpoint, sketchPlaneNormal, planeA.normal);
+    const gussetBasePoints = getGussetBasePoints(definition.length, endResultSketchPlane, planeA, planeB, sketchPlaneNormal, gussetDefinition.gussetMidpoint);
+    const startPoint = zeroVector(2) * meter;
 
-    const startPoint = vector(0 * meter, 0 * meter);
-    var points = new box([startPoint, triangleP1]);
-    if (definition.gussetType == GussetStyleType.TRIANGLE)
-    {
-        result = createTriangularGusset(definition, midpoint, endResultSketchPlane, gussetBasePoints);
-    }
-    else if (definition.gussetType == GussetStyleType.RECTANGLE)
-    {
-        result = createRectangularGusset(definition, midpoint, endResultSketchPlane, gussetBasePoints, startPoint, points);
-    }
+    var result = definition.gussetType == GussetStyleType.TRIANGLE ?
+    createTriangularGusset(definition, gussetDefinition.gussetMidpoint, endResultSketchPlane, gussetBasePoints) :
+    createRectangularGusset(definition, gussetDefinition.gussetMidpoint, endResultSketchPlane, gussetBasePoints);
 
-    points[] = append(points[], triangleP2);
-    points[] = append(points[], startPoint);
+    var points = [startPoint, gussetBasePoints[0]];
+    for (var point in result.points)
+    {
+        points = append(points, point);
+    }
+    points = append(points, gussetBasePoints[1]);
+    points = append(points, startPoint);
+
     const endSketch = newSketchOnPlane(context, id + "profileEndSketch", {
                 "sketchPlane" : endResultSketchPlane
             });
     skPolyline(endSketch, "gussetPolyline", {
-                "points" : points[]
+                "points" : points
             });
     skSolve(endSketch);
 
     // This intersection call is already checked in getGussetBasePlanes, it can't fail
     const intersectionLine = intersection(planeA, planeB);
-    opExtrude(context, id + GUSSET_EXTRUDE_SUFFIX, {
-                "entities" : qCreatedBy(id + "profileEndSketch", EntityType.FACE),
-                "direction" : intersectionLine.direction,
-                "endBound" : BoundingType.BLIND,
-                "endDepth" : definition.thickness / 2,
-                "startBound" : BoundingType.BLIND,
-                "startDepth" : definition.thickness / 2
-            });
+    if (definition.gussetPosition == GussetPosition.ALIGNED && !isQueryEmpty(context, definition.alignedReference))
+    {
+        const direction = normalize(gussetDefinition.gussetMidpoint - gussetDefinition.edgeMidpoint) * (definition.shouldFlipAlignment ? 1 : -1);
+        opExtrude(context, id + "finalExtrude", {
+                    "entities" : qCreatedBy(id + "profileEndSketch", EntityType.FACE),
+                    "direction" : direction,
+                    "endBound" : BoundingType.BLIND,
+                    "endDepth" : definition.thickness
+                });
+        result.manipulatorDefinition.sizeLine.origin += direction * definition.thickness / 2;
+    }
+    else
+    {
+        opExtrude(context, id + "finalExtrude", {
+                    "entities" : qCreatedBy(id + "profileEndSketch", EntityType.FACE),
+                    "direction" : intersectionLine.direction,
+                    "endBound" : BoundingType.BLIND,
+                    "endDepth" : definition.thickness / 2,
+                    "startBound" : BoundingType.BLIND,
+                    "startDepth" : definition.thickness / 2
+                });
+    }
     opDeleteBodies(context, id + "deleteFinalSketch", { "entities" : qCreatedBy(id + "profileEndSketch", EntityType.BODY)
             });
 
     return result;
 }
 
-function createTriangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array) returns map
+function getAlignedOffset(context is Context, definition is map) returns Vector
 {
-    var result = {
-        sizeLine : undefined,
-        chamferLine : undefined
-    };
-    const firstCoordInWorld = planeToWorld(endResultSketchPlane, gussetBasePoints[0]);
-    const line = line(midpoint, firstCoordInWorld - midpoint);
-    result.sizeLine = line;
-    result.sizeOffset = norm(firstCoordInWorld - midpoint);
-    return result;
+    var alignedOffset = zeroVector(3) * meter;
+    if (definition.gussetPosition == GussetPosition.ALIGNED)
+    {
+        verifyNonemptyQuery(context, definition, "alignedReference", ErrorStringEnum.GUSSET_EMPTY_ALIGNMENT_SELECTION);
+        const edge = qNthElement(definition.edges, 0);
+        const alignmentLine = evEdgeTangentLine(context, {
+                    "edge" : definition.alignedReference,
+                    "parameter" : 0.5
+                });
+        const tangentEdgeLine = evEdgeTangentLine(context, {
+                    "edge" : edge,
+                    "parameter" : 0.5
+                });
+        const intersectionResult = intersection(tangentEdgeLine, alignmentLine);
+        if (intersectionResult.dim == 0) // intersection is a point
+        {
+            alignedOffset = intersectionResult.intersection - tangentEdgeLine.origin;
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.GUSSET_ALIGNMENT_NO_INTERSECTION, ["alignedReference"], qUnion([edge, definition.alignedReference]));
+        }
+    }
+    return alignedOffset;
 }
 
-function createRectangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array, startPoint is Vector, points is box) returns map
+function manipulatorDefinition(sizeLine is Line, offset is ValueWithUnits) returns ManipulatorDefinition
 {
-    var result = {
-        sizeLine : undefined,
-        chamferLine : undefined,
-        gussetError: undefined
-    };
+    return { "sizeLine" : sizeLine, "sizeOffset" : offset } as ManipulatorDefinition;
+}
+
+function createTriangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array) returns GussetCreationResult
+{
+    const firstCoordInWorld = planeToWorld(endResultSketchPlane, gussetBasePoints[0]);
+    const line = line(midpoint, firstCoordInWorld - midpoint);
+    const offset = norm(firstCoordInWorld - midpoint);
+    return { "manipulatorDefinition" : manipulatorDefinition(line, offset), "points" : [], "gussetError" : undefined } as GussetCreationResult;
+}
+
+function createRectangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array) returns GussetCreationResult
+{
+    const startPoint = zeroVector(2) * meter;
     const triangleP1 = gussetBasePoints[0];
     const triangleP2 = gussetBasePoints[1];
+
+    var result = undefined;
     if (definition.chamfer)
     {
         if (!gussetChamferIsValid(definition, endResultSketchPlane, triangleP1, triangleP2))
@@ -224,11 +321,11 @@ function createRectangularGusset(definition is map, midpoint is Vector, endResul
             const thirdCoordInWorld = planeToWorld(endResultSketchPlane, vector(triangleP2[0] - definition.chamferSize, 0 * meter));
             const forthCoordInWorld = planeToWorld(endResultSketchPlane, startPoint);
             const newOrigin = (thirdCoordInWorld + forthCoordInWorld) / 2.0;
+            const points = [vector(triangleP2[0] - definition.chamferSize, triangleP1[1]), vector(triangleP2[0], triangleP1[1] - definition.chamferSize)];
 
-            result.sizeLine = line(newOrigin, lengthManipulatorFaceMidpoint - newOrigin);
-            result.sizeOffset = norm(lengthManipulatorFaceMidpoint - newOrigin);
-            points[] = append(points[], vector(triangleP2[0] - definition.chamferSize, triangleP1[1]));
-            points[] = append(points[], vector(triangleP2[0], triangleP1[1] - definition.chamferSize));
+            const sizeLine = line(newOrigin, lengthManipulatorFaceMidpoint - newOrigin);
+            const sizeOffset = norm(lengthManipulatorFaceMidpoint - newOrigin);
+            result = { "manipulatorDefinition" : manipulatorDefinition(sizeLine, sizeOffset), "points" : points, "gussetError" : undefined } as GussetCreationResult;
         }
     }
     else
@@ -239,10 +336,11 @@ function createRectangularGusset(definition is map, midpoint is Vector, endResul
         const thirdCoordInWorld = planeToWorld(endResultSketchPlane, vector(triangleP2[0], 0 * meter));
         const forthCoordInWorld = planeToWorld(endResultSketchPlane, startPoint);
         const newOrigin = (thirdCoordInWorld + forthCoordInWorld) / 2.0;
+        const points = [vector(triangleP2[0], triangleP1[1])];
 
-        result.sizeLine = line(newOrigin, lengthManipulatorFaceMidpoint - newOrigin);
-        result.sizeOffset = norm(lengthManipulatorFaceMidpoint - newOrigin);
-        points[] = append(points[], vector(triangleP2[0], triangleP1[1]));
+        const sizeLine = line(newOrigin, lengthManipulatorFaceMidpoint - newOrigin);
+        const sizeOffset = norm(lengthManipulatorFaceMidpoint - newOrigin);
+        result = { "manipulatorDefinition" : manipulatorDefinition(sizeLine, sizeOffset), "points" : points, "gussetError" : undefined } as GussetCreationResult;
     }
     return result;
 }
@@ -328,15 +426,15 @@ function getGussetBasePlanes(context is Context, closestSweptFacesQuery is Query
     // evPlane might actually fail if upstream changes will change the geometry type
     // Such an event will not trigger edit logit, so old data is still stored in the closestSweptFacesQuery
     const closestSweptPlanes = closestSweptFaces->mapArray(function(face)
-    {
-        if (isQueryEmpty(context, qGeometry(face, GeometryType.PLANE)))
         {
-            throw genericError;
-        }
-        return evPlane(context, {
-                    "face" : face
-                });
-    });
+            if (isQueryEmpty(context, qGeometry(face, GeometryType.PLANE)))
+            {
+                throw genericError;
+            }
+            return evPlane(context, {
+                        "face" : face
+                    });
+        });
 
     var parentFace = undefined;
     var planeA = undefined;
@@ -376,10 +474,10 @@ function getGussetBasePlanes(context is Context, closestSweptFacesQuery is Query
     return result;
 }
 
-function createMidpointManipulator(context is Context, id is Id, definition is map, tangentLine is Line)
+function createMidpointManipulator(context is Context, id is Id, definition is map, tangentLine is Line, manipulatorBase is Vector)
 {
     const midpointManipulator = linearManipulator({
-                "base" : tangentLine.origin,
+                "base" : manipulatorBase,
                 "direction" : tangentLine.direction,
                 "offset" : definition.shouldFlipOffset ? definition.offset : -definition.offset,
                 "primaryParameterId" : "offset"
@@ -389,29 +487,12 @@ function createMidpointManipulator(context is Context, id is Id, definition is m
             });
 }
 
-function createThicknessManipulator(context is Context, id is Id, definition is map, tangentLine is Line, solidId is Id)
-{
-    const centroid = evApproximateCentroid(context, {
-                "entities" : qCreatedBy(solidId, EntityType.BODY)
-            });
-    const thicknessManipulator = linearManipulator({
-                "base" : centroid,
-                "direction" : tangentLine.direction,
-                "offset" : definition.thickness / 2.0,
-                "primaryParameterId" : "thickness",
-                "minValue" : MIN_THICKNESS
-            });
-    addManipulators(context, id, {
-                (THICKNESS_MANIPULATOR_ID) : thicknessManipulator
-            });
-}
-
-function createLengthManipulator(context is Context, id is Id, tangentLine is Line, offset is ValueWithUnits)
+function createLengthManipulator(context is Context, id is Id, manipulatorDefinition is ManipulatorDefinition)
 {
     const lengthManipulator = linearManipulator({
-                "base" : tangentLine.origin,
-                "direction" : tangentLine.direction,
-                "offset" : offset,
+                "base" : manipulatorDefinition.sizeLine.origin,
+                "direction" : manipulatorDefinition.sizeLine.direction,
+                "offset" : manipulatorDefinition.sizeOffset,
                 "primaryParameterId" : "length",
                 "minValue" : MIN_SIZE
             });
@@ -430,10 +511,6 @@ export function gussetManipulatorChange(context is Context, definition is map, n
             definition.offset = abs(value.offset);
             definition.shouldFlipOffset = value.offset > 0;
         }
-        if (key == THICKNESS_MANIPULATOR_ID)
-        {
-            definition.thickness = value.offset * 2;
-        }
         if (key == LENGTH_MANIPULATOR_ID)
         {
             definition.length = value.offset;
@@ -445,17 +522,17 @@ export function gussetManipulatorChange(context is Context, definition is map, n
 function collectBaseSweptFaces(context is Context, edgesToVisit is Query) returns Query
 {
     const getClosestFaces = function(edge)
-    {
-        const tangentLine = evEdgeTangentLine(context, {
+        {
+            const tangentLine = evEdgeTangentLine(context, {
                         "edge" : edge,
                         "parameter" : 0.5
                     });
-        const midpoint = tangentLine.origin;
+            const midpoint = tangentLine.origin;
 
-        return qHasAttributeWithValueMatching(FRAME_ATTRIBUTE_TOPOLOGY_NAME, { "topologyType" : FrameTopologyType.SWEPT_FACE })
-            ->qGeometry(GeometryType.PLANE)
-            ->qContainsPoint(midpoint);
-    };
+            return qHasAttributeWithValueMatching(FRAME_ATTRIBUTE_TOPOLOGY_NAME, { "topologyType" : FrameTopologyType.SWEPT_FACE })
+                ->qGeometry(GeometryType.PLANE)
+                ->qContainsPoint(midpoint);
+        };
     return evaluateQuery(context, edgesToVisit)->mapArray(getClosestFaces)->qUnion();
 }
 
@@ -466,4 +543,3 @@ export function gussetEditLogic(context is Context, id is Id, oldDefinition is m
     definition.baseSweptFaces = qUnion([definition.baseSweptFaces, addedBaseSweptFaces]);
     return definition;
 }
-

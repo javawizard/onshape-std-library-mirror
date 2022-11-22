@@ -1,4 +1,4 @@
-FeatureScript 1890; /* Automatically generated version */
+FeatureScript 1913; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1175,7 +1175,24 @@ export enum FeatureScriptVersionNumber
     V1887_FILL_G0_ADJACENT_FACES_FAILURE_FIX,
     V1888_DO_NOT_STORE_EXTERNAL_THREAD_FOUND_SIZES,
     V1889_REFACTOR_EXTERNAL_THREAD_STORAGE_SIMPLIFICATION,
-    V1890_FOLLOW_LAMINAR_SOURCE_COINCIDENCE_CHECK
+    V1890_FOLLOW_LAMINAR_SOURCE_COINCIDENCE_CHECK,
+    V1897_FIX_PARASOLID_BAD_STATE_IN_CURVE_ON_SURFACE,
+    V1898_FASTER_REDUNDANCY_REMOVAL,
+    V1899_OPHOLE_DESTROYS_PART,
+    V1900_EQUAL_HOLE_CBORE_FIX,
+    V1901_MAX_THREAD_LENGTH_COMPARISON_FIX,
+    V1902_START_FROM_SKETCH_MEASURE,
+    V1903_HOLD_ADJACENT_EDGES,
+    V1904_ADD_HOLE_ATTRIBUTES_TO_CHAMFER_FEATURES,
+    V1905_PREVENT_ASYMMETRIC_SHEET_METAL_FILLETS,
+    V1906_ASYMMETRIC_DEFAULT_WARNING,
+    V1907_PARTIAL_FILLET_FIX,
+    V1908_PARTIAL_FILLET_ERROR_HANDLE,
+    V1909_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE,
+    V1910_EQUAL_HOLE_CBORE_FIX_FIX,
+    V1911_PARTIAL_FILLET_FIX_MANIPULATORS,
+    V1912_QUERY_ONLY_CIRCULAR_EDGES_FOR_CONVEX,
+    V1913_BACK_OUT_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE
 }
 
 /**
@@ -1186,6 +1203,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1890_FOLLOW_LAMINAR_SOURCE_COINCIDENCE_CHECK;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1913_BACK_OUT_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE;
 
 
