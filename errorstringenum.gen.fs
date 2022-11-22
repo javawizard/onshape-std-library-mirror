@@ -776,11 +776,11 @@ export enum ErrorStringEnum
     HOLE_DISJOINT,
     /* Some entities could not be converted properly. */
     SKETCH_INSERT_DWG_CONVERSION_FAILURE,
-    /* The counterbore diameter is smaller than the hole diameter. */
+    /* The counterbore diameter must be larger than the hole diameter. */
     HOLE_CBORE_TOO_SMALL,
-    /* The counterbore depth is deeper than the hole depth. */
+    /* The counterbore depth must be smaller than the hole depth. */
     HOLE_CBORE_TOO_DEEP,
-    /* The countersink diameter is smaller than the hole diameter. */
+    /* The countersink diameter must be larger than the hole diameter. */
     HOLE_CSINK_TOO_SMALL,
     /* The countersink depth is deeper than the hole depth. */
     HOLE_CSINK_TOO_DEEP,
@@ -2458,7 +2458,25 @@ export enum ErrorStringEnum
     /* External threads cannot be applied to sheet metal features. */
     EXTERNAL_THREADS_UNSUPPORTED_ON_SHEET_METAL,
     /* Thread length is greater than cylinder length. */
-    THREAD_DEPTH_BEYOND_CYLINDER
+    THREAD_DEPTH_BEYOND_CYLINDER,
+    /* Additional radius is required at each vertex for asymmetric fillets. */
+    VRFILLET_ASYMMETRIC_RADIUS_REQUIRED_AT_VERTEX,
+    /* Additional radius is required at each point for asymmetric fillets. */
+    VRFILLET_ASYMMETRIC_RADIUS_REQUIRED_AT_POINT,
+    /* Could not apply an asymmetric fillet to the selected edges. */
+    VRFILLET_BAD_COEDGE,
+    /* Asymmetric blends are unsupported in legacy feature version. */
+    FILLET_LEGACY_ASYMMETRIC_UNSUPPORTED,
+    /* Only one edge or one chain of tangent edges can be partially fillet. */
+    PARTIAL_FILLET_BAD_INPUT_ERROR,
+    /* Select a linear edge to align to. */
+    GUSSET_EMPTY_ALIGNMENT_SELECTION,
+    /* Unable to find intersection point between first edge and alignment entity. */
+    GUSSET_ALIGNMENT_NO_INTERSECTION,
+    /* Partial fillet is not supported for an active sheet metal model. */
+    CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL,
+    /* Closed entity requires a second boundary point. */
+    PARTIAL_FILLET_CLOSED_PATH_ERROR
 }
 
 

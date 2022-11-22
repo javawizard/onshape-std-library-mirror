@@ -580,20 +580,17 @@ export function createInternalCapFaceMap(context is Context, id is Id, face is Q
     var invertedNormal = true;
     var zeroOffset = 0 * meter;
 
-    var bodiesToDelete = new box([]);
-    var lengthAndAngle = getCutlistLengthAndAngles(context, id, id + "lengthAndAngle", frameSegment, bodiesToDelete);
     const dirOutsideFrameSegment = evPlane(context, {
                     "face" : face
                 }).normal;
 
-    if ((isStartFace(context, face) && abs(lengthAndAngle.angle1.value) > 0) || (!isStartFace(context, face) && abs(lengthAndAngle.angle2.value) > 0))
+    if (!parallelVectors(getFrameAxis(context, frameSegment), dirOutsideFrameSegment))
     {
         throw regenError(ErrorStringEnum.CAP_INCLINED_CUT_FRAME_ERROR, ["faces"], face);
     }
 
     //Processing 90 deg cut on frame segment
     direction = -dirOutsideFrameSegment;
-
 
     const newFaceNormal = evPlane(context, {
                     "face" : innerFace

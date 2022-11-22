@@ -1184,9 +1184,16 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     var flangeData = edgeToFlangeData[edge];
     if (vertexOverride != undefined)
     {
-        const sidePlane = vertexOverride;
-        const forceResult = true; // Use the automiter flag to use the plane direction even if it adds material.
-        result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, forceResult, definition);
+        if (vertexOverride.position != undefined)
+        {
+            result.flangeBasePoint = vertexOverride.position;
+        }
+        const sidePlane = vertexOverride.limitPlane;
+        if (sidePlane != undefined)
+        {
+            const forceResult = true; // Use the automiter flag to use the plane direction even if it adds material.
+            result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, forceResult, definition);
+        }
         return result;
     }
 
@@ -2263,14 +2270,27 @@ function getUpToEntityParameter(boundIndex is number)
 // Take a flange bound and apply it to a particular edge from the start or the end.
 // Return the parameter that the bound needs to split the edge at.
 function processOneFlangeBound(context is Context, flangeBound is PartialFlangeBound, edgeLength is ValueWithUnits,
-    modelEdge is Query, trimFromEdgeStart is boolean, boundIndex is number) returns map
+    modelEdge is Query, trimFromEdgeStart is boolean, boundIndex is number, holdAdjacentEdges is boolean) returns map
 {
+    const includePosition = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1903_HOLD_ADJACENT_EDGES);
     if (flangeBound.partialFlangeType == SMFlangeBoundingType.BLIND)
     {
         var parameter = flangeBound.offset / edgeLength;
         if (!trimFromEdgeStart)
         {
             parameter = 1 - parameter;
+        }
+        if (includePosition && !holdAdjacentEdges)
+        {
+            const position = try silent(evEdgeTangentLine(context, {
+                                "edge" : modelEdge,
+                                "parameter" : parameter
+                            }).origin);
+            if (position == undefined)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+            }
+            return { "parameter" : parameter, "limit" : { "position" : position } };
         }
         return { "parameter" : parameter };
     }
@@ -2292,8 +2312,28 @@ function processOneFlangeBound(context is Context, flangeBound is PartialFlangeB
             parameterOffset = trimFromEdgeStart ? -parameterOffset : parameterOffset;
             parameter += parameterOffset;
         }
-        const plane = getPlaneForLimitEntity(context, modelEdge, flangeBound.boundEntity, parameter, boundIndex);
-        return { "parameter" : parameter, "limitPlane" : plane };
+
+        var limit = { "limitPlane" : getPlaneForLimitEntity(context, modelEdge, flangeBound.boundEntity, parameter, boundIndex) };
+        if (includePosition && !holdAdjacentEdges)
+        {
+            if (flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
+            {
+                const position = try silent(evEdgeTangentLine(context, {
+                                    "edge" : modelEdge,
+                                    "parameter" : parameter
+                                }).origin);
+                if (position == undefined)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+                }
+                limit.position = position;
+            }
+            else
+            {
+                limit.position = distanceResult.sides[0].point;
+            }
+        }
+        return { "parameter" : parameter, "limit" : limit };
     }
 }
 
@@ -2360,9 +2400,33 @@ function showSplitErrorLocations(context is Context, modelEdge is Query, splitPa
     }
 }
 
+/**
+ * Convert transient ids in return to queries that will survive edge setback.
+ */
+function convertReturnToQuery(context is Context, operationId is Id, modelEdge is Query, limitEntities is map, midPoint)
+{
+    var convertedLimits = {};
+    for (var index, limit in limitEntities)
+    {
+        // Use a query for the key that will work whether or not the edge is moved as part of flange alignment.
+        // This will be converted into a transient query before the map is consumed.
+        const vertexQuery = midPoint != undefined ?
+            makeRobustQuery(context, qEdgeVertex(qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midPoint), index == 0)) :
+            makeRobustQuery(context, qEdgeVertex(modelEdge, index == 0));
+        convertedLimits[vertexQuery] = limit;
+    }
+    const edgeQuery = midPoint != undefined ?
+        makeRobustQuery(context, qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midPoint)) :
+        makeRobustQuery(context, modelEdge);
+    return {
+            "splitEdgeQuery" : edgeQuery,
+            "limitEntities" : convertedLimits
+        };
+}
+
 // Divide an edge for the given bounds in order to localize a flange.
 // Returns a query for the split edge that the flange should be attached to.
-function splitEdgeForPartialFlange(context is Context, operationId is Id, modelEdge is Query, bounds is array, isAlignedWithEdge is boolean) returns map
+function splitEdgeForPartialFlange(context is Context, operationId is Id, modelEdge is Query, bounds is array, isAlignedWithEdge is boolean, holdAdjacentEdges is boolean) returns map
 {
     var limitEntities = {};
     const length = try silent(evLength(context, {
@@ -2377,13 +2441,22 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
     for (var index, flangeBound in bounds)
     {
         const trimAtStart = (index == 0) == isAlignedWithEdge;
-        const parameterAndLimitPlane = processOneFlangeBound(context, flangeBound, length, modelEdge, trimAtStart, index);
-        if (parameterAndLimitPlane.limitPlane != undefined)
+        const parameterAndLimit = processOneFlangeBound(context, flangeBound, length, modelEdge, trimAtStart, index, holdAdjacentEdges);
+        if (parameterAndLimit.limit != undefined)
         {
             const vertexIndex = trimAtStart ? 0 : 1;
-            limitEntities[vertexIndex] = parameterAndLimitPlane.limitPlane;
+            limitEntities[vertexIndex] = parameterAndLimit.limit;
         }
-        splitParameters = splitParameters->append(parameterAndLimitPlane.parameter);
+        splitParameters = splitParameters->append(parameterAndLimit.parameter);
+    }
+
+    // Skip splitting the edge but provide an end position for the flange instead.
+    // This stops flange alignment from creating a step edge.
+    const splitConditionally = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1903_HOLD_ADJACENT_EDGES);
+    if (splitConditionally && !holdAdjacentEdges)
+    {
+        const splitPoint = undefined;
+        return convertReturnToQuery(context, operationId, modelEdge, limitEntities, splitPoint);
     }
 
     if (splitParameters->size() == 1)
@@ -2409,18 +2482,8 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
     if (abs(splitParameters[lowerParameterIndex]) * length < TOLERANCE.zeroLength * meter &&
         abs(splitParameters[1 - lowerParameterIndex] - 1) * length < TOLERANCE.zeroLength * meter)
     {
-        var convertedLimits = {};
-        for (var index, limit in limitEntities)
-        {
-            // Use a query for the key that will work whether or not the edge is moved as part of flange alignment.
-            // This will be converted into a transient query before the map is consumed.
-            const vertexQuery = makeRobustQuery(context, qEdgeVertex(modelEdge, index == 0));
-            convertedLimits[vertexQuery] = limit;
-        }
-        return {
-                "splitEdgeQuery" : makeRobustQuery(context, modelEdge),
-                "limitEntities" : convertedLimits
-            };
+        const splitPoint = undefined;
+        return convertReturnToQuery(context, operationId, modelEdge, limitEntities, splitPoint);
     }
     const midSplitPoint = evEdgeTangentLine(context, {
                     "edge" : modelEdge,
@@ -2447,16 +2510,8 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
             throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
         }
     }
-    var convertedLimits = {};
-    for (var index, limit in limitEntities)
-    {
-        const vertexQuery = makeRobustQuery(context, qEdgeVertex(qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint), index == 0));
-        convertedLimits[vertexQuery] = limit;
-    }
-    return {
-            "splitEdgeQuery" : makeRobustQuery(context, qContainsPoint(qSplitBy(operationId, EntityType.EDGE, false), midSplitPoint)),
-            "limitEntities" : convertedLimits
-        };
+
+    return convertReturnToQuery(context, operationId, modelEdge, limitEntities, midSplitPoint);
 }
 
 function splitAllEdgesForPartialFlange(context is Context, operationId, definition is map, modelEdges is Query) returns map
@@ -2474,7 +2529,8 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
             for (var index, edge in path.edges)
             {
                 const alignedWithEdge = definition.flipFlangeBounds == path.flipped[index];
-                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), edge, bounds, alignedWithEdge);
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
+                    edge, bounds, alignedWithEdge, definition.holdAdjacentEdges);
                 if (splitQueryAndLimitEntity.limitEntities != undefined)
                 {
                     limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
@@ -2495,7 +2551,8 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
             {
                 // Use path direction since it is stabilized by vertex deterministic id.
                 const alignedWithEdge = definition.flipFlangeBounds == path.flipped[0];
-                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), path.edges[0], bounds, alignedWithEdge);
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
+                    path.edges[0], bounds, alignedWithEdge, definition.holdAdjacentEdges);
                 if (splitQueryAndLimitEntity.limitEntities != undefined)
                 {
                     limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
@@ -2524,7 +2581,8 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
                     const applyToStart = boundIndex == (definition.flipFlangeBounds ? 1 : 0);
                     const edgeIndex = applyToStart ? 0 : path.edges->size() - 1;
                     const alignedWithEdge = path.flipped[edgeIndex] != applyToStart;
-                    const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex), path.edges[edgeIndex], [bound], alignedWithEdge);
+                    const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
+                        path.edges[edgeIndex], [bound], alignedWithEdge, definition.holdAdjacentEdges);
                     if (splitQueryAndLimitEntity.limitEntities != undefined)
                     {
                         limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;

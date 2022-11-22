@@ -322,17 +322,59 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         // V206 was the current version when it was determined that a version check was needed
         if (definition.style == HoleStyle.C_BORE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
         {
-            if (definition.holeDiameter > definition.cBoreDiameter + TOLERANCE.zeroLength * meter)
-                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, ["holeDiameter", "cBoreDiameter"]);
+            var cBoreTooSmall;
+            // Do not allow holeDiameter to be equal to cBoreDiameter
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1900_EQUAL_HOLE_CBORE_FIX))
+            {
+                cBoreTooSmall = definition.holeDiameter > (definition.cBoreDiameter - TOLERANCE.zeroLength * meter);
+            }
+            else
+            {
+                cBoreTooSmall = definition.holeDiameter > (definition.cBoreDiameter + TOLERANCE.zeroLength * meter);
+            }
 
-            if (definition.endStyle == HoleEndStyle.BLIND && definition.holeDepth < definition.cBoreDepth - TOLERANCE.zeroLength * meter)
-                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
+            if (cBoreTooSmall)
+            {
+                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, ["holeDiameter", "cBoreDiameter"]);
+            }
+
+            if (definition.endStyle == HoleEndStyle.BLIND)
+            {
+                var cBoreTooDeep;
+                // Do not allow holeDepth to be equal to cBoreDepth
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1900_EQUAL_HOLE_CBORE_FIX))
+                {
+                    cBoreTooDeep = definition.holeDepth < (definition.cBoreDepth + TOLERANCE.zeroLength * meter);
+                }
+                else
+                {
+                    cBoreTooDeep = definition.holeDepth < (definition.cBoreDepth - TOLERANCE.zeroLength * meter);
+                }
+
+                if (cBoreTooDeep)
+                {
+                    throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
+                }
+            }
         }
 
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V206_LINEAR_RANGE))
         {
-            if (definition.holeDiameter > definition.cSinkDiameter + TOLERANCE.zeroLength * meter)
+            var cSinkTooSmall;
+            // Do not allow holeDiameter to be equal to cSinkDiameter
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1900_EQUAL_HOLE_CBORE_FIX))
+            {
+                cSinkTooSmall = definition.holeDiameter > (definition.cSinkDiameter - TOLERANCE.zeroLength * meter);
+            }
+            else
+            {
+                cSinkTooSmall = definition.holeDiameter > (definition.cSinkDiameter + TOLERANCE.zeroLength * meter);
+            }
+
+            if (cSinkTooSmall)
+            {
                 throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, ["holeDiameter", "cSinkDiameter"]);
+            }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
             {
@@ -2080,14 +2122,29 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
         const finalPositionReferenceInfo = singleHoleReturnValue.positionReferenceInfo[finalPositionReference];
         const depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        const firstEntranceInFinalPositionReferenceSpace = depthExtremes.firstEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullEntranceInFinalPositionReferenceSpace = depthExtremes.fullEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullExitInFinalPositionReferenceSpace = depthExtremes.fullExit - finalPositionReferenceInfo.referenceRootEnd;
-
 
         var depthInPart;
         if (userDefinedHoleDepth != undefined)
         {
-            depthInPart = userDefinedHoleDepth - fullEntranceInFinalPositionReferenceSpace;
+            var entranceInFinalPositionReferenceSpace;
+            if (featureDefinition.startFromSketch && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1902_START_FROM_SKETCH_MEASURE))
+            {
+                // When starting from sketch plane, ensure that we do not have negative values for depth by measuring
+                // from where the hole cylinder starts to intersect the part, rather than from where it fully intersects
+                // the part. This is not ideal for holes that enter the part on a slanted face, but is a good compromise
+                // for holes that interact with complex target geometry (such as a large-radius shallow hole being
+                // drilled into a a position where there is already a small-radius deep hole)
+                entranceInFinalPositionReferenceSpace = firstEntranceInFinalPositionReferenceSpace;
+            }
+            else
+            {
+                // The ideal measurement criteria: measure distance from where the hole cylinder fully intersects the part.
+                entranceInFinalPositionReferenceSpace = fullEntranceInFinalPositionReferenceSpace;
+            }
+            depthInPart = userDefinedHoleDepth - entranceInFinalPositionReferenceSpace;
         }
         var isLastTarget = false;
         if (singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START] != undefined)

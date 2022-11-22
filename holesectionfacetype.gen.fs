@@ -14,6 +14,8 @@ FeatureScript ✨; /* Automatically generated version */
  * @value CBORE_DEPTH_FACE : The face that represents the counter bore depth face of a CBore hole feature.
  * @value CSINK_FACE : The face that represents the counter sink angular face of a CSink hole feature.
  * @value CSINK_CBORE_FACE : The face that represents the counter bore diameter face of a CSink hole feature.
+ * @value BLIND_TIP_FACE : The face that represents the terminating face of a blind hole feature.
+ * @value EXTERNAL_THREAD_CHAMFER_FACE : The face that represents the chamfer face of an external thread feature.
  */
 export enum HoleSectionFaceType
 {
@@ -28,7 +30,9 @@ export enum HoleSectionFaceType
     annotation {"Name" : "CBore Diameter Face on CSink Hole"}
     CSINK_CBORE_FACE,
     annotation {"Name" : "Blind Tip Angular Face"}
-    BLIND_TIP_FACE
+    BLIND_TIP_FACE,
+    annotation {"Name" : "External Thread Chamfered Face"}
+    EXTERNAL_THREAD_CHAMFER_FACE
 }
 
 

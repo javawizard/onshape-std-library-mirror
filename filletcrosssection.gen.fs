@@ -6,11 +6,11 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the cross section for a fillet operation.
+ * Specifies the cross sectional control for a fillet operation.
  */
 export enum FilletCrossSection
 {
-    annotation {"Name" : "Circular"}
+    annotation {"Name" : "Distance"}
     CIRCULAR,
     annotation {"Name" : "Conic"}
     CONIC,
