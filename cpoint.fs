@@ -27,16 +27,6 @@ export enum PointType
 
 /**
  * @internal
- * A `RealBoundSpec` for a normalized parameter along an edge's length, with 0 being the start of the edge and 1 the end
- * Default UI value is 0.5, i.e. the midpoint of an open edge
- */
-export const EDGE_PARAMETER_BOUNDS =
-{
-    (unitless) : [0.0, 0.5, 1]
-} as RealBoundSpec;
-
-/**
- * @internal
  * Creates a construction point, calling [opPoint]. Not exposed through the UI.
  */
 annotation { "Feature Type Name" : "Point" }

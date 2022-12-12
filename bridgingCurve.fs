@@ -46,6 +46,10 @@ export const BIAS_BOUNDS =
 
 const UI_SCALING = 0.5;
 const ANGLE_RANGE = 30 * degree;
+const SIDE_1_MANIPULATOR = "Side1Manip";
+const SIDE_2_MANIPULATOR = "Side2Manip";
+const ANGLE_1_MANIPULATOR = "Angle1Manip";
+const ANGLE_2_MANIPULATOR = "Angle2Manip";
 const MAGNITUDE_MANIPULATOR = "magnitudeManipulator";
 const CENTRAL_MAGNITUDE_MANIPULATOR = "centralMagnitudeManipulator";
 const BIAS_MANIPULATOR = "biasManipulator";
@@ -72,9 +76,9 @@ annotation { "Feature Type Name" : "Bridging curve",
 export const bridgingCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX }
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX || EntityType.FACE }
         definition.preselectedEntities is Query;
-        annotation { "Name" : "Start", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
+        annotation { "Name" : "Start", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO), "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;
         annotation { "Name" : "Match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match1 is BridgingCurveMatchType;
@@ -83,7 +87,7 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.flip1 is boolean;
         }
-        annotation { "Name" : "End", "Filter" : EntityType.EDGE || EntityType.VERTEX, "MaxNumberOfPicks" : 2 }
+        annotation { "Name" : "End", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO), "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
         annotation { "Name" : "Match", "Column Name" : "Second match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
@@ -92,37 +96,37 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.flip2 is boolean;
         }
-
         if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
         {
             annotation { "Name" : "Method", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE], "Default" : BridgingCurveMethod.CONTROL_POINTS }
             definition.method is BridgingCurveMethod;
-
             if (definition.method == BridgingCurveMethod.CONTROL_POINTS)
             {
                 annotation { "Name" : "Edit control points", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 definition.editControlPoints is boolean;
-
                 if (definition.editControlPoints)
                 {
-                    if (definition.match1 != BridgingCurveMatchType.POSITION)
+                    annotation { "Group Name" : "Edit control points", "Collapsed By Default" : false, "Driving Parameter" : "editControlPoints" }
                     {
-                        annotation { "Name" : "Start magnitude" }
-                        isReal(definition.side1Magnitude, POSITIVE_REAL_BOUNDS);
-                        if (definition.match1 == BridgingCurveMatchType.CURVATURE)
+                        if (definition.match1 != BridgingCurveMatchType.POSITION)
                         {
-                            annotation { "Name" : "Start curvature offset" }
-                            isReal(definition.side1CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                            annotation { "Name" : "Start magnitude" }
+                            isReal(definition.side1Magnitude, POSITIVE_REAL_BOUNDS);
+                            if (definition.match1 == BridgingCurveMatchType.CURVATURE)
+                            {
+                                annotation { "Name" : "Start curvature offset" }
+                                isReal(definition.side1CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                            }
                         }
-                    }
-                    if (definition.match2 != BridgingCurveMatchType.POSITION)
-                    {
-                        annotation { "Name" : "End magnitude" }
-                        isReal(definition.side2Magnitude, POSITIVE_REAL_BOUNDS);
-                        if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+                        if (definition.match2 != BridgingCurveMatchType.POSITION)
                         {
-                            annotation { "Name" : "End curvature offset" }
-                            isReal(definition.side2CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                            annotation { "Name" : "End magnitude" }
+                            isReal(definition.side2Magnitude, POSITIVE_REAL_BOUNDS);
+                            if (definition.match2 == BridgingCurveMatchType.CURVATURE)
+                            {
+                                annotation { "Name" : "End curvature offset" }
+                                isReal(definition.side2CurvatureOffset, CLAMP_MAGNITUDE_REAL_BOUNDS);
+                            }
                         }
                     }
                 }
@@ -141,6 +145,55 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
                 }
             }
         }
+
+        annotation { "Name" : "side1HasVertex", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.side1HasVertex is boolean;
+        annotation { "Name" : "side2HasVertex", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.side2HasVertex is boolean;
+
+        if (!definition.side1HasVertex || !definition.side2HasVertex)
+        {
+            annotation { "Name" : "Edit edge positions", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition.editEdgePositions is boolean;
+            if (definition.editEdgePositions)
+            {
+                annotation { "Group Name" : "Edge positions", "Collapsed By Default" : false, "Driving Parameter" : "editEdgePositions" }
+                {
+                    if (!definition.side1HasVertex)
+                    {
+                        annotation { "Name" : "Start edge position" }
+                        isReal(definition.startEdgeParameter, EDGE_PARAMETER_BOUNDS);
+                    }
+                    if (!definition.side2HasVertex)
+                    {
+                        annotation { "Name" : "End edge position" }
+                        isReal(definition.endEdgeParameter, EDGE_PARAMETER_BOUNDS);
+                    }
+                }
+            }
+        }
+
+        if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
+        {
+            annotation { "Name" : "Edit tangency angles", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition.editTangencyAngles is boolean;
+            if (definition.editTangencyAngles)
+            {
+                annotation { "Group Name" : "Edit angles", "Collapsed By Default" : false, "Driving Parameter" : "editTangencyAngles" }
+                {
+                    if (definition.match1 != BridgingCurveMatchType.POSITION)
+                    {
+                        annotation { "Name" : "Start angle" }
+                        isAngle(definition.startAngle, ANGLE_180_MINUS_180_BOUNDS);
+                    }
+                    if (definition.match2 != BridgingCurveMatchType.POSITION)
+                    {
+                        annotation { "Name" : "End angle" }
+                        isAngle(definition.endAngle, ANGLE_180_MINUS_180_BOUNDS);
+                    }
+                }
+            }
+        }
     }
     {
         verifyNoMesh(context, definition, "side1");
@@ -155,8 +208,9 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
                 "references" : qUnion([definition.side1, definition.side2])
             });
 
-        const side1Data = getDataForSide(context, definition.side1, definition.match1, definition.flip1, "side1", definition.side2);
-        const side2Data = getDataForSide(context, definition.side2, definition.match2, definition.flip2, "side2", definition.side1);
+        const sideData = getSideDataAndAddManipulators(context, definition, true, {"id" : id});
+        var side1Data = sideData.side1;
+        var side2Data = sideData.side2;
 
         if (definition.method == BridgingCurveMethod.MAGNITUDE_BIAS)
         {
@@ -184,7 +238,7 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
 
             createBezierCurve(context, id, controlPoints);
         }
-
+        showWire(context, id, qCreatedBy(id, EntityType.BODY));
         transformResultIfNecessary(context, id, remainingTransform);
     }, {
             'match1' : BridgingCurveMatchType.TANGENCY,
@@ -192,9 +246,66 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             'flip1' : false,
             'flip2' : false,
             'method' : BridgingCurveMethod.MAGNITUDE_BIAS,
-            'preselectedEntities' : qNothing()
+            'preselectedEntities' : qNothing(),
+            'side1HasVertex' : false,
+            'side2HasVertex' : false,
+            'editEdgePositions' : false,
+            'editTangencyAngles' : false
         }
     );
+
+/**
+ * Data type for side queries
+ *
+ *  @type {{
+ *      @field vertex {Query} : The vertex element on a side query @optional
+ *      @field edge {Query} : The edge element on a side query @optional
+ *      @field face {Query} : The face element on a side query @optional
+ * }}
+ */
+export type SideQueries typecheck canBeSideQueries;
+
+predicate canBeSideQueries(value)
+{
+    value is map;
+    value.vertex == undefined || value.vertex is Query;
+    value.edge == undefined || value.edge is Query;
+    value.face == undefined || value.face is Query;
+}
+
+/**
+ * Data type for precomputed side data
+ *
+ *  @type {{
+ *      @field point {Vector} : The position
+ *      @field frame {EdgeCurvatureResult} : The coordSystem and curvature at the given position @optional
+ * }}
+ */
+export type SideData typecheck canBeSideData;
+
+predicate canBeSideData(value)
+{
+    value is map;
+    isLengthVector(value.point);
+    value.frame == undefined || value.frame is EdgeCurvatureResult;
+}
+
+/**
+ * Aggregation of both sides SideData
+ *
+ *  @type {{
+ *      @field side1 {SideData} : SideData map for start side
+ *      @field side2 {SideData} : SideData map for end side
+ * }}
+ */
+export type TwoSidesData typecheck canBeTwoSidesData;
+
+predicate canBeTwoSidesData(value)
+{
+    value is map;
+    value.side1 is SideData;
+    value.side2 is SideData;
+}
 
 /**
  * Data type for unified control points computation
@@ -227,6 +338,230 @@ predicate canBeBridgingSideData(value)
         value.curvature is ValueWithUnits;
         value.curvatureOffsetScale == undefined || value.curvatureOffsetScale is number;
     }
+}
+
+function makeSideQueries(context is Context, side is Query) returns SideQueries
+{
+    var sideQueries is SideQueries = {
+        "vertex" : undefined,
+        "edge" : undefined,
+        "face" : undefined
+    } as SideQueries;
+    const vertex = qEntityFilter(side, EntityType.VERTEX);
+    if (size(evaluateQuery(context, vertex)) == 1)
+    {
+        sideQueries.vertex = vertex;
+    }
+    const edge = qEntityFilter(side, EntityType.EDGE);
+    if (size(evaluateQuery(context, edge)) == 1)
+    {
+        sideQueries.edge = edge;
+    }
+    const face = qEntityFilter(side, EntityType.FACE);
+    if (size(evaluateQuery(context, face)) == 1)
+    {
+        sideQueries.face = face;
+    }
+    return sideQueries;
+}
+
+function checkSideIsValid(context is Context, sideQueries is SideQueries, sideName is string, sideErrorMessage is string)
+{
+    if (sideQueries.vertex == undefined && sideQueries.edge == undefined && sideQueries.face == undefined)
+    {
+        throw regenError(sideErrorMessage, [sideName]);
+    }
+    // We need at least a vertex or an edge on each side.
+    if (sideQueries.vertex == undefined && sideQueries.edge == undefined)
+    {
+        throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_OR_EDGE_ON_SIDE, [sideName]);
+    }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1920_CONNECTING_CURVE_BETTER_INPUT_CHECKS) && sideQueries.face != undefined)
+    {
+        // We need to make sure the face contains vertex or the edge
+        if (sideQueries.vertex != undefined)
+        {
+            // Either the vertex is a face vertex or it's coincident with the face
+            var adjacentVertices = qAdjacent(sideQueries.face, AdjacencyType.VERTEX, EntityType.VERTEX);
+            if (isQueryEmpty(context, qIntersection([adjacentVertices, sideQueries.vertex])))
+            {
+                if (isQueryEmpty(context, qContainsPoint(sideQueries.face, evVertexPoint(context, {
+                                                         "vertex" : sideQueries.vertex
+                                                         }))))
+                {
+                    throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_BELONG_TO_FACE, [sideName]);
+                }
+            }
+        }
+        else if (sideQueries.edge != undefined)
+        {
+            // Either the edge is a face edge or it's coincident with the face.
+            var adjacentEdges = qAdjacent(sideQueries.face, AdjacencyType.EDGE, EntityType.EDGE);
+            if (isQueryEmpty(context, qIntersection([adjacentEdges, sideQueries.edge])))
+            {
+                var results = evEdgeCurvatures(context, {
+                        "edge" : sideQueries.edge,
+                        "parameters" : [0, 0.3, 0.7, 1]
+                });
+                for (var result in results)
+                {
+                    if (isQueryEmpty(context, qContainsPoint(sideQueries.face, result.frame.origin)))
+                    {
+                        throw regenError(ErrorStringEnum.BRIDGING_CURVE_EDGE_BELONG_TO_FACE, [sideName]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// id should be {"id" : id} if addManip is true, {} otherwise.
+// Returns { s}
+function getSideDataAndAddManipulators(context is Context, definition is map, addManip is boolean, id is map) returns TwoSidesData
+{
+    var side1Data;
+    var side2Data;
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1914_BRIDGING_CONNECTING_CURVE))
+    {
+        const sideQueries1 = makeSideQueries(context, definition.side1);
+        const sideQueries2 = makeSideQueries(context, definition.side2);
+
+        checkSideIsValid(context, sideQueries1, "side1", ErrorStringEnum.BRIDGING_CURVE_NO_START_SELECTION);
+        checkSideIsValid(context, sideQueries2, "side2", ErrorStringEnum.BRIDGING_CURVE_NO_END_SELECTION);
+
+        if (addManip && definition.editEdgePositions && sideQueries1.vertex == undefined && sideQueries1.edge != undefined)
+        {
+            addTangentManipulator(context, id.id, SIDE_1_MANIPULATOR, sideQueries1.edge, definition.startEdgeParameter, "startEdgeParameter");
+        }
+        if (addManip && definition.editEdgePositions && sideQueries2.vertex == undefined && sideQueries2.edge != undefined)
+        {
+            addTangentManipulator(context, id.id, SIDE_2_MANIPULATOR, sideQueries2.edge, definition.endEdgeParameter, "endEdgeParameter");
+        }
+        var startParam = definition.editEdgePositions ? definition.startEdgeParameter : 0.5;
+        var endParam = definition.editEdgePositions ? definition.endEdgeParameter : 0.5;
+        const points = getPointsLocations(context, sideQueries1, startParam, sideQueries2, endParam, definition.editEdgePositions);
+        const point1 = points.point1;
+        const point2 = points.point2;
+
+        side1Data = getDataForSide(context, sideQueries1, definition.editEdgePositions, startParam, definition.match1, definition.flip1, "side1", point1, point2);
+        side2Data = getDataForSide(context, sideQueries2, definition.editEdgePositions, endParam, definition.match2, definition.flip2, "side2", point2, point1);
+
+        if (definition.editTangencyAngles)
+        {
+            const midLength = norm(side1Data.point - side2Data.point) / 2;
+            if (definition.match1 != BridgingCurveMatchType.POSITION && side1Data.frame != undefined && !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.FACE)))
+            {
+                const frame1 = side1Data.frame.frame;
+                if (addManip)
+                {
+                    addManipulators(context, id.id, {
+                                (ANGLE_1_MANIPULATOR) : angularManipulator({
+                                        "axisOrigin" : frame1.origin,
+                                        "axisDirection" : frame1.xAxis,
+                                        "rotationOrigin" : frame1.origin + frame1.zAxis * midLength,
+                                        "angle" : definition.startAngle,
+                                        "primaryParameterId" : "startAngle"
+                                    })
+                                });
+                }
+                side1Data.frame.frame = rotationAround(line(frame1.origin, frame1.xAxis), definition.startAngle) * frame1;
+            }
+            if (definition.match2 != BridgingCurveMatchType.POSITION && side2Data.frame != undefined && !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.FACE)))
+            {
+                const frame2 = side2Data.frame.frame;
+                if (addManip)
+                {
+                    addManipulators(context, id.id, {
+                                    (ANGLE_2_MANIPULATOR) : angularManipulator({
+                                        "axisOrigin" : frame2.origin,
+                                        "axisDirection" : frame2.xAxis,
+                                        "rotationOrigin" : frame2.origin + frame2.zAxis * midLength,
+                                        "angle" : definition.endAngle,
+                                        "primaryParameterId" : "endAngle"
+                                    })
+                                });
+                }
+                side2Data.frame.frame = rotationAround(line(frame2.origin, frame2.xAxis), definition.endAngle) * frame2;
+            }
+        }
+    }
+    else
+    {
+        side1Data = getDataForSideDeprecated(context, definition.side1, definition.match1, definition.flip1, "side1", definition.side2);
+        side2Data = getDataForSideDeprecated(context, definition.side2, definition.match2, definition.flip2, "side2", definition.side1);
+    }
+    return {
+        "side1" : side1Data,
+        "side2" : side2Data
+    } as TwoSidesData;
+}
+
+function computeCurvature(curvatures is FaceCurvatureResult, v is Vector)
+{
+    var denom = dot(v, v);
+    var c1 = dot(curvatures.minDirection, v) ^ 2;
+    var c2 = dot(curvatures.maxDirection, v) ^ 2;
+    var num = c1 * curvatures.minCurvature + c2 * curvatures.maxCurvature;
+    return num / denom;
+}
+
+function getPointLocationFromVertexOrParameter(context is Context, sideQueries is SideQueries, parameter is number, useParameter is boolean)
+{
+    const vertex = sideQueries.vertex;
+
+    if (vertex != undefined)
+    {
+        return evVertexPoint(context, {
+                    "vertex" : vertex
+                });
+    }
+    const edge = sideQueries.edge;
+    const face = sideQueries.face;
+
+    if (edge != undefined && (useParameter || face != undefined))
+    {
+        return evEdgeTangentLine(context, {
+                "edge" : edge,
+                "parameter" : parameter
+        }).origin;
+    }
+}
+
+function getPointsLocations(context is Context, sideQueries1 is SideQueries, side1Parameter is number, sideQueries2 is SideQueries, side2Parameter is number, useParameter is boolean) returns map
+{
+    var point1 = getPointLocationFromVertexOrParameter(context, sideQueries1, side1Parameter, useParameter);
+    var point2 = getPointLocationFromVertexOrParameter(context, sideQueries2, side2Parameter, useParameter);
+
+    const side1Edge = sideQueries1.edge;
+    const side2Edge = sideQueries2.edge;
+    // If point1 is undefined, this means side1Edge is not undefined. Same for point2.
+    if (point1 == undefined)
+    {
+        if (point2 == undefined)
+        {
+            // We only have an edge for each side
+            point1 = inferVertexFromEdge(context, side1Edge, side2Edge);
+        }
+        else
+        {
+            point1 = inferVertexFromPosition(context, side1Edge, point2);
+        }
+        point1 = evVertexPoint(context, {
+                        "vertex" : point1
+                    });
+    }
+    if (point2 == undefined)
+    {
+        point2 = evVertexPoint(context, {
+                        "vertex" : inferVertexFromPosition(context, side2Edge, point1)
+                    });
+    }
+
+    return {
+        "point1" : point1,
+        "point2" : point2
+    };
 }
 
 function getBridgingSideData(sideData is map, match is BridgingCurveMatchType) returns BridgingSideData
@@ -419,17 +754,19 @@ function showControlPoints(context is Context, id is Id, controlPoints is array)
     abortFeature(context, controlId);
 }
 
-/**
- * @internal
- * The editing logic function used in the `bridgingCurve` feature.
- */
-export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map) returns map
+function showWire(context is Context, id is Id, wire is Query)
 {
-    if (oldDefinition != {})
+    const showWireId = id + "showWire";
+    startFeature(context, showWireId, {});
+    try
     {
-        // We are only going to modify the definition on pre-selection
-        return definition;
+        addDebugEntities(context, wire, DebugColor.MAGENTA);
     }
+    abortFeature(context, showWireId);
+}
+
+function bridgingCurvePreselectionEditingLogic(context is Context, oldDefinition is map, definition is map) returns map
+{
 
     // We have a few things we want to do here but we're not going to be too clever. We could try to work out whether a point
     // is isolated and the user wants a non-default POSITION bridging but it is more likely that they pre-selected points and
@@ -477,10 +814,71 @@ export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefin
     {
         definition = matchEdgeAndVertexPairs(context, definition, edges, vertices);
     }
-
     return definition;
 }
 
+function needToFlipSide(context is Context, edge is Query, point is Vector) returns boolean
+{
+    const frames = evEdgeCurvatures(context, {
+                "edge" : edge,
+                "parameters" : [0, 1]
+            });
+    const inferredFrame = findClosestEndFrame(point, frames[0], frames[1]);
+    const midEdgeTangent = evEdgeTangentLine(context, {
+            "edge" : edge,
+            "parameter" : 0.5
+    });
+    return dot(inferredFrame.frame.zAxis, midEdgeTangent.direction) < 0;
+}
+
+function sideFlips(context is Context, oldDefinition is map, definition is map,
+    specifiedParameters is map) returns map
+{
+    if (oldDefinition == {} || oldDefinition.editEdgePositions == definition.editEdgePositions)
+    {
+        return definition;
+    }
+    const sideQueries1 = makeSideQueries(context, definition.side1);
+    const sideQueries2 = makeSideQueries(context, definition.side2);
+    const side1IsOnlyEdge = sideQueries1.edge != undefined && sideQueries1.vertex == undefined && sideQueries1.face == undefined;
+    const side2IsOnlyEdge = sideQueries2.edge != undefined && sideQueries2.vertex == undefined && sideQueries2.face == undefined;
+    const canFlipSide1 = side1IsOnlyEdge && !specifiedParameters.flip1 && !specifiedParameters.startEdgeParameter;
+    const canFlipSide2 = side2IsOnlyEdge && !specifiedParameters.flip2 && !specifiedParameters.endEdgeParameter;
+    // We only want to flip if we only have an edge (ie we infer the edge point), the user has not manually flipped the tangency direction
+    // and the user has not specified an edge parameter.
+    if (!canFlipSide1 && !canFlipSide2)
+    {
+        return definition;
+    }
+    const points = getPointsLocations(context, sideQueries1, 0, sideQueries2, 0, false);
+    if (canFlipSide1)
+    {
+        definition.flip1 = needToFlipSide(context, sideQueries1.edge, points.point1) ? !definition.flip1 : definition.flip1;
+    }
+    if (canFlipSide2)
+    {
+        definition.flip2 = needToFlipSide(context, sideQueries2.edge, points.point2) ? !definition.flip2 : definition.flip2;
+    }
+    return definition;
+}
+
+/**
+ * @internal
+ * The editing logic function used in the `bridgingCurve` feature.
+ */
+export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    if (oldDefinition == {})
+    {
+        definition = bridgingCurvePreselectionEditingLogic(context, oldDefinition, definition);
+    }
+
+    definition.side1HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.VERTEX));
+    definition.side2HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.VERTEX));
+
+    return sideFlips(context, oldDefinition, definition, specifiedParameters);
+}
 
 function matchVerticesToEdge(context is Context, definition is map, edge is Query, vertices is array) returns map
 {
@@ -628,8 +1026,41 @@ function matchEdgesThatEndAtVertex(context is Context, vertex is Query, edges is
  */
 export function bridgingCurveManipulator(context is Context, definition is map, newManipulators is map) returns map
 {
-    const side1Data = getDataForSide(context, definition.side1, definition.match1, definition.flip1, "side1", definition.side2);
-    const side2Data = getDataForSide(context, definition.side2, definition.match2, definition.flip2, "side2", definition.side1);
+    // These manipulators need to be before control points computation to avoid issues when edge positions are the same.
+    if (newManipulators[SIDE_1_MANIPULATOR] is map)
+    {
+        const manipulator = newManipulators[SIDE_1_MANIPULATOR];
+        var edge = qEntityFilter(definition.side1, EntityType.EDGE);
+        if (!isQueryEmpty(context, edge))
+        {
+            var pos = manipulator.base + manipulator.direction * manipulator.offset;
+            var distanceResult = evDistance(context, { "side0" : pos, "side1" : edge });
+            definition["startEdgeParameter"] = distanceResult.sides[1].parameter;
+        }
+    }
+    if (newManipulators[SIDE_2_MANIPULATOR] is map)
+    {
+        const manipulator = newManipulators[SIDE_2_MANIPULATOR];
+        var edge = qEntityFilter(definition.side2, EntityType.EDGE);
+        if (!isQueryEmpty(context, edge))
+        {
+            var pos = manipulator.base + manipulator.direction * manipulator.offset;
+            var distanceResult = evDistance(context, { "side0" : pos, "side1" : edge });
+            definition["endEdgeParameter"] = distanceResult.sides[1].parameter;
+        }
+    }
+    if (newManipulators[ANGLE_1_MANIPULATOR] is map)
+    {
+        definition.startAngle = newManipulators[ANGLE_1_MANIPULATOR].angle;
+    }
+    if (newManipulators[ANGLE_2_MANIPULATOR] is map)
+    {
+        definition.endAngle = newManipulators[ANGLE_2_MANIPULATOR].angle;
+    }
+
+    const sideData = getSideDataAndAddManipulators(context, definition, false, {});
+    var side1Data = sideData.side1;
+    var side2Data = sideData.side2;
 
     var side1 is BridgingSideData = getBridgingSideData(side1Data, definition.match1);
     var side2 is BridgingSideData = getBridgingSideData(side2Data, definition.match2);
@@ -692,7 +1123,37 @@ export function bridgingCurveManipulator(context is Context, definition is map, 
     return definition;
 }
 
-function inferVertex(context is Context, edge is Query, otherSide is Query) returns Query
+function inferVertexFromEdge(context is Context, edge is Query, otherEdge is Query) returns Query
+{
+    var inferred = qNothing();
+    // In this case we want to get the vertex closest to one of the vertices of the other edge
+    const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
+    const otherEdgeVertices = qAdjacent(otherEdge, AdjacencyType.VERTEX, EntityType.VERTEX);
+    var bestDistance = -2 * meter;
+    for (var vertex in evaluateQuery(context, otherEdgeVertices))
+    {
+        const vertexPoint = evVertexPoint(context, { "vertex" : vertex });
+        const found = qClosestTo(edgeVertices, vertexPoint);
+        if (size(evaluateQuery(context, found)) == 1)
+        {
+            const distance = norm(evVertexPoint(context, { "vertex" : found }) - vertexPoint);
+            if (bestDistance < -1 * meter || distance < bestDistance)
+            {
+                inferred = found;
+                bestDistance = distance;
+            }
+        }
+    }
+    return inferred;
+}
+
+function inferVertexFromPosition(context is Context, edge is Query, otherPoint is Vector) returns Query
+{
+    const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
+    return qClosestTo(edgeVertices, otherPoint);
+}
+
+function inferVertexDeprecated(context is Context, edge is Query, otherSide is Query) returns Query
 {
     var otherVertex = qEntityFilter(otherSide, EntityType.VERTEX);
     var otherEdge = qEntityFilter(otherSide, EntityType.EDGE);
@@ -700,30 +1161,13 @@ function inferVertex(context is Context, edge is Query, otherSide is Query) retu
     if (size(evaluateQuery(context, otherVertex)) == 1)
     {
         const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
-        inferred = qClosestTo(edgeVertices, evVertexPoint(context, {
+        inferred = inferVertexFromPosition(context, edge, evVertexPoint(context, {
                         "vertex" : otherVertex
                     }));
     }
     else if (size(evaluateQuery(context, otherEdge)) == 1)
     {
-        // In this case we want to get the vertex closest to one of the vertices of the other edge
-        const edgeVertices = qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX);
-        const otherEdgeVertices = qAdjacent(otherEdge, AdjacencyType.VERTEX, EntityType.VERTEX);
-        var bestDistance = -2 * meter;
-        for (var vertex in evaluateQuery(context, otherEdgeVertices))
-        {
-            const vertexPoint = evVertexPoint(context, { "vertex" : vertex });
-            const found = qClosestTo(edgeVertices, vertexPoint);
-            if (size(evaluateQuery(context, found)) == 1)
-            {
-                const distance = norm(evVertexPoint(context, { "vertex" : found }) - vertexPoint);
-                if (bestDistance < -1 * meter || distance < bestDistance)
-                {
-                    inferred = found;
-                    bestDistance = distance;
-                }
-            }
-        }
+        inferred = inferVertexFromEdge(context, edge, otherEdge);
     }
     return inferred;
 }
@@ -732,7 +1176,7 @@ function inferVertex(context is Context, edge is Query, otherSide is Query) retu
  * This will find the frame that exactly matches the point passed in. It's not useful in general cases and is deprecated.
  * It will reverse the direction of the start frame to point out of the edge
  */
-function findMatchingEndFrame(point is Vector, startFrame is EdgeCurvatureResult, endFrame is EdgeCurvatureResult)
+function findMatchingEndFrame(point is Vector, startFrame is EdgeCurvatureResult, endFrame is EdgeCurvatureResult) returns EdgeCurvatureResult
 {
     if (tolerantEquals(startFrame.frame.origin, point))
     {
@@ -772,28 +1216,46 @@ function findClosestEndFrame(point is Vector, startFrame is EdgeCurvatureResult,
     }
 }
 
-function getDataForSide(context is Context, side is Query, match is BridgingCurveMatchType, flip is boolean, sideName is string, otherSide is Query) returns map
+function getDataForSideDeprecated(context is Context, side is Query, match is BridgingCurveMatchType, flip is boolean, sideName is string, otherSide is Query) returns SideData
 {
     var points = qEntityFilter(side, EntityType.VERTEX);
     var edges = qEntityFilter(side, EntityType.EDGE);
     var edgeCount = size(evaluateQuery(context, edges));
+    var sideQueries is SideQueries = {
+        "vertex" : undefined,
+        "edge" : undefined,
+        "face" : undefined
+    } as SideQueries;
 
-    if (isQueryEmpty(context, points) && edgeCount == 1)
+    if (edgeCount == 1)
     {
-        // The user hasn't selected a vertex but if they selected an edge we may be able to work out what they want from the other side selections
-        points = inferVertex(context, edges, otherSide);
+        sideQueries.edge = edges;
+        if (isQueryEmpty(context, points))
+        {
+            // The user hasn't selected a vertex but if they selected an edge we may be able to work out what they want from the other side selections
+            points = inferVertexDeprecated(context, edges, otherSide);
+        }
     }
     if (size(evaluateQuery(context, points)) != 1)
     {
         throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_BOTH_SIDES, [sideName]);
     }
+    sideQueries.vertex = points;
     const point = evVertexPoint(context, { "vertex" : points });
 
-    if (edgeCount != 1 && match != BridgingCurveMatchType.POSITION)
+    return getDataForSideNoFace(context, sideQueries, match, flip, sideName, point, false, 0);
+}
+
+function getDataForSideNoFace(context is Context, sideQueries is SideQueries, match is BridgingCurveMatchType, flip is boolean, sideName is string, sidePoint is Vector, useParameter is boolean, parameter is number) returns SideData
+{
+    var points = sideQueries.vertex;
+    var edges = sideQueries.edge;
+
+    if (edges == undefined && match != BridgingCurveMatchType.POSITION)
     {
         // Try to get the edge from the vertex
         edges = qAdjacent(points, AdjacencyType.VERTEX, EntityType.EDGE);
-        edgeCount = size(evaluateQuery(context, edges));
+        var edgeCount = size(evaluateQuery(context, edges));
         if (edgeCount != 1)
         {
             throw regenError(ErrorStringEnum.BRIDGING_CURVE_ONE_EDGE_EACH_SIDE, [sideName]);
@@ -803,19 +1265,29 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
     var frame;
     if (match != BridgingCurveMatchType.POSITION)
     {
-        // This code deliberately only considers the ends of the edge but we could just as easily match to an
-        // edge that passes through the specified point but doesn't end there.
-        const frames = evEdgeCurvatures(context, {
-                    "edge" : edges,
-                    "parameters" : [0, 1]
-                });
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
+        if (useParameter && points == undefined)
         {
-            frame = findClosestEndFrame(point, frames[0], frames[1]);
+            frame = evEdgeCurvature(context, {
+                    "edge" : edges,
+                    "parameter" : parameter
+            });
         }
         else
         {
-            frame = findMatchingEndFrame(point, frames[0], frames[1]);
+            // This code deliberately only considers the ends of the edge but we could just as easily match to an
+            // edge that passes through the specified point but doesn't end there.
+            const frames = evEdgeCurvatures(context, {
+                        "edge" : edges,
+                        "parameters" : [0, 1]
+                    });
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
+            {
+                frame = findClosestEndFrame(sidePoint, frames[0], frames[1]);
+            }
+            else
+            {
+                frame = findMatchingEndFrame(sidePoint, frames[0], frames[1]);
+            }
         }
         if (frame == undefined)
         {
@@ -829,9 +1301,60 @@ function getDataForSide(context is Context, side is Query, match is BridgingCurv
 
     return
     {
-            "point" : point,
-            "frame" : frame
-        };
+        "point" : sidePoint,
+        "frame" : frame
+    } as SideData;
+}
+
+function getDataForSideFace(context is Context, sideQueries is SideQueries, param is number, match is BridgingCurveMatchType, flip is boolean, sideName is string, point is Vector, otherPoint is Vector) returns SideData
+{
+    var tangent;
+    var edgeTangent;
+    if (sideQueries.edge != undefined)
+    {
+        var line = evEdgeTangentLine(context, { "edge" : sideQueries.edge, "parameter" : param });
+        edgeTangent = line.direction;
+    }
+
+    var distanceResult = evDistance(context, { "side0" : point, "side1" : sideQueries.face });
+    var facePlane = evFaceTangentPlane(context, { "face" : sideQueries.face, "parameter" : distanceResult.sides[1].parameter });
+
+    if (edgeTangent == undefined)
+    {
+        tangent = normalize(project(facePlane, otherPoint) - point);
+    }
+    else
+    {
+        tangent = cross(facePlane.normal, edgeTangent);
+    }
+    if (dot(tangent, otherPoint - point) < 0)
+    {
+        tangent = -tangent;
+    }
+
+    var curvatureResult = evFaceCurvature(context, {
+            "face" : sideQueries.face,
+            "parameter" : distanceResult.sides[1].parameter
+    });
+
+    return
+    {
+        "point" : point,
+        "frame" : { "frame" : coordSystem(point, facePlane.normal, (flip ? -1 : 1) * tangent),
+                    "curvature" : -computeCurvature(curvatureResult, tangent) } as EdgeCurvatureResult
+    } as SideData;
+}
+
+function getDataForSide(context is Context, sideQueries is SideQueries, useParameter is boolean, param is number, match is BridgingCurveMatchType, flip is boolean, sideName is string, sidePoint is Vector, otherPoint is Vector) returns SideData
+{
+    if (sideQueries.face == undefined)
+    {
+        return getDataForSideNoFace(context, sideQueries, match, flip, sideName, sidePoint, useParameter, param);
+    }
+    else
+    {
+        return getDataForSideFace(context, sideQueries, param, match, flip, sideName, sidePoint, otherPoint);
+    }
 }
 
 // ======================================= Legacy-only functions below =====================================================
@@ -1167,5 +1690,19 @@ function createBezierCurve(context is Context, id is Id, controlPoints is array)
 {
     const bCurve = bSplineCurve({ "degree" : size(controlPoints) - 1, "isPeriodic" : false, "controlPoints" : controlPoints });
     opCreateBSplineCurve(context, id, { "bSplineCurve" : bCurve });
+}
+
+function addTangentManipulator(context is Context, id is Id, key is string, edge is Query, parameter is number, parameterId is string)
+{
+    var line = evEdgeTangentLine(context, { "edge" : edge, "parameter" : parameter });
+    addManipulators(context, id, { (key) :
+                linearManipulator({
+                        "base" : line.origin,
+                        "direction" : line.direction,
+                        "offset" : 0 * inch,
+                        "style" : ManipulatorStyleEnum.TANGENTIAL,
+                        "primaryParameterId" : parameterId
+                    })
+            });
 }
 

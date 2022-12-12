@@ -1,13 +1,14 @@
 FeatureScript ✨; /* Automatically generated version */
-import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
 import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
+import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
-import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
-import(path : "onshape/std/vector.fs", version : "✨");
-import(path : "onshape/std/topologyUtils.fs", version : "✨");
+import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/manipulator.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/topologyUtils.fs", version : "✨");
+import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 export import(path : "onshape/std/projectiontype.gen.fs", version : "✨");
 
@@ -52,10 +53,13 @@ export enum CurveProjectionType
  */
 annotation { "Feature Type Name" : "Projected curve",
              "Manipulator Change Function" : "projectedCurveManipulatorChange",
+             "Editing Logic Function" : "projectCurvesEditLogic",
              "UIHint" : UIHint.NO_PREVIEW_PROVIDED }
 export const projectCurves = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE && ConstructionObject.NO }
+        definition.preselectedEntities is Query;
         annotation { "Name" : "Curve projection type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE] }
         definition.curveProjectionType is CurveProjectionType;
         if (definition.curveProjectionType == CurveProjectionType.TWO_SKETCHES)
@@ -93,7 +97,8 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
         {
             dropCurve(context, id, definition);
         }
-    }, { curveProjectionType : CurveProjectionType.TWO_SKETCHES });
+    }, { curveProjectionType : CurveProjectionType.TWO_SKETCHES,
+         preselectedEntities : qNothing() });
 
 function verifySameSketch(context is Context, edges is Query, source is string)
 {
@@ -276,3 +281,60 @@ export function projectedCurveManipulatorChange(context is Context, definition i
     }
     return definition;
 }
+
+function needDirectionFlip(context is Context, id is Id, definition is map) returns boolean
+{
+    var direction = extractDirection(context, definition.directionQuery) * (definition.oppositeDirection ? -1 : 1);
+    const directionCSys = coordSystem(plane(vector(0, 0, 0) * meter, direction));
+
+    const toolBB = evBox3d(context, {
+            "topology" : definition.dropTools,
+            "cSys" : directionCSys
+    });
+    const targetBB = evBox3d(context, {
+            "topology" : definition.targets,
+            "cSys" : directionCSys
+    });
+
+    // Only flip if the target bounding box is outside the tool bounding box in the other direction
+    return toolBB.minCorner[2] > targetBB.maxCorner[2];
+}
+
+function isDefinitionCompleteForDirectionProjection(context is Context, definition is map) returns boolean
+{
+    return !isQueryEmpty(context, definition.dropTools) &&
+           !isQueryEmpty(context, definition.targets) &&
+           !isQueryEmpty(context, definition.directionQuery);
+}
+
+
+/**
+ * @internal
+ * The editing logic function used in the `projectCurves` feature.
+ */
+export function projectCurvesEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query)
+{
+    if (oldDefinition == {})
+    {
+        if (definition.curveProjectionType == CurveProjectionType.TWO_SKETCHES)
+        {
+            definition.sketchEdges1 = qSketchFilter(definition.preselectedEntities, SketchObject.YES);
+        }
+        else
+        {
+            definition.dropTools = definition.preselectedEntities;
+        }
+    }
+    else if (definition.curveProjectionType == CurveProjectionType.CURVE_TO_FACE)
+    {
+        if (definition.curveProjectionType == CurveProjectionType.CURVE_TO_FACE && !specifiedParameters.oppositeDirection &&
+            !isDefinitionCompleteForDirectionProjection(context, oldDefinition) &&
+            isDefinitionCompleteForDirectionProjection(context, definition))
+        {
+            definition.oppositeDirection = needDirectionFlip(context, id, definition) ? !definition.oppositeDirection : definition.oppositeDirection;
+        }
+    }
+    return definition;
+}
+

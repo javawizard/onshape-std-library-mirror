@@ -181,17 +181,75 @@ export const externalThread = defineFeature(function(context is Context, id is I
 
     }, { keepTools : false, splitType : SplitType.PART, useTrimmed : false, keepBothSides : true, keepFront : true, keepToolSurfaces : true });
 
+
+
+function shouldTapThrough(context is Context, shaftRadius is ValueWithUnits, facesAdjacentToSelectedEdge is Query, shaftFace is Query, minorThreadDiameter is ValueWithUnits) returns boolean
+{
+     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1918_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE_v2))
+     {
+        return false;
+     }
+    // 3 special cases to determine if an up to next thread should tap thorugh all or not
+
+    const shaftAdjacentFaces = qAdjacent(shaftFace, AdjacencyType.EDGE, EntityType.FACE);
+    const farEndFace = qSubtraction(shaftAdjacentFaces, facesAdjacentToSelectedEdge);
+    if (size(evaluateQuery(context, farEndFace)) != 1)
+    {
+        return false;
+    }
+    const farEndFaceSurface = evSurfaceDefinition(context, {"face" : farEndFace});
+    // 1) Test if face on far end of shaft is a chamfer
+    const farEndFaceIsConical = (farEndFaceSurface is Cone);
+    if (!farEndFaceIsConical)
+    {
+        return false;
+    }
+    const shaftFarEndEdges = qIntersection(
+        qAdjacent(farEndFace, AdjacencyType.EDGE, EntityType.EDGE),
+        qAdjacent(shaftFace,AdjacencyType.EDGE, EntityType.EDGE ));
+    const shaftFarEndEdge = qUnion(qGeometry(shaftFarEndEdges, GeometryType.ARC), qGeometry(shaftFarEndEdges, GeometryType.CIRCLE));
+
+    if (size(evaluateQuery(context, shaftFarEndEdge)) != 1)
+    {
+        return false;
+    }
+
+    // 2) Test the edge convexity of of the "far" end edge of the shaft
+    const shaftFarEndEdgeIsConvex = evEdgeConvexity(context, { "edge" : shaftFarEndEdge }) == EdgeConvexityType.CONVEX;
+    if (shaftFarEndEdgeIsConvex == false)
+    {
+        return false;
+    }
+
+    // 3) Check the diameter of the far ending face not shared with the shaft.
+    const farEndEdges = qAdjacent(farEndFace, AdjacencyType.EDGE, EntityType.EDGE);
+    const nonShaftFarEndEdge = qSubtraction(farEndEdges, shaftFarEndEdge);
+    if (size(evaluateQuery(context, nonShaftFarEndEdge)) != 1)
+    {
+        return false;
+    }
+    const nonShaftFarEndEdgeRadius = evCurveDefinition(context, {
+            "edge" : nonShaftFarEndEdge,
+            "returnBSplinesAsOther" : true
+        }).radius;
+    if (nonShaftFarEndEdgeRadius == undefined)
+    {
+        return false;
+    }
+    return (nonShaftFarEndEdgeRadius * 2) < minorThreadDiameter - (TOLERANCE.zeroLength * meter);
+}
+
 /**
  * From a starting edge selection, get data about a valid cylindrical face to annotation and/or cut and data about the direction to
  * cut.
  */
-export function getSplitData(context is Context, topLevelId is Id, endEdge is Query) returns map
+export function getSplitData(context is Context, topLevelId is Id, endEdge is Query, minorDiameter is ValueWithUnits) returns map
 {
-    const adjacentFaces = qAdjacent(endEdge, AdjacencyType.EDGE, EntityType.FACE);
+    const facesAdjacentToSelectedEdge = qAdjacent(endEdge, AdjacencyType.EDGE, EntityType.FACE);
     var endcapSurface;
     var shaftQuery;
     var chamferSurface;
-    for (var face in evaluateQuery(context, adjacentFaces))
+    for (var face in evaluateQuery(context, facesAdjacentToSelectedEdge))
     {
         const currentSurface = evSurfaceDefinition(context, { "face" : face });
         const isCylinder = !isQueryEmpty(context, qGeometry(face, GeometryType.CYLINDER));
@@ -228,11 +286,13 @@ export function getSplitData(context is Context, topLevelId is Id, endEdge is Qu
         throw regenError(ErrorStringEnum.UNABLE_TO_FIND_THREAD_BOUNDARY);
     }
 
-    const isConvex = isConvexCylinder(context, shaftQuery);
+    const isConvexCylinderFace = isConvexCylinder(context, shaftQuery);
+    const shaftRadius = evCurveDefinition(context, { "edge" :endEdge, "returnBSplinesAsOther" : true }).radius;
 
-    const radius = evCurveDefinition(context, { "edge" :endEdge, "returnBSplinesAsOther" : true }).radius;
+    const shouldTapThrough = shouldTapThrough(context, shaftRadius, facesAdjacentToSelectedEdge, shaftQuery, minorDiameter);
+
     const arcLength = evLength(context, { "entities" : endEdge });
-    const arcAngle = (arcLength /  radius) * radian;
+    const arcAngle = (arcLength /  shaftRadius) * radian;
     const minRadians = (MINIMUM_ARC_SWEEP / 180.0) * PI * radian;
     const isValidArc = (arcAngle >= minRadians);
 
@@ -249,7 +309,7 @@ export function getSplitData(context is Context, topLevelId is Id, endEdge is Qu
     const dotPositive = dot(edgeCoordZ, cylinderZ) > 0;
 
     return {
-            "isConvex" : isConvex,
+            "isConvexCylinderFace" : isConvexCylinderFace,
             "isValidArc" : isValidArc,
             "endcapSurface" : endcapSurface,
             "chamferSurface" : chamferSurface,
@@ -260,9 +320,11 @@ export function getSplitData(context is Context, topLevelId is Id, endEdge is Qu
             "edgeCoordSys" : edgeDirectionInfo.edgeCoordSys,
             "diameter" : dimensions.radius * 2,
             "chamferDistance" : chamferDistance,
-            "cylinderAlignedWithThreadDirection": dotPositive
+            "cylinderAlignedWithThreadDirection": dotPositive,
+            "shouldTapThrough" : shouldTapThrough
         };
 }
+
 
 /**
  * Find an selected edge's coordinate system and whether the direction to cut needs to be inverted.
@@ -376,7 +438,19 @@ function checkAndSplitAllShaftFaces(context is Context, topLevelId is Id, defini
             {
                 throw regenError(ErrorStringEnum.EXTERNAL_THREADS_UNSUPPORTED_ON_SHEET_METAL);
             }
-            const splitData = getSplitData(context, innerId, endEdgeQuery);
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1916_CHECK_INVALID_CYLINDER_END_SELECTION))
+            {
+                // Needed if the user selects the "wrong" edge of a cylinder that is bound by a face making the edge non-convex (not typical)
+                const shaftNearEndEdgeIsConvex = evEdgeConvexity(context, { "edge" : endEdgeQuery }) == EdgeConvexityType.CONVEX;
+                if (!shaftNearEndEdgeIsConvex)
+                {
+                    throw regenError(ErrorStringEnum.WRONG_CYLINDER_EDGE_SELECTED, ["entities"], endEdgeQuery);
+                }
+            }
+
+            const minorThreadDiameter = getMinorDiameter(definition);
+            const splitData = getSplitData(context, innerId, endEdgeQuery, minorThreadDiameter);
             entityMapList[] = append(entityMapList[], splitData);
             if (firstDiameter[] == undefined)
             {
@@ -387,7 +461,7 @@ function checkAndSplitAllShaftFaces(context is Context, topLevelId is Id, defini
                 throw regenError(ErrorStringEnum.DIAMETERS_MUST_BE_EQUAL);
             }
 
-            if (!splitData.isConvex)
+            if (!splitData.isConvexCylinderFace)
             {
                 throw regenError(ErrorStringEnum.NOT_CONVEX);
             }
@@ -714,8 +788,9 @@ export function editFeatureLogicExternalThread(context is Context, id is Id, old
     {
         return definition;
     }
-    const splitData = getSplitData(context, id, endEdges[0]);
-    if (!splitData.isConvex || !splitData.isValidArc)
+    const minorThreadDiameter = getMinorDiameter(definition);
+    const splitData = getSplitData(context, id, endEdges[0], minorThreadDiameter);
+    if (!splitData.isConvexCylinderFace || !splitData.isValidArc)
     {
         return definition;
     }
@@ -839,11 +914,10 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
         {
             threadDepth = entityMap.length;
         }
-
         var relatedEntities = qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE);
         var cylinderHighlight = qGeometry(qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE), GeometryType.CYLINDER);
-
-        const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection);
+        const tapThrough = !isBlind && entityMap.shouldTapThrough;
+        const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection, tapThrough );
         const entitiesToMark = qUnion(relatedEntities, entityMap.edgeQuery);
         attributes = append(attributes, attribute);
         checkExistingExternalThread(context, entitiesToMark);
@@ -857,7 +931,7 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
 /**
  * Create an attribute for an external thread on a face
  */
-function createExternalThreadAttribute(id is string, minorDiameter is ValueWithUnits, majorDiameter is ValueWithUnits, holeDiameter is ValueWithUnits, threadDepth is ValueWithUnits, isBlind is boolean, nominalSize is string, shaftLength is ValueWithUnits, cylinderAlignedWithThreadDirection is boolean)
+function createExternalThreadAttribute(id is string, minorDiameter is ValueWithUnits, majorDiameter is ValueWithUnits, holeDiameter is ValueWithUnits, threadDepth is ValueWithUnits, isBlind is boolean, nominalSize is string, shaftLength is ValueWithUnits, cylinderAlignedWithThreadDirection is boolean, tapThrough is boolean)
 {
     var threadAttribute = makeHoleAttribute(true, id, HoleStyle.SIMPLE);
     threadAttribute.isTappedHole = true;
@@ -870,7 +944,7 @@ function createExternalThreadAttribute(id is string, minorDiameter is ValueWithU
     threadAttribute.holeDiameter = { "value" : holeDiameter };
     threadAttribute.endType = isBlind ? HoleEndStyle.BLIND : HoleEndStyle.THROUGH;
     threadAttribute.tapSize = nominalSize;
-    threadAttribute.isTappedThrough = false;
+    threadAttribute.isTappedThrough = tapThrough;
     threadAttribute.isTaperedPipeTapHole = false;
     threadAttribute.tapClearance = 0.0;
     threadAttribute.cylinderAlignedWithThreadDirection = cylinderAlignedWithThreadDirection;
