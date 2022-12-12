@@ -1,22 +1,22 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "1913.0");
-import(path : "onshape/std/valueBounds.fs", version : "1913.0");
-import(path : "onshape/std/frameUtils.fs", version : "1913.0");
-import(path : "onshape/std/feature.fs", version : "1913.0");
-import(path : "onshape/std/evaluate.fs", version : "1913.0");
-import(path : "onshape/std/containers.fs", version : "1913.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
-import(path : "onshape/std/string.fs", version : "1913.0");
-import(path : "onshape/std/vector.fs", version : "1913.0");
-import(path : "onshape/std/coordSystem.fs", version : "1913.0");
-import(path : "onshape/std/sketch.fs", version : "1913.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
-import(path : "onshape/std/manipulator.fs", version : "1913.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1913.0");
+import(path : "onshape/std/units.fs", version : "1930.0");
+import(path : "onshape/std/valueBounds.fs", version : "1930.0");
+import(path : "onshape/std/frameUtils.fs", version : "1930.0");
+import(path : "onshape/std/feature.fs", version : "1930.0");
+import(path : "onshape/std/evaluate.fs", version : "1930.0");
+import(path : "onshape/std/containers.fs", version : "1930.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
+import(path : "onshape/std/string.fs", version : "1930.0");
+import(path : "onshape/std/vector.fs", version : "1930.0");
+import(path : "onshape/std/coordSystem.fs", version : "1930.0");
+import(path : "onshape/std/sketch.fs", version : "1930.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
+import(path : "onshape/std/manipulator.fs", version : "1930.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1930.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 const MIN_THICKNESS = MIN_SIZE;
@@ -148,8 +148,20 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
     }
     {
         verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.EMPTY_GUSSET_SELECTION);
+        if (!edgesAreParallel(context, definition.edges))
+        {
+            if (definition.gussetPosition == GussetPosition.ALIGNED)
+            {
+                throw regenError(ErrorStringEnum.GUSSET_ALIGNED_OFFSET_NOT_PARALLEL, ["edges"], definition.edges);
+            }
+            if (!tolerantEquals(definition.offset, 0 * meter))
+            {
+                throw regenError(ErrorStringEnum.GUSSET_OFFSET_NOT_PARALLEL, ["edges"], definition.edges);
+            }
+        }
 
         const alignedOffset = getAlignedOffset(context, definition);
+        const offsetDirection = getOffsetDirection(context, definition);
         const edges = reverse(evaluateQuery(context, definition.edges));
         for (var i = 0; i < size(edges); i += 1)
         {
@@ -164,7 +176,7 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
 
             const closestSweptFaces = qContainsPoint(definition.baseSweptFaces, midpoint);
             const gussetBasePlanes = getGussetBasePlanes(context, closestSweptFaces, currentEdge);
-            const offset = (definition.shouldFlipOffset ? 1 : -1) * tangentLine.direction * definition.offset;
+            const offset = (definition.shouldFlipOffset ? 1 : -1) * offsetDirection * definition.offset;
             const gussetDefinition = {
                         "lhsPlane" : gussetBasePlanes.planeA,
                         "rhsPlane" : gussetBasePlanes.planeB,
@@ -176,7 +188,7 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
 
             if (i == 0) // Add manipulators only to the last edge
             {
-                createMidpointManipulator(context, id, definition, tangentLine, midpoint + alignedOffset);
+                createMidpointManipulator(context, id, definition, offsetDirection, midpoint + alignedOffset);
                 createLengthManipulator(context, id, gussetCreationResult.manipulatorDefinition);
             }
 
@@ -291,7 +303,18 @@ function manipulatorDefinition(sizeLine is Line, offset is ValueWithUnits) retur
     return { "sizeLine" : sizeLine, "sizeOffset" : offset } as ManipulatorDefinition;
 }
 
-function createTriangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array) returns GussetCreationResult
+function getOffsetDirection(context is Context, definition is map) returns Vector
+{
+    const edges = evaluateQuery(context, definition.edges);
+    const lastEdge = edges[size(edges) - 1];
+    const tangentLine = evEdgeTangentLine(context, {
+                "edge" : lastEdge,
+                "parameter" : 0.5
+            });
+    return tangentLine.direction;
+}
+
+function createTriangularGusset(definition is map, midpoint is Vector, endResultSketchPlane is Plane, gussetBasePoints is array) returns map
 {
     const firstCoordInWorld = planeToWorld(endResultSketchPlane, gussetBasePoints[0]);
     const line = line(midpoint, firstCoordInWorld - midpoint);
@@ -474,11 +497,16 @@ function getGussetBasePlanes(context is Context, closestSweptFacesQuery is Query
     return result;
 }
 
-function createMidpointManipulator(context is Context, id is Id, definition is map, tangentLine is Line, manipulatorBase is Vector)
+function edgesAreParallel(context is Context, edges is Query)
+{
+    return isQueryEmpty(context, qSubtraction(edges, qParallelEdges(edges, qNthElement(edges, 0))));
+}
+
+function createMidpointManipulator(context is Context, id is Id, definition is map, offsetDirection is Vector, manipulatorBase is Vector)
 {
     const midpointManipulator = linearManipulator({
                 "base" : manipulatorBase,
-                "direction" : tangentLine.direction,
+                "direction" : offsetDirection,
                 "offset" : definition.shouldFlipOffset ? definition.offset : -definition.offset,
                 "primaryParameterId" : "offset"
             });

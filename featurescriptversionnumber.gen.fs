@@ -1,4 +1,4 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1192,7 +1192,24 @@ export enum FeatureScriptVersionNumber
     V1910_EQUAL_HOLE_CBORE_FIX_FIX,
     V1911_PARTIAL_FILLET_FIX_MANIPULATORS,
     V1912_QUERY_ONLY_CIRCULAR_EDGES_FOR_CONVEX,
-    V1913_BACK_OUT_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE
+    V1913_BACK_OUT_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE,
+    V1914_BRIDGING_CONNECTING_CURVE,
+    V1915_HOLE_CYLINDER_CAST_INTERSECT_ALL_TARGETS,
+    V1916_CHECK_INVALID_CYLINDER_END_SELECTION,
+    V1917_PARTIAL_FILLET_FIX_CHAIN_OF_EDGES,
+    V1918_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE_v2,
+    V1919_CYLINDICAL_BEND_FLAT_TRANSFORM,
+    V1920_CONNECTING_CURVE_BETTER_INPUT_CHECKS,
+    V1921_BRIDGING_CURVE_FIXES_BUMP,
+    V1922_REVERT_PRECISION_AND_TOLERANCE_CHANGES,
+    V1923_BRIDGING_CURVE_MATE_CONNECTOR_BUMP,
+    V1924_BRIDGING_CURVE_MATE_CONNECTOR_REVERT,
+    V1925_HANDLE_MITER_IF_HOLD_ADJACENT_EDGES_FIX,
+    V1926_BRIDGING_CURVE_MATE_CONNECTOR_BUMP_BIS,
+    V1927_PARTIAL_FILLET_MANIPULATORS_FIX,
+    V1928_BRIDGING_CURVE_MATE_CONNECTOR_REVERT,
+    V1929_PARTIAL_FLANGE_PER_CHAIN_MANIPULATORS_FIX,
+    V1930_PARTIAL_FLANGE_ALIGNMENT_FIX
 }
 
 /**
@@ -1203,6 +1220,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1913_BACK_OUT_THREADS_TAPPED_THRU_FOR_CHAMFER_CASE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1930_PARTIAL_FLANGE_ALIGNMENT_FIX;
 
 

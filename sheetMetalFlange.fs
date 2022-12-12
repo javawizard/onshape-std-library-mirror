@@ -1,30 +1,31 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1913.0");
-import(path : "onshape/std/boolean.fs", version : "1913.0");
-import(path : "onshape/std/containers.fs", version : "1913.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
-import(path : "onshape/std/debug.fs", version : "1913.0");
-import(path : "onshape/std/extrude.fs", version : "1913.0");
-import(path : "onshape/std/evaluate.fs", version : "1913.0");
-import(path : "onshape/std/feature.fs", version : "1913.0");
-import(path : "onshape/std/math.fs", version : "1913.0");
-import(path : "onshape/std/matrix.fs", version : "1913.0");
-import(path : "onshape/std/path.fs", version : "1913.0");
-import(path : "onshape/std/query.fs", version : "1913.0");
-import(path : "onshape/std/sketch.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1913.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1913.0");
-import(path : "onshape/std/units.fs", version : "1913.0");
-import(path : "onshape/std/valueBounds.fs", version : "1913.0");
-import(path : "onshape/std/vector.fs", version : "1913.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1913.0");
+import(path : "onshape/std/attributes.fs", version : "1930.0");
+import(path : "onshape/std/boolean.fs", version : "1930.0");
+import(path : "onshape/std/containers.fs", version : "1930.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
+import(path : "onshape/std/debug.fs", version : "1930.0");
+import(path : "onshape/std/extrude.fs", version : "1930.0");
+import(path : "onshape/std/evaluate.fs", version : "1930.0");
+import(path : "onshape/std/feature.fs", version : "1930.0");
+import(path : "onshape/std/math.fs", version : "1930.0");
+import(path : "onshape/std/matrix.fs", version : "1930.0");
+import(path : "onshape/std/path.fs", version : "1930.0");
+import(path : "onshape/std/query.fs", version : "1930.0");
+import(path : "onshape/std/sketch.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1930.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
+import(path : "onshape/std/string.fs", version : "1930.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1930.0");
+import(path : "onshape/std/units.fs", version : "1930.0");
+import(path : "onshape/std/valueBounds.fs", version : "1930.0");
+import(path : "onshape/std/vector.fs", version : "1930.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1930.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -114,6 +115,10 @@ export enum SMPartialFlangeChainType
 }
 
 const SURFACE_SUFFIX = "surface";
+const PARTIAL_FLANGE_ON_START_EDGE_MANIPULATOR_ID = "Partial flange on start edge manipulator";
+const PARTIAL_FLANGE_ON_END_EDGE_MANIPULATOR_ID = "Partial flange on end edge manipulator";
+const PARTIAL_FLANGE_ON_START_ENTITY_OFFSET_MANIPULATOR_ID = "Partial flange on start entity offset manipulator";
+const PARTIAL_FLANGE_ON_END_ENTITY_OFFSET_MANIPULATOR_ID = "Partial flange on end entity offset manipulator";
 
 /**
 * Create sheet metal flanges on selected edges of sheet metal parts. Length of flange may be
@@ -122,6 +127,7 @@ const SURFACE_SUFFIX = "surface";
 * selected, flange sides are rotated by miter angle.
 */
 annotation { "Feature Type Name" : "Flange",
+             "Manipulator Change Function" : "flangeManipulatorChange",
              "Filter Selector" : "allparts",
              "Editing Logic Function" : "flangeEditLogic" }
 export const sheetMetalFlange = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
@@ -246,7 +252,7 @@ precondition
         const splitIdBase = id + "split";
         for (var key, value in containerToLoop)
         {
-            const limitEntitiesAndSplitEdges = splitAllEdgesForPartialFlange(context, splitIdBase + unstableIdComponent(modelIndex), definition, qUnion(value));
+            const limitEntitiesAndSplitEdges = splitAllEdgesForPartialFlange(context, id, splitIdBase + unstableIdComponent(modelIndex), definition, qUnion(value));
             modelIndex += 1;
             flangeDataOverrides = mergeMaps(flangeDataOverrides, limitEntitiesAndSplitEdges.limitEntities);
             containerToLoop[key] = limitEntitiesAndSplitEdges.splitEdgeQueries;
@@ -269,6 +275,59 @@ precondition
         isPartialFlange : false, hasSecondBound : false, firstBoundingEntityOppositeOffsetDirection : false,
         secondBoundingEntityOppositeOffsetDirection : false });
 
+/*
+ * Create a linear manipulators for the Partial Flange
+ */
+function addPartialFlangeManipulators(context is Context, topLevelId is Id, definition is map, flangeBound is PartialFlangeBound, manipPosition is map)
+{
+    const firstBound = flangeBound.isFirstBound;
+    const blind = flangeBound.partialFlangeType == SMFlangeBoundingType.BLIND;
+    const upToEntityOffset = flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET;
+    var manipulatorName;
+    var primaryParameterId;
+    var offset;
+
+    if (blind && firstBound)
+    {
+        manipulatorName = PARTIAL_FLANGE_ON_START_EDGE_MANIPULATOR_ID;
+        primaryParameterId = "firstBoundOffset";
+        offset = definition.firstBoundOffset;
+    }
+    else if (blind)
+    {
+        manipulatorName = PARTIAL_FLANGE_ON_END_EDGE_MANIPULATOR_ID;
+        primaryParameterId = "secondBoundOffset";
+        offset = definition.secondBoundOffset;
+    }
+    else if (upToEntityOffset && firstBound)
+    {
+        manipulatorName = PARTIAL_FLANGE_ON_START_ENTITY_OFFSET_MANIPULATOR_ID;
+        primaryParameterId = "firstBoundingEntityOffset";
+        offset = definition.firstBoundingEntityOffset;
+    }
+    else if (upToEntityOffset)
+    {
+        manipulatorName = PARTIAL_FLANGE_ON_END_ENTITY_OFFSET_MANIPULATOR_ID;
+        primaryParameterId = "secondBoundingEntityOffset";
+        offset = definition.secondBoundingEntityOffset;
+    }
+    addPartialFlangeManipulator(context, topLevelId, manipulatorName, primaryParameterId, offset, manipPosition);
+}
+
+/*
+ * Create a linear manipulator for the Partial Flange
+ */
+function addPartialFlangeManipulator(context is Context, id is Id, manipulatorName is string, primaryParameterId is string, offset is ValueWithUnits, manipulatorPosition is Line)
+{
+    addManipulators(context, id, { (manipulatorName) :
+                linearManipulator({
+                        "base" : manipulatorPosition.origin,
+                        "direction" : manipulatorPosition.direction,
+                        "offset" : offset,
+                        "minValue" : 0 * meter,
+                        "style" : ManipulatorStyleEnum.TANGENTIAL,
+                        "primaryParameterId" : primaryParameterId }) });
+}
 
 function groupEdgesByBodyOrModel(context is Context, edges is array) returns map
 {
@@ -357,6 +416,40 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
         if (dot(upToDirection, flangeData.direction) < TOLERANCE.zeroLength * meter)
         {
             definition.oppositeDirection = true;
+        }
+    }
+    return definition;
+}
+
+/**
+ * @internal
+ * Manipulator change function for `flange`.
+ */
+export function flangeManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    try
+    {
+        for (var key, manipulator in newManipulators)
+        {
+            if (tolerantEquals(manipulator.offset, TOLERANCE.zeroLength * meter))
+                continue;
+
+            if (key == PARTIAL_FLANGE_ON_START_EDGE_MANIPULATOR_ID)
+            {
+                definition.firstBoundOffset = manipulator.offset;
+            }
+            else if (key == PARTIAL_FLANGE_ON_END_EDGE_MANIPULATOR_ID)
+            {
+                definition.secondBoundOffset = manipulator.offset;
+            }
+            else if (key == PARTIAL_FLANGE_ON_START_ENTITY_OFFSET_MANIPULATOR_ID)
+            {
+                definition.firstBoundingEntityOffset = manipulator.offset;
+            }
+            else if (key == PARTIAL_FLANGE_ON_END_ENTITY_OFFSET_MANIPULATOR_ID)
+            {
+                definition.secondBoundingEntityOffset = manipulator.offset;
+            }
         }
     }
     return definition;
@@ -1182,19 +1275,41 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     };
 
     var flangeData = edgeToFlangeData[edge];
+    const handleMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1925_HANDLE_MITER_IF_HOLD_ADJACENT_EDGES_FIX);
     if (vertexOverride != undefined)
     {
         if (vertexOverride.position != undefined)
         {
             result.flangeBasePoint = vertexOverride.position;
+            // Edge may have moved due to flange alignment.
+            const projectToEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1930_PARTIAL_FLANGE_ALIGNMENT_FIX);
+            if (projectToEdge)
+            {
+                const distanceResult = try silent(evDistance(context, {
+                                "side0" : edge,
+                                "side1" : vertexOverride.position
+                            }));
+                if (distanceResult == undefined)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+                }
+                result.flangeBasePoint = distanceResult.sides[0].point;
+            }
         }
         const sidePlane = vertexOverride.limitPlane;
         if (sidePlane != undefined)
         {
             const forceResult = true; // Use the automiter flag to use the plane direction even if it adds material.
             result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, forceResult, definition);
+            if (handleMiter)
+            {
+                return result;
+            }
         }
-        return result;
+        if (!handleMiter)
+        {
+            return result;
+        }
     }
 
     var needsSideDirUpdate = false;
@@ -2167,11 +2282,11 @@ predicate partialFlangePredicate(flangeDefinition is map)
             flangeDefinition.hasSecondBound is boolean;
             if (flangeDefinition.hasSecondBound)
             {
-                annotation { "Name" : "Bound type" }
+                annotation { "Name" : "Second bound type" }
                 flangeDefinition.secondBoundType is SMFlangeBoundingType;
                 if (flangeDefinition.secondBoundType == SMFlangeBoundingType.BLIND)
                 {
-                    annotation { "Name" : "Distance" }
+                    annotation { "Name" : "Second distance" }
                     isLength(flangeDefinition.secondBoundOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
                 }
                 else if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY || flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
@@ -2181,7 +2296,7 @@ predicate partialFlangePredicate(flangeDefinition is map)
 
                     if (flangeDefinition.secondBoundType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET)
                     {
-                        annotation { "Name" : "Distance" }
+                        annotation { "Name" : "Second distance" }
                         isLength(flangeDefinition.secondBoundingEntityOffset, NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS);
 
                         annotation { "Name" : "Opposite offset direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
@@ -2221,7 +2336,9 @@ function convertDefinitionToFlangeBound(definition is map) returns array
     if (definition.isPartialFlange)
     {
         var firstFlangeBound = {
-            "partialFlangeType" : definition.firstBoundType
+            "partialFlangeType" : definition.firstBoundType,
+            "isFirstBound" : true,
+            "partialFlangeOppositeOffsetDirection" : definition.firstBoundingEntityOppositeOffsetDirection
         };
         if (definition.firstBoundType == SMFlangeBoundingType.BLIND)
         {
@@ -2240,7 +2357,9 @@ function convertDefinitionToFlangeBound(definition is map) returns array
         if (definition.hasSecondBound)
         {
             var secondFlangeBound = {
-                "partialFlangeType" : definition.secondBoundType
+                "partialFlangeType" : definition.secondBoundType,
+                "isFirstBound" : false,
+                "partialFlangeOppositeOffsetDirection" : definition.secondBoundingEntityOppositeOffsetDirection
             };
             if (definition.secondBoundType == SMFlangeBoundingType.BLIND)
             {
@@ -2288,7 +2407,7 @@ function processOneFlangeBound(context is Context, flangeBound is PartialFlangeB
                             }).origin);
             if (position == undefined)
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+                throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, ["edges"]);
             }
             return { "parameter" : parameter, "limit" : { "position" : position } };
         }
@@ -2426,7 +2545,7 @@ function convertReturnToQuery(context is Context, operationId is Id, modelEdge i
 
 // Divide an edge for the given bounds in order to localize a flange.
 // Returns a query for the split edge that the flange should be attached to.
-function splitEdgeForPartialFlange(context is Context, operationId is Id, modelEdge is Query, bounds is array, isAlignedWithEdge is boolean, holdAdjacentEdges is boolean) returns map
+function splitEdgeForPartialFlange(context is Context, topLevelId is Id, definition is map, operationId is Id, modelEdge is Query, bounds is array, isAlignedWithEdge is boolean, holdAdjacentEdges is boolean, addManipulators is boolean) returns map
 {
     var limitEntities = {};
     const length = try silent(evLength(context, {
@@ -2448,6 +2567,49 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
             limitEntities[vertexIndex] = parameterAndLimit.limit;
         }
         splitParameters = splitParameters->append(parameterAndLimit.parameter);
+
+        if (addManipulators && (flangeBound.partialFlangeType == SMFlangeBoundingType.BLIND
+            || (flangeBound.partialFlangeType == SMFlangeBoundingType.UP_TO_ENTITY_OFFSET && parameterAndLimit.limit != undefined)))
+        {
+            var manipPosition = evEdgeTangentLine(context, {
+                    "edge" : modelEdge,
+                    "parameter" : trimAtStart ? 0 : 1
+                });
+
+            if (flangeBound.partialFlangeType == SMFlangeBoundingType.BLIND)
+            {
+                manipPosition.direction *= trimAtStart ? 1 : -1;
+            }
+            else
+            {
+                const distanceResult = try silent(evDistance(context, {
+                        "side0" : modelEdge,
+                        "side1" : flangeBound.boundEntity
+                    }));
+                const parameter = distanceResult.sides[0].parameter < 0 ? 0 : distanceResult.sides[0].parameter;
+
+                manipPosition = evEdgeTangentLine(context, {
+                    "edge" : modelEdge,
+                    "parameter" : parameter
+                });
+
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V1927_PARTIAL_FILLET_MANIPULATORS_FIX);
+                var isFlipped = flangeBound.partialFlangeOppositeOffsetDirection == definition.flipFlangeBounds;
+                isFlipped = flangeBound.isFirstBound ? isFlipped : !isFlipped;
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V1929_PARTIAL_FLANGE_PER_CHAIN_MANIPULATORS_FIX);
+                if (definition.chainType == SMPartialFlangeChainType.PER_CHAIN)
+                {
+                    isFlipped = definition.flipFlangeBounds == flangeBound.isFirstBound ? !isFlipped : isFlipped;
+                    isFlipped = isAlignedWithEdge ? isFlipped : !isFlipped;
+                }
+                if (isFlipped)
+                {
+                    manipPosition.direction = -manipPosition.direction;
+                }
+            }
+
+            addPartialFlangeManipulators(context, topLevelId, definition, flangeBound, manipPosition);
+        }
     }
 
     // Skip splitting the edge but provide an end position for the flange instead.
@@ -2514,13 +2676,14 @@ function splitEdgeForPartialFlange(context is Context, operationId is Id, modelE
     return convertReturnToQuery(context, operationId, modelEdge, limitEntities, midSplitPoint);
 }
 
-function splitAllEdgesForPartialFlange(context is Context, operationId, definition is map, modelEdges is Query) returns map
+function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, operationId, definition is map, modelEdges is Query) returns map
 {
     var splitEdgeQueries = [];
     var limitEntities = {};
     const bounds = convertDefinitionToFlangeBound(definition);
     const paths = constructPaths(context, modelEdges, {});
     var operationIndex = 0;
+    var addManipulators = !isInFeaturePattern(context);
     if (definition.chainType == SMPartialFlangeChainType.PER_EDGE)
     {
         // SMPartialFlangeChainType.PER_EDGE => bounds are applied to every edge identically.
@@ -2529,14 +2692,15 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
             for (var index, edge in path.edges)
             {
                 const alignedWithEdge = definition.flipFlangeBounds == path.flipped[index];
-                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
-                    edge, bounds, alignedWithEdge, definition.holdAdjacentEdges);
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, topLevelId, definition, operationId + unstableIdComponent(operationIndex),
+                    edge, bounds, alignedWithEdge, definition.holdAdjacentEdges, addManipulators);
                 if (splitQueryAndLimitEntity.limitEntities != undefined)
                 {
                     limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
                 }
                 splitEdgeQueries = splitEdgeQueries->append(splitQueryAndLimitEntity.splitEdgeQuery);
                 operationIndex += 1;
+                addManipulators = false;
             }
         }
     }
@@ -2551,8 +2715,8 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
             {
                 // Use path direction since it is stabilized by vertex deterministic id.
                 const alignedWithEdge = definition.flipFlangeBounds == path.flipped[0];
-                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
-                    path.edges[0], bounds, alignedWithEdge, definition.holdAdjacentEdges);
+                const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, topLevelId, definition, operationId + unstableIdComponent(operationIndex),
+                    path.edges[0], bounds, alignedWithEdge, definition.holdAdjacentEdges, addManipulators);
                 if (splitQueryAndLimitEntity.limitEntities != undefined)
                 {
                     limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
@@ -2581,8 +2745,8 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
                     const applyToStart = boundIndex == (definition.flipFlangeBounds ? 1 : 0);
                     const edgeIndex = applyToStart ? 0 : path.edges->size() - 1;
                     const alignedWithEdge = path.flipped[edgeIndex] != applyToStart;
-                    const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, operationId + unstableIdComponent(operationIndex),
-                        path.edges[edgeIndex], [bound], alignedWithEdge, definition.holdAdjacentEdges);
+                    const splitQueryAndLimitEntity = splitEdgeForPartialFlange(context, topLevelId, definition, operationId + unstableIdComponent(operationIndex),
+                        path.edges[edgeIndex], [bound], alignedWithEdge, definition.holdAdjacentEdges, addManipulators);
                     if (splitQueryAndLimitEntity.limitEntities != undefined)
                     {
                         limitEntities[splitQueryAndLimitEntity.splitEdgeQuery] = splitQueryAndLimitEntity.limitEntities;
@@ -2591,6 +2755,7 @@ function splitAllEdgesForPartialFlange(context is Context, operationId, definiti
                     operationIndex += 1;
                 }
             }
+            addManipulators = false;
         }
     }
     return {

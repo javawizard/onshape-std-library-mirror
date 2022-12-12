@@ -1,4 +1,4 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,10 +32,10 @@ FeatureScript 1913; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "1913.0");
-import(path : "onshape/std/math.fs", version : "1913.0");
-import(path : "onshape/std/error.fs", version : "1913.0");
-export import(path : "onshape/std/units.fs", version : "1913.0");
+import(path : "onshape/std/containers.fs", version : "1930.0");
+import(path : "onshape/std/math.fs", version : "1930.0");
+import(path : "onshape/std/error.fs", version : "1930.0");
+export import(path : "onshape/std/units.fs", version : "1930.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -479,6 +479,15 @@ export const ANGLE_STRICT_90_BOUNDS =
 } as AngleBoundSpec;
 
 /**
+ * An `AngleBoundSpec` for an angle between -180 and 180 degrees, defaulting to 0 degrees.
+ */
+export const ANGLE_180_MINUS_180_BOUNDS =
+{
+    (degree) : [-180, 0, 180],
+    (radian) : 1
+} as AngleBoundSpec;
+
+/**
  * An `IntegerBoundSpec` for an integer strictly greater than zero, defaulting to 2.
  */
 export const POSITIVE_COUNT_BOUNDS =
@@ -825,6 +834,16 @@ export predicate canBeRealBoundSpec(value)
     @size(value) == 1;
     value[unitless] is array;
 }
+
+/**
+ * @internal
+ * A `RealBoundSpec` for a normalized parameter along an edge's length, with 0 being the start of the edge and 1 the end
+ * Default UI value is 0.5, i.e. the midpoint of an open edge
+ */
+export const EDGE_PARAMETER_BOUNDS =
+{
+    (unitless) : [0.0, 0.5, 1]
+} as RealBoundSpec;
 
 /**
  * A spec to be used with the `isForce` predicate to define allowable force values

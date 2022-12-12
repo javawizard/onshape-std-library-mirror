@@ -1,29 +1,29 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1913.0");
+export import(path : "onshape/std/query.fs", version : "1930.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1913.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1913.0");
-export import(path : "onshape/std/manipulator.fs", version : "1913.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1930.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1930.0");
+export import(path : "onshape/std/manipulator.fs", version : "1930.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1913.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1913.0");
-import(path : "onshape/std/evaluate.fs", version : "1913.0");
-import(path : "onshape/std/feature.fs", version : "1913.0");
-import(path : "onshape/std/path.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
-import(path : "onshape/std/string.fs", version : "1913.0");
-import(path : "onshape/std/tool.fs", version : "1913.0");
-import(path : "onshape/std/valueBounds.fs", version : "1913.0");
-import(path : "onshape/std/vector.fs", version : "1913.0");
+import(path : "onshape/std/containers.fs", version : "1930.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1930.0");
+import(path : "onshape/std/evaluate.fs", version : "1930.0");
+import(path : "onshape/std/feature.fs", version : "1930.0");
+import(path : "onshape/std/path.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
+import(path : "onshape/std/string.fs", version : "1930.0");
+import(path : "onshape/std/tool.fs", version : "1930.0");
+import(path : "onshape/std/valueBounds.fs", version : "1930.0");
+import(path : "onshape/std/vector.fs", version : "1930.0");
 
 const FILLET_RHO_BOUNDS = {
             (unitless) : [0.0, 0.5, 0.99999]
@@ -352,6 +352,16 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
 {
     definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
 
+    if (definition.isPartial && definition.blendControlType == BlendControlType.RADIUS)
+    {
+        const partialFilletData = generatePartialFilletData(context, topLevelId, definition);
+        definition.partialFilletBounds = partialFilletData.partialFilletBounds;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1917_PARTIAL_FILLET_FIX_CHAIN_OF_EDGES))
+        {
+            definition.entities = partialFilletData.filterEntities;
+        }
+    }
+
     if (definition.blendControlType != BlendControlType.RADIUS || !definition.isVariable)
     {
         try(addFilletManipulator(context, topLevelId, definition));
@@ -363,77 +373,6 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
         if (!isInFeaturePattern(context))
         {
             try(addPointOnEdgeManipulators(context, topLevelId, definition));
-        }
-    }
-
-    if (definition.isPartial && definition.blendControlType == BlendControlType.RADIUS)
-    {
-        const separatedQueries = separateSheetMetalQueries(context, definition.entities);
-
-        if (!isQueryEmpty(context, separatedQueries.sheetMetalQueries))
-        {
-            throw regenError(ErrorStringEnum.CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL, ["entities"], separatedQueries.sheetMetalQueries);
-        }
-
-        var paths;
-        const edges = qEntityFilter(definition.entities, EntityType.EDGE);
-        try
-        {
-            const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
-            paths = constructPaths(context, tangentEdges, {});
-        }
-        catch
-        {
-            throw regenError(ErrorStringEnum.PATH_EDGES_NOT_CONTINUOUS, ["edges"], edges);
-        }
-
-        if (size(paths) != 1)
-        {
-            throw regenError(ErrorStringEnum.PARTIAL_FILLET_BAD_INPUT_ERROR, ["edges"], edges);
-        }
-
-        if (paths[0].closed && !definition.secondBound)
-        {
-            throw regenError(ErrorStringEnum.PARTIAL_FILLET_CLOSED_PATH_ERROR, ["edges"], edges);
-        }
-
-        var params = [definition.partialFirstEdgeTotalParameter] as array;
-        if (definition.secondBound)
-        {
-            params = append(params, definition.partialSecondEdgeTotalParameter);
-        }
-
-        definition.partialFilletBounds = [];
-        var flipDirection = definition.partialOppositeParameter;
-        definition.partialArcLengthParameterization = FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION;
-        const path = paths[0];
-        const lines = evPathTangentLines(context, path, params);
-        const tangentLinesCount = size(lines.tangentLines);
-        const pathLength = evPathLength(context, path);
-        for (var i = 0; i < tangentLinesCount; i += 1)
-        {
-            var param = i == 0 ? definition.partialFirstEdgeTotalParameter : definition.partialSecondEdgeTotalParameter;
-            param = flipDirection ? param : 1 - param;
-            const normal = flipDirection ? -lines.tangentLines[i].direction : lines.tangentLines[i].direction;
-            const offset = pathLength * param;
-            const position = lines.tangentLines[i].origin + (normal * offset);
-            const primaryParameterId = i == 0 ? "partialFirstEdgeTotalParameter" : "partialSecondEdgeTotalParameter";
-            addManipulators(context, topLevelId, { PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(i) :
-                        linearManipulator({
-                                "base" : position,
-                                "direction" : -normal,
-                                "offset" : offset,
-                                "minValue" : 0 * meter,
-                                "maxValue" : pathLength,
-                                "primaryParameterId" : primaryParameterId }) });
-            const boundaryEdge = path.edges[lines.edgeIndices[i]];
-            const qEdges = evaluateQuery(context, qEntityFilter(boundaryEdge, EntityType.EDGE));
-            const boundaryParameter = evDistance(context, { "side0" : lines.tangentLines[i].origin, "side1" : qEdges[0],
-                        "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION }).sides[1].parameter;
-
-            definition.partialFilletBounds = append(definition.partialFilletBounds, { "boundaryEdge" : boundaryEdge, "boundaryParameter" : boundaryParameter, "isFlipped" : path.flipped[lines.edgeIndices[i]] != flipDirection });
-
-            flipDirection = !flipDirection;
         }
     }
 
@@ -454,6 +393,104 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
             clearFeatureStatus(context, topLevelId, { "withDisplayData" : false }); //keep supplemental graphics
         }
     }
+}
+
+/** @internal */
+function generatePartialFilletData(context is Context, topLevelId is Id, definition is map) returns map
+{
+    const separatedQueries = separateSheetMetalQueries(context, definition.entities);
+
+    if (!isQueryEmpty(context, separatedQueries.sheetMetalQueries))
+    {
+        throw regenError(ErrorStringEnum.CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL, ["entities"], separatedQueries.sheetMetalQueries);
+    }
+
+    var paths;
+    const edges = qEntityFilter(definition.entities, EntityType.EDGE);
+    try
+    {
+        const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
+        paths = constructPaths(context, tangentEdges, {});
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.PATH_EDGES_NOT_CONTINUOUS, ["edges"], edges);
+    }
+
+    if (size(paths) != 1)
+    {
+        throw regenError(ErrorStringEnum.PARTIAL_FILLET_BAD_INPUT_ERROR, ["edges"], edges);
+    }
+
+    if (paths[0].closed && !definition.secondBound)
+    {
+        throw regenError(ErrorStringEnum.PARTIAL_FILLET_CLOSED_PATH_ERROR, ["edges"], edges);
+    }
+
+    var params = [definition.partialFirstEdgeTotalParameter] as array;
+    if (definition.secondBound)
+    {
+        params = append(params, definition.partialSecondEdgeTotalParameter);
+    }
+
+    var partialFilletBounds = [];
+    var flipDirection = definition.partialOppositeParameter;
+    definition.partialArcLengthParameterization = FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION;
+    const path = paths[0];
+    const lines = evPathTangentLines(context, path, params);
+    const tangentLinesCount = size(lines.tangentLines);
+    const pathLength = evPathLength(context, path);
+    for (var i = 0; i < tangentLinesCount; i += 1)
+    {
+        if (!isInFeaturePattern(context))
+        {
+            try(addPartialFilletManipulators(context, topLevelId, definition, i, flipDirection, pathLength, lines));
+        }
+
+        const boundaryEdge = path.edges[lines.edgeIndices[i]];
+        const qEdges = evaluateQuery(context, qEntityFilter(boundaryEdge, EntityType.EDGE));
+        const boundaryParameter = evDistance(context, { "side0" : lines.tangentLines[i].origin, "side1" : qEdges[0],
+                    "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION }).sides[1].parameter;
+
+        partialFilletBounds = append(partialFilletBounds, { "boundaryEdge" : boundaryEdge, "boundaryParameter" : boundaryParameter, "isFlipped" : path.flipped[lines.edgeIndices[i]] != flipDirection });
+
+        flipDirection = !flipDirection;
+    }
+
+    var filterEntities = qUnion(subArray(path.edges, lines.edgeIndices[0], definition.secondBound ? lines.edgeIndices[1] : size(path.edges)));
+    if (!definition.partialOppositeParameter)
+    {
+        filterEntities = qSubtraction(edges, filterEntities);
+    }
+
+    for (var i = 0; i < size(lines.edgeIndices); i += 1)
+    {
+         filterEntities = qUnion([filterEntities, path.edges[lines.edgeIndices[i]]]);
+    }
+
+    return {"filterEntities": filterEntities, "partialFilletBounds": partialFilletBounds};
+}
+
+/*
+ * Create linear tangtential manipulators for partial fillet
+ */
+function addPartialFilletManipulators(context is Context, topLevelId is Id, definition is map, index is number, flipDirection is boolean, maxValue is ValueWithUnits, lines is map)
+{
+    var param = index == 0 ? definition.partialFirstEdgeTotalParameter : definition.partialSecondEdgeTotalParameter;
+    param = flipDirection ? param : 1 - param;
+    const normal = flipDirection ? -lines.tangentLines[index].direction : lines.tangentLines[index].direction;
+    const offset = maxValue * param;
+    const position = lines.tangentLines[index].origin + (normal * offset);
+    const primaryParameterId = index == 0 ? "partialFirstEdgeTotalParameter" : "partialSecondEdgeTotalParameter";
+
+    addManipulators(context, topLevelId, { PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(index) :
+            linearManipulator({
+                    "base" : position,
+                    "direction" : -normal,
+                    "offset" : offset,
+                    "minValue" : 0 * meter,
+                    "maxValue" : maxValue,
+                    "primaryParameterId" : primaryParameterId }) });
 }
 
 /**
@@ -663,9 +700,6 @@ export function filletManipulatorChange(context is Context, definition is map, n
         {
             for (var key, manipulator in newManipulators)
             {
-                if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
-                    continue;
-
                 if (match(key, PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.*').hasMatch)
                 {
                     const index = stringToNumber(replace(key, PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.', ""));
@@ -696,6 +730,9 @@ export function filletManipulatorChange(context is Context, definition is map, n
                 }
                 else
                 {
+                    if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
+                        continue;
+
                     var settingIndex = stringToNumber(replace(key, VARIABLE_POINT_ON_EDGE_MANIPULATOR ~ '.', ""));
                     var pos = manipulator.base + manipulator.direction * manipulator.offset;
                     var qEdges = evaluateQuery(context, qEntityFilter(definition.pointOnEdgeSettings[settingIndex].edge, EntityType.EDGE));

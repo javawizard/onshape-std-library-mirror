@@ -1,4 +1,4 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1307,7 +1307,7 @@ export enum ErrorStringEnum
     BSPLINECURVE_NOT_G1,
     /* Select a single vertex for both sides of the bridge. */
     BRIDGING_CURVE_VERTEX_BOTH_SIDES,
-    /* Select a single edge for tangency matching. */
+    /* Select a single edge or face for tangency matching. */
     BRIDGING_CURVE_ONE_EDGE_EACH_SIDE,
     /* The vertex must lie at the end of the edge. */
     BRIDGING_CURVE_VERTEX_AT_END_OF_EDGE,
@@ -2473,10 +2473,26 @@ export enum ErrorStringEnum
     GUSSET_EMPTY_ALIGNMENT_SELECTION,
     /* Unable to find intersection point between first edge and alignment entity. */
     GUSSET_ALIGNMENT_NO_INTERSECTION,
+    /* Select a vertex or an edge on each side. */
+    BRIDGING_CURVE_VERTEX_OR_EDGE_ON_SIDE,
     /* Partial fillet is not supported for an active sheet metal model. */
     CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL,
     /* Closed entity requires a second boundary point. */
-    PARTIAL_FILLET_CLOSED_PATH_ERROR
+    PARTIAL_FILLET_CLOSED_PATH_ERROR,
+    /* Select the leading edge of the cylinder. */
+    WRONG_CYLINDER_EDGE_SELECTED,
+    /* Non-zero offset requires gusset edges to be parallel. */
+    GUSSET_OFFSET_NOT_PARALLEL,
+    /* Aligned offset requires gusset edges to be parallel. */
+    GUSSET_ALIGNED_OFFSET_NOT_PARALLEL,
+    /* Selected vertex does not belong to selected face. */
+    BRIDGING_CURVE_VERTEX_BELONG_TO_FACE,
+    /* Selected edge does not belong to selected face. */
+    BRIDGING_CURVE_EDGE_BELONG_TO_FACE,
+    /* Select a vertex or edge at the start position, and optionally an edge or face with the starting direction/curvature. */
+    BRIDGING_CURVE_NO_START_SELECTION,
+    /* Select a vertex or edge at the ending position, and optionally an edge or face with the ending direction/curvature. */
+    BRIDGING_CURVE_NO_END_SELECTION
 }
 
 

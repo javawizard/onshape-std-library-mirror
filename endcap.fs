@@ -1,35 +1,35 @@
-FeatureScript 1913; /* Automatically generated version */
+FeatureScript 1930; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "1913.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1913.0");
-import(path : "onshape/std/chamfer.fs", version : "1913.0");
-import(path : "onshape/std/containers.fs", version : "1913.0");
-import(path : "onshape/std/cutlistMath.fs", version : "1913.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1913.0");
-import(path : "onshape/std/coordSystem.fs", version : "1913.0");
-import(path : "onshape/std/error.fs", version : "1913.0");
-import(path : "onshape/std/evaluate.fs", version : "1913.0");
-import(path : "onshape/std/feature.fs", version : "1913.0");
-import(path : "onshape/std/frameUtils.fs", version : "1913.0");
-import(path : "onshape/std/fillet.fs", version : "1913.0");
-import(path : "onshape/std/math.fs", version : "1913.0");
-import(path : "onshape/std/manipulator.fs", version : "1913.0");
-import(path : "onshape/std/offsetSurface.fs", version : "1913.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1913.0");
-import(path : "onshape/std/string.fs", version : "1913.0");
-import(path : "onshape/std/sketch.fs", version : "1913.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1913.0");
-import(path : "onshape/std/splitpart.fs", version : "1913.0");
-import(path : "onshape/std/units.fs", version : "1913.0");
-import(path : "onshape/std/valueBounds.fs", version : "1913.0");
-import(path : "onshape/std/vector.fs", version : "1913.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1930.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1930.0");
+import(path : "onshape/std/chamfer.fs", version : "1930.0");
+import(path : "onshape/std/containers.fs", version : "1930.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1930.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
+import(path : "onshape/std/coordSystem.fs", version : "1930.0");
+import(path : "onshape/std/error.fs", version : "1930.0");
+import(path : "onshape/std/evaluate.fs", version : "1930.0");
+import(path : "onshape/std/feature.fs", version : "1930.0");
+import(path : "onshape/std/frameUtils.fs", version : "1930.0");
+import(path : "onshape/std/fillet.fs", version : "1930.0");
+import(path : "onshape/std/math.fs", version : "1930.0");
+import(path : "onshape/std/manipulator.fs", version : "1930.0");
+import(path : "onshape/std/offsetSurface.fs", version : "1930.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
+import(path : "onshape/std/string.fs", version : "1930.0");
+import(path : "onshape/std/sketch.fs", version : "1930.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
+import(path : "onshape/std/splitpart.fs", version : "1930.0");
+import(path : "onshape/std/units.fs", version : "1930.0");
+import(path : "onshape/std/valueBounds.fs", version : "1930.0");
+import(path : "onshape/std/vector.fs", version : "1930.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
-const INTERNAL_MANIPULATOR_ID = "Internal manipulator";
+const INTERNAL_MANIPULATOR_ID = "Inset manipulator";
 
 const OFFSET_BOUNDS =
 {
@@ -74,6 +74,9 @@ export enum CornerType
     annotation { "Name" : "Fillet" }
     FILLET
 }
+
+/* @internal */
+const ROUND_PRECISION = 3;
 
 /**
  * Construct a endcap.
@@ -241,7 +244,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                                 "base" : internalCapFaceMap.drivePoint,
                                 "direction" : internalCapFaceMap.direction,
                                 "offset" : definition.internalShiftDistance,
-                                "minValue" : 0 * meter,
+                                "minValue" : TOLERANCE.zeroLength * meter,
                                 "primaryParameterId" : "internalShiftDistance"
                             });
 
@@ -350,39 +353,32 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
 /** @internal */
 function generateProfileInternal(context is Context, id is Id, definition is map, face is Query, faceGeometryMap is map) returns map
 {
-    try
-    {
-        //Get face for cap creation
-        var internalCapFaceMap = createInternalCapFaceMap(context, id, face, faceGeometryMap);
+    //Get face for cap creation
+    var internalCapFaceMap = createInternalCapFaceMap(context, id, face, faceGeometryMap);
 
-        //Move face to initial position
-        opOffsetFace(context, id + "offsetInnerFace", {
-                    "moveFaces" : internalCapFaceMap.innerFace,
-                    "offsetDistance" : internalCapFaceMap.invertedNormal ?
-                    -definition.internalShiftDistance + internalCapFaceMap.zeroOffset :
-                    definition.internalShiftDistance - internalCapFaceMap.zeroOffset
-                });
-        const drivePoint = evApproximateCentroid(context, {
-                    "entities" : internalCapFaceMap.innerFace
-                });
-        const thickness1 = internalCapFaceMap.invertedNormal ? 0 * inch : definition.thickness;
-        const thickness2 = internalCapFaceMap.invertedNormal ? definition.thickness : 0 * inch;
+    //Move face to initial position
+    opOffsetFace(context, id + "offsetInnerFace", {
+                "moveFaces" : internalCapFaceMap.innerFace,
+                "offsetDistance" : internalCapFaceMap.invertedNormal ?
+                -definition.internalShiftDistance + internalCapFaceMap.zeroOffset :
+                definition.internalShiftDistance - internalCapFaceMap.zeroOffset
+            });
+    const drivePoint = evApproximateCentroid(context, {
+                "entities" : internalCapFaceMap.innerFace
+            });
+    const thickness1 = internalCapFaceMap.invertedNormal ? 0 * inch : definition.thickness;
+    const thickness2 = internalCapFaceMap.invertedNormal ? definition.thickness : 0 * inch;
 
-        const thickenInnerCapId = id + "thickenInnerCap";
-        opThicken(context, thickenInnerCapId, {
-                    "entities" : internalCapFaceMap.innerFace,
-                    "thickness1" : thickness1,
-                    "thickness2" : thickness2,
-                    "keepTools" : false
-                });
+    const thickenInnerCapId = id + "thickenInnerCap";
+    opThicken(context, thickenInnerCapId, {
+                "entities" : internalCapFaceMap.innerFace,
+                "thickness1" : thickness1,
+                "thickness2" : thickness2,
+                "keepTools" : false
+            });
 
-        internalCapFaceMap.innerFace = qCreatedBy(thickenInnerCapId, EntityType.FACE);
-        return internalCapFaceMap;
-    }
-    catch
-    {
-        throw regenError(ErrorStringEnum.CAP_CURVED_FRAME_ERROR, ["faces"], face);
-    }
+    internalCapFaceMap.innerFace = qCreatedBy(thickenInnerCapId, EntityType.FACE);
+    return internalCapFaceMap;
 }
 
 /** @internal */
@@ -632,7 +628,7 @@ export function getFrameAxis(context is Context, body is Query) returns Vector
         }
     }
 
-    try
+    try silent
     {
         const cylinderFaces = qGeometry(qNthElement(sweptFace, 0), GeometryType.CYLINDER);
         return evAxis(context, {
@@ -660,7 +656,10 @@ export function manipulatorChange(context is Context, definition is map, newMani
         }
         if (key == INTERNAL_MANIPULATOR_ID)
         {
-            definition.internalShiftDistance = value.offset;
+            if (tolerantEquals(definition.internalShiftDistance - value.offset, TOLERANCE.zeroLength * meter))
+                continue;
+
+            definition.internalShiftDistance = roundToPrecision(value.offset / meter, ROUND_PRECISION) * meter;
         }
     }
 
