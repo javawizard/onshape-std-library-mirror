@@ -1,11 +1,11 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1930.0");
-import(path : "onshape/std/hole.fs", version : "1930.0");
-import(path : "onshape/std/table.fs", version : "1930.0");
+import(path : "onshape/std/attributes.fs", version : "1948.0");
+import(path : "onshape/std/hole.fs", version : "1948.0");
+import(path : "onshape/std/table.fs", version : "1948.0");
 
 const TAG_COLUMN_KEY = "tag";
 const SIZE_COLUMN_KEY = "size";
@@ -129,93 +129,151 @@ export const holeTable = defineTable(function(context is Context, definition is 
         return tableArray(tables);
     });
 
-function computeAngle(attribute is HoleAttribute) returns TemplateString
+function computeAngle(attribute is HoleAttribute) returns StringWithTolerances
 {
-    var result = {};
-    const CHARACTER_SPACE = ' ';
     if (attribute.endType != HoleEndStyle.THROUGH)
     {
-        result.template = "#tipAngle";
-        result.tipAngle = attribute.tipAngle;
+        return tolerancedValueToString("", attribute.tipAngle, attribute.tolerances.tipAngle);
     }
     else
     {
-        result.template = CHARACTER_SPACE;
+        return createStringWithTolerances(" ");
     }
-
-    return result as TemplateString;
 }
 
-function computeSize(attribute is HoleAttribute) returns TemplateString
+function computeSize(attribute is HoleAttribute) returns StringWithTolerances
 {
-    var template = "⌀#holeDiameter";
-    var result = {};
-    result.holeDiameter = attribute.holeDiameter;
+    if (attribute.isExternalThread == true)
+    {
+        return createStringWithTolerances("External Thread");
+    }
+
+    var result = tolerancedValueToString("⌀", attribute.holeDiameter, attribute.tolerances.holeDiameter);
 
     // THRU or depth
     if (attribute.endType == HoleEndStyle.THROUGH)
     {
         if (attribute.partialThrough != true)
-            template ~= " THRU";
+        {
+            result = appendToleranceComponent(result, " THRU");
+        }
     }
     else
     {
-        template ~= "↧#holeDepth";
-        result.holeDepth = attribute.holeDepth;
+        result = concatenateStringsWithTolerances(
+            result,
+            tolerancedValueToString("↧", attribute.holeDepth, attribute.tolerances.holeDepth)
+        );
     }
 
     // Counterbore or countersink
     if (attribute.holeType == HoleStyle.C_BORE)
     {
-        template ~= "\n⌴⌀#cBoreDiameter↧#cBoreDepth";
-        result.cBoreDiameter = attribute.cBoreDiameter;
-        result.cBoreDepth = attribute.cBoreDepth;
+        result = concatenateStringsWithTolerances(
+            result,
+            tolerancedValueToString("\n⌴⌀", attribute.cBoreDiameter, attribute.tolerances.cBoreDiameter)
+        );
+        result = concatenateStringsWithTolerances(
+            result,
+            tolerancedValueToString("↧", attribute.cBoreDepth, attribute.tolerances.cBoreDepth)
+        );
     }
 
     if (attribute.holeType == HoleStyle.C_SINK)
     {
-        template ~= "\n⌵⌀#cSinkDiameter X #cSinkAngle";
-        result.cSinkDiameter = attribute.cSinkDiameter;
-        result.cSinkAngle = attribute.cSinkAngle;
+        result = concatenateStringsWithTolerances(
+            result,
+            tolerancedValueToString("\n⌵⌀", attribute.cSinkDiameter, attribute.tolerances.cSinkDiameter)
+        );
+        result = concatenateStringsWithTolerances(
+            result,
+            tolerancedValueToString("X ", attribute.cSinkAngle, attribute.tolerances.cSinkAngle)
+        );
     }
 
-    // Tapped or tapered pipe tap
-    if (attribute.isTappedHole || attribute.isTaperedPipeTapHole)
+    // Tapped
+    if (attribute.isTappedHole)
     {
-        template ~= "\n#tapSize";
-        result.tapSize = attribute.tapSize;
-        if (!attribute.isTaperedPipeTapHole)
+        result = appendToleranceComponent(result, "\n" ~ attribute.tapSize);
+        if (attribute.isTappedThrough)
         {
-            if (attribute.isTappedThrough)
-            {
-                template ~= " THRU";
-            }
-            else
-            {
-                template ~= "↧#tappedDepth";
-                result.tappedDepth = attribute.tappedDepth;
-            }
+            result = appendToleranceComponent(result, " THRU");
+        }
+        else
+        {
+            result = concatenateStringsWithTolerances(
+                result,
+                tolerancedValueToString("↧", attribute.tappedDepth, attribute.tolerances.tappedDepth)
+            );
         }
     }
-    if (attribute.isExternalThread == true)
+    else if (attribute.isTaperedPipeTapHole)
     {
-        result = {};
-        template = "External Thread";
+        result = appendToleranceComponent(result, "\n" ~ attribute.tapSize);
+        if (attribute.standard == "ANSI")
+        {
+            result = appendToleranceComponent(result, " NPT");
+        }
+        else if (attribute.standard == "ISO")
+        {
+            result = appendToleranceComponent(result, " RC TAPPED HOLE");
+        }
     }
-    result.template = template;
-    return result as TemplateString;
+
+    return result;
 }
 
-function sizeToSizeSignature(holeSize is TemplateString) returns map
+function roundStringValues(template is map, precision is number) returns TemplateString
 {
-    for (var entry in holeSize)
+    if (template is TemplateString)
     {
-        if (entry.value is ValueWithUnits)
+        for (var key, value in template)
         {
-            holeSize[entry.key].value = roundToPrecision(entry.value.value, 8); // Similar to what is done for drawings
+            if (value is ValueWithUnits)
+            {
+                template[key].value = roundToPrecision(value.value, precision);
+            }
         }
     }
-    return holeSize;
+    return template;
+}
+
+function roundToleranceComponentField(component is map, field is string, precision is number)
+{
+    if (!isUndefinedOrEmptyString(component[field]))
+    {
+        component[field] = roundStringValues(component[field], precision);
+    }
+}
+
+function roundToleranceComponent(component is StringToleranceComponent, precision is number) returns StringToleranceComponent
+{
+    roundToleranceComponentField(component, "value", precision);
+    roundToleranceComponentField(component, "upper", precision);
+    roundToleranceComponentField(component, "lower", precision);
+
+    return component;
+}
+
+function roundStringWithTolerances(template is StringWithTolerances, precision is number) returns StringWithTolerances
+{
+    for (var index, component in template.components)
+    {
+        if (component is StringToleranceComponent)
+        {
+            template.components[index] = roundToleranceComponent(component, precision);
+        }
+        else if (component is TemplateString)
+        {
+            template.components[index] = roundStringValues(component, precision);
+        }
+    }
+    return template;
+}
+
+function sizeToSizeSignature(holeSize is StringWithTolerances) returns map
+{
+    return roundStringWithTolerances(holeSize, 8);
 }
 
 // Tag logic

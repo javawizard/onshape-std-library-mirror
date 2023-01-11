@@ -1,29 +1,27 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "1930.0");
-import(path : "onshape/std/valueBounds.fs", version : "1930.0");
-import(path : "onshape/std/frameUtils.fs", version : "1930.0");
-import(path : "onshape/std/feature.fs", version : "1930.0");
-import(path : "onshape/std/evaluate.fs", version : "1930.0");
-import(path : "onshape/std/containers.fs", version : "1930.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
-import(path : "onshape/std/string.fs", version : "1930.0");
-import(path : "onshape/std/vector.fs", version : "1930.0");
-import(path : "onshape/std/coordSystem.fs", version : "1930.0");
-import(path : "onshape/std/sketch.fs", version : "1930.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
-import(path : "onshape/std/manipulator.fs", version : "1930.0");
-import(path : "onshape/std/frameAttributes.fs", version : "1930.0");
+import(path : "onshape/std/units.fs", version : "1948.0");
+import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+import(path : "onshape/std/frameUtils.fs", version : "1948.0");
+import(path : "onshape/std/feature.fs", version : "1948.0");
+import(path : "onshape/std/evaluate.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1948.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
+import(path : "onshape/std/string.fs", version : "1948.0");
+import(path : "onshape/std/vector.fs", version : "1948.0");
+import(path : "onshape/std/coordSystem.fs", version : "1948.0");
+import(path : "onshape/std/sketch.fs", version : "1948.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
+import(path : "onshape/std/manipulator.fs", version : "1948.0");
+import(path : "onshape/std/frameAttributes.fs", version : "1948.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
-const MIN_THICKNESS = MIN_SIZE;
 
 const LENGTH_MANIPULATOR_ID = "Length manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
-const GUSSET_EXTRUDE_SUFFIX = "finalExtrude";
 
 const CHAMFER_SIZE_BOUNDS =
 {
@@ -376,16 +374,11 @@ function verifyGussetEdge(context is Context, edge is Query)
     {
         throw regenError(ErrorStringEnum.NON_FRAME_EDGE_SELECTED, ["edges"], edge);
     }
-
     const parentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
-    for (var face in parentFaces)
+    if (!any(parentFaces, function(f) { return isCapFace(context, f); }))
     {
-        if (isCapFace(context, face))
-        {
-            return;
-        }
+        throw regenError(ErrorStringEnum.SWEPT_EDGE_SELECTED, ["edges"], edge);
     }
-    throw regenError(ErrorStringEnum.SWEPT_EDGE_SELECTED, ["edges"], edge);
 }
 
 function getPointInFacePlane(faceCoord is CoordSystem, sketchCoord is CoordSystem, size is ValueWithUnits) returns Vector

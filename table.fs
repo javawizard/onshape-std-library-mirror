@@ -1,17 +1,18 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/containers.fs", version : "1930.0");
-export import(path : "onshape/std/context.fs", version : "1930.0");
-export import(path : "onshape/std/evaluate.fs", version : "1930.0");
-export import(path : "onshape/std/math.fs", version : "1930.0");
-export import(path : "onshape/std/properties.fs", version : "1930.0");
-export import(path : "onshape/std/query.fs", version : "1930.0");
-export import(path : "onshape/std/string.fs", version : "1930.0");
-export import(path : "onshape/std/valueBounds.fs", version : "1930.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1930.0");
+export import(path : "onshape/std/containers.fs", version : "1948.0");
+export import(path : "onshape/std/context.fs", version : "1948.0");
+export import(path : "onshape/std/evaluate.fs", version : "1948.0");
+export import(path : "onshape/std/math.fs", version : "1948.0");
+export import(path : "onshape/std/properties.fs", version : "1948.0");
+export import(path : "onshape/std/query.fs", version : "1948.0");
+export import(path : "onshape/std/string.fs", version : "1948.0");
+export import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "1948.0");
+export import(path : "onshape/std/tolerance.fs", version : "1948.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -384,6 +385,153 @@ precondition canBeStringWithTolerances(value);
 {
     return value as StringWithTolerances;
 }
+
+export function toString(value is StringToleranceComponent) returns string
+{
+    var output = toString(value.value);
+    var tolerance = "";
+    if (!isUndefinedOrEmptyString(value.upper))
+    {
+        tolerance ~= "upper: " ~ toString(value.upper);
+    }
+    if (!isUndefinedOrEmptyString(value.lower))
+    {
+        if (!isUndefinedOrEmptyString(tolerance))
+        {
+            tolerance ~= ", ";
+        }
+        tolerance ~= "lower: " ~ toString(value.lower);
+    }
+    if (!isUndefinedOrEmptyString(tolerance))
+    {
+        output ~= " [" ~ tolerance ~ "]";
+    }
+    return output;
+}
+
+export function toString(value is StringWithTolerances) returns string
+{
+    var output = "";
+
+    for (var component in value.components)
+    {
+        output ~= toString(component);
+    }
+
+    return output;
+}
+
+/** Concantenates two [StringWithTolerances] values together. */
+export function concatenateStringsWithTolerances(a is StringWithTolerances, b is StringWithTolerances) returns StringWithTolerances
+{
+    var result = stringWithTolerances({
+        "components" : concatenateArrays([a.components, b.components])
+    });
+    return result;
+}
+
+predicate canBeToleranceComponent(value)
+{
+    value is string || value is TemplateString || canBeStringToleranceComponent(value);
+}
+
+/** Appends either a `string`, a [TemplateString], or a [StringToleranceComponent] to an existing [StringWithTolerances]. */
+export function appendToleranceComponent(result is StringWithTolerances, component) returns StringWithTolerances
+precondition canBeToleranceComponent(component);
+{
+    return stringWithTolerances({
+        "components" : append(result.components, component)
+    });
+}
+
+/** Creates a [StringWithTolerances] wrapping the specified component. */
+export function createStringWithTolerances(component) returns StringWithTolerances
+precondition canBeToleranceComponent(component);
+{
+    return stringWithTolerances({
+        "components" : [component]
+    });
+}
+
+function includePrecisionIfNeeded(value is ValueWithUnits, toleranceInfo is map) returns map
+{
+    if (toleranceInfo.usePrecisionOverride)
+    {
+        return valueWithUnitsAndPrecision(value, toleranceInfo.precision);
+    }
+    return value;
+}
+
+/**
+ * Converts a ValueWithUnits and an associated ToleranceInfo into a StringWithTolerances.
+ */
+export function tolerancedValueToString(prefix is string, value is ValueWithUnits, tolerance) returns StringWithTolerances
+precondition isToleranceInfoOrUndefined(tolerance);
+{
+    var component = stringToleranceComponent({
+        "value" : templateString({
+            "template" : "#prefix#field",
+            "prefix" : prefix,
+            "field" : value
+        }),
+        "upper" : "",
+        "lower" : ""
+    });
+
+    if (tolerance == undefined)
+    {
+        return createStringWithTolerances(component);
+    }
+
+    // Round and convert main field value
+    component.value.field = includePrecisionIfNeeded(value, tolerance);
+
+    var upper = tolerance.upper;
+    var lower = tolerance.lower;
+
+    if (upper != undefined)
+    {
+        upper = includePrecisionIfNeeded(upper, tolerance);
+    }
+    if (lower != undefined)
+    {
+        lower = includePrecisionIfNeeded(lower, tolerance);
+    }
+
+    if (tolerance.toleranceType == ToleranceType.DEVIATION)
+    {
+        const upperTemplate = templateString({ "template" : "+#upperValue", "upperValue" : upper });
+        const lowerTemplate = templateString({ "template" : "-#lowerValue", "lowerValue" : lower });
+        component.upper = upperTemplate;
+        component.lower = lowerTemplate;
+    }
+    else if (tolerance.toleranceType == ToleranceType.LIMITS)
+    {
+        const upperTemplate = templateString({ "template" : "#upperValue", "upperValue" : upper });
+        const lowerTemplate = templateString({ "template" : "#lowerValue", "lowerValue" : lower });
+        component.upper = upperTemplate;
+        component.lower = lowerTemplate;
+    }
+
+    var result = createStringWithTolerances(component);
+
+    if (tolerance.toleranceType == ToleranceType.SYMMETRICAL)
+    {
+        const templateEntry = templateString({ "template" : "±#tolerance", "tolerance" : upper });
+        result = appendToleranceComponent(result, templateEntry);
+    }
+    else if (tolerance.toleranceType == ToleranceType.MIN)
+    {
+        result = appendToleranceComponent(result, " MIN");
+    }
+    else if (tolerance.toleranceType == ToleranceType.MAX)
+    {
+        result = appendToleranceComponent(result, " MAX");
+    }
+
+    return result;
+}
+
 
 // ----------------------------------- All parts query -----------------------------------
 

@@ -1,4 +1,4 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 1930; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "1930.0");
-import(path : "onshape/std/string.fs", version : "1930.0");
+import(path : "onshape/std/math.fs", version : "1948.0");
+import(path : "onshape/std/string.fs", version : "1948.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -398,7 +398,7 @@ export function last(elements is array)
  * @example `rotateArray([0, 1, 2], -1)`
  *          returns `[1, 2, 0]`
  */
-function rotateArray(elements is array, step is number) returns array
+export function rotateArray(elements is array, step is number) returns array
 {
     const length = @size(elements);
     if (length == 0)
@@ -425,3 +425,344 @@ export function removeElementAt(arr is array, index is number) returns array
     return concatenateArrays([subArray(arr, 0, index), subArray(arr, index + 1, size(arr))]);
 }
 
+/**
+ * Returns `true` if and only if all elements of an array, when passed into the `checkFunction`, return `true`.
+ * @seeAlso [all(array)]
+ * @ex `all([0, 2, 4], function(e){ return e % 2 == 0; })` returns `true`
+ * @ex `all([], function(e){ return false; })` returns `true`
+ *
+ * @param arr {array} : An array of elements to be checked.
+ * @param checkFunction {function} : A unary function that returns a boolean.
+ * @returns {boolean} : `true` if and only if all `checkFunction(element)` calls return `true`.
+ **/
+export function all(arr is array, checkFunction is function) returns boolean
+{
+    for (var x in arr)
+    {
+        if (!checkFunction(x))
+            return false;
+    }
+    return true;
+}
+
+/**
+ * Returns true if all elements in the passed array are `true`.
+ * @seeAlso [all(array, function)]
+ * @ex `all([])` returns `true`
+ * @ex `all([false, false, true])` returns `false`
+ * @ex `all([true, true, true])` returns `true`
+ *
+ * @param arr {array} : An array of booleans.
+ * @returns {boolean} : `true` if and only if all `element`s are `true`.
+ **/
+export function all(arr is array) returns boolean
+{
+    for (var x in arr)
+    {
+        if (!x)
+            return false;
+    }
+    return true;
+}
+
+predicate isArrayOfArrays(arr is array)
+{
+    for (var a in arr)
+    {
+        a is array;
+    }
+}
+
+/**
+ * Creates all possible combinations from arrays of values for each element.
+ * @ex `allCombinations([[1,2], [3,4]])` returns `[[1,3], [1,4], [2,3], [2,4]]`
+ * @ex `allCombinations([[0, 1, 2, 3]])` returns `[[0], [1], [2], [3]]`
+ * @ex `allCombinations([[], [0, 1, 2]])` returns `[]`
+ *
+ * @param arr {array} : An array of arrays, where each array represents all possible values for the given array's index in the returned arrays.
+ * @returns {array} : An array of all possible combinations that have exactly one element from each of the input arrays.
+ **/
+export function allCombinations(arr is array) returns array
+precondition
+{
+    isArrayOfArrays(arr);
+}
+{
+    const n = size(arr);
+    if (n == 0)
+    {
+        return [];
+    }
+    // Base case - [[0,1,2,3]]->[[0], [1], [2], [3]]
+    if (n == 1)
+    {
+        var result = [];
+        for (var x in arr[0])
+        {
+            result = append(result, [x]);
+        }
+        return result;
+    }
+    else
+    {
+        const otherCombinations = allCombinations(removeElementAt(arr, n - 1));
+        return mapArray(otherCombinations, function(combination)
+                {
+                    return mapArray(arr[n - 1], function(el)
+                        {
+                            return append(combination, el);
+                        });
+                })->concatenateArrays();
+    }
+}
+
+/**
+ * Returns `true` if any element of an array, when passed into the `check` function, returns `true`.
+ * @seeAlso [any(array)]
+ * @ex `any([1, 3, 4], function(e){ return e % 2 == 0; })` returns `true`
+ * @ex `any([], function(e){ return true; })` returns `false`
+ *
+ * @param arr {array} : An array of elements.
+ * @returns {boolean} : `true` if and only if at least one `check(element)` call returns `true`.
+ **/
+export function any(arr is array, check is function) returns boolean
+{
+    for (var x in arr)
+    {
+        if (check(x))
+            return true;
+    }
+    return false;
+}
+
+/**
+ * Returns true if any element in the passed array is `true`.
+ * @seeAlso [any(array, function)]
+ * @ex `any([])` returns `false`
+ * @ex `any([false, false, true])` returns `true`
+ *
+ * @param arr {array} : An array of booleans.
+ * @returns {boolean} : `true` if and only if at least one `element` is `true`.
+ **/
+export function any(arr is array) returns boolean
+{
+    for (var x in arr)
+    {
+        if (x)
+            return true;
+    }
+    return false;
+}
+
+/**
+ * Returns the average of an array. All array elements must be mutually addable and divisible by a number.
+ * @ex `average([1, 2, 3, 4])` returns `2.5`
+ * @ex `average([vector([1, 0, 0])*meter, vector([0, 0, 0])*meter, vector([0, 1, 0])*meter])` returns `vector(1/3, 1/3, 0) * meter`
+ *
+ * @param arr {array} : An array of mutually addable and divisible elements.
+ * @returns : The average of values in the passed in array.
+ **/
+export function average(arr is array)
+{
+    return sum(arr) / size(arr);
+}
+
+/**
+ * Deduplicate an array. Maintains original array order, eliminating all but the first occurrence of a given duplicate.
+ * @ex `deduplicate([1, 2, 1, 3, 2, 0, 0])` returns `[1, 2, 3, 0]`
+ * @ex `deduplicate([])` returns `[]`
+ *
+ * @param arr {array} : An array of values to be deduplicated.
+ * @returns {array} : An array of deduplicated values.
+ **/
+export function deduplicate(arr is array) returns array
+{
+    var result = [];
+    var deDuplicatedSet = {};
+    for (var potentialDuplicate in arr)
+    {
+        if (deDuplicatedSet[potentialDuplicate] == undefined)
+        {
+            deDuplicatedSet[potentialDuplicate] = true;
+            result = append(result, potentialDuplicate);
+        }
+    }
+    return result;
+}
+
+/**
+ * Folds an array from left to right with a `foldFunction`.
+ *
+ * @ex `foldArray([1, 2, 3], 0, function(accumulator, element) { return accumulator + element; })` returns `6`
+ *
+ * @param arr {array} : An array to fold.
+ * @param seed : The initial value of the accumulator to be passed into the `foldFunction`.
+ * @param foldFunction : A binary function which takes in an accumulator (the seed for the first iteration, and the result of the
+ *      previous call for subsequent iterations) and an element of the passed in array.
+ * @returns : The accumulator after all elements of `arr` have been folded.
+ */
+export function foldArray(arr is array, seed, foldFunction is function)
+{
+    var response = seed;
+    for (var element in arr)
+    {
+        response = foldFunction(response, element);
+    }
+    return response;
+}
+
+/**
+ * Calls `foldArray` with the `seed` set to the first element of `arr`.
+ * @seeAlso [foldArray]
+ */
+export function foldArray(arr is array, foldFunction is function)
+{
+    return arr == [] ? undefined : foldArray(arr->removeElementAt(0), arr[0], foldFunction);
+}
+
+/**
+ * Returns a new array, with the same size as `arr`, created by mapping each
+ * index of `arr` through a `mapIndexFunction`.
+ * @ex `const myArray = [1, 3, 5]; mapArrayIndices(myArray, function(i) { return myArray[i] + myArray[ (i+1) % size(myArray)]; })` returns `[4, 8, 6]`
+ *
+ * @param mapIndexFunction : A function which takes in one argument (an index of the
+ *          input array) and returns a value.
+ * @returns {array} : The results of calling `mapIndexFunction` on the indices of all elements in the passed in `arr`.
+ */
+export function mapArrayIndices(arr is array, mapIndexFunction is function) returns array
+{
+    const n = size(arr);
+    if (n < 1)
+    {
+        return [];
+    }
+    return range(0, size(arr) - 1)->mapArray(mapIndexFunction);
+}
+
+/**
+ * Map a value using a mapFunction and return the result. Particularly useful when using a lambda function inline to dynamically change some value.
+ * @ex `mapValue(4, function(n){ return n+1; })` returns `5`
+ * @ex `couldBeUndefined->mapValue(function(v){ return v == undefined ? 'a great default' : v; })`
+ *
+ * @param value : Anything that the passed in mapFunction will accept as a parameter.
+ * @param mapFunction : A function that will be called on the passed in `value`.
+ * @returns : The result of calling `mapFunction` with `value`.
+ **/
+export function mapValue(value, mapFunction is function)
+{
+    return mapFunction(value);
+}
+
+/**
+ * Merge maps at a particular location as specified by the `keyList`. If either the destination node specified by the `keyList`
+ *      or the `newNode` is not a map, the `newNode` will replace the destination node.
+ * @seeAlso [mergeMaps(map, map)]
+ * @ex `mergeMaps({ a: [ { b: 2 } ] }, ['a', 0, 'b'], 4)` returns `{ a : [ { b : 4 } ] }`
+ * @ex `mergeMaps(5, [], 4)` returns `4`
+ * @ex `mergeMaps({ a : 5 }, ['a'], 4)` returns `{a: 4 }`
+ *
+ * @param defaults : A container (array or map) that will be merged at the location specified by the `keyList`.
+ *      If `defaults` is not an array or map and `keyList` is empty, the result is `newNode` since a merge isn't possible.
+ * @param keyList {array} : An array of map keys or array indices that collectively specify a location within `defaults` to perform the merge.
+ * @param newNode : A value that will be merged into defaults at the location specified by `keyList`. If the `newNode` specified is a map and
+ *      the node identified by `keyList` is a map, then this will perform a `mergeMaps` operation.
+ * @returns : The merged or replaced value.
+ **/
+export function mergeMaps(defaults, keyList is array, newNode)
+{
+    if (size(keyList) == 0)
+    {
+        if (defaults is map && newNode is map)
+        {
+            return mergeMaps(defaults, newNode);
+        }
+        else
+        {
+            return newNode;
+        }
+    }
+    const firstKey = keyList[0];
+    defaults[firstKey] = mergeMaps(defaults[firstKey], keyList->subArray(1, size(keyList)), newNode);
+    return defaults;
+}
+
+/**
+ * Sum an array of elements that are all mutually addable. An empty array returns 0.
+ * @ex `sum(range(0,5))` returns `15`
+ * @ex `sum([vector(1, 2, 3) * meter, vector(4, 5, 6) * meter])` returns `vector(5, 7, 9) * meter`
+ * @ex `sum([])` returns `0`
+ *
+ * @param arr {array} : An array of mutually addable elements to be summed.
+ * @returns : The sum of values in the passed in array.
+ **/
+export function sum(arr is array)
+{
+    if (arr == [])
+    {
+        return 0;
+    }
+    var result = arr[0];
+    for (var x in arr->removeElementAt(0))
+    {
+        result += x;
+    }
+    return result;
+}
+
+/**
+ * Makes an array that aggregates elements from each of the arrays. Returns an array of arrays, where the i-th array
+ * contains the i-th element from each of the argument arrays. The array stops when the shortest input array is exhausted.
+ * With a single array argument, it returns an array of single element arrays. With no arguments, it returns an empty array.
+ * @seeAlso [zip(array, array)]
+ * @ex `zip([range(0,3), range(10,13), range(20,26)])` returns `[[0, 10, 20], [1, 11, 21], [2, 12, 22], [3, 13, 23]]`
+ * @ex `zip([])` returns `[]`
+ * @ex `zip([range(0, 3)])` returns `[[0],[1],[2],[3]]`
+ *
+ * @param arr {array} : An array of arrays to aggregate.
+ * @returns {array} : An array where the i'th element contains the i'th element from each of the passed in arrays.
+ **/
+export function zip(arr is array) returns array
+precondition
+{
+    isArrayOfArrays(arr);
+}
+{
+    const n = size(arr);
+    if (n == 0)
+        return [];
+    var zipSize = size(arr[0]);
+    for (var x in arr)
+    {
+        const n = size(x);
+        if (n < zipSize)
+        {
+            zipSize = n;
+        }
+    }
+    var result = [];
+    for (var i = 0; i < zipSize; i += 1)
+    {
+        var zippedEntry = [];
+        for (var arrEntry in arr)
+        {
+            zippedEntry = append(zippedEntry, arrEntry[i]);
+        }
+        result = append(result, zippedEntry);
+    }
+    return result;
+}
+
+/**
+ * An alternative way to call [zip(array)] that facilitates chaining arguments.
+ * @seeAlso [zip(array)]
+ * @ex `zip(range(0,3), range(1, 4))` returns `[[0, 1], [1, 2], [2, 3], [3, 4]]`
+ * @ex `zip(range(0,3), [])` returns `[]`
+ *
+ * @param a {array} : The first array to zip.
+ * @param b {array} : The second array to zip.
+ * @returns {array} : An array of length-2 arrays. For the i'th array, the first element is the i'th element of `a` and the second is the i'th element of `b`.
+ **/
+export function zip(a is array, b is array)
+{
+    return zip([a, b]);
+}

@@ -1,36 +1,36 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "1930.0");
-export import(path : "onshape/std/hole.fs", version : "1930.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "1930.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1930.0");
-export import(path : "onshape/std/moveFace.fs", version : "1930.0");
-export import(path : "onshape/std/query.fs", version : "1930.0");
-export import(path : "onshape/std/tool.fs", version : "1930.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/hole.fs", version : "1948.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1948.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/moveFace.fs", version : "1948.0");
+export import(path : "onshape/std/query.fs", version : "1948.0");
+export import(path : "onshape/std/tool.fs", version : "1948.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1930.0");
+export import(path : "onshape/std/manipulator.fs", version : "1948.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1930.0");
-import(path : "onshape/std/containers.fs", version : "1930.0");
-import(path : "onshape/std/string.fs", version : "1930.0");
-import(path : "onshape/std/debug.fs", version : "1930.0");
-import(path : "onshape/std/coordSystem.fs", version : "1930.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
-import(path : "onshape/std/evaluate.fs", version : "1930.0");
-import(path : "onshape/std/feature.fs", version : "1930.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1930.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1930.0");
-import(path : "onshape/std/primitives.fs", version : "1930.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
-import(path : "onshape/std/splitpart.fs", version : "1930.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
-import(path : "onshape/std/valueBounds.fs", version : "1930.0");
-import(path : "onshape/std/vector.fs", version : "1930.0");
+import(path : "onshape/std/attributes.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1948.0");
+import(path : "onshape/std/string.fs", version : "1948.0");
+import(path : "onshape/std/debug.fs", version : "1948.0");
+import(path : "onshape/std/coordSystem.fs", version : "1948.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
+import(path : "onshape/std/evaluate.fs", version : "1948.0");
+import(path : "onshape/std/feature.fs", version : "1948.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1948.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1948.0");
+import(path : "onshape/std/primitives.fs", version : "1948.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
+import(path : "onshape/std/splitpart.fs", version : "1948.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
+import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+import(path : "onshape/std/vector.fs", version : "1948.0");
 
 
 
@@ -50,16 +50,6 @@ const CHAMFER_ANGLE_BOUNDS_EXTERNAL_THREAD =
     (degree) : [0.1, 30, 89],
     (radian) : PI / 6
 } as AngleBoundSpec;
-
-const EXTERNAL_THREAD_DIAMETER_BOUNDS =
-{
-            (millimeter) : [1e-5, 5.0, 100000],
-            (centimeter) : 0.5,
-            (meter) : 0.005,
-            (inch) : 0.25,
-            (foot) : 0.02,
-            (yard) : 0.007
-        } as LengthBoundSpec;
 
 const EXTERNAL_THREAD_DEPTH_BOUNDS =
 {

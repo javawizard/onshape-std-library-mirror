@@ -1,34 +1,35 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1930.0");
-import(path : "onshape/std/boolean.fs", version : "1930.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1930.0");
-import(path : "onshape/std/box.fs", version : "1930.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1930.0");
-import(path : "onshape/std/containers.fs", version : "1930.0");
-import(path : "onshape/std/coordSystem.fs", version : "1930.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1930.0");
-import(path : "onshape/std/evaluate.fs", version : "1930.0");
-import(path : "onshape/std/feature.fs", version : "1930.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1930.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1930.0");
-import(path : "onshape/std/mathUtils.fs", version : "1930.0");
-import(path : "onshape/std/revolve.fs", version : "1930.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1930.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
-import(path : "onshape/std/sketch.fs", version : "1930.0");
-import(path : "onshape/std/string.fs", version : "1930.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
-import(path : "onshape/std/tool.fs", version : "1930.0");
-import(path : "onshape/std/valueBounds.fs", version : "1930.0");
+import(path : "onshape/std/attributes.fs", version : "1948.0");
+import(path : "onshape/std/boolean.fs", version : "1948.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1948.0");
+import(path : "onshape/std/box.fs", version : "1948.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1948.0");
+import(path : "onshape/std/coordSystem.fs", version : "1948.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1948.0");
+import(path : "onshape/std/evaluate.fs", version : "1948.0");
+import(path : "onshape/std/feature.fs", version : "1948.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1948.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1948.0");
+import(path : "onshape/std/mathUtils.fs", version : "1948.0");
+import(path : "onshape/std/revolve.fs", version : "1948.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1948.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
+import(path : "onshape/std/sketch.fs", version : "1948.0");
+import(path : "onshape/std/string.fs", version : "1948.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
+import(path : "onshape/std/tool.fs", version : "1948.0");
+import(path : "onshape/std/valueBounds.fs", version : "1948.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1930.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1930.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1930.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1948.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1948.0");
+export import(path : "onshape/std/tolerance.fs", version : "1948.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -117,6 +118,17 @@ const HOLE_FEATURE_COUNT_VARIABLE_NAME = "-holeFeatureCount"; // Not a valid ide
 // When `isTappedThrough` is set to `true`, `tappedDepth` should be set to a consistent value to prevent issues in
 // drawings tables. The value in question is unimportant, so we will use 0.
 const TAPPED_DEPTH_FOR_TAPPED_THROUGH = 0 * meter;
+
+const HOLE_DIAMETER_NAME = "Diameter";
+const HOLE_DEPTH_NAME = "Depth";
+const C_BORE_DIAMETER_NAME = "Counterbore diameter";
+const C_BORE_DEPTH_NAME = "Counterbore depth";
+const C_SINK_DIAMETER_NAME = "Countersink diameter";
+const C_SINK_ANGLE_NAME = "Countersink angle";
+const TAP_DRILL_DIAMETER_NAME = "Tap drill diameter";
+const TIP_ANGLE_NAME = "Tip angle";
+const TAPPED_DEPTH_NAME = "Tapped depth";
+const TAPPED_ANGLE_NAME = "Tapped angle";
 
 /*
 * JAR/IB: The call structure of the principal functions in this file is something like this:
@@ -211,32 +223,38 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.standardBlindInLast is LookupTablePath;
         }
 
-        annotation { "Name" : "Diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+        annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
         isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
+        defineLengthTolerance(definition, "holeDiameter", HOLE_DIAMETER_NAME);
 
         if (definition.style == HoleStyle.C_BORE)
         {
-            annotation { "Name" : "Counterbore diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+            annotation { "Name" : C_BORE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cBoreDiameter, HOLE_BORE_DIAMETER_BOUNDS);
+        defineLengthTolerance(definition, "cBoreDiameter", C_BORE_DIAMETER_NAME);
 
-            annotation { "Name" : "Counterbore depth", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+            annotation { "Name" : C_BORE_DEPTH_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cBoreDepth, HOLE_BORE_DEPTH_BOUNDS);
+        defineLengthTolerance(definition, "cBoreDepth", C_BORE_DEPTH_NAME);
         }
         else if (definition.style == HoleStyle.C_SINK)
         {
-            annotation { "Name" : "Countersink diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+            annotation { "Name" : C_SINK_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cSinkDiameter, HOLE_BORE_DIAMETER_BOUNDS);
+            defineLengthTolerance(definition, "cSinkDiameter", C_SINK_DIAMETER_NAME);
 
-            annotation { "Name" : "Countersink angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : C_SINK_ANGLE_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isAngle(definition.cSinkAngle, CSINK_ANGLE_BOUNDS);
+            defineAngleTolerance(definition, "cSinkAngle", C_SINK_ANGLE_NAME);
         }
 
         if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
         {
             if (definition.tapDrillDiameter != undefined)
             {
-                annotation { "Name" : "Tap drill diameter", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                annotation { "Name" : TAP_DRILL_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
                 isLength(definition.tapDrillDiameter, HOLE_DIAMETER_BOUNDS);
+                defineLengthTolerance(definition, "tapDrillDiameter", TAP_DRILL_DIAMETER_NAME);
             }
         }
 
@@ -244,6 +262,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             annotation { "Name" : "Tap major diameter", "UIHint" : ["ALWAYS_HIDDEN"] }
             isLength(definition.majorDiameter, HOLE_MAJOR_DIAMETER_BOUNDS);
+            // We don't define a tolerance here because it is always hidden
         }
 
         /*
@@ -256,16 +275,18 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.endStyle != HoleEndStyle.THROUGH)
         {
-            annotation { "Name" : "Depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
+            defineLengthTolerance(definition, "holeDepth", HOLE_DEPTH_NAME);
 
             annotation { "Name" : "Tip angle style", "UIHint" : UIHint.SHOW_LABEL }
             definition.tipAngleStyle is TipAngleStyle;
 
             if (definition.tipAngleStyle == TipAngleStyle.CUSTOM)
             {
-                annotation { "Name" : "Tip angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : TIP_ANGLE_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isAngle(definition.tipAngle, TIP_ANGLE_BOUNDS);
+                defineAngleTolerance(definition, "tipAngle", TIP_ANGLE_NAME);
             }
         }
         if (definition.showTappedDepth)
@@ -278,13 +299,14 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
             {
-                annotation { "Name" : "Tapped depth", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : TAPPED_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+                defineLengthTolerance(definition, "tappedDepth", TAPPED_DEPTH_NAME);
             }
 
             if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
             {
-                annotation { "Name" : "Tapped angle", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                annotation { "Name" : TAPPED_ANGLE_NAME, "UIHint" : UIHint.ALWAYS_HIDDEN }
                 isAngle(definition.tappedAngle, HOLE_TAPPED_ANGLE_BOUNDS);
             }
 
@@ -396,6 +418,20 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             reportFeatureInfo(context, id, ErrorStringEnum.HOLE_CBORE_CSINK_VALUES_NON_STD);
         }
 
+        if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1945_HOLE_CSINK_TOLERANCE_BOUNDS_CHECK))
+        {
+            const cSinkAngleToleranceInfo = getToleranceInfo(definition, "cSinkAngle");
+            const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, cSinkAngleToleranceInfo);
+            if (cSinkAngleBounds[0] < 0 * degree)
+            {
+                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_NARROW, ["cSinkAngle"]);
+            }
+            if (cSinkAngleBounds[1] > 180 * degree)
+            {
+                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_WIDE, ["cSinkAngle"]);
+            }
+        }
+
         // ------------- Definition adjustment -------------
 
         if (definition.tipAngleStyle == TipAngleStyle.DEGREE118)
@@ -480,7 +516,28 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             tappedDepth : 0.5 * inch,
             tappedAngle : 0.0 * degree,
             tapClearance : 3,
-            isTappedThrough : false
+            isTappedThrough : false,
+
+            // Defaults for precision and tolerance. These are needed or else
+            // the upgrade task fails for old holes.
+            holeDiameterPrecision : PrecisionType.DEFAULT,
+            holeDiameterToleranceType : ToleranceType.NONE,
+            cBoreDiameterPrecision : PrecisionType.DEFAULT,
+            cBoreDiameterToleranceType : ToleranceType.NONE,
+            cBoreDepthPrecision : PrecisionType.DEFAULT,
+            cBoreDepthToleranceType : ToleranceType.NONE,
+            cSinkDiameterPrecision : PrecisionType.DEFAULT,
+            cSinkDiameterToleranceType : ToleranceType.NONE,
+            tapDrillDiameterPrecision : PrecisionType.DEFAULT,
+            tapDrillDiameterToleranceType : ToleranceType.NONE,
+            holeDepthPrecision : PrecisionType.DEFAULT,
+            holeDepthToleranceType : ToleranceType.NONE,
+            tappedDepthPrecision : PrecisionType.DEFAULT,
+            tappedDepthToleranceType : ToleranceType.NONE,
+            cSinkAnglePrecision : PrecisionType.DEFAULT,
+            cSinkAngleToleranceType : ToleranceType.NONE,
+            tipAnglePrecision : PrecisionType.DEFAULT,
+            tipAngleToleranceType : ToleranceType.NONE
         });
 
 function isTaperedPipeTapHole(definition is map) returns boolean
@@ -1356,64 +1413,64 @@ function reduceLocations(context is Context, rawLocationQuery is Query) returns 
 
 const TIP_ANGLE_BOUNDS =
 {
-            (degree) : [0.1, 118, 180],
-            (radian) : 0.5 * PI
-        } as AngleBoundSpec;
+    (degree) : [0.1, 118, 180],
+    (radian) : 0.5 * PI
+} as AngleBoundSpec;
 
 const HOLE_CLEARANCE_BOUNDS =
 {
-            (unitless) : [0, 3, 500]
-        } as RealBoundSpec;
+    (unitless) : [0, 3, 500]
+} as RealBoundSpec;
 
 const HOLE_DIAMETER_BOUNDS =
 {
-            (meter) : [1e-5, 0.005, 500],
-            (centimeter) : 0.5,
-            (millimeter) : 5.0,
-            (inch) : 0.25,
-            (foot) : 0.02,
-            (yard) : 0.007
-        } as LengthBoundSpec;
+    (meter) : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch) : 0.25,
+    (foot) : 0.02,
+    (yard) : 0.007
+} as LengthBoundSpec;
 
 const HOLE_MAJOR_DIAMETER_BOUNDS =
 {
-            (meter) : [1e-5, 0.005, 500],
-            (centimeter) : 0.5,
-            (millimeter) : 5.0,
-            (inch) : 0.25,
-            (foot) : 0.02,
-            (yard) : 0.007
-        } as LengthBoundSpec;
+    (meter) : [1e-5, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch) : 0.25,
+    (foot) : 0.02,
+    (yard) : 0.007
+} as LengthBoundSpec;
 
 const HOLE_BORE_DIAMETER_BOUNDS =
 {
-            (meter) : [1e-5, 0.01, 500],
-            (centimeter) : 1.0,
-            (millimeter) : 10.0,
-            (inch) : 0.5,
-            (foot) : 0.04,
-            (yard) : 0.014
-        } as LengthBoundSpec;
+    (meter) : [1e-5, 0.01, 500],
+    (centimeter) : 1.0,
+    (millimeter) : 10.0,
+    (inch) : 0.5,
+    (foot) : 0.04,
+    (yard) : 0.014
+} as LengthBoundSpec;
 
 const HOLE_DEPTH_BOUNDS =
 {
-            (meter) : [1e-5, 0.012, 500],
-            (centimeter) : 1.2,
-            (millimeter) : 12.0,
-            (inch) : 0.5,
-            (foot) : 0.04,
-            (yard) : 0.014
-        } as LengthBoundSpec;
+    (meter) : [1e-5, 0.012, 500],
+    (centimeter) : 1.2,
+    (millimeter) : 12.0,
+    (inch) : 0.5,
+    (foot) : 0.04,
+    (yard) : 0.014
+} as LengthBoundSpec;
 
 const HOLE_BORE_DEPTH_BOUNDS =
 {
-            (meter) : [0.0, 0.005, 500],
-            (centimeter) : 0.5,
-            (millimeter) : 5.0,
-            (inch) : 0.25,
-            (foot) : 0.02,
-            (yard) : 0.007
-        } as LengthBoundSpec;
+    (meter) : [0.0, 0.005, 500],
+    (centimeter) : 0.5,
+    (millimeter) : 5.0,
+    (inch) : 0.25,
+    (foot) : 0.02,
+    (yard) : 0.007
+} as LengthBoundSpec;
 
 const HOLE_TAPERED_PIPE_TAP_ANGLE = 1.789911;
 const HOLE_TAPERED_PIPE_TAP_CLEARANCE = 5;
@@ -2151,7 +2208,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         {
             isLastTarget = (target == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target);
         }
-        var featureDefinitionForAttribute = adjustDefinitionForAttribute(featureDefinition, sectionFaceTypes, isLastTarget, depthInPart);
+        var featureDefinitionForAttribute = adjustDefinitionForAttribute(context, featureDefinition, sectionFaceTypes, isLastTarget, depthInPart);
 
         // Adjust `partialThrough`
         if (featureDefinitionForAttribute.endStyle == HoleEndStyle.THROUGH)
@@ -2272,7 +2329,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
             }
         }
 
-        var holeDefinitionForAttribute = adjustDefinitionForAttribute(holeDefinition, sectionFaceTypes, part == lastBody, depthInPart);
+        var holeDefinitionForAttribute = adjustDefinitionForAttribute(context, holeDefinition, sectionFaceTypes, part == lastBody, depthInPart);
 
         // Adjust `partialThrough`
         if (holeDefinitionForAttribute.endStyle == HoleEndStyle.THROUGH)
@@ -2313,7 +2370,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
 }
 
 // This function does not handle `partialThrough` or `isTappedThrough`.  Caller should follow up with adjustments to those parameters.
-function adjustDefinitionForAttribute(featureDefinition is map, sectionFaceTypes is map, isLastTarget is boolean, depthInPart) returns map
+function adjustDefinitionForAttribute(context is Context, featureDefinition is map, sectionFaceTypes is map, isLastTarget is boolean, depthInPart) returns map
 {
     var modifiedFeatureDefinition = featureDefinition;
     // Remove countersink and counterbore if necessary
@@ -2353,6 +2410,10 @@ function adjustDefinitionForAttribute(featureDefinition is map, sectionFaceTypes
     }
     if (isLastTarget && tappedHoleWithOffset(featureDefinition)) // If this is a tapped hole, adjust diameter
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1947_TAP_DRILL_DIAMETER_FIX))
+        {
+            modifiedFeatureDefinition = copyToleranceInfo(featureDefinition, modifiedFeatureDefinition, "tapDrillDiameter", "holeDiameter");
+        }
         modifiedFeatureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
     }
     return modifiedFeatureDefinition;
@@ -2432,6 +2493,9 @@ function createHoleAttribute(context is Context, createdUsingNewHolePipeline is 
 
     // add common properties
     holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinition);
+
+    // add properties specific to precision and tolerance
+    holeAttribute = addToleranceAttributeProperties(holeAttribute, holeDefinition);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
     holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinition);
@@ -2614,6 +2678,52 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     }
 
     return resultAttribute;
+}
+
+function addToleranceForField(tolerances is map, field is string, definition is map) returns map
+{
+    const tolerance = getToleranceInfo(definition, field);
+
+    // Do not include the tolerance info if it is set to all default values
+    if (isToleranceSet(tolerance))
+    {
+        tolerances[field] = tolerance;
+    }
+
+    return tolerances;
+}
+
+const TOLERANCED_FIELDS_FOR_ATTRIBUTE = [
+  "holeDiameter",
+  "holeDepth",
+  "cBoreDiameter",
+  "cBoreDepth",
+  "cSinkDiameter",
+  "cSinkAngle",
+  "tapDrillDiameter",
+  "tappedDepth"
+];
+
+function addToleranceAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
+{
+    var tolerances = {};
+
+    var tolerancedFields = TOLERANCED_FIELDS_FOR_ATTRIBUTE;
+
+    // Only include tipAngle tolerance if we have the custom tip angle style selected
+    if (holeDefinition.tipAngleStyle == TipAngleStyle.CUSTOM)
+    {
+        tolerancedFields = append(tolerancedFields, "tipAngle");
+    }
+
+    for (var field in tolerancedFields)
+    {
+        tolerances = addToleranceForField(tolerances, field, holeDefinition);
+    }
+
+    attribute.tolerances = tolerances;
+
+    return attribute;
 }
 
 function addSimpleHoleAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute

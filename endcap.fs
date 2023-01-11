@@ -1,31 +1,31 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "1930.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1930.0");
-import(path : "onshape/std/chamfer.fs", version : "1930.0");
-import(path : "onshape/std/containers.fs", version : "1930.0");
-import(path : "onshape/std/cutlistMath.fs", version : "1930.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1930.0");
-import(path : "onshape/std/coordSystem.fs", version : "1930.0");
-import(path : "onshape/std/error.fs", version : "1930.0");
-import(path : "onshape/std/evaluate.fs", version : "1930.0");
-import(path : "onshape/std/feature.fs", version : "1930.0");
-import(path : "onshape/std/frameUtils.fs", version : "1930.0");
-import(path : "onshape/std/fillet.fs", version : "1930.0");
-import(path : "onshape/std/math.fs", version : "1930.0");
-import(path : "onshape/std/manipulator.fs", version : "1930.0");
-import(path : "onshape/std/offsetSurface.fs", version : "1930.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1930.0");
-import(path : "onshape/std/string.fs", version : "1930.0");
-import(path : "onshape/std/sketch.fs", version : "1930.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1930.0");
-import(path : "onshape/std/splitpart.fs", version : "1930.0");
-import(path : "onshape/std/units.fs", version : "1930.0");
-import(path : "onshape/std/valueBounds.fs", version : "1930.0");
-import(path : "onshape/std/vector.fs", version : "1930.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1948.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1948.0");
+import(path : "onshape/std/chamfer.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1948.0");
+import(path : "onshape/std/cutlistMath.fs", version : "1948.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
+import(path : "onshape/std/coordSystem.fs", version : "1948.0");
+import(path : "onshape/std/error.fs", version : "1948.0");
+import(path : "onshape/std/evaluate.fs", version : "1948.0");
+import(path : "onshape/std/feature.fs", version : "1948.0");
+import(path : "onshape/std/frameUtils.fs", version : "1948.0");
+import(path : "onshape/std/fillet.fs", version : "1948.0");
+import(path : "onshape/std/math.fs", version : "1948.0");
+import(path : "onshape/std/manipulator.fs", version : "1948.0");
+import(path : "onshape/std/offsetSurface.fs", version : "1948.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
+import(path : "onshape/std/string.fs", version : "1948.0");
+import(path : "onshape/std/sketch.fs", version : "1948.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
+import(path : "onshape/std/splitpart.fs", version : "1948.0");
+import(path : "onshape/std/units.fs", version : "1948.0");
+import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+import(path : "onshape/std/vector.fs", version : "1948.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
@@ -479,21 +479,16 @@ function generateProfileCircle(context is Context, id is Id, definition is map, 
 /** @internal */
 function getOuterInnerFace(context is Context, id is Id, isOuter is boolean, faceGeometryMap is map) returns Query
 {
-    var loopsArray = faceGeometryMap.loopsArray;
-    var loopCounter = faceGeometryMap.loopsCount;
-    var pathArray = makeArray(loopCounter, 0);
-
-    for (var i = 0; i < loopCounter; i += 1)
-    {
-        const bBox = evBox3d(context, {
+    const loopsArray = faceGeometryMap.loopsArray;
+    const loopCounter = faceGeometryMap.loopsCount;
+    const pathArray = loopCounter == 0 ? [] : range(0, loopCounter - 1)->mapArray(function(i)
+        {
+            const bBox = evBox3d(context, {
                     "topology" : loopsArray[i],
                     "tight" : true
                 });
-        const size = box3dDiagonalLength(bBox);
-        pathArray[i] = { "size" : size, "topology" : loopsArray[i] };
-    }
-
-    pathArray = sort(pathArray, function(a, b)
+            return { "size" : box3dDiagonalLength(bBox), "topology" : loopsArray[i] };
+        }) -> sort(function(a, b)
         {
             return b.size - a.size;
         });
@@ -504,31 +499,6 @@ function getOuterInnerFace(context is Context, id is Id, isOuter is boolean, fac
             });
 
     return qCreatedBy(fillSurfaceId, EntityType.FACE);
-}
-
-/** @internal */
-export function getInnerBoundary(context is Context, faceGeometryMap is map) returns Query
-{
-    var loopsArray = faceGeometryMap.loopsArray;
-    var loopCounter = faceGeometryMap.loopsCount;
-    var pathArray = makeArray(loopCounter, 0);
-
-    for (var i = 0; i < loopCounter; i += 1)
-    {
-        var bBox = evBox3d(context, {
-                "topology" : loopsArray[i],
-                "tight" : true
-            });
-        var size = box3dDiagonalLength(bBox);
-        pathArray[i] = { "size" : size, "topology" : loopsArray[i] };
-    }
-
-    pathArray = sort(pathArray, function(a, b)
-        {
-            return b.size - a.size;
-        });
-
-    return pathArray[1].topology;
 }
 
 /** @internal */
@@ -665,4 +635,3 @@ export function manipulatorChange(context is Context, definition is map, newMani
 
     return definition;
 }
-

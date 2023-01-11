@@ -1,4 +1,4 @@
-FeatureScript 1930; /* Automatically generated version */
+FeatureScript 1948; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2492,7 +2492,19 @@ export enum ErrorStringEnum
     /* Select a vertex or edge at the start position, and optionally an edge or face with the starting direction/curvature. */
     BRIDGING_CURVE_NO_START_SELECTION,
     /* Select a vertex or edge at the ending position, and optionally an edge or face with the ending direction/curvature. */
-    BRIDGING_CURVE_NO_END_SELECTION
+    BRIDGING_CURVE_NO_END_SELECTION,
+    /* Camera position data is invalid. */
+    NAMED_VIEW_INVALID,
+    /* Same surface cannot be used twice. */
+    MUTUAL_TRIM_SAME_SURFACE_USED,
+    /* Select one surface. */
+    MUTUAL_TRIM_SURFACE_NOT_SELECTED,
+    /* Failed to perform a mutual trim operation. */
+    MUTUAL_TRIM_GENERIC_ERROR,
+    /* The toleranced countersink angle bounds must not be greater than 180 degrees. */
+    HOLE_CSINK_ANGLE_TOO_WIDE,
+    /* The toleranced countersink angle bounds must not be negative. */
+    HOLE_CSINK_ANGLE_TOO_NARROW
 }
 
 
