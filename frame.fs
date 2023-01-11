@@ -1872,18 +1872,6 @@ function isButtCorner(cornerType is FrameCornerType) returns boolean
     return (cornerType == FrameCornerType.BUTT || cornerType == FrameCornerType.COPED_BUTT);
 }
 
-function rotateArray(elements is array, step is number) returns array
-{
-    const size = size(elements);
-    var outputArray = makeArray(size);
-    for (var index = 0; index < size; index += 1)
-    {
-        const newIndex = (index + step) % size;
-        outputArray[newIndex] = elements[index];
-    }
-    return outputArray;
-}
-
 function getSweepBodies(pathData is map) returns array
 {
     const bodies = mapArray(pathData.sweepData, function(sweepData)

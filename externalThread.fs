@@ -51,16 +51,6 @@ const CHAMFER_ANGLE_BOUNDS_EXTERNAL_THREAD =
     (radian) : PI / 6
 } as AngleBoundSpec;
 
-const EXTERNAL_THREAD_DIAMETER_BOUNDS =
-{
-            (millimeter) : [1e-5, 5.0, 100000],
-            (centimeter) : 0.5,
-            (meter) : 0.005,
-            (inch) : 0.25,
-            (foot) : 0.02,
-            (yard) : 0.007
-        } as LengthBoundSpec;
-
 const EXTERNAL_THREAD_DEPTH_BOUNDS =
 {
             (millimeter) : [0.1, 10.0, 200000],

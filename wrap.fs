@@ -576,8 +576,6 @@ function getDefaultAnchors(context is Context, sourceInfo is map, destinationCyl
 
 // - getManipulatorInformation -
 
-const MANIPULATOR_BASE_OFFSET_SCALE = 0.25;
-
 /**
  * Get some auxiliary information which helps construct the uv shift manipulators.
  *

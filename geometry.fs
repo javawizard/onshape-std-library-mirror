@@ -53,6 +53,7 @@ export import(path : "onshape/std/mateConnector.fs", version : "✨");
 export import(path : "onshape/std/mirror.fs", version : "✨");
 export import(path : "onshape/std/modifyFillet.fs", version : "✨");
 export import(path : "onshape/std/moveFace.fs", version : "✨");
+export import(path : "onshape/std/mutualTrim.fs", version : "✨");
 export import(path : "onshape/std/nameEntity.fs", version : "✨");
 export import(path : "onshape/std/offsetSurface.fs", version : "✨");
 export import(path : "onshape/std/pattern.fs", version : "✨");

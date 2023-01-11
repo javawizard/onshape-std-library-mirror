@@ -479,21 +479,16 @@ function generateProfileCircle(context is Context, id is Id, definition is map, 
 /** @internal */
 function getOuterInnerFace(context is Context, id is Id, isOuter is boolean, faceGeometryMap is map) returns Query
 {
-    var loopsArray = faceGeometryMap.loopsArray;
-    var loopCounter = faceGeometryMap.loopsCount;
-    var pathArray = makeArray(loopCounter, 0);
-
-    for (var i = 0; i < loopCounter; i += 1)
-    {
-        const bBox = evBox3d(context, {
+    const loopsArray = faceGeometryMap.loopsArray;
+    const loopCounter = faceGeometryMap.loopsCount;
+    const pathArray = loopCounter == 0 ? [] : range(0, loopCounter - 1)->mapArray(function(i)
+        {
+            const bBox = evBox3d(context, {
                     "topology" : loopsArray[i],
                     "tight" : true
                 });
-        const size = box3dDiagonalLength(bBox);
-        pathArray[i] = { "size" : size, "topology" : loopsArray[i] };
-    }
-
-    pathArray = sort(pathArray, function(a, b)
+            return { "size" : box3dDiagonalLength(bBox), "topology" : loopsArray[i] };
+        }) -> sort(function(a, b)
         {
             return b.size - a.size;
         });
@@ -504,31 +499,6 @@ function getOuterInnerFace(context is Context, id is Id, isOuter is boolean, fac
             });
 
     return qCreatedBy(fillSurfaceId, EntityType.FACE);
-}
-
-/** @internal */
-export function getInnerBoundary(context is Context, faceGeometryMap is map) returns Query
-{
-    var loopsArray = faceGeometryMap.loopsArray;
-    var loopCounter = faceGeometryMap.loopsCount;
-    var pathArray = makeArray(loopCounter, 0);
-
-    for (var i = 0; i < loopCounter; i += 1)
-    {
-        var bBox = evBox3d(context, {
-                "topology" : loopsArray[i],
-                "tight" : true
-            });
-        var size = box3dDiagonalLength(bBox);
-        pathArray[i] = { "size" : size, "topology" : loopsArray[i] };
-    }
-
-    pathArray = sort(pathArray, function(a, b)
-        {
-            return b.size - a.size;
-        });
-
-    return pathArray[1].topology;
 }
 
 /** @internal */
@@ -665,4 +635,3 @@ export function manipulatorChange(context is Context, definition is map, newMani
 
     return definition;
 }
-

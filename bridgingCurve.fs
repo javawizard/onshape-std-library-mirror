@@ -76,9 +76,9 @@ annotation { "Feature Type Name" : "Bridging curve",
 export const bridgingCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX || EntityType.FACE }
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO) || BodyType.MATE_CONNECTOR }
         definition.preselectedEntities is Query;
-        annotation { "Name" : "Start", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO), "MaxNumberOfPicks" : 2 }
+        annotation { "Name" : "Start", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 2 }
         definition.side1 is Query;
         annotation { "Name" : "Match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match1 is BridgingCurveMatchType;
@@ -87,7 +87,7 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
             definition.flip1 is boolean;
         }
-        annotation { "Name" : "End", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO), "MaxNumberOfPicks" : 2 }
+        annotation { "Name" : "End", "Filter" : EntityType.EDGE || EntityType.VERTEX || (EntityType.FACE && ConstructionObject.NO) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 2 }
         definition.side2 is Query;
         annotation { "Name" : "Match", "Column Name" : "Second match", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE, "Default" : BridgingCurveMatchType.TANGENCY }
         definition.match2 is BridgingCurveMatchType;
@@ -271,6 +271,7 @@ predicate canBeSideQueries(value)
     value.vertex == undefined || value.vertex is Query;
     value.edge == undefined || value.edge is Query;
     value.face == undefined || value.face is Query;
+    value.position == undefined || value.position is Vector;
 }
 
 /**
@@ -345,12 +346,23 @@ function makeSideQueries(context is Context, side is Query) returns SideQueries
     var sideQueries is SideQueries = {
         "vertex" : undefined,
         "edge" : undefined,
-        "face" : undefined
+        "face" : undefined,
+        "position" : undefined
     } as SideQueries;
     const vertex = qEntityFilter(side, EntityType.VERTEX);
     if (size(evaluateQuery(context, vertex)) == 1)
     {
         sideQueries.vertex = vertex;
+        sideQueries.position = evVertexPoint(context, {
+                "vertex" : vertex
+        });
+    }
+    const mateConnector = qBodyType(side, BodyType.MATE_CONNECTOR);
+    if (size(evaluateQuery(context, mateConnector)) == 1)
+    {
+        sideQueries.position = evMateConnector(context, {
+                "mateConnector" : mateConnector
+        }).origin;
     }
     const edge = qEntityFilter(side, EntityType.EDGE);
     if (size(evaluateQuery(context, edge)) == 1)
@@ -365,32 +377,41 @@ function makeSideQueries(context is Context, side is Query) returns SideQueries
     return sideQueries;
 }
 
+function checkFaceContainsEdge(context is Context, face is Query, edge is Query) returns boolean
+{
+    var results = evEdgeCurvatures(context, {
+                                    "edge" : edge,
+                                    "parameters" : [0, 0.3, 0.7, 1]
+    });
+    for (var result in results)
+    {
+        if (isQueryEmpty(context, qContainsPoint(face, result.frame.origin)))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 function checkSideIsValid(context is Context, sideQueries is SideQueries, sideName is string, sideErrorMessage is string)
 {
-    if (sideQueries.vertex == undefined && sideQueries.edge == undefined && sideQueries.face == undefined)
+    if (sideQueries.position == undefined && sideQueries.edge == undefined && sideQueries.face == undefined)
     {
         throw regenError(sideErrorMessage, [sideName]);
     }
     // We need at least a vertex or an edge on each side.
-    if (sideQueries.vertex == undefined && sideQueries.edge == undefined)
+    if (sideQueries.position == undefined && sideQueries.edge == undefined)
     {
         throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_OR_EDGE_ON_SIDE, [sideName]);
     }
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1920_CONNECTING_CURVE_BETTER_INPUT_CHECKS) && sideQueries.face != undefined)
     {
-        // We need to make sure the face contains vertex or the edge
-        if (sideQueries.vertex != undefined)
+        // We need to make sure the face contains the vertex or edge
+        if (sideQueries.position != undefined)
         {
-            // Either the vertex is a face vertex or it's coincident with the face
-            var adjacentVertices = qAdjacent(sideQueries.face, AdjacencyType.VERTEX, EntityType.VERTEX);
-            if (isQueryEmpty(context, qIntersection([adjacentVertices, sideQueries.vertex])))
+            if (isQueryEmpty(context, qContainsPoint(sideQueries.face, sideQueries.position)))
             {
-                if (isQueryEmpty(context, qContainsPoint(sideQueries.face, evVertexPoint(context, {
-                                                         "vertex" : sideQueries.vertex
-                                                         }))))
-                {
-                    throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_BELONG_TO_FACE, [sideName]);
-                }
+                throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_BELONG_TO_FACE, [sideName]);
             }
         }
         else if (sideQueries.edge != undefined)
@@ -399,16 +420,9 @@ function checkSideIsValid(context is Context, sideQueries is SideQueries, sideNa
             var adjacentEdges = qAdjacent(sideQueries.face, AdjacencyType.EDGE, EntityType.EDGE);
             if (isQueryEmpty(context, qIntersection([adjacentEdges, sideQueries.edge])))
             {
-                var results = evEdgeCurvatures(context, {
-                        "edge" : sideQueries.edge,
-                        "parameters" : [0, 0.3, 0.7, 1]
-                });
-                for (var result in results)
+                if (!checkFaceContainsEdge(context, sideQueries.face, sideQueries.edge))
                 {
-                    if (isQueryEmpty(context, qContainsPoint(sideQueries.face, result.frame.origin)))
-                    {
-                        throw regenError(ErrorStringEnum.BRIDGING_CURVE_EDGE_BELONG_TO_FACE, [sideName]);
-                    }
+                    throw regenError(ErrorStringEnum.BRIDGING_CURVE_EDGE_BELONG_TO_FACE, [sideName]);
                 }
             }
         }
@@ -430,11 +444,11 @@ function getSideDataAndAddManipulators(context is Context, definition is map, ad
         checkSideIsValid(context, sideQueries1, "side1", ErrorStringEnum.BRIDGING_CURVE_NO_START_SELECTION);
         checkSideIsValid(context, sideQueries2, "side2", ErrorStringEnum.BRIDGING_CURVE_NO_END_SELECTION);
 
-        if (addManip && definition.editEdgePositions && sideQueries1.vertex == undefined && sideQueries1.edge != undefined)
+        if (addManip && definition.editEdgePositions && sideQueries1.position == undefined && sideQueries1.edge != undefined)
         {
             addTangentManipulator(context, id.id, SIDE_1_MANIPULATOR, sideQueries1.edge, definition.startEdgeParameter, "startEdgeParameter");
         }
-        if (addManip && definition.editEdgePositions && sideQueries2.vertex == undefined && sideQueries2.edge != undefined)
+        if (addManip && definition.editEdgePositions && sideQueries2.position == undefined && sideQueries2.edge != undefined)
         {
             addTangentManipulator(context, id.id, SIDE_2_MANIPULATOR, sideQueries2.edge, definition.endEdgeParameter, "endEdgeParameter");
         }
@@ -508,13 +522,9 @@ function computeCurvature(curvatures is FaceCurvatureResult, v is Vector)
 
 function getPointLocationFromVertexOrParameter(context is Context, sideQueries is SideQueries, parameter is number, useParameter is boolean)
 {
-    const vertex = sideQueries.vertex;
-
-    if (vertex != undefined)
+    if (sideQueries.position != undefined)
     {
-        return evVertexPoint(context, {
-                    "vertex" : vertex
-                });
+        return sideQueries.position;
     }
     const edge = sideQueries.edge;
     const face = sideQueries.face;
@@ -765,55 +775,111 @@ function showWire(context is Context, id is Id, wire is Query)
     abortFeature(context, showWireId);
 }
 
+function checkSidesInPreselectionEditingLogic(context is Context, sides is array) returns boolean
+{
+    if (size(sides) > 2)
+    {
+        return false;
+    }
+    const sideCount = size(sides);
+    for (var i = 0; i < sideCount; i += 1)
+    {
+        var side = sides[i];
+        if (size(evaluateQuery(context, side)) > 2)
+        {
+            return false;
+        }
+        const vertices = evaluateQuery(context, qEntityFilter(side, EntityType.VERTEX));
+        const edges = evaluateQuery(context, qEntityFilter(side, EntityType.EDGE));
+        const faces = evaluateQuery(context, qEntityFilter(side, EntityType.FACE));
+
+        const vertexCount = size(vertices);
+        const edgeCount = size(edges);
+        const faceCount = size(faces);
+
+        if (vertexCount > 2 || edgeCount > 2 || faceCount > 2)
+        {
+            return false;
+        }
+        for (var j = i+1; j < sideCount; j += 1)
+        {
+            if (!isQueryEmpty(context, qIntersection([side, sides[j]])))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 function bridgingCurvePreselectionEditingLogic(context is Context, oldDefinition is map, definition is map) returns map
 {
-
-    // We have a few things we want to do here but we're not going to be too clever. We could try to work out whether a point
-    // is isolated and the user wants a non-default POSITION bridging but it is more likely that they pre-selected points and
-    // now need to select an edge to correctly specify tangency.
-    // So we will limit the behavior to reshuffling of the selections.
-    // If the user started out with odd selections then we will ignore the pre-selections.
-
     const vertices = evaluateQuery(context, qEntityFilter(definition.preselectedEntities, EntityType.VERTEX));
     const edges = evaluateQuery(context, qEntityFilter(definition.preselectedEntities, EntityType.EDGE));
-    definition.preselectedEntities = qNothing();
+    const faces = evaluateQuery(context, qEntityFilter(definition.preselectedEntities, EntityType.FACE));
 
     const vertexCount = size(vertices);
     const edgeCount = size(edges);
+    const faceCount = size(faces);
 
-    if (vertexCount > 2 || edgeCount > 2 || vertexCount + edgeCount == 0)
+    if (vertexCount > 2 || edgeCount > 2 || faceCount > 2 || vertexCount + edgeCount + faceCount == 0)
     {
         return definition;
     }
 
-    if (vertexCount == 0)
+    var sides = faces;
+    for (var edge in edges)
     {
-        definition.side1 = edges[0];
-        if (edgeCount > 1)
+        var hasBeenAdded = false;
+        for (var i = 0; i < faceCount; i += 1)
         {
-            definition.side2 = edges[1];
+            if (checkFaceContainsEdge(context, faces[i], edge))
+            {
+                sides[i] = qUnion([sides[i], edge]);
+                hasBeenAdded = true;
+            }
+        }
+        if (!hasBeenAdded)
+        {
+            sides = append(sides, edge);
         }
     }
-    else if (edgeCount == 0)
+
+    var sideCount = size(sides);
+    for (var vertex in vertices)
     {
-        definition.side1 = vertices[0];
-        if (vertexCount > 1)
+        var hasBeenAdded = false;
+        for (var i = 0; i < sideCount; i += 1)
         {
-            definition.side2 = vertices[1];
+            if (!isQueryEmpty(context, qContainsPoint(sides[i], evVertexPoint(context, {
+                    "vertex" : vertex
+            }))))
+            {
+                sides[i] = qUnion([sides[i], vertex]);
+                hasBeenAdded = true;
+            }
+        }
+        if (!hasBeenAdded)
+        {
+            sides = append(sides, vertex);
         }
     }
-    else if (edgeCount == 1)
+
+    if (!checkSidesInPreselectionEditingLogic(context, sides))
     {
-        definition = matchVerticesToEdge(context, definition, edges[0], vertices);
+        return definition;
     }
-    else if (vertexCount == 1)
+
+    sideCount = size(sides);
+    if (sideCount > 0)
     {
-        definition = matchEdgesToVertex(context, definition, vertices[0], edges);
+        definition.side1 = sides[0];
     }
-    else
+    if (sideCount > 1)
     {
-        definition = matchEdgeAndVertexPairs(context, definition, edges, vertices);
+        definition.side2 = sides[1];
     }
+
     return definition;
 }
 
@@ -840,8 +906,8 @@ function sideFlips(context is Context, oldDefinition is map, definition is map,
     }
     const sideQueries1 = makeSideQueries(context, definition.side1);
     const sideQueries2 = makeSideQueries(context, definition.side2);
-    const side1IsOnlyEdge = sideQueries1.edge != undefined && sideQueries1.vertex == undefined && sideQueries1.face == undefined;
-    const side2IsOnlyEdge = sideQueries2.edge != undefined && sideQueries2.vertex == undefined && sideQueries2.face == undefined;
+    const side1IsOnlyEdge = sideQueries1.edge != undefined && sideQueries1.position == undefined && sideQueries1.face == undefined;
+    const side2IsOnlyEdge = sideQueries2.edge != undefined && sideQueries2.position == undefined && sideQueries2.face == undefined;
     const canFlipSide1 = side1IsOnlyEdge && !specifiedParameters.flip1 && !specifiedParameters.startEdgeParameter;
     const canFlipSide2 = side2IsOnlyEdge && !specifiedParameters.flip2 && !specifiedParameters.endEdgeParameter;
     // We only want to flip if we only have an edge (ie we infer the edge point), the user has not manually flipped the tangency direction
@@ -874,150 +940,10 @@ export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefin
         definition = bridgingCurvePreselectionEditingLogic(context, oldDefinition, definition);
     }
 
-    definition.side1HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.VERTEX));
-    definition.side2HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.VERTEX));
+    definition.side1HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.VERTEX)) || !isQueryEmpty(context, qBodyType(definition.side1, BodyType.MATE_CONNECTOR));
+    definition.side2HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.VERTEX)) || !isQueryEmpty(context, qBodyType(definition.side2, BodyType.MATE_CONNECTOR));
 
     return sideFlips(context, oldDefinition, definition, specifiedParameters);
-}
-
-function matchVerticesToEdge(context is Context, definition is map, edge is Query, vertices is array) returns map
-{
-    const endVertices = matchVerticesAtEndsOfEdge(context, edge, vertices);
-    if (size(endVertices) == 0)
-    {
-        definition.side1 = edge;
-        if (size(vertices) == 1)
-        {
-            // Didn't match a vertex so assume it is the other end of the bridge
-            definition.side2 = vertices[0];
-        }
-    }
-    else if (size(endVertices) == 1)
-    {
-        definition.side1 = qUnion([edge, endVertices[0]]);
-        if (size(vertices) == 2)
-        {
-            // Matched one vertex but have two, so assume the other is at the other end
-            if (vertices[0] == endVertices[0])
-            {
-                definition.side2 = vertices[1];
-            }
-            else
-            {
-                definition.side2 = vertices[0];
-            }
-        }
-    }
-    else
-    {
-        // One edge, with both its vertices selected? Maybe the user wants to bridge the two ends of the edge
-        // So lets put the edge in both the queries
-        definition.side1 = qUnion([edge, endVertices[0]]);
-        definition.side2 = qUnion([edge, endVertices[1]]);
-    }
-    return definition;
-}
-
-function matchEdgesToVertex(context is Context, definition is map, vertex is Query, edges is array) returns map
-{
-    const matchedEdges = matchEdgesThatEndAtVertex(context, vertex, edges);
-    if (size(matchedEdges) == 0)
-    {
-        definition.side1 = vertex;
-        if (size(edges) == 1)
-        {
-            // Assume the edge is at the other side
-            definition.side2 = edges[0];
-        }
-    }
-    else if (size(matchedEdges) == 1)
-    {
-        definition.side1 = qUnion([vertex, matchedEdges[0]]);
-        if (size(edges) == 2)
-        {
-            // Matched one vertex but have two, so assume the other is at the other end
-            if (edges[0] == matchedEdges[0])
-            {
-                definition.side2 = edges[1];
-            }
-            else
-            {
-                definition.side2 = edges[0];
-            }
-        }
-    }
-    else
-    {
-        // Two matched edges? No idea what the user intends. Just throw one in the first box and one in the second
-        definition.side1 = qUnion([vertex, matchedEdges[0]]);
-        definition.side2 = matchedEdges[1];
-    }
-    return definition;
-}
-
-function matchEdgeAndVertexPairs(context is Context, definition is map, edges is array, vertices is array) returns map
-{
-    if (size(edges) != 2 || size(vertices) != 2)
-    {
-        return definition;
-    }
-    const matched1 = matchEdgesThatEndAtVertex(context, vertices[0], edges);
-    const matched2 = matchEdgesThatEndAtVertex(context, vertices[1], edges);
-    if (size(matched1) == 1 && size(matched2) == 1 && matched1[0] != matched2[0])
-    {
-        definition.side1 = qUnion([vertices[0], matched1[0]]);
-        definition.side2 = qUnion([vertices[1], matched2[0]]);
-    }
-    return definition;
-}
-
-function matchVerticesAtEndsOfEdge(context is Context, edge is Query, vertices is array) returns array
-{
-    const ends = evEdgeTangentLines(context, {
-                "edge" : edge,
-                "parameters" : [0, 1]
-            });
-    if (size(ends) != 2)
-    {
-        return [];
-    }
-
-    var matches = [];
-    for (var vertex in vertices)
-    {
-        const point = evVertexPoint(context, {
-                    "vertex" : vertex
-                });
-        if (tolerantEquals(point, ends[0].origin) || tolerantEquals(point, ends[1].origin))
-        {
-            matches = append(matches, vertex);
-        }
-    }
-    return matches;
-}
-
-function matchEdgesThatEndAtVertex(context is Context, vertex is Query, edges is array) returns array
-{
-    const point = evVertexPoint(context, {
-                "vertex" : vertex
-            });
-
-    var matches = [];
-    for (var edge in edges)
-    {
-        const ends = evEdgeTangentLines(context, {
-                    "edge" : edge,
-                    "parameters" : [0, 1]
-                });
-        if (size(ends) == 2)
-        {
-            if (tolerantEquals(point, ends[0].origin) || tolerantEquals(point, ends[1].origin))
-            {
-                matches = append(matches, edge);
-            }
-        }
-    }
-    return matches;
 }
 
 /**
@@ -1241,20 +1167,25 @@ function getDataForSideDeprecated(context is Context, side is Query, match is Br
         throw regenError(ErrorStringEnum.BRIDGING_CURVE_VERTEX_BOTH_SIDES, [sideName]);
     }
     sideQueries.vertex = points;
-    const point = evVertexPoint(context, { "vertex" : points });
+    sideQueries.position = evVertexPoint(context, { "vertex" : points });
 
-    return getDataForSideNoFace(context, sideQueries, match, flip, sideName, point, false, 0);
+    return getDataForSideNoFace(context, sideQueries, match, flip, sideName, sideQueries.position, false, 0);
 }
 
 function getDataForSideNoFace(context is Context, sideQueries is SideQueries, match is BridgingCurveMatchType, flip is boolean, sideName is string, sidePoint is Vector, useParameter is boolean, parameter is number) returns SideData
 {
-    var points = sideQueries.vertex;
+    var vertex = sideQueries.vertex;
     var edges = sideQueries.edge;
 
     if (edges == undefined && match != BridgingCurveMatchType.POSITION)
     {
+        // This means we have an implicit mate connector with no tangency/curvature entity
+        if (vertex == undefined)
+        {
+            throw regenError(ErrorStringEnum.BRIDGING_CURVE_ONE_EDGE_EACH_SIDE, [sideName]);
+        }
         // Try to get the edge from the vertex
-        edges = qAdjacent(points, AdjacencyType.VERTEX, EntityType.EDGE);
+        edges = qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE);
         var edgeCount = size(evaluateQuery(context, edges));
         if (edgeCount != 1)
         {
@@ -1263,9 +1194,10 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
     }
 
     var frame;
+    var position = sideQueries.position;
     if (match != BridgingCurveMatchType.POSITION)
     {
-        if (useParameter && points == undefined)
+        if (useParameter && position == undefined)
         {
             frame = evEdgeCurvature(context, {
                     "edge" : edges,
@@ -1274,19 +1206,38 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
         }
         else
         {
-            // This code deliberately only considers the ends of the edge but we could just as easily match to an
-            // edge that passes through the specified point but doesn't end there.
-            const frames = evEdgeCurvatures(context, {
-                        "edge" : edges,
-                        "parameters" : [0, 1]
-                    });
-            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1935_BRIDGING_CURVE_MATE_CONNECTOR))
             {
-                frame = findClosestEndFrame(sidePoint, frames[0], frames[1]);
+                const positionParameter = evDistance(context, {
+                        "side0" : edges,
+                        "side1" : sidePoint
+                    }).sides[0].parameter;
+
+                frame = evEdgeCurvature(context, {
+                        "edge" : edges,
+                        "parameter" : positionParameter
+                });
+                if (positionParameter < TOLERANCE.zeroLength)
+                {
+                    frame.frame.zAxis *= -1;
+                }
             }
             else
             {
-                frame = findMatchingEndFrame(sidePoint, frames[0], frames[1]);
+                // This code deliberately only considers the ends of the edge but we could just as easily match to an
+                // edge that passes through the specified point but doesn't end there.
+                const frames = evEdgeCurvatures(context, {
+                            "edge" : edges,
+                            "parameters" : [0, 1]
+                        });
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V606_TOLERANT_BRIDGING_CURVE))
+                {
+                    frame = findClosestEndFrame(sidePoint, frames[0], frames[1]);
+                }
+                else
+                {
+                    frame = findMatchingEndFrame(sidePoint, frames[0], frames[1]);
+                }
             }
         }
         if (frame == undefined)

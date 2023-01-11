@@ -2151,13 +2151,6 @@ function findIntersectionPoint(plane is Plane, line is Line) returns Vector
     return intersectionResult.intersection;
 }
 
-function getTotalArcLength(hemData is map) returns ValueWithUnits
-{
-    // Arc length = (arcAngle / (2 * pi)) * (2 * pi * r)
-    //            = arcAngle * r
-    return (hemData.arcAngle / radian) * hemData.arcRadius;
-}
-
 function throwHemTypeError(hemType is SMHemType)
 {
     throw "Unrecognized hem type: " ~ hemType;

@@ -50,6 +50,9 @@ precondition
         definition.value is Material;
     else if (definition.propertyType == PropertyType.EXCLUDE_FROM_BOM)
         definition.value is boolean;
+    else if (definition.propertyType == PropertyType.MASS_OVERRIDE)
+        ((definition.value is string) ||
+         (definition.value is ValueWithUnits && definition.value.unit == MASS_UNITS));
     else
         definition.value is string;
 

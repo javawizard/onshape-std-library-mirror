@@ -2338,6 +2338,7 @@ export const ANSI_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const ANSI_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -7518,6 +7519,7 @@ export const DIN_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const DIN_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -13008,6 +13010,7 @@ export const ISO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const ISO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -16126,6 +16129,7 @@ export const PEM_Metric_BSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_BSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -16392,6 +16396,7 @@ export const PEM_Metric_CLA_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_CLA_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -16771,6 +16776,7 @@ export const PEM_Metric_CLS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_CLS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17027,6 +17033,7 @@ export const PEM_Metric_DSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_DSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17163,6 +17170,7 @@ export const PEM_Metric_FH4_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_FH4_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17385,6 +17393,7 @@ export const PEM_Metric_FHL_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_FHL_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17559,6 +17568,7 @@ export const PEM_Metric_FHX_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_FHX_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17693,6 +17703,7 @@ export const PEM_Metric_FH_Pin_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_FH_Pin_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -17940,6 +17951,7 @@ export const PEM_Metric_FH_Stud_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_FH_Stud_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18179,6 +18191,7 @@ export const PEM_Metric_H_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_H_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18380,6 +18393,7 @@ export const PEM_Metric_SGPC_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SGPC_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18577,6 +18591,7 @@ export const PEM_Metric_SH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18778,6 +18793,7 @@ export const PEM_Metric_SL_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SL_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -18975,6 +18991,7 @@ export const PEM_Metric_SMPS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SMPS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -19084,6 +19101,7 @@ export const PEM_Metric_SOSG_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SOSG_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -19243,6 +19261,7 @@ export const PEM_Metric_SO_Threaded_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SO_Threaded_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -19509,6 +19528,7 @@ export const PEM_Metric_SO_Unthreaded_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SO_Unthreaded_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -19773,6 +19793,7 @@ export const PEM_Metric_SRT_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_SRT_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -19969,6 +19990,7 @@ export const PEM_Metric_Stud_HF109_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_Stud_HF109_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20124,6 +20146,7 @@ export const PEM_Metric_Stud_HFE_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_Stud_HFE_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20302,6 +20325,7 @@ export const PEM_Metric_Stud_HFH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_Stud_HFH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20478,6 +20502,7 @@ export const PEM_Metric_Stud_HFLH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_Stud_HFLH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20633,6 +20658,7 @@ export const PEM_Metric_TFH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_TFH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20811,6 +20837,7 @@ export const PEM_Metric_TPS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_TPS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -20941,6 +20968,7 @@ export const PEM_Metric_TPXS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_TPXS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -21100,6 +21128,7 @@ export const PEM_Metric_TSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Metric_TSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -21366,6 +21395,7 @@ export const PEM_Unified_BSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_BSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -21661,6 +21691,7 @@ export const PEM_Unified_CLA_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_CLA_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -22140,6 +22171,7 @@ export const PEM_Unified_CLS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_CLS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -22508,6 +22540,7 @@ export const PEM_Unified_DSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_DSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -22667,6 +22700,7 @@ export const PEM_Unified_FH4_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_FH4_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -22910,6 +22944,7 @@ export const PEM_Unified_FHL_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_FHL_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -23429,6 +23464,7 @@ export const PEM_Unified_FH_Pin_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_FH_Pin_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -23978,6 +24014,7 @@ export const PEM_Unified_FH_Stud_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_FH_Stud_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -24231,6 +24268,7 @@ export const PEM_Unified_H_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_H_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -24455,6 +24493,7 @@ export const PEM_Unified_SGPC_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SGPC_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -24673,6 +24712,7 @@ export const PEM_Unified_SH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -24920,6 +24960,7 @@ export const PEM_Unified_SL_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SL_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -25159,6 +25200,7 @@ export const PEM_Unified_SMPS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SMPS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -25291,6 +25333,7 @@ export const PEM_Unified_SOSG_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SOSG_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -25494,6 +25537,7 @@ export const PEM_Unified_SO_Threaded_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SO_Threaded_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -25781,6 +25825,7 @@ export const PEM_Unified_SO_Unthreaded_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SO_Unthreaded_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -26068,6 +26113,7 @@ export const PEM_Unified_SRT_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_SRT_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -26286,6 +26332,7 @@ export const PEM_Unified_Stud_HFE_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_Stud_HFE_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -26441,6 +26488,7 @@ export const PEM_Unified_Stud_HFG8_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_Stud_HFG8_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -26619,6 +26667,7 @@ export const PEM_Unified_Stud_HFH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_Stud_HFH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -26795,6 +26844,7 @@ export const PEM_Unified_Stud_HFLH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_Stud_HFLH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -27004,6 +27054,7 @@ export const PEM_Unified_TFH_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_TFH_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -27215,6 +27266,7 @@ export const PEM_Unified_TPS_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_TPS_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -27416,6 +27468,7 @@ export const PEM_Unified_TSO_TappedHoleTable = {
     }
 };
 
+annotation { 'unused' : true }
 const PEM_Unified_TSO_ThroughTappedScrewTable = {
     "name" : "size",
     "displayName" : "Size",

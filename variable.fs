@@ -117,6 +117,9 @@ annotation { "Feature Type Name" : "Variable", "Feature Name Template" : "###nam
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowFlattenedGeometry.YES }
+        definition.initEntities is Query;
+
         annotation { "Name" : "Mode", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.mode is VariableMode;
 
@@ -395,7 +398,8 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         minmax: VariableMinMaxSelection.MINIMUM,
         extendEntities: false,
         measureFromAxis: false,
-        radius: false
+        radius: false,
+        initEntities: qNothing()
     });
 
 /**
@@ -784,22 +788,33 @@ export function variableEditLogic(context is Context, id is Id, oldDefinition is
     {
         definition.value = "?";
     }
-    return definition;
-}
 
-/**
- * Returns true if at least one axis type entity been located.
- */
-function hasAxisEntity(context is Context, entityQuery is Query) returns boolean
-{
-    for (var singleEntity in evaluateQuery(context, entityQuery))
+    if (oldDefinition == {} && !isQueryEmpty(context, definition.initEntities))
     {
-        if (getAxis(context, singleEntity) != undefined)
+        if (definition.mode == VariableMode.MEASURED)
         {
-            return true;
+            if (definition.measurementMode == VariableMeasurementMode.DISTANCE)
+            {
+                definition.entityCouple = definition.initEntities;
+            }
+            else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
+            {
+                definition.lengthEntities = definition.initEntities->qEntityFilter(EntityType.EDGE);
+            }
+            else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
+            {
+                definition.diameterEntity = qUnion([
+                    definition.initEntities->qGeometry(GeometryType.CIRCLE),
+                    definition.initEntities->qGeometry(GeometryType.ARC),
+                    definition.initEntities->qGeometry(GeometryType.CYLINDER),
+                    definition.initEntities->qGeometry(GeometryType.SPHERE)
+                ])->qNthElement(0);
+            }
         }
+        definition.initEntities = qNothing();
     }
-    return false;
+
+    return definition;
 }
 
 function sideContainsConstructionPlanes(context is Context, side) returns boolean

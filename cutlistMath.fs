@@ -16,7 +16,6 @@ import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
-const CUTLIST_MATCH_TOLERANCE = 1e-6 * meter;
 const NUM_ISOPARAM_CURVES = 7;
 
 /**

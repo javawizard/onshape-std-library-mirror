@@ -1333,6 +1333,12 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
         }
         return result;
     }
+
+    if (vertexOverride != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1939_PARTIAL_FLANGE_HOLD_ADJACENT_EDGES_FIX))
+    {
+        return result;
+    }
+
     var sideEdge = vertexAndEdges.edgeX;
     var edgeY = vertexAndEdges.edgeY;
     var sideFace = vertexAndEdges.sideFace;
@@ -2676,6 +2682,27 @@ function splitEdgeForPartialFlange(context is Context, topLevelId is Id, definit
     return convertReturnToQuery(context, operationId, modelEdge, limitEntities, midSplitPoint);
 }
 
+function alignPathDirectionByInput(context is Context, path is Path, inputEdges is Query) returns Path
+{
+    const edges = qIntersection(inputEdges, qUnion(path.edges));
+    if (path.edges->size() > 1 && !isQueryEmpty(context, edges))
+    {
+        const firstEdge = qNthElement(edges, 0);
+        for (var index, edge in path.edges)
+        {
+            if (!isQueryEmpty(context, qIntersection(firstEdge, edge)))
+            {
+                if (path.flipped[index])
+                {
+                    return reverse(path);
+                }
+                break;
+            }
+        }
+    }
+    return path;
+}
+
 function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, operationId, definition is map, modelEdges is Query) returns map
 {
     var splitEdgeQueries = [];
@@ -2683,12 +2710,17 @@ function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, ope
     const bounds = convertDefinitionToFlangeBound(definition);
     const paths = constructPaths(context, modelEdges, {});
     var operationIndex = 0;
+    const keepInputOrder = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1934_PARTIAL_FLANGE_STABLE_EDGE_ORDER);
     var addManipulators = !isInFeaturePattern(context);
     if (definition.chainType == SMPartialFlangeChainType.PER_EDGE)
     {
         // SMPartialFlangeChainType.PER_EDGE => bounds are applied to every edge identically.
         for (var path in paths)
         {
+            if (keepInputOrder)
+            {
+                path = alignPathDirectionByInput(context, path, modelEdges);
+            }
             for (var index, edge in path.edges)
             {
                 const alignedWithEdge = definition.flipFlangeBounds == path.flipped[index];
@@ -2731,6 +2763,10 @@ function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, ope
                 {
                     splitEdgeQueries = splitEdgeQueries->append(qUnion(path.edges));
                     continue;
+                }
+                if (keepInputOrder)
+                {
+                    path = alignPathDirectionByInput(context, path, modelEdges);
                 }
                 const startOffset = (bounds->size() == 1) && definition.flipFlangeBounds ? 0 : 1;
                 const endOffset = (bounds->size() == 1) && !definition.flipFlangeBounds ? 0 : 1;
